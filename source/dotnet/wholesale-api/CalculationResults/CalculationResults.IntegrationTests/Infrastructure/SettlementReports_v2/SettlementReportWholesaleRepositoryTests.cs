@@ -110,4 +110,90 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
         Assert.Single(results);
         Assert.Equal(4, results[0].StartDateTime.ToDateTimeOffset().Hour);
     }
+
+    [Theory]
+    [InlineData("8397670583199", 1)]
+    [InlineData(null, 3)]
+    public async Task Get_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected)
+    {
+        // arrange
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+            [
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'405'", "'8397670583196'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ea'", "'405'", "'8397670583197'", "'2024-01-02T03:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'405'", "'8397670583198'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+            ]);
+
+        if (energySupplier is not null)
+        {
+            await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
+                _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+                [
+                    ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'405'", "'8397670583199'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ]);
+        }
+
+        // act
+        var actual = await Sut.GetAsync(
+            CalculationType.WholesaleFixing,
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-01T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-04T00:00:00.000+00:00"),
+                energySupplier,
+                "da-DK"),
+            skip: 0,
+            take: int.MaxValue).ToListAsync();
+
+        // assert
+        Assert.Equal(expected, actual.Count);
+    }
+
+    [Theory]
+    [InlineData("8397670583104", 1)]
+    [InlineData(null, 3)]
+    public async Task Count_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected)
+    {
+        // arrange
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+            [
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'406'", "'8397670583101'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ea'", "'406'", "'8397670583102'", "'2024-01-02T03:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'406'", "'8397670583103'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+            ]);
+
+        if (energySupplier is not null)
+        {
+            await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
+                _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+                [
+                    ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'406'", "'8397670583104'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ]);
+        }
+
+        // act
+        var actual = await Sut.CountAsync(
+            CalculationType.WholesaleFixing,
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "406", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-01T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-04T00:00:00.000+00:00"),
+                energySupplier,
+                "da-DK"));
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
 }
