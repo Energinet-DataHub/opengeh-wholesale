@@ -26,7 +26,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_column_n
 )
 from package.constants import MeteringPointPeriodColname
 
-charge_link_periods_v1_expected_schema = StructType(
+charge_link_periods_v1_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("calculation_type", StringType(), False),
