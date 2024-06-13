@@ -311,14 +311,12 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var start = DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant();
-        var end = DateTimeOffset.Parse("2022-01-01T00:15Z").ToInstant();
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries(start, end);
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridAreaCodes.Count == 0)))
-            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
+        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+                It.IsAny<IReadOnlyCollection<string>>(),
+                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
+                It.IsAny<RequestedCalculationType>()))
+            .ReturnsAsync(new List<CalculationForPeriod>
+            { }.AsReadOnly());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
