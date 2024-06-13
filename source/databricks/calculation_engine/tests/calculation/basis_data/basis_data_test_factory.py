@@ -25,7 +25,7 @@ from calculation.output.calculations_storage_model_test_factory import (
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
     charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
@@ -37,8 +37,8 @@ from package.calculation.basis_data.schemas.grid_loss_metering_points_schema imp
 from package.calculation.calculation_results import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
+from package.calculation.preparation.data_structures.charge_price_information import (
+    ChargePriceInformation,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
@@ -79,7 +79,7 @@ class DefaultValues:
     CREATED_BY_USER_ID = "bar"
 
 
-def create_charge_master_data_row(
+def create_charge_price_information_row(
     calculation_id: str = DefaultValues.CALCULATION_ID,
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_type: ChargeType = DefaultValues.CHARGE_TYPE,
@@ -170,15 +170,15 @@ def create_grid_loss_metering_points_row(
     return Row(**row)
 
 
-def create_charge_master_data(
+def create_charge_price_information(
     spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargeMasterData:
+) -> ChargePriceInformation:
     if data is None:
-        data = [create_charge_master_data_row()]
+        data = [create_charge_price_information_row()]
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, charge_price_information_periods_schema)
-    return ChargeMasterData(df)
+    return ChargePriceInformation(df)
 
 
 def create_charge_prices(
@@ -249,10 +249,10 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     grid_loss_metering_points = create_grid_loss_metering_points(spark)
     charge_links = create_charge_links(spark)
     charge_prices = create_charge_prices(spark)
-    charge_master_data = create_charge_master_data(spark)
+    charge_price_information = create_charge_price_information(spark)
 
     input_charges_container = InputChargesContainer(
-        charge_master_data=charge_master_data,
+        charge_price_information=charge_price_information,
         charge_prices=charge_prices,
         charge_links=charge_links,
     )
