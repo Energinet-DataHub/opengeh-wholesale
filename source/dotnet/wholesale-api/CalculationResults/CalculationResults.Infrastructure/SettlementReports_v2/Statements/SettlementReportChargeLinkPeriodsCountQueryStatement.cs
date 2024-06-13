@@ -34,15 +34,16 @@ public sealed class SettlementReportChargeLinkPeriodsCountQueryStatement : Datab
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT(DISTINCT({SettlementReportWholesaleViewColumns.ResultId})) AS {Columns.Count}
+                    SELECT COUNT({SettlementReportChargeLinkPeriodsViewColumns.CalculationId}) AS {Columns.Count}
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
                     WHERE
-                        {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
-                        {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                        {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
+                        {SettlementReportChargeLinkPeriodsViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
+                        {SettlementReportChargeLinkPeriodsViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
+                        {SettlementReportChargeLinkPeriodsViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
+                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargeLinkPeriodsViewColumns.EnergySupplierId + " = '" + _filter.EnergySupplier + "' AND")} 
+                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
                 """;
     }
 

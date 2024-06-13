@@ -62,6 +62,7 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
             calculationId.Id,
             gridAreaCode,
             filter.CalculationType,
+            filter.EnergySupplier,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant());
     }

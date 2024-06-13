@@ -29,11 +29,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<SettlementReportChargeLinkPeriodsRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<SettlementReportChargeLinkPeriodsRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
-    public SettlementReportChargeLinkPeriodsRepositoryTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
+    public SettlementReportChargeLinkPeriodsRepositoryTests(MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
@@ -41,14 +41,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
             SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            WHOLESALE_RESULTS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
-            BasisDataSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.BasisDataSchemaName,
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            ENERGY_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-            WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-            CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
-            CHARGE_LINK_PERIODS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
         });
 
         Fixture.Inject(mockedOptions);
@@ -62,12 +55,13 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
     }
 
     [Fact]
-    public async Task Count_ValidFilter_ReturnsCount()
+    public async Task Count_ValidFilterNoEnergySupplier_ReturnsCount()
     {
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
                 ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583191'"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -79,9 +73,36 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                     },
                 },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
-                DateTimeOffset.Parse("2024-01-03T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
+                "da-DK"));
+
+        Assert.Equal(2, actual);
+    }
+
+    [Fact]
+    public async Task Count_ValidFilterWithEnergySupplier_ReturnsCount()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
+            [
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583191'"],
+            ]);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "403", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
+                "8397670583191",
                 "da-DK"));
 
         Assert.Equal(1, actual);
@@ -93,9 +114,9 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108999'", "46", "'2024-01-02T03:00:00.000+00:00'", "'2024-01-31T03:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108910'", "46", "'2024-01-02T04:00:00.000+00:00'", "'2024-01-31T04:00:00.000+00:00'", "'404'", "'8397670583196'"],
             ]);
 
         var results = await Sut.GetAsync(
@@ -106,8 +127,8 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                         "404", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
                     },
                 },
-                DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
-                DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-01T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-02-04T00:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
