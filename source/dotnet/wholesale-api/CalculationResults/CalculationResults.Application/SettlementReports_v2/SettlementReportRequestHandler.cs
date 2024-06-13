@@ -82,7 +82,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var resultEnergy = new SettlementReportFileRequestDto(
             fileContent,
-            new SettlementReportPartialFileInfo("Result Energy"),
+            new SettlementReportPartialFileInfo("Result Energy", true),
             requestId,
             reportRequest.Filter);
 
@@ -99,7 +99,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var resultWholesale = new SettlementReportFileRequestDto(
                 wholesaleFileContent,
-                new SettlementReportPartialFileInfo("Result Wholesale"),
+                new SettlementReportPartialFileInfo("Result Wholesale", true),
                 requestId,
                 reportRequest.Filter);
 

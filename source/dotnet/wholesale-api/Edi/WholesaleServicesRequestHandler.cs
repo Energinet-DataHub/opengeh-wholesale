@@ -32,7 +32,6 @@ namespace Energinet.DataHub.Wholesale.Edi;
 /// </summary>
 public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 {
-    // TODO: Is this the correct error code?
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -136,7 +135,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         if (queryParameters.GridAreaCodes.Count == 0) // If grid area codes is empty, we already retrieved any data across all grid areas
             return false;
 
-        if (requestedByActorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
+        if (requestedByActorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.SystemOperator)
         {
             var queryParametersWithoutGridArea = queryParameters with
             {
