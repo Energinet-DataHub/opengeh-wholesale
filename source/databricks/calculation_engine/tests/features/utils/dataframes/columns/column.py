@@ -15,7 +15,7 @@
 from pyspark.sql.types import DataType
 
 
+@dataclass
 class Column:
-    def __init__(self, name: str, data_type: DataType):
-        self.name = name
-        self.data_type = data_type
+    name: str
+    data_type: DataType
