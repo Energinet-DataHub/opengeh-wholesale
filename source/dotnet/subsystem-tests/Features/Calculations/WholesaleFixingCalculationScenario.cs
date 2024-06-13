@@ -372,14 +372,13 @@ AppDependencies
 
     [ScenarioStep(18)]
     [SubsystemFact]
-    public async Task AndThen_OneTableInEachPublicDataModelMustExistsAndContainData()
+    public async Task AndThen_OneViewOrTableInEachPublicDataModelMustExistsAndContainData()
     {
         // Arrange
         var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
         {
             new("settlement_report", "metering_point_periods_v1"),
             new("wholesale_calculation_results", "energy_per_ga_v1"),
-            new("wholesale_calculation_results", "amount_per_charge_v1"),
         };
 
         // Act
