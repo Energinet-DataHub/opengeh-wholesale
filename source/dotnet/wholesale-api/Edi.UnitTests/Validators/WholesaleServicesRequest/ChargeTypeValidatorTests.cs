@@ -107,11 +107,11 @@ public class ChargeTypeValidatorTests
     public async Task Validate_WhenMultipleChargeTypeButOneHasInvalidType_returnsExpectedValidationError()
     {
         // Arrange
-        var invalidCharTypeId = "ThisIsMoreThan10Charlong";
+        var invalidCharType = "ThisIsMoreThan10Charlong";
         var chargeTypes = new ChargeType[]
             {
                 new ChargeType() { ChargeType_ = "valid1", ChargeCode = "D01" },
-                new ChargeType() { ChargeType_ = invalidCharTypeId, ChargeCode = "D01" },
+                new ChargeType() { ChargeType_ = invalidCharType, ChargeCode = "D01" },
                 new ChargeType() { ChargeType_ = "valid2", ChargeCode = "D01" },
             };
 
@@ -123,6 +123,6 @@ public class ChargeTypeValidatorTests
         var validationErrors = await _sut.ValidateAsync(message);
 
         // Assert
-        validationErrors.Should().ContainSingle().Subject.Should().Be(_chargeTypeIdIsToLongError.WithPropertyName(invalidCharTypeId));
+        validationErrors.Should().ContainSingle().Subject.Should().Be(_chargeTypeIdIsToLongError.WithPropertyName(invalidCharType));
     }
 }
