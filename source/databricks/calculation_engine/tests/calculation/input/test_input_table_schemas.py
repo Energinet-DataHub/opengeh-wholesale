@@ -20,7 +20,7 @@ from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     charge_link_periods_schema,
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
 )
 from package.infrastructure import paths
@@ -75,14 +75,14 @@ def test__input_charge_price_points_schema__matches_published_contract(
     _assert_is_equal(test_input_data.schema, charge_price_points_schema)
 
 
-def test__input_charge_master_data_periods_schema__matches_published_contract(
+def test__input_charge_price_information_periods_schema__matches_published_contract(
     spark: SparkSession, price_input_data_written_to_delta: None
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
     )
-    _assert_is_equal(test_input_data.schema, charge_master_data_periods_schema)
+    _assert_is_equal(test_input_data.schema, charge_price_information_periods_schema)
 
 
 def _assert_is_equal(actual_schema: StructType, expected_schema: StructType) -> None:
