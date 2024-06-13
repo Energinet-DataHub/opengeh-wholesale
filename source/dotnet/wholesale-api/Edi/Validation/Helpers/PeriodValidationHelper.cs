@@ -42,4 +42,12 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
 
         return zonedEndDateTime.LocalDateTime > monthsFromStart;
     }
+
+    public bool PeriodStartIs3YearsAnd2MonthsAgo(Instant periodStart)
+    {
+        var zonedDateTime = new ZonedDateTime(periodStart, dateTimeZone);
+        var zonedCurrentDataTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
+        return zonedDateTime.LocalDateTime.Month == zonedCurrentDataTime.LocalDateTime.Month - 2
+               && zonedDateTime.LocalDateTime.Year == zonedCurrentDataTime.LocalDateTime.Year - 3;
+    }
 }
