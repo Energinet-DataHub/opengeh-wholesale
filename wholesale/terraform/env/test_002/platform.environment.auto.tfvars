@@ -1,10 +1,7 @@
 # This file contains values that are specific to this environment.
-# For values that persist across all environments, refer to /main/terraform.tfvars
+# For values that persist across all environments, refer to /main/platform.auto.tfvars
 databricks_vnet_address_space                      = "10.142.104.0/22"
 databricks_private_subnet_address_prefix           = "10.142.104.0/24"
 databricks_public_subnet_address_prefix            = "10.142.105.0/24"
 databricks_private_endpoints_subnet_address_prefix = "10.142.106.0/24"
 omada_developers_security_group_name               = "SEC-G-Datahub-DevelopersAzure"
-quarterly_resolution_transition_datetime           = "2023-01-31T23:00:00Z"
-alert_email_address                                = "5543d1b6.energinet.onmicrosoft.com@emea.teams.ms"
-pim_sql_writer_ad_group_name                       = "SEC-A-Datahub-Test-001-Contributor"
