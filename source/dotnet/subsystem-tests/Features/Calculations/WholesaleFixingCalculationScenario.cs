@@ -377,7 +377,15 @@ AppDependencies
         // Arrange
         var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
         {
+            new("settlement_report", "current_balance_fixing_calculation_version_v1"),
             new("settlement_report", "metering_point_periods_v1"),
+            new("settlement_report", "metering_point_time_series_v1"),
+            new("settlement_report", "charge_link_periods_v1"),
+            new("settlement_report", "charge_prices_v1"),
+            new("settlement_report", "energy_result_points_per_ga_v1"),
+            new("settlement_report", "energy_result_points_per_es_ga_v1"),
+            new("settlement_report", "wholesale_results_v1"),
+            new("settlement_report", "monthly_amounts_v1"),
             new("wholesale_calculation_results", "energy_per_ga_v1"),
         };
 
