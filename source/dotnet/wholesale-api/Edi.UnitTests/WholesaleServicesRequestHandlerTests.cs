@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
@@ -240,6 +241,61 @@ public class WholesaleServicesRequestHandlerTests
             {
                 new("A validation error", expectedValidationErrorCode),
             });
+
+        var sut = new WholesaleServicesRequestHandler(
+            ediClient.Object,
+            validator.Object,
+            completedCalculationRetriever.Object,
+            queries.Object,
+            mapper.Object,
+            logger.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedRejectedSubject)
+                    && message.WithErrorCode(expectedValidationErrorCode)
+                    && message.ApplicationProperties.ContainsKey("ReferenceId")
+                    && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WithNoDataInRequestedGridArea_SendsRejectedEdiMessage(
+        [Frozen] Mock<IEdiClient> ediClient,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
+        [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
+        [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
+        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+    {
+        // Arrange
+        const string expectedRejectedSubject = nameof(WholesaleServicesRequestRejected);
+        const string expectedValidationErrorCode = "D46";
+        var expectedReferenceId = Guid.NewGuid().ToString();
+
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(
+                new WholesaleServicesRequestBuilder()
+                    .WithGridAreaCode("123")
+                    .WithRequestedByActorRole(DataHubNames.ActorRole.SystemOperator)
+                    .Build().ToByteArray()));
+
+        queries
+            .Setup(parameters =>
+                parameters.AnyAsync(
+                    It.Is<WholesaleServicesQueryParameters>(x => x.GridAreaCodes.Count == 0)))
+            .Returns(() => Task.FromResult(true));
 
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
