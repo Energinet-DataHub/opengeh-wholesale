@@ -24,8 +24,6 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NodaTime;
-using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
