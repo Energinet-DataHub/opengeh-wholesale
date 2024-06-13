@@ -6,5 +6,3 @@ feature_management_use_total_monthly_amount_result_produced      = false
 feature_management_use_energy_result_produced                    = false
 feature_management_use_request_wholesale_settlement_receiver     = true
 feature_management_use_message_delegation                        = true
-pim_sql_writer_ad_group_name = "SEC-A-Datahub-Prod-001-Contributor"
-pim_sql_reader_ad_group_name = "SEC-A-Datahub-Prod-001-Reader"
