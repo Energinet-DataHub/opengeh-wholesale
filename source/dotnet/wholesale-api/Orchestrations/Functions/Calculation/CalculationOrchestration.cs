@@ -102,7 +102,7 @@ internal class CalculationOrchestration
                 nameof(CreateCompletedCalculationActivity),
                 new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId));
 
-            //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
+            //// TODO XDAST: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(

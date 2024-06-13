@@ -83,15 +83,18 @@ public static class EdiExtensions
     {
         services.AddScoped<IValidator<WholesaleServicesRequest>, WholesaleServicesRequestValidator>();
         services
-            .AddScoped<
-                IValidationRule<WholesaleServicesRequest>,
-                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.PeriodValidationRule>()
             .AddSingleton<
                 IValidationRule<WholesaleServicesRequest>,
                 Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.ResolutionValidationRule>()
             .AddSingleton<
                 IValidationRule<WholesaleServicesRequest>,
                 Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.EnergySupplierValidationRule>()
+            .AddSingleton<
+                IValidationRule<WholesaleServicesRequest>,
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.ChargeTypeValidationRule>()
+            .AddScoped<
+                IValidationRule<WholesaleServicesRequest>,
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.PeriodValidationRule>()
             .AddScoped<
                 IValidationRule<WholesaleServicesRequest>,
                 Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.GridAreaValidationRule>();
