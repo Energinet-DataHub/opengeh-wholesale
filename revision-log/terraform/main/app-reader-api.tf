@@ -17,9 +17,9 @@ module "app_reader_api" {
   dotnet_framework_version               = "v8.0"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_settings                           = local.default_reader_api_app_settings
+  app_settings                           = local.app_reader_api.app_settings
 
-  role_assignments = [
+  role_assignments                       = [
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"

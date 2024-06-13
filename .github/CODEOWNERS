@@ -21,6 +21,11 @@ edi/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-Data
 edi/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 edi/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 
+# revision-log configurations
+revision-log/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+revision-log/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+revision-log/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+
 # wholesale app settings
 wholesale/terraform/**/app-*.config*.tf @Energinet-DataHub/mandalorian @Energinet-DataHub/TheOutlaws
 wholesale/terraform/**/func-*.config*.tf @Energinet-DataHub/mandalorian @Energinet-DataHub/TheOutlaws
