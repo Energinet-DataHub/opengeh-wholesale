@@ -30,6 +30,7 @@ using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Google.Protobuf;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
@@ -76,6 +77,73 @@ public class WholesaleServicesRequestHandlerTests
             .ReturnsAsync(new List<CalculationForPeriod>
             {
                 new(new Period(wholesaleServices.Period.Start, wholesaleServices.Period.End), Guid.NewGuid(), 1),
+            }.AsReadOnly());
+
+        var sut = new WholesaleServicesRequestHandler(
+            ediClient.Object,
+            validator.Object,
+            completedCalculationRetriever.Object,
+            queries.Object,
+            mapper.Object,
+            logger.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedAcceptedSubject)
+                    && message.ApplicationProperties.ContainsKey("ReferenceId")
+                    && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WhenPeriodStartIsNotTheFirstOfAMonth_SendsAcceptedEdiMessage(
+        [Frozen] Mock<IEdiClient> ediClient,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
+        [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
+        [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
+        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+    {
+        // Arrange
+        const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(new WholesaleServicesRequestBuilder()
+                .WithPeriodStart("2024-01-16T23:00:00Z") // This should be 3 years and 2 months back in time. Otherwise it should be rejected by a validation rule, which is mocked off
+                .WithPeriodEnd("2024-01-31T23:00:00Z")
+                .Build().ToByteArray()));
+
+        var wholesaleServices = CreateWholesaleServices();
+        queries.Setup(q =>
+                q.GetAsync(It.Is<WholesaleServicesQueryParameters>(x =>
+                        x.Calculations.Any(y => y.Period.Start.Day() == 1))))
+            .Returns(new List<WholesaleServices>
+            {
+                wholesaleServices,
+            }.ToAsyncEnumerable());
+
+        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+            It.IsAny<IReadOnlyCollection<string>>(),
+            It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
+            It.IsAny<RequestedCalculationType>()))
+            .ReturnsAsync((
+                IReadOnlyCollection<string> grid,
+                Energinet.DataHub.Wholesale.Edi.Models.Period period,
+                RequestedCalculationType calType) => new List<CalculationForPeriod>
+            {
+                new(new Period(period.Start, period.End), Guid.NewGuid(), 1),
             }.AsReadOnly());
 
         var sut = new WholesaleServicesRequestHandler(
