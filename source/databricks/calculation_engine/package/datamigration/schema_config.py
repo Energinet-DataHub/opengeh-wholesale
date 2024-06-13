@@ -150,6 +150,9 @@ schema_config = [
             View(
                 name=paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME
             ),
+            View(
+                name=paths.CalculationResultsPublicDataModel.MONTHLY_AMOUNT_PER_CHARGE_VIEW_NAME
+            ),
         ],
     ),
 ]
