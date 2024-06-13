@@ -20,7 +20,7 @@ from features.utils.dataframes.columns.view_columns import ViewColumns
 
 
 def test__public_data_model_views_have_registered_column_names_and_types(
-    # migrations_executed: None,
+    migrations_executed: None,
     spark: SparkSession,
 ) -> None:
     """Verify that all columns in all views in all public view models match the expected column names and data types"""
