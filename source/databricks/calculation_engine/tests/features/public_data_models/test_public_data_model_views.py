@@ -49,7 +49,12 @@ def get_view_databases(spark: SparkSession) -> List[Database]:
     """
     Get all view databases.
     """
-    negative_databases = {"default", "wholesale_output", "wholesale_input"}
+    negative_databases = {
+        "default",
+        "wholesale_output",
+        "wholesale_input",
+        "basis_data",
+    }
     databases = [
         db for db in spark.catalog.listDatabases() if db.name not in negative_databases
     ]
