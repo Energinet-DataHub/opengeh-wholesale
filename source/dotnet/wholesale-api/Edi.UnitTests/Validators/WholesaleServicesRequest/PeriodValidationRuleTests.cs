@@ -497,6 +497,34 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
+    public async Task Validate_WhenPeriodStartIs3YearsAnd2MonthsFromNowButDurationIsToLong_ReturnsNoValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2019, 3, 15, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var periodEndDate = new LocalDateTime(2019, 5, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2022, 5, 15, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle().Which.ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
+    }
+
+    [Fact]
     public async Task Validate_WhenPeriodDoesNotEndOnTheLastDayOfAMonth_ReturnsExpectedValidationError()
     {
         // Arrange

@@ -77,9 +77,18 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         }
 
         var incomingStart = InstantPattern.General.Parse(incomingRequest.PeriodStart).Value.ToDateTimeUtc();
-        if (incomingStart.Day != 1)
+
+        // If the following check is true. Then the period start is not the first day of the month Danish time.
+        // Last day of the previous month UTC, which is what we're dealing with.
+        // This should only be possible of an actor request data 3 years and 2 months back in time, precisely.
+        // eg.
+        // from {now - 3 years and 2 months}
+        // to {now - 3 years and 2 months + days such that it is the last day of the month}
+        // Hence this altering of the period start will result in an actor getting data from a full month.
+        if (incomingStart.Day + 1 != 1)
         {
-            incomingRequest.PeriodStart = incomingStart.AddDays(-incomingStart.Day + 1).ToInstant().ToString();
+            // Since the request is in UTC we have set the period start to the last day of the previous month
+            incomingRequest.PeriodStart = incomingStart.AddDays(-incomingStart.Day).ToInstant().ToString();
         }
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);

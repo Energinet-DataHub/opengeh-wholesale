@@ -121,14 +121,21 @@ public class WholesaleServicesRequestHandlerTests
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(new WholesaleServicesRequestBuilder()
-                .WithPeriodStart("2024-01-16T23:00:00Z") // This should be 3 years and 2 months back in time. Otherwise it should be rejected by a validation rule, which is mocked off
+                .WithPeriodStart("2024-01-16T23:00:00Z") // This should be 3 years and 2 months back in time. Otherwise, it should be rejected by a validation rule, which is mocked off
                 .WithPeriodEnd("2024-01-31T23:00:00Z")
                 .Build().ToByteArray()));
 
         var wholesaleServices = CreateWholesaleServices();
+
+        // Since Period start and Period End are within the same month, and have no validation error.
+        // Then we expect that the period start will be overwritten to the previous month's last day.
+        // Since we are dealing with time in UTC
+        // Notice that the expected period does not match that of the request!
+        var expectedPeriodStart = Instant.FromUtc(2023, 12, 31, 23, 00, 00);
+
         queries.Setup(q =>
                 q.GetAsync(It.Is<WholesaleServicesQueryParameters>(x =>
-                        x.Calculations.Any(y => y.Period.Start.Day() == 1))))
+                        x.Calculations.Any(y => y.Period.Start == expectedPeriodStart))))
             .Returns(new List<WholesaleServices>
             {
                 wholesaleServices,
