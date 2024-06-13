@@ -105,7 +105,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
 
         using var streamReader = new StreamReader(combinedEntry.Open());
         var inputFileContents = await streamReader.ReadToEndAsync();
-        var expectedContents = string.Concat(Enumerable.Repeat("Content: target_file.csv", 3));
+        var expectedContents = string.Concat(Enumerable.Repeat("Content: target_file.csv\n", 3));
 
         Assert.Equal(expectedContents, inputFileContents);
     }
@@ -149,7 +149,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
 
     private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file, bool makeLargeFiles = false)
     {
-        var binaryData = new BinaryData($"Content: {file.FileInfo.FileName}");
+        var binaryData = new BinaryData($"Content: {file.FileInfo.FileName}\n");
 
         if (makeLargeFiles)
         {
