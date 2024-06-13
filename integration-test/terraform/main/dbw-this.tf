@@ -204,9 +204,9 @@ resource "databricks_job" "migration_workflow" {
 
 resource "databricks_sql_endpoint" "sql_endpoint_integration_test" {
   name                      = "SQL Endpoint for Testing"
-  cluster_size              = "Small"
-  max_num_clusters          = 1
-  auto_stop_mins            = 120
+  cluster_size              = "Medium"
+  max_num_clusters          = 2
+  auto_stop_mins            = 15
   enable_serverless_compute = true
   warehouse_type            = "PRO"
 
