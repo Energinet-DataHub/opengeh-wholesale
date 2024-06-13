@@ -22,6 +22,7 @@ WHERE
     calculation_type in ('balance_fixing', 'aggregation')
     AND aggregation_level = 'brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
+GO
 
 DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_es_brp_ga_v1
 GO
