@@ -59,9 +59,9 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
-            new(requestId, new("fileA.csv"), "fileA_0.csv"),
-            new(requestId, new("fileB.csv"), "fileB_0.csv"),
-            new(requestId, new("fileC.csv"), "fileC_0.csv"),
+            new(requestId, new("fileA.csv", true), "fileA_0.csv"),
+            new(requestId, new("fileB.csv", true), "fileB_0.csv"),
+            new(requestId, new("fileC.csv", true), "fileC_0.csv"),
         };
 
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));

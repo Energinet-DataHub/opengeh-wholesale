@@ -32,18 +32,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Applic
 
 [Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>,
-    IClassFixture<DatabricksSqlStatementApiFixture>
+    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private const string GridAreaA = "018";
     private readonly string[] _gridAreaCodes = [GridAreaA];
     private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
     private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 31, 0, 0, 0);
 
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     public SettlementReportFileRequestHandlerIntegrationTests(
-        DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture,
+        MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture,
         SettlementReportFileBlobStorageFixture settlementReportFileBlobStorageFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
@@ -53,13 +53,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
             SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            WHOLESALE_RESULTS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
-            BasisDataSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.BasisDataSchemaName,
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            ENERGY_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-            WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-            CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
         });
 
         var calc = new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated);
@@ -100,7 +94,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
             SettlementReportFileContent.EnergyResultForCalculationId,
-            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString()),
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             requestId,
             filter);
 

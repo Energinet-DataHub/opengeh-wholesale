@@ -110,12 +110,6 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithGridAreaCode(string gridAreaCode)
-    {
-        _gridAreaCode = gridAreaCode;
-        return this;
-    }
-
     public WholesaleServicesRequestBuilder WithSettlementVersion(string settlementVersion)
     {
         _settlementVersion = settlementVersion;
@@ -128,7 +122,7 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithGridArea(string gridAreaCode)
+    public WholesaleServicesRequestBuilder WithGridAreaCode(string gridAreaCode)
     {
         _gridAreaCode = gridAreaCode;
         return this;

@@ -55,7 +55,7 @@ public class GridAreaValidatorTest
         var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
-            .WithGridArea(gridAreaCode)
+            .WithGridAreaCode(gridAreaCode)
             .Build();
 
         // Act
@@ -86,7 +86,7 @@ public class GridAreaValidatorTest
         var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
-            .WithGridArea(gridAreaCode)
+            .WithGridAreaCode(gridAreaCode)
             .Build();
 
         // Act
@@ -110,7 +110,7 @@ public class GridAreaValidatorTest
         var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
-            .WithGridArea(null!)
+            .WithGridAreaCode(null!)
             .Build();
 
         // Act
@@ -140,7 +140,7 @@ public class GridAreaValidatorTest
         var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
-            .WithGridArea(notExistingGridAreaCode)
+            .WithGridAreaCode(notExistingGridAreaCode)
             .Build();
 
         // Act
