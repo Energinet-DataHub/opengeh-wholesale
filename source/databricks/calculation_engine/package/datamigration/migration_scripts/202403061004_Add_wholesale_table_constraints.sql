@@ -87,7 +87,7 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT settlement_method_chk CHECK (settlement_method IS NULL OR settlement_method IN ('non_profiled', 'flex'))
 GO
 
--- TODO: Any constraints for charge_id?
+-- TODO JMG: Any constraints for charge_id?
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     DROP CONSTRAINT IF EXISTS charge_type_chk
 GO
