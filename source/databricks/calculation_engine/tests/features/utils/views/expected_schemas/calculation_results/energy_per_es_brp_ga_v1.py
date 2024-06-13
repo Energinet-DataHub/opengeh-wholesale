@@ -11,3 +11,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+    LongType,
+    DecimalType,
+    ArrayType,
+)
+
+energy_per_es_brp_ga_v1_schema = StructType(
+    [
+        StructField("calculation_id", StringType(), False),
+        StructField("calculation_type", StringType(), False),
+        StructField("calculation_period_start", TimestampType(), False),
+        StructField("calculation_period_end", TimestampType(), False),
+        StructField("calculation_version", LongType(), False),
+        StructField("result_id", StringType(), False),
+        StructField("grid_area_code", StringType(), False),
+        StructField("energy_supplier_id", StringType(), False),
+        StructField("balance_responsible_party_id", StringType(), False),
+        StructField("metering_point_type", StringType(), False),
+        StructField("settlement_method", StringType(), False),
+        StructField("resolution", StringType(), False),
+        StructField("time", TimestampType(), False),
+        StructField("quantity", DecimalType(18, 3), False),
+        StructField("quantity_unit", DecimalType(18, 3), True),
+        StructField("quantity_qualities", ArrayType(StringType()), False),
+    ]
+)

@@ -19,6 +19,7 @@ from pyspark.sql.types import (
     StructType,
     LongType,
     DecimalType,
+    ArrayType,
 )
 
 energy_per_brp_ga_v1_schema = StructType(
@@ -34,8 +35,9 @@ energy_per_brp_ga_v1_schema = StructType(
         StructField("metering_point_type", StringType(), False),
         StructField("settlement_method", StringType(), False),
         StructField("resolution", StringType(), False),
+        StructField("time", TimestampType(), False),
         StructField("quantity", DecimalType(18, 3), False),
         StructField("quantity_unit", DecimalType(18, 3), True),
-        StructField("quantity_qualities", StringType(), False),
+        StructField("quantity_qualities", ArrayType(StringType()), False),
     ]
 )
