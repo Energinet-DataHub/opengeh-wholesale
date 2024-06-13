@@ -16,6 +16,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public static class SettlementReportDataRepositoryExceptions
 {
-    // TODO: Make Databricks Exception type public.
+    // TODO MJM: Make Databricks Exception type public.
     public const string DataSourceUnavailableExceptionMessage = "Unable to fetch result from Databricks";
 }
