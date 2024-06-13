@@ -24,8 +24,8 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServices
 public class ChargeTypeValidatorTests
 {
     private static readonly ValidationError _chargeTypeIdIsToLongError = new ValidationError(
-        "Følgende chargeType er for lang: {PropertyName}. Den må højst indeholde 10 karaktere/"
-        + "The following ChargeId is to long: {PropertyName} It must at most be 10 characters",
+        "Følgende chargeType mRID er for lang: {PropertyName}. Den må højst indeholde 10 karaktere/"
+        + "The following chargeType mRID is to long: {PropertyName} It must at most be 10 characters",
         "D14");
 
     private readonly ChargeTypeValidationRule _sut = new();
