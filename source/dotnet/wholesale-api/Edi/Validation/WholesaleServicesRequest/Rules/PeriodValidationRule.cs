@@ -74,6 +74,20 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         MustBeMidnight(endInstant.Value, "Period End", errors);
 
         MustBeWithin3YearsAnd2Months(startInstant.Value, errors);
+
+        if (periodValidationHelper.PeriodStartIs3YearsAnd2MonthsAgo(startInstant.Value))
+        {
+            var startUtc = startInstant.Value.ToDateTimeUtc();
+            var endUtc = endInstant.Value.ToDateTimeUtc();
+
+            // If the start date is 3 years and 2 months ago, the end date must be the last day of the month
+            if (endUtc.Month == startUtc.Month
+                && endUtc.AddDays(1).Month != endUtc.Month)
+            {
+                return Task.FromResult<IList<ValidationError>>(errors);
+            }
+        }
+
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
@@ -117,7 +131,11 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
             || zonedEndDateTime.LocalDateTime.Day != 1)
         {
             errors.Add(_invalidPeriodLength);
+            return;
         }
+
+        if (zonedEndDateTime.LocalDateTime.Month - zonedStartDateTime.LocalDateTime.Month != 1)
+            errors.Add(_invalidPeriodAcrossMonths);
     }
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
