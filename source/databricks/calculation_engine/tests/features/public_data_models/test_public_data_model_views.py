@@ -51,6 +51,7 @@ def get_view_databases(spark: SparkSession) -> List[Database]:
     """
     negative_databases = {
         "default",
+        "schema_migration",
         "wholesale_output",
         "wholesale_input",
         "basis_data",
