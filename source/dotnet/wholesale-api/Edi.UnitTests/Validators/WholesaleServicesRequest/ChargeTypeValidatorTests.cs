@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServices
 
 public class ChargeTypeValidatorTests
 {
-    private static readonly ValidationError _chargeIdIsToLongError = new ValidationError(
+    private static readonly ValidationError _chargeTypeIdIsToLongError = new ValidationError(
         "Følgende chargeType er for lang: {PropertyName}. Den må højst indeholde 10 karaktere/"
         + "The following ChargeId is to long: {PropertyName} It must at most be 10 characters",
         "D14");
@@ -73,7 +73,7 @@ public class ChargeTypeValidatorTests
         // Assert
         validationErrors.Should().ContainSingle()
             .Subject.Should().Be(
-                _chargeIdIsToLongError.WithPropertyName(chargeTypeId));
+                _chargeTypeIdIsToLongError.WithPropertyName(chargeTypeId));
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class ChargeTypeValidatorTests
 
         for (var i = 0; i < chargeTypes.Count(); i++)
         {
-            expectedErrors.Add(_chargeIdIsToLongError.WithPropertyName(chargeTypes[i].ChargeType_));
+            expectedErrors.Add(_chargeTypeIdIsToLongError.WithPropertyName(chargeTypes[i].ChargeType_));
         }
 
         var message = new WholesaleServicesRequestBuilder()
@@ -123,6 +123,6 @@ public class ChargeTypeValidatorTests
         var validationErrors = await _sut.ValidateAsync(message);
 
         // Assert
-        validationErrors.Should().ContainSingle().Subject.Should().Be(_chargeIdIsToLongError.WithPropertyName(invalidCharTypeId));
+        validationErrors.Should().ContainSingle().Subject.Should().Be(_chargeTypeIdIsToLongError.WithPropertyName(invalidCharTypeId));
     }
 }

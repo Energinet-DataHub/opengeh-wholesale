@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Ru
 
 public class ChargeTypeValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
-    private static readonly ValidationError _chargeIdIsToLongError = new ValidationError(
+    private static readonly ValidationError _chargeTypeIdIsToLongError = new ValidationError(
         "Følgende chargeType er for lang: {PropertyName}. Den må højst indeholde 10 karaktere/"
         + "The following ChargeId is to long: {PropertyName} It must at most be 10 characters",
         "D14");
@@ -27,12 +27,12 @@ public class ChargeTypeValidationRule : IValidationRule<DataHub.Edi.Requests.Who
 
         if (chargeTypesWithToLongType.Any())
         {
-            var errors = chargeTypesWithToLongType.Select(chargeType => _chargeIdIsToLongError.WithPropertyName(chargeType.ChargeType_)).ToList();
+            var errors = chargeTypesWithToLongType.Select(chargeType => _chargeTypeIdIsToLongError.WithPropertyName(chargeType.ChargeType_)).ToList();
             return Task.FromResult<IList<ValidationError>>(errors);
         }
 
         if (subject.ChargeTypes.Any(chargeType => chargeType.ChargeType_.Length > 10))
-            return Task.FromResult<IList<ValidationError>>(new List<ValidationError> { _chargeIdIsToLongError });
+            return Task.FromResult<IList<ValidationError>>(new List<ValidationError> { _chargeTypeIdIsToLongError });
 
         return Task.FromResult(NoError);
     }
