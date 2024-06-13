@@ -48,7 +48,7 @@ class ViewColumns:
         column = self.column_classes.get(column_name, None)
         return column if column else None
 
-    # Column names in alphabetical order
+    # Column names and types in alphabetical order
     amount = Column("amount", DecimalType(18, 6))
     balance_responsible_party_id = Column("balance_responsible_party_id", StringType())
     calculation_id = Column("calculation_id", StringType())
