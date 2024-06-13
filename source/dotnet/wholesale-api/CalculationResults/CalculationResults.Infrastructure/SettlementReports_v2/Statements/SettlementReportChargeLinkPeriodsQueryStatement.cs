@@ -55,6 +55,7 @@ public sealed class SettlementReportChargeLinkPeriodsQueryStatement : Databricks
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
+                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargeLinkPeriodsViewColumns.EnergySupplierId + " = '" + _filter.EnergySupplier + "' AND")}
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
                 ORDER BY 
                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} LIMIT {_take} OFFSET {_skip}

@@ -23,7 +23,7 @@ public class SettlementReportChargeLinkPeriodsViewColumns
     public const string ChargeType = "charge_type";
     public const string ChargeCode = "charge_code";
     public const string ChargeOwnerId = "charge_owner_id";
-    public const string Quantity = "quantity";
+    public const string Quantity = "charge_link_quantity";
     public const string FromDate = "from_date";
     public const string ToDate = "to_date";
     public const string GridArea = "grid_area_code";

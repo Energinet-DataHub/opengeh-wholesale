@@ -57,7 +57,7 @@ public sealed class SettlementReportChargeLinkPeriodsQueries : ISettlementReport
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var rawValue = new DatabricksSqlRow(nextRow)[SettlementReportWholesaleResultCountQueryStatement.Columns.Count];
+            var rawValue = new DatabricksSqlRow(nextRow)[SettlementReportChargeLinkPeriodsCountQueryStatement.Columns.Count];
             return SqlResultValueConverters.ToInt(rawValue)!.Value;
         }
 

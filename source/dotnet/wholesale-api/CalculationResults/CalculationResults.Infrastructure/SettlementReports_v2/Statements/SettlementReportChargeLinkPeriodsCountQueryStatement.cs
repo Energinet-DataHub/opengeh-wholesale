@@ -34,7 +34,7 @@ public sealed class SettlementReportChargeLinkPeriodsCountQueryStatement : Datab
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT(DISTINCT({SettlementReportChargeLinkPeriodsViewColumns.CalculationId})) AS {Columns.Count}
+                    SELECT COUNT({SettlementReportChargeLinkPeriodsViewColumns.CalculationId}) AS {Columns.Count}
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
                     WHERE
@@ -42,6 +42,7 @@ public sealed class SettlementReportChargeLinkPeriodsCountQueryStatement : Datab
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
+                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargeLinkPeriodsViewColumns.EnergySupplierId + " = '" + _filter.EnergySupplier + "' AND")} 
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
                 """;
     }
