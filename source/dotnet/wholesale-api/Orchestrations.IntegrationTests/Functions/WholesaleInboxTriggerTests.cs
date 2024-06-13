@@ -19,6 +19,7 @@ using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -142,17 +143,10 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
     public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletes()
     {
         // Arrange
-        var actorMessagesEnqueued = new ActorMessagesEnqueuedV1
-        {
-            CalculationId = "valid-calculation-id",
-            OrchestrationInstanceId = "valid-orchestration-id",
-        };
-
-        var referenceId = "valid-reference-id";
-        await SendMessageToWholesaleInbox(
-            subject: ActorMessagesEnqueuedV1.Descriptor.Name,
-            body: actorMessagesEnqueued.ToByteArray(),
-            referenceId: referenceId);
+        var orcestrationInstanceId = "non-existing-orchestration-id";
+        await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(
+            Guid.NewGuid(),
+            orcestrationInstanceId);
 
         // Act
         // => WholesaleInboxTrigger is running in the fixture and triggered by the given Wholesale inbox message
@@ -161,6 +155,10 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
         // Handling a MessagesEnqueuedV1 should raise an event to the Durable Task client, which we cannot test without
         // using some kind of mock, but we can atleast verify that the function completes.
         await AssertWholesaleInboxTriggerIsCompleted();
+        var functionHostLogs = Fixture.AppHostManager.GetHostLogSnapshot();
+        functionHostLogs.Should()
+            .ContainMatch(
+                $"*An error occured when raising event to orchestrator for OrchestrationInstanceId: {orcestrationInstanceId}*");
     }
 
     [Fact]
