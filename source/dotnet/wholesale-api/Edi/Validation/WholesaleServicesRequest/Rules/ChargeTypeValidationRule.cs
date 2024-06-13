@@ -31,9 +31,6 @@ public class ChargeTypeValidationRule : IValidationRule<DataHub.Edi.Requests.Who
             return Task.FromResult<IList<ValidationError>>(errors);
         }
 
-        if (subject.ChargeTypes.Any(chargeType => chargeType.ChargeType_.Length > 10))
-            return Task.FromResult<IList<ValidationError>>(new List<ValidationError> { _chargeTypeIdIsToLongError });
-
         return Task.FromResult(NoError);
     }
 
