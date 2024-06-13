@@ -80,7 +80,7 @@ public class WholesaleResultFactoryTests
             { WholesaleResultColumnNames.EnergySupplierId, "energySupplierId" },
             { WholesaleResultColumnNames.GridArea, "504" },
             { WholesaleResultColumnNames.AmountType, "amount_per_charge" },
-            { WholesaleResultColumnNames.CalculationType, "WholesaleFixing" },
+            { WholesaleResultColumnNames.CalculationType, "wholesale_fixing" },
             { WholesaleResultColumnNames.ChargeCode, "chargeCode" },
             { WholesaleResultColumnNames.ChargeType, "tariff" },
             { WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId" },
