@@ -209,7 +209,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
                 orchestrationStatus.InstanceId,
                 s => s.OrchestrationProgress == "ActorMessagesEnqueuing");
 
-        // => Send "ActorMessagesEnqueued" event Wholesale inbox
+        // => Send "ActorMessagesEnqueued" event to Wholesale inbox
         await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(
             calculationId,
             orchestrationStatus.InstanceId,
