@@ -27,6 +27,7 @@ from package.calculation.energy.calculated_grid_loss import (
 from package.calculation.preparation.data_structures import (
     PreparedMeteringPointTimeSeries,
 )
+from package.codelists import QuantityQuality
 from package.constants import Colname
 
 
@@ -70,5 +71,10 @@ def test__add_calculated_grid_loss_to_metering_point_times_series__returns_corre
     )
 
     # Assert
+    assert result.df.count() == 3
+    positive_and_negative_grid_loss = result.df.filter(
+        result.df[Colname.quality] == QuantityQuality.CALCULATED.value
+    )
+    assert positive_and_negative_grid_loss.count() == 2
     assert result.df.collect()[0][Colname.resolution] == expected_resolution
     assert result.df.collect()[1][Colname.resolution] == expected_resolution
