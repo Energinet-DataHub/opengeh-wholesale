@@ -75,8 +75,6 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
         MustNotBe3YearsAnd3MonthsOld(startInstant.Value, errors);
 
-        if (errors.Any())
-            return Task.FromResult<IList<ValidationError>>(errors);
         return Task.FromResult<IList<ValidationError>>(errors);
     }
 
