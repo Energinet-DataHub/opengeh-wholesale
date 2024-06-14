@@ -26,7 +26,7 @@ def test__public_data_model_views_have_registered_column_names_and_types(
     """Verify that all columns in all views in all public view models match the expected column names and data types"""
 
     # Arrange
-    databases = get_view_databases(spark)
+    databases = _get_view_databases(spark)
     errors = []
 
     # Act & Assert
@@ -38,7 +38,7 @@ def test__public_data_model_views_have_registered_column_names_and_types(
             df = spark.table(f"{database.name}.{view.name}")
             for column in df.columns:
                 try:
-                    assert_name_and_data_type(column, df)
+                    _assert_name_and_data_type(column, df)
                 except Exception as e:
                     errors.append(f"{database.name}.{view.name}: {e}")
 
