@@ -38,6 +38,22 @@ public static class MeteringPointTypeMapper
         }
     }
 
+    public static MeteringPointType FromDeltaTableValueNonNull(string meteringPointType)
+    {
+        try
+        {
+            var normalized = meteringPointType.Replace("_", string.Empty);
+            return Enum.Parse<MeteringPointType>(normalized, ignoreCase: true);
+        }
+        catch (ArgumentException)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(meteringPointType),
+                actualValue: meteringPointType,
+                "Value does not contain a valid string representation of a metering point type.");
+        }
+    }
+
     public static MeteringPointType FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
         TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {

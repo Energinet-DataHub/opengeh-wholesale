@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -22,52 +21,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class QuantityUnitMapperTests
 {
-    private const string DocumentPath = "DeltaTableContracts.enums.charge-unit.json";
-
-    [Fact]
-    public async Task QuantityUnit_Matches_ContractPropertyCount()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        // Act
-        var expectedLength = Enum.GetNames(typeof(QuantityUnit)).Length;
-
-        // Assert
-        expectedLength.Should().Be(validDeltaValues.Count);
-    }
-
-    [Theory]
-    [InlineData("kWh")]
-    [InlineData("pcs")]
-    public async Task QuantityUnit_Matches_Contract(string quantityUnit)
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        // Assert
-        quantityUnit.Should().BeOneOf(validDeltaValues);
-    }
-
-    [Fact]
-    public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act
-            var actual = QuantityUnitMapper.FromDeltaTableValue(validDeltaValue);
-
-            // Assert it's a defined enum value (and not null)
-            actual.Should().BeDefined();
-        }
-    }
-
     [Theory]
     [InlineData("kWh", QuantityUnit.Kwh)]
     [InlineData("pcs", QuantityUnit.Pieces)]

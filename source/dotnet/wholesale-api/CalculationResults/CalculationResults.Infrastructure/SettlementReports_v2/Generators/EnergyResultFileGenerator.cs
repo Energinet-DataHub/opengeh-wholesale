@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 100;
+    private const int ChunkSize = 1000;
 
     private readonly ISettlementReportEnergyResultRepository _dataSource;
 
@@ -41,22 +41,23 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportEnergyResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            if (chunkOffset == 0)
+            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
                 csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
                 csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
         }
     }
