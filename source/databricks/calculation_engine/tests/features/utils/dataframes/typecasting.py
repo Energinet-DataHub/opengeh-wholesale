@@ -49,7 +49,7 @@ def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> Da
         return df.withColumn(column_name, f.col(column_name).cast(LongType()))
 
     if column_name == "quantity":
-        if "charge" in table_or_view_name:
+        if "charge_link" in table_or_view_name:
             return df.withColumn(column_name, f.col(column_name).cast(IntegerType()))
         else:
             return df.withColumn(
