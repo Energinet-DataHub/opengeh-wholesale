@@ -61,7 +61,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
                 ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583191'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583191'"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -88,7 +88,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
                 ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583191'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9e2'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583191'"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -115,8 +115,8 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
                 ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'404'", "'8397670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108999'", "46", "'2024-01-02T03:00:00.000+00:00'", "'2024-01-31T03:00:00.000+00:00'", "'404'", "'8397670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108910'", "46", "'2024-01-02T04:00:00.000+00:00'", "'2024-01-31T04:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'consumption'", "'tariff'", "'40000'", "'6392825108999'", "46", "'2024-01-02T03:00:00.000+00:00'", "'2024-01-31T03:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ed'", "'consumption'", "'tariff'", "'40000'", "'6392825108910'", "46", "'2024-01-02T04:00:00.000+00:00'", "'2024-01-31T04:00:00.000+00:00'", "'404'", "'8397670583196'"],
             ]);
 
         var results = await Sut.GetAsync(

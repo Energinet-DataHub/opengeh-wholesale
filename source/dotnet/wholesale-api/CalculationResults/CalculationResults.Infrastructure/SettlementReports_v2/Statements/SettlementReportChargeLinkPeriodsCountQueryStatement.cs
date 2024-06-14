@@ -34,7 +34,7 @@ public sealed class SettlementReportChargeLinkPeriodsCountQueryStatement : Datab
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT({SettlementReportChargeLinkPeriodsViewColumns.MeteringPointId}) AS {Columns.Count}
+                    SELECT COUNT(DISTINCT({SettlementReportChargeLinkPeriodsViewColumns.MeteringPointId})) AS {Columns.Count}
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
                     WHERE
