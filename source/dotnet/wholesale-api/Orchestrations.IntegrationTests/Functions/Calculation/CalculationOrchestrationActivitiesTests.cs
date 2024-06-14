@@ -92,16 +92,8 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         // => Wait for the orchestration to reach the "ActorMessagesEnqueuing" state
         await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(orchestrationStatus.InstanceId, (status) => status.OrchestrationProgress == "ActorMessagesEnqueuing");
 
-        // => Raise "ActorMessagesEnqueued" event to the orchestrator
-        await Fixture.DurableClient.RaiseEventAsync(
-            orchestrationStatus.InstanceId,
-            ActorMessagesEnqueuedV1.EventName,
-            new ActorMessagesEnqueuedV1
-            {
-                CalculationId = calculationId.ToString(),
-                OrchestrationInstanceId = orchestrationStatus.InstanceId,
-                Success = true,
-            });
+        // => Send "ActorMessagesEnqueued" event to Wholesale inbox
+        await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(calculationId, orchestrationStatus.InstanceId);
 
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
