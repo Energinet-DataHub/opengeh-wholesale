@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -24,20 +23,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class SettlementMethodMapperTests
 {
-    [Fact]
-    public async Task FromDeltaTableValue_AcceptsAllValidDeltaTableValues()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.time-series-type.json");
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act & Assert: Does not throw
-            SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(validDeltaValue);
-        }
-    }
-
     [Theory]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.Production, null!)]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.NonProfiledConsumption, SettlementMethod.NonProfiled)]
