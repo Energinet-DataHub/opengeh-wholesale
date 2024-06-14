@@ -2,12 +2,12 @@ CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.total_monthly_amou
 SELECT c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
-       ma.calculation_result_id as result_id,
-       ma.grid_area_code,
-       ma.energy_supplier_id,
-       ma.charge_owner_id,
+       tma.calculation_result_id as result_id,
+       tma.grid_area_code,
+       tma.energy_supplier_id,
+       tma.charge_owner_id,
        "DKK" as currency,
-       ma.time,
-       ma.amount
-FROM {OUTPUT_DATABASE_NAME}.monthly_amounts as ma
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = ma.calculation_id
+       tma.time,
+       tma.amount
+FROM {OUTPUT_DATABASE_NAME}.total_monthly_amounts as tma
+INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = tma.calculation_id
