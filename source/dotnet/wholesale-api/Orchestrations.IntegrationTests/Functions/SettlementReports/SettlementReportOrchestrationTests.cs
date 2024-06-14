@@ -92,7 +92,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
-            CalculationType.BalanceFixing,
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
@@ -101,6 +101,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 
@@ -160,7 +161,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
-            CalculationType.BalanceFixing,
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
@@ -169,6 +170,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 
@@ -241,7 +243,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
-            CalculationType.BalanceFixing,
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
@@ -250,6 +252,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 

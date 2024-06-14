@@ -33,7 +33,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var setsOfFiles = new List<IAsyncEnumerable<SettlementReportFileRequestDto>>();
 
-        switch (reportRequest.CalculationType)
+        switch (reportRequest.Filter.CalculationType)
         {
             case CalculationType.BalanceFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(true, requestId, reportRequest));
@@ -41,21 +41,41 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             case CalculationType.WholesaleFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.WholesaleResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.FirstCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.FirstCorrectionResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.SecondCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.SecondCorrectionResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.ThirdCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.ThirdCorrectionResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                }
+
                 break;
             default:
-                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
+                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.Filter.CalculationType}.");
         }
 
         var filesToRequest = new List<SettlementReportFileRequestDto>();
@@ -104,6 +124,23 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 reportRequest.Filter);
 
         await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargeLinkPeriodsAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var resultChargeLinkPeriods = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Charge links on metering points", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultChargeLinkPeriods, true).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }

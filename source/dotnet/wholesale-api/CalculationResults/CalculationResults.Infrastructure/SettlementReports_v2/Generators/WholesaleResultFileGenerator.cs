@@ -29,19 +29,17 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
     private const int ChunkSize = 1000;
 
     private readonly ISettlementReportWholesaleRepository _dataSource;
-    private readonly CalculationType _calculationType;
 
-    public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource, CalculationType calculationType)
+    public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource)
     {
         _dataSource = dataSource;
-        _calculationType = calculationType;
     }
 
     public string FileExtension => ".csv";
 
     public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
     {
-        var count = await _dataSource.CountAsync(_calculationType, filter).ConfigureAwait(false);
+        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
@@ -58,7 +56,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(_calculationType, filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
