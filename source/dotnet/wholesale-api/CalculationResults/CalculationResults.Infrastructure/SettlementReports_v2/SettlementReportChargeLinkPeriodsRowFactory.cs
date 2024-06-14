@@ -35,7 +35,7 @@ public static class SettlementReportChargeLinkPeriodsRowFactory
 
         return new SettlementReportChargeLinkPeriodsRow(
             meteringPointId!,
-            MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
+            MeteringPointTypeMapper.FromDeltaTableValueNonNull(meteringPointType!), // The model definition says this can't be null, so therefore this should be ok
             ChargeTypeMapper.FromDeltaTableValue(chargeType!),
             chargeOwnerId!,
             chargeCode!,
