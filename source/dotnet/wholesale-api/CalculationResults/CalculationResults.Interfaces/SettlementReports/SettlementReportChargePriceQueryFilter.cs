@@ -21,5 +21,4 @@ public sealed record SettlementReportChargePriceQueryFilter(
     Guid CalculationId,
     string GridAreaCode,
     CalculationType CalculationType,
-    Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant PeriodStart);

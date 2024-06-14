@@ -18,14 +18,30 @@ public class SettlementReportChargePriceViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
-    public const string GridArea = "grid_area_code";
-    public const string EnergySupplierId = "energy_supplier_id";
-    public const string PeriodStart = "from_date";
-    public const string PeriodEnd = "to_date";
-    public const string Quantity = "quantity";
+    public const string CalculationVersion = "calculation_version";
     public const string ChargeType = "charge_type";
     public const string ChargeCode = "charge_code";
     public const string ChargeOwnerId = "charge_owner_id";
-    public const string MeteringPointId = "metering_point_id";
-    public const string MeteringPointType = "metering_point_type";
+    public const string Resolution = "resolution";
+    public const string Taxation = "is_tax";
+    public const string StartTime = "start_date_time";
+    public const string EnergyPrices = "price_points";
+    public const string GridArea = "grid_area_code";
+    public const string EnergySupplierId = "energy_supplier_id";
+
+    public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
+    {
+        { CalculationId, ("string", false) },
+        { CalculationType, ("string", false) },
+        { CalculationVersion, ("bigint", false) },
+        { ChargeType, ("string", false) },
+        { ChargeCode, ("string", false) },
+        { ChargeOwnerId, ("string", false) },
+        { Resolution, ("string", false) },
+        { Taxation, ("boolean", false) },
+        { StartTime, ("timestamp", false) },
+        { EnergyPrices, ("array<struct<time:timestamp,price:decimal(18,6)>>", false) },
+        { GridArea, ("string", false) },
+        { EnergySupplierId, ("string", false) },
+    };
 }

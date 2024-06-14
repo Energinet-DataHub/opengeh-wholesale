@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using NodaTime;
+using System.Text.Json;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 
-public sealed record SettlementReportChargePriceRow(
-    ChargeType ChargeType,
-    string ChargeCode,
-    string ChargeOwnerId,
-    Resolution Resolution,
-    bool TaxIndicator,
-    Instant StartDateTime,
-    IEnumerable<double> EnergyPrices);
+public static class EnergyPriceTypeMapper
+{
+    public static IReadOnlyCollection<double>? FromDeltaTableValue(string? value)
+    {
+        if (value == null)
+            return null;
+
+        var energyPrices = JsonSerializer.Deserialize<SettlementReportEnergyPrice[]>(value)!;
+        return energyPrices.Select(ep => ep.Price).ToArray();
+    }
+}

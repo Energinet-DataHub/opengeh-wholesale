@@ -23,25 +23,21 @@ public static class SettlementReportChargePriceRowFactory
 {
     public static SettlementReportChargePriceRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
-        var periodStart = databricksSqlRow[SettlementReportChargePriceViewColumns.PeriodStart];
-        var periodEnd = databricksSqlRow[SettlementReportChargePriceViewColumns.PeriodEnd];
-        var quantity = databricksSqlRow[SettlementReportChargePriceViewColumns.Quantity];
         var chargeType = databricksSqlRow[SettlementReportChargePriceViewColumns.ChargeType];
         var chargeCode = databricksSqlRow[SettlementReportChargePriceViewColumns.ChargeCode];
         var chargeOwnerId = databricksSqlRow[SettlementReportChargePriceViewColumns.ChargeOwnerId];
-        var startTime = databricksSqlRow[SettlementReportChargePriceViewColumns.PeriodStart];
-        var meteringPointType = databricksSqlRow[SettlementReportChargePriceViewColumns.MeteringPointType];
-        var resolution = string.Empty;
-        var taxIndicator = string.Empty;
-        var energyPrice1 = string.Empty; //TODO: find the correct values
+        var resolution = databricksSqlRow[SettlementReportChargePriceViewColumns.Resolution];
+        var taxIndicator = databricksSqlRow[SettlementReportChargePriceViewColumns.Taxation];
+        var startTime = databricksSqlRow[SettlementReportChargePriceViewColumns.StartTime];
+        var energyPrices = databricksSqlRow[SettlementReportChargePriceViewColumns.EnergyPrices];
 
         return new SettlementReportChargePriceRow(
             ChargeTypeMapper.FromDeltaTableValue(chargeType!),
             chargeCode!,
             chargeOwnerId!,
             ResolutionMapper.FromDeltaTableValue(resolution!),
-            taxIndicator,
+            SqlResultValueConverters.ToBool(taxIndicator!),
             SqlResultValueConverters.ToInstant(startTime)!.Value,
-            energyPrice1);
+            EnergyPriceTypeMapper.FromDeltaTableValue(energyPrices)!);
     }
 }

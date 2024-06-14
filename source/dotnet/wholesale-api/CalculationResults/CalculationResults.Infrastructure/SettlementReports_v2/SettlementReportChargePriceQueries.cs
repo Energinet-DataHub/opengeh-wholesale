@@ -43,7 +43,7 @@ public sealed class SettlementReportChargePriceQueries : ISettlementReportCharge
     public async IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportChargePriceQueryFilter filter, int skip, int take)
     {
         var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
-        var statement = new SettlementReportChargePriceQueryStatement(filter.CalculationId);
+        var statement = new SettlementReportChargePriceQueryStatement(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {

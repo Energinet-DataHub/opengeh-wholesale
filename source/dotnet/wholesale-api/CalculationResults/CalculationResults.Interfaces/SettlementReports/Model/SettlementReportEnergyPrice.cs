@@ -12,16 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using NodaTime;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public sealed record SettlementReportChargePriceRow(
-    ChargeType ChargeType,
-    string ChargeCode,
-    string ChargeOwnerId,
-    Resolution Resolution,
-    bool TaxIndicator,
-    Instant StartDateTime,
-    IEnumerable<double> EnergyPrices);
+public sealed record SettlementReportEnergyPrice(string Time, double Price);

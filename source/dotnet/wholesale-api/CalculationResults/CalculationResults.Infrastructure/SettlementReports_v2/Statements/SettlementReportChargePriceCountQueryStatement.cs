@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -32,16 +33,15 @@ public sealed class SettlementReportChargePriceCountQueryStatement : DatabricksS
 
     protected override string GetSqlStatement()
     {
-        //TODO: fix query
         return $"""
-                    SELECT COUNT(DISTINCT({SettlementReportEnergyResultViewColumns.ResultId})) AS {SettlementReportEnergyResultCountColumns.Count}
+                    SELECT COUNT(DISTINCT({SettlementReportChargePriceViewColumns.StartTime})) AS Count
                     FROM
-                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
+                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}
                     WHERE
-                        {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
-                        {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                        {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}'
+                        {SettlementReportChargePriceViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
+                        {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                        {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
                 """;
     }
 }
