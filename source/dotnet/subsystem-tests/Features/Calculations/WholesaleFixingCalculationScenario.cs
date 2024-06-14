@@ -379,7 +379,6 @@ AppDependencies
         {
             new("settlement_report", "metering_point_periods_v1"),
             new("wholesale_calculation_results", "energy_per_ga_v1"),
-            new("wholesale_calculation_results", "monthly_amount_per_charge_v1"),
         };
 
         // Act
