@@ -57,7 +57,7 @@ public sealed class SettlementReport
         ActorId = actorId;
         CreatedDateTime = clock.GetCurrentInstant();
         Status = SettlementReportStatus.InProgress;
-        CalculationType = request.CalculationType;
+        CalculationType = request.Filter.CalculationType;
         ContainsBasisData = false;
         PeriodStart = request.Filter.PeriodStart.ToInstant();
         PeriodEnd = request.Filter.PeriodEnd.ToInstant();
