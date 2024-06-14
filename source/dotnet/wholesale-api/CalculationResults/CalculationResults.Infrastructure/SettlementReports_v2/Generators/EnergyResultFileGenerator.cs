@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 100;
+    private const int ChunkSize = 1000;
 
     private readonly ISettlementReportEnergyResultRepository _dataSource;
 
@@ -51,12 +51,13 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
             if (chunkOffset == 0)
             {
                 csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
             await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
                 csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
         }
     }
