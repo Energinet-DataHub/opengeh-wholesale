@@ -45,7 +45,7 @@ def test__public_data_model_views_have_registered_column_names_and_types(
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
 
-def get_view_databases(spark: SparkSession) -> List[Database]:
+def _get_view_databases(spark: SparkSession) -> List[Database]:
     """
     Get all view databases.
     """
