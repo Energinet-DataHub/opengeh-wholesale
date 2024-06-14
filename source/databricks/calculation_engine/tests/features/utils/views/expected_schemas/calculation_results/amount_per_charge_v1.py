@@ -20,23 +20,30 @@ from pyspark.sql.types import (
     LongType,
     DecimalType,
     ArrayType,
+    BooleanType,
 )
 
-energy_per_ga_v1_schema = StructType(
+amount_per_charge_v1_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("calculation_type", StringType(), False),
-        StructField("calculation_period_start", TimestampType(), False),
-        StructField("calculation_period_end", TimestampType(), False),
         StructField("calculation_version", LongType(), False),
         StructField("result_id", StringType(), False),
         StructField("grid_area_code", StringType(), False),
+        StructField("energy_supplier_id", StringType(), False),
+        StructField("charge_type", StringType(), False),
+        StructField("charge_code", StringType(), False),
+        StructField("charge_owner_id", StringType(), False),
+        StructField("resolution", StringType(), False),
+        StructField("quantity_unit", StringType(), True),
         StructField("metering_point_type", StringType(), False),
         StructField("settlement_method", StringType(), False),
-        StructField("resolution", StringType(), False),
+        StructField("is_tax", BooleanType(), False),
+        StructField("currency", StringType(), False),
         StructField("time", TimestampType(), False),
         StructField("quantity", DecimalType(18, 3), False),
-        StructField("quantity_unit", StringType(), True),
         StructField("quantity_qualities", ArrayType(StringType()), False),
+        StructField("price", DecimalType(18, 6), False),
+        StructField("amount", DecimalType(18, 6), False),
     ]
 )
