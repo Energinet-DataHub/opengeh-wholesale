@@ -49,7 +49,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
             new(requestId, new("fileC.csv", false), "fileC_0.csv"),
         };
 
-        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, false)));
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file)));
 
         // Act
         var actual = await Sut.CombineAsync(requestId, inputFiles);
@@ -82,12 +82,12 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
-            new(requestId, new("target_file.csv", false) { ChunkOffset = 0 }, "fileA_0.csv"),
-            new(requestId, new("target_file.csv", false) { ChunkOffset = 1 }, "fileA_1.csv"),
-            new(requestId, new("target_file.csv", false) { ChunkOffset = 2 }, "fileA_2.csv"),
+            new(requestId, new("target_file.csv", false) { FileOffset = 0 }, "fileA_0.csv"),
+            new(requestId, new("target_file.csv", false) { FileOffset = 1 }, "fileA_1.csv"),
+            new(requestId, new("target_file.csv", false) { FileOffset = 2 }, "fileA_2.csv"),
         };
 
-        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, false)));
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file)));
 
         // Act
         var actual = await Sut.CombineAsync(requestId, inputFiles);
