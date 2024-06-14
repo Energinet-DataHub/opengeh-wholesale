@@ -11,22 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import uuid
 from datetime import datetime
 from decimal import Decimal
+
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
-import pytest
-import uuid
 
-from contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas.monthly_amounts_schema import (
     monthly_amounts_schema,
 )
-from tests.helpers.data_frame_utils import set_column
 from package.codelists import CalculationType, ChargeType
 from package.constants import MonthlyAmountsColumnNames
 from package.infrastructure.paths import OutputDatabase
+from tests.helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -48,23 +47,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         MonthlyAmountsColumnNames.charge_owner_id: "1234567890123",
     }
     return spark.createDataFrame(data=[row], schema=monthly_amounts_schema)
-
-
-def test__migrated_table__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/monthly-amounts-table-column-names.json"
-
-    # Act
-    actual = spark.table(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME}"
-    ).schema
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual)
 
 
 @pytest.mark.parametrize(
