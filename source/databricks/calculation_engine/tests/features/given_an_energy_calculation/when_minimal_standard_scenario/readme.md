@@ -22,12 +22,12 @@ time period (one hour).
 
 All metering point types relevant for energy calculations
 
-- E20 (energy in)
-- E20 (energy out)
-- E17 (flex)
-- E17 (nonprofiled)
-- E17 (glmp)
-- E18
-- E18 (skmp)
+- Exchange (energy in)
+- Exchange (energy out)
+- Consumption (flex)
+- Consumption (nonprofiled)
+- Production
+- Grid Loss MP
+- System Correction MP
 
 Each of the metering point types both have a metering point with resolution 15M and 1H.
