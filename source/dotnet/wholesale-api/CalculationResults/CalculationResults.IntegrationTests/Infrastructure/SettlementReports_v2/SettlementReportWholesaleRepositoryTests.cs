@@ -64,7 +64,6 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             ]);
 
         var actual = await Sut.CountAsync(
-            CalculationType.WholesaleFixing,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
@@ -74,6 +73,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T02:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 null,
                 "da-DK"));
 
@@ -92,7 +92,6 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             ]);
 
         var results = await Sut.GetAsync(
-            CalculationType.WholesaleFixing,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>()
                 {
@@ -102,6 +101,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 },
                 DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
             skip: 2,
