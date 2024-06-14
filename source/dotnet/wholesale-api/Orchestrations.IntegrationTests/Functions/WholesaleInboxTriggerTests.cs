@@ -140,7 +140,7 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletes()
+    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletesWithAttemptToRaiseEventToOrchestrator()
     {
         // Arrange
         var orcestrationInstanceId = "non-existing-orchestration-id";
@@ -152,9 +152,11 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
         // => WholesaleInboxTrigger is running in the fixture and triggered by the given Wholesale inbox message
 
         // Assert
-        // Handling a MessagesEnqueuedV1 should raise an event to the Durable Task client, which we cannot test without
-        // using some kind of mock, but we can atleast verify that the function completes.
         await AssertWholesaleInboxTriggerIsCompleted();
+
+        // The function should raise an event to the orchestrator with the given orchestration instance id,
+        // however this will fail since the given orchestrator instance does not exist. We can assert that
+        // happened by checking the logs for the expected error message.
         var functionHostLogs = Fixture.AppHostManager.GetHostLogSnapshot();
         functionHostLogs.Should()
             .ContainMatch(
