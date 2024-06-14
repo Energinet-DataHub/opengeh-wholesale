@@ -33,7 +33,7 @@ public class PeriodValidationRuleTests
 
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for mere end 3 år og 3 måneder tilbage i tid / It is not possible to request data longer than 3 years and 3 months back in time",
+            "Der kan ikke anmodes om data for 3 år og 3 måneder tilbage i tid / It is not possible to request data 3 years and 3 months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
