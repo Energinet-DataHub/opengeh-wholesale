@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .calculation_results.amount_per_charge_v1 import amount_per_charge_v1_schema
-from .calculation_results.energy_per_brp_ga_v1 import energy_per_brp_ga_v1_schema
-from .calculation_results.energy_per_es_brp_ga_v1 import energy_per_es_brp_ga_v1_schema
-from .calculation_results.energy_per_ga_v1 import energy_per_ga_v1_schema
-from .calculation_results.exchange_per_neighbor_ga_v1 import (
+from .calculation_results.amount_per_charge_v1_schema import amount_per_charge_v1_schema
+from .calculation_results.energy_per_brp_ga_v1_schema import energy_per_brp_ga_v1_schema
+from .calculation_results.energy_per_es_brp_ga_v1_schema import (
+    energy_per_es_brp_ga_v1_schema,
+)
+from .calculation_results.energy_per_ga_v1_schema import energy_per_ga_v1_schema
+from .calculation_results.exchange_per_neighbor_ga_v1_schema import (
     exchange_per_neighbor_ga_v1_schema,
 )
 from .settlement_report.charge_link_periods_v1_schema import (
