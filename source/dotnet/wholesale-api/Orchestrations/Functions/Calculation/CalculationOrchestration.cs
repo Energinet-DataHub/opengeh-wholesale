@@ -173,9 +173,19 @@ internal class CalculationOrchestration
         Guid calculationId,
         int messagesEnqueuingExpiryTimeInSeconds)
     {
-        var messagesEnqueuedEvent = await context.WaitForExternalEvent<ActorMessagesEnqueuedV1>(
-            ActorMessagesEnqueuedV1.EventName,
-            timeout: TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds));
+        ActorMessagesEnqueuedV1 messagesEnqueuedEvent;
+
+        var timeoutLimit = TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds);
+        try
+        {
+            messagesEnqueuedEvent = await context.WaitForExternalEvent<ActorMessagesEnqueuedV1>(
+                ActorMessagesEnqueuedV1.EventName,
+                timeout: timeoutLimit);
+        }
+        catch (TaskCanceledException taskCanceledException)
+        {
+            return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", $"Timeout while waiting for actor messages enqueued event. Timeout limit: {timeoutLimit}, exception: {taskCanceledException}");
+        }
 
         var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
         if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
@@ -185,7 +195,7 @@ internal class CalculationOrchestration
         {
             return OrchestrationResult.Error(
                 "ActorMessagesEnqueuingFailed",
-                "ActorMessagesEnqueuedV1 event failed");
+                "ActorMessagesEnqueuedV1 event was not success");
         }
 
         return OrchestrationResult.Success();
