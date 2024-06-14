@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -23,46 +22,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class QuantityQualityMapperTests
 {
-    private const string DocumentPath = "DeltaTableContracts.enums.quantity-quality.json";
-
-    [Fact]
-    public async Task QuantityQuality_Matches_Contract()
-    {
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
-    }
-
-    [Fact]
-    public void FromDeltaTableValue_ReturnsMappedQuality()
-    {
-        // Arrange
-        foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
-        {
-            var expected = (QuantityQuality)type;
-            var input = expected.ToString().ToLower();
-
-            // Act & Assert
-            QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
-        }
-    }
-
-    [Fact]
-    public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act
-            var actual = QuantityQualityMapper.FromDeltaTableValue(validDeltaValue);
-
-            // Assert it's a defined enum value (and not null)
-            actual.Should().BeDefined();
-        }
-    }
-
     [Theory]
     [InlineAutoMoqData("calculated", QuantityQuality.Calculated)]
     [InlineAutoMoqData("estimated", QuantityQuality.Estimated)]

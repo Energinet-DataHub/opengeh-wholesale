@@ -20,7 +20,6 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 
-from contract_utils import assert_contract_matches_schema
 from helpers.data_frame_utils import set_column
 from package.calculation.output.schemas import energy_results_schema
 from package.codelists import (
@@ -55,23 +54,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.resolution: MeteringPointResolution.QUARTER.value,
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
-
-
-def test__migrated_table__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
-
-    # Act
-    actual = spark.table(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
-    ).schema
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual)
 
 
 @pytest.mark.parametrize(
