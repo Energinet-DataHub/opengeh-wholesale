@@ -57,6 +57,7 @@ public class MigrationsFreeDatabricksSchemaManager
         await CreateTableAsync(DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME, SettlementReportEnergyResultViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME, SettlementReportEnergyResultPerEnergySupplierViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME, SettlementReportWholesaleViewColumns.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME, SettlementReportChargeLinkPeriodsViewColumns.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()
