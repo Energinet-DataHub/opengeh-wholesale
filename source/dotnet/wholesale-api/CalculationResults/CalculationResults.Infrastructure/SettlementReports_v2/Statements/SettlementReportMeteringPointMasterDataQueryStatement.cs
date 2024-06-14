@@ -41,7 +41,7 @@ public sealed class SettlementReportMeteringPointMasterDataQueryStatement : Data
             $"""
                      SELECT DISTINCT({SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId})
                      FROM
-                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
+                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}
                      WHERE 
                          {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                          {SettlementReportMeteringPointMasterDataViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
@@ -66,9 +66,9 @@ public sealed class SettlementReportMeteringPointMasterDataQueryStatement : Data
                     SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId,
                 ])}
                 FROM 
-                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
+                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}
                 JOIN 
-                      ({meteringPoint}) AS mp ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}.{SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId} = mp.{SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId}
+                      ({meteringPoint}) AS mp ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}.{SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId} = mp.{SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId}
                 WHERE 
                         {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportMeteringPointMasterDataViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND

@@ -36,7 +36,7 @@ public sealed class SettlementReportMeteringPointMasterDataCountQueryStatement :
         return $"""
                     SELECT COUNT(DISTINCT({SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId})) AS {Columns.Count}
                     FROM
-                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
+                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}
                     WHERE
                         {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportMeteringPointMasterDataViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
