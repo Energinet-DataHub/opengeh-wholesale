@@ -130,7 +130,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var isActorMessagesEnqueuingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.ActorMessagesEnqueuing, Fixture.TestLogger);
         isActorMessagesEnqueuingState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuing);
 
-        // => Send "ActorMessagesEnqueued" event Wholesale inbox
+        // => Send "ActorMessagesEnqueued" event to Wholesale inbox
         await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(calculationId, orchestrationStatus.InstanceId);
 
         // => Orchestration is "ActorMessagesEnqueued" or "Completed", state should be ActorMessagesEnqueued or Completed
@@ -209,7 +209,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
                 orchestrationStatus.InstanceId,
                 s => s.OrchestrationProgress == "ActorMessagesEnqueuing");
 
-        // => Send "ActorMessagesEnqueued" event Wholesale inbox
+        // => Send "ActorMessagesEnqueued" event to Wholesale inbox
         await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(
             calculationId,
             orchestrationStatus.InstanceId,
