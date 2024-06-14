@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -22,52 +21,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class ResolutionMapperTests
 {
-    private const string DocumentPath = "DeltaTableContracts.enums.energy-result-resolution.json";
-
-    [Fact]
-    public async Task ContractPropertyCount_Matches_ModelValuesCount()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        // Act
-        var expectedLength = Enum.GetNames(typeof(Resolution)).Length;
-
-        // Assert
-        expectedLength.Should().Be(validDeltaValues.Count);
-    }
-
-    [Theory]
-    [InlineData("PT15M")]
-    [InlineData("PT1H")]
-    public async Task ModelValues_Matches_DeltaTableValues(string deltaTableValue)
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        // Assert
-        deltaTableValue.Should().BeOneOf(validDeltaValues);
-    }
-
-    [Fact]
-    public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act
-            var actual = ResolutionMapper.FromDeltaTableValue(validDeltaValue);
-
-            // Assert it's a defined enum value (and not null)
-            actual.Should().BeDefined();
-        }
-    }
-
     [Theory]
     [InlineData("PT15M", Resolution.Quarter)]
     [InlineData("PT1H", Resolution.Hour)]

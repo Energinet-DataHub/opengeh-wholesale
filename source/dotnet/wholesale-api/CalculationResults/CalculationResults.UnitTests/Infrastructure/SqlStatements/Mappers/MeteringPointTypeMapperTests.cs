@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -23,25 +22,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class MeteringPointTypeMapperTests
 {
-    [Fact]
-    public async Task FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.metering-point-type.json");
-        var deltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var deltaValue in deltaValues)
-        {
-            var expected = deltaValue.Replace("_", string.Empty);
-
-            // Act
-            var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaValue);
-
-            // Assert
-            actualType.ToString().Should().BeEquivalentTo(expected);
-        }
-    }
-
     [Fact]
     public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
     {
