@@ -22,11 +22,9 @@ using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
-using NodaTime;
-using NodaTime.Extensions;
-using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -74,21 +72,6 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
             _logger.LogWarning("Validation errors for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
-        }
-
-        var incomingStart = InstantPattern.General.Parse(incomingRequest.PeriodStart).Value.ToDateTimeUtc();
-
-        // If the following check is true. Then the period start is not the first day of the month Danish time.
-        // Last day of the previous month UTC, which is what we're dealing with.
-        // This should only be possible of an actor request data 3 years and 2 months back in time, precisely.
-        // eg.
-        // from {now - 3 years and 2 months}
-        // to {now - 3 years and 2 months + days such that it is the last day of the month}
-        // Hence this altering of the period start will result in an actor getting data from a full month.
-        if (incomingStart.Day + 1 != 1)
-        {
-            // Since the request is in UTC we have set the period start to the last day of the previous month
-            incomingRequest.PeriodStart = incomingStart.AddDays(-incomingStart.Day).ToInstant().ToString();
         }
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);

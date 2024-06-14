@@ -25,11 +25,11 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
         return zonedDateTime.TimeOfDay == LocalTime.Midnight;
     }
 
-    public bool IsStartDateOlderThanAllowed(Instant start, int maxYears, int maxMonths)
+    public bool IsDateOlderThanAllowed(Instant date, int maxYears, int maxMonths)
     {
-        var zonedStartDateTime = new ZonedDateTime(start, dateTimeZone);
+        var zonedStartDateTime = new ZonedDateTime(date, dateTimeZone);
         var zonedCurrentDateTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
-        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-maxYears).PlusMonths(maxMonths);
+        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-maxYears).PlusMonths(-maxMonths);
 
         return zonedStartDateTime.LocalDateTime < latestStartDate;
     }
@@ -43,11 +43,13 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
         return zonedEndDateTime.LocalDateTime > monthsFromStart;
     }
 
-    public bool PeriodStartIs3YearsAnd2MonthsAgo(Instant periodStart)
+    public bool PeriodStartIs3YearsAnd3MonthsAgo(Instant periodStart)
     {
         var zonedDateTime = new ZonedDateTime(periodStart, dateTimeZone);
         var zonedCurrentDataTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
-        return zonedDateTime.LocalDateTime.Month == zonedCurrentDataTime.LocalDateTime.Month - 2
-               && zonedDateTime.LocalDateTime.Year == zonedCurrentDataTime.LocalDateTime.Year - 3;
+        var threeYearsAndThreeMonthsAgo = zonedCurrentDataTime.LocalDateTime.PlusYears(-3).PlusMonths(-3);
+
+        return zonedDateTime.LocalDateTime.Month == threeYearsAndThreeMonthsAgo.Month
+               && zonedDateTime.LocalDateTime.Year == threeYearsAndThreeMonthsAgo.Year;
     }
 }
