@@ -138,16 +138,15 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             {
                 yield return splitFileRequest;
 
-                // Keep track of the offset of the chunks, so that the next grid area begins at the correct offset.
                 partialFileInfo = splitFileRequest.PartialFileInfo with
                 {
-                    ChunkOffset = splitFileRequest.PartialFileInfo.ChunkOffset + 1,
+                    FileOffset = splitFileRequest.PartialFileInfo.FileOffset + 1,
+                    ChunkOffset = 0,
                 };
             }
         }
     }
 
-    // Note: Always return ChunkOffset in increasing order, as SplitFileRequestPerGridAreaAsync expects last ChunkOffset to be the highest.
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestIntoChunksAsync(
         SettlementReportFileRequestDto fileRequest)
     {
