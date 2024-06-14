@@ -53,4 +53,6 @@ public class DeltaTableOptions
     public string ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_per_es_ga_v1";
 
     public string CalculationResultsSchemaName { get; set; } = "wholesale_calculation_results";
+
+    public string CHARGE_PRICES_V1_VIEW_NAME { get; set; } = "charge_prices_v1"; //TODO: find the right name
 }

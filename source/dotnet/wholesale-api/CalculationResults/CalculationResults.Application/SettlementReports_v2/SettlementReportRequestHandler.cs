@@ -41,18 +41,22 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             case CalculationType.WholesaleFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.WholesaleResult, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 break;
             case CalculationType.FirstCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.FirstCorrectionResult, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 break;
             case CalculationType.SecondCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.SecondCorrectionResult, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 break;
             case CalculationType.ThirdCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.ThirdCorrectionResult, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 break;
             default:
                 throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
@@ -104,6 +108,23 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 reportRequest.Filter);
 
         await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargePriceAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var fileRequest = new SettlementReportFileRequestDto(
+                fileContent,
+                new SettlementReportPartialFileInfo("Charge Price"),
+                requestId,
+                reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }

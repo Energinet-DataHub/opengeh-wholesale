@@ -113,6 +113,8 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddScoped<ISettlementReportDownloadHandler, SettlementReportDownloadHandler>();
+        services.AddScoped<ISettlementReportChargePriceRepository, SettlementReportChargePriceRepository>();
+        services.AddScoped<ISettlementReportChargePriceQueries, SettlementReportChargePriceQueries>(); //TODO: fix when files created
         services.AddSettlementReportBlobStorage();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
