@@ -71,7 +71,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
 
             using var streamReader = new StreamReader(entry.Open());
             var inputFileContents = await streamReader.ReadToEndAsync();
-            Assert.Equal($"Content: {inputFile.FileInfo.FileName}", inputFileContents);
+            Assert.Equal($"Content: {inputFile.FileInfo.FileName}\n", inputFileContents);
         }
     }
 
