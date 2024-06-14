@@ -59,7 +59,8 @@ def get_expected_public_data_model_schemas() -> dict:
                 spec.loader.exec_module(module)
 
                 if hasattr(module, schema_name):
-                    schemas[schema_name] = getattr(module, schema_name)
+                    view_name = schema_name.replace("_schema", "")
+                    schemas[view_name] = getattr(module, schema_name)
                 else:
                     raise AttributeError(
                         f"Module {module} does not have the expected schema variable {schema_name}"

@@ -31,7 +31,7 @@ charge_link_periods_v1_schema = StructType(
         StructField("charge_type", StringType(), False),
         StructField("charge_code", StringType(), False),
         StructField("charge_owner_id", StringType(), False),
-        StructField("quantity", IntegerType(), False),
+        StructField("charge_link_quantity", IntegerType(), False),
         StructField("from_date", TimestampType(), False),
         StructField("to_date", TimestampType(), True),
         StructField("grid_area_code", StringType(), False),
