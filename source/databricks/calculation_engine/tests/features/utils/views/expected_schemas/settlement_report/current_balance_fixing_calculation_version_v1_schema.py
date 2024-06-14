@@ -11,3 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from pyspark.sql.types import (
+    StructField,
+    StructType,
+    LongType,
+)
+
+current_balance_fixing_calculation_version_v1_schema = StructType(
+    [
+        StructField("calculation_version", LongType(), False),
+    ]
+)
