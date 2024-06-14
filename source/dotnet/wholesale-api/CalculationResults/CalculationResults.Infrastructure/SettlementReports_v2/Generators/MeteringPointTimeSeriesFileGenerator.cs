@@ -43,7 +43,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap(new SettlementReportMeteringPointTimeSeriesResultRowMap(_resolution == Resolution.Quarter ? 100 : 25));
@@ -53,7 +53,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
             csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
             await csvHelper.NextRecordAsync().ConfigureAwait(false);
 
-            await foreach (var record in _dataSource.GetAsync(filter, _resolution, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
