@@ -77,6 +77,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T04:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
             Resolution.Quarter);
@@ -108,6 +109,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 },
                 DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
             Resolution.Quarter,
@@ -153,6 +155,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 },
                 DateTimeOffset.Parse("2024-01-01T00:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-04T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
             Resolution.Quarter,
@@ -197,6 +200,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 },
                 DateTimeOffset.Parse("2024-01-01T00:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-04T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
             Resolution.Quarter);

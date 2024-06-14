@@ -74,6 +74,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 null,
                 "da-DK"));
 
@@ -99,6 +100,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"));
 
@@ -127,6 +129,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
             skip: 3,
@@ -162,6 +165,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 "8236015961811",
                 "da-DK"),
             skip: 3,

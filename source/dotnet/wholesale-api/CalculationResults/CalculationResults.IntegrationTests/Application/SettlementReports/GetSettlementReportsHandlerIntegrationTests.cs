@@ -38,9 +38,15 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
-        CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto(new Dictionary<string, CalculationId>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        false,
+        new SettlementReportRequestFilterDto(
+            new Dictionary<string, CalculationId>(),
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            CalculationType.BalanceFixing,
+            null,
+            null));
 
     public GetSettlementReportsHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
