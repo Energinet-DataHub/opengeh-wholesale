@@ -23,7 +23,7 @@ from pyspark.sql.types import (
     BooleanType,
 )
 
-amount_per_charge_v1_schema = StructType(
+amounts_per_charge_v1_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("calculation_type", StringType(), False),
