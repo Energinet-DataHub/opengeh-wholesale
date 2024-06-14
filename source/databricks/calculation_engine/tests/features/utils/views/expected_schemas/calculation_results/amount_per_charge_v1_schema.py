@@ -35,7 +35,7 @@ amount_per_charge_v1_schema = StructType(
         StructField("charge_type", StringType(), False),
         StructField("charge_owner_id", StringType(), False),
         StructField("resolution", StringType(), False),
-        StructField("quantity_unit", StringType(), True),
+        StructField("quantity_unit", StringType(), False),
         StructField("metering_point_type", StringType(), False),
         StructField("settlement_method", StringType(), False),
         StructField("is_tax", BooleanType(), False),
