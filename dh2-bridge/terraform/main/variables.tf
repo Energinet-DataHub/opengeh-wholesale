@@ -18,6 +18,12 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
+variable "region_short" {
+  type        = string
+  description = "Azure region that the infrastructure code is deployed into."
+  default     = "we"
+}
+
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
@@ -39,13 +45,13 @@ variable "sendgrid_from_email" {
   description = "Specify the sender which the emails originates from"
 }
 
-variable "pim_sql_reader_ad_group_name" {
+variable "pim_reader_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
   default     = ""
 }
 
-variable "pim_sql_writer_ad_group_name" {
+variable "pim_contributor_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = ""
