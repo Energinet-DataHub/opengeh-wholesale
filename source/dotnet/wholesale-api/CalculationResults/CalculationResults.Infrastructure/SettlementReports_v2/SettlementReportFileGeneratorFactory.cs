@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
@@ -30,7 +29,6 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
         ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
         ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository,
-        ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
         ISettlementReportChargePriceRepository settlementChargePriceRepository)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;

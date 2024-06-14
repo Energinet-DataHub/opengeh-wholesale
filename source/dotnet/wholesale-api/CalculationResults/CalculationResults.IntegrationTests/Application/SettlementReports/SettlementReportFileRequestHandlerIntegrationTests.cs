@@ -86,10 +86,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
             settlementReportDataRepository,
             settlementReportWholesaleRepository,
-            settlementReportChargeLinkPeriodsRepository));
-        
-
-        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(settlementReportDataRepository, settlementReportWholesaleRepository, settlementReportChargePriceRepository));
+            settlementReportChargeLinkPeriodsRepository,
+            settlementReportChargePriceRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
