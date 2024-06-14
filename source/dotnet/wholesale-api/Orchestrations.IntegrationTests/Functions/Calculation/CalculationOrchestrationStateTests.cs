@@ -130,16 +130,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var isActorMessagesEnqueuingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.ActorMessagesEnqueuing, Fixture.TestLogger);
         isActorMessagesEnqueuingState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuing);
 
-        // => Raise "ActorMessagesEnqueued" event to the orchestrator
-        await Fixture.DurableClient.RaiseEventAsync(
-            orchestrationStatus.InstanceId,
-            ActorMessagesEnqueuedV1.EventName,
-            new ActorMessagesEnqueuedV1
-            {
-                CalculationId = calculationId.ToString(),
-                OrchestrationInstanceId = orchestrationStatus.InstanceId,
-                Success = true,
-            });
+        // => Send "ActorMessagesEnqueued" event to Wholesale inbox
+        await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(calculationId, orchestrationStatus.InstanceId);
 
         // => Orchestration is "ActorMessagesEnqueued" or "Completed", state should be ActorMessagesEnqueued or Completed
         // The state changes from ActorMessagesEnqueued to Completed immediately, so we need to check for both states.
@@ -217,16 +209,11 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
                 orchestrationStatus.InstanceId,
                 s => s.OrchestrationProgress == "ActorMessagesEnqueuing");
 
-        // => Raise "ActorMessagesEnqueued" failed event to the orchestrator
-        await Fixture.DurableClient.RaiseEventAsync(
+        // => Send "ActorMessagesEnqueued" event to Wholesale inbox
+        await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(
+            calculationId,
             orchestrationStatus.InstanceId,
-            ActorMessagesEnqueuedV1.EventName,
-            new ActorMessagesEnqueuedV1
-            {
-                CalculationId = calculationId.ToString(),
-                OrchestrationInstanceId = orchestrationStatus.InstanceId,
-                Success = false,
-            });
+            success: false);
 
         // => Wait for ActorMessagesEnqueuingFailed state
         var isActorMessagesEnqueuingFailedState = await dbContext.WaitForCalculationWithStateAsync(
@@ -244,6 +231,6 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
                 CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
                 Fixture.TestLogger);
         isStillActorMessagesEnqueuingFailedState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
-        completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Error: ActorMessagesEnqueuedV1 event failed");
+        completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Error: ActorMessagesEnqueuedV1 event was not success");
     }
 }

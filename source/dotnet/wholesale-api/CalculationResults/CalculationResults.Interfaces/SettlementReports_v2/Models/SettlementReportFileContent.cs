@@ -22,4 +22,5 @@ public enum SettlementReportFileContent
     FirstCorrectionResult,
     SecondCorrectionResult,
     ThirdCorrectionResult,
+    ChargeLinksPeriods,
 }
