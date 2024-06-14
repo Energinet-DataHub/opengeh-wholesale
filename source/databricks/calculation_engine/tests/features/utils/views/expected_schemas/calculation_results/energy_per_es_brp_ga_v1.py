@@ -38,7 +38,7 @@ energy_per_es_brp_ga_v1_schema = StructType(
         StructField("resolution", StringType(), False),
         StructField("time", TimestampType(), False),
         StructField("quantity", DecimalType(18, 3), False),
-        StructField("quantity_unit", DecimalType(18, 3), True),
+        StructField("quantity_unit", StringType(), True),
         StructField("quantity_qualities", ArrayType(StringType()), False),
     ]
 )
