@@ -10,15 +10,18 @@ data "azurerm_resource_group" "shared" {
 }
 
 data "azurerm_role_definition" "app_config_settings_read_access" {
-  name = "datahub-app-config-settings-read-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "datahub-app-config-settings-read-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  scope = data.azurerm_subscription.this.id
 }
 
 data "azurerm_role_definition" "apim_groups_contributor_access" {
-  name = "datahub-apim-groups-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "datahub-apim-groups-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  scope = data.azurerm_subscription.this.id
 }
 
 data "azurerm_role_definition" "locks_contributor_access" {
-  name = "datahub-locks-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "datahub-locks-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  scope = data.azurerm_subscription.this.id
 }
 
 module "pim_contributor_security_group_permissions" {
