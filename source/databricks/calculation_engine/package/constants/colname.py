@@ -36,7 +36,7 @@ class Colname:
     "The grid area sending current"
     grid_area_code = "grid_area_code"
     metering_point_id = "metering_point_id"
-    metering_point_type = "type"
+    metering_point_type = "metering_point_type"
     observation_time = "observation_time"
     """When the production/consumption/exchange actually happened."""
     parent_metering_point_id = "parent_metering_point_id"
