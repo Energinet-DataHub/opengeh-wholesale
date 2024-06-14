@@ -30,6 +30,9 @@ from features.utils.views.expected_schemas import (
     energy_per_ga_v1_schema,
     exchange_per_neighbor_ga_v1_schema,
 )
+from features.utils.views.expected_schemas.calculation_results.amount_per_charge_v1 import (
+    amount_per_charge_v1_schema,
+)
 from package.common import assert_schema
 
 
@@ -85,4 +88,5 @@ def get_expected_schemas() -> dict:
         "energy_per_es_brp_ga_v1": energy_per_es_brp_ga_v1_schema,
         "energy_per_ga_v1": energy_per_ga_v1_schema,
         "exchange_per_neighbor_ga_v1": exchange_per_neighbor_ga_v1_schema,
+        "amount_per_charge_v1": amount_per_charge_v1_schema,
     }
