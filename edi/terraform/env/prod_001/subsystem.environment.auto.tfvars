@@ -6,3 +6,4 @@ feature_management_use_total_monthly_amount_result_produced      = false
 feature_management_use_energy_result_produced                    = false
 feature_management_use_request_wholesale_settlement_receiver     = true
 feature_management_use_message_delegation                        = true
+alert_email_address                                              = "4f683395.energinet.onmicrosoft.com@emea.teams.ms"

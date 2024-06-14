@@ -10,3 +10,4 @@ feature_management_use_energy_result_produced                         = true
 feature_management_use_total_monthly_amount_result_produced           = true
 feature_management_use_calculation_completed_event                    = true
 feature_management_use_calculation_completed_event_for_balance_fixing = true
+alert_email_address                                                   = "3679b895.energinet.onmicrosoft.com@emea.teams.ms"

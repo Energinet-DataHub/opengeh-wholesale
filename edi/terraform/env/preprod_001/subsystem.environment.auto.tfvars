@@ -7,3 +7,4 @@ feature_management_use_peek_messages                             = true
 feature_management_use_request_messages                          = true
 feature_management_use_energy_result_produced                    = true
 feature_management_use_message_delegation                        = true
+alert_email_address                                              = "9ede9cda.energinet.onmicrosoft.com@emea.teams.ms"

@@ -123,3 +123,9 @@ variable "apim_maintenance_mode" {
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."
   default     = false
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}
