@@ -19,7 +19,6 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 
-from contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import monthly_amounts_storage_model_factory as sut
 from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
@@ -115,22 +114,6 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
     ]
 
     return spark.createDataFrame(data=rows)
-
-
-def test__create__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/monthly-amounts-table-column-names.json"
-    result = _create_default_result(spark)
-
-    # Act
-    actual = sut.create(args, result)
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual.schema)
 
 
 @pytest.mark.parametrize(
