@@ -48,12 +48,10 @@ def get_expected_public_data_model_schemas() -> dict:
     for root, _, files in os.walk(schemas_folder):
         for file_name in files:
             if file_name.endswith(".py") and not file_name.startswith("__"):
-                schema_name = file_name[
-                    :-3
-                ]  # Remove the '.py' extension to get the module name
-                module_path = os.path.join(root, file_name)
+                # Remove the file extension
+                schema_name = file_name[:-3]
 
-                # Import the module dynamically
+                module_path = os.path.join(root, file_name)
                 spec = importlib.util.spec_from_file_location(schema_name, module_path)
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)

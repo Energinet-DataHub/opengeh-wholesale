@@ -69,6 +69,7 @@ class CalculationResultsPublicDataModel:
     ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME = "energy_per_brp_ga_v1"
     ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME = "energy_per_es_brp_ga_v1"
     AMOUNTS_PER_CHARGE_VIEW_NAME = "amounts_per_charge_v1"
+    MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME = "monthly_amounts_per_charge_v1"
 
 
 class SettlementReportPublicDataModel:
