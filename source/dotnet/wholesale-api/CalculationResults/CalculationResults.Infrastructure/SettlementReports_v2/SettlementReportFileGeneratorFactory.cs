@@ -23,15 +23,19 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
 {
     private readonly ISettlementReportEnergyResultRepository _settlementReportEnergyResultRepository;
     private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
+    private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
     private readonly ISettlementReportChargePriceRepository _settlementChargePriceRepository;
 
     public SettlementReportFileGeneratorFactory(
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
         ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
+        ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository,
+        ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
         ISettlementReportChargePriceRepository settlementChargePriceRepository)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
+        _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
         _settlementChargePriceRepository = settlementChargePriceRepository;
     }
 
@@ -44,13 +48,12 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
             case SettlementReportFileContent.EnergyResultForCalculationId:
                 return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.WholesaleResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.WholesaleFixing);
             case SettlementReportFileContent.FirstCorrectionResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.FirstCorrectionSettlement);
             case SettlementReportFileContent.SecondCorrectionResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.SecondCorrectionSettlement);
             case SettlementReportFileContent.ThirdCorrectionResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.ThirdCorrectionSettlement);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository);
+            case SettlementReportFileContent.ChargeLinksPeriods:
+                return new ChargeLinkPeriodsFileGenerator(_settlementReportChargeLinkPeriodsRepository);
             case SettlementReportFileContent.ChargePrice:
                 return new ChargePriceFileGenerator(_settlementChargePriceRepository);
             default:

@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Edi.Exceptions;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
-public class MissingCalculationException : Exception
-{
-    public MissingCalculationException(string message)
-        : base(message)
-    {
-    }
-}
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+
+public sealed record SettlementReportChargeLinkPeriodQueryFilter(
+    Guid CalculationId,
+    string GridAreaCode,
+    CalculationType CalculationType,
+    string? EnergySupplier,
+    Instant PeriodStart,
+    Instant PeriodEnd);

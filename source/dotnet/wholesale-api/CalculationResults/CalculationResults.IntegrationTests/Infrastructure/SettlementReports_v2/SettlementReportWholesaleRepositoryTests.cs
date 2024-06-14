@@ -29,11 +29,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
-    public SettlementReportWholesaleRepositoryTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
+    public SettlementReportWholesaleRepositoryTests(MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
@@ -41,13 +41,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
             SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            WHOLESALE_RESULTS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
-            BasisDataSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.BasisDataSchemaName,
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            ENERGY_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-            WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-            CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
         });
 
         Fixture.Inject(mockedOptions);
@@ -70,7 +64,6 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             ]);
 
         var actual = await Sut.CountAsync(
-            CalculationType.WholesaleFixing,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
@@ -80,6 +73,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T02:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 null,
                 "da-DK"));
 
@@ -98,7 +92,6 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             ]);
 
         var results = await Sut.GetAsync(
-            CalculationType.WholesaleFixing,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>()
                 {
@@ -108,6 +101,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 },
                 DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
             skip: 2,

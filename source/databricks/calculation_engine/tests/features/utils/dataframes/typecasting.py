@@ -49,12 +49,14 @@ def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> Da
         return df.withColumn(column_name, f.col(column_name).cast(LongType()))
 
     if column_name == "quantity":
-        if "charge" in table_or_view_name:
+        if "charge_link" in table_or_view_name:
             return df.withColumn(column_name, f.col(column_name).cast(IntegerType()))
         else:
             return df.withColumn(
                 column_name, f.col(column_name).cast(DecimalType(18, 3))
             )
+    if column_name == "charge_link_quantity":
+        return df.withColumn(column_name, f.col(column_name).cast(IntegerType()))
 
     if column_name == "quantities":
         """Settlement report quantities are stored as a string in the format "[{observation_time: timestamp, quantity: decimal}, ...]"."""

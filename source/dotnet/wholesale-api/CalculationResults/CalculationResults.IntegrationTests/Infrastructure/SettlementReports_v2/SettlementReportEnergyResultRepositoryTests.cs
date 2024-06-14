@@ -21,17 +21,18 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementReportEnergyResultRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementReportEnergyResultRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
-    public SettlementReportEnergyResultRepositoryTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
+    public SettlementReportEnergyResultRepositoryTests(MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
@@ -39,13 +40,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
             SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            WHOLESALE_RESULTS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
-            BasisDataSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.BasisDataSchemaName,
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            ENERGY_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-            WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-            CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
         });
 
         Fixture.Inject(mockedOptions);
@@ -75,6 +70,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 null,
                 "da-DK"));
 
@@ -100,6 +96,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"));
 
@@ -127,6 +124,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 null,
                 "da-DK"));
 
@@ -154,6 +152,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"));
 

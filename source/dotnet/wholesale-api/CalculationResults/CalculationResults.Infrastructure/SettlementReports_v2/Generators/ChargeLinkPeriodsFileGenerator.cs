@@ -23,11 +23,20 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenerator
 {
+    private const int ChunkSize = 1000;
+    private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
+
+    public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
     public string FileExtension => ".csv";
 
-    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
     {
-        return Task.FromResult(1);
+        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
+        return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
@@ -40,12 +49,11 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
             csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
             await csvHelper.NextRecordAsync().ConfigureAwait(false);
 
-            // TODO: Fix data source.
-            // await foreach (var record in _dataSource.GetAsync(filter).ConfigureAwait(false))
-            // {
-            //     csvHelper.WriteRecord(record);
-            //     await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            // }
+            await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            {
+                csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            }
         }
     }
 

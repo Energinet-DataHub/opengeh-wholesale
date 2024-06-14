@@ -32,18 +32,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Applic
 
 [Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>,
-    IClassFixture<DatabricksSqlStatementApiFixture>
+    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private const string GridAreaA = "018";
     private readonly string[] _gridAreaCodes = [GridAreaA];
     private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
     private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 31, 0, 0, 0);
 
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     public SettlementReportFileRequestHandlerIntegrationTests(
-        DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture,
+        MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture,
         SettlementReportFileBlobStorageFixture settlementReportFileBlobStorageFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
@@ -53,13 +53,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
             SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            WHOLESALE_RESULTS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
-            BasisDataSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.BasisDataSchemaName,
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            ENERGY_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-            WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-            CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
         });
 
         var calc = new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated);
@@ -79,10 +73,21 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
 
+        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
         var settlementReportChargePriceRepository = new SettlementReportChargePriceRepository(new SettlementReportChargePriceQueries(
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
+
+        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
+            settlementReportDataRepository,
+            settlementReportWholesaleRepository,
+            settlementReportChargeLinkPeriodsRepository));
+        
 
         Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(settlementReportDataRepository, settlementReportWholesaleRepository, settlementReportChargePriceRepository));
 
@@ -99,13 +104,14 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
             SettlementReportFileContent.EnergyResultForCalculationId,
-            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString()),
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             requestId,
             filter);
 
@@ -113,10 +119,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
                 ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "1.100"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T18:30:00.000+00:00'", "2.100"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T23:15:00.000+00:00'", "2.200"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T12:00:00.000+00:00'", "1.200"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-14T12:15:00.000+00:00'", "3.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T18:30:00.000+00:00'", "2.100"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T23:15:00.000+00:00'", "2.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T12:00:00.000+00:00'", "1.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-14T12:15:00.000+00:00'", "3.200"],
             ]);
 
         // Act
