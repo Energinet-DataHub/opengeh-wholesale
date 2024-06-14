@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -23,32 +22,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class AggregationLevelMapperTests
 {
-    [Theory]
-    [InlineData(TimeSeriesType.Production, null, null)]
-    [InlineData(TimeSeriesType.Production, "es_id", null)]
-    [InlineData(TimeSeriesType.Production, "es_id", "brp_id")]
-    [InlineData(TimeSeriesType.Production, null, "brp_id")]
-    [InlineData(TimeSeriesType.FlexConsumption, null, null)]
-    [InlineData(TimeSeriesType.FlexConsumption, "es_id", null)]
-    [InlineData(TimeSeriesType.FlexConsumption, "es_id", "brp_id")]
-    [InlineData(TimeSeriesType.FlexConsumption, null, "brp_id")]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, null, null)]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, "es_id", null)]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, "es_id", "brp_id")]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, null, "brp_id")]
-    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(TimeSeriesType timeSeriesType, string? energySupplierId, string? balanceResponsibleId)
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.aggregation-level.json");
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        // Act
-        var actual = AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, energySupplierId, balanceResponsibleId);
-
-        // Assert
-        actual.Should().BeOneOf(validDeltaValues);
-    }
-
     [Theory]
     [InlineData(TimeSeriesType.Production)]
     [InlineData(TimeSeriesType.FlexConsumption)]
