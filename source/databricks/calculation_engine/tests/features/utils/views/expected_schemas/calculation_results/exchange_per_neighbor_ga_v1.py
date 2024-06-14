@@ -11,3 +11,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+    LongType,
+    DecimalType,
+    ArrayType,
+)
+
+exchange_per_neighbor_ga_v1_schema = StructType(
+    [
+        StructField("calculation_id", StringType(), False),
+        StructField("calculation_type", StringType(), False),
+        StructField("calculation_period_start", TimestampType(), False),
+        StructField("calculation_period_end", TimestampType(), False),
+        StructField("calculation_version", LongType(), False),
+        StructField("in_grid_area_code", StringType(), False),
+        StructField("out_grid_area_code", StringType(), False),
+        StructField("resolution", StringType(), False),
+        StructField("time", TimestampType(), False),
+        StructField("quantity", DecimalType(18, 3), False),
+        StructField("quantity_unit", DecimalType(18, 3), True),
+        StructField("quantity_qualities", ArrayType(StringType()), False),
+    ]
+)

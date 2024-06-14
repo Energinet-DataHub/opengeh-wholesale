@@ -25,6 +25,10 @@ from features.utils.views.expected_schemas import (
     metering_point_time_series_v1_schema,
     monthly_amounts_v1_schema,
     wholesale_results_v1_schema,
+    energy_per_brp_ga_v1_schema,
+    energy_per_es_brp_ga_v1_schema,
+    energy_per_ga_v1_schema,
+    exchange_per_neighbor_ga_v1_schema,
 )
 from package.common import assert_schema
 
@@ -66,6 +70,7 @@ def test__public_data_model_views_have_correct_schemas(
 
 def get_expected_schemas() -> dict:
     return {
+        # settlement_report
         "charge_link_periods_v1": charge_link_periods_v1_schema,
         "charge_prices_v1": charge_prices_v1_schema,
         "current_balance_fixing_calculation_version_v1": current_balance_fixing_calculation_version_v1_schema,
@@ -75,4 +80,9 @@ def get_expected_schemas() -> dict:
         "metering_point_time_series_v1": metering_point_time_series_v1_schema,
         "monthly_amounts_v1": monthly_amounts_v1_schema,
         "wholesale_results_v1": wholesale_results_v1_schema,
+        # Calculation results
+        "energy_per_brp_ga_v1": energy_per_brp_ga_v1_schema,
+        "energy_per_es_brp_ga_v1": energy_per_es_brp_ga_v1_schema,
+        "energy_per_ga_v1": energy_per_ga_v1_schema,
+        "exchange_per_neighbor_ga_v1": exchange_per_neighbor_ga_v1_schema,
     }
