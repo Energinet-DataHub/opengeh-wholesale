@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 100;
+    private const int ChunkSize = 1000;
 
     private readonly ISettlementReportWholesaleRepository _dataSource;
 
@@ -53,12 +53,13 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
             if (chunkOffset == 0)
             {
                 csvHelper.WriteHeader<SettlementReportWholesaleResultRow>();
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
             await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
                 csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
         }
     }
@@ -154,7 +155,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
             Map(r => r.Quantity)
                 .Name("ENERGYQUANTITY")
                 .Index(10)
-                .Data.TypeConverterOptions.Formats = ["#,##0"];
+                .Data.TypeConverterOptions.Formats = ["0.000"];
 
             Map(r => r.Price)
                 .Name("PRICE")
@@ -164,7 +165,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
             Map(r => r.Amount)
                 .Name("AMOUNT")
                 .Index(12)
-                .Data.TypeConverterOptions.Formats = ["#,##0"];
+                .Data.TypeConverterOptions.Formats = ["0.000000"];
 
             Map(r => r.ChargeType)
                 .Name("CHARGETYPE")

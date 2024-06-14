@@ -79,6 +79,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, chunkA.RequestId);
         Assert.Equal(calculationFilter.Single(), chunkA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", chunkA.PartialFileInfo.FileName);
+        Assert.Equal(0, chunkA.PartialFileInfo.FileOffset);
         Assert.Equal(0, chunkA.PartialFileInfo.ChunkOffset);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, chunkA.FileContent);
 
@@ -86,6 +87,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, chunkB.RequestId);
         Assert.Equal(calculationFilter.Single(), chunkB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", chunkB.PartialFileInfo.FileName);
+        Assert.Equal(0, chunkB.PartialFileInfo.FileOffset);
         Assert.Equal(1, chunkB.PartialFileInfo.ChunkOffset);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, chunkB.FileContent);
     }
