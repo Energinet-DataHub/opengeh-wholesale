@@ -42,7 +42,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
                     row.MeteringPointId,
                     row.MeteringPointType,
                     row.StartDateTime,
-                    row.Quantities));
+                    row.Quantities.Select(x => new SettlementReportMeteringPointTimeSeriesResultQuantity(x.ObservationTime, x.Quantity))));
     }
 
     private static SettlementReportMeteringPointTimeSeriesResultQueryFilter CreateQueryFilter(SettlementReportRequestFilterDto filter, Resolution resolution)

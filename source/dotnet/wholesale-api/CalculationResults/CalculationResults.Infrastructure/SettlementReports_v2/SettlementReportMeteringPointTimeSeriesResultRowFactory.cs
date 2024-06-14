@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
@@ -32,6 +33,15 @@ public static class SettlementReportMeteringPointTimeSeriesResultRowFactory
             meteringPointId!,
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType)!.Value,
             SqlResultValueConverters.ToInstant(startDateTime)!.Value,
-            quantities!.Split(',').Select(decimal.Parse));
+            DeserializeQuantities(quantities!));
+    }
+
+    private static IEnumerable<SettlementReportMeteringPointTimeSeriesResultQuantity> DeserializeQuantities(string quantities)
+    {
+        return JsonDocument.Parse(quantities).RootElement.EnumerateArray()
+            .Select(x =>
+                new SettlementReportMeteringPointTimeSeriesResultQuantity(
+                    SqlResultValueConverters.ToInstant(x.GetProperty("observation_time").GetString())!.Value,
+                    SqlResultValueConverters.ToDecimal(x.GetProperty("quantity").GetString())!.Value));
     }
 }

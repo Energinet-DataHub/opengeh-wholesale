@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed record SettlementReportMeteringPointTimeSeriesResultRow(
-    string MeteringPointId,
-    MeteringPointType MeteringPointType,
-    Instant StartDateTime,
-    IEnumerable<SettlementReportMeteringPointTimeSeriesResultQuantity> Quantities);
+public sealed record SettlementReportMeteringPointTimeSeriesResultQuantity(Instant ObservationTime, decimal Quantity);

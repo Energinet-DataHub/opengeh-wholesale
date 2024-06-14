@@ -21,4 +21,4 @@ public sealed record SettlementReportMeterinPointTimeSeriesResultRow(
     string MeteringPointId,
     MeteringPointType MeteringPointType,
     Instant StartDateTime,
-    IEnumerable<decimal> Quantities);
+    IEnumerable<SettlementReportMeteringPointTimeSeriesResultQuantity> Quantities);
