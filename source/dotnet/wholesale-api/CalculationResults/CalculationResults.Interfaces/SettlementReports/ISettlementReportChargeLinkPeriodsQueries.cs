@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportChargeLinkPeriodsQueries
 {
-Task<int> CountAsync(SettlementReportChargeLinkPeriodQueryFilter filter);
+    Task<int> CountAsync(SettlementReportChargeLinkPeriodQueryFilter filter);
 
-IAsyncEnumerable<SettlementReportChargeLinkPeriodsRow> GetAsync(SettlementReportChargeLinkPeriodQueryFilter filter, int skip, int take);
+    IAsyncEnumerable<SettlementReportChargeLinkPeriodsRow> GetAsync(SettlementReportChargeLinkPeriodQueryFilter filter, int skip, int take);
 }

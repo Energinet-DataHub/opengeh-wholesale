@@ -134,13 +134,13 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        var resultWholesale = new SettlementReportFileRequestDto(
+        var resultChargeLinkPeriods = new SettlementReportFileRequestDto(
             fileContent,
             new SettlementReportPartialFileInfo("Charge links on metering points", true),
             requestId,
             reportRequest.Filter);
 
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, true).ConfigureAwait(false))
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultChargeLinkPeriods, true).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }

@@ -58,7 +58,8 @@ public sealed class SettlementReportChargeLinkPeriodsQueryStatement : Databricks
                         {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargeLinkPeriodsViewColumns.EnergySupplierId + " = '" + _filter.EnergySupplier + "' AND")}
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
                 ORDER BY 
-                       {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} LIMIT {_take} OFFSET {_skip}
+                       {SettlementReportChargeLinkPeriodsViewColumns.MeteringPointId} 
+                LIMIT {_take} OFFSET {_skip}
                 """;
     }
 }
