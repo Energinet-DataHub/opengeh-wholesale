@@ -374,6 +374,10 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             True,
         ),
         (
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
             True,
         ),
