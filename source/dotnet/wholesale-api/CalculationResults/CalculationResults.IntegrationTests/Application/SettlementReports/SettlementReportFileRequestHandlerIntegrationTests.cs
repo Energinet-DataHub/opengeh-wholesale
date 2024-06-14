@@ -73,7 +73,15 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
 
-        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(settlementReportDataRepository, settlementReportWholesaleRepository));
+        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
+            settlementReportDataRepository,
+            settlementReportWholesaleRepository,
+            settlementReportChargeLinkPeriodsRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
@@ -88,6 +96,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
             null,
             null);
 
@@ -102,10 +111,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
                 ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "1.100"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T18:30:00.000+00:00'", "2.100"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T23:15:00.000+00:00'", "2.200"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T12:00:00.000+00:00'", "1.200"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-14T12:15:00.000+00:00'", "3.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T18:30:00.000+00:00'", "2.100"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T23:15:00.000+00:00'", "2.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T12:00:00.000+00:00'", "1.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-14T12:15:00.000+00:00'", "3.200"],
             ]);
 
         // Act

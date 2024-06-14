@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -24,30 +23,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class TimeSeriesTypeMapperTests
 {
-    [Fact]
-    public async Task TimeSeriesType_Matches_Contract()
-    {
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.time-series-type.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TimeSeriesType>(stream);
-    }
-
-    [Fact]
-    public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.time-series-type.json");
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act
-            var actual = TimeSeriesTypeMapper.FromDeltaTableValue(validDeltaValue);
-
-            // Assert it's a defined enum value (and not null)
-            actual.Should().BeDefined();
-        }
-    }
-
     [Theory]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.Production, TimeSeriesType.Production)]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]

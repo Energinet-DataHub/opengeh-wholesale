@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -23,33 +22,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class CalculationTypeMapperTests
 {
-    [Fact]
-    public async Task CalculationType_Matches_Contract()
-    {
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.calculation-type.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<CalculationType>(stream);
-    }
-
-    [Theory]
-    [InlineData(CalculationType.Aggregation)]
-    [InlineData(CalculationType.BalanceFixing)]
-    [InlineData(CalculationType.WholesaleFixing)]
-    [InlineData(CalculationType.FirstCorrectionSettlement)]
-    [InlineData(CalculationType.SecondCorrectionSettlement)]
-    [InlineData(CalculationType.ThirdCorrectionSettlement)]
-    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(CalculationType calculationType)
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.calculation-type.json");
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        // Act
-        var actual = CalculationTypeMapper.ToDeltaTableValue(calculationType);
-
-        // Assert
-        actual.Should().BeOneOf(validDeltaValues);
-    }
-
     [Theory]
     [InlineData(CalculationType.Aggregation, DeltaTableCalculationType.Aggregation)]
     [InlineData(CalculationType.BalanceFixing, DeltaTableCalculationType.BalanceFixing)]

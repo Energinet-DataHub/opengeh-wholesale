@@ -23,29 +23,40 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenerator
 {
-    public string FileExtension => ".csv";
+    private const int ChunkSize = 1000;
+    private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
 
-    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
     {
-        return Task.FromResult(1);
+        _dataSource = dataSource;
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
+    public string FileExtension => ".csv";
+
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    {
+        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
+        return (int)Math.Ceiling(count / (double)ChunkSize);
+    }
+
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportChargeLinkPeriodsResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
-            await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
+            {
+                csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            }
 
-            // TODO MJM: Fix data source.
-            // await foreach (var record in _dataSource.GetAsync(filter).ConfigureAwait(false))
-            // {
-            //     csvHelper.WriteRecord(record);
-            //     await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            // }
+            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            {
+                csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            }
         }
     }
 
