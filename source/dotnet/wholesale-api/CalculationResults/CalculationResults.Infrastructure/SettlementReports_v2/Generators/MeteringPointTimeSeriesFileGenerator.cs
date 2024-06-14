@@ -14,9 +14,8 @@
 
 using System.Globalization;
 using CsvHelper;
-using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -46,63 +45,42 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap(new SettlementReportMeteringPointTimeSeriesResultRowMap(_resolution == Resolution.Quarter ? 100 : 25));
+        var expectedQuantities = _resolution == Resolution.Quarter ? 100 : 25;
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
-            await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
+                new TypeConverterOptions
+                {
+                    Formats = ["0.000"],
+                });
+
+            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
+            {
+                csvHelper.WriteField("METERINGPOINTID");
+                csvHelper.WriteField("TYPEOFMP");
+                csvHelper.WriteField("STARTDATETIME");
+
+                for (var i = 0; i < expectedQuantities; ++i)
+                {
+                    csvHelper.WriteField($"ENERGYQUANTITY{i + 1}");
+                }
+
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            }
 
             await foreach (var record in _dataSource.GetAsync(filter, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-        }
-    }
+                csvHelper.WriteField(record.MeteringPointId);
+                csvHelper.WriteField(record.MeteringPointType);
+                csvHelper.WriteField(record.StartDateTime);
 
-    private sealed class SettlementReportMeteringPointTimeSeriesResultRowMap : ClassMap<SettlementReportMeteringPointTimeSeriesResultRow>
-    {
-        public SettlementReportMeteringPointTimeSeriesResultRowMap(int expectedQuantities)
-        {
-            Map(r => r.MeteringPointId)
-                .Name("METERINGPOINTID")
-                .Index(0);
-
-            Map(r => r.MeteringPointType)
-                .Name("TYPEOFMP")
-                .Index(1)
-                .Convert(row => row.Value.MeteringPointType switch
+                for (var i = 0; i < expectedQuantities; ++i)
                 {
-                    MeteringPointType.Consumption => "E17",
-                    MeteringPointType.Production => "E18",
-                    MeteringPointType.Exchange => "E20",
-                    MeteringPointType.VeProduction => "D01",
-                    MeteringPointType.NetProduction => "D05",
-                    MeteringPointType.SupplyToGrid => "D06",
-                    MeteringPointType.ConsumptionFromGrid => "D07",
-                    MeteringPointType.WholesaleServicesInformation => "D08",
-                    MeteringPointType.OwnProduction => "D09",
-                    MeteringPointType.NetFromGrid => "D10",
-                    MeteringPointType.NetToGrid => "D11",
-                    MeteringPointType.TotalConsumption => "D12",
-                    MeteringPointType.ElectricalHeating => "D14",
-                    MeteringPointType.NetConsumption => "D15",
-                    MeteringPointType.EffectSettlement => "D19",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
-                });
+                    csvHelper.WriteField<decimal?>(record.Quantities.Count > i ? record.Quantities[i].Quantity : null);
+                }
 
-            Map(r => r.StartDateTime)
-                .Name("STARTDATETIME")
-                .Index(2);
-
-            for (var i = 0; i < expectedQuantities; ++i)
-            {
-                var index = i;
-
-                Map<decimal?>(r => r.Quantities.Count > index ? r.Quantities[index].Quantity : null)
-                    .Name($"ENERGYQUANTITY{index + 1}")
-                    .Index(index + 3);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
         }
     }
