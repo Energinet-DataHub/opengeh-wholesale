@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -31,13 +30,13 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(CalculationType.WholesaleFixing, filter));
+        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
     }
 
     public async IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
         var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(CalculationType.WholesaleFixing, filter), skip, take)
+            .GetAsync(ParseFilter(filter), skip, take)
             .ConfigureAwait(false);
 
         await foreach (var row in rows.ConfigureAwait(false))
@@ -49,19 +48,18 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
                 row.Resolution,
                 row.TaxIndicator,
                 row.StartDateTime,
-                row.EnergyPrice1);
+                row.EnergyPrices);
         }
     }
 
-    private static SettlementReportChargePriceQueryFilter ParseFilter(CalculationType calculationType, SettlementReportRequestFilterDto filter)
+    private static SettlementReportChargePriceQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportChargePriceQueryFilter(
             calculationId.Id,
             gridAreaCode,
-            calculationType,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.CalculationType,
+            filter.PeriodStart.ToInstant());
     }
 }
