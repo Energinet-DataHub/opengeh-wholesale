@@ -38,7 +38,7 @@ public static class SettlementReportDataFactory
             gridArea!,
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             SqlResultValueConverters.ToInstant(time)!.Value,
-            "PT15M", // TODO (JMG): store resolution in delta table?
+            "PT15M", // TODO JMG: store resolution in delta table?
             MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType!),
             SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType!),
             SqlResultValueConverters.ToDecimal(quantity)!.Value);

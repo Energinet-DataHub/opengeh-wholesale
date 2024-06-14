@@ -44,7 +44,7 @@ imbalance_price_schema = StructType(
         # Resolution is per hour.
         StructField("Time", TimestampType(), False),
         # The time when the imbalance price was received from NOIS.
-        # TODO Only needed if we don't create snapshots
+        # CONSIDER: Only needed if we don't create snapshots
         StructField("ReceivedTime", TimestampType(), False),
     ]
 )
