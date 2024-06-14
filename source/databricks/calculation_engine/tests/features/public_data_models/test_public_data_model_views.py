@@ -66,7 +66,7 @@ def _get_view_databases(spark: SparkSession) -> List[Database]:
     return databases
 
 
-def assert_name_and_data_type(column_name: str, df: DataFrame) -> None:
+def _assert_name_and_data_type(column_name: str, df: DataFrame) -> None:
     actual_schema = df.schema[column_name]
     expected_column = ViewColumns.get(actual_schema.name)
     assert expected_column is not None, f"Column {column_name} not found."
