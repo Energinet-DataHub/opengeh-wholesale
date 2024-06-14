@@ -20,6 +20,7 @@ public sealed record SettlementReportPartialFileInfo
     {
         FileName = fileName;
         PreventLargeTextFiles = preventLargeTextFiles;
+        FileOffset = 0;
         ChunkOffset = 0;
     }
 
@@ -29,6 +30,8 @@ public sealed record SettlementReportPartialFileInfo
     /// Specifies that the combined file should not grow so large that it cannot be opened.
     /// </summary>
     public bool PreventLargeTextFiles { get; init; }
+
+    public int FileOffset { get; init; }
 
     public int ChunkOffset { get; init; }
 }
