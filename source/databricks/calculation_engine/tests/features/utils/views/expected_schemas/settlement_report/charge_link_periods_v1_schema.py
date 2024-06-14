@@ -35,6 +35,8 @@ charge_link_periods_v1_schema = StructType(
         StructField("from_date", TimestampType(), False),
         StructField("to_date", TimestampType(), True),
         StructField("grid_area_code", StringType(), False),
-        StructField("energy_supplier_id", StringType(), True),
+        # The business logic is that the field should not be null,
+        # but the field can be null in the database.
+        StructField("energy_supplier_id", StringType(), False),
     ]
 )
