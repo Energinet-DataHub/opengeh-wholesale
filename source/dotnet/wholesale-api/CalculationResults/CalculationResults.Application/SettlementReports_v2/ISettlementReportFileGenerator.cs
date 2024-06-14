@@ -22,5 +22,5 @@ public interface ISettlementReportFileGenerator
 
     Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter);
 
-    Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination);
+    Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination);
 }
