@@ -61,8 +61,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d2'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d2'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -70,7 +70,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 new Dictionary<string, CalculationId>
                 {
                     {
-                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
                     },
                 },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
@@ -115,8 +115,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "null"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'9397670583197'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d4'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "null"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d4'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "null"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -124,7 +124,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 new Dictionary<string, CalculationId>
                 {
                     {
-                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d4"))
                     },
                 },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
@@ -133,7 +133,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 null,
                 "da-DK"));
 
-        actual.Should().BeGreaterOrEqualTo(2);
+        actual.Should().Be(2);
     }
 
     [Fact]
@@ -142,8 +142,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "null"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8397870583197'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d5'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "null"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d5'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "null"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -151,7 +151,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 new Dictionary<string, CalculationId>
                 {
                     {
-                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d5"))
                     },
                 },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
