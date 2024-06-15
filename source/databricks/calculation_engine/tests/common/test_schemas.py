@@ -55,6 +55,22 @@ schema_with_other_datatype = t.StructType(
         t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
 )
+schema_with_more_columns = t.StructType(
+    [
+        t.StructField("foo", t.StringType(), False),
+        t.StructField("bar", t.IntegerType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
+        t.StructField("another-field", t.StringType(), True),
+    ]
+)
+schema_with_more_columns_and_different_column_order = t.StructType(
+    [
+        t.StructField("bar", t.IntegerType(), False),
+        t.StructField("another-field", t.StringType(), True),
+        t.StructField("foo", t.StringType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
+    ]
+)
 
 
 @pytest.mark.parametrize(
@@ -105,7 +121,12 @@ def test__assert_schema__when_schema_does_not_match__raises(
     ignore_nullability: bool,
 ) -> None:
     with pytest.raises(AssertionError):
-        assert_schema(actual, expected)
+        assert_schema(
+            actual,
+            expected,
+            ignore_column_order=ignore_column_order,
+            ignore_nullability=ignore_nullability,
+        )
 
 
 def test__assert_schema__when_lenient_and_other_datatype__raises_assertion_error() -> (
@@ -120,6 +141,7 @@ def test__assert_schema__when_lenient_and_other_datatype__raises_assertion_error
             ignore_column_order=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
+            ignore_extra_actual_columns=True,
         )
 
 
@@ -173,4 +195,39 @@ def test__assert_schema__when_decimal_type_should_be_accepted__does_not_raise(
         expected,
         ignore_decimal_scale=ignore_scale,
         ignore_decimal_precision=ignore_precision,
+    )
+
+
+def test__assert_schema__when_more_actual_columns_should_be_rejected__raises_assertion_error() -> (
+    None
+):
+    with pytest.raises(AssertionError):
+        assert_schema(
+            any_schema,
+            schema_with_more_columns,
+        )
+
+
+def test__assert_schema__when_different_column_order_and_more_actual_columns_should_be_rejected__does_not_raise() -> (
+    None
+):
+    """
+    Test name is leaving out the fact that column ordering is ignored as well.
+    Otherwise, the name is too long.
+    """
+    assert_schema(
+        schema_with_more_columns_and_different_column_order,
+        any_schema,
+        ignore_column_order=True,
+        ignore_extra_actual_columns=True,
+    )
+
+
+def test__assert_schema__when_more_actual_columns_should_be_accepted__does_not_raise() -> (
+    None
+):
+    assert_schema(
+        any_schema,
+        schema_with_more_columns,
+        ignore_extra_actual_columns=True,
     )

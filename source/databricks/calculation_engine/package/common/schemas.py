@@ -22,6 +22,7 @@ def assert_schema(
     ignore_column_order: bool = False,
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
+    ignore_extra_actual_columns: bool = False,
 ) -> None:
     """
     When actual schema does not match the expected schema,
@@ -38,12 +39,17 @@ def assert_schema(
         or ignore_column_order
         or ignore_decimal_precision
         or ignore_decimal_scale
+        or ignore_extra_actual_columns
     )
     if strict:
         _raise(f"Expected {expected}, but got {actual}.")
 
     actual_fields = actual.fields
     expected_fields = expected.fields
+
+    if ignore_extra_actual_columns:
+        expected_field_names = set(field.name for field in expected_fields)
+        actual_fields = [f for f in actual if f.name in expected_field_names]
 
     if ignore_column_order:
         actual_fields = sorted(actual_fields, key=lambda f: f.name)
