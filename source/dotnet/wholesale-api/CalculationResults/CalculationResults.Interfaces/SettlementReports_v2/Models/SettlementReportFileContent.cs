@@ -23,4 +23,5 @@ public enum SettlementReportFileContent
     SecondCorrectionResult,
     ThirdCorrectionResult,
     ChargeLinksPeriods,
+    MeteringPointMasterData,
 }

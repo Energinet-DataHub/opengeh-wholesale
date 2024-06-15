@@ -24,15 +24,18 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
     private readonly ISettlementReportEnergyResultRepository _settlementReportEnergyResultRepository;
     private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
     private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
+    private readonly ISettlementReportMeteringPointMasterDataRepository _settlementReportMeteringPointMasterDataRepository;
 
     public SettlementReportFileGeneratorFactory(
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
         ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
-        ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository)
+        ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository,
+        ISettlementReportMeteringPointMasterDataRepository settlementReportMeteringPointMasterDataRepository)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
         _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
+        _settlementReportMeteringPointMasterDataRepository = settlementReportMeteringPointMasterDataRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -50,6 +53,8 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
                 return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository);
             case SettlementReportFileContent.ChargeLinksPeriods:
                 return new ChargeLinkPeriodsFileGenerator(_settlementReportChargeLinkPeriodsRepository);
+            case SettlementReportFileContent.MeteringPointMasterData:
+                return new MeteringPointMasterDataFileGenerator(_settlementReportMeteringPointMasterDataRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }
