@@ -366,7 +366,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             True,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.AMOUNT_PER_CHARGE_VIEW_NAME}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.AMOUNTS_PER_CHARGE_VIEW_NAME}",
             True,
         ),
         (
