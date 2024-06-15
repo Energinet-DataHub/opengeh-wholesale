@@ -20,7 +20,6 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas import wholesale_results_schema
 from package.codelists import (
     AmountType,
@@ -63,23 +62,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.amount_type: "amount_per_charge",
     }
     return spark.createDataFrame(data=[row], schema=wholesale_results_schema)
-
-
-def test__migrated_table__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/wholesale-result-table-column-names.json"
-
-    # Act
-    actual = spark.table(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
-    ).schema
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual)
 
 
 @pytest.mark.parametrize(

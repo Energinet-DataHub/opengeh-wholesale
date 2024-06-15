@@ -40,17 +40,20 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportChargeLinkPeriodsResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
-            await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
+            {
+                csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            }
 
-            await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
