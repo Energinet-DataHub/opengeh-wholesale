@@ -29,7 +29,8 @@ from pyspark.sql.window import Window
 # Source variables
 source_database = "hive_metastore.wholesale_output" # FILL IN
 source_energy_results_table_name = "energy_results"
-source_calculation_id_to_use = "1fba2899-7ea5-4d36-8330-67022bdcac14" # FILL IN
+source_metering_points_database_and_table_name = "wholesale_input.metering_point_periods"
+source_calculation_id_to_use = "51d60f89-bbc5-4f7a-be98-6139aab1c1b2" # FILL IN
 
 # Target variables
 target_database = "hive_metastore.wholesale_output_anonymised" # FILL IN
@@ -89,6 +90,15 @@ df_source_energy_results_table = (
 
 # COMMAND ----------
 
+# Read all grid area codes
+df_source_grid_area_codes_table = (
+    spark.read.table(f"{source_metering_points_database_and_table_name}")
+    .select(grid_area_code_column_name)
+    .distinct()
+)
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC # Step 3: Find and anonymised all grid_area_codes, and metering_point_id's and energy_supplier_ids + balance_supplier_ids
 
@@ -113,28 +123,31 @@ df_source_energy_results_table = (
 
 # COMMAND ----------
 
-df_all_grid_area_codes = (
-    df_source_energy_results_table.select(grid_area_code_column_name)
-    .distinct()
-).cache()
+# MAGIC %md
+# MAGIC For each grid area code give it a new 3 digit anonymized code, however if the anoynmized grid area code is identical to a real one, then we skip it and create a new one
 
-count_distinct_mpids = len(str(df_all_grid_area_codes.count()))
-window_random_order = Window.orderBy(F.rand())
+# COMMAND ----------
 
-df_anonymised_grid_area_codes = (
-    df_all_grid_area_codes.withColumn(
-        anonymised_grid_area_code_column_name, 
-        F.lpad(F.row_number().over(window_random_order), 3, "0")
-    )
-    .withColumn(
-        anonymised_grid_area_code_column_name,
-        F.when(
-            F.col(grid_area_code_column_name).isNull(),
-            F.lit(None),
-        ).otherwise(F.col(anonymised_grid_area_code_column_name)),
-    )
-    .na.drop()
-).cache()
+df_unique_grid_area_codes = df_source_grid_area_codes_table.union(df_source_energy_results_table.select(grid_area_code_column_name).distinct()).distinct()
+
+anonymised_grid_area_codes = []
+list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_unique_grid_area_codes.collect()]
+
+first_anonymized_id_iteration = 1
+for grid_area_code in list_unique_grid_area_codes:
+    str_i = str(first_anonymized_id_iteration).rjust(3, '0')
+    first_anonymized_id_iteration += 1
+
+    # Keep going until we reach a new unique grid area code
+    while str_i in list_unique_grid_area_codes:
+        str_i = str(first_anonymized_id_iteration).rjust(3, '0')
+        first_anonymized_id_iteration += 1
+    
+    anonymised_grid_area_codes.append((grid_area_code, str_i))
+
+# COMMAND ----------
+
+df_anonymised_grid_area_codes = spark.createDataFrame(anonymised_grid_area_codes, [grid_area_code_column_name, anonymised_grid_area_code_column_name]).cache()
 
 # COMMAND ----------
 
@@ -253,29 +266,72 @@ df_all_supplier_and_balancers = (
         df_source_energy_results_table.select(F.col(balance_responsible_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
     )
     .distinct()
-).cache()
+)
 
-count_distinct_suppliers_and_balancers = len(str(df_all_supplier_and_balancers.count()))
-window_random_order = Window.orderBy(F.rand())
+list_of_gln_numbers = [row[tmp_balance_and_supplier_id_column_name] for row in df_all_supplier_and_balancers.collect()]
 
-df_anonymised_suppliers_and_balancers = (
-    df_all_supplier_and_balancers.withColumn(
-        anonymised_balance_or_supplier_id_column_name,
-        F.rpad(
-            F.concat(
-                F.lit("4"), F.lpad(F.row_number().over(window_random_order), count_distinct_suppliers_and_balancers, "0"), F.lit("4")
-            ),
-            13,
-            "0",
-        ),
-    )
-    .withColumn(
-        anonymised_balance_or_supplier_id_column_name,
-        F.when(F.col(tmp_balance_and_supplier_id_column_name).isNull(), F.lit(None)).otherwise(
-            F.col(anonymised_balance_or_supplier_id_column_name)
-        ),
-    )
-).cache()
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC The functions below are a direct translation from C# to Python, and is a translation of Raccoons GLN Generator
+
+# COMMAND ----------
+
+import random
+import math
+
+
+def create_random_gln():
+    rng = random.Random()
+    location = ''.join(str(rng.randint(0, 9)) for _ in range(12))
+    
+    for check_digit in range(10):
+        gln = location + str(check_digit)
+        if calculate_checksum(gln) == check_digit:
+            return gln
+    
+    raise Exception("Should not happen")
+
+
+def calculate_checksum(gln_number):
+    sum_of_odd_numbers = 0
+    sum_of_even_numbers = 0
+
+    for i in range(1, len(gln_number)):
+        current_number = int(gln_number[i - 1])
+
+        if i % 2 == 0:
+            sum_of_even_numbers += current_number
+        else:
+            sum_of_odd_numbers += current_number
+    
+    sum = sum_of_even_numbers * 3 + sum_of_odd_numbers
+
+    return (math.ceil(sum / 10.0) * 10) - sum
+
+# COMMAND ----------
+
+list_of_anonymised_gln_numbers = []
+anonymised_gln_numbers_mapping = []
+for gln_number in list_of_gln_numbers:
+    if gln_number is None:
+        list_of_anonymised_gln_numbers.append(None)
+        anonymised_gln_numbers_mapping.append((None, None))
+        continue
+
+    anonymised_gln_number = create_random_gln()
+
+    # Create a new GLN number until we get one we haven't seen yet
+    while anonymised_gln_number in list_of_anonymised_gln_numbers:
+        anonymised_gln_number = create_random_gln()
+    
+    # Add to list of anonymised GLN numbers as well as the mapping
+    list_of_anonymised_gln_numbers.append(anonymised_gln_number)
+    anonymised_gln_numbers_mapping.append((gln_number, anonymised_gln_number))
+
+# COMMAND ----------
+
+df_anonymised_suppliers_and_balancers = spark.createDataFrame(anonymised_gln_numbers_mapping, [tmp_balance_and_supplier_id_column_name, anonymised_balance_or_supplier_id_column_name]).cache()
 
 # COMMAND ----------
 
@@ -321,30 +377,53 @@ assert (
 
 # COMMAND ----------
 
+df_anonymised_suppliers_and_balancers = df_anonymised_suppliers_and_balancers.select(
+    F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
+    F.col(tmp_balance_and_supplier_id_column_name).alias(energy_supplier_id_column_name),
+    anonymised_balance_or_supplier_id_column_name,
+)
+
+# COMMAND ----------
+
 df_source_energy_results_table_anonymised = (
-    df_source_energy_results_table.join(df_anonymised_metering_points, [metering_point_id_column_name], "left")
+    df_source_energy_results_table
+    # Anonymise Metering Point Id
+    .join(
+        df_anonymised_metering_points,
+        df_source_energy_results_table[metering_point_id_column_name].eqNullSafe(df_anonymised_metering_points[metering_point_id_column_name]),
+        "left",
+    )
+    .drop(df_anonymised_metering_points[metering_point_id_column_name])
     .withColumn(metering_point_id_column_name, F.col(anonymised_metering_point_id_column_name))
-    .drop(anonymised_metering_point_id_column_name)
-    .join(df_anonymised_suppliers_and_balancers, [(df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_energy_results_table.energy_supplier_id) | (df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_energy_results_table.balance_responsible_id)], "left")
+    .drop(df_anonymised_metering_points[metering_point_id_column_name], anonymised_metering_point_id_column_name)
+    # Anonymise Energy Supplier Id
+    .join(
+        df_anonymised_suppliers_and_balancers,
+        df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name].eqNullSafe(df_source_energy_results_table[energy_supplier_id_column_name]),
+        "left",
+    )
+    .drop(df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name], df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name])
     .withColumn(energy_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
+    # Anonymise Balance Supplier Id
     .join(
-        df_anonymised_suppliers_and_balancers.select(
-            F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
-            anonymised_balance_or_supplier_id_column_name,
-        ),
-        [balance_responsible_id_column_name],
+        df_anonymised_suppliers_and_balancers,
+        df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name].eqNullSafe(df_source_energy_results_table[balance_responsible_id_column_name]),
         "left",
     )
+    .drop(df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name], df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name])
     .withColumn(balance_responsible_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
+    # Anonymise Grid Area Code
     .join(
         df_anonymised_grid_area_codes,
-        [grid_area_code_column_name],
+        df_source_energy_results_table[grid_area_code_column_name].eqNullSafe(df_anonymised_grid_area_codes[grid_area_code_column_name]),
         "left",
     )
+    .drop(df_anonymised_grid_area_codes[grid_area_code_column_name])
     .withColumn(grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name))
     .drop(anonymised_grid_area_code_column_name)
+    # Select and Distinct
     .select(df_source_energy_results_table.columns)
     .distinct()
 ).cache()
@@ -434,6 +513,10 @@ assert (
 
 # COMMAND ----------
 
-df_source_energy_results_table_anonymised.write.format("delta").mode("append").saveAsTable(
+df_source_energy_results_table_anonymised.write.format("delta").mode("overwrite").saveAsTable(
     f"{target_database}.{target_energy_results_table_name}"
 )
+
+# COMMAND ----------
+
+
