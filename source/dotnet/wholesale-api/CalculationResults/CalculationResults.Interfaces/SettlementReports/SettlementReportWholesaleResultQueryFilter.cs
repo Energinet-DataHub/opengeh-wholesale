@@ -22,4 +22,5 @@ public sealed record SettlementReportWholesaleResultQueryFilter(
     string GridAreaCode,
     CalculationType CalculationType,
     Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant PeriodEnd,
+    string? EnergySupplier);
