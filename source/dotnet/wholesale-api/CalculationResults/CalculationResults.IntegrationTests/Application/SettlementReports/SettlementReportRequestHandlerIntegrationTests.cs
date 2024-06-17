@@ -305,6 +305,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(calculationFilter.Single(), chargeLinkPeriodsResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResult.FileContent);
+
+        var chargePricesResult = actual[3];
+        Assert.Equal(requestId, chargePricesResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price", chargePricesResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
     }
 
     [Theory]
@@ -371,5 +377,17 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(calculationFilter.Last(), chargeLinkPeriodsResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge links on metering points (806)", chargeLinkPeriodsResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResultB.FileContent);
+
+        var chargePricesResultA = actual[6];
+        Assert.Equal(requestId, chargePricesResultA.RequestId);
+        Assert.Equal(calculationFilter.First(), chargePricesResultA.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price (805)", chargePricesResultA.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultA.FileContent);
+
+        var chargePricesResultB = actual[7];
+        Assert.Equal(requestId, chargePricesResultB.RequestId);
+        Assert.Equal(calculationFilter.Last(), chargePricesResultB.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price (806)", chargePricesResultB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultB.FileContent);
     }
 }
