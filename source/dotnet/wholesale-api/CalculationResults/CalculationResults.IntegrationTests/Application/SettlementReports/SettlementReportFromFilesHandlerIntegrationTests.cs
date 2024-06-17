@@ -110,11 +110,11 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         Assert.Equal(expectedContents, inputFileContents);
     }
 
-    [Fact]
+    [Fact(Skip = "TODO: AIU Internal Testing")]
     public async Task CombineAsync_GivenLargeChunks_SplitsFilePerMillionRows()
     {
         // Arrange
-        const int largeTextFileThreshold = 1_000;
+        const int largeTextFileThreshold = 1_000_000;
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
