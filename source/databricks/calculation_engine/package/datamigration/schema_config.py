@@ -156,6 +156,9 @@ schema_config = [
             View(
                 name=paths.CalculationResultsPublicDataModel.MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME
             ),
+            View(
+                name=paths.CalculationResultsPublicDataModel.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME
+            ),
         ],
     ),
 ]
