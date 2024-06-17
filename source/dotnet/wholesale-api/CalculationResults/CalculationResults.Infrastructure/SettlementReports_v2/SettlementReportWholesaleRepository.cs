@@ -70,6 +70,7 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
             gridAreaCode,
             filter.CalculationType,
             filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.PeriodEnd.ToInstant(),
+            filter.EnergySupplier);
     }
 }

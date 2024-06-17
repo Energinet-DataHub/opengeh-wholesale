@@ -1,0 +1,47 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System.Text.Json;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
+
+public static class SettlementReportMeteringPointTimeSeriesResultRowFactory
+{
+    public static SettlementReportMeterinPointTimeSeriesResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    {
+        var meteringPointId = databricksSqlRow[SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId];
+        var meteringPointType = databricksSqlRow[SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointType];
+        var startDateTime = databricksSqlRow[SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime];
+        var quantities = databricksSqlRow[SettlementReportMeteringPointTimeSeriesViewColumns.Quantities];
+
+        return new SettlementReportMeterinPointTimeSeriesResultRow(
+            meteringPointId!,
+            MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType)!.Value,
+            SqlResultValueConverters.ToInstant(startDateTime)!.Value,
+            DeserializeQuantities(quantities!));
+    }
+
+    private static IEnumerable<SettlementReportMeteringPointTimeSeriesResultQuantity> DeserializeQuantities(string quantities)
+    {
+        return JsonDocument.Parse(quantities).RootElement.EnumerateArray()
+            .Select(x =>
+                new SettlementReportMeteringPointTimeSeriesResultQuantity(
+                    SqlResultValueConverters.ToInstant(x.GetProperty("observation_time").GetString())!.Value,
+                    SqlResultValueConverters.ToDecimal(x.GetProperty("quantity").GetString())!.Value));
+    }
+}
