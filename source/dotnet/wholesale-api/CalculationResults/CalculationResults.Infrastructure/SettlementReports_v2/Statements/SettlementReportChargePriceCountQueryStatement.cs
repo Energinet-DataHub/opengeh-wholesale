@@ -34,7 +34,7 @@ public sealed class SettlementReportChargePriceCountQueryStatement : DatabricksS
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT(DISTINCT({SettlementReportChargePriceViewColumns.StartTime})) AS Count
+                    SELECT COUNT(DISTINCT({SettlementReportChargePriceViewColumns.StartTime})) AS count
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}
                     WHERE

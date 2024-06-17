@@ -43,7 +43,7 @@ public sealed class SettlementReportChargePriceQueryStatement : DatabricksStatem
     {
         var chargePrice =
             $"""
-                     SELECT COUNT(DISTINCT({SettlementReportChargePriceViewColumns.StartTime})) AS Count
+                     SELECT DISTINCT({SettlementReportChargePriceViewColumns.StartTime}) 
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}
                      WHERE
@@ -69,10 +69,10 @@ public sealed class SettlementReportChargePriceQueryStatement : DatabricksStatem
                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}
                 JOIN 
                       ({chargePrice}) AS cp ON
-                      {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}.{SettlementReportChargePriceViewColumns.StartTime} = mp.{SettlementReportChargePriceViewColumns.StartTime}
+                      {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}.{SettlementReportChargePriceViewColumns.StartTime} = cp.{SettlementReportChargePriceViewColumns.StartTime}
                 WHERE 
                         {SettlementReportChargePriceViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
-                        {SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
+                        cp.{SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
                         {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
              """;
