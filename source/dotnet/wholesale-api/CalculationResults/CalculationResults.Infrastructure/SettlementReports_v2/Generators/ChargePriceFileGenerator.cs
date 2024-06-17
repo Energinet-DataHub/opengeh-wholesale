@@ -15,6 +15,7 @@
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
@@ -52,6 +53,10 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
             if (chunkOffset == 0)
             {
                 csvHelper.WriteHeader<SettlementReportChargePriceRow>();
+                for (var i = 0; i < 24; ++i)
+                {
+                    csvHelper.WriteField($"ENERGYPRICE{i + 1}");
+                }
             }
 
             await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
@@ -68,7 +73,6 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
         {
             Map(r => r.ChargeType)
                 .Name("CHARGETYPE")
-                .Index(0)
                 .Convert(row => row.Value.ChargeType switch
                 {
                     ChargeType.Tariff => "D03",
@@ -78,16 +82,13 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 });
 
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
-                .Index(1);
+                .Name("CHARGETYPEID");
 
-            Map(r => r.ChargeOwnerId) // TODO: rename to ChargeOwner
-                .Name("CHARGETYPEOWNER")
-                .Index(2);
+            Map(r => r.ChargeOwnerId)
+                .Name("CHARGETYPEOWNER");
 
             Map(r => r.Resolution)
                 .Name("RESOLUTIONDURATION")
-                .Index(3)
                 .Convert(row => row.Value.Resolution switch
                 {
                     Resolution.Hour => "PT1H",
@@ -97,18 +98,14 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 });
 
             Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR")
-                .Index(4);
+                .Name("TAXINDICATOR");
 
             Map(r => r.StartDateTime)
-                .Name("STARTDATETIME")
-                .Index(5);
+                .Name("STARTDATETIME");
 
-            Map(r => r.EnergyPrice1)
+            Map(r => r.EnergyPrices)
                 .Name("ENERGYPRICE1")
-                .Index(6);
-
-            //TODO: the rest of energyprices
+                .TypeConverter<IEnumerableConverter>();
         }
     }
 }
