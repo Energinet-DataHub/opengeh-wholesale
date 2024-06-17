@@ -27,12 +27,12 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
 public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>,
-    IClassFixture<DatabricksSqlStatementApiFixture>
+    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private readonly AggregatedTimeSeriesQueriesData _aggregatedTimeSeriesQueriesData;
-    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
 
-    public AggregatedTimeSeriesQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public AggregatedTimeSeriesQueriesTests(MigrationsFreeDatabricksSqlStatementApiFixture fixture)
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());

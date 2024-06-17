@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private const string CalculationId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string HourlyTariffCalculationResultId = "12345678-98ee-45c1-b343-0cbf185a47d9";
@@ -37,10 +37,10 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
     private const string DefaultHourlyAmount = "2.34567";
     private const string DefaultMonthlyAmount = "1.123456";
 
-    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
     private readonly Mock<ICalculationsClient> _calculationsClientMock;
 
-    public WholesaleResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public WholesaleResultQueriesTests(MigrationsFreeDatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
         _calculationsClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
