@@ -94,13 +94,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
     private void MustNotBe3YearsAnd3MonthsOld(Instant periodStart, ICollection<ValidationError> errors)
     {
-        // Start is within [3 year 2 months ago, now]
-        if (!periodValidationHelper.IsDateOlderThanAllowed(periodStart, maxYears: 3, maxMonths: 2))
-            return;
-
-        // Start is within [A long time ago, 3 year 3 months ago]
-        if (periodValidationHelper.IsDateOlderThanAllowed(periodStart, maxYears: 3, maxMonths: 3)
-            || periodValidationHelper.PeriodStartIs3YearsAnd3MonthsAgo(periodStart))
+        if (periodValidationHelper.IsMonthOlder3Years2Months(periodStart))
         {
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
         }
