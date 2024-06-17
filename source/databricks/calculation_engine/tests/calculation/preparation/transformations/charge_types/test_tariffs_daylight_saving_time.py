@@ -33,7 +33,7 @@ class TestWhenEnteringDaylightSavingTime:
         spark: SparkSession,
     ) -> None:
         """
-        TODO JMG: When transitioning to daylight saving time the returned number of rows .
+        When entering daylight saving time there should neither 'holes' nor 'overlaps' in the returned number of rows.
         """
         # Arrange
         time_series_rows = [
@@ -92,7 +92,7 @@ class TestWhenExitingDaylightSavingTime:
         spark: SparkSession,
     ) -> None:
         """
-        TODO JMG: When transitioning to daylight saving time the returned number of rows .
+        When entering daylight saving time there should neither 'holes' nor 'overlaps' in the returned number of rows.
         """
         # Arrange
         time_series_rows = [
