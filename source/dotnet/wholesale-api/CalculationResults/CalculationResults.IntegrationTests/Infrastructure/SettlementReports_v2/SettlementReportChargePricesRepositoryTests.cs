@@ -65,6 +65,9 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
     [Fact]
     public async Task Count_WrongGridArea_ReturnsEmpty()
     {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager
+            .EmptyAsync(_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME);
+
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargePriceViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME,
             _chargePriceRows);
@@ -89,6 +92,9 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
     [Fact]
     public async Task Count_ValidFilterGridArea_ReturnsCount()
     {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager
+            .EmptyAsync(_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME);
+
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargePriceViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME,
             _chargePriceRows);
@@ -113,6 +119,9 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
     [Fact]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager
+            .EmptyAsync(_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME);
+
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargePriceViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME,
             _chargePriceRows);
@@ -139,6 +148,9 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
     [Fact]
     public async Task Get_TakeMoreThanAvailable_ReturnsFewerRows()
     {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager
+            .EmptyAsync(_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME);
+
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargePriceViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME,
             _chargePriceRows);
