@@ -24,12 +24,6 @@ variable "location" {
   default     = "West Europe"
 }
 
-variable "enable_health_check_alerts" {
-  type        = bool
-  description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
-  default     = true
-}
-
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
@@ -125,4 +119,10 @@ variable "biz_talk_business_type_exchange" {
   type        = string
   description = "Business type for exchange"
   default     = "NBS-MEPI"
+}
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
 }

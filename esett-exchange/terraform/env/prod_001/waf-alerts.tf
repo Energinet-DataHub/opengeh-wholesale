@@ -1,11 +1,13 @@
 resource "azurerm_monitor_scheduled_query_rules_alert" "waf_alert" {
+  count               = length(module.monitor_action_group_esett) != 1 ? 0 : 1
   name                = "qra-waf-${local.NAME_SUFFIX}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
 
   action {
-    action_group = [module.ag_dev_alert.id]
+    action_group = [module.monitor_action_group_esett[0].id]
   }
+
   data_source_id = data.azurerm_key_vault_secret.log_shared_id.value
   description    = "Blocked requests from IP 194.239.2.103 or 194.239.2.105"
   enabled        = true

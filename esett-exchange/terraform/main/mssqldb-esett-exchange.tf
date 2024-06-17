@@ -4,9 +4,10 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_esett_exchange" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.8.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.22.0"
 
   name                 = "esett-exchange"
+  enclave_type         = null
   location             = azurerm_resource_group.this.location
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -14,10 +15,12 @@ module "mssqldb_esett_exchange" {
   server_id            = data.azurerm_mssql_server.mssqlsrv.id
   sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
   elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
-  monitor_action_group = {
-    id                  = data.azurerm_key_vault_secret.primary_action_group_id.value
+
+  monitor_action_group = length(module.monitor_action_group_esett) != 1 ? null : {
+    id                  = module.monitor_action_group_esett[0].id
     resource_group_name = azurerm_resource_group.this.name
   }
+
   max_size_gb = 5
 }
 
