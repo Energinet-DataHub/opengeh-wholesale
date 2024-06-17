@@ -15,10 +15,7 @@
 from pyspark.sql import SparkSession, DataFrame
 
 from features.utils.dataframes.columns.view_columns import ViewColumns
-from features.utils.views.public_data_models_databases_and_schemas import (
-    get_public_data_model_databases,
-    get_expected_public_data_model_schemas,
-)
+from features.utils.views.public_data_models import get_databases, get_expected_schemas
 from package.common import assert_schema
 
 
@@ -29,7 +26,7 @@ def test__public_data_model_views_have_registered_column_names_and_types(
     """Verify that all columns in all views in all public view models match the expected column names and data types"""
 
     # Arrange
-    databases = get_public_data_model_databases(spark)
+    databases = get_databases(spark)
     errors = []
 
     # Act & Assert
@@ -55,8 +52,8 @@ def test__public_data_model_views_have_correct_schemas(
     """Verify that all schemas from all views in all public view models match the respective expected schema."""
 
     # Arrange
-    databases = get_public_data_model_databases(spark)
-    expected_schemas = get_expected_public_data_model_schemas()
+    databases = get_databases(spark)
+    expected_schemas = get_expected_schemas()
     errors = []
 
     # Act & Assert

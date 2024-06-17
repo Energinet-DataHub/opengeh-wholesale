@@ -16,7 +16,7 @@ from typing import Tuple
 from pyspark.sql import SparkSession
 
 from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
-from features.utils.dataframes.typecasting import cast_column_types
+from features.utils.dataframes.typecasting import cast_column_types2
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 
 
@@ -84,7 +84,7 @@ class ViewScenarioExecutor:
         for wrapper in dataframe_wrappers:
             if wrapper.df is None:
                 continue
-            wrapper.df = cast_column_types(wrapper.df, table_or_view_name=wrapper.name)
+            wrapper.df = cast_column_types2(wrapper.df)
             wrappers.append(wrapper)
 
         return wrappers

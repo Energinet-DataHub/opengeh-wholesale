@@ -27,7 +27,15 @@ from pyspark.sql.types import (
     LongType,
 )
 
+from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.constants import TimeSeriesColname
+
+
+def cast_column_types2(df: DataFrame) -> DataFrame:
+    for column in df.schema:
+        column = ViewColumns.get(column.name)
+        df = df.withColumn(column.name, f.col(column.name).cast(column.data_type))
+    return df
 
 
 def cast_column_types(df: DataFrame, table_or_view_name: str = "") -> DataFrame:
