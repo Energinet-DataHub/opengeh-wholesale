@@ -48,7 +48,7 @@ public sealed class MeteringPointMasterDataFileGenerator : ISettlementReportFile
         {
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
-                csvHelper.WriteHeader<SettlementReportMeteringPointMasterDataRowMap>();
+                csvHelper.WriteHeader<SettlementReportMeteringPointMasterDataRow>();
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
