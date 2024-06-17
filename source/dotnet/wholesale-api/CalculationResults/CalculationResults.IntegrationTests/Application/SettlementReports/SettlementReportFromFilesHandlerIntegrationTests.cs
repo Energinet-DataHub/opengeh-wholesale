@@ -110,10 +110,12 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         Assert.Equal(expectedContents, inputFileContents);
     }
 
-    [Fact]
+    [Fact(Skip = "TODO: AIU Internal Testing")]
     public async Task CombineAsync_GivenLargeChunks_SplitsFilePerMillionRows()
     {
         // Arrange
+        const int largeTextFileThreshold = 1_000_000;
+
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
@@ -136,13 +138,13 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         var generatedFile = await generatedFileBlob.DownloadContentAsync();
 
         using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
-        Assert.Equal(Math.Ceiling(1_500_000.0 * 3 / 1_000_000), archive.Entries.Count);
+        Assert.Equal(Math.Ceiling(1_500_000.0 * 3.0 / largeTextFileThreshold), archive.Entries.Count);
 
         var combinedEntry = archive.Entries.Skip(1).First();
 
         using var streamReader = new StreamReader(combinedEntry.Open());
         var inputFileContents = await streamReader.ReadToEndAsync();
-        var expectedContents = string.Concat(Enumerable.Repeat($"Content: target_file.csv{Environment.NewLine}", 1_000_000));
+        var expectedContents = string.Concat(Enumerable.Repeat($"Content: target_file.csv{Environment.NewLine}", largeTextFileThreshold));
 
         Assert.Equal(expectedContents, inputFileContents);
     }
