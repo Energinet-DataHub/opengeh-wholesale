@@ -99,7 +99,6 @@ def test__calculate_per_ga_co_es__sums_per_energy_supplier(
     ).df
 
     # Assert
-    actual.show()
     assert actual.count() == 2
     assert actual.where(f.col(Colname.energy_supplier_id) == "1").collect()[0][
         Colname.total_amount
