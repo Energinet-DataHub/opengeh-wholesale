@@ -17,47 +17,13 @@ module "func_dropzoneunzipper" {
   health_check_path                      = "/api/monitor/ready"
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
-
-  health_check_alert = {
+  app_settings                           = local.func_dropzoneunzipper.app_settings
+  health_check_alert                     = {
     action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
     enabled         = var.enable_health_check_alerts
   }
-  app_settings = {
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE     = true
-    WEBSITE_RUN_FROM_PACKAGE            = 1
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = true
-    FUNCTIONS_WORKER_RUNTIME            = "dotnet-isolated"
-
-    # Storage Account and container settings
-    ARCHIVE_DROPZONE_URI                           = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
-    ARCHIVE_CONTAINER_NAME                         = azurerm_storage_container.dropzonearchive.name
-    ZIPPED_DROPZONE_URI                            = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
-    ZIPPED_CONTAINER_NAME                          = azurerm_storage_container.dh2_dropzone_zipped.name
-    UNZIPPED_DROPZONE_URI                          = "https://${module.st_dh2data.name}.blob.core.windows.net"
-    UNZIPPED_METERING_POINTS_CONTAINER_NAME        = azurerm_storage_container.dh2_metering_point_history.name
-    UNZIPPED_TIME_SERIES_CONTAINER_NAME            = azurerm_storage_container.dh2_timeseries.name
-    UNZIPPED_CHARGES_CONTAINER_NAME                = azurerm_storage_container.dh2_charges.name
-    UNZIPPED_CHARGE_LINKS_CONTAINER_NAME           = azurerm_storage_container.dh2_charge_links.name
-    UNZIPPED_CONSUMPTION_STATEMENTS_CONTAINER_NAME = azurerm_storage_container.dh2_consumption_statements.name
-
-    # Event Hub settings
-    INGRESS_EVENT_HUB_CONNECTION_STRING = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string
-    INGRESS_EVENT_HUB_NAME              = azurerm_eventhub.eventhub_dropzone_zipped.name
-    INGRESS_EVENT_HUB_CONSUMER_GROUP    = azurerm_eventhub_consumer_group.consumer_group_dropzone_zipped.name
-
-    # Logging Worker
-    "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
-    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
-    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
-
-    # Logging Host
-    "AzureFunctionsJobHost__logging__logLevel__Default"                                    = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
-    "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__isEnabled"     = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
-    "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__excludedTypes" = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
-  }
-
   # Role assigments is needed to connect to the storage accounts using URI
-  role_assignments = [
+  role_assignments                       = [
     {
       resource_id          = module.st_dh2data.id
       role_definition_name = "Storage Blob Data Contributor"
