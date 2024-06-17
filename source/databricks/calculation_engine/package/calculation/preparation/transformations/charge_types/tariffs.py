@@ -106,7 +106,7 @@ def get_charges_with_no_prices(
     charge_price_information_filtered: DataFrame,
     resolution: ChargeResolution,
     time_zone: str,
-):
+) -> DataFrame:
     if resolution == ChargeResolution.HOUR:
         return charge_price_information_filtered.withColumn(
             Colname.charge_time,
