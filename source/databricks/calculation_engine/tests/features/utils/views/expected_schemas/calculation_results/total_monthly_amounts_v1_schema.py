@@ -19,7 +19,6 @@ from pyspark.sql.types import (
     StructType,
     LongType,
     DecimalType,
-    BooleanType,
 )
 
 total_monthly_amounts_v1_schema = StructType(
@@ -30,11 +29,7 @@ total_monthly_amounts_v1_schema = StructType(
         StructField("result_id", StringType(), False),
         StructField("grid_area_code", StringType(), False),
         StructField("energy_supplier_id", StringType(), False),
-        StructField("charge_code", StringType(), False),
-        StructField("charge_type", StringType(), False),
         StructField("charge_owner_id", StringType(), False),
-        StructField("quantity_unit", StringType(), False),
-        StructField("is_tax", BooleanType(), False),
         StructField("currency", StringType(), False),
         StructField("time", TimestampType(), False),
         StructField("amount", DecimalType(18, 6), False),
