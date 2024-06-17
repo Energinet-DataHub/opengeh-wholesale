@@ -45,7 +45,12 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        var expectedQuantities = _resolution == Resolution.Quarter ? 100 : 25;
+        var expectedQuantities = _resolution switch
+        {
+            Resolution.Hour => 25,
+            Resolution.Quarter => 100,
+            _ => throw new ArgumentException(nameof(_resolution)),
+        };
 
         await using (csvHelper.ConfigureAwait(false))
         {
