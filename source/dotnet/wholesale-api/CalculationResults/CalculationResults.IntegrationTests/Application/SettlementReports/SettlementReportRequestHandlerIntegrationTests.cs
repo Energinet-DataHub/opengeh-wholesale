@@ -305,6 +305,24 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(calculationFilter.Single(), chargeLinkPeriodsResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResult.FileContent);
+
+        var timeSeriesPT15MResults = actual[3];
+        Assert.Equal(requestId, timeSeriesPT15MResults.RequestId);
+        Assert.Equal(calculationFilter.Single(), timeSeriesPT15MResults.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT15M (805)", timeSeriesPT15MResults.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt15M, timeSeriesPT15MResults.FileContent);
+
+        var timeSeriesResultsB = actual[4];
+        Assert.Equal(requestId, timeSeriesResultsB.RequestId);
+        Assert.Equal(calculationFilter.Single(), timeSeriesResultsB.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT1H (805)", timeSeriesResultsB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt1H, timeSeriesResultsB.FileContent);
+
+        var chargePricesResult = actual[5];
+        Assert.Equal(requestId, chargePricesResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price", chargePricesResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
     }
 
     [Theory]
@@ -371,5 +389,41 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(calculationFilter.Last(), chargeLinkPeriodsResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge links on metering points (806)", chargeLinkPeriodsResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResultB.FileContent);
+
+        var pt15MResultsA = actual[6];
+        Assert.Equal(requestId, pt15MResultsA.RequestId);
+        Assert.Equal(calculationFilter.First(), pt15MResultsA.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT15M (805)", pt15MResultsA.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt15M, pt15MResultsA.FileContent);
+
+        var pt15MResultsB = actual[7];
+        Assert.Equal(requestId, pt15MResultsB.RequestId);
+        Assert.Equal(calculationFilter.Last(), pt15MResultsB.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT15M (806)", pt15MResultsB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt15M, pt15MResultsB.FileContent);
+
+        var pt1HResultsA = actual[8];
+        Assert.Equal(requestId, pt1HResultsA.RequestId);
+        Assert.Equal(calculationFilter.First(), pt1HResultsA.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT1H (805)", pt1HResultsA.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt1H, pt1HResultsA.FileContent);
+
+        var pt1HResultsB = actual[9];
+        Assert.Equal(requestId, pt1HResultsB.RequestId);
+        Assert.Equal(calculationFilter.Last(), pt1HResultsB.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT1H (806)", pt1HResultsB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt1H, pt1HResultsB.FileContent);
+
+        var chargePricesResultA = actual[10];
+        Assert.Equal(requestId, chargePricesResultA.RequestId);
+        Assert.Equal(calculationFilter.First(), chargePricesResultA.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price (805)", chargePricesResultA.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultA.FileContent);
+
+        var chargePricesResultB = actual[11];
+        Assert.Equal(requestId, chargePricesResultB.RequestId);
+        Assert.Equal(calculationFilter.Last(), chargePricesResultB.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price (806)", chargePricesResultB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultB.FileContent);
     }
 }

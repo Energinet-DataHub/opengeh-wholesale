@@ -25,17 +25,20 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
     private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
     private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _settlementReportMeteringPointTimeSeriesResultRepository;
+    private readonly ISettlementReportChargePriceRepository _settlementChargePriceRepository;
 
     public SettlementReportFileGeneratorFactory(
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
         ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
         ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository,
-        ISettlementReportMeteringPointTimeSeriesResultRepository settlementReportMeteringPointTimeSeriesResultRepository)
+        ISettlementReportMeteringPointTimeSeriesResultRepository settlementReportMeteringPointTimeSeriesResultRepository,
+        ISettlementReportChargePriceRepository settlementChargePriceRepository)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
         _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
         _settlementReportMeteringPointTimeSeriesResultRepository = settlementReportMeteringPointTimeSeriesResultRepository;
+        _settlementChargePriceRepository = settlementChargePriceRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -57,6 +60,8 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
                 return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Quarter);
             case SettlementReportFileContent.Pt1H:
                 return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Hour);
+            case SettlementReportFileContent.ChargePrice:
+                return new ChargePriceFileGenerator(_settlementChargePriceRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

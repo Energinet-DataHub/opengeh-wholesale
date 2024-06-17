@@ -19,11 +19,11 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementReportChargeLinkPeriodsRepository
+public sealed class SettlementReportChargePriceRepository : ISettlementReportChargePriceRepository
 {
-    private readonly ISettlementReportChargeLinkPeriodsQueries _settlementReportResultQueries;
+    private readonly ISettlementReportChargePriceQueries _settlementReportResultQueries;
 
-    public SettlementReportChargeLinkPeriodsRepository(ISettlementReportChargeLinkPeriodsQueries settlementReportResultQueries)
+    public SettlementReportChargePriceRepository(ISettlementReportChargePriceQueries settlementReportResultQueries)
     {
         _settlementReportResultQueries = settlementReportResultQueries;
     }
@@ -33,7 +33,7 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
         return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
     }
 
-    public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
         var rows = _settlementReportResultQueries
             .GetAsync(ParseFilter(filter), skip, take)
@@ -41,28 +41,25 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
 
         await foreach (var row in rows.ConfigureAwait(false))
         {
-            yield return new SettlementReportChargeLinkPeriodsResultRow(
-                row.MeteringPointId,
-                row.MeteringPointType,
+            yield return new SettlementReportChargePriceRow(
                 row.ChargeType,
-                row.ChargeOwnerId,
                 row.ChargeCode,
-                row.Quantity,
-                row.PeriodStart,
-                row.PeriodEnd);
+                row.ChargeOwnerId,
+                row.Resolution,
+                row.TaxIndicator,
+                row.StartDateTime,
+                row.EnergyPrices);
         }
     }
 
-    private static SettlementReportChargeLinkPeriodQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
+    private static SettlementReportChargePriceQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportChargeLinkPeriodQueryFilter(
+        return new SettlementReportChargePriceQueryFilter(
             calculationId.Id,
             gridAreaCode,
             filter.CalculationType,
-            filter.EnergySupplier,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.PeriodStart.ToInstant());
     }
 }
