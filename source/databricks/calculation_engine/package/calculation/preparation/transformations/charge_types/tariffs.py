@@ -62,6 +62,7 @@ def get_prepared_tariffs(
             metering_point_time_series, resolution, time_zone
         )
     )
+    grouped_time_series.show(3000)
 
     # join with grouped time series
     tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)
@@ -79,20 +80,9 @@ def _join_master_data_and_prices_add_missing_prices(
     charge_price_information_filtered = charge_price_information.df.filter(
         f.col(Colname.resolution) == resolution.value
     )
-    charges_with_no_prices = charge_price_information_filtered.withColumn(
-        Colname.charge_time,
-        f.explode(
-            f.sequence(
-                f.from_utc_timestamp(Colname.from_date, time_zone),
-                f.from_utc_timestamp(Colname.to_date, time_zone),
-                f.expr(
-                    f"interval {_get_window_duration_string_based_on_resolution(resolution)}"
-                ),
-            )
-        ),
-    ).withColumn(
-        Colname.charge_time,
-        f.to_utc_timestamp(Colname.charge_time, time_zone),
+
+    charges_with_no_prices = get_charges_with_no_prices(
+        charge_price_information_filtered, resolution, time_zone
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
@@ -111,6 +101,38 @@ def _join_master_data_and_prices_add_missing_prices(
     )
 
     return charges_with_prices_and_missing_prices
+
+
+def get_charges_with_no_prices(
+    charge_price_information_filtered: DataFrame,
+    resolution: ChargeResolution,
+    time_zone: str,
+):
+    if resolution == ChargeResolution.HOUR:
+        return charge_price_information_filtered.withColumn(
+            Colname.charge_time,
+            f.explode(
+                f.sequence(
+                    Colname.from_date,
+                    Colname.to_date,
+                    f.expr(f"interval 1 hour"),
+                )
+            ),
+        )
+    elif resolution == ChargeResolution.DAY:
+        return charge_price_information_filtered.withColumn(
+            Colname.charge_time,
+            f.explode(
+                f.sequence(
+                    f.from_utc_timestamp(Colname.from_date, time_zone),
+                    f.from_utc_timestamp(Colname.to_date, time_zone),
+                    f.expr(f"interval 1 day"),
+                )
+            ),
+        ).withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(Colname.charge_time, time_zone),
+        )
 
 
 def _join_with_charge_link_metering_points(
@@ -206,6 +228,7 @@ def _get_window_duration_string_based_on_resolution(
 def _join_with_grouped_time_series(
     df: DataFrame, grouped_time_series: DataFrame
 ) -> DataFrame:
+
     df = df.join(
         grouped_time_series,
         [
