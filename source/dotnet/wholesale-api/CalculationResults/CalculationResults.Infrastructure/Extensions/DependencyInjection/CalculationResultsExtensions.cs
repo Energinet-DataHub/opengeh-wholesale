@@ -106,10 +106,15 @@ public static class CalculationResultsExtensions
         services.AddScoped<IUpdateFailedSettlementReportsHandler, UpdateFailedSettlementReportsHandler>();
 
         services.AddScoped<IRemoveExpiredSettlementReports, RemoveExpiredSettlementReports>();
-        services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
+        services.AddScoped<ISettlementReportWholesaleRepository, SettlementReportWholesaleRepository>();
+        services.AddScoped<ISettlementReportEnergyResultRepository, SettlementReportEnergyResultRepository>();
+        services.AddScoped<ISettlementReportWholesaleResultQueries, SettlementReportWholesaleResultQueries>();
+        services.AddScoped<ISettlementReportEnergyResultQueries, SettlementReportEnergyResultQueries>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddScoped<ISettlementReportDownloadHandler, SettlementReportDownloadHandler>();
+        services.AddScoped<ISettlementReportChargeLinkPeriodsRepository, SettlementReportChargeLinkPeriodsRepository>();
+        services.AddScoped<ISettlementReportChargeLinkPeriodsQueries, SettlementReportChargeLinkPeriodsQueries>();
         services.AddSettlementReportBlobStorage();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();

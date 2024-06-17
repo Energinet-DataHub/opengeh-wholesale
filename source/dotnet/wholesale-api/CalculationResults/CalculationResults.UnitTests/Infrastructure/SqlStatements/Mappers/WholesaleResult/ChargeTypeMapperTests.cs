@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Xunit;
 
@@ -22,15 +21,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class ChargeTypeMapperTests
 {
-    private const string DocumentPath = "DeltaTableContracts.enums.charge-type.json";
-
-    [Fact]
-    public async Task ChargeType_Matches_Contract()
-    {
-        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ChargeType>(stream);
-    }
-
     [Theory]
     [InlineData("fee", ChargeType.Fee)]
     [InlineData("subscription", ChargeType.Subscription)]

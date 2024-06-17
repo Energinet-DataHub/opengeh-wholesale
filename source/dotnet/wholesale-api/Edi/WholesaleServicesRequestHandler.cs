@@ -24,6 +24,9 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
+using NodaTime;
+using NodaTime.Extensions;
+using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -32,7 +35,6 @@ namespace Energinet.DataHub.Wholesale.Edi;
 /// </summary>
 public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 {
-    // TODO: Is this the correct error code?
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -72,6 +74,12 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
             _logger.LogWarning("Validation errors for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
+        }
+
+        var incomingStart = InstantPattern.General.Parse(incomingRequest.PeriodStart).Value.ToDateTimeUtc();
+        if (incomingStart.Day != 1)
+        {
+            incomingRequest.PeriodStart = incomingStart.AddDays(-incomingStart.Day + 1).ToInstant().ToString();
         }
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
@@ -136,7 +144,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         if (queryParameters.GridAreaCodes.Count == 0) // If grid area codes is empty, we already retrieved any data across all grid areas
             return false;
 
-        if (requestedByActorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
+        if (requestedByActorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.SystemOperator)
         {
             var queryParametersWithoutGridArea = queryParameters with
             {

@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 public sealed record SettlementReportRequestFilterDto(
-    IReadOnlyCollection<CalculationFilterDto> Calculations,
+    IReadOnlyDictionary<string, CalculationId> GridAreas, // NOTE: Cannot type key to GridAreaCode, as serializer is unable to process the type.
     DateTimeOffset PeriodStart,
     DateTimeOffset PeriodEnd,
+    CalculationType CalculationType,
     string? EnergySupplier,
     string? CsvFormatLocale);

@@ -35,9 +35,15 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
-        CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        false,
+        new SettlementReportRequestFilterDto(
+            new Dictionary<string, CalculationId>(),
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            CalculationType.BalanceFixing,
+            null,
+            null));
 
     public SettlementReportDownloadHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -60,13 +66,12 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            "Report.zip",
             []);
 
         var userId = Guid.NewGuid();
         var actorId = Guid.NewGuid();
-        var settlementReport =
-            new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
+        var settlementReport = new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
         settlementReport.MarkAsCompleted(generatedSettlementReport);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
@@ -90,7 +95,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            "Report.zip",
             []);
 
         var userId = Guid.NewGuid();
@@ -116,7 +121,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            "Report.zip",
             []);
 
         var userId = Guid.NewGuid();
@@ -142,6 +147,6 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
     {
         var containerClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         var blobClient = containerClient.GetBlobClient($"settlement-reports/{requestId.Id}/Report.zip");
-        return blobClient.UploadAsync(new BinaryData($"Content: Report.zip"));
+        return blobClient.UploadAsync(new BinaryData("Content: Report.zip"));
     }
 }

@@ -17,7 +17,9 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -135,6 +137,30 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
             .Which
             .ApplicationProperties.Should().ContainKey("ReferenceId")
             .WhoseValue.Should().Be(referenceId);
+    }
+
+    [Fact]
+    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletesWithAttemptToRaiseEventToOrchestrator()
+    {
+        // Arrange
+        var orcestrationInstanceId = "non-existing-orchestration-id";
+        await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(
+            Guid.NewGuid(),
+            orcestrationInstanceId);
+
+        // Act
+        // => WholesaleInboxTrigger is running in the fixture and triggered by the given Wholesale inbox message
+
+        // Assert
+        await AssertWholesaleInboxTriggerIsCompleted();
+
+        // The function should raise an event to the orchestrator with the given orchestration instance id,
+        // however this will fail since the given orchestrator instance does not exist. We can assert that
+        // happened by checking the logs for the expected error message.
+        var functionHostLogs = Fixture.AppHostManager.GetHostLogSnapshot();
+        functionHostLogs.Should()
+            .ContainMatch(
+                $"*An error occured when raising event to orchestrator for OrchestrationInstanceId: {orcestrationInstanceId}*");
     }
 
     [Fact]

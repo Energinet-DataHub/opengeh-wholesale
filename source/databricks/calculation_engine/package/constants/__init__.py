@@ -16,7 +16,7 @@ from .colname import Colname
 from .basis_data_colname import (
     MeteringPointPeriodColname,
     TimeSeriesColname,
-    ChargeMasterDataPeriodsColname,
+    ChargePriceInformationPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
     GridLossMeteringPointsColName,
@@ -24,3 +24,4 @@ from .basis_data_colname import (
 from .energy_result_column_names import EnergyResultColumnNames
 from .wholesale_result_column_names import WholesaleResultColumnNames
 from .total_monthly_amounts_column_names import TotalMonthlyAmountsColumnNames
+from .monthly_amounts_column_names import MonthlyAmountsColumnNames

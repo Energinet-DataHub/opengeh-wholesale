@@ -322,9 +322,10 @@ public class LatestCalculationsForPeriodTests
     }
 
     [Fact]
-    public void FindLatestCalculations_WithMissingCalculationForPartOfThePeriod_ThrowsMissingCalculationException()
+    public void FindLatestCalculations_WithMissingCalculationForPartOfThePeriod_ReturnsAvailableLatestCalculationsInPeriod()
     {
         // Arrange
+        var missingDate = Instant.FromUtc(2024, 1, 15, 23, 0, 0);
         var firstPeriodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
         var firstPeriodEnd = Instant.FromUtc(2024, 1, 14, 23, 0, 0);
         var secondPeriodStart = Instant.FromUtc(2024, 1, 16, 23, 0, 0);
@@ -343,14 +344,15 @@ public class LatestCalculationsForPeriodTests
         var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
-        var actual = () => sut
+        var actual = sut
             .FindLatestCalculationsForPeriod(
                 firstPeriodStart,
                 secondPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
-        actual.Should().ThrowExactly<MissingCalculationException>();
+        actual.Count.Should().Be(2);
+        actual.Where(x => x.Period.Start < missingDate && x.Period.End > missingDate).Should().HaveCount(0);
     }
 
     [Fact]

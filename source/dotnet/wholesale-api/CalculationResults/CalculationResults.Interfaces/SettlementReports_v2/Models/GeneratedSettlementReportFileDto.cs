@@ -14,4 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record GeneratedSettlementReportFileDto(SettlementReportRequestId RequestId, string FileName);
+public sealed record GeneratedSettlementReportFileDto(
+    SettlementReportRequestId RequestId,
+    SettlementReportPartialFileInfo FileInfo,
+    string StorageFileName);

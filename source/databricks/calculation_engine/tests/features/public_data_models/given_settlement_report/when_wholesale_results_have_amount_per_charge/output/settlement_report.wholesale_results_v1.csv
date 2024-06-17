@@ -1,0 +1,2 @@
+calculation_id;calculation_type;calculation_version;result_id;grid_area_code;energy_supplier_id;time;resolution;metering_point_type;settlement_method;quantity_unit;currency;quantity;price;amount;charge_type;charge_code;charge_owner_id
+0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;1;22222222-9fc8-409a-a169-fbd49479d718;803;5790001662233;2023-02-02 23:00;P1D;production;non_profiled;kWh;DKK;2.125;13.000100;2.2;fee;Fee-801;8500000000502

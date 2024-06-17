@@ -16,9 +16,8 @@ from typing import Tuple
 from pyspark.sql import SparkSession
 
 from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
+from features.utils.dataframes.typecasting import cast_column_types
 from features.utils.views.dataframe_wrapper import DataframeWrapper
-from features.utils.views.view_input_specifications import get_input_specifications
-from features.utils.views.view_output_specifications import get_output_specifications
 
 
 class ViewScenarioExecutor:
@@ -32,50 +31,44 @@ class ViewScenarioExecutor:
         self, scenario_folder_path: str
     ) -> Tuple[list[DataframeWrapper], list[DataframeWrapper]]:
 
-        input_specifications = get_input_specifications()
-        output_specifications = get_output_specifications()
-
         input_dataframes_wrappers = self.parser.parse_csv_files_concurrently(
-            f"{scenario_folder_path}/input", input_specifications
+            f"{scenario_folder_path}/input"
         )
 
         input_dataframes_wrappers = self.correct_dataframe_types(
-            input_dataframes_wrappers, input_specifications
+            input_dataframes_wrappers
         )
-        self._write_to_tables(input_dataframes_wrappers, input_specifications)
+        self._write_to_tables(input_dataframes_wrappers)
 
         output_dataframe_wrappers = self.parser.parse_csv_files_concurrently(
-            f"{scenario_folder_path}/output", output_specifications
+            f"{scenario_folder_path}/output"
         )
 
-        expected = self.correct_dataframe_types(
-            output_dataframe_wrappers, output_specifications
-        )
+        expected = self.correct_dataframe_types(output_dataframe_wrappers)
 
-        actual = self._read_from_views(output_specifications, output_dataframe_wrappers)
+        actual = self._read_from_views(output_dataframe_wrappers)
         return actual, expected
 
     @staticmethod
     def _write_to_tables(
         input_dataframe_wrappers: list[DataframeWrapper],
-        specifications: dict[str, tuple],
     ) -> None:
         for wrapper in input_dataframe_wrappers:
-            database_name = specifications[wrapper.key][3]
-            wrapper.df.write.format("delta").mode("overwrite").saveAsTable(
-                f"{database_name}.{wrapper.name}"
-            )
+            try:
+                wrapper.df.write.format("delta").mode("overwrite").saveAsTable(
+                    wrapper.name
+                )
+            except Exception as e:
+                raise Exception(f"Failed to write to table {wrapper.name}") from e
 
     def _read_from_views(
         self,
-        output_specifications: dict[str, tuple],
         output_dataframe_wrappers: list[DataframeWrapper],
     ) -> list[DataframeWrapper]:
 
         wrappers = []
         for wrapper in output_dataframe_wrappers:
-            read_df_method = output_specifications[wrapper.key][1]
-            df = read_df_method(self.spark)
+            df = self.spark.read.format("delta").table(wrapper.name)
             dataframe_wrapper = DataframeWrapper(
                 key=wrapper.key, name=wrapper.name, df=df
             )
@@ -86,14 +79,12 @@ class ViewScenarioExecutor:
     def correct_dataframe_types(
         self,
         dataframe_wrappers: list[DataframeWrapper],
-        output_specifications: dict[str, tuple],
     ) -> list[DataframeWrapper]:
         wrappers = []
         for wrapper in dataframe_wrappers:
             if wrapper.df is None:
                 continue
-            correction_method = output_specifications[wrapper.key][2]
-            wrapper.df = correction_method(self.spark, wrapper.df)
+            wrapper.df = cast_column_types(wrapper.df, table_or_view_name=wrapper.name)
             wrappers.append(wrapper)
 
         return wrappers

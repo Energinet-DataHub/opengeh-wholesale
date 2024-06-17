@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
@@ -47,7 +49,7 @@ internal class CalculationOrchestration
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
-        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.ExpiryTimeInSeconds);
+        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds);
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
@@ -62,7 +64,7 @@ internal class CalculationOrchestration
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
-                    nameof(UpdateCalculationStatusActivity),
+                    nameof(UpdateCalculationStateFromJobStatusActivity),
                     calculationMetadata);
 
                 if (calculationMetadata.JobStatus is CalculationState.Canceled)
@@ -76,7 +78,7 @@ internal class CalculationOrchestration
                 }
 
                 // Wait for the next checkpoint
-                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.PollingIntervalInSeconds);
+                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions.CalculationJobStatusPollingIntervalInSeconds);
                 await context.CreateTimer(nextCheckpoint, CancellationToken.None);
             }
             else
@@ -87,7 +89,7 @@ internal class CalculationOrchestration
 
         // Update calculation execution status (SQL)
         await context.CallActivityAsync(
-            nameof(UpdateCalculationStatusActivity),
+            nameof(UpdateCalculationStateFromJobStatusActivity),
             calculationMetadata);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
@@ -100,13 +102,13 @@ internal class CalculationOrchestration
                 nameof(CreateCompletedCalculationActivity),
                 new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId));
 
-            //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
+            //// TODO XDAST: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
                 nameof(SendCalculationResultsActivity),
                 calculationMetadata.Id);
-            calculationMetadata.OrchestrationProgress = "CalculationResultsSend";
+            calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
             context.SetCustomStatus(calculationMetadata);
         }
@@ -114,11 +116,89 @@ internal class CalculationOrchestration
         {
             calculationMetadata.OrchestrationProgress = "CalculationJobFailed";
             context.SetCustomStatus(calculationMetadata);
-            return $"Error: Job status '{calculationMetadata.JobStatus}'.";
+            return $"Error: Job status '{calculationMetadata.JobStatus}'";
         }
 
-        // TODO: Wait for an event to notify us that messages are ready for customer in EDI, and update orchestration status
-        // TODO: Set calculation orchestration status to completed
+        // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
+        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(
+            context,
+            calculationMetadata.Id,
+            input.OrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds);
+        if (!waitForActorMessagesEnqueuedEventResult.IsSuccess)
+        {
+            calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
+            context.SetCustomStatus(calculationMetadata);
+            await UpdateCalculationOrchestrationStateAsync(
+                context,
+                calculationMetadata.Id,
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
+            return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
+        }
+
+        // Update state to ActorMessagesEnqueued
+        calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueued";
+        context.SetCustomStatus(calculationMetadata);
+        await UpdateCalculationOrchestrationStateAsync(
+            context,
+            calculationMetadata.Id,
+            CalculationOrchestrationState.ActorMessagesEnqueued);
+
+        // Update state to Completed
+        calculationMetadata.OrchestrationProgress = "Completed";
+        context.SetCustomStatus(calculationMetadata);
+        await UpdateCalculationOrchestrationStateAsync(
+            context,
+            calculationMetadata.Id,
+            CalculationOrchestrationState.Completed);
+
         return "Success";
     }
+
+    private static async Task UpdateCalculationOrchestrationStateAsync(
+        TaskOrchestrationContext context,
+        Guid calculationId,
+        CalculationOrchestrationState newState)
+    {
+        await context.CallActivityAsync(
+            nameof(UpdateCalculationOrchestrationStateActivity),
+            new UpdateCalculationOrchestrationStateInput(calculationId, newState));
+    }
+
+#pragma warning disable CS1570 // XML comment has badly formed XML -- XML doesn't like links
+    /// <summary>
+    /// Pattern #5: Human interaction - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=isolated-process%2Cnodejs-v3%2Cv1-model&pivots=csharp#human
+    /// </summary>
+    private static async Task<OrchestrationResult> WaitForActorMessagesEnqueuedEventAsync(
+        TaskOrchestrationContext context,
+        Guid calculationId,
+        int messagesEnqueuingExpiryTimeInSeconds)
+    {
+        ActorMessagesEnqueuedV1 messagesEnqueuedEvent;
+
+        var timeoutLimit = TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds);
+        try
+        {
+            messagesEnqueuedEvent = await context.WaitForExternalEvent<ActorMessagesEnqueuedV1>(
+                ActorMessagesEnqueuedV1.EventName,
+                timeout: timeoutLimit);
+        }
+        catch (TaskCanceledException taskCanceledException)
+        {
+            return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", $"Timeout while waiting for actor messages enqueued event. Timeout limit: {timeoutLimit}, exception: {taskCanceledException}");
+        }
+
+        var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
+        if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
+            return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+
+        if (!messagesEnqueuedEvent.Success)
+        {
+            return OrchestrationResult.Error(
+                "ActorMessagesEnqueuingFailed",
+                "ActorMessagesEnqueuedV1 event was not success");
+        }
+
+        return OrchestrationResult.Success();
+    }
+#pragma warning restore CS1570 // XML comment has badly formed XML
 }

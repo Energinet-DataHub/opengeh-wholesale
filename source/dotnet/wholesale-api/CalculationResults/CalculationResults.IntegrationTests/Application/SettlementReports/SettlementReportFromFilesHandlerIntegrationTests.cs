@@ -44,41 +44,120 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
-            new(requestId, "fileA.csv"),
-            new(requestId, "fileB.csv"),
-            new(requestId, "fileC.csv"),
+            new(requestId, new("fileA.csv", false), "fileA_0.csv"),
+            new(requestId, new("fileB.csv", false), "fileB_0.csv"),
+            new(requestId, new("fileC.csv", false), "fileC_0.csv"),
         };
 
-        await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file)));
 
         // Act
-        var actual = await Sut.CombineAsync(inputFiles);
+        var actual = await Sut.CombineAsync(requestId, inputFiles);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
         Assert.Equal(inputFiles, actual.TemporaryFiles);
 
         var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.FinalReport.FileName}");
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.ReportFileName}");
         var generatedFile = await generatedFileBlob.DownloadContentAsync();
 
         using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
 
         foreach (var inputFile in inputFiles)
         {
-            var entry = archive.GetEntry(inputFile.FileName);
+            var entry = archive.GetEntry(inputFile.FileInfo.FileName);
             Assert.NotNull(entry);
 
             using var streamReader = new StreamReader(entry.Open());
             var inputFileContents = await streamReader.ReadToEndAsync();
-            Assert.Equal($"Content: {inputFile.FileName}", inputFileContents);
+            Assert.Equal($"Content: {inputFile.FileInfo.FileName}\n", inputFileContents);
         }
     }
 
-    private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file)
+    [Fact]
+    public async Task CombineAsync_GivenSeveralChunks_ReturnsCombinedFile()
     {
+        // Arrange
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var inputFiles = new GeneratedSettlementReportFileDto[]
+        {
+            new(requestId, new("target_file.csv", false) { FileOffset = 0 }, "fileA_0.csv"),
+            new(requestId, new("target_file.csv", false) { FileOffset = 1 }, "fileA_1.csv"),
+            new(requestId, new("target_file.csv", false) { FileOffset = 2 }, "fileA_2.csv"),
+        };
+
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file)));
+
+        // Act
+        var actual = await Sut.CombineAsync(requestId, inputFiles);
+
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
+        Assert.Equal(inputFiles, actual.TemporaryFiles);
+
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.ReportFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+
+        using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
+        var combinedEntry = archive.Entries.Single();
+
+        using var streamReader = new StreamReader(combinedEntry.Open());
+        var inputFileContents = await streamReader.ReadToEndAsync();
+        var expectedContents = string.Concat(Enumerable.Repeat("Content: target_file.csv\n", 3));
+
+        Assert.Equal(expectedContents, inputFileContents);
+    }
+
+    [Fact]
+    public async Task CombineAsync_GivenLargeChunks_SplitsFilePerMillionRows()
+    {
+        // Arrange
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var inputFiles = new GeneratedSettlementReportFileDto[]
+        {
+            new(requestId, new("target_file.csv", true) { ChunkOffset = 0 }, "fileA_0.csv"),
+            new(requestId, new("target_file.csv", true) { ChunkOffset = 1 }, "fileA_1.csv"),
+            new(requestId, new("target_file.csv", true) { ChunkOffset = 2 }, "fileA_2.csv"),
+        };
+
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, true)));
+
+        // Act
+        var actual = await Sut.CombineAsync(requestId, inputFiles);
+
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
+        Assert.Equal(inputFiles, actual.TemporaryFiles);
+
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.ReportFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+
+        using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
+        Assert.Equal(Math.Ceiling(1_500_000.0 * 3 / 1_000_000), archive.Entries.Count);
+
+        var combinedEntry = archive.Entries.Skip(1).First();
+
+        using var streamReader = new StreamReader(combinedEntry.Open());
+        var inputFileContents = await streamReader.ReadToEndAsync();
+        var expectedContents = string.Concat(Enumerable.Repeat($"Content: target_file.csv{Environment.NewLine}", 1_000_000));
+
+        Assert.Equal(expectedContents, inputFileContents);
+    }
+
+    private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file, bool makeLargeFiles = false)
+    {
+        var binaryData = new BinaryData($"Content: {file.FileInfo.FileName}\n");
+
+        if (makeLargeFiles)
+        {
+            binaryData = new BinaryData(string.Concat(Enumerable.Repeat("Content: target_file.csv\n", 1_500_000)));
+        }
+
         var containerClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var blobClient = containerClient.GetBlobClient($"settlement-reports/{file.RequestId.Id}/{file.FileName}");
-        return blobClient.UploadAsync(new BinaryData($"Content: {file.FileName}"));
+        var blobClient = containerClient.GetBlobClient($"settlement-reports/{file.RequestId.Id}/{file.StorageFileName}");
+        return blobClient.UploadAsync(binaryData);
     }
 }

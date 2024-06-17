@@ -38,9 +38,15 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
-        CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        false,
+        new SettlementReportRequestFilterDto(
+            new Dictionary<string, CalculationId>(),
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            CalculationType.BalanceFixing,
+            null,
+            null));
 
     public GetSettlementReportsHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -181,7 +187,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
 
         var generatedSettlementReportDto = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "TestFile.csv"),
+            "TestFile.csv",
             []);
 
         report.MarkAsCompleted(generatedSettlementReportDto);
@@ -191,7 +197,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         await dbContext.SaveChangesAsync();
 
         var blobClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.FinalReport.FileName}";
+        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.ReportFileName}";
         await blobClient.UploadBlobAsync(blobName, new BinaryData("data"));
 
         // Act

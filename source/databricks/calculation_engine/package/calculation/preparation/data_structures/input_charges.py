@@ -15,14 +15,14 @@ from dataclasses import dataclass
 
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
+from package.calculation.preparation.data_structures.charge_price_information import (
+    ChargePriceInformation,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 
 
 @dataclass
 class InputChargesContainer:
-    charge_master_data: ChargeMasterData
+    charge_price_information: ChargePriceInformation
     charge_prices: ChargePrices
     charge_links: DataFrame

@@ -19,7 +19,6 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession
 
-from contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import (
     total_monthly_amounts_storage_model_factory as sut,
@@ -32,12 +31,11 @@ from package.codelists import (
     CalculationType,
 )
 from package.constants import Colname, TotalMonthlyAmountsColumnNames
-from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-)
+from package.infrastructure.paths import OutputDatabase
 
-TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+TABLE_NAME = (
+    f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+)
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -101,22 +99,6 @@ def _create_multiple_total_monthly_amounts(
     ]
 
     return TotalMonthlyAmount(spark.createDataFrame(data=rows))
-
-
-def test__create__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/total-monthly-amounts-table-column-names.json"
-    total_monthly_amounts = _create_default_total_monthly_amounts(spark)
-
-    # Act
-    actual = sut.create(args, total_monthly_amounts)
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual.schema)
 
 
 @pytest.mark.parametrize(

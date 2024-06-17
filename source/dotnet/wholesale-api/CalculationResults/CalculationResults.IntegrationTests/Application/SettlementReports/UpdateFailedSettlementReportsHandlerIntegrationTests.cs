@@ -43,9 +43,15 @@ public sealed class UpdateFailedSettlementReportsHandlerIntegrationTests : TestB
     {
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var settlementReportRequest = new SettlementReportRequestDto(
-            CalculationType.BalanceFixing,
             false,
-            new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+            false,
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>(),
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
+                null,
+                null));
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
         await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, settlementReportRequest));

@@ -18,7 +18,6 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class CreateCalculationRecordActivity(
     ICreateCalculationHandler createCalculationHandler)
 {
@@ -36,7 +35,7 @@ internal class CreateCalculationRecordActivity(
             calculationOrchestrationInput.StartCalculationRequestDto.GridAreaCodes,
             calculationOrchestrationInput.StartCalculationRequestDto.StartDate,
             calculationOrchestrationInput.StartCalculationRequestDto.EndDate,
-            calculationOrchestrationInput.RequestedByUserId));
+            calculationOrchestrationInput.RequestedByUserId)).ConfigureAwait(false);
 
         return new CalculationMetadata
         {
@@ -45,4 +44,3 @@ internal class CreateCalculationRecordActivity(
         };
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

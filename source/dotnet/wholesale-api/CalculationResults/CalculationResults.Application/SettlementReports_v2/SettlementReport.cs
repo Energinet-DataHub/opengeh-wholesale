@@ -57,11 +57,11 @@ public sealed class SettlementReport
         ActorId = actorId;
         CreatedDateTime = clock.GetCurrentInstant();
         Status = SettlementReportStatus.InProgress;
-        CalculationType = request.CalculationType;
+        CalculationType = request.Filter.CalculationType;
         ContainsBasisData = false;
         PeriodStart = request.Filter.PeriodStart.ToInstant();
         PeriodEnd = request.Filter.PeriodEnd.ToInstant();
-        GridAreaCount = request.Filter.Calculations.Count;
+        GridAreaCount = request.Filter.GridAreas.Count;
     }
 
     // EF Core Constructor.
@@ -73,7 +73,7 @@ public sealed class SettlementReport
     public void MarkAsCompleted(GeneratedSettlementReportDto generatedSettlementReport)
     {
         Status = SettlementReportStatus.Completed;
-        BlobFileName = generatedSettlementReport.FinalReport.FileName;
+        BlobFileName = generatedSettlementReport.ReportFileName;
     }
 
     public void MarkAsFailed()

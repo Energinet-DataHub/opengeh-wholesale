@@ -15,24 +15,41 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFileGeneratorFactory
 {
-    private readonly ISettlementReportDataRepository _dataRepository;
+    private readonly ISettlementReportEnergyResultRepository _settlementReportEnergyResultRepository;
+    private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
+    private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
 
-    public SettlementReportFileGeneratorFactory(ISettlementReportDataRepository dataRepository)
+    public SettlementReportFileGeneratorFactory(
+        ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
+        ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
+        ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository)
     {
-        _dataRepository = dataRepository;
+        _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
+        _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
+        _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
     {
         switch (fileContent)
         {
-            case SettlementReportFileContent.BalanceFixingResult:
-                return new BalanceFixingResultFileGenerator(_dataRepository);
+            case SettlementReportFileContent.EnergyResultLatestPerDay:
+                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
+            case SettlementReportFileContent.EnergyResultForCalculationId:
+                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
+            case SettlementReportFileContent.WholesaleResult:
+            case SettlementReportFileContent.FirstCorrectionResult:
+            case SettlementReportFileContent.SecondCorrectionResult:
+            case SettlementReportFileContent.ThirdCorrectionResult:
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository);
+            case SettlementReportFileContent.ChargeLinksPeriods:
+                return new ChargeLinkPeriodsFileGenerator(_settlementReportChargeLinkPeriodsRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

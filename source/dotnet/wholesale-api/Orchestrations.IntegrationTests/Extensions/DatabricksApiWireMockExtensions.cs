@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Text;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Microsoft.Net.Http.Headers;
 using WireMock.RequestBuilders;
@@ -118,6 +119,46 @@ public static class DatabricksApiWireMockExtensions
     }
 
     /// <summary>
+    /// Mock get job runs endpoint. Waits for <paramref name="getLifeCycleState"/> to not return null before
+    /// returning a response.
+    /// </summary>
+    public static WireMockServer MockJobsRunsGet(this WireMockServer server, long runId, Func<string?> getLifeCycleState)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.1/jobs/runs/get")
+            .WithParam("run_id", runId.ToString())
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(async _ =>
+            {
+                await Awaiter.WaitUntilConditionAsync(
+                    () => getLifeCycleState() != null,
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromMilliseconds(500));
+
+                var lifeCycleState = getLifeCycleState() ??
+                        throw new Exception("LifeCycleState is null, waiting for LifeCycleState state failed");
+
+                var resultState = "EXCLUDED";
+                if (lifeCycleState == "TERMINATED")
+                    resultState = "SUCCESS";
+
+                return BuildJobsRunsGetJson(runId, lifeCycleState, resultState);
+            });
+
+        server
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
+    /// <summary>
     /// JobStatusLifeCycle goes through "Pending" -> "Running" -> "Completed".
     /// </summary>
     public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, long runId)
@@ -206,7 +247,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Guid? calculationId = null)
+    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Guid calculationId)
     {
         var request = Request
             .Create()
@@ -217,6 +258,40 @@ public static class DatabricksApiWireMockExtensions
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
             .WithBody(Encoding.UTF8.GetBytes(DatabricksEnergyStatementRowMock(calculationId)));
+
+        server
+            .Given(request)
+            .RespondWith(response);
+        return server;
+    }
+
+    /// <summary>
+    /// Mock databrick energy sql statement result. Waits for <paramref name="getCalculationId"/> to not return null
+    /// before returning the response.
+    /// </summary>
+    /// <param name="server"></param>
+    /// <param name="path"></param>
+    /// <param name="getCalculationId">Will wait for the calculation id to have a value before returning a mocked response</param>
+    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Func<Guid?> getCalculationId)
+    {
+        var request = Request
+            .Create()
+            .WithPath($"/{path}")
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithBody(async _ =>
+            {
+                await Awaiter.WaitUntilConditionAsync(
+                    () => getCalculationId() != null,
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromMilliseconds(500));
+
+                var calculationId = getCalculationId();
+                return DatabricksEnergyStatementRowMock(calculationId!.Value);
+            });
 
         server
             .Given(request)
@@ -317,12 +392,12 @@ public static class DatabricksApiWireMockExtensions
     /// <remarks>
     /// Note that QuantityQualities is a string, containing a list of strings.
     /// </remarks>>
-    private static string DatabricksEnergyStatementRowMock(Guid? calculationId = null)
+    private static string DatabricksEnergyStatementRowMock(Guid calculationId)
     {
         // Make sure that the order of the data matches the order of the columns defined in 'DatabricksEnergyStatementResponseMock'
         var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
-            EnergyResultColumnNames.CalculationId => $"\"{calculationId ?? Guid.NewGuid()}\"",
+            EnergyResultColumnNames.CalculationId => $"\"{calculationId}\"",
             EnergyResultColumnNames.CalculationExecutionTimeStart => "\"2022-03-11T03:00:00.000Z\"",
             EnergyResultColumnNames.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
             EnergyResultColumnNames.CalculationResultId => "\"aaaaaaaa-1111-1111-1c1c-08d3b12d4511\"",
