@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
@@ -24,7 +25,13 @@ public static class EnergyPriceTypeMapper
         if (value == null)
             return null;
 
-        var energyPrices = JsonSerializer.Deserialize<SettlementReportEnergyPrice[]>(value)!;
+        var energyPrices = JsonSerializer.Deserialize<SettlementReportEnergyPrice[]>(
+            value,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+            })!;
         return energyPrices.Select(ep => ep.Price).ToArray();
     }
 }
