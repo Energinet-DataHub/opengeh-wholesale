@@ -43,26 +43,29 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportChargePriceRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            if (chunkOffset == 0)
+            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
                 csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-                for (var i = 0; i < 24; ++i)
+                const int energyPriceFieldCount = 24;
+                for (var i = 0; i < energyPriceFieldCount; ++i)
                 {
                     csvHelper.WriteField($"ENERGYPRICE{i + 1}");
                 }
+
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
                 csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
         }
     }
