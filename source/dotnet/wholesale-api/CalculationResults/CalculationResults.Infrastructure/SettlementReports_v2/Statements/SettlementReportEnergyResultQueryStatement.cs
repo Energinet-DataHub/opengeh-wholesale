@@ -48,7 +48,7 @@ public sealed class SettlementReportEnergyResultQueryStatement : DatabricksState
                          {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}'
                      ORDER BY 
                          {SettlementReportEnergyResultViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
-                 """.Replace(Environment.NewLine, " ");
+                 """;
 
         var sqlStatement = $"""
                                 SELECT {string.Join(", ", [
@@ -65,7 +65,7 @@ public sealed class SettlementReportEnergyResultQueryStatement : DatabricksState
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
                                 JOIN 
-                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.ResultId} = cr.{SettlementReportEnergyResultViewColumns.ResultId}
+                                    ({calculationResult.Replace(Environment.NewLine, " ")}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.ResultId} = cr.{SettlementReportEnergyResultViewColumns.ResultId}
                                 WHERE 
                                     {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                                     {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND

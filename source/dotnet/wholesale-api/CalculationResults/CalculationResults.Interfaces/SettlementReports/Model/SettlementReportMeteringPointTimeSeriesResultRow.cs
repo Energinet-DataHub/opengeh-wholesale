@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using NodaTime;
 
-public enum SettlementReportFileContent
-{
-    EnergyResultLatestPerDay,
-    EnergyResultForCalculationId,
-    WholesaleResult,
-    FirstCorrectionResult,
-    SecondCorrectionResult,
-    ThirdCorrectionResult,
-    ChargeLinksPeriods,
-    MeteringPointMasterData,
-    Pt15M,
-    Pt1H,
-}
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+
+public sealed record SettlementReportMeterinPointTimeSeriesResultRow(
+    string MeteringPointId,
+    MeteringPointType MeteringPointType,
+    Instant StartDateTime,
+    IEnumerable<SettlementReportMeteringPointTimeSeriesResultQuantity> Quantities);
