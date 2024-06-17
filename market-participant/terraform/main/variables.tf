@@ -29,6 +29,12 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
+variable "location" {
+  type        = string
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
+}
+
 variable "b2c_tenant" {
   type        = string
   description = "URL of the Active Directory Tenant."
@@ -71,13 +77,13 @@ variable "sendgrid_bcc_email" {
   description = "Specify the bcc email address for email copies"
 }
 
-variable "pim_sql_reader_ad_group_name" {
+variable "pim_reader_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
   default     = ""
 }
 
-variable "pim_sql_writer_ad_group_name" {
+variable "pim_contributor_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = ""

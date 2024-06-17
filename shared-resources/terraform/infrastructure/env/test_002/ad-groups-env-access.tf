@@ -38,7 +38,7 @@ resource "azurerm_role_assignment" "omada_developers_storage_queue_read_access" 
 resource "azurerm_role_assignment" "app_config_settings_omada_developer_group_read_access" {
   count                = 1
   scope                = data.azurerm_subscription.this.id
-  role_definition_name = resource.azurerm_role_definition.app_config_settings_read_access[0].name
+  role_definition_name = azurerm_role_definition.app_config_settings_read_access.name
   principal_id         = var.omada_developers_security_group_object_id
 }
 

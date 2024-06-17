@@ -18,6 +18,12 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
+variable "location" {
+  type        = string
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
+}
+
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
@@ -30,13 +36,13 @@ variable "omada_developers_security_group_name" {
   default     = ""
 }
 
-variable "pim_sql_reader_ad_group_name" {
+variable "pim_reader_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
   default     = ""
 }
 
-variable "pim_sql_writer_ad_group_name" {
+variable "pim_contributor_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = ""

@@ -23,6 +23,12 @@ variable "domain_name_short" {
   description = "Name of the project this infrastructure is a part of."
 }
 
+variable "location" {
+  type        = string
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
+}
+
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
@@ -66,13 +72,13 @@ variable "quarterly_resolution_transition_datetime" {
   default     = "2023-04-30T22:00:00Z"
 }
 
-variable "pim_sql_reader_ad_group_name" {
+variable "pim_reader_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
   default     = ""
 }
 
-variable "pim_sql_writer_ad_group_name" {
+variable "pim_contributor_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = ""

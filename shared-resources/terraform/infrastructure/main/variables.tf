@@ -19,10 +19,10 @@ variable "environment_instance" {
   description = "Enviroment instance that the infrastructure code is deployed into."
 }
 
-variable "region_short" {
+variable "location" {
   type        = string
-  description = "Azure region that the infrastructure code is deployed into."
-  default     = "we"
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
 }
 
 variable "domain_name_short" {
@@ -224,11 +224,11 @@ variable "databricks_developers_group_id" {
 variable "pim_contributor_group_name" {
   type        = string
   description = "Name of the PIM controlled security group with contributors permissions."
-  default     = null
+  default     = ""
 }
 
 variable "pim_reader_group_name" {
   type        = string
   description = "Name of the PIM controlled security group with reader permissions."
-  default     = null
+  default     = ""
 }

@@ -24,6 +24,12 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
+variable "location" {
+  type        = string
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
+}
+
 variable "b2c_tenant_id" {
   type        = string
   description = "Tenant ID of the B2C tenant instance."
@@ -65,4 +71,16 @@ variable "txt_value" {
   type        = string
   description = "The value of the TXT record used for production"
   default     = null
+}
+
+variable "pim_reader_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = ""
+}
+
+variable "pim_contributor_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = ""
 }

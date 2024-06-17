@@ -7,7 +7,7 @@
 
 data "azurerm_resource_group" "rg_tfstate" {
   count = 1
-  name  = "rg-tfs-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "rg-tfs-${var.environment_short}-${local.region_code}-${var.environment_instance}"
 }
 
 resource "azurerm_role_assignment" "omada_developers_subscription_reader" {
@@ -26,7 +26,7 @@ resource "azurerm_role_assignment" "omada_platformteam_keyvault_secrets_user" {
 resource "azurerm_role_assignment" "deny_omada_developer_dataplane_access_to_tfs_rg" {
   count                = 1
   scope                = data.azurerm_resource_group.rg_tfstate[0].id
-  role_definition_name = resource.azurerm_role_definition.deny_dataplane_access_to_tfs_rg[0].name
+  role_definition_name = azurerm_role_definition.deny_dataplane_access_to_tfs_rg.name
   principal_id         = var.omada_developers_security_group_object_id
 }
 
@@ -34,7 +34,7 @@ resource "azurerm_role_assignment" "deny_omada_developer_dataplane_access_to_tfs
 resource "azurerm_role_assignment" "omada_platformteam_config_settings_read_access" {
   count                = 1
   scope                = data.azurerm_subscription.this.id
-  role_definition_name = resource.azurerm_role_definition.app_config_settings_read_access[0].name
+  role_definition_name = azurerm_role_definition.app_config_settings_read_access.name
   principal_id         = var.omada_platform_team_security_group_object_id
 }
 
@@ -51,8 +51,7 @@ resource "azurerm_role_assignment" "omada_platform_support_contributor_access" {
 ##################
 
 resource "azurerm_role_definition" "deny_dataplane_access_to_tfs_rg" {
-  count       = 1
-  name        = "datahub-deny-dataplane-access-to-tfs-rg-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name        = "datahub-deny-dataplane-access-to-tfs-rg-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope       = data.azurerm_resource_group.rg_tfstate[0].id
   description = "Denies dataplane access to Terraform state"
 
@@ -64,8 +63,7 @@ resource "azurerm_role_definition" "deny_dataplane_access_to_tfs_rg" {
 // There is no built-in role for reading appsettings :o/
 // Reference: https://github.com/MicrosoftDocs/azure-docs/issues/59847#issuecomment-871298764
 resource "azurerm_role_definition" "app_config_settings_read_access" {
-  count       = 1
-  name        = "datahub-app-config-settings-read-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name        = "datahub-app-config-settings-read-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope       = data.azurerm_subscription.this.id
   description = "Allow reading config settings in Function apps and App Services"
 
@@ -79,7 +77,7 @@ resource "azurerm_role_definition" "app_config_settings_read_access" {
 
 # There is no built-in role for managing APIM groups
 resource "azurerm_role_definition" "apim_groups_contributor_access" {
-  name        = "datahub-apim-groups-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name        = "datahub-apim-groups-contributor-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope       = data.azurerm_subscription.this.id
   description = "Allow adding and removing APIM users to APIM groups"
 
@@ -92,7 +90,7 @@ resource "azurerm_role_definition" "apim_groups_contributor_access" {
 
 # There is no built-in role for managing locks without giving many other permissions
 resource "azurerm_role_definition" "locks_contributor_access" {
-  name        = "datahub-locks-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name        = "datahub-locks-contributor-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope       = data.azurerm_subscription.this.id
   description = "Allow management and deletion of locks"
 

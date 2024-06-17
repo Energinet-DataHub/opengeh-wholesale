@@ -1,6 +1,18 @@
+locals {
+  get_region_code = {
+    "North Europe" = "ne"
+    "West Europe"  = "we"
+    "northeurope"  = "ne"
+    "westeurope"   = "we"
+    # Add more mappings as needed
+    # Terraform currently changes between West Europe and westeurope, which is why both are added
+  }
+  region_code = local.get_region_code[var.location]
+}
+
 resource "azurerm_resource_group" "this" {
   name     = "rg-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
-  location = "West Europe"
+  location = var.location
 
   tags = local.tags
 }
@@ -10,17 +22,17 @@ data "azurerm_resource_group" "shared" {
 }
 
 data "azurerm_role_definition" "app_config_settings_read_access" {
-  name  = "datahub-app-config-settings-read-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "datahub-app-config-settings-read-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope = data.azurerm_subscription.this.id
 }
 
 data "azurerm_role_definition" "apim_groups_contributor_access" {
-  name  = "datahub-apim-groups-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "datahub-apim-groups-contributor-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope = data.azurerm_subscription.this.id
 }
 
 data "azurerm_role_definition" "locks_contributor_access" {
-  name  = "datahub-locks-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "datahub-locks-contributor-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope = data.azurerm_subscription.this.id
 }
 

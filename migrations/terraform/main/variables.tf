@@ -24,6 +24,12 @@ variable "environment_instance" {
   description = "Enviroment instance that the infrastructure code is deployed into."
 }
 
+variable "location" {
+  type        = string
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
+}
+
 variable "domain_name_short" {
   type        = string
   description = "Shortest possible edition of the domain name."
@@ -119,4 +125,16 @@ variable "databricks_developers_group_id" {
 variable "databricks_migrations_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users synced from the OMADA group for people with unrestricted data access."
+}
+
+variable "pim_reader_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = ""
+}
+
+variable "pim_contributor_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = ""
 }

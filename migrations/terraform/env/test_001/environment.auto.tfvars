@@ -8,3 +8,4 @@ datahub2_ip_whitelist                              = "86.106.96.1"
 datahub2_migration_url                             = "https://b2b.te7.datahub.dk/dh3"
 feature_flag_datahub2_healthcheck                  = true
 feature_flag_datahub2_time_series_import           = true
+pim_contributor_group_name                         = "SEC-A-Datahub-Test-001-Contributor"

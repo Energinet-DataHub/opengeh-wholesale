@@ -37,10 +37,10 @@ module "kvs_sql_ms_edi_database_name" {
 locals {
   pim_security_group_rules_001 = [
     {
-      name = var.pim_sql_reader_ad_group_name
+      name = var.pim_reader_group_name
     },
     {
-      name                 = var.pim_sql_writer_ad_group_name
+      name                 = var.pim_contributor_group_name
       enable_db_datawriter = true
     }
   ]

@@ -18,29 +18,35 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
+variable "location" {
+  type        = string
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
+}
+
 variable "developer_object_ids" {
   type        = list(string)
   description = "List of developer principal IDs"
   default     = []
 }
 
-variable "pim_sql_reader_ad_group_name" {
+variable "pim_reader_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
-  default     = null
+  default     = ""
 }
 
-variable "pim_sql_writer_ad_group_name" {
+variable "pim_contributor_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
-  default     = null
+  default     = ""
 }
 
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []

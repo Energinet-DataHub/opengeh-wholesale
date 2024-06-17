@@ -2,4 +2,4 @@
 # For values that persist across all environments, refer to /main/platform.auto.tfvars
 omada_developers_security_group_name = "SEC-G-Datahub-DevelopersAzure"
 biztalk_hybrid_connection_hostname   = "datahub.preproduction.biztalk.energinet.local"
-pim_sql_writer_ad_group_name         = "SEC-A-Datahub-Dev-001-Contributor"
+pim_contributor_group_name           = "SEC-A-Datahub-Dev-001-Contributor"

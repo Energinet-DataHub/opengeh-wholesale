@@ -18,10 +18,10 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "region_short" {
+variable "location" {
   type        = string
-  description = "Azure region that the infrastructure code is deployed into."
-  default     = "we"
+  description = "The Azure region where the resources are created. Changing this forces a new resource to be created."
+  default     = "West Europe"
 }
 
 variable "omada_developers_security_group_name" {
