@@ -47,7 +47,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             await using (streamWriter.ConfigureAwait(false))
             {
                 await fileGenerator
-                    .WriteAsync(fileRequest.RequestFilter, fileRequest.PartialFileInfo.ChunkOffset, streamWriter)
+                    .WriteAsync(fileRequest.RequestFilter, fileRequest.PartialFileInfo, streamWriter)
                     .ConfigureAwait(false);
             }
         }

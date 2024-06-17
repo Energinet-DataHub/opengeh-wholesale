@@ -15,6 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
@@ -28,7 +29,7 @@ public class ActorMessagesEnqueuedV1RequestHandler(
 
     public bool CanHandle(string requestSubject) => requestSubject.Equals(ActorMessagesEnqueuedV1.EventName);
 
-    public Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
+    public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
         _logger.LogInformation(
             "Handling ActorMessagesEnqueued event with message id: {MessageId}, subject: {Subject}, reference id: {ReferenceId}",
@@ -45,10 +46,27 @@ public class ActorMessagesEnqueuedV1RequestHandler(
             messageEnqueuedEvent.CalculationId,
             receivedMessage.MessageId);
 
-        return _durableTaskClientAccessor.Current.RaiseEventAsync(
-            messageEnqueuedEvent.OrchestrationInstanceId,
-            ActorMessagesEnqueuedV1.EventName,
-            messageEnqueuedEvent,
-            cancellationToken);
+        try
+        {
+            await _durableTaskClientAccessor.Current.RaiseEventAsync(
+                    messageEnqueuedEvent.OrchestrationInstanceId,
+                    ActorMessagesEnqueuedV1.EventName,
+                    messageEnqueuedEvent,
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (RpcException exception)
+        {
+            // Exception thrown if OrchestrationInstanceId couldn't be found:
+            //      Grpc.Core.RpcException: Status(StatusCode="Unknown", Detail="Exception was thrown by handler.")
+            // This can happen if the orchestration has finished and a duplicate ActorMessagesEnqueued event is received
+            // or if the orchestration has timed out and the ActorMessagesEnqueued is received afterwards
+            _logger.LogWarning(
+                exception,
+                "An error occured when raising event to orchestrator for OrchestrationInstanceId: {OrchestrationInstanceId}, CalculationId: {CalculationId}, ServiceBusMessageId: {ServiceBusMessageId}",
+                messageEnqueuedEvent.OrchestrationInstanceId,
+                messageEnqueuedEvent.CalculationId,
+                receivedMessage.MessageId);
+        }
     }
 }
