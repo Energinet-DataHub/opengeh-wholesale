@@ -62,7 +62,6 @@ def get_prepared_tariffs(
             metering_point_time_series, resolution, time_zone
         )
     )
-    grouped_time_series.show(3000)
 
     # join with grouped time series
     tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)
@@ -174,31 +173,37 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     charge_resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
-    grouped_time_series = (
-        t.aggregate_quantity_and_quality(
-            metering_point_time_series.df.withColumn(
-                Colname.observation_time,
-                f.from_utc_timestamp(Colname.observation_time, time_zone),
-            ),
-            [
-                Colname.metering_point_id,
-                f.window(
-                    Colname.observation_time,
-                    _get_window_duration_string_based_on_resolution(charge_resolution),
-                ).alias("time_window"),
-            ],
+    time_series_df = metering_point_time_series.df
+
+    if charge_resolution == ChargeResolution.DAY:
+        # Convert into local time zone to handle daylight saving time correctly
+        time_series_df = time_series_df.withColumn(
+            Colname.observation_time,
+            f.from_utc_timestamp(Colname.observation_time, time_zone),
         )
-        .select(
-            Colname.quantity,
-            Colname.qualities,
+
+    grouped_time_series = t.aggregate_quantity_and_quality(
+        time_series_df,
+        [
             Colname.metering_point_id,
-            f.col("time_window.start").alias(Colname.observation_time),
-        )
-        .withColumn(
+            f.window(
+                Colname.observation_time,
+                _get_window_duration_string_based_on_resolution(charge_resolution),
+            ).alias("time_window"),
+        ],
+    ).select(
+        Colname.quantity,
+        Colname.qualities,
+        Colname.metering_point_id,
+        f.col("time_window.start").alias(Colname.observation_time),
+    )
+
+    if charge_resolution == ChargeResolution.DAY:
+        # Convert back to UTC
+        grouped_time_series = grouped_time_series.withColumn(
             Colname.observation_time,
             f.to_utc_timestamp(Colname.observation_time, time_zone),
         )
-    )
 
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
