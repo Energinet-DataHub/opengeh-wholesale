@@ -1,4 +1,7 @@
-CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.amount_per_charge_v1 AS
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.amount_per_charge_v1
+GO
+
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.amounts_per_charge_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
