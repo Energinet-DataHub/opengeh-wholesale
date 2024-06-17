@@ -143,8 +143,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         Assert.Equal("018,D05,2022-01-14T12:15:00Z,PT15M,E17,E02,3.200", fileLines[5]);
     }
 
-    [Fact]
-    public async Task RequestFileAsync_ForWholesaleFixingPT15M_ReturnsExpectedCsv()
+    [Theory]
+    [InlineData(SettlementReportFileContent.Pt15M, "400000000000000004,Exchange,2022-01-02T02:00:00Z,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")]
+    [InlineData(SettlementReportFileContent.Pt1H, "400000000000000004,Exchange,2022-01-02T02:00:00Z,679.900,,,,,,,,,,,,,,,,,,,,,,,,")]
+    public async Task RequestFileAsync_ForWholesaleFixingMeteringPointTimeSeries_ReturnsExpectedCsv(SettlementReportFileContent content, string expected)
     {
         // Arrange
         var calculationId = Guid.Parse("891b7070-b80f-4731-8714-76221e27c366");
@@ -164,7 +166,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.Pt15M,
+            content,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             requestId,
             filter);
@@ -172,9 +174,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:00:00' AS observation_time, 123.45 AS quantity), STRUCT('2022-01-02 12:15:00' AS observation_time, 678.90 AS quantity))"],
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392712'", "'2022-01-02T03:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:00:00' AS observation_time, 123.45 AS quantity), STRUCT('2022-01-02 12:15:00' AS observation_time, 678.90 AS quantity))"],
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392712'", "'2022-01-02T04:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:00:00' AS observation_time, 123.45 AS quantity), STRUCT('2022-01-02 12:15:00' AS observation_time, 678.90 AS quantity))"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:00:00' AS observation_time, 678.90 AS quantity))"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT1H'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:15:00' AS observation_time, 679.90 AS quantity))"],
             ]);
 
         // Act
@@ -190,8 +191,6 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
         Assert.StartsWith("METERINGPOINTID,TYPEOFMP,STARTDATETIME,", fileLines[0]);
-        Assert.Equal("400000000000000004,Exchange,2022-01-02T02:00:00Z,123.450,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", fileLines[1]);
-        Assert.Equal("400000000000000004,Exchange,2022-01-02T03:00:00Z,123.450,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", fileLines[2]);
-        Assert.Equal("400000000000000004,Exchange,2022-01-02T04:00:00Z,123.450,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", fileLines[3]);
+        Assert.Equal(expected, fileLines[1]);
     }
 }

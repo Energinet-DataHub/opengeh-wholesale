@@ -31,9 +31,9 @@ public class PeriodValidationRuleTests
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z",
             "D66");
 
-    private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd2Months =
+    private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
+            "Der kan ikke anmodes om data for 3 år og 3 måneder tilbage i tid / It is not possible to request data 3 years and 3 months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
@@ -82,6 +82,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         errors.Should().Satisfy(
             error =>
                 error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
@@ -110,6 +111,7 @@ public class PeriodValidationRuleTests
         var errors2 = await _sut.ValidateAsync(message2);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         errors1.Should().Satisfy(
             error =>
                 error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
@@ -128,7 +130,7 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIsOlderThanAllowed_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodStartIs5YearsOld_ReturnsExpectedValidationError()
     {
         // Arrange
         var dateTimeOffset = _now.ToDateTimeOffset().AddYears(-5);
@@ -142,14 +144,11 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        var error = errors.First();
-        error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
-        error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnsNoValidationError()
+    public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnNoValidationError()
     {
         // Arrange
         var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
@@ -170,6 +169,34 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsExactly3YearsAnd3MonthsOld_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        _now = new LocalDateTime(2024, 6, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var start = new LocalDateTime(2021, 3, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var end = new LocalDateTime(2024, 4, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(start.ToString())
+            .WithPeriodEnd(end.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
     }
 
     [Fact]
@@ -197,6 +224,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         errors.Should().BeEmpty();
         var duration = _now - periodStartDate;
         duration.Days.Should().Be(1157);
@@ -228,6 +256,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         errors.Should().BeEmpty();
         var duration = _now - periodStartDate;
         duration.Days.Should().Be(1156);
@@ -235,7 +264,71 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodStartIsExactly3Years3MonthsAnd1HourOldDueToDaylightSavingTime_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2021, 10, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var periodEndDate = new LocalDateTime(2021, 11, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2025, 1, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
+        var duration = _now - periodStartDate;
+        duration.Days.Should().Be(1188);
+        duration.Hours.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsExactly3Years3MonthsMinus1HourOldDueToDaylightSavingTime_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2024, 6, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
+        var duration = _now - periodStartDate;
+        duration.Days.Should().Be(1187);
+        duration.Hours.Should().Be(23);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStart3Years2Month1DayFromNow_ReturnsNoValidationError()
     {
         // Arrange
         _now = new LocalDateTime(2024, 6, 2, 0, 0, 0)
@@ -260,11 +353,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        using var assertionScope = new AssertionScope();
-        errors.Should().ContainSingle();
-        var error = errors.First();
-        error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
-        error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
+        errors.Should().BeEmpty();
     }
 
     [Fact]
@@ -330,10 +419,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        var error = errors.First();
-        error.ErrorCode.Should().Be(_invalidWinterMidnightFormat.ErrorCode);
-        error.Message.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start").Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start"));
     }
 
     [Fact]
@@ -351,10 +437,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        var error = errors.First();
-        error.ErrorCode.Should().Be(_invalidSummerMidnightFormat.ErrorCode);
-        error.Message.Should().Be(_invalidSummerMidnightFormat.WithPropertyName("Period End").Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidSummerMidnightFormat.WithPropertyName("Period End"));
     }
 
     [Fact]
@@ -372,10 +455,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period End").Message)
-            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidDateFormat.WithPropertyName("Period End"));
     }
 
     [Fact]
@@ -403,9 +483,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be(_invalidPeriodAcrossMonths.ErrorCode);
-        errors.Single().Message.Should().Be(_invalidPeriodAcrossMonths.WithPropertyName("Period End").Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidPeriodAcrossMonths.WithPropertyName("Period End"));
     }
 
     [Fact]
@@ -433,9 +511,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
-        errors.Single().Message.Should().Be(_invalidPeriodLength.WithPropertyName("Period End").Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidPeriodLength.WithPropertyName("Period End"));
     }
 
     [Fact]
@@ -463,37 +539,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
-        errors.Single().Message.Should().Be(_invalidPeriodLength.Message);
-    }
-
-    [Fact]
-    public async Task Validate_WhenPeriodDoesNotStartOnTheFirstOfAMonthButIs3YearsAnd2Months_ReturnsNoValidationError()
-    {
-        // Arrange
-        var periodStartDate = new LocalDateTime(2019, 3, 15, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var periodEndDate = new LocalDateTime(2019, 4, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        _now = new LocalDateTime(2022, 5, 15, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(periodStartDate.ToString())
-            .WithPeriodEnd(periodEndDate.ToString())
-            .Build();
-
-        // Act
-        var errors = await _sut.ValidateAsync(message);
-
-        // Assert
-        errors.Should().BeEmpty();
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidPeriodLength);
     }
 
     [Fact]
@@ -521,9 +567,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
-        errors.Single().Message.Should().Be(_invalidPeriodLength.WithPropertyName("Period End").Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidPeriodLength.WithPropertyName("Period End"));
     }
 
     [Fact]
@@ -579,9 +623,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be(_invalidPeriodAcrossMonths.ErrorCode);
-        errors.Single().Message.Should().Be(_invalidPeriodAcrossMonths.Message);
+        errors.Should().ContainSingle().Subject.Should().Be(_invalidPeriodAcrossMonths);
     }
 
     private sealed class MockClock(Func<Instant> getInstant) : IClock
