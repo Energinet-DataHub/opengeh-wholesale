@@ -30,7 +30,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private const string CalculationId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -40,10 +40,10 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFix
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
 
-    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
     private readonly Mock<ICalculationsClient> _calculationsClientMock;
 
-    public EnergyResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public EnergyResultQueriesTests(MigrationsFreeDatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
 
