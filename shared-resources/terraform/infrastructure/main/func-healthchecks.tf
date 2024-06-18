@@ -15,7 +15,10 @@ module "func_healthchecks" {
   always_on                              = true
   dotnet_framework_version               = "v8.0"
   application_insights_connection_string = module.appi_shared.connection_string
-
+  health_check_alert = length(module.monitor_action_group_shres) != 1 ? null : {
+    enabled         = true
+    action_group_id = module.monitor_action_group_shres[0].id
+  }
 
   role_assignments = [
     {

@@ -7,8 +7,8 @@ module "mssql_data_additional" { # Needs to be a named like this or it would del
   sql_version          = "12.0"
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
-  monitor_action_group = {
-    id                  = module.ag_primary.id
+  monitor_action_group = length(module.monitor_action_group_shres) != 1 ? null : {
+    id                  = module.monitor_action_group_shres[0].id
     resource_group_name = azurerm_resource_group.this.name
   }
 
@@ -29,10 +29,6 @@ module "mssql_data_additional" { # Needs to be a named like this or it would del
     max_capacity = 100
   }
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
-
-  depends_on = [
-    module.ag_primary
-  ]
 }
 
 resource "azurerm_mssql_firewall_rule" "github_largerunner" {

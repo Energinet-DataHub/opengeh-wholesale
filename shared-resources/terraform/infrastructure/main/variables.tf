@@ -232,3 +232,9 @@ variable "pim_reader_group_name" {
   description = "Name of the PIM controlled security group with reader permissions."
   default     = ""
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}

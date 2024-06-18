@@ -12,3 +12,4 @@ biztalk_hybrid_connection_hostname  = "datahub.preproduction.biztalk.energinet.l
 apim_url                            = "https://preprod.b2b.datahub3.dk"
 pim_contributor_group_name          = "SEC-A-Datahub-PreProd-001-Contributor"
 pim_reader_group_name               = "SEC-A-Datahub-PreProd-001-Reader"
+alert_email_address                 = "26a83fcc.energinet.onmicrosoft.com@emea.teams.ms"
