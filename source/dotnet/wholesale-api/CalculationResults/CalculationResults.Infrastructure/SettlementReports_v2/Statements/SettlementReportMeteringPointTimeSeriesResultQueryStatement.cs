@@ -41,12 +41,12 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement 
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}
                                 WHERE 
-                                    {SettlementReportMeteringPointTimeSeriesViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                                    {SettlementReportMeteringPointTimeSeriesViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.CalculationId} = '{_filter.CalculationId}' AND
-                                    {SettlementReportMeteringPointTimeSeriesViewColumns.Resolution} = '{_filter.Resolution}'
-                                    {(_filter.EnergySupplier is not null ? $"AND {SettlementReportMeteringPointTimeSeriesViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'" : string.Empty)}
+                                    {SettlementReportMeteringPointTimeSeriesViewColumns.Resolution} = '{SqlStringSanitizer.Sanitize(_filter.Resolution)}'
+                                    {(_filter.EnergySupplier is not null ? $"AND {SettlementReportMeteringPointTimeSeriesViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                                 ORDER BY 
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} LIMIT {_take} OFFSET {_skip}
                             """;
