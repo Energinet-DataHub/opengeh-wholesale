@@ -119,15 +119,18 @@ def get_charges_with_no_prices(
             ),
         )
     elif resolution == ChargeResolution.DAY:
+        # When resolution is DAY we need to deal with local time to get the correct start time of each day
         return charge_price_information_filtered.withColumn(
             Colname.charge_time,
             f.explode(
+                # Create a sequence of the start of each day in the period. The times are local time
                 f.sequence(
                     f.from_utc_timestamp(Colname.from_date, time_zone),
                     f.from_utc_timestamp(Colname.to_date, time_zone),
                     f.expr("interval 1 day"),
                 )
             ),
+        # Convert local day start times back to UTC
         ).withColumn(
             Colname.charge_time,
             f.to_utc_timestamp(Colname.charge_time, time_zone),
