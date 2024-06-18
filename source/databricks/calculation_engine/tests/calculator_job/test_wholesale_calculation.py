@@ -366,6 +366,10 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             True,
         ),
         (
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.AMOUNTS_PER_CHARGE_VIEW_NAME}",
             True,
         ),
