@@ -130,7 +130,7 @@ def get_charges_with_no_prices(
                     f.expr("interval 1 day"),
                 )
             ),
-        # Convert local day start times back to UTC
+            # Convert local day start times back to UTC
         ).withColumn(
             Colname.charge_time,
             f.to_utc_timestamp(Colname.charge_time, time_zone),
