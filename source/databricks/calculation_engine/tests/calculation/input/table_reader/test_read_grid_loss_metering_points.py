@@ -92,7 +92,7 @@ class TestWhenValidInputAndExtraColumns:
         row = _create_grid_loss_metering_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
         with mock.patch.object(

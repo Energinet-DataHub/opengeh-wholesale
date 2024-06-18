@@ -52,7 +52,7 @@ class TestWhenSchemaMismatch:
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
         )
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop("charge_code")
 
         # Act & Assert
         with mock.patch.object(

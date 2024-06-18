@@ -21,6 +21,7 @@ import pyspark.sql.functions as f
 from package.calculation.input import TableReader
 from package.calculation.input.schemas import metering_point_period_schema
 import calculation.input.table_reader.input_metering_point_periods_factory as factory
+from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
@@ -60,7 +61,7 @@ class TestWhenValidInputAndMoreColumns:
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         row = factory.create_row()
         df = factory.create(spark, row)
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
         with mock.patch.object(

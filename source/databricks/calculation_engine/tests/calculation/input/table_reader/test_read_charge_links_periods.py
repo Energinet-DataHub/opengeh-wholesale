@@ -50,7 +50,7 @@ class TestWhenSchemaMismatch:
         row = _create_charge_link_period_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop("charge_code")
 
         # Act & Assert
         with mock.patch.object(
