@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_grid_loss_imbalance_prices" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.8.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.22.0"
 
   name                 = "grid-loss-imbalance-prices"
   location             = azurerm_resource_group.this.location
@@ -21,7 +21,7 @@ module "mssqldb_grid_loss_imbalance_prices" {
 }
 
 module "kvs_sql_ms_grid_loss_imbalance_prices_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "mssql-grid-loss-imbalance-prices-database-name"
   value        = module.mssqldb_grid_loss_imbalance_prices.name
