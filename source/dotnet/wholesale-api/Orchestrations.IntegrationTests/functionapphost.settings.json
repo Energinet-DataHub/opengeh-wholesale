@@ -8,5 +8,5 @@
 
   // We must ensure this tool is installed at the same location on all developer machines.
   // Be sure to use 'nvm' to manage Node.js + npm and node modules.
-  "FunctionAppHostPath": "C:\\Program Files\\Microsoft\\Azure Functions Core Tools\\func.dll"
+  "FunctionAppHostPath": "C:\\Program Files\\nodejs\\node_modules\\azure-functions-core-tools\\bin\\func.dll"
 }

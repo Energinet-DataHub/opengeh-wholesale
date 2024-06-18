@@ -52,7 +52,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
             csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
                 new TypeConverterOptions
                 {
-                    Formats = ["0.000"],
+                    Formats = ["0.000000"],
                 });
 
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
