@@ -44,7 +44,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.aggregation_level: "total_ga",
         EnergyResultColumnNames.time_series_type: "production",
         EnergyResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        EnergyResultColumnNames.calculation_type: "BalanceFixing",
+        EnergyResultColumnNames.calculation_type: "balance_fixing",
         EnergyResultColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),

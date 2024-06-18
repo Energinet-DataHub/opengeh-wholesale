@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
@@ -29,7 +30,7 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--grid-areas=[{gridAreas}]",
             $"--period-start-datetime={calculation.PeriodStart}",
             $"--period-end-datetime={calculation.PeriodEnd}",
-            $"--calculation-type={calculation.CalculationType}",
+            $"--calculation-type={CalculationTypeMapper.ToDeltaTableValue(calculation.CalculationType)}",
             $"--created-by-user-id={calculation.CreatedByUserId}",
         };
 
