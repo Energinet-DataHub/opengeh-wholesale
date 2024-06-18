@@ -68,7 +68,7 @@ class ViewScenarioExecutor:
 
         wrappers = []
         for wrapper in output_dataframe_wrappers:
-            df = self.spark.read.format("delta").table(wrapper.name)
+            df = self.spark.read.format("delta").table(wrapper.name).cache()
             dataframe_wrapper = DataframeWrapper(
                 key=wrapper.key, name=wrapper.name, df=df
             )
