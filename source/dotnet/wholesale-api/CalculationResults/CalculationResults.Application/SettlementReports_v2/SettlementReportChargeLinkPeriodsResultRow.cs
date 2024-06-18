@@ -26,4 +26,4 @@ public sealed record SettlementReportChargeLinkPeriodsResultRow(
     string? ChargeCode,
     int Quantity,
     Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant? PeriodEnd);

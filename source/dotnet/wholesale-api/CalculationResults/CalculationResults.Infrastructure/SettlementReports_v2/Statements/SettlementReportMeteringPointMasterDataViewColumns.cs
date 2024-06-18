@@ -14,19 +14,18 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public class SettlementReportChargeLinkPeriodsViewColumns
+public class SettlementReportMeteringPointMasterDataViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
     public const string MeteringPointId = "metering_point_id";
-    public const string MeteringPointType = "metering_point_type";
-    public const string ChargeType = "charge_type";
-    public const string ChargeCode = "charge_code";
-    public const string ChargeOwnerId = "charge_owner_id";
-    public const string Quantity = "charge_link_quantity";
     public const string FromDate = "from_date";
     public const string ToDate = "to_date";
     public const string GridArea = "grid_area_code";
+    public const string GridAreaFrom = "from_grid_area_code";
+    public const string GridAreaTo = "to_grid_area_code";
+    public const string MeteringPointType = "metering_point_type";
+    public const string SettlementMethod = "settlement_method";
     public const string EnergySupplierId = "energy_supplier_id";
 
     public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
@@ -34,14 +33,13 @@ public class SettlementReportChargeLinkPeriodsViewColumns
         { CalculationId, ("string", false) },
         { CalculationType, ("string", false) },
         { MeteringPointId, ("string", false) },
-        { MeteringPointType, ("string", false) },
-        { ChargeType, ("string", false) },
-        { ChargeCode, ("string", false) },
-        { ChargeOwnerId, ("string", false) },
-        { Quantity, ("int", false) },
         { FromDate, ("timestamp", false) },
         { ToDate, ("timestamp", true) },
         { GridArea, ("string", false) },
+        { GridAreaFrom, ("string", true) },
+        { GridAreaTo, ("string", true) },
+        { MeteringPointType, ("string", false) },
+        { SettlementMethod, ("string", true) },
         { EnergySupplierId, ("string", true) },
     };
 }
