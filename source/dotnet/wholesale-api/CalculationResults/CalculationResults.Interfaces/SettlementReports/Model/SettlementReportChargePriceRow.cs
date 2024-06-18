@@ -24,4 +24,4 @@ public sealed record SettlementReportChargePriceRow(
     Resolution Resolution,
     bool TaxIndicator,
     Instant StartDateTime,
-    IReadOnlyCollection<double> EnergyPrices);
+    IReadOnlyCollection<decimal> EnergyPrices);

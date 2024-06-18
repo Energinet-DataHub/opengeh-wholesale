@@ -19,14 +19,13 @@ using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
 public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 100;
+    private const int ChunkSize = 1000;
 
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
@@ -50,6 +49,12 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
         await using (csvHelper.ConfigureAwait(false))
         {
+            csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
+                new TypeConverterOptions
+                {
+                    Formats = ["0.000"],
+                });
+
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
                 csvHelper.WriteHeader<SettlementReportChargePriceRow>();

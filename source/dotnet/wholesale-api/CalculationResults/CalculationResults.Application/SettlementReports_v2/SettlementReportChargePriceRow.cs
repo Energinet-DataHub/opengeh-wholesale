@@ -26,7 +26,7 @@ public sealed record SettlementReportChargePriceRow
         Resolution resolution,
         bool taxIndicator,
         Instant startDateTime,
-        IReadOnlyCollection<double> energyPrices)
+        IReadOnlyCollection<decimal> energyPrices)
     {
         ChargeType = chargeType;
         ChargeCode = chargeCode;
@@ -49,5 +49,5 @@ public sealed record SettlementReportChargePriceRow
 
     public Resolution Resolution { get; }
 
-    public IReadOnlyCollection<double> EnergyPrices { get; }
+    public IReadOnlyCollection<decimal> EnergyPrices { get; }
 }

@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public sealed record SettlementReportEnergyPrice(string Time, double Price);
+public sealed record SettlementReportEnergyPrice(string Time, decimal Price);

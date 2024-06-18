@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class EnergyPriceTypeMapper
 {
-    public static IReadOnlyCollection<double>? FromDeltaTableValue(string? value)
+    public static IReadOnlyCollection<decimal>? FromDeltaTableValue(string? value)
     {
         if (value == null)
             return null;
