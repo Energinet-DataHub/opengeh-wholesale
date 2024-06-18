@@ -41,7 +41,7 @@ def _create_change_price_point_row() -> dict:
     }
 
 
-class TestWhenSchemaMismatch:
+class TestWhenContractMismatch:
     def test__raises_assertion_error(
         self,
         spark: SparkSession,
@@ -50,7 +50,7 @@ class TestWhenSchemaMismatch:
         row = _create_change_price_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop(Colname.charge_code)
 
         # Act & Assert
         with mock.patch.object(
@@ -90,3 +90,21 @@ class TestWhenValidInput:
 
         # Assert
         assert_dataframes_equal(actual, expected)
+
+
+class TestWhenValidInputAndExtraColumns:
+    def test__returns_expected_df(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        row = _create_change_price_point_row()
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
+        df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            reader.read_charge_price_points()
