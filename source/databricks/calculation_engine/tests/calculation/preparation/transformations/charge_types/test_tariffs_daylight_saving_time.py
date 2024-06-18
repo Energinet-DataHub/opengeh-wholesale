@@ -140,10 +140,12 @@ class TestWhenEnteringDaylightSavingTime:
         # Assert
         assert actual.df.count() == 2
         actual_df = actual.df.orderBy(Colname.charge_time).collect()
-        assert actual_df[0][Colname.quantity] == 23 * factory.DefaultValues.QUANTITY
-        assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
+        # Day with transition into daylight saving time
         assert actual_df[0][Colname.charge_time] == datetime(2021, 3, 27, 23)
+        assert actual_df[0][Colname.quantity] == 23 * factory.DefaultValues.QUANTITY
+        # Normal day within daylight saving time (no transition)
         assert actual_df[1][Colname.charge_time] == datetime(2021, 3, 28, 22)
+        assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
 
 
 class TestWhenExitingDaylightSavingTime:
@@ -257,7 +259,9 @@ class TestWhenExitingDaylightSavingTime:
         # Assert
         assert actual.df.count() == 2
         actual_df = actual.df.orderBy(Colname.charge_time).collect()
+        # Day with transition out of daylight saving time
         assert actual_df[0][Colname.quantity] == 25 * factory.DefaultValues.QUANTITY
-        assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
         assert actual_df[0][Colname.charge_time] == datetime(2021, 10, 30, 22)
+        # Normal day not in daylight saving time and no transition
+        assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
         assert actual_df[1][Colname.charge_time] == datetime(2021, 10, 31, 23)

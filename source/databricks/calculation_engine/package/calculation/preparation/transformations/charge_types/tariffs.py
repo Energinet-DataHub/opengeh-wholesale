@@ -45,13 +45,13 @@ def get_prepared_tariffs(
     metering_point_time_series always hava a row for each resolution time in the given period.
     """
     tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
-    tariff_master_data = charge_price_information.filter_by_charge_type(
+    tariff_price_information_periods = charge_price_information.filter_by_charge_type(
         ChargeType.TARIFF
     )
     tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
 
-    tariffs = _join_master_data_and_prices_add_missing_prices(
-        tariff_master_data, tariff_prices, resolution, time_zone
+    tariffs = _join_price_information_periods_and_prices_add_missing_prices(
+        tariff_price_information_periods, tariff_prices, resolution, time_zone
     )
 
     tariffs = _join_with_charge_link_metering_points(tariffs, tariff_links)
@@ -69,7 +69,7 @@ def get_prepared_tariffs(
     return PreparedTariffs(tariffs)
 
 
-def _join_master_data_and_prices_add_missing_prices(
+def _join_price_information_periods_and_prices_add_missing_prices(
     charge_price_information: ChargePriceInformation,
     charge_prices: ChargePrices,
     resolution: ChargeResolution,
