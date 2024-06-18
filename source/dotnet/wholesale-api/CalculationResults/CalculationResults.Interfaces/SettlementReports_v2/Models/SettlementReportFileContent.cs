@@ -26,4 +26,5 @@ public enum SettlementReportFileContent
     MeteringPointMasterData,
     Pt15M,
     Pt1H,
+    MonthlyAmount,
 }

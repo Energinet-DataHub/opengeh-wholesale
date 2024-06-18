@@ -26,19 +26,22 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
     private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
     private readonly ISettlementReportMeteringPointMasterDataRepository _settlementReportMeteringPointMasterDataRepository;
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _settlementReportMeteringPointTimeSeriesResultRepository;
+    private readonly ISettlementReportMonthlyAmountRepository _settlementReportMonthlyAmountRepository;
 
     public SettlementReportFileGeneratorFactory(
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
         ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
         ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository,
         ISettlementReportMeteringPointMasterDataRepository settlementReportMeteringPointMasterDataRepository,
-        ISettlementReportMeteringPointTimeSeriesResultRepository settlementReportMeteringPointTimeSeriesResultRepository)
+        ISettlementReportMeteringPointTimeSeriesResultRepository settlementReportMeteringPointTimeSeriesResultRepository,
+        ISettlementReportMonthlyAmountRepository settlementReportMonthlyAmountRepository)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
         _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
         _settlementReportMeteringPointMasterDataRepository = settlementReportMeteringPointMasterDataRepository;
         _settlementReportMeteringPointTimeSeriesResultRepository = settlementReportMeteringPointTimeSeriesResultRepository;
+        _settlementReportMonthlyAmountRepository = settlementReportMonthlyAmountRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -62,6 +65,8 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
                 return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Quarter);
             case SettlementReportFileContent.Pt1H:
                 return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Hour);
+            case SettlementReportFileContent.MonthlyAmount:
+                return new MonthlyAmountFileGenerator(_settlementReportMonthlyAmountRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

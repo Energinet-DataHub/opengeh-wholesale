@@ -49,6 +49,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
                 }
 
+                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                {
+                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.FirstCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
@@ -59,6 +64,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                }
+
+                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                {
+                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
                 }
 
                 break;
@@ -73,6 +83,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
                 }
 
+                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                {
+                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.ThirdCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
@@ -83,6 +98,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                }
+
+                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                {
+                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
                 }
 
                 break;
@@ -175,6 +195,23 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         }
     }
 
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForMonthlyAmountAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var request = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Monthly amounts", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
     private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForTimeSeriesAsync(
             SettlementReportFileContent fileContent,
             SettlementReportRequestId requestId,
@@ -247,5 +284,14 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 PartialFileInfo = partialFileInfo with { ChunkOffset = partialFileInfo.ChunkOffset + i },
             };
         }
+    }
+
+    private static bool IsWholeMonth(DateTimeOffset start, DateTimeOffset end)
+    {
+        var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(start, "Europe/Copenhagen");
+        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(end, "Europe/Copenhagen");
+        return convertedEnd.TimeOfDay.Ticks == 0
+            && convertedEnd.Day == 1
+            && convertedEnd.Month - convertedStart.Month == 1;
     }
 }
