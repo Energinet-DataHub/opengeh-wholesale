@@ -55,8 +55,11 @@ def test__public_data_model_views_have_correct_schemas(
     """Verify that all schemas from all views in all public view models match the respective expected schema."""
 
     # Arrange
-    databases = get_public_data_model_databases(spark)
     expected_schemas = get_expected_public_data_model_schemas()
+    if not expected_schemas:
+        raise ValueError("No expected schemas found.")
+
+    databases = get_public_data_model_databases(spark)
     errors = []
 
     # Act & Assert
@@ -66,7 +69,7 @@ def test__public_data_model_views_have_correct_schemas(
 
         for view in views:
             try:
-                if not view.name in expected_schemas:
+                if view.name not in expected_schemas:
                     raise ValueError(
                         f"Expected schema for {database.name}.{view.name} not found."
                     )
