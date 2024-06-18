@@ -21,6 +21,7 @@ import pyspark.sql.functions as f
 from package.calculation.input import TableReader
 from package.calculation.input.schemas import metering_point_period_schema
 import calculation.input.table_reader.input_metering_point_periods_factory as factory
+from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
@@ -54,13 +55,28 @@ class TestWhenValidInput:
         assert_dataframes_equal(actual, df)
 
 
-class TestWhenSchemaMismatch:
+class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         row = factory.create_row()
         df = factory.create(spark, row)
         df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            reader.read_metering_point_periods()
+
+
+class TestWhenContractMismatch:
+    def test_raises_assertion_error(self, spark: SparkSession) -> None:
+        # Arrange
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        row = factory.create_row()
+        df = factory.create(spark, row)
+        df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
         with mock.patch.object(
