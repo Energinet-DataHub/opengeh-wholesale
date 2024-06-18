@@ -42,11 +42,11 @@ public sealed class SettlementReportEnergyResultPerEnergySupplierQueryStatement 
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
                      WHERE 
-                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}' AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = '{_filter.CalculationId}' AND
-                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'
                      ORDER BY 
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
@@ -69,11 +69,11 @@ public sealed class SettlementReportEnergyResultPerEnergySupplierQueryStatement 
                                 JOIN 
                                     ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId} = cr.{SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId}
                                 WHERE 
-                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                                     {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
                                     {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}' AND
                                     {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = '{_filter.CalculationId}' AND 
-                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'
                             """;
         return sqlStatement;
     }
