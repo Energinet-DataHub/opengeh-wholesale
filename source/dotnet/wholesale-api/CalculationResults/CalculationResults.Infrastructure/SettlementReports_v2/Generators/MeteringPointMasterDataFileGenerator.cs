@@ -17,17 +17,16 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenerator
+public sealed class MeteringPointMasterDataFileGenerator : ISettlementReportFileGenerator
 {
     private const int ChunkSize = 1000;
-    private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
+    private readonly ISettlementReportMeteringPointMasterDataRepository _dataSource;
 
-    public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
+    public MeteringPointMasterDataFileGenerator(ISettlementReportMeteringPointMasterDataRepository dataSource)
     {
         _dataSource = dataSource;
     }
@@ -43,13 +42,13 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportChargeLinkPeriodsResultRowMap>();
+        csvHelper.Context.RegisterClassMap<SettlementReportMeteringPointMasterDataRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
-                csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
+                csvHelper.WriteHeader<SettlementReportMeteringPointMasterDataRow>();
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
@@ -61,17 +60,37 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
         }
     }
 
-    public sealed class SettlementReportChargeLinkPeriodsResultRowMap : ClassMap<SettlementReportChargeLinkPeriodsResultRow>
+    public sealed class SettlementReportMeteringPointMasterDataRowMap : ClassMap<SettlementReportMeteringPointMasterDataRow>
     {
-        public SettlementReportChargeLinkPeriodsResultRowMap()
+        public SettlementReportMeteringPointMasterDataRowMap()
         {
             Map(r => r.MeteringPointId)
                 .Name("METERINGPOINTID")
                 .Index(0);
 
+            Map(r => r.PeriodStart)
+                .Name("VALIDFROM")
+                .Index(1);
+
+            Map(r => r.PeriodEnd)
+                .Name("VALIDTO")
+                .Index(2);
+
+            Map(r => r.GridAreaId)
+                .Name("GRIDAREAID")
+                .Index(3);
+
+            Map(r => r.GridAreaToId)
+                .Name("TOGRIDAREAID")
+                .Index(4);
+
+            Map(r => r.GridAreaFromId)
+                .Name("FROMGRIDAREAID")
+                .Index(5);
+
             Map(r => r.MeteringPointType)
                 .Name("TYPEOFMP")
-                .Index(1)
+                .Index(6)
                 .Convert(row => row.Value.MeteringPointType switch
                 {
                     null => string.Empty,
@@ -93,36 +112,20 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
                 });
 
-            Map(r => r.ChargeType)
-                .Name("CHARGETYPE")
-                .Index(2)
-                .Convert(row => row.Value.ChargeType switch
+            Map(r => r.SettlementMethod)
+                .Name("SETTLEMENTMETHOD")
+                .Index(7)
+                .Convert(row => row.Value.SettlementMethod switch
                 {
-                    ChargeType.Tariff => "D03",
-                    ChargeType.Fee => "D02",
-                    ChargeType.Subscription => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.ChargeType)),
+                    null => string.Empty,
+                    SettlementMethod.NonProfiled => "E02",
+                    SettlementMethod.Flex => "D01",
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.SettlementMethod)),
                 });
 
-            Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
-                .Index(3);
-
-            Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
-                .Index(4);
-
-            Map(r => r.Quantity)
-                .Name("CHARGEOCCURRENCES")
-                .Index(5);
-
-            Map(r => r.PeriodStart)
-                .Name("PERIODSTART")
-                .Index(6);
-
-            Map(r => r.PeriodEnd)
-                .Name("PERIODEND")
-                .Index(7);
+            Map(r => r.EnergySupplierId)
+                .Name("ENERGYSUPPLIERID")
+                .Index(8);
         }
     }
 }

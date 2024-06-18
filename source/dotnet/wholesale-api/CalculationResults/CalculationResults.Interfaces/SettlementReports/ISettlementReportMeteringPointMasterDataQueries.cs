@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public enum SettlementReportFileContent
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+
+public interface ISettlementReportMeteringPointMasterDataQueries
 {
-    EnergyResultLatestPerDay,
-    EnergyResultForCalculationId,
-    WholesaleResult,
-    FirstCorrectionResult,
-    SecondCorrectionResult,
-    ThirdCorrectionResult,
-    ChargeLinksPeriods,
-    MeteringPointMasterData,
-    Pt15M,
-    Pt1H,
+    Task<int> CountAsync(SettlementReportMeteringPointMasterDataQueryFilter filter);
+
+    IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportMeteringPointMasterDataQueryFilter filter, int skip, int take);
 }
