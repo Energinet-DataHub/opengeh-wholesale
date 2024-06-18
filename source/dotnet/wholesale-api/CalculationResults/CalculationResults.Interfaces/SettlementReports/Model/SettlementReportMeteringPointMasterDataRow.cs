@@ -13,18 +13,17 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public sealed record SettlementReportChargeLinkPeriodsRow(
+public sealed record SettlementReportMeteringPointMasterDataRow(
     string MeteringPointId,
-    MeteringPointType MeteringPointType,
-    ChargeType ChargeType,
-    string ChargeOwnerId,
-    string ChargeCode,
-    int Quantity,
+    MeteringPointType? MeteringPointType,
+    string GridAreaId,
+    string? GridAreaFromId,
+    string? GridAreaToId,
+    SettlementMethod? SettlementMethod,
+    string? EnergySupplierId,
     Instant PeriodStart,
     Instant? PeriodEnd);

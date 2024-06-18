@@ -24,13 +24,13 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public sealed class SettlementReportChargeLinkPeriodsQueries : ISettlementReportChargeLinkPeriodsQueries
+public sealed class SettlementReportMeteringPointMasterDataQueries : ISettlementReportMeteringPointMasterDataQueries
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly ICalculationsClient _calculationsClient;
 
-    public SettlementReportChargeLinkPeriodsQueries(
+    public SettlementReportMeteringPointMasterDataQueries(
         IOptions<DeltaTableOptions> deltaTableOptions,
         DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
         ICalculationsClient calculationsClient)
@@ -40,20 +40,20 @@ public sealed class SettlementReportChargeLinkPeriodsQueries : ISettlementReport
         _deltaTableOptions = deltaTableOptions;
     }
 
-    public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsRow> GetAsync(SettlementReportChargeLinkPeriodQueryFilter filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportMeteringPointMasterDataQueryFilter filter, int skip, int take)
     {
         var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
-        var statement = new SettlementReportChargeLinkPeriodsQueryStatement(_deltaTableOptions, filter, skip, take);
+        var statement = new SettlementReportMeteringPointMasterDataQueryStatement(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportChargeLinkPeriodsRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
+            yield return SettlementReportMeteringPointMasterDataRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
         }
     }
 
-    public async Task<int> CountAsync(SettlementReportChargeLinkPeriodQueryFilter filter)
+    public async Task<int> CountAsync(SettlementReportMeteringPointMasterDataQueryFilter filter)
     {
-        var statement = new SettlementReportChargeLinkPeriodsCountQueryStatement(_deltaTableOptions, filter);
+        var statement = new SettlementReportMeteringPointMasterDataCountQueryStatement(_deltaTableOptions, filter);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
@@ -61,6 +61,6 @@ public sealed class SettlementReportChargeLinkPeriodsQueries : ISettlementReport
             return SqlResultValueConverters.ToInt(rawValue)!.Value;
         }
 
-        throw new InvalidOperationException("Could not count result for SettlementReportChargeLinkPeriodsQueries.");
+        throw new InvalidOperationException("Could not count result for SettlementReportMeteringPointMasterDataQueries.");
     }
 }
