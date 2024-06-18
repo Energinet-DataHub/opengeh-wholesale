@@ -19,7 +19,6 @@ from pyspark.sql.types import (
     StructType,
     LongType,
     DecimalType,
-    ArrayType,
 )
 
 grid_loss_metering_point_time_series_v1_schema = StructType(
@@ -29,9 +28,11 @@ grid_loss_metering_point_time_series_v1_schema = StructType(
         StructField("calculation_period_start", TimestampType(), False),
         StructField("calculation_period_end", TimestampType(), False),
         StructField("calculation_version", LongType(), False),
+        StructField("metering_point_id", StringType(), False),
         StructField("metering_point_type", StringType(), False),
         StructField("resolution", StringType(), False),
-        StructField("time", TimestampType(), False),
         StructField("quantity_unit", StringType(), False),
+        StructField("time", TimestampType(), False),
+        StructField("quantity", DecimalType(18, 3), False),
     ]
 )
