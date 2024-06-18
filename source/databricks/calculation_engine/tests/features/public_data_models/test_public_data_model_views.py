@@ -66,6 +66,11 @@ def test__public_data_model_views_have_correct_schemas(
 
         for view in views:
             try:
+                if not view.name in expected_schemas:
+                    raise ValueError(
+                        f"Expected schema for {database.name}.{view.name} not found."
+                    )
+
                 actual_df = spark.table(f"{database.name}.{view.name}")
                 expected_df = spark.createDataFrame([], expected_schemas[view.name])
 
