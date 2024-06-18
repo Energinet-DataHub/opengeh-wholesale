@@ -229,7 +229,6 @@ def calculation_output_path(data_lake_path: str) -> str:
 def migrations_executed(
     spark: SparkSession,
     calculation_output_path: str,
-    energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     # Execute all migrations
