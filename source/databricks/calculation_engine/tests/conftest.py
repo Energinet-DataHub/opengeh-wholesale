@@ -400,6 +400,7 @@ def energy_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
     calculation_input_path: str,
+    migrations_executed: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     _write_input_test_data_to_table(
