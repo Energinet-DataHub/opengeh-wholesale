@@ -58,7 +58,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
                 csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-                const int energyPriceFieldCount = 24;
+                const int energyPriceFieldCount = 25;
                 for (var i = 0; i < energyPriceFieldCount; ++i)
                 {
                     csvHelper.WriteField($"ENERGYPRICE{i + 1}");
