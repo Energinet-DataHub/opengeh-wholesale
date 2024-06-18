@@ -33,11 +33,11 @@ using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Cal
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
+public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQueries>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
-    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
 
-    public WholesaleServicesQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public WholesaleServicesQueriesTests(MigrationsFreeDatabricksSqlStatementApiFixture fixture)
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());

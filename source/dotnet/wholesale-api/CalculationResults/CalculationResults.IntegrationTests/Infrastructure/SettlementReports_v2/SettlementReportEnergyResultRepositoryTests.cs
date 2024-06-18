@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
@@ -43,12 +44,15 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
+        var calculationsClientMock = new Mock<ICalculationsClient>();
+        calculationsClientMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated));
+
         Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
         Fixture.Inject<ISettlementReportEnergyResultQueries>(new SettlementReportEnergyResultQueries(
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            new Mock<ICalculationsClient>().Object));
+            calculationsClientMock.Object));
     }
 
     [Fact]
@@ -109,12 +113,13 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T02:00:00.000+00:00'", "26.634"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:00:00.000+00:00'", "26.634"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
             ]);
 
-        var actual = await Sut.CountAsync(
+        var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
@@ -122,13 +127,16 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                         "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-10T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
-                "da-DK"));
+                "da-DK"),
+            skip: 3,
+            take: 1).ToListAsync();
 
-        Assert.Equal(1, actual);
+        Assert.Single(actual);
+        Assert.Equal(4, actual[0].Time.ToDateTimeOffset().Hour);
     }
 
     [Fact]
@@ -137,12 +145,17 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
             [
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T02:00:00.000+00:00'", "26.634", "'8236015961810'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:00:00.000+00:00'", "26.634", "'8236015961810'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035310'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035311'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'47433af6-03c1-46bd-ab9b-dd0497035312'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961811'"],
             ]);
 
-        var actual = await Sut.CountAsync(
+        var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
@@ -150,12 +163,15 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                         "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-10T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
                 CalculationType.BalanceFixing,
-                "8236015961810",
-                "da-DK"));
+                "8236015961811",
+                "da-DK"),
+            skip: 3,
+            take: 1).ToListAsync();
 
-        Assert.Equal(1, actual);
+        Assert.Single(actual);
+        Assert.Equal(4, actual[0].Time.ToDateTimeOffset().Hour);
     }
 }
