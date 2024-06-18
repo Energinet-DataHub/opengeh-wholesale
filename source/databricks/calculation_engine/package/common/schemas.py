@@ -21,12 +21,13 @@ def assert_contract(actual_schema: StructType, contract: StructType) -> None:
     Non-breaking changes are allowed, such as adding new columns or changing column ordering.
     """
     try:
-        # Consider: Contract changes from nullable=True to nullable=False is a non-breaking change
         assert_schema(
             actual_schema,
             contract,
             ignore_extra_actual_columns=True,
             ignore_column_order=True,
+            # Consider: Contract changes from nullable=False to nullable=True should be considered a breaking change
+            ignore_nullability=True,
         )
     except AssertionError as e:
         raise AssertionError(
@@ -75,6 +76,13 @@ def assert_schema(
     if ignore_column_order:
         actual_fields = sorted(actual_fields, key=lambda f: f.name)
         expected_fields = sorted(expected_fields, key=lambda f: f.name)
+
+    if len(actual_fields) < len(expected_fields):
+        _raise(
+            f"""Actual schema has fewer fields than expected schema.
+            Expected field names: {expected.fieldNames()}.
+            Actual field names: {actual.fieldNames()}."""
+        )
 
     for actual_field, expected_field in zip(actual_fields, expected_fields):
         _assert_column_name(actual_field, expected_field)

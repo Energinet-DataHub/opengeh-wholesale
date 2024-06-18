@@ -41,7 +41,7 @@ def _create_change_price_point_row() -> dict:
     }
 
 
-class TestWhenSchemaMismatch:
+class TestWhenContractMismatch:
     def test__raises_assertion_error(
         self,
         spark: SparkSession,
@@ -50,7 +50,7 @@ class TestWhenSchemaMismatch:
         row = _create_change_price_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
-        df = df.drop("charge_code")
+        df = df.drop(Colname.charge_code)
 
         # Act & Assert
         with mock.patch.object(

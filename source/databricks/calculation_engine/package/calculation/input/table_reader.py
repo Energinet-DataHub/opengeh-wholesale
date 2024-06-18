@@ -93,7 +93,7 @@ class TableReader:
 
 
 def _read(spark: SparkSession, path: str, contract: StructType) -> DataFrame:
-    df = spark.read.format("delta").load(path).select(contract.fieldNames())
+    df = spark.read.format("delta").load(path)
 
     # Assert that the schema of the data matches the defined contract
     assert_contract(df.schema, contract)

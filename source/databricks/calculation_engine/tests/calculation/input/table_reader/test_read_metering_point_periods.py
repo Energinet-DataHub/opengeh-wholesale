@@ -61,7 +61,7 @@ class TestWhenValidInputAndMoreColumns:
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         row = factory.create_row()
         df = factory.create(spark, row)
-        df = df.drop(Colname.metering_point_id)
+        df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
         with mock.patch.object(
@@ -70,14 +70,13 @@ class TestWhenValidInputAndMoreColumns:
             reader.read_metering_point_periods()
 
 
-class TestWhenSchemaMismatch:
-    # TODO BJM: Add tests for other cases (all read methods)
+class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         row = factory.create_row()
         df = factory.create(spark, row)
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
         with mock.patch.object(

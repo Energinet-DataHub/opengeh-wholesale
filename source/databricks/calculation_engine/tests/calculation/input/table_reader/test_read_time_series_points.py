@@ -38,13 +38,13 @@ def _create_time_series_point_row(
     }
 
 
-class TestWhenSchemaMismatch:
+class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_time_series_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
-        df = df.withColumn("test", f.lit("test"))
+        df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
         with mock.patch.object(
@@ -95,7 +95,7 @@ class TestWhenValidInputAndExtraColumns:
         row = _create_time_series_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
-        df = df.drop(Colname.metering_point_id)
+        df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
         with mock.patch.object(

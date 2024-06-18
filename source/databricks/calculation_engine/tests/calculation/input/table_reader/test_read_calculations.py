@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pathlib
+import uuid
 from datetime import datetime
 from unittest import mock
 
@@ -21,6 +22,7 @@ from pyspark.sql import SparkSession
 
 from package.calculation.basis_data.schemas import calculations_schema
 from package.calculation.input import TableReader
+from package.codelists import CalculationType
 from package.constants.basis_data_colname import CalculationsColumnName
 from package.infrastructure.paths import BasisDataDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
@@ -29,17 +31,17 @@ from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 def _create_calculation_row() -> dict:
     return {
-        CalculationsColumnName.calculation_id: "some-calculation-id",
-        CalculationsColumnName.calculation_type: "some-calculation-type",
+        CalculationsColumnName.calculation_id: str(uuid.uuid4()),
+        CalculationsColumnName.calculation_type: CalculationType.BALANCE_FIXING.value,
         CalculationsColumnName.period_start: datetime(2022, 6, 8, 22, 0, 0),
         CalculationsColumnName.period_end: datetime(2022, 6, 9, 22, 0, 0),
         CalculationsColumnName.execution_time_start: datetime(2022, 6, 8, 22, 0, 0),
-        CalculationsColumnName.created_by_user_id: "some-user-id",
+        CalculationsColumnName.created_by_user_id: str(uuid.uuid4()),
         CalculationsColumnName.version: 1,
     }
 
 
-class TestWhenSchemaMismatch:
+class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_calculation_row()
@@ -74,7 +76,7 @@ class TestWhenValidInput:
         write_dataframe_to_table(
             spark,
             df,
-            "the_test_database",
+            BasisDataDatabase.DATABASE_NAME,
             BasisDataDatabase.CALCULATIONS_TABLE_NAME,
             calculations_table_location,
             calculations_schema,

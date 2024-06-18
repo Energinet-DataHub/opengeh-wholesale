@@ -41,7 +41,7 @@ def _create_charge_price_information_period_row() -> dict:
     }
 
 
-class TestWhenSchemaMismatch:
+class TestWhenContractMismatch:
     def test__raises_assertion_error(
         self,
         spark: SparkSession,
@@ -52,7 +52,7 @@ class TestWhenSchemaMismatch:
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
         )
-        df = df.drop("charge_code")
+        df = df.drop(Colname.charge_type)
 
         # Act & Assert
         with mock.patch.object(
