@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
@@ -48,11 +50,11 @@ public sealed class SettlementReportLatestEnergyResultPerEnergySupplierQueryStat
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
                      WHERE
-                         {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                         {SettlementReportEnergyResultViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier}= '{_filter.EnergySupplier}' AND
-                         {SettlementReportEnergyResultViewColumns.CalculationType} = 'BalanceFixing'
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}' AND
+                         {SettlementReportEnergyResultViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
                      GROUP BY 
                         start_of_day LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
@@ -81,11 +83,11 @@ public sealed class SettlementReportLatestEnergyResultPerEnergySupplierQueryStat
                                           'Europe/Copenhagen'
                                       ) = latest.start_of_day
                                 WHERE
-                                    {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                                    {SettlementReportEnergyResultViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                                     {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
                                     {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier}= '{_filter.EnergySupplier}' AND
-                                    {SettlementReportEnergyResultViewColumns.CalculationType} = 'BalanceFixing'
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}' AND
+                                    {SettlementReportEnergyResultViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
                             """;
         return sqlStatement;
     }
