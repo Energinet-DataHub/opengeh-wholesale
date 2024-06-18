@@ -36,10 +36,28 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement 
 
     protected override string GetSqlStatement()
     {
+        var meteringPoint =
+            $"""
+                     SELECT DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId})
+                     FROM
+                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}
+                     WHERE 
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.Resolution} = '{SqlStringSanitizer.Sanitize(_filter.Resolution)}'
+                        {(_filter.EnergySupplier is not null ? $"AND {SettlementReportMeteringPointTimeSeriesViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
+                     ORDER BY 
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId} LIMIT {_take} OFFSET {_skip}
+                 """.Replace(Environment.NewLine, " ");
+
         var sqlStatement = $"""
-                                SELECT {string.Join(", ", SettlementReportMeteringPointTimeSeriesViewColumns.AllNames)}
+                                SELECT mp.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId}, {string.Join(", ", SettlementReportMeteringPointTimeSeriesViewColumns.AllNames.Except([SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId]))}
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}
+                                JOIN 
+                                    ({meteringPoint}) AS mp ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId} = mp.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId}
                                 WHERE 
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
@@ -47,8 +65,6 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement 
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.CalculationId} = '{_filter.CalculationId}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.Resolution} = '{SqlStringSanitizer.Sanitize(_filter.Resolution)}'
                                     {(_filter.EnergySupplier is not null ? $"AND {SettlementReportMeteringPointTimeSeriesViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
-                                ORDER BY 
-                                    {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} LIMIT {_take} OFFSET {_skip}
                             """;
         return sqlStatement;
     }
