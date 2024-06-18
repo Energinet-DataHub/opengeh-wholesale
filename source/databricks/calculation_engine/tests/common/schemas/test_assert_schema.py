@@ -87,7 +87,7 @@ schema_with_more_columns_and_different_column_order = t.StructType(
         (any_schema, schema_with_other_column_order_and_nullability, True, True),
     ],
 )
-def test__assert_schema__accepts_matching_schema(
+def test__accepts_matching_schema(
     actual: t.StructType,
     expected: t.StructType,
     ignore_column_order: bool,
@@ -114,7 +114,7 @@ def test__assert_schema__accepts_matching_schema(
         (any_schema, schema_with_other_column_order_and_nullability, True, False),
     ],
 )
-def test__assert_schema__when_schema_does_not_match__raises(
+def test__when_schema_does_not_match__raises(
     actual: t.StructType,
     expected: t.StructType,
     ignore_column_order: bool,
@@ -129,9 +129,7 @@ def test__assert_schema__when_schema_does_not_match__raises(
         )
 
 
-def test__assert_schema__when_lenient_and_other_datatype__raises_assertion_error() -> (
-    None
-):
+def test__when_lenient_and_other_datatype__raises_assertion_error() -> None:
     """Lenient refers to being as loose as possible in the check."""
     with pytest.raises(AssertionError):
         assert_schema(
@@ -155,7 +153,7 @@ def test__assert_schema__when_lenient_and_other_datatype__raises_assertion_error
         (t.DecimalType(18, 2), True, False),
     ],
 )
-def test__assert_schema__when_invalid_decimal_type__raises_assertion_error(
+def test__when_invalid_decimal_type__raises_assertion_error(
     expected_decimal: t.DecimalType,
     ignore_precision: bool,
     ignore_scale: bool,
@@ -181,7 +179,7 @@ def test__assert_schema__when_invalid_decimal_type__raises_assertion_error(
         (t.DecimalType(18, 2), False, True),
     ],
 )
-def test__assert_schema__when_decimal_type_should_be_accepted__does_not_raise(
+def test__when_decimal_type_should_be_accepted__does_not_raise(
     expected_decimal: t.DecimalType,
     ignore_precision: bool,
     ignore_scale: bool,
@@ -198,9 +196,7 @@ def test__assert_schema__when_decimal_type_should_be_accepted__does_not_raise(
     )
 
 
-def test__assert_schema__when_more_actual_columns_should_be_rejected__raises_assertion_error() -> (
-    None
-):
+def test__when_more_actual_columns_should_be_rejected__raises_assertion_error() -> None:
     with pytest.raises(AssertionError):
         assert_schema(
             any_schema,
@@ -208,7 +204,7 @@ def test__assert_schema__when_more_actual_columns_should_be_rejected__raises_ass
         )
 
 
-def test__assert_schema__when_different_column_order_and_more_actual_columns_should_be_rejected__does_not_raise() -> (
+def test__when_different_column_order_and_more_actual_columns_should_be_rejected__does_not_raise() -> (
     None
 ):
     """
@@ -223,9 +219,7 @@ def test__assert_schema__when_different_column_order_and_more_actual_columns_sho
     )
 
 
-def test__assert_schema__when_more_actual_columns_should_be_accepted__does_not_raise() -> (
-    None
-):
+def test__when_more_actual_columns_should_be_accepted__does_not_raise() -> None:
     assert_schema(
         any_schema,
         schema_with_more_columns,

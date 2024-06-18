@@ -15,6 +15,27 @@
 from pyspark.sql.types import DecimalType, StructField, StructType, ArrayType, DataType
 
 
+def assert_contract(actual_schema: StructType, contract: StructType) -> None:
+    """
+    Asserts that the actual schema matches the contract of the public data model (data product data contract).
+    Non-breaking changes are allowed, such as adding new columns or changing column ordering.
+    """
+    try:
+        # Consider: Contract changes from nullable=True to nullable=False is a non-breaking change
+        assert_schema(
+            actual_schema,
+            contract,
+            ignore_extra_actual_columns=True,
+            ignore_column_order=True,
+        )
+    except AssertionError as e:
+        raise AssertionError(
+            f"""The data source does not comply with the contract.
+            Were breaking changes made without a new major version?
+            Is the contract correct? Details: {str(e)}"""
+        )
+
+
 def assert_schema(
     actual: StructType,
     expected: StructType,
