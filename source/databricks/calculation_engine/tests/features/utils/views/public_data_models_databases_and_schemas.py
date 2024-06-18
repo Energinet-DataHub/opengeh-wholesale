@@ -13,6 +13,7 @@
 # limitations under the License.
 import importlib.util
 import os
+from pathlib import Path
 from typing import List
 
 from pyspark.sql import SparkSession
@@ -42,8 +43,8 @@ def get_public_data_model_databases(spark: SparkSession) -> List[Database]:
 
 def get_expected_public_data_model_schemas() -> dict:
     schemas = {}
-    current_directory = os.getcwd()
-    schemas_folder = current_directory + "/features/utils/views/expected_schemas"
+    current_directory = Path(__file__).parent
+    schemas_folder = current_directory / "expected_schemas"
 
     for root, _, files in os.walk(schemas_folder):
         for file_name in files:
