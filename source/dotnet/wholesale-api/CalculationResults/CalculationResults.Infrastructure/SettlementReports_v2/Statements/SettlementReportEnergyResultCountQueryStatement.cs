@@ -37,7 +37,7 @@ public sealed class SettlementReportEnergyResultCountQueryStatement : Databricks
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
                     WHERE
-                        {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportEnergyResultViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
                         {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
                         {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}'

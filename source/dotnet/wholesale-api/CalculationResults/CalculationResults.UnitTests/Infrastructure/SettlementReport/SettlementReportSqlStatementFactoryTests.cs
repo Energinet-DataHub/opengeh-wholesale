@@ -74,7 +74,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
 WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.GridArea} IN (123,234,345)
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga','total_consumption')
-    AND t1.{EnergyResultColumnNames.CalculationType} = 'BalanceFixing'
+    AND t1.{EnergyResultColumnNames.CalculationType} = 'balance_fixing'
     AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
     AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
 ORDER BY t1.time
@@ -98,7 +98,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
 WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.GridArea} IN (123,234,345)
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
-    AND t1.{EnergyResultColumnNames.CalculationType} = 'BalanceFixing'
+    AND t1.{EnergyResultColumnNames.CalculationType} = 'balance_fixing'
     AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
     AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
     AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{energySupplier}'
