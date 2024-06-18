@@ -16,6 +16,6 @@ SELECT calculation_id,
        quantity_qualities
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
-    calculation_type in ('BalanceFixing', 'Aggregation')
+    calculation_type in ('balance_fixing', 'aggregation')
     AND aggregation_level = 'brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')

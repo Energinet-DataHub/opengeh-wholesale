@@ -33,9 +33,9 @@ public class SettlementReportDataFactoryTests
     public SettlementReportDataFactoryTests()
     {
         _rows = [];
-        var row1 = CreateRow("123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
-        var row2 = CreateRow("234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
-        var row3 = CreateRow("234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3");
+        var row1 = CreateRow("123", "balance_fixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
+        var row2 = CreateRow("234", "balance_fixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
+        var row3 = CreateRow("234", "balance_fixing", "2022-05-16T01:30:00.000Z", "production", "3.3");
         _rows.Add(row1);
         _rows.Add(row2);
         _rows.Add(row3);

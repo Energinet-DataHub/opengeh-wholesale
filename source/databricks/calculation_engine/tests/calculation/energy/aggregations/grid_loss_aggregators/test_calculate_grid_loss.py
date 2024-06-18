@@ -190,7 +190,6 @@ class TestWhenEnergyResultsIsEmpty:
 
         # Act
         actual = calculate_grid_loss(exchange, non_profiled, flex, production)
-        actual.df.show(100, False)
 
         # Assert
         assert actual.df.collect()[0][Colname.quantity] == expected_quantity
