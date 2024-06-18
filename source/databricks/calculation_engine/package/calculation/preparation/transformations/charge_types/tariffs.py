@@ -114,7 +114,7 @@ def get_charges_with_no_prices(
                 f.sequence(
                     Colname.from_date,
                     Colname.to_date,
-                    f.expr(f"interval 1 hour"),
+                    f.expr("interval 1 hour"),
                 )
             ),
         )
@@ -125,7 +125,7 @@ def get_charges_with_no_prices(
                 f.sequence(
                     f.from_utc_timestamp(Colname.from_date, time_zone),
                     f.from_utc_timestamp(Colname.to_date, time_zone),
-                    f.expr(f"interval 1 day"),
+                    f.expr("interval 1 day"),
                 )
             ),
         ).withColumn(
