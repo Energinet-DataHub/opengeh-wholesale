@@ -38,7 +38,7 @@ public sealed class SettlementReportLatestEnergyResultQueryStatement : Databrick
     {
         var latestVersionPrDay =
             $"""
-                     SELECT MAX({SettlementReportEnergyResultViewColumns.CalculationVersion}), TO_UTC_TIMESTAMP(
+                     SELECT MAX({SettlementReportEnergyResultViewColumns.CalculationVersion}) AS max_calc_version, TO_UTC_TIMESTAMP(
                            DATE_TRUNC(
                              'day',
                              FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
@@ -47,12 +47,12 @@ public sealed class SettlementReportLatestEnergyResultQueryStatement : Databrick
                          ) AS start_of_day
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
-                     WHERE 
+                     WHERE
                          {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                          {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
                          {SettlementReportEnergyResultViewColumns.CalculationType} = 'BalanceFixing'
-                     ORDER BY 
+                     GROUP BY 
                         start_of_day LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
 
@@ -60,7 +60,7 @@ public sealed class SettlementReportLatestEnergyResultQueryStatement : Databrick
                                 SELECT {string.Join(", ", [
                                     SettlementReportEnergyResultViewColumns.CalculationId,
                                     SettlementReportEnergyResultViewColumns.CalculationType,
-                                    "cr." + SettlementReportEnergyResultViewColumns.ResultId,
+                                    SettlementReportEnergyResultViewColumns.ResultId,
                                     SettlementReportEnergyResultViewColumns.GridArea,
                                     SettlementReportEnergyResultViewColumns.Time,
                                     SettlementReportEnergyResultViewColumns.Resolution,
@@ -71,11 +71,11 @@ public sealed class SettlementReportLatestEnergyResultQueryStatement : Databrick
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
                                 JOIN 
-                                    ({latestVersionPrDay}) AS latest ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.CalculationVersion} = latest.{SettlementReportEnergyResultViewColumns.CalculationVersion} AND
+                                    ({latestVersionPrDay}) AS latest ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.CalculationVersion} = latest.max_calc_version AND
                                       TO_UTC_TIMESTAMP(
                                           DATE_TRUNC(
                                             'day',
-                                            FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
+                                            FROM_UTC_TIMESTAMP({_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
                                           ),
                                           'Europe/Copenhagen'
                                       ) = latest.start_of_day

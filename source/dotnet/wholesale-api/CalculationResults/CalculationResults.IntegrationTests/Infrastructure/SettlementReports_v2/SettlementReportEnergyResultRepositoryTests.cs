@@ -61,7 +61,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -82,12 +82,38 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
     }
 
     [Fact]
+    public async Task LatestCount_ValidFilter_ReturnsCount()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'BalanceFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+            ]);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"));
+
+        Assert.Equal(1, actual);
+    }
+
+    [Fact]
     public async Task CountPerEnergySupplier_ValidFilter_ReturnsCount()
     {
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
             [
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -108,15 +134,41 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
     }
 
     [Fact]
+    public async Task LatestCountPerEnergySupplier_ValidFilter_ReturnsCount()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'BalanceFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
+            ]);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8236015961810",
+                "da-DK"));
+
+        Assert.Equal(1, actual);
+    }
+
+    [Fact]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
             ]);
 
         var actual = await Sut.GetAsync(
@@ -140,19 +192,58 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
     }
 
     [Fact]
+    public async Task LatestGet_SkipTake_ReturnsExpectedRows()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'BalanceFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b4'", "'BalanceFixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T05:00:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b5'", "'BalanceFixing'", "'3'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:30:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b6'", "'BalanceFixing'", "'4'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T05:00:00.000+00:00'", "26.634"],
+
+                // Expected output.
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1c0'", "'BalanceFixing'", "'8'", "'47433af6-03c1-46bd-ab9b-dd0497035312'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T05:00:00.000+00:00'", "26.634"],
+
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b7'", "'BalanceFixing'", "'5'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T03:45:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b8'", "'BalanceFixing'", "'6'", "'47433af6-03c1-46bd-ab9b-dd0497035310'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T05:00:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b9'", "'BalanceFixing'", "'7'", "'47433af6-03c1-46bd-ab9b-dd0497035311'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T04:00:00.000+00:00'", "26.634"],
+            ]);
+
+        var actual = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-14T00:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"),
+            skip: 3,
+            take: 1).ToListAsync();
+
+        Assert.Single(actual);
+        Assert.Equal(5, actual[0].Time.ToDateTimeOffset().Hour);
+    }
+
+    [Fact]
     public async Task GetPerEnergySupplier_SkipTake_ReturnsExpectedRows()
     {
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
             [
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634", "'8236015961810'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634", "'8236015961810'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961810'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961811'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035310'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634", "'8236015961811'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035311'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634", "'8236015961811'"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035312'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035312'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634", "'8236015961810'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035310'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035311'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634", "'8236015961811'"],
             ]);
 
         var actual = await Sut.GetAsync(
@@ -173,5 +264,44 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         Assert.Single(actual);
         Assert.Equal(4, actual[0].Time.ToDateTimeOffset().Hour);
+    }
+
+    [Fact]
+    public async Task LatestGetPerEnergySupplier_SkipTake_ReturnsExpectedRows()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'BalanceFixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b4'", "'BalanceFixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T05:00:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b5'", "'BalanceFixing'", "'3'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:30:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b6'", "'BalanceFixing'", "'4'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T05:00:00.000+00:00'", "26.634", "'8236015961811'"],
+
+                // Expected output.
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1c0'", "'BalanceFixing'", "'8'", "'47433af6-03c1-46bd-ab9b-dd0497035312'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T05:00:00.000+00:00'", "26.634", "'8236015961811'"],
+
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b7'", "'BalanceFixing'", "'5'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T03:45:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b8'", "'BalanceFixing'", "'6'", "'47433af6-03c1-46bd-ab9b-dd0497035310'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T05:00:00.000+00:00'", "26.634", "'8236015961811'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b9'", "'BalanceFixing'", "'7'", "'47433af6-03c1-46bd-ab9b-dd0497035311'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T04:00:00.000+00:00'", "26.634", "'8236015961811'"],
+            ]);
+
+        var actual = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId>
+                {
+                    {
+                        "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-14T00:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8236015961811",
+                "da-DK"),
+            skip: 3,
+            take: 1).ToListAsync();
+
+        Assert.Single(actual);
+        Assert.Equal(5, actual[0].Time.ToDateTimeOffset().Hour);
     }
 }
