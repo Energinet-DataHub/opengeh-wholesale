@@ -23,9 +23,25 @@ from calculation.preparation.transformations import (
 from package.calculation.preparation.transformations import (
     get_prepared_tariffs,
 )
+from package.codelists import ChargeResolution
 from package.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+
+
+def create_default_price_information(
+    spark: SparkSession, charge_resolution: ChargeResolution
+):
+    return factory.create_charge_price_information(
+        spark,
+        [
+            factory.create_charge_price_information_row(
+                from_date=datetime(2021, 3, 26, 23),
+                to_date=datetime(2021, 4, 2, 22),
+                resolution=charge_resolution,
+            )
+        ],
+    )
 
 
 class TestWhenEnteringDaylightSavingTime:
@@ -34,6 +50,7 @@ class TestWhenEnteringDaylightSavingTime:
         spark: SparkSession,
     ) -> None:
         # Arrange
+        expected_number_of_rows = 5
         time_series_rows = [
             factory.create_time_series_row(observation_time=datetime(2021, 3, 27, 23)),
             factory.create_time_series_row(observation_time=datetime(2021, 3, 28, 0)),
@@ -81,7 +98,7 @@ class TestWhenEnteringDaylightSavingTime:
         )
 
         # Assert
-        assert actual.df.count() == 5
+        assert actual.df.count() == expected_number_of_rows
 
     def test__get_prepared_tariffs__when_daily_resolution__returns_expected_number_rows(
         self,
@@ -154,6 +171,7 @@ class TestWhenExitingDaylightSavingTime:
         spark: SparkSession,
     ) -> None:
         # Arrange
+        expected_number_of_rows = 5
         time_series_rows = [
             factory.create_time_series_row(observation_time=datetime(2021, 10, 30, 22)),
             factory.create_time_series_row(observation_time=datetime(2021, 10, 30, 23)),
@@ -200,7 +218,7 @@ class TestWhenExitingDaylightSavingTime:
         )
 
         # Assert
-        assert actual.df.count() == 5
+        assert actual.df.count() == expected_number_of_rows
 
     def test__get_prepared_tariffs__when_daily_resolution__returns_expected_number_rows(
         self,
