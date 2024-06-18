@@ -36,12 +36,12 @@ public class SettlementReportChargeLinkPeriodsViewColumns
         { MeteringPointId, ("string", false) },
         { MeteringPointType, ("string", false) },
         { ChargeType, ("string", false) },
-        { ChargeCode, ("string", true) },
+        { ChargeCode, ("string", false) },
         { ChargeOwnerId, ("string", false) },
-        { Quantity, ("int", true) },
+        { Quantity, ("int", false) },
         { FromDate, ("timestamp", false) },
-        { ToDate, ("timestamp", false) },
+        { ToDate, ("timestamp", true) },
         { GridArea, ("string", false) },
-        { EnergySupplierId, ("string", false) },
+        { EnergySupplierId, ("string", true) },
     };
 }

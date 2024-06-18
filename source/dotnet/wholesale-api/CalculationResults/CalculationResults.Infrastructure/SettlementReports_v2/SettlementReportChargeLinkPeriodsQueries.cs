@@ -61,6 +61,6 @@ public sealed class SettlementReportChargeLinkPeriodsQueries : ISettlementReport
             return SqlResultValueConverters.ToInt(rawValue)!.Value;
         }
 
-        throw new InvalidOperationException("Could not count result for SettlementReportWholesaleResultQueries.");
+        throw new InvalidOperationException("Could not count result for SettlementReportChargeLinkPeriodsQueries.");
     }
 }

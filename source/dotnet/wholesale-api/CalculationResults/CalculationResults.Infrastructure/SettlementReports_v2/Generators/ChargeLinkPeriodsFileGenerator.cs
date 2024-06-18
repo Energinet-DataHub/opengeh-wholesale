@@ -17,6 +17,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
@@ -91,25 +92,36 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
                 });
 
+            Map(r => r.ChargeType)
+                .Name("CHARGETYPE")
+                .Index(2)
+                .Convert(row => row.Value.ChargeType switch
+                {
+                    ChargeType.Tariff => "D03",
+                    ChargeType.Fee => "D02",
+                    ChargeType.Subscription => "D01",
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.ChargeType)),
+                });
+
             Map(r => r.ChargeOwnerId)
                 .Name("CHARGETYPEOWNERID")
-                .Index(2);
+                .Index(3);
 
             Map(r => r.ChargeCode)
                 .Name("CHARGETYPEID")
-                .Index(3);
+                .Index(4);
 
             Map(r => r.Quantity)
                 .Name("CHARGEOCCURRENCES")
-                .Index(4);
+                .Index(5);
 
             Map(r => r.PeriodStart)
                 .Name("PERIODSTART")
-                .Index(5);
+                .Index(6);
 
             Map(r => r.PeriodEnd)
                 .Name("PERIODEND")
-                .Index(6);
+                .Index(7);
         }
     }
 }

@@ -43,12 +43,12 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
                      WHERE 
-                         {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                         {SettlementReportWholesaleViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                          {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                          {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
-                         {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{_filter.EnergySupplier}'" : string.Empty)}
+                         {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                      ORDER BY 
                          {SettlementReportWholesaleViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
@@ -78,12 +78,12 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                                 JOIN 
                                     ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}.{SettlementReportWholesaleViewColumns.ResultId} = cr.{SettlementReportWholesaleViewColumns.ResultId}
                                 WHERE 
-                                    {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                                    {SettlementReportWholesaleViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                                     {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                                     {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                                     {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                                     {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
-                                    {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{_filter.EnergySupplier}'" : string.Empty)}
+                                    {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                             """;
         return
             sqlStatement;

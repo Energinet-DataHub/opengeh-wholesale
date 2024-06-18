@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
 USING DELTA
 TBLPROPERTIES (
     delta.deletedFileRetentionDuration = 'interval 30 days',
-    delta.constraints.calculation_type_chk = "calculation_type IN ( 'BalanceFixing' , 'Aggregation' , 'WholesaleFixing' , 'FirstCorrectionSettlement' , 'SecondCorrectionSettlement' , 'ThirdCorrectionSettlement' )",
+    delta.constraints.calculation_type_chk = "calculation_type IN ( 'balance_fixing' , 'aggregation' , 'wholesale_fixing' , 'first_correction_settlement' , 'second_correction_settlement' , 'third_correction_settlement' )",
     delta.constraints.time_series_type_chk = "time_series_type IN ( 'production' , 'non_profiled_consumption' , 'net_exchange_per_neighboring_ga' , 'net_exchange_per_ga' , 'flex_consumption' , 'grid_loss' , 'negative_grid_loss' , 'positive_grid_loss' , 'total_consumption' , 'temp_flex_consumption' , 'temp_production' )",
     delta.constraints.quantity_qualities_chk = "array_size ( array_except ( quantity_qualities , array ( 'missing' , 'calculated' , 'measured' , 'estimated' ) ) ) = 0 AND array_size ( quantity_qualities ) > 0",
     delta.constraints.aggregation_level_chk = "aggregation_level IN ( 'total_ga' , 'es_brp_ga' , 'es_ga' , 'brp_ga' )",
