@@ -42,7 +42,7 @@ public static class DatabricksTestHelper
 
     private static Dictionary<string, object?> CreateNewRow(
         string gridAre = "123",
-        string calculationType = "BalanceFixing",
+        string calculationType = "balance_fixing",
         string time = "2022-05-16T01:00:00.000Z",
         string timeSeriesType = "non_profiled_consumption",
         string quantity = "1.234",
