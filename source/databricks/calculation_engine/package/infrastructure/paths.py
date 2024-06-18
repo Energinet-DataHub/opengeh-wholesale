@@ -68,6 +68,9 @@ class CalculationResultsPublicDataModel:
     ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_per_ga_v1"
     ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME = "energy_per_brp_ga_v1"
     ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME = "energy_per_es_brp_ga_v1"
+    GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME = (
+        "grid_loss_metering_point_time_series_v1"
+    )
     AMOUNTS_PER_CHARGE_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_VIEW_NAME = "total_monthly_amounts_v1"
