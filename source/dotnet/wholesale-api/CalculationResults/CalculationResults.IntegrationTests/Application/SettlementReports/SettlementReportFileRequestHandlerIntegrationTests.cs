@@ -176,13 +176,13 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
                     .CHARGE_LINK_PERIODS_V1_VIEW_NAME,
                 [
                     [
-                        "'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'WholesaleFixing'",
+                        "'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'wholesale_fixing'",
                         "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'",
                         "'6392825108998'", "46", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'",
                         "'018'", "'8397670583196'"
                     ],
                     [
-                        "'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'WholesaleFixing'",
+                        "'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'wholesale_fixing'",
                         "'15cba911-b91e-4786-bed4-f0d28418a9e2'", "'consumption'", "'tariff'", "'40000'",
                         "'6392825108998'", "46", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'",
                         "'018'", "'8397670583191'"
@@ -284,8 +284,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'", "'018'", "'406'", "'407'", "'consumption'", "'flex'", "8397670583196"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'WholesaleFixing'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'", "'018'", "'406'", "'407'", "'consumption'", "'flex'", "8397670583196"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'wholesale_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'", "'018'", "'406'", "'407'", "'consumption'", "'flex'", "8397670583196"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'wholesale_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'", "'018'", "'406'", "'407'", "'consumption'", "'flex'", "8397670583196"],
             ]);
 
         // Act
