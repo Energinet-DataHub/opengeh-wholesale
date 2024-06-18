@@ -38,11 +38,11 @@ public sealed class SettlementReportMeteringPointMasterDataCountQueryStatement :
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}
                     WHERE
-                        {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportMeteringPointMasterDataViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportMeteringPointMasterDataViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
                         {SettlementReportMeteringPointMasterDataViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
-                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId + " = '" + _filter.EnergySupplier + "' AND")} 
+                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")} 
                         {SettlementReportMeteringPointMasterDataViewColumns.CalculationId} = '{_filter.CalculationId}'
                 """;
     }

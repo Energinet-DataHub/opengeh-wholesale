@@ -37,11 +37,11 @@ public sealed class SettlementReportEnergyResultPerEnergySupplierCountQueryState
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
                     WHERE
-                        {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}' AND
                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = '{_filter.CalculationId}' AND
-                        {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
+                        {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'
                 """;
     }
 }
