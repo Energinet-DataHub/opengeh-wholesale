@@ -18,9 +18,15 @@ import pytest
 from package.common import assert_schema
 
 
-any_schema = t.StructType(
+reference_schema = t.StructType(
     [
         t.StructField("foo", t.StringType(), False),
+        t.StructField("bar", t.IntegerType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
+    ]
+)
+schema_with_missing_column = t.StructType(
+    [
         t.StructField("bar", t.IntegerType(), False),
         t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
@@ -55,23 +61,39 @@ schema_with_other_datatype = t.StructType(
         t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
 )
+schema_with_more_columns = t.StructType(
+    [
+        t.StructField("foo", t.StringType(), False),
+        t.StructField("bar", t.IntegerType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
+        t.StructField("another-field", t.StringType(), True),
+    ]
+)
+schema_with_more_columns_and_different_column_order = t.StructType(
+    [
+        t.StructField("bar", t.IntegerType(), False),
+        t.StructField("another-field", t.StringType(), True),
+        t.StructField("foo", t.StringType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
+    ]
+)
 
 
 @pytest.mark.parametrize(
     "actual, expected, ignore_column_order, ignore_nullability",
     [
-        (any_schema, any_schema, False, False),
-        (any_schema, any_schema, False, True),
-        (any_schema, any_schema, True, False),
-        (any_schema, any_schema, True, True),
-        (any_schema, schema_with_other_column_order, True, False),
-        (any_schema, schema_with_other_column_order, True, True),
-        (any_schema, schema_with_other_nullability, False, True),
-        (any_schema, schema_with_other_nullability, True, True),
-        (any_schema, schema_with_other_column_order_and_nullability, True, True),
+        (reference_schema, reference_schema, False, False),
+        (reference_schema, reference_schema, False, True),
+        (reference_schema, reference_schema, True, False),
+        (reference_schema, reference_schema, True, True),
+        (reference_schema, schema_with_other_column_order, True, False),
+        (reference_schema, schema_with_other_column_order, True, True),
+        (reference_schema, schema_with_other_nullability, False, True),
+        (reference_schema, schema_with_other_nullability, True, True),
+        (reference_schema, schema_with_other_column_order_and_nullability, True, True),
     ],
 )
-def test__assert_schema__accepts_matching_schema(
+def test__accepts_matching_schema(
     actual: t.StructType,
     expected: t.StructType,
     ignore_column_order: bool,
@@ -89,37 +111,47 @@ def test__assert_schema__accepts_matching_schema(
 @pytest.mark.parametrize(
     "actual, expected, ignore_column_order, ignore_nullability",
     [
-        (any_schema, schema_with_other_column_order, False, False),
-        (any_schema, schema_with_other_column_order, False, True),
-        (any_schema, schema_with_other_nullability, False, False),
-        (any_schema, schema_with_other_nullability, True, False),
-        (any_schema, schema_with_other_column_order_and_nullability, False, False),
-        (any_schema, schema_with_other_column_order_and_nullability, False, True),
-        (any_schema, schema_with_other_column_order_and_nullability, True, False),
+        (schema_with_missing_column, reference_schema, True, True),
+        (reference_schema, schema_with_other_column_order, False, False),
+        (reference_schema, schema_with_other_column_order, False, True),
+        (reference_schema, schema_with_other_nullability, False, False),
+        (reference_schema, schema_with_other_nullability, True, False),
+        (
+            reference_schema,
+            schema_with_other_column_order_and_nullability,
+            False,
+            False,
+        ),
+        (reference_schema, schema_with_other_column_order_and_nullability, False, True),
+        (reference_schema, schema_with_other_column_order_and_nullability, True, False),
     ],
 )
-def test__assert_schema__when_schema_does_not_match__raises(
+def test__when_schema_does_not_match__raises(
     actual: t.StructType,
     expected: t.StructType,
     ignore_column_order: bool,
     ignore_nullability: bool,
 ) -> None:
     with pytest.raises(AssertionError):
-        assert_schema(actual, expected)
+        assert_schema(
+            actual,
+            expected,
+            ignore_column_order=ignore_column_order,
+            ignore_nullability=ignore_nullability,
+        )
 
 
-def test__assert_schema__when_lenient_and_other_datatype__raises_assertion_error() -> (
-    None
-):
+def test__when_lenient_and_other_datatype__raises_assertion_error() -> None:
     """Lenient refers to being as loose as possible in the check."""
     with pytest.raises(AssertionError):
         assert_schema(
-            any_schema,
+            reference_schema,
             schema_with_other_datatype,
             ignore_nullability=True,
             ignore_column_order=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
+            ignore_extra_actual_columns=True,
         )
 
 
@@ -133,7 +165,7 @@ def test__assert_schema__when_lenient_and_other_datatype__raises_assertion_error
         (t.DecimalType(18, 2), True, False),
     ],
 )
-def test__assert_schema__when_invalid_decimal_type__raises_assertion_error(
+def test__when_invalid_decimal_type__raises_assertion_error(
     expected_decimal: t.DecimalType,
     ignore_precision: bool,
     ignore_scale: bool,
@@ -159,7 +191,7 @@ def test__assert_schema__when_invalid_decimal_type__raises_assertion_error(
         (t.DecimalType(18, 2), False, True),
     ],
 )
-def test__assert_schema__when_decimal_type_should_be_accepted__does_not_raise(
+def test__when_decimal_type_should_be_accepted__does_not_raise(
     expected_decimal: t.DecimalType,
     ignore_precision: bool,
     ignore_scale: bool,
@@ -173,4 +205,36 @@ def test__assert_schema__when_decimal_type_should_be_accepted__does_not_raise(
         expected,
         ignore_decimal_scale=ignore_scale,
         ignore_decimal_precision=ignore_precision,
+    )
+
+
+def test__when_more_actual_columns_should_be_rejected__raises_assertion_error() -> None:
+    with pytest.raises(AssertionError):
+        assert_schema(
+            schema_with_more_columns,
+            reference_schema,
+            ignore_extra_actual_columns=False,
+        )
+
+
+def test__when_different_column_order_and_more_actual_columns_should_be_rejected__does_not_raise() -> (
+    None
+):
+    """
+    Test name is leaving out the fact that column ordering is ignored as well.
+    Otherwise, the name is too long.
+    """
+    assert_schema(
+        schema_with_more_columns_and_different_column_order,
+        reference_schema,
+        ignore_column_order=True,
+        ignore_extra_actual_columns=True,
+    )
+
+
+def test__when_more_actual_columns_should_be_accepted__does_not_raise() -> None:
+    assert_schema(
+        schema_with_more_columns,
+        reference_schema,
+        ignore_extra_actual_columns=True,
     )
