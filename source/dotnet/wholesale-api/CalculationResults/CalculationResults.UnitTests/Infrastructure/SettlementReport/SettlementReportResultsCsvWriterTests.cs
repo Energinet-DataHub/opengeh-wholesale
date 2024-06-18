@@ -52,7 +52,7 @@ public class SettlementReportResultsCsvWriterTests
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
-        var lines = text.Split(Environment.NewLine);
+        var lines = text.Split(["\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
         Assert.Equal("METERINGGRIDAREAID;ENERGYBUSINESSPROCESS;STARTDATETIME;RESOLUTIONDURATION;TYPEOFMP;SETTLEMENTMETHOD;ENERGYQUANTITY", lines[0]);
         Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;D01;1000,521", lines[1]);
@@ -77,7 +77,7 @@ public class SettlementReportResultsCsvWriterTests
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
-        var lines = text.Split(Environment.NewLine);
+        var lines = text.Split(["\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
         Assert.Equal("METERINGGRIDAREAID,ENERGYBUSINESSPROCESS,STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY", lines[0]);
         Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,D01,1000.521", lines[1]);
@@ -243,7 +243,7 @@ public class SettlementReportResultsCsvWriterTests
 
     private static string ReadValueForHeader(string csvText, string headerName)
     {
-        var lines = csvText.Split(Environment.NewLine);
+        var lines = csvText.Split(["\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
         var headerLine = lines[0];
         var headerValues = headerLine.Split(';');
