@@ -44,6 +44,9 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 if (reportRequest.IncludeBasisData)
                 {
                     setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
                 }
 
                 break;
@@ -53,6 +56,9 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 if (reportRequest.IncludeBasisData)
                 {
                     setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
                 }
 
                 break;
@@ -62,6 +68,9 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 if (reportRequest.IncludeBasisData)
                 {
                     setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
                 }
 
                 break;
@@ -71,6 +80,9 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 if (reportRequest.IncludeBasisData)
                 {
                     setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
                 }
 
                 break;
@@ -141,6 +153,40 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             reportRequest.Filter);
 
         await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultChargeLinkPeriods, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForMeteringPointMasterDataAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var request = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Master data for metering points", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForTimeSeriesAsync(
+            SettlementReportFileContent fileContent,
+            SettlementReportRequestId requestId,
+            SettlementReportRequestDto reportRequest)
+        {
+        var request = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo($"Time series {fileContent.ToString().ToUpperInvariant()}", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }
