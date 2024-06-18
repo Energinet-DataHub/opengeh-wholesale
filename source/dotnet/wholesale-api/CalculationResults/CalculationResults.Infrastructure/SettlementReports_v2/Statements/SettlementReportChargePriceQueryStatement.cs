@@ -47,7 +47,7 @@ public sealed class SettlementReportChargePriceQueryStatement : DatabricksStatem
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}
                      WHERE
-                         {SettlementReportChargePriceViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                         {SettlementReportChargePriceViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
                          {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
                          {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
@@ -71,7 +71,7 @@ public sealed class SettlementReportChargePriceQueryStatement : DatabricksStatem
                       ({chargePrice}) AS cp ON
                       {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME}.{SettlementReportChargePriceViewColumns.StartTime} = cp.{SettlementReportChargePriceViewColumns.StartTime}
                 WHERE 
-                        {SettlementReportChargePriceViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportChargePriceViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         cp.{SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
                         {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
