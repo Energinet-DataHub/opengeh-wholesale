@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using NodaTime;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed record SettlementReportChargeLinkPeriodsResultRow(
-    string MeteringPointId,
-    MeteringPointType? MeteringPointType,
-    ChargeType ChargeType,
-    string ChargeOwnerId,
-    string? ChargeCode,
-    int Quantity,
-    Instant PeriodStart,
-    Instant? PeriodEnd);
+public interface ISettlementReportMeteringPointMasterDataRepository
+{
+    Task<int> CountAsync(SettlementReportRequestFilterDto filter);
+
+    IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take);
+}

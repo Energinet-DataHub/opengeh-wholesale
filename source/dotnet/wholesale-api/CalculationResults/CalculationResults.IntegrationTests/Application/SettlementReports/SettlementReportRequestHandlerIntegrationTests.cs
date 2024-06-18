@@ -323,6 +323,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge Price", chargePricesResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
+
+        var meteringPointMasterDataResult = actual[3];
+        Assert.Equal(requestId, meteringPointMasterDataResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), meteringPointMasterDataResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResult.FileContent);
     }
 
     [Theory]
@@ -425,5 +431,17 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(calculationFilter.Last(), chargePricesResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge Price (806)", chargePricesResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultB.FileContent);
+
+        var meteringPointMasterDataResultA = actual[6];
+        Assert.Equal(requestId, meteringPointMasterDataResultA.RequestId);
+        Assert.Equal(calculationFilter.First(), meteringPointMasterDataResultA.RequestFilter.GridAreas.Single());
+        Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResultA.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResultA.FileContent);
+
+        var meteringPointMasterDataResultB = actual[7];
+        Assert.Equal(requestId, meteringPointMasterDataResultB.RequestId);
+        Assert.Equal(calculationFilter.Last(), meteringPointMasterDataResultB.RequestFilter.GridAreas.Single());
+        Assert.Equal("Master data for metering points (806)", meteringPointMasterDataResultB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResultB.FileContent);
     }
 }

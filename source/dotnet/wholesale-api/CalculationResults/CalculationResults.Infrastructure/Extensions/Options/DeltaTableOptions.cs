@@ -58,5 +58,7 @@ public class DeltaTableOptions
 
     public string CHARGE_LINK_PERIODS_V1_VIEW_NAME { get; set; } = "charge_link_periods_v1";
 
+    public string METERING_POINT_MASTER_DATA_V1_VIEW_NAME { get; set; } = "metering_point_periods_v1";
+
     public string CHARGE_PRICES_V1_VIEW_NAME { get; set; } = "charge_prices_v1";
 }
