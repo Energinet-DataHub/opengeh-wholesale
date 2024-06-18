@@ -82,3 +82,20 @@ class TestWhenValidInput:
 
         # Assert
         assert_dataframes_equal(actual, expected)
+
+
+# TODO BJM: Doc that the tests is about being resilient to extra columns (non-breaking change)
+#           What about different ordering of columns?
+class TestWhenValidInputAndExtraColumns:
+    def test_returns_expected_df(self, spark: SparkSession) -> None:
+        # Arrange
+        row = _create_grid_loss_metering_point_row()
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
+        df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            reader.read_grid_loss_metering_points()

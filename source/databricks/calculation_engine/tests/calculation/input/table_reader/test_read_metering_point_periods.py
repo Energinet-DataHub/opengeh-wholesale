@@ -54,7 +54,23 @@ class TestWhenValidInput:
         assert_dataframes_equal(actual, df)
 
 
+class TestWhenValidInputAndMoreColumns:
+    def test_raises_assertion_error(self, spark: SparkSession) -> None:
+        # Arrange
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        row = factory.create_row()
+        df = factory.create(spark, row)
+        df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            reader.read_metering_point_periods()
+
+
 class TestWhenSchemaMismatch:
+    # TODO BJM: Add tests for other cases (all read methods)
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")

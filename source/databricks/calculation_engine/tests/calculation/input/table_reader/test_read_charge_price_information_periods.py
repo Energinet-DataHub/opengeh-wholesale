@@ -94,3 +94,23 @@ class TestWhenValidInput:
 
         # Assert
         assert_dataframes_equal(actual, expected)
+
+
+class TestWhenValidInputAndMoreColumns:
+    def test__returns_expected_df(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        row = _create_charge_price_information_period_row()
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        df = spark.createDataFrame(
+            data=[row], schema=charge_price_information_periods_schema
+        )
+        df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            reader.read_charge_price_information_periods()
