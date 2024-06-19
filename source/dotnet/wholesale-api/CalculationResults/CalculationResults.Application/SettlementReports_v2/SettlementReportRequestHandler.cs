@@ -71,6 +71,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                         new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "Charge links on metering points", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.ChargePrice, Name = "Charge prices", SplitReportPerGridArea = true },
                     ],
                     _ => throw new InvalidOperationException($"Cannot basis data for calculation type {reportRequest.Filter.CalculationType}."),
                 }
