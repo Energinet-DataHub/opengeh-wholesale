@@ -414,6 +414,63 @@ def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
     assert actual.df.count() == 2
 
 
+def test__get_prepared_tariffs__when_tariff_stops_and_starts_again__returns_expected_quantities(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    jan_1st = datetime(2020, 1, 31, 23)
+    jan_2nd = datetime(2020, 2, 1, 23)
+    jan_3rd = datetime(2020, 2, 2, 23)
+
+    time_series_rows = [
+        factory.create_time_series_row(observation_time=jan_1st, quantity=Decimal(1)),
+        factory.create_time_series_row(observation_time=jan_2nd, quantity=Decimal(1)),
+        factory.create_time_series_row(observation_time=jan_3rd, quantity=Decimal(1)),
+    ]
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
+            from_date=jan_1st, to_date=jan_2nd, resolution=e.ChargeResolution.DAY
+        ),
+        factory.create_charge_price_information_row(
+            from_date=jan_2nd, to_date=jan_3rd, resolution=e.ChargeResolution.DAY
+        ),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(),
+    ]
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF, from_date=jan_1st, to_date=jan_3rd
+        ),
+    ]
+
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
+
+    # Act
+    actual = get_prepared_tariffs(
+        time_series,
+        charge_price_information,
+        charge_prices,
+        charge_link_metering_point_periods,
+        e.ChargeResolution.DAY,
+        DEFAULT_TIME_ZONE,
+    )
+
+    # Assert
+    assert actual.df.count() == 2
+
+
 def test__get_prepared_tariffs__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:

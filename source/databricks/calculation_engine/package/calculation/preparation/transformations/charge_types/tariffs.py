@@ -76,12 +76,9 @@ def _join_price_information_periods_and_prices_add_missing_prices(
     time_zone: str,
 ) -> DataFrame:
     charge_prices = charge_prices.df
-    charge_price_information_filtered = charge_price_information.df.filter(
-        f.col(Colname.resolution) == resolution.value
-    )
 
     charges_with_no_prices = get_charges_with_no_prices(
-        charge_price_information_filtered, resolution, time_zone
+        charge_price_information, resolution, time_zone
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
@@ -94,8 +91,6 @@ def _join_price_information_periods_and_prices_add_missing_prices(
         charges_with_no_prices[Colname.charge_tax],
         charges_with_no_prices[Colname.resolution],
         charges_with_no_prices[Colname.charge_time],
-        charges_with_no_prices[Colname.from_date],
-        charges_with_no_prices[Colname.to_date],
         Colname.charge_price,
     )
 
@@ -103,38 +98,57 @@ def _join_price_information_periods_and_prices_add_missing_prices(
 
 
 def get_charges_with_no_prices(
-    charge_price_information_filtered: DataFrame,
+    charge_price_information: ChargePriceInformation,
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
-    if resolution == ChargeResolution.HOUR:
-        return charge_price_information_filtered.withColumn(
-            Colname.charge_time,
-            f.explode(
-                f.sequence(
-                    Colname.from_date,
-                    Colname.to_date,
-                    f.expr("interval 1 hour"),
-                )
-            ),
-        )
-    elif resolution == ChargeResolution.DAY:
-        # When resolution is DAY we need to deal with local time to get the correct start time of each day
-        return charge_price_information_filtered.withColumn(
-            Colname.charge_time,
-            f.explode(
-                # Create a sequence of the start of each day in the period. The times are local time
-                f.sequence(
-                    f.from_utc_timestamp(Colname.from_date, time_zone),
-                    f.from_utc_timestamp(Colname.to_date, time_zone),
-                    f.expr("interval 1 day"),
-                )
-            ),
-            # Convert local day start times back to UTC
-        ).withColumn(
-            Colname.charge_time,
-            f.to_utc_timestamp(Colname.charge_time, time_zone),
-        )
+    charge_price_information = charge_price_information.df.filter(
+        f.col(Colname.resolution) == resolution.value
+    )
+
+    def explode_within_periods():
+        if resolution == ChargeResolution.HOUR:
+            return charge_price_information.withColumn(
+                Colname.charge_time,
+                f.explode(
+                    f.sequence(
+                        Colname.from_date,
+                        Colname.to_date,
+                        f.expr("interval 1 hour"),
+                    )
+                ),
+            )
+        elif resolution == ChargeResolution.DAY:
+            # When resolution is DAY we need to deal with local time to get the correct start time of each day
+            return charge_price_information.withColumn(
+                Colname.charge_time,
+                f.explode(
+                    # Create a sequence of the start of each day in the period. The times are local time
+                    f.sequence(
+                        f.from_utc_timestamp(Colname.from_date, time_zone),
+                        f.from_utc_timestamp(Colname.to_date, time_zone),
+                        f.expr("interval 1 day"),
+                    )
+                ),
+                # Convert local day start times back to UTC
+            ).withColumn(
+                Colname.charge_time,
+                f.to_utc_timestamp(Colname.charge_time, time_zone),
+            )
+
+    charge_price_information_with_no_prices = explode_within_periods().dropDuplicates(
+        [Colname.charge_key, Colname.charge_time]
+    )
+
+    return charge_price_information_with_no_prices.select(
+        Colname.charge_key,
+        Colname.charge_code,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_tax,
+        Colname.resolution,
+        Colname.charge_time,
+    )
 
 
 def _join_with_charge_link_metering_points(
