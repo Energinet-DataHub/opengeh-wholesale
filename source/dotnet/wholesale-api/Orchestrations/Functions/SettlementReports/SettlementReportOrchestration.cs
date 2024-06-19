@@ -31,14 +31,14 @@ internal sealed class SettlementReportOrchestration
          [OrchestrationTrigger] TaskOrchestrationContext context,
          FunctionContext executionContext)
     {
-        var settlementReportRequest = context.GetInput<SettlementReportRequestDto>();
+        var settlementReportRequest = context.GetInput<SettlementReportRequestInput>();
         if (settlementReportRequest == null)
         {
             return "Error: No input specified.";
         }
 
         var requestId = new SettlementReportRequestId(context.InstanceId);
-        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest);
+        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest.Request, settlementReportRequest.MarketRole);
 
         var dataSourceExceptionHandler = TaskOptions.FromRetryHandler(retryContext => HandleDataSourceExceptions(
                 retryContext,

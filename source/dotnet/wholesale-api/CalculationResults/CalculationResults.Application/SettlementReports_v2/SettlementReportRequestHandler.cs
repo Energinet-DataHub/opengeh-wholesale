@@ -33,7 +33,8 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
+        SettlementReportRequestDto reportRequest,
+        MarketRole marketRole)
     {
         const string energyResultFileName = "Result Energy";
         const string wholesaleResultFileName = "Result Wholesale";
@@ -88,7 +89,8 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 file.Content,
                 new SettlementReportPartialFileInfo(file.Name, true),
                 reportRequest.Filter,
-                maxCalculationVersion);
+                maxCalculationVersion,
+                marketRole);
 
             await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, file.SplitReportPerGridArea).ConfigureAwait(false))
             {
