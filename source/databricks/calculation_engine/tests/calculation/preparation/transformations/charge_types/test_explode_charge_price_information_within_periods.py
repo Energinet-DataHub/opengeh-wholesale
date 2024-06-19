@@ -32,12 +32,35 @@ FEB_3RD = datetime(2020, 2, 2, 23)
 FEB_4TH = datetime(2020, 2, 3, 23)
 
 
-def get_delta_time(charge_resolution: e.ChargeResolution) -> timedelta:
-    return (
-        timedelta(hours=1)
-        if charge_resolution == e.ChargeResolution.HOUR
-        else timedelta(days=1)
-    )
+class TestWhenChargeResolutionDiffersFormHourOrDay:
+    """
+    When the charge resolution is not hour or day, then an exception should be raised.
+    """
+
+    def test__explode_charge_price_information_within_periods__when_resolution_is_not_hour_nor_day__raises_value_error(
+        self, spark: SparkSession
+    ) -> None:
+
+        # Arrange
+        charge_price_information_rows = [
+            factory.create_charge_price_information_row(
+                from_date=FEB_1ST, to_date=FEB_2ND, resolution=ChargeResolution.MONTH
+            )
+        ]
+
+        charge_price_information = factory.create_charge_price_information(
+            spark, charge_price_information_rows
+        )
+
+        # Act & Assert
+        with pytest.raises(ValueError) as exc_info:
+            explode_charge_price_information_within_periods(
+                charge_price_information,
+                ChargeResolution.MONTH,
+                DEFAULT_TIME_ZONE,
+            )
+
+        assert "Unsupported resolution" in str(exc_info.value)
 
 
 class TestWhenChargePeriodStopsAndStartsOnSameDay:

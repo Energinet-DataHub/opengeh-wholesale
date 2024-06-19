@@ -28,6 +28,8 @@ def explode_charge_price_information_within_periods(
     """
     This method takes explodes each row into a set of rows given by from_date, to_date and charge_resolution.
     """
+    if resolution != ChargeResolution.HOUR and resolution != ChargeResolution.DAY:
+        raise ValueError(f"Unsupported resolution {resolution}")
 
     charge_price_information_df = charge_price_information.df.filter(
         f.col(Colname.resolution) == resolution.value
