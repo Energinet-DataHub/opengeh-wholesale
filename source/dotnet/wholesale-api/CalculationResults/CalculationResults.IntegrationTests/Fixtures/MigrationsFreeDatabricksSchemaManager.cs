@@ -62,6 +62,7 @@ public class MigrationsFreeDatabricksSchemaManager
         await CreateTableAsync(DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME, SettlementReportMeteringPointMasterDataViewColumns.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, EnergyResultsTableSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME, WholesaleResultsTableSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME, SettlementReportChargePriceViewColumns.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()

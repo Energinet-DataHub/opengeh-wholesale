@@ -119,6 +119,8 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportChargeLinkPeriodsQueries, SettlementReportChargeLinkPeriodsQueries>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataRepository, SettlementReportMeteringPointMasterDataRepository>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataQueries, SettlementReportMeteringPointMasterDataQueries>();
+        services.AddScoped<ISettlementReportChargePriceRepository, SettlementReportChargePriceRepository>();
+        services.AddScoped<ISettlementReportChargePriceQueries, SettlementReportChargePriceQueries>();
         services.AddSettlementReportBlobStorage();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
