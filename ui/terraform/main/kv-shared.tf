@@ -48,11 +48,6 @@ data "azurerm_key_vault_secret" "authentication_invitation_user_flow_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "primary_action_group_id" {
-  name         = "ag-primary-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "apim_logger_id" {
   name         = "apim-logger-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -83,8 +78,12 @@ data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-
 data "azurerm_key_vault_secret" "log_shared_id" {
   name         = "log-shared-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "appi_shared_id" {
+  name         = "appi-shared-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

@@ -14,8 +14,6 @@ module "backend_for_frontend" {
   app_service_plan_id                    = module.webapp_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/monitor/ready"
-  health_check_alert_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled             = var.enable_health_check_alerts
   dotnet_framework_version               = "v6.0"
   role_assignments = [
     {
@@ -23,6 +21,12 @@ module "backend_for_frontend" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
+
+  monitor_action_group = length(module.monitor_action_group_ui) != 1 ? null : {
+    id                  = module.monitor_action_group_ui[0].id
+    resource_group_name = azurerm_resource_group.this.name
+  }
+
   app_settings = {
     ApiClientSettings__MarketParticipantBaseUrl       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-api-base-url)"
     ApiClientSettings__WholesaleBaseUrl               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-wholesale-webapi-base-url)"
