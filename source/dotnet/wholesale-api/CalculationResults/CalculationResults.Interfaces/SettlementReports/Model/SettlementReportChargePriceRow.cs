@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.States;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public class SettlementDownloadInput
-{
-    public IList<string> GridAreaCodes { get; } = new List<string>();
-
-    public CalculationType CalculationType { get; set; }
-
-    public DateTimeOffset CalculationPeriodStart { get; set; }
-
-    public DateTimeOffset CalculationPeriodEnd { get; set; }
-}
+public sealed record SettlementReportChargePriceRow(
+    ChargeType ChargeType,
+    string ChargeCode,
+    string ChargeOwnerId,
+    Resolution Resolution,
+    bool TaxIndicator,
+    Instant StartDateTime,
+    IReadOnlyCollection<decimal> EnergyPrices);

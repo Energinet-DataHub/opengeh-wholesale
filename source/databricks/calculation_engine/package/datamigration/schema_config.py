@@ -159,6 +159,9 @@ schema_config = [
             View(
                 name=paths.CalculationResultsPublicDataModel.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME
             ),
+            View(
+                name=paths.CalculationResultsPublicDataModel.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME
+            ),
         ],
     ),
 ]

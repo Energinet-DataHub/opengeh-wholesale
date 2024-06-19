@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed record SettlementReportChargeLinkPeriodsResultRow(
     string MeteringPointId,
-    MeteringPointType? MeteringPointType,
+    MeteringPointType MeteringPointType,
     ChargeType ChargeType,
     string ChargeOwnerId,
     string? ChargeCode,

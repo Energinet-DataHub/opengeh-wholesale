@@ -27,4 +27,5 @@ public enum SettlementReportFileContent
     Pt15M,
     Pt1H,
     MonthlyAmount,
+    ChargePrice,
 }
