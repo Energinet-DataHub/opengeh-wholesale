@@ -61,7 +61,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportMonthlyAmountQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.CalculationType,
             filter.EnergySupplier,
