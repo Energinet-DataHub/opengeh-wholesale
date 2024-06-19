@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
-using System.IO.Compression;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.States;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public class SettlementReportScenarioState
-{
-    public SettlementDownloadInput SettlementDownloadInput { get; } = new();
-
-    [NotNull]
-    public ZipArchive? CompressedSettlementReport { get; set; }
-
-    [NotNull]
-    public ZipArchiveEntry? Entry { get; set; }
-
-    public string[] EntryDataLines { get; set; } = Array.Empty<string>();
-}
+public sealed record SettlementReportLatestEnergyResultQueryFilter(
+    string GridAreaCode,
+    Instant PeriodStart,
+    Instant PeriodEnd);

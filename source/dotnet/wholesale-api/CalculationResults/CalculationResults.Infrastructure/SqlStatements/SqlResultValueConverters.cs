@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
+using System.Text.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -26,7 +27,8 @@ public static class SqlResultValueConverters
 {
     public static Instant? ToInstant(string? value)
     {
-        if (value == null) return null;
+        if (value == null)
+            return null;
         return InstantPattern.ExtendedIso.Parse(value).Value;
     }
 
@@ -46,13 +48,15 @@ public static class SqlResultValueConverters
 
     public static decimal? ToDecimal(string? value)
     {
-        if (value == null) return null;
+        if (value == null)
+            return null;
         return decimal.Parse(value, CultureInfo.InvariantCulture);
     }
 
     public static DateTimeOffset? ToDateTimeOffset(string? value)
     {
-        if (value == null) return null;
+        if (value == null)
+            return null;
         return DateTimeOffset.Parse(value, CultureInfo.InvariantCulture);
     }
 
@@ -82,5 +86,12 @@ public static class SqlResultValueConverters
                 actualValue: value,
                 "Value does not contain a valid string representation of a boolean."),
         };
+    }
+
+    public static T ToType<T>(string value)
+    {
+        if (value == null)
+            return default!;
+        return JsonSerializer.Deserialize<T>(value)!;
     }
 }

@@ -20,6 +20,7 @@ public class SettlementReportEnergyResultViewSchemaDefinition
     {
         { SettlementReportEnergyResultViewColumns.CalculationId, ("string", false) },
         { SettlementReportEnergyResultViewColumns.CalculationType, ("string", false) },
+        { SettlementReportEnergyResultViewColumns.CalculationVersion, ("string", false) },
         { SettlementReportEnergyResultViewColumns.ResultId, ("string", false) },
         { SettlementReportEnergyResultViewColumns.GridArea, ("string", false) },
         { SettlementReportEnergyResultViewColumns.MeteringPointType, ("string", false) },
