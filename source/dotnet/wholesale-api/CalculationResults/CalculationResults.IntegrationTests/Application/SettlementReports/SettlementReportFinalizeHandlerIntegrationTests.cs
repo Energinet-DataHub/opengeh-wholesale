@@ -39,7 +39,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         false,
         false,
         new SettlementReportRequestFilterDto(
-            new Dictionary<string, CalculationId>(),
+            new Dictionary<string, CalculationId?>(),
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
             CalculationType.BalanceFixing,

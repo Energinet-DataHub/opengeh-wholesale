@@ -39,6 +39,13 @@ public static class SqlResultValueConverters
         return int.Parse(value, CultureInfo.InvariantCulture);
     }
 
+    public static long? ToLong(string? value)
+    {
+        if (value == null)
+            return null;
+        return long.Parse(value, CultureInfo.InvariantCulture);
+    }
+
     public static decimal? ToDecimal(string? value)
     {
         if (value == null)

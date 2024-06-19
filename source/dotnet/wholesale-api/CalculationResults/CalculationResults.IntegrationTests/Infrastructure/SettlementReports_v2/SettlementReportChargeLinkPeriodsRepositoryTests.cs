@@ -66,7 +66,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
@@ -93,7 +93,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "403", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
@@ -121,7 +121,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
 
         var results = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>()
+                new Dictionary<string, CalculationId?>()
                 {
                     {
                         "404", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))

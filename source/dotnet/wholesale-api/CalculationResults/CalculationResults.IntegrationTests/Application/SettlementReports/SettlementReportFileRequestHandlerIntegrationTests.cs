@@ -112,7 +112,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.WholesaleFixing,
@@ -121,10 +121,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.EnergyResultForCalculationId,
-            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             requestId,
-            filter);
+            SettlementReportFileContent.EnergyResult,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
@@ -162,7 +163,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b3");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.WholesaleFixing,
@@ -171,10 +172,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             SettlementReportFileContent.ChargeLinksPeriods,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager
             .InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
@@ -226,7 +228,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var calculationId = Guid.Parse("891b7070-b80f-4731-8714-76221e27c366");
         var gridAreaCode = "404";
         var filter = new SettlementReportRequestFilterDto(
-            new Dictionary<string, CalculationId>
+            new Dictionary<string, CalculationId?>
             {
                 {
                     gridAreaCode, new CalculationId(calculationId)
@@ -240,10 +242,12 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             content,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
+
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
@@ -273,7 +277,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26de");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.WholesaleFixing,
@@ -282,10 +286,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             SettlementReportFileContent.MeteringPointMasterData,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
