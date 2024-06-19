@@ -34,6 +34,7 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 FEB_1ST = datetime(2020, 1, 31, 23)
 FEB_2ND = datetime(2020, 2, 1, 23)
 FEB_3RD = datetime(2020, 2, 2, 23)
+FEB_4TH = datetime(2020, 2, 3, 23)
 
 
 def _create_expected_prepared_tariffs_row(
@@ -485,6 +486,76 @@ def test__get_prepared_tariffs__when_tariff_stops_and_starts_on_same_day__return
     assert actual_df[0][Colname.quantity] == quantity_feb_1st
     assert actual_df[1][Colname.charge_time] == FEB_2ND
     assert actual_df[1][Colname.quantity] == quantity_feb_2nd
+
+
+@pytest.mark.parametrize(
+    "charge_resolution", [e.ChargeResolution.HOUR, e.ChargeResolution.DAY]
+)
+def test__get_prepared_tariffs__when_tariff_stops_for_one_day__returns_expected_quantities(
+    spark: SparkSession, charge_resolution: e.ChargeResolution
+) -> None:
+    # Arrange
+    quantity_feb_1st = Decimal(1)
+    quantity_feb_3rd = Decimal(3)
+
+    time_series_rows = [
+        factory.create_time_series_row(
+            observation_time=FEB_1ST, quantity=quantity_feb_1st
+        ),
+        factory.create_time_series_row(
+            observation_time=FEB_3RD, quantity=quantity_feb_3rd
+        ),
+    ]
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
+            from_date=FEB_1ST, to_date=FEB_2ND, resolution=charge_resolution
+        ),
+        factory.create_charge_price_information_row(
+            from_date=FEB_3RD, to_date=FEB_4TH, resolution=charge_resolution
+        ),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(charge_time=FEB_1ST),
+    ]
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF, from_date=FEB_1ST, to_date=FEB_2ND
+        ),
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF, from_date=FEB_3RD, to_date=FEB_4TH
+        ),
+    ]
+
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
+
+    # Act
+    actual = get_prepared_tariffs(
+        time_series,
+        charge_price_information,
+        charge_prices,
+        charge_link_metering_point_periods,
+        charge_resolution,
+        DEFAULT_TIME_ZONE,
+    )
+
+    # Assert
+    assert actual.df.count() == 2
+    actual_df = actual.df.orderBy(Colname.charge_time).collect()
+    assert actual_df[0][Colname.charge_time] == FEB_1ST
+    assert actual_df[0][Colname.quantity] == quantity_feb_1st
+    assert actual_df[1][Colname.charge_time] == FEB_3RD
+    assert actual_df[1][Colname.quantity] == quantity_feb_3rd
 
 
 def test__get_prepared_tariffs__returns_expected_tariff_values(
