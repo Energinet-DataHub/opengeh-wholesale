@@ -1,6 +1,6 @@
 import pyspark.sql.types as t
 
-monthly_amounts_v1_schema = t.StructType(
+monthly_amounts_v1 = t.StructType(
     [
         t.StructField("calculation_id", t.StringType(), False),
         t.StructField("calculation_type", t.StringType(), False),

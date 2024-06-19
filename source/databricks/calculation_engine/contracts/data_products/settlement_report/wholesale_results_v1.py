@@ -1,6 +1,6 @@
 import pyspark.sql.types as t
 
-wholesale_results_v1_schema = t.StructType(
+wholesale_results_v1 = t.StructType(
     [
         t.StructField("calculation_id", t.StringType(), False),
         t.StructField("calculation_type", t.StringType(), False),

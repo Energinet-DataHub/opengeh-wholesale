@@ -7,7 +7,7 @@ element = t.StructType(
     ]
 )
 
-metering_point_time_series_v1_schema = t.StructType(
+metering_point_time_series_v1 = t.StructType(
     [
         t.StructField("calculation_id", t.StringType(), False),
         t.StructField("calculation_type", t.StringType(), False),
