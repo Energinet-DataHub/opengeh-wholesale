@@ -36,11 +36,13 @@ JAN_5TH = datetime(2022, 1, 4, 23)
 FEB_1ST = datetime(2022, 1, 31, 23)
 
 
-def _create_default_charge_master_data(spark: SparkSession) -> d.ChargeMasterData:
-    return factory.create_charge_master_data(
+def _create_default_charge_price_information(
+    spark: SparkSession,
+) -> d.ChargePriceInformation:
+    return factory.create_charge_price_information(
         spark,
         [
-            factory.create_charge_master_data_row(
+            factory.create_charge_price_information_row(
                 charge_type=e.ChargeType.FEE,
                 resolution=e.ChargeResolution.MONTH,
                 from_date=JAN_1ST,
@@ -105,7 +107,7 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
     ) -> None:
         # Arrange
         charge_price = Decimal("1.123456")
-        charge_master_data = _create_default_charge_master_data(spark)
+        charge_price_information = _create_default_charge_price_information(spark)
         charge_prices = _create_charge_price(spark, charge_time, charge_price)
         charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
             spark, charge_link_from_date
@@ -113,7 +115,7 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
 
         # Act
         actual = get_prepared_fees(
-            charge_master_data,
+            charge_price_information,
             charge_prices,
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,
@@ -131,7 +133,7 @@ class TestWhenChargeTimeIsAfterLinkPeriod:
     ) -> None:
         # Arrange
         charge_price = Decimal("1.123456")
-        charge_master_data = _create_default_charge_master_data(spark)
+        charge_price_information = _create_default_charge_price_information(spark)
         charge_prices = _create_charge_price(spark, JAN_3RD, charge_price)
         charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
             spark, JAN_1ST
@@ -139,7 +141,7 @@ class TestWhenChargeTimeIsAfterLinkPeriod:
 
         # Act
         actual = get_prepared_fees(
-            charge_master_data,
+            charge_price_information,
             charge_prices,
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,
@@ -163,7 +165,7 @@ class TestWhenHavingTwoLinksThatDoNotOverlapWithChargeTime:
         charge_time = JAN_1ST
         charge_price = Decimal("1.123456")
 
-        charge_master_data = _create_default_charge_master_data(spark)
+        charge_price_information = _create_default_charge_price_information(spark)
         charge_prices = _create_charge_price(spark, charge_time, charge_price)
         charge_link_metering_points_rows = [
             factory.create_charge_link_metering_point_periods_row(
@@ -188,7 +190,7 @@ class TestWhenHavingTwoLinksThatDoNotOverlapWithChargeTime:
 
         # Act
         actual = get_prepared_fees(
-            charge_master_data,
+            charge_price_information,
             charge_prices,
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,
@@ -222,15 +224,15 @@ class TestWhenValidInput:
                 charge_type=e.ChargeType.TARIFF
             ),
         ]
-        charge_master_data_rows = [
-            factory.create_charge_master_data_row(
+        charge_price_information_rows = [
+            factory.create_charge_price_information_row(
                 charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
             ),
-            factory.create_charge_master_data_row(
+            factory.create_charge_price_information_row(
                 charge_type=e.ChargeType.SUBSCRIPTION,
                 resolution=e.ChargeResolution.MONTH,
             ),
-            factory.create_charge_master_data_row(),
+            factory.create_charge_price_information_row(),
         ]
         charge_prices_rows = [
             factory.create_charge_prices_row(
@@ -247,14 +249,14 @@ class TestWhenValidInput:
                 spark, charge_link_metering_points_rows
             )
         )
-        charge_master_data = factory.create_charge_master_data(
-            spark, charge_master_data_rows
+        charge_price_information = factory.create_charge_price_information(
+            spark, charge_price_information_rows
         )
         charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
         actual = get_prepared_fees(
-            charge_master_data,
+            charge_price_information,
             charge_prices,
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,

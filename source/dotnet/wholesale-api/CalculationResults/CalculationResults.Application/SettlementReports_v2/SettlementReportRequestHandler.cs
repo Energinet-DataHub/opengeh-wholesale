@@ -33,7 +33,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var setsOfFiles = new List<IAsyncEnumerable<SettlementReportFileRequestDto>>();
 
-        switch (reportRequest.CalculationType)
+        switch (reportRequest.Filter.CalculationType)
         {
             case CalculationType.BalanceFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(true, requestId, reportRequest));
@@ -41,21 +41,57 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             case CalculationType.WholesaleFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.WholesaleResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.FirstCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.FirstCorrectionResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.SecondCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.SecondCorrectionResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.ThirdCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.ThirdCorrectionResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
+                }
+
                 break;
             default:
-                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
+                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.Filter.CalculationType}.");
         }
 
         var filesToRequest = new List<SettlementReportFileRequestDto>();
@@ -82,7 +118,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var resultEnergy = new SettlementReportFileRequestDto(
             fileContent,
-            new SettlementReportPartialFileInfo("Result Energy"),
+            new SettlementReportPartialFileInfo("Result Energy", true),
             requestId,
             reportRequest.Filter);
 
@@ -99,11 +135,79 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var resultWholesale = new SettlementReportFileRequestDto(
                 wholesaleFileContent,
-                new SettlementReportPartialFileInfo("Result Wholesale"),
+                new SettlementReportPartialFileInfo("Result Wholesale", true),
                 requestId,
                 reportRequest.Filter);
 
         await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargeLinkPeriodsAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var resultChargeLinkPeriods = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Charge links on metering points", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultChargeLinkPeriods, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForMeteringPointMasterDataAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var request = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Master data for metering points", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForTimeSeriesAsync(
+            SettlementReportFileContent fileContent,
+            SettlementReportRequestId requestId,
+            SettlementReportRequestDto reportRequest)
+        {
+        var request = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo($"Time series {fileContent.ToString().ToUpperInvariant()}", true),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargePriceAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var fileRequest = new SettlementReportFileRequestDto(
+                fileContent,
+                new SettlementReportPartialFileInfo("Charge Price", true),
+                requestId,
+                reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }
@@ -138,16 +242,15 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             {
                 yield return splitFileRequest;
 
-                // Keep track of the offset of the chunks, so that the next grid area begins at the correct offset.
                 partialFileInfo = splitFileRequest.PartialFileInfo with
                 {
-                    ChunkOffset = splitFileRequest.PartialFileInfo.ChunkOffset + 1,
+                    FileOffset = splitFileRequest.PartialFileInfo.FileOffset + 1,
+                    ChunkOffset = 0,
                 };
             }
         }
     }
 
-    // Note: Always return ChunkOffset in increasing order, as SplitFileRequestPerGridAreaAsync expects last ChunkOffset to be the highest.
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestIntoChunksAsync(
         SettlementReportFileRequestDto fileRequest)
     {

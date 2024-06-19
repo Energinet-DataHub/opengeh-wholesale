@@ -15,6 +15,28 @@
 from pyspark.sql.types import DecimalType, StructField, StructType, ArrayType, DataType
 
 
+def assert_contract(actual_schema: StructType, contract: StructType) -> None:
+    """
+    Asserts that the actual schema matches the contract of the public data model (data product data contract).
+    Non-breaking changes are allowed, such as adding new columns or changing column ordering.
+    """
+    try:
+        assert_schema(
+            actual_schema,
+            contract,
+            ignore_extra_actual_columns=True,
+            ignore_column_order=True,
+            # Consider: Contract changes from nullable=False to nullable=True should be considered a breaking change
+            ignore_nullability=True,
+        )
+    except AssertionError as e:
+        raise AssertionError(
+            f"""The data source does not comply with the contract.
+            Were breaking changes made without a new major version?
+            Is the contract correct? Details: {str(e)}"""
+        )
+
+
 def assert_schema(
     actual: StructType,
     expected: StructType,
@@ -22,6 +44,7 @@ def assert_schema(
     ignore_column_order: bool = False,
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
+    ignore_extra_actual_columns: bool = False,
 ) -> None:
     """
     When actual schema does not match the expected schema,
@@ -38,6 +61,7 @@ def assert_schema(
         or ignore_column_order
         or ignore_decimal_precision
         or ignore_decimal_scale
+        or ignore_extra_actual_columns
     )
     if strict:
         _raise(f"Expected {expected}, but got {actual}.")
@@ -45,9 +69,20 @@ def assert_schema(
     actual_fields = actual.fields
     expected_fields = expected.fields
 
+    if ignore_extra_actual_columns:
+        expected_field_names = set(field.name for field in expected_fields)
+        actual_fields = [f for f in actual if f.name in expected_field_names]
+
     if ignore_column_order:
         actual_fields = sorted(actual_fields, key=lambda f: f.name)
         expected_fields = sorted(expected_fields, key=lambda f: f.name)
+
+    if len(actual_fields) < len(expected_fields):
+        _raise(
+            f"""Actual schema has fewer fields than expected schema.
+            Expected field names: {expected.fieldNames()}.
+            Actual field names: {actual.fieldNames()}."""
+        )
 
     for actual_field, expected_field in zip(actual_fields, expected_fields):
         _assert_column_name(actual_field, expected_field)
@@ -125,6 +160,17 @@ def _assert_data_type(
             ignore_decimal_precision,
             ignore_decimal_scale,
         )
+        return
+
+    if isinstance(actual, StructType) and isinstance(expected, StructType):
+        for i, field in enumerate(actual):
+            _assert_data_type(
+                field.dataType,
+                expected.fields[i].dataType,
+                field.name,
+                ignore_decimal_precision,
+                ignore_decimal_scale,
+            )
         return
 
     if not isinstance(actual, DecimalType) or not isinstance(expected, DecimalType):

@@ -20,6 +20,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
@@ -28,6 +29,8 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NodaTime;
+using NodaTime.Extensions;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.SettlementReports;
@@ -73,27 +76,37 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     public async Task MockExternalDependencies_WhenCallingDurableFunctionEndpoint_OrchestrationCompletesWithReportPresent()
     {
         // Arrange
-        var settlementReportRequest = new SettlementReportRequestDto(
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationEntity = new Calculations.Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
+            [new GridAreaCode("042")],
+            new DateTimeOffset(2020, 1, 1, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            new DateTimeOffset(2020, 1, 31, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid(),
+            1);
+
+        dbContext.Calculations.Add(calculationEntity);
+        await dbContext.SaveChangesAsync();
+
+        var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -132,28 +145,37 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     public async Task MockExternalDependencies_WhenCallingDurableFunctionEndpoint_OrchestrationCompletesWithReportPresent_CanDownload()
     {
         // Arrange
-        var settlementReportRequest = new SettlementReportRequestDto(
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationEntity = new Calculations.Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
+            [new GridAreaCode("042")],
+            new DateTimeOffset(2020, 1, 1, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            new DateTimeOffset(2020, 1, 31, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid(),
+            1);
+
+        dbContext.Calculations.Add(calculationEntity);
+        await dbContext.SaveChangesAsync();
+
+        var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
-                    { "043", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -205,27 +227,37 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     public async Task MockExternalDependencies_WhenCallingListReportsFunctionEndpoint_StatusIsValid()
     {
         // Arrange
-        var settlementReportRequest = new SettlementReportRequestDto(
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationEntity = new Calculations.Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
+            [new GridAreaCode("042")],
+            new DateTimeOffset(2020, 1, 1, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            new DateTimeOffset(2020, 1, 31, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid(),
+            1);
+
+        dbContext.Calculations.Add(calculationEntity);
+        await dbContext.SaveChangesAsync();
+
+        var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
 
         // Act A: Start generating report.
         using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -288,11 +320,13 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
+        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
 
         var internalToken = new JwtSecurityToken(
             issuer,
             audience,
-            [userClaim, actorClaim],
+            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
             validFrom,
             validTo,
             new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));

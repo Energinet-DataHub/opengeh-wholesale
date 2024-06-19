@@ -31,8 +31,20 @@ def set_column(
 
 
 def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
-    assert actual.subtract(expected).count() == 0
-    assert expected.subtract(actual).count() == 0
+    actual_excess = actual.subtract(expected)
+    expected_excess = expected.subtract(actual)
+
+    if actual_excess.count() > 0:
+        print("Actual excess:")
+        actual_excess.show(3000, False)
+
+    if expected_excess.count() > 0:
+        print("Expected excess:")
+        expected_excess.show(3000, False)
+
+    assert (
+        actual_excess.count() == 0 and expected_excess.count() == 0
+    ), "Dataframes data are not equal"
 
 
 def assert_dataframe_and_schema(
@@ -79,6 +91,8 @@ def assert_dataframe_and_schema(
         expected.show(3000, False)
 
     try:
+        actual.show()
+        expected.show()
         assert_dataframes_equal(actual, expected)
     except AssertionError:
 
@@ -110,7 +124,12 @@ def drop_columns_if_the_same(df1: DataFrame, df2: DataFrame) -> (DataFrame, Data
 
 def _assert_skipped_columns(df: DataFrame, column_names: list[str]) -> None:
     # Construct a filter that checks if any column is not 'IGNORED'
-    condition = " OR ".join([f"{col_name} != 'IGNORED'" for col_name in column_names])
+    condition = " OR ".join(
+        [
+            f"({col_name} != 'IGNORED' OR {col_name} IS NULL)"
+            for col_name in column_names
+        ]
+    )
 
     non_ignored_df = df.filter(condition)
     count = non_ignored_df.count()

@@ -99,7 +99,6 @@ def test__calculate_per_ga_co_es__sums_per_energy_supplier(
     ).df
 
     # Assert
-    actual.show()
     assert actual.count() == 2
     assert actual.where(f.col(Colname.energy_supplier_id) == "1").collect()[0][
         Colname.total_amount
@@ -344,14 +343,14 @@ def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_tim
 ) -> None:
     # Arrange
     rows = [
-        total_monthly_amount_factory.create_row(
+        monthly_amount_per_charge_factory.create_row(
             grid_area=grid_area,
             energy_supplier_id=energy_supplier_id,
             total_amount=total_amount,
             charge_owner=charge_owner,
             charge_time=charge_time,
         ),
-        total_monthly_amount_factory.create_row(
+        monthly_amount_per_charge_factory.create_row(
             grid_area="123",
             energy_supplier_id="es_id_1",
             total_amount=Decimal("2"),
@@ -359,14 +358,49 @@ def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_tim
             charge_time=datetime(2021, 1, 1),
         ),
     ]
-    total_monthly_amount_per_ga_co_es = total_monthly_amount_factory.create(spark, rows)
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, rows)
 
     # Act
     actual = calculate_per_ga_es(
-        total_monthly_amount_per_ga_co_es,
+        monthly_amounts,
     )
 
     # Assert
     assert actual.df.count() == expected_count
     assert actual.df.collect()[0][Colname.total_amount] == expected_total_amount
+    assert actual.df.collect()[0][Colname.charge_owner] is None
+
+
+def test__calculate_per_ga_es__sums_when_different_charge_tax(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        monthly_amount_per_charge_factory.create_row(
+            grid_area="123",
+            energy_supplier_id="es_id_1",
+            total_amount=Decimal("1"),
+            charge_owner="co_id_1",
+            charge_time=datetime(2021, 1, 1),
+            charge_tax=True,
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            grid_area="123",
+            energy_supplier_id="es_id_1",
+            total_amount=Decimal("2"),
+            charge_owner="co_id_1",
+            charge_time=datetime(2021, 1, 1),
+            charge_tax=False,
+        ),
+    ]
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, rows)
+
+    # Act
+    actual = calculate_per_ga_es(
+        monthly_amounts,
+    )
+
+    # Assert
+    assert actual.df.count() == 1
+    assert actual.df.collect()[0][Colname.total_amount] == Decimal("3.000000")
     assert actual.df.collect()[0][Colname.charge_owner] is None

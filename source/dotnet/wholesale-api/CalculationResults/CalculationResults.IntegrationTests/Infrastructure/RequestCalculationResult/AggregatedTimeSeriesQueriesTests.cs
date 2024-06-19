@@ -27,12 +27,12 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
 public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>,
-    IClassFixture<DatabricksSqlStatementApiFixture>
+    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private readonly AggregatedTimeSeriesQueriesData _aggregatedTimeSeriesQueriesData;
-    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
 
-    public AggregatedTimeSeriesQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public AggregatedTimeSeriesQueriesTests(MigrationsFreeDatabricksSqlStatementApiFixture fixture)
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
@@ -923,5 +923,70 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(expectedGridAreas.Count);
         expectedGridAreas.ForEach(gridArea => actual.Should().ContainSingle(p => p.GridArea == gridArea));
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenOnlyResultFromHalfTheRequestedPeriod_ReturnedPointsAreInCorrectPeriod()
+    {
+        // Business case example:
+        // When a new Energy Supplier is being made responsible for a metering point in the middle of the month
+        // and they do not already have a metering point in the grid area from the beginning of the month.
+        // The result is that the Energy Supplier will only have results for the last half of the month.
+
+        // Arrange
+        await _fixture.DatabricksSchemaManager
+            .EmptyAsync(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+
+        var calculationPeriodStart = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var calculationPeriodEnd = Instant.FromUtc(2022, 2, 1, 0, 0);
+
+        var calculationId = Guid.NewGuid();
+        const string gridArea = "100";
+        const int calculationVersion = 1;
+
+        // Created calculation results for the last half of the month
+        var calculationResults = new List<IReadOnlyCollection<string>>();
+        var middleOfPeriod = calculationPeriodStart.Plus(Duration.FromDays(15));
+        var currentTime = middleOfPeriod;
+        while (currentTime < calculationPeriodEnd)
+        {
+            var rows = new List<IReadOnlyCollection<string>>
+            {
+                EnergyResultDeltaTableHelper.CreateRowValues(
+                    calculationId: calculationId.ToString(),
+                    timeSeriesType: DeltaTableTimeSeriesType.Production,
+                    gridArea: gridArea,
+                    time: currentTime.ToString()),
+            };
+
+            calculationResults.AddRange(rows);
+            currentTime = currentTime.Plus(Duration.FromMinutes(15));
+        }
+
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, calculationResults);
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            [TimeSeriesType.Production],
+            [gridArea],
+            null,
+            null,
+            new List<CalculationForPeriod>
+            {
+                new(
+                    new Period(calculationPeriodStart, calculationPeriodEnd),
+                    calculationId,
+                    calculationVersion),
+            });
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        var calculationResult = actual.Should().ContainSingle().Subject;
+        calculationResult.PeriodStart.Should().Be(middleOfPeriod);
+        calculationResult.PeriodEnd.Should().Be(calculationPeriodEnd);
+        calculationResult.TimeSeriesPoints.Should().HaveCount(calculationResults.Count);
     }
 }

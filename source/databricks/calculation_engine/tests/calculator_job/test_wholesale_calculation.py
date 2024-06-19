@@ -20,7 +20,7 @@ from pyspark.sql.types import StructType
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
     charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
@@ -56,11 +56,19 @@ ENERGY_RESULT_TYPES = {
     ),
     (
         TimeSeriesType.PRODUCTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.PRODUCTION.value,
         AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
@@ -69,6 +77,10 @@ ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.FLEX_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
@@ -195,7 +207,7 @@ def test__wholesale_result__amount_per_charge_is_created(
     ["40000", "41000"],
     # charge_code 40000 is for hourly charge resolution
     # charge_code 41000 is for daily charge resolution
-    # see "test_files/ChargeMasterDataPeriods.csv"
+    # see "test_files/ChargePriceInformationPeriods.csv"
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
@@ -272,7 +284,7 @@ def test__monthly_amounts__are_stored(
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.BASIS_DATA_TABLE_NAMES,
+    paths.BasisDataDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -281,7 +293,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -295,21 +307,27 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
             metering_point_period_schema,
         ),
         (
-            paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
-        (paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME, charge_link_periods_schema),
         (
-            paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            charge_link_periods_schema,
+        ),
+        (
+            paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         ),
-        (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
         (
-            paths.GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            charge_price_points_schema,
+        ),
+        (
+            paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
             grid_loss_metering_points_schema,
         ),
     ],
@@ -322,7 +340,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.
@@ -336,51 +354,67 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     "view_name, has_data",
     [
         (
-            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
             False,
         ),
         (
-            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
-            False,
-        ),
-        (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.AMOUNTS_PER_CHARGE_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
-            False,
-        ),
-        (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.WHOLESALE_RESULTS_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
             True,
         ),
     ],

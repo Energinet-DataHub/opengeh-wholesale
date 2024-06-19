@@ -16,6 +16,7 @@ using System.Globalization;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
@@ -55,6 +56,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(MonthlyAmountPerChargeResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(TotalMonthlyAmountResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
+        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationCompletedV1.EventName);
     }
 
     [ScenarioStep(2)]
@@ -70,7 +72,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
 
     [ScenarioStep(3)]
     [SubsystemFact]
-    public async Task Then_CalculationIsCompletedWithinWaitTime()
+    public async Task Then_CalculationExecutionIsCompletedWithinWaitTime()
     {
         var (isCompletedOrFailed, calculation) = await Fixture.WaitForCalculationCompletedOrFailedAsync(
             Fixture.ScenarioState.CalculationId,
@@ -118,6 +120,8 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
             .OfType<TotalMonthlyAmountResultProducedV1>().ToList();
         Fixture.ScenarioState.ReceivedGridLossProducedV1 = actualReceivedIntegrationEvents
             .OfType<GridLossResultProducedV1>().ToList();
+        Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
+            .OfType<CalculationCompletedV1>().ToList();
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -126,14 +130,14 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
-        // TODO: Assert CalculationCompletedV1 received
+        Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
     }
 
     [ScenarioStep(6)]
     [SubsystemFact]
     public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
     {
-        var expected = 116;
+        var expected = 227; // 5 (total_ga) + 111 (es_ga) + 111 (br_es_ga)
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -368,13 +372,13 @@ AppDependencies
 
     [ScenarioStep(18)]
     [SubsystemFact]
-    public async Task AndThen_OneTableInEachPublicDataModelMustExistsAndContainData()
+    public async Task AndThen_OneViewOrTableInEachPublicDataModelMustExistsAndContainData()
     {
         // Arrange
         var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
         {
             new("settlement_report", "metering_point_periods_v1"),
-            new("wholesale_edi_results", "energy_result_points_per_ga_v1"),
+            new("wholesale_calculation_results", "energy_per_ga_v1"),
         };
 
         // Act
@@ -386,5 +390,72 @@ AppDependencies
         {
             actual.IsAccessible.Should().Be(true, actual.ErrorMessage);
         }
+    }
+
+    [ScenarioStep(19)]
+    [SubsystemFact]
+    public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
+    {
+        // Assert
+        var receivedCalculationCompletedEvent = Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().ContainSingle()
+            .Subject;
+
+        receivedCalculationCompletedEvent.InstanceId.Should().NotBeNullOrWhiteSpace();
+        Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
+    }
+
+    [ScenarioStep(20)]
+    [SubsystemFact]
+    public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
+    {
+        // Wait for the calculation to reach the ActorMessagesEnqueuing state
+        // We need to watch for ActorMessagesEnqueued or Completed as well, since the EDI subsystem
+        // could have already handled the request and sent an ActorMessagesEnqueued message back to
+        // the Wholesale subsystem already
+        var (isSuccess, calculation) = await Fixture.WaitForOneOfCalculationStatesAsync(
+            Fixture.ScenarioState.CalculationId,
+            [
+                CalculationOrchestrationState.ActorMessagesEnqueuing,
+                CalculationOrchestrationState.ActorMessagesEnqueued,
+                CalculationOrchestrationState.Completed
+            ],
+            waitTimeLimit: TimeSpan.FromMinutes(1));
+
+        isSuccess.Should().BeTrue("because calculation should be in ActorMessagesEnqueuing state or later");
+        calculation.Should().NotBeNull();
+        calculation!.OrchestrationState.Should().BeOneOf(
+            [
+                CalculationOrchestrationState.ActorMessagesEnqueuing,
+                CalculationOrchestrationState.ActorMessagesEnqueued,
+                CalculationOrchestrationState.Completed
+            ],
+            "because calculation should be in ActorMessagesEnqueuing state or later");
+    }
+
+    [ScenarioStep(21)]
+    [SubsystemFact]
+    public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
+    {
+        // Send a ActorMessagesEnqueued message to the Wholesale subsystem
+        // This must not fail even if the message has already been received from the EDI subsystem
+        await Fixture.SendActorMessagesEnqueuedMessageAsync(
+            Fixture.ScenarioState.CalculationId,
+            Fixture.ScenarioState.OrchestrationInstanceId);
+    }
+
+    [ScenarioStep(22)]
+    [SubsystemFact]
+    public async Task AndThen_CalculationOrchestrationIsCompleted()
+    {
+        // Wait for the calculation to reach the Completed state
+        var (isSuccess, calculation) = await Fixture.WaitForOneOfCalculationStatesAsync(
+            Fixture.ScenarioState.CalculationId,
+            [CalculationOrchestrationState.Completed],
+            waitTimeLimit: TimeSpan.FromMinutes(1));
+
+        using var assertionScope = new AssertionScope();
+        isSuccess.Should().BeTrue("because the calculation should be completed");
+        calculation.Should().NotBeNull();
+        calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);
     }
 }

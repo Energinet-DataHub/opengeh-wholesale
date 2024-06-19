@@ -36,9 +36,15 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
-        CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto(new Dictionary<string, CalculationId>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        false,
+        new SettlementReportRequestFilterDto(
+            new Dictionary<string, CalculationId>(),
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow,
+            CalculationType.BalanceFixing,
+            null,
+            null));
 
     public SettlementReportFinalizeHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -59,9 +65,9 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
-            new(requestId, new("fileA.csv"), "fileA_0.csv"),
-            new(requestId, new("fileB.csv"), "fileB_0.csv"),
-            new(requestId, new("fileC.csv"), "fileC_0.csv"),
+            new(requestId, new("fileA.csv", true), "fileA_0.csv"),
+            new(requestId, new("fileB.csv", true), "fileB_0.csv"),
+            new(requestId, new("fileC.csv", true), "fileC_0.csv"),
         };
 
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));

@@ -14,11 +14,15 @@
 
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime.Extensions;
+using CalculationState = Energinet.DataHub.Wholesale.Calculations.Interfaces.Models.CalculationState;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
@@ -26,11 +30,67 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 [Route("v3/[controller]")]
 public class SettlementReportController : V3ControllerBase
 {
-    private readonly ISettlementReportClient _settlementReportClient;
+    private readonly ICalculationsClient _calculationsClient;
+    private readonly IGridAreaOwnershipClient _gridAreaOwnershipClient;
+    private readonly IUserContext<FrontendUser> _userContext;
 
-    public SettlementReportController(ISettlementReportClient settlementReportClient)
+    public SettlementReportController(
+        ICalculationsClient calculationsClient,
+        IGridAreaOwnershipClient gridAreaOwnershipClient,
+        IUserContext<FrontendUser> userContext)
     {
-        _settlementReportClient = settlementReportClient;
+        _calculationsClient = calculationsClient;
+        _gridAreaOwnershipClient = gridAreaOwnershipClient;
+        _userContext = userContext;
+    }
+
+    /// <summary>
+    /// Returns a subset of calculations that are valid for use with settlement reports.
+    /// Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
+    /// </summary>
+    [HttpGet(Name = "GetApplicableCalculations")]
+    [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(List<SettlementReportApplicableCalculationDto>))]
+    [Authorize(Roles = Permissions.SettlementReportsManage)]
+    public async Task<IActionResult> GetApplicableCalculationsAsync(
+        [FromQuery] CalculationType calculationType,
+        [FromQuery] string[] gridAreaCodes,
+        [FromQuery] DateTimeOffset periodStart,
+        [FromQuery] DateTimeOffset periodEnd)
+    {
+        if (_userContext.CurrentUser.Actor.HasMarketRole(FrontendActorMarketRole.GridAccessProvider))
+        {
+            var ownedGridAreas = await _gridAreaOwnershipClient
+                .GetOwnedByAsync(_userContext.CurrentUser.Actor.ActorNumber)
+                .ConfigureAwait(false);
+
+            if (gridAreaCodes.Any(code => !ownedGridAreas.Contains(code)))
+            {
+                return Forbid();
+            }
+        }
+
+        var calculations = await _calculationsClient
+            .SearchAsync(
+                gridAreaCodes,
+                CalculationState.Completed,
+                periodStart.ToInstant(),
+                periodEnd.ToInstant(),
+                CalculationTypeMapper.Map(calculationType))
+            .ConfigureAwait(false);
+
+        var calculationsForSettlementReports =
+            from calculation in calculations
+            from gridAreaCode in calculation.GridAreaCodes
+            where gridAreaCodes.Contains(gridAreaCode)
+            select new SettlementReportApplicableCalculationDto(
+                calculation.CalculationId,
+                calculation.ExecutionTimeStart!.Value,
+                calculation.PeriodStart,
+                calculation.PeriodEnd,
+                gridAreaCode);
+
+        return Ok(calculationsForSettlementReports.ToList());
     }
 
     /// <summary>
@@ -54,45 +114,6 @@ public class SettlementReportController : V3ControllerBase
         [FromQuery] string? energySupplier,
         [FromQuery] string? csvFormatLocale)
     {
-        return _settlementReportClient
-            .CreateCompressedSettlementReportAsync(
-                () =>
-                {
-                    var settlementReportFileName = GetSettlementReportFileName(
-                        gridAreaCodes,
-                        calculationType,
-                        periodStart,
-                        periodEnd,
-                        energySupplier);
-
-                    Response.Headers.Append("Content-Type", "application/zip");
-                    Response.Headers.Append("Content-Disposition", $"attachment; filename={settlementReportFileName}");
-
-                    return Response.BodyWriter.AsStream();
-                },
-                gridAreaCodes,
-                CalculationTypeMapper.Map(calculationType),
-                periodStart,
-                periodEnd,
-                energySupplier,
-                csvFormatLocale);
-    }
-
-    private static string GetSettlementReportFileName(
-        string[] gridAreaCode,
-        CalculationType calculationType,
-        DateTimeOffset periodStart,
-        DateTimeOffset periodEnd,
-        string? energySupplier)
-    {
-        var energySupplierString = energySupplier is null ? string.Empty : $"_{energySupplier}";
-        var gridAreaCodeString = string.Join("+", gridAreaCode);
-        var calculationTypeString = calculationType switch
-        {
-            CalculationType.BalanceFixing => "D04",
-            _ => string.Empty,
-        };
-
-        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{calculationTypeString}.zip";
+        return Task.CompletedTask;
     }
 }

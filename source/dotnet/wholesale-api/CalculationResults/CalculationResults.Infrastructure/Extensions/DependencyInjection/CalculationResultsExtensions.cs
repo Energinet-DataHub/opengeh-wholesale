@@ -106,10 +106,21 @@ public static class CalculationResultsExtensions
         services.AddScoped<IUpdateFailedSettlementReportsHandler, UpdateFailedSettlementReportsHandler>();
 
         services.AddScoped<IRemoveExpiredSettlementReports, RemoveExpiredSettlementReports>();
-        services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
+        services.AddScoped<ISettlementReportWholesaleRepository, SettlementReportWholesaleRepository>();
+        services.AddScoped<ISettlementReportEnergyResultRepository, SettlementReportEnergyResultRepository>();
+        services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultRepository, SettlementReportMeteringPointTimeSeriesResultRepository>();
+        services.AddScoped<ISettlementReportWholesaleResultQueries, SettlementReportWholesaleResultQueries>();
+        services.AddScoped<ISettlementReportEnergyResultQueries, SettlementReportEnergyResultQueries>();
+        services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultQueries, SettlementReportMeteringPointTimeSeriesResultQueries>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddScoped<ISettlementReportDownloadHandler, SettlementReportDownloadHandler>();
+        services.AddScoped<ISettlementReportChargeLinkPeriodsRepository, SettlementReportChargeLinkPeriodsRepository>();
+        services.AddScoped<ISettlementReportChargeLinkPeriodsQueries, SettlementReportChargeLinkPeriodsQueries>();
+        services.AddScoped<ISettlementReportMeteringPointMasterDataRepository, SettlementReportMeteringPointMasterDataRepository>();
+        services.AddScoped<ISettlementReportMeteringPointMasterDataQueries, SettlementReportMeteringPointMasterDataQueries>();
+        services.AddScoped<ISettlementReportChargePriceRepository, SettlementReportChargePriceRepository>();
+        services.AddScoped<ISettlementReportChargePriceQueries, SettlementReportChargePriceQueries>();
         services.AddSettlementReportBlobStorage();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();

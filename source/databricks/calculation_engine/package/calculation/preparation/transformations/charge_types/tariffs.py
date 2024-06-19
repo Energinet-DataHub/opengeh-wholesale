@@ -19,8 +19,8 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
+from package.calculation.preparation.data_structures.charge_price_information import (
+    ChargePriceInformation,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
@@ -35,7 +35,7 @@ from package.constants import Colname
 
 def get_prepared_tariffs(
     metering_point_time_series: PreparedMeteringPointTimeSeries,
-    charge_master_data: ChargeMasterData,
+    charge_price_information: ChargePriceInformation,
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
@@ -45,11 +45,13 @@ def get_prepared_tariffs(
     metering_point_time_series always hava a row for each resolution time in the given period.
     """
     tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
-    tariff_master_data = charge_master_data.filter_by_charge_type(ChargeType.TARIFF)
+    tariff_price_information_periods = charge_price_information.filter_by_charge_type(
+        ChargeType.TARIFF
+    )
     tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
 
-    tariffs = _join_master_data_and_prices_add_missing_prices(
-        tariff_master_data, tariff_prices, resolution, time_zone
+    tariffs = _join_price_information_periods_and_prices_add_missing_prices(
+        tariff_price_information_periods, tariff_prices, resolution, time_zone
     )
 
     tariffs = _join_with_charge_link_metering_points(tariffs, tariff_links)
@@ -67,30 +69,19 @@ def get_prepared_tariffs(
     return PreparedTariffs(tariffs)
 
 
-def _join_master_data_and_prices_add_missing_prices(
-    charge_master_data: ChargeMasterData,
+def _join_price_information_periods_and_prices_add_missing_prices(
+    charge_price_information: ChargePriceInformation,
     charge_prices: ChargePrices,
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
     charge_prices = charge_prices.df
-    charge_master_data_filtered = charge_master_data.df.filter(
+    charge_price_information_filtered = charge_price_information.df.filter(
         f.col(Colname.resolution) == resolution.value
     )
-    charges_with_no_prices = charge_master_data_filtered.withColumn(
-        Colname.charge_time,
-        f.explode(
-            f.sequence(
-                f.from_utc_timestamp(Colname.from_date, time_zone),
-                f.from_utc_timestamp(Colname.to_date, time_zone),
-                f.expr(
-                    f"interval {_get_window_duration_string_based_on_resolution(resolution)}"
-                ),
-            )
-        ),
-    ).withColumn(
-        Colname.charge_time,
-        f.to_utc_timestamp(Colname.charge_time, time_zone),
+
+    charges_with_no_prices = get_charges_with_no_prices(
+        charge_price_information_filtered, resolution, time_zone
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
@@ -109,6 +100,41 @@ def _join_master_data_and_prices_add_missing_prices(
     )
 
     return charges_with_prices_and_missing_prices
+
+
+def get_charges_with_no_prices(
+    charge_price_information_filtered: DataFrame,
+    resolution: ChargeResolution,
+    time_zone: str,
+) -> DataFrame:
+    if resolution == ChargeResolution.HOUR:
+        return charge_price_information_filtered.withColumn(
+            Colname.charge_time,
+            f.explode(
+                f.sequence(
+                    Colname.from_date,
+                    Colname.to_date,
+                    f.expr("interval 1 hour"),
+                )
+            ),
+        )
+    elif resolution == ChargeResolution.DAY:
+        # When resolution is DAY we need to deal with local time to get the correct start time of each day
+        return charge_price_information_filtered.withColumn(
+            Colname.charge_time,
+            f.explode(
+                # Create a sequence of the start of each day in the period. The times are local time
+                f.sequence(
+                    f.from_utc_timestamp(Colname.from_date, time_zone),
+                    f.from_utc_timestamp(Colname.to_date, time_zone),
+                    f.expr("interval 1 day"),
+                )
+            ),
+            # Convert local day start times back to UTC
+        ).withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(Colname.charge_time, time_zone),
+        )
 
 
 def _join_with_charge_link_metering_points(
@@ -150,31 +176,37 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     charge_resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
-    grouped_time_series = (
-        t.aggregate_quantity_and_quality(
-            metering_point_time_series.df.withColumn(
-                Colname.observation_time,
-                f.from_utc_timestamp(Colname.observation_time, time_zone),
-            ),
-            [
-                Colname.metering_point_id,
-                f.window(
-                    Colname.observation_time,
-                    _get_window_duration_string_based_on_resolution(charge_resolution),
-                ).alias("time_window"),
-            ],
+    time_series_df = metering_point_time_series.df
+
+    if charge_resolution == ChargeResolution.DAY:
+        # Convert into local time zone to handle daylight saving time correctly
+        time_series_df = time_series_df.withColumn(
+            Colname.observation_time,
+            f.from_utc_timestamp(Colname.observation_time, time_zone),
         )
-        .select(
-            Colname.quantity,
-            Colname.qualities,
+
+    grouped_time_series = t.aggregate_quantity_and_quality(
+        time_series_df,
+        [
             Colname.metering_point_id,
-            f.col("time_window.start").alias(Colname.observation_time),
-        )
-        .withColumn(
+            f.window(
+                Colname.observation_time,
+                _get_window_duration_string_based_on_resolution(charge_resolution),
+            ).alias("time_window"),
+        ],
+    ).select(
+        Colname.quantity,
+        Colname.qualities,
+        Colname.metering_point_id,
+        f.col("time_window.start").alias(Colname.observation_time),
+    )
+
+    if charge_resolution == ChargeResolution.DAY:
+        # Convert back to UTC
+        grouped_time_series = grouped_time_series.withColumn(
             Colname.observation_time,
             f.to_utc_timestamp(Colname.observation_time, time_zone),
         )
-    )
 
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
@@ -204,6 +236,7 @@ def _get_window_duration_string_based_on_resolution(
 def _join_with_grouped_time_series(
     df: DataFrame, grouped_time_series: DataFrame
 ) -> DataFrame:
+
     df = df.join(
         grouped_time_series,
         [

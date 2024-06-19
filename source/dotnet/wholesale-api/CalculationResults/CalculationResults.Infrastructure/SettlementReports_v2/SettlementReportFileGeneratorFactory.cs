@@ -14,18 +14,34 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFileGeneratorFactory
 {
-    private readonly ISettlementReportDataRepository _dataRepository;
+    private readonly ISettlementReportEnergyResultRepository _settlementReportEnergyResultRepository;
+    private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
+    private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
+    private readonly ISettlementReportMeteringPointMasterDataRepository _settlementReportMeteringPointMasterDataRepository;
+    private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _settlementReportMeteringPointTimeSeriesResultRepository;
+    private readonly ISettlementReportChargePriceRepository _settlementChargePriceRepository;
 
-    public SettlementReportFileGeneratorFactory(ISettlementReportDataRepository dataRepository)
+    public SettlementReportFileGeneratorFactory(
+        ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
+        ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
+        ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository,
+        ISettlementReportMeteringPointMasterDataRepository settlementReportMeteringPointMasterDataRepository,
+        ISettlementReportMeteringPointTimeSeriesResultRepository settlementReportMeteringPointTimeSeriesResultRepository,
+        ISettlementReportChargePriceRepository settlementChargePriceRepository)
     {
-        _dataRepository = dataRepository;
+        _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
+        _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
+        _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
+        _settlementReportMeteringPointMasterDataRepository = settlementReportMeteringPointMasterDataRepository;
+        _settlementReportMeteringPointTimeSeriesResultRepository = settlementReportMeteringPointTimeSeriesResultRepository;
+        _settlementChargePriceRepository = settlementChargePriceRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -33,17 +49,24 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         switch (fileContent)
         {
             case SettlementReportFileContent.EnergyResultLatestPerDay:
-                return new BalanceFixingResultFileGenerator(_dataRepository);
+                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.EnergyResultForCalculationId:
-                return new BalanceFixingResultFileGenerator(_dataRepository);
+                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.WholesaleResult:
-                return new WholesaleFixingResultFileGenerator(_dataRepository, CalculationType.WholesaleFixing);
             case SettlementReportFileContent.FirstCorrectionResult:
-                return new WholesaleFixingResultFileGenerator(_dataRepository, CalculationType.FirstCorrectionSettlement);
             case SettlementReportFileContent.SecondCorrectionResult:
-                return new WholesaleFixingResultFileGenerator(_dataRepository, CalculationType.SecondCorrectionSettlement);
             case SettlementReportFileContent.ThirdCorrectionResult:
-                return new WholesaleFixingResultFileGenerator(_dataRepository, CalculationType.ThirdCorrectionSettlement);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository);
+            case SettlementReportFileContent.ChargeLinksPeriods:
+                return new ChargeLinkPeriodsFileGenerator(_settlementReportChargeLinkPeriodsRepository);
+            case SettlementReportFileContent.MeteringPointMasterData:
+                return new MeteringPointMasterDataFileGenerator(_settlementReportMeteringPointMasterDataRepository);
+            case SettlementReportFileContent.Pt15M:
+                return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Quarter);
+            case SettlementReportFileContent.Pt1H:
+                return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Hour);
+            case SettlementReportFileContent.ChargePrice:
+                return new ChargePriceFileGenerator(_settlementChargePriceRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

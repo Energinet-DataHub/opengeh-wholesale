@@ -26,9 +26,9 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z",
             "D66");
 
-    private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd2Months =
+    private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
+            "Der kan ikke anmodes om data for 3 år og 3 måneder tilbage i tid / It is not possible to request data 3 years and 3 months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
@@ -72,9 +72,8 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
         MustBeMidnight(startInstant.Value, "Period Start", errors);
         MustBeMidnight(endInstant.Value, "Period End", errors);
-
-        MustBeWithin3YearsAnd2Months(startInstant.Value, errors);
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
+        MustNotBe3YearsAnd3MonthsOld(startInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
@@ -93,10 +92,12 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         return null;
     }
 
-    private void MustBeWithin3YearsAnd2Months(Instant periodStart, ICollection<ValidationError> errors)
+    private void MustNotBe3YearsAnd3MonthsOld(Instant periodStart, ICollection<ValidationError> errors)
     {
-        if (periodValidationHelper.IsStartDateOlderThanAllowed(periodStart, maxYears: 3, maxMonths: -2))
-            errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months);
+        if (periodValidationHelper.IsMonthOlder3Years2Months(periodStart))
+        {
+            errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
+        }
     }
 
     private void MustBeAWholeMonth(
@@ -117,7 +118,11 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
             || zonedEndDateTime.LocalDateTime.Day != 1)
         {
             errors.Add(_invalidPeriodLength);
+            return;
         }
+
+        if (zonedEndDateTime.LocalDateTime.Month - zonedStartDateTime.LocalDateTime.Month != 1)
+            errors.Add(_invalidPeriodAcrossMonths);
     }
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)

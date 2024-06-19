@@ -102,7 +102,7 @@ internal class CalculationOrchestration
                 nameof(CreateCompletedCalculationActivity),
                 new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId));
 
-            //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
+            //// TODO XDAST: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
@@ -128,6 +128,10 @@ internal class CalculationOrchestration
         {
             calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
             context.SetCustomStatus(calculationMetadata);
+            await UpdateCalculationOrchestrationStateAsync(
+                context,
+                calculationMetadata.Id,
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
             return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
         }
 
@@ -169,13 +173,30 @@ internal class CalculationOrchestration
         Guid calculationId,
         int messagesEnqueuingExpiryTimeInSeconds)
     {
-        var messagesEnqueuedEvent = await context.WaitForExternalEvent<ActorMessagesEnqueuedV1>(
-            ActorMessagesEnqueuedV1.EventName,
-            timeout: TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds));
+        ActorMessagesEnqueuedV1 messagesEnqueuedEvent;
+
+        var timeoutLimit = TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds);
+        try
+        {
+            messagesEnqueuedEvent = await context.WaitForExternalEvent<ActorMessagesEnqueuedV1>(
+                ActorMessagesEnqueuedV1.EventName,
+                timeout: timeoutLimit);
+        }
+        catch (TaskCanceledException taskCanceledException)
+        {
+            return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", $"Timeout while waiting for actor messages enqueued event. Timeout limit: {timeoutLimit}, exception: {taskCanceledException}");
+        }
 
         var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
         if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
             return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+
+        if (!messagesEnqueuedEvent.Success)
+        {
+            return OrchestrationResult.Error(
+                "ActorMessagesEnqueuingFailed",
+                "ActorMessagesEnqueuedV1 event was not success");
+        }
 
         return OrchestrationResult.Success();
     }

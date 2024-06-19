@@ -33,7 +33,7 @@ indent_style = space
 indent_size = 2
 
 # Code files
-[*.{cs,csx,vb,vbx,proto,tf}]
+[*.{cs,csx,vb,vbx,proto}]
 indent_size = 4
 insert_final_newline = true
 charset = utf-8-bom
@@ -57,8 +57,8 @@ indent_size = 2
 indent_size = 2
 
 # Powershell files
-[*.ps1]
-indent_size = 2
+[*.{ps1, psm1, psd1}]
+indent_size = 4
 
 # Shell script files
 [*.sh]
@@ -203,7 +203,7 @@ csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 
 # Index and range preferences
 csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_range_operator = true::silent
+csharp_style_prefer_range_operator = true:silent
 
 # Misc. preferences
 csharp_style_deconstructed_variable_declaration = true:suggestion
@@ -530,15 +530,7 @@ dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 
 ##############################################################
-# Durable Functions Orchestration                            #
-##############################################################
-[**/Orchestrations/Functions/**/*Orchestration.cs]
-
-dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
-dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
-
-##############################################################
-# C# Test Conventions (overrides default configuration)      #
+# Overrides default configuration                            #
 ##############################################################
 
 # .NET Analyzers (CAxxxx)
@@ -546,6 +538,10 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 #
 # VS Threading Analyzers (VSTHRDxxx)
 # See rules here: https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/index.md
+
+###############################
+# C# Test Conventions         #
+###############################
 
 #
 # The intention of this section is to match c# code files
@@ -562,5 +558,36 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 # that is part of a class that contains tests or scenarios.
 #
 [*{Tests,Scenario}.cs]
+
+dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods
+
+###############################
+# Durable Functions           #
+###############################
+
+#
+# The intention of this section is to match c# code files
+# that is functions Middleware and which then might be
+# used in combination with Durable Functions.
+#
+[*Middleware.cs]
+
+dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+
+#
+# The intention of this section is to match c# code files
+# that is either Durable Function Orchestrations or Activities.
+#
+[**/Orchestrations/Functions/**/*{Orchestration}.cs]
+
+dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+
+#
+# The intention of this section is to match c# code files
+# that is either function Triggers, Durable Function Orchestrations or Activities.
+#
+[**/Orchestrations/Functions/**/*{Orchestration,Activity,Trigger}.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods

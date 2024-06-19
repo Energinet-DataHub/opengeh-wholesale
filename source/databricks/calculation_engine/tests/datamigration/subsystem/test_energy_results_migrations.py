@@ -20,7 +20,6 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 
-from contract_utils import assert_contract_matches_schema
 from helpers.data_frame_utils import set_column
 from package.calculation.output.schemas import energy_results_schema
 from package.codelists import (
@@ -31,7 +30,7 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import EnergyResultColumnNames
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.infrastructure.paths import OutputDatabase
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -45,7 +44,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.aggregation_level: "total_ga",
         EnergyResultColumnNames.time_series_type: "production",
         EnergyResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        EnergyResultColumnNames.calculation_type: "BalanceFixing",
+        EnergyResultColumnNames.calculation_type: "balance_fixing",
         EnergyResultColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),
@@ -55,21 +54,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.resolution: MeteringPointResolution.QUARTER.value,
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
-
-
-def test__migrated_table__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
-
-    # Act
-    actual = spark.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}").schema
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual)
 
 
 @pytest.mark.parametrize(
@@ -112,7 +96,8 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}", overwrite=False
+            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}",
+            overwrite=False,
         )
 
     # Assert: Do sufficient assertions to be confident that the expected violation has been caught
@@ -162,7 +147,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -205,7 +190,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -235,12 +220,12 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
     # Assert
     actual_df = spark.read.table(
-        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     ).where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].quantity == quantity
 
@@ -254,9 +239,9 @@ def test__result_table__is_not_managed(
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
     Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
-    database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
+    database_details = spark.sql(f"DESCRIBE DATABASE {OutputDatabase.DATABASE_NAME}")
     table_details = spark.sql(
-        f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+        f"DESCRIBE DETAIL {OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
     database_location = database_details.where(
@@ -301,7 +286,7 @@ def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
 
     # Act + Assert
     results_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -342,7 +327,8 @@ def test__migrated_table_constraints_on_metering_point_id_with_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         results_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}", overwrite=False
+            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}",
+            overwrite=False,
         )
 
     # Assert: Do sufficient assertions to be confident that the expected violation has been caught

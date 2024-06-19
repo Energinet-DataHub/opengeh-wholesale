@@ -24,8 +24,6 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NodaTime;
-using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
@@ -52,7 +50,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
     {
         var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         var statement = new WholesaleResultQueryStatement(calculationId, _deltaTableOptions);
-        await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant(), calculation.Version).ConfigureAwait(false))
+        await foreach (var calculationResult in GetInternalAsync(statement, calculation.Version).ConfigureAwait(false))
             yield return calculationResult;
         _logger.LogDebug("Fetched all wholesale calculation results for calculation {calculation_id}", calculationId);
     }
@@ -62,7 +60,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
     }
 
-    private async IAsyncEnumerable<WholesaleResult> GetInternalAsync(DatabricksStatement statement, Instant periodStart, Instant periodEnd, long version)
+    private async IAsyncEnumerable<WholesaleResult> GetInternalAsync(DatabricksStatement statement, long version)
     {
         var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
         DatabricksSqlRow? currentRow = null;
@@ -75,7 +73,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, convertedNextRow))
             {
-                yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd, version);
+                yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, version);
                 resultCount++;
                 timeSeriesPoints = [];
             }
@@ -86,7 +84,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
 
         if (currentRow != null)
         {
-            yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd, version);
+            yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, version);
             resultCount++;
         }
 

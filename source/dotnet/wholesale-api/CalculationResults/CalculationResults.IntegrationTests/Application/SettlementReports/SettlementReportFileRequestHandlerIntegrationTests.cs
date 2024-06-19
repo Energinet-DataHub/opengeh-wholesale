@@ -15,13 +15,16 @@
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
+using Moq;
 using NodaTime;
 using Xunit;
 
@@ -29,55 +32,109 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Applic
 
 [Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>,
-    IClassFixture<DatabricksSqlStatementApiFixture>
+    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
-    private const string GridAreaA = "805";
-    private const string GridAreaB = "111";
-    private readonly string[] _gridAreaCodes = [GridAreaA, GridAreaB];
+    private const string GridAreaA = "018";
+    private readonly string[] _gridAreaCodes = [GridAreaA];
     private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
-    private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
+    private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 31, 0, 0, 0);
 
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     public SettlementReportFileRequestHandlerIntegrationTests(
-        DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture,
+        MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture,
         SettlementReportFileBlobStorageFixture settlementReportFileBlobStorageFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
-        var dataRepository = new LegacySettlementReportDataRepository(new SettlementReportResultQueries(
-            databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions));
+        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
+        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
+        {
+            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
+            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
+        });
 
-        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(dataRepository));
+        var calc = new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated);
+
+        var calculationsClientMock = new Mock<ICalculationsClient>();
+        calculationsClientMock
+            .Setup(x => x.GetAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(calc);
+
+        var settlementReportDataRepository = new SettlementReportEnergyResultRepository(new SettlementReportEnergyResultQueries(
+            mockedOptions.Object,
+            databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(new SettlementReportWholesaleResultQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(
+            new SettlementReportMeteringPointMasterDataQueries(
+                mockedOptions.Object,
+                _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+                calculationsClientMock.Object));
+
+        var settlementReportMeteringPointTimeSeriesResultRepository = new SettlementReportMeteringPointTimeSeriesResultRepository(new SettlementReportMeteringPointTimeSeriesResultQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        var settlementReportChargePriceRepository = new SettlementReportChargePriceRepository(new SettlementReportChargePriceQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
+            settlementReportDataRepository,
+            settlementReportWholesaleRepository,
+            settlementReportChargeLinkPeriodsRepository,
+            settlementReportMeteringPointMasterDataRepository,
+            settlementReportMeteringPointTimeSeriesResultRepository,
+            settlementReportChargePriceRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
     }
 
     [Fact]
-    public async Task RequestFileAsync_ForBalanceFixing_ReturnsExpectedCsv()
+    public async Task RequestFileAsync_ForWholesaleFixing_ReturnsExpectedCsv()
     {
         // Arrange
+        var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(Guid.Parse("8E1E8B45-6101-426B-8A0A-B2AB0354A442"))),
+            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.EnergyResultLatestPerDay,
-            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString()),
+            SettlementReportFileContent.EnergyResultForCalculationId,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             requestId,
             filter);
 
-        await InsertRowsFromMultipleCalculationsAsync(_databricksSqlStatementApiFixture
-            .DatabricksSchemaManager
-            .DeltaTableOptions);
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "1.100"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T18:30:00.000+00:00'", "2.100"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T23:15:00.000+00:00'", "2.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T12:00:00.000+00:00'", "1.200"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'0'", "'47433af6-03c1-46bd-ab9b-dd0497035309'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-14T12:15:00.000+00:00'", "3.200"],
+            ]);
 
         // Act
         var actual = await Sut.RequestFileAsync(fileRequest);
@@ -92,48 +149,172 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
         Assert.Equal("METERINGGRIDAREAID,ENERGYBUSINESSPROCESS,STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY", fileLines[0]);
-        Assert.Equal("805,D04,2022-01-01T01:00:00Z,PT15M,E18,,1.100", fileLines[1]);
-        Assert.Equal("111,D04,2022-01-01T01:00:00Z,PT15M,E18,,2.100", fileLines[2]);
-        Assert.Equal("111,D04,2022-01-02T01:00:00Z,PT15M,E18,,2.200", fileLines[3]);
-        Assert.Equal("805,D04,2022-01-02T01:00:00Z,PT15M,E18,,1.200", fileLines[4]);
-        Assert.Equal("805,D04,2022-01-03T01:00:00Z,PT15M,E18,,3.200", fileLines[5]);
+        Assert.Equal("018,D05,2022-01-10T03:15:00Z,PT15M,E17,E02,1.100", fileLines[1]);
+        Assert.Equal("018,D05,2022-01-11T18:30:00Z,PT15M,E17,E02,2.100", fileLines[2]);
+        Assert.Equal("018,D05,2022-01-12T23:15:00Z,PT15M,E17,E02,2.200", fileLines[3]);
+        Assert.Equal("018,D05,2022-01-13T12:00:00Z,PT15M,E17,E02,1.200", fileLines[4]);
+        Assert.Equal("018,D05,2022-01-14T12:15:00Z,PT15M,E17,E02,3.200", fileLines[5]);
     }
 
-    // NOTE: This will only work with LegacyRepo. When view arrives, this has to be redone.
-    private async Task InsertRowsFromMultipleCalculationsAsync(IOptions<DeltaTableOptions> options)
+    [Fact]
+    public async Task RequestFileAsync_ForChargeLinkPeriods_ReturnsExpectedCsv()
     {
-        const string january1 = "2022-01-01T01:00:00.000Z";
-        const string january2 = "2022-01-02T01:00:00.000Z";
-        const string january3 = "2022-01-03T01:00:00.000Z";
-        const string april1 = "2022-04-01T01:00:00.000Z";
-        const string may1 = "2022-05-01T01:00:00.000Z";
-        const string june1 = "2022-06-01T01:00:00.000Z";
+        // Arrange
+        var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b3");
+        var filter = new SettlementReportRequestFilterDto(
+            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _january1St.ToDateTimeOffset(),
+            _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
+            null,
+            null);
 
-        // Calculation 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
-        const string quantity11 = "1.100"; // include
-        const string quantity12 = "1.200"; // include
-        var calculation1Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january1, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity11);
-        var calculation1Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january2, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity12);
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var fileRequest = new SettlementReportFileRequestDto(
+            SettlementReportFileContent.ChargeLinksPeriods,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
+            requestId,
+            filter);
 
-        // Calculation 2: Same as calculation 1, but for other grid area (include)
-        const string quantity21 = "2.100"; // include
-        const string quantity22 = "2.200"; // include
-        var calculation2Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january1, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity21);
-        var calculation2Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january2, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity22);
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager
+            .InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
+                _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value
+                    .CHARGE_LINK_PERIODS_V1_VIEW_NAME,
+                [
+                    [
+                        "'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'wholesale_fixing'",
+                        "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'",
+                        "'6392825108998'", "46", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'",
+                        "'018'", "'8397670583196'"
+                    ],
+                    [
+                        "'51d60f89-bbc5-4f7a-be98-6139aab1c1b3'", "'wholesale_fixing'",
+                        "'15cba911-b91e-4786-bed4-f0d28418a9e2'", "'consumption'", "'tariff'", "'40000'",
+                        "'6392825108998'", "46", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'",
+                        "'018'", "'8397670583191'"
+                    ],
+                ]);
 
-        // Calculation 3: Same as calculation 1, but only partly covering the same period (include the uncovered part)
-        const string quantity31 = "3.100"; // exclude because it's an older calculation
-        const string quantity32 = "3.200"; // include because other calculations don't cover this date
-        var calculation3Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1, time: january2, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity31);
-        var calculation3Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1, time: january3, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity32);
+        var actual = await Sut.RequestFileAsync(fileRequest);
 
-        // Calculation 4: Same as calculation 1, but newer and for Aggregation (exclude)
-        const string quantity41 = "4.100"; // exclude because it's aggregation
-        const string quantity42 = "4.200";  // exclude because it's aggregation
-        var calculation4Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1, time: january1, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
-        var calculation4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1, time: january2, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
 
-        var rows = new List<IReadOnlyCollection<string>> { calculation1Row1, calculation1Row2, calculation2Row1, calculation2Row2, calculation3Row1, calculation3Row2, calculation4Row1, calculation4Row2 };
-        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.StorageFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+        var fileContents = generatedFile.Value.Content.ToString();
+        var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.Equal(
+            "METERINGPOINTID,TYPEOFMP,CHARGETYPE,CHARGETYPEOWNERID,CHARGETYPEID,CHARGEOCCURRENCES,PERIODSTART,PERIODEND",
+            fileLines[0]);
+        Assert.Equal(
+            "15cba911-b91e-4786-bed4-f0d28418a9e2,E17,D03,6392825108998,40000,46,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z",
+            fileLines[1]);
+        Assert.Equal(
+            "15cba911-b91e-4786-bed4-f0d28418a9eb,E17,D03,6392825108998,40000,46,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z",
+            fileLines[2]);
+    }
+
+    [Theory]
+    [InlineData(SettlementReportFileContent.Pt15M, "400000000000000004,Exchange,2022-01-02T02:00:00Z,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")]
+    [InlineData(SettlementReportFileContent.Pt1H, "400000000000000004,Exchange,2022-01-02T02:00:00Z,679.900,,,,,,,,,,,,,,,,,,,,,,,,")]
+    public async Task RequestFileAsync_ForWholesaleFixingMeteringPointTimeSeries_ReturnsExpectedCsv(SettlementReportFileContent content, string expected)
+    {
+        // Arrange
+        var calculationId = Guid.Parse("891b7070-b80f-4731-8714-76221e27c366");
+        var gridAreaCode = "404";
+        var filter = new SettlementReportRequestFilterDto(
+            new Dictionary<string, CalculationId>
+            {
+                {
+                    gridAreaCode, new CalculationId(calculationId)
+                },
+            },
+            _january1St.ToDateTimeOffset(),
+            _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
+            null,
+            null);
+
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var fileRequest = new SettlementReportFileRequestDto(
+            content,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
+            requestId,
+            filter);
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
+            [
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:00:00' AS observation_time, 678.90 AS quantity))"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT1H'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:15:00' AS observation_time, 679.90 AS quantity))"],
+            ]);
+
+        // Act
+        var actual = await Sut.RequestFileAsync(fileRequest);
+
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
+
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.StorageFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+        var fileContents = generatedFile.Value.Content.ToString();
+        var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.StartsWith("METERINGPOINTID,TYPEOFMP,STARTDATETIME,", fileLines[0]);
+        Assert.Equal(expected, fileLines[1]);
+    }
+
+    [Fact]
+    public async Task RequestFileAsync_ForMeteringPointMasterData_ReturnsExpectedCsv()
+    {
+        // Arrange
+        var calculationId = Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26de");
+        var filter = new SettlementReportRequestFilterDto(
+            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _january1St.ToDateTimeOffset(),
+            _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
+            null,
+            null);
+
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var fileRequest = new SettlementReportFileRequestDto(
+            SettlementReportFileContent.MeteringPointMasterData,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
+            requestId,
+            filter);
+
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
+            [
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'wholesale_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'", "'018'", "'406'", "'407'", "'consumption'", "'flex'", "8397670583196"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'wholesale_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-03T02:00:00.000+00:00'", "'018'", "'406'", "'407'", "'consumption'", "'flex'", "8397670583196"],
+            ]);
+
+        // Act
+        var actual = await Sut.RequestFileAsync(fileRequest);
+
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
+
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.StorageFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+        var fileContents = generatedFile.Value.Content.ToString();
+        var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.Equal(3, fileLines.Length);
+        Assert.Equal(
+            "METERINGPOINTID,VALIDFROM,VALIDTO,GRIDAREAID,TOGRIDAREAID,FROMGRIDAREAID,TYPEOFMP,SETTLEMENTMETHOD,ENERGYSUPPLIERID",
+            fileLines[0]);
+        Assert.Equal(
+            "15cba911-b91e-4782-bed4-f0d2841829e1,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,018,407,406,E17,D01,8397670583196",
+            fileLines[1]);
+        Assert.Equal(
+            "15cba911-b91e-4782-bed4-f0d2841829e2,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,018,407,406,E17,D01,8397670583196",
+            fileLines[2]);
     }
 }

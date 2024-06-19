@@ -30,11 +30,7 @@ from package.calculation.energy.data_structures.energy_results import (
 )
 from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from tests.contract_utils import (
-    assert_contract_matches_schema,
-    get_column_names_from_contract,
-)
+from package.infrastructure.paths import OutputDatabase
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -70,7 +66,7 @@ OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
-TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+TABLE_NAME = f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
 
 
 @pytest.fixture(scope="module")
@@ -218,28 +214,6 @@ def test__create__with_correct_row_values(
 
     # Assert
     assert actual.collect()[0][column_name] == column_value
-
-
-def test__create__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
-    row = [_create_result_row()]
-    result_df = _create_energy_results(spark, row)
-
-    # Act
-    actual = sut.create(
-        args,
-        result_df,
-        DEFAULT_TIME_SERIES_TYPE,
-        DEFAULT_AGGREGATION_LEVEL,
-    )
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual.schema)
 
 
 def test__create__with_correct_number_of_calculation_result_ids(
@@ -395,8 +369,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         EnergyResultColumnNames.metering_point_id,
         EnergyResultColumnNames.resolution,
     ]
-    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
-    all_columns = get_column_names_from_contract(contract_path)
+    all_columns = _get_energy_result_column_names()
 
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
@@ -423,3 +396,11 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     if field_name == Colname.energy_supplier_id:
         return EnergyResultColumnNames.energy_supplier_id
     return field_name
+
+
+def _get_energy_result_column_names() -> List[str]:
+    return [
+        getattr(EnergyResultColumnNames, key)
+        for key in dir(EnergyResultColumnNames)
+        if not key.startswith("__")
+    ]

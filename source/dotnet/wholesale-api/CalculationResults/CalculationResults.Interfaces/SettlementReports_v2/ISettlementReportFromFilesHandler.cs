@@ -18,5 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportFromFilesHandler
 {
-    Task<GeneratedSettlementReportDto> CombineAsync(IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
+    Task<GeneratedSettlementReportDto> CombineAsync(
+        SettlementReportRequestId requestId,
+        IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
 }

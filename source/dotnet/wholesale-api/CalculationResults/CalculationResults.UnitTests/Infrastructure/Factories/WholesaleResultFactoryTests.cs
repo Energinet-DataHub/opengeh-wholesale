@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Factories;
@@ -43,9 +44,12 @@ public class WholesaleResultFactoryTests
     {
         // Arrange
         var row = CreateSqlResultRow();
+        var expectedStartDate = _defaultWholesaleTimeSeriesPoints.First().Time;
+        // End date is the first point in the next periode
+        var expectedEndDate = _defaultWholesaleTimeSeriesPoints.Last().Time.AddHours(1);
 
         // Act
-        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd, _version);
+        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _version);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -60,8 +64,8 @@ public class WholesaleResultFactoryTests
         actual.Resolution.Should().Be(Resolution.Hour);
         actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
         actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
-        actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
-        actual.PeriodStart.Should().Be(_defaultPeriodStart);
+        actual.PeriodStart.Should().Be(expectedStartDate.ToInstant());
+        actual.PeriodEnd.Should().Be(expectedEndDate.ToInstant());
         actual.CalculationType.Should().Be(CalculationType.WholesaleFixing);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.TimeSeriesPoints.Should().HaveCount(1);
@@ -76,7 +80,7 @@ public class WholesaleResultFactoryTests
             { WholesaleResultColumnNames.EnergySupplierId, "energySupplierId" },
             { WholesaleResultColumnNames.GridArea, "504" },
             { WholesaleResultColumnNames.AmountType, "amount_per_charge" },
-            { WholesaleResultColumnNames.CalculationType, "WholesaleFixing" },
+            { WholesaleResultColumnNames.CalculationType, "wholesale_fixing" },
             { WholesaleResultColumnNames.ChargeCode, "chargeCode" },
             { WholesaleResultColumnNames.ChargeType, "tariff" },
             { WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId" },

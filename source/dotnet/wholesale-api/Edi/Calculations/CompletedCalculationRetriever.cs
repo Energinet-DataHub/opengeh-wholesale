@@ -75,27 +75,14 @@ public class CompletedCalculationRetriever
                 .ConfigureAwait(true);
         }
 
-        try
-        {
-            return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-                period.Start,
-                period.End,
-                completedCalculationsForPeriod);
-        }
-        catch (MissingCalculationException e)
-        {
-            _logger.LogError(
-                e,
-                "Failed to find latest calculations for calculation type {RequestedCalculationType}, grid area codes: {GridAreaCodes}, within period: {Start}  - {End}",
-                requestedCalculationType,
-                string.Join(',', gridAreaCodes),
-                period.Start,
-                period.End);
-            throw;
-        }
+        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
+            period.Start,
+            period.End,
+            completedCalculationsForPeriod);
     }
 
-    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationsForPeriodAsync(IReadOnlyCollection<string> gridAreaCodes, Period period, RequestedCalculationType requestedCalculationType)
+    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationsForPeriodAsync(
+        IReadOnlyCollection<string> gridAreaCodes, Period period, RequestedCalculationType requestedCalculationType)
     {
         return await _calculationsClient
             .SearchAsync(

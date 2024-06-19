@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import uuid
 from datetime import datetime
 from decimal import Decimal
@@ -20,23 +19,19 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
 from package.codelists import CalculationType
 from package.constants import TotalMonthlyAmountsColumnNames
-from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-)
+from package.infrastructure.paths import OutputDatabase
 from tests.helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         TotalMonthlyAmountsColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        TotalMonthlyAmountsColumnNames.calculation_type: "WholesaleFixing",
+        TotalMonthlyAmountsColumnNames.calculation_type: "wholesale_fixing",
         TotalMonthlyAmountsColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),
@@ -48,23 +43,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         TotalMonthlyAmountsColumnNames.charge_owner_id: "1234567890123",
     }
     return spark.createDataFrame(data=[row], schema=total_monthly_amounts_schema)
-
-
-def test__migrated_table__columns_matching_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    contract_path = f"{contracts_path}/total-monthly-amounts-table-column-names.json"
-
-    # Act
-    actual = spark.table(
-        f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
-    ).schema
-
-    # Assert
-    assert_contract_matches_schema(contract_path, actual)
 
 
 @pytest.mark.parametrize(
@@ -106,7 +84,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}",
+            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}",
             overwrite=False,
         )
 
@@ -130,7 +108,7 @@ actor_eic = "1234567890123456"
             TotalMonthlyAmountsColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (TotalMonthlyAmountsColumnNames.calculation_type, "WholesaleFixing"),
+        (TotalMonthlyAmountsColumnNames.calculation_type, "wholesale_fixing"),
         (
             TotalMonthlyAmountsColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
@@ -159,7 +137,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
 
@@ -191,7 +169,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
 
@@ -221,12 +199,12 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
     # Assert
     actual_df = spark.read.table(
-        f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     ).where(col(TotalMonthlyAmountsColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].amount == amount
 
@@ -240,9 +218,9 @@ def test__total_monthly_amounts_table__is_not_managed(
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
     Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
-    database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
+    database_details = spark.sql(f"DESCRIBE DATABASE {OutputDatabase.DATABASE_NAME}")
     table_details = spark.sql(
-        f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"DESCRIBE DETAIL {OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
     database_location = database_details.where(

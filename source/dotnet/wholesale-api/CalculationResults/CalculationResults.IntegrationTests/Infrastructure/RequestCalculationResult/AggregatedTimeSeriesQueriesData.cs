@@ -14,6 +14,7 @@
 
 using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -197,7 +198,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   with the period start and end being the same for all `CalculationForPeriod'.
  */
-public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFixture sqlStatementApiFixture)
+public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlStatementApiFixture sqlStatementApiFixture)
 {
     public static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         Instant startOfPeriod,
@@ -703,9 +704,7 @@ public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFix
     private static string GetCalculationIdForBrGaAggregation(string time, string calculationType)
     {
         var isTimeBeforeCut = IsTimeBeforeCut(time);
-        var tryParse = Enum.TryParse<CalculationType>(calculationType, out var calculationTypeAsEnum);
-
-        tryParse.Should().BeTrue("Must be able to parse calculation type in order to determine calculation id");
+        var calculationTypeAsEnum = CalculationTypeMapper.FromDeltaTableValue(calculationType);
 
         return calculationTypeAsEnum switch
         {
@@ -732,44 +731,10 @@ public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFix
         };
     }
 
-    private static string GetCalculationIdForEsGaAggregation(string time, string calculationType)
-    {
-        var isTimeBeforeCut = IsTimeBeforeCut(time);
-        var tryParse = Enum.TryParse<CalculationType>(calculationType, out var calculationTypeAsEnum);
-
-        tryParse.Should().BeTrue("Must be able to parse calculation type in order to determine calculation id");
-
-        return calculationTypeAsEnum switch
-        {
-            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgBf1CalculationResultId,
-            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgBf2CalculationResultId,
-
-            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgFc1CalculationResultId,
-            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgFc2CalculationResultId,
-
-            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgSc1CalculationResultId,
-            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgSc2CalculationResultId,
-
-            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgTc1CalculationResultId,
-            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
-                .EsGaAgTc2CalculationResultId,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-    }
-
     private static string GetCalculationIdForGaAggregation(string time, string calculationType)
     {
         var isTimeBeforeCut = IsTimeBeforeCut(time);
-        var tryParse = Enum.TryParse<CalculationType>(calculationType, out var calculationTypeAsEnum);
-
-        tryParse.Should().BeTrue("Must be able to parse calculation type in order to determine calculation id");
+        var calculationTypeAsEnum = CalculationTypeMapper.FromDeltaTableValue(calculationType);
 
         return calculationTypeAsEnum switch
         {
