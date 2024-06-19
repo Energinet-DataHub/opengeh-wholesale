@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -30,6 +31,13 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
     {
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            return filter.EnergySupplier is not null
+                ? _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilterWithEnergySupplier(filter))
+                : _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilter(filter));
+        }
+
         return filter.EnergySupplier is not null
             ? _settlementReportResultQueries.CountAsync(ParseEnergyFilterWithEnergySupplier(filter))
             : _settlementReportResultQueries.CountAsync(ParseEnergyFilter(filter));
@@ -37,9 +45,20 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
 
     public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
-        var rows = filter.EnergySupplier is not null
+        IAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportEnergyResultRow> rows;
+
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            rows = filter.EnergySupplier is not null
+                ? _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilterWithEnergySupplier(filter), skip, take)
+                : _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilter(filter), skip, take);
+        }
+        else
+        {
+            rows = filter.EnergySupplier is not null
                 ? _settlementReportResultQueries.GetAsync(ParseEnergyFilterWithEnergySupplier(filter), skip, take)
                 : _settlementReportResultQueries.GetAsync(ParseEnergyFilter(filter), skip, take);
+        }
 
         await foreach (var row in rows.ConfigureAwait(false))
         {
@@ -66,12 +85,33 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             filter.PeriodEnd.ToInstant());
     }
 
+    private static SettlementReportLatestEnergyResultQueryFilter ParseLatestEnergyFilter(SettlementReportRequestFilterDto filter)
+    {
+        var (gridAreaCode, _) = filter.GridAreas.Single();
+
+        return new SettlementReportLatestEnergyResultQueryFilter(
+            gridAreaCode,
+            filter.PeriodStart.ToInstant(),
+            filter.PeriodEnd.ToInstant());
+    }
+
     private static SettlementReportEnergyResultPerEnergySupplierQueryFilter ParseEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportEnergyResultPerEnergySupplierQueryFilter(
             calculationId.Id,
+            gridAreaCode,
+            filter.EnergySupplier!,
+            filter.PeriodStart.ToInstant(),
+            filter.PeriodEnd.ToInstant());
+    }
+
+    private static SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter ParseLatestEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter)
+    {
+        var (gridAreaCode, _) = filter.GridAreas.Single();
+
+        return new SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter(
             gridAreaCode,
             filter.EnergySupplier!,
             filter.PeriodStart.ToInstant(),
