@@ -14,8 +14,10 @@ module "mssqldb_grid_loss_imbalance_prices" {
   server_id            = data.azurerm_mssql_server.mssqlsrv.id
   sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
   elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
-  monitor_action_group = {
-    id                  = data.azurerm_key_vault_secret.primary_action_group_id.value
+  enclave_type         = null
+
+  monitor_action_group = length(module.monitor_action_group_gridloss) != 1 ? null : {
+    id                  = module.monitor_action_group_gridloss[0].id
     resource_group_name = azurerm_resource_group.this.name
   }
 }
