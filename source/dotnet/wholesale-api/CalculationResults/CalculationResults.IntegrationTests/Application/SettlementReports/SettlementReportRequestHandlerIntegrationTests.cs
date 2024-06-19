@@ -261,11 +261,15 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     }
 
     [Theory]
-    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult)]
-    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult)]
-    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult)]
-    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult)]
-    public async Task RequestReportAsync_ForWholesaleFixingWithBasisData_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
+    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult, false)]
+    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult, false)]
+    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult, false)]
+    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult, false)]
+    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult, true)]
+    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult, true)]
+    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult, true)]
+    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult, true)]
+    public async Task RequestReportAsync_ForWholesaleFixingWithBasisData_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent, bool isforWholeMonth)
     {
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
@@ -273,10 +277,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
+        var startDate = isforWholeMonth ? new DateTimeOffset(2024, 1, 1, 1, 0, 0, DateTimeOffset.Now.Offset).UtcDateTime : DateTimeOffset.UtcNow.Date;
+        var endDate = isforWholeMonth ? startDate.AddMonths(1) : startDate.AddDays(2);
         var filter = new SettlementReportRequestFilterDto(
             calculationFilter,
-            DateTimeOffset.UtcNow.Date,
-            DateTimeOffset.UtcNow.Date.AddDays(2),
+            startDate,
+            endDate,
             calculationType,
             null,
             null);
@@ -288,29 +294,57 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
-        var energyResult = actual[0];
+        var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResultForCalculationId);
+        Assert.NotNull(energyResult);
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResult.FileContent);
 
-        var wholesaleResult = actual[1];
+        var wholesaleResult = actual.FirstOrDefault(x => x.FileContent == fileContent);
+        Assert.NotNull(wholesaleResult);
         Assert.Equal(requestId, wholesaleResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
         Assert.Equal(fileContent, wholesaleResult.FileContent);
 
-        var chargeLinkPeriodsResult = actual[2];
+        var chargeLinkPeriodsResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.ChargeLinksPeriods);
+        Assert.NotNull(chargeLinkPeriodsResult);
         Assert.Equal(requestId, chargeLinkPeriodsResult.RequestId);
         Assert.Equal(calculationFilter.Single(), chargeLinkPeriodsResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResult.FileContent);
 
-        var meteringPointMasterDataResult = actual[3];
+        var meteringPointMasterDataResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MeteringPointMasterData);
+        Assert.NotNull(meteringPointMasterDataResult);
         Assert.Equal(requestId, meteringPointMasterDataResult.RequestId);
         Assert.Equal(calculationFilter.Single(), meteringPointMasterDataResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResult.FileContent);
+
+        var timeSeriesPT15MResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.Pt15M);
+        Assert.NotNull(timeSeriesPT15MResult);
+        Assert.Equal(requestId, timeSeriesPT15MResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), timeSeriesPT15MResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT15M (805)", timeSeriesPT15MResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt15M, timeSeriesPT15MResult.FileContent);
+
+        var timeSeriesPT1HResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.Pt1H);
+        Assert.NotNull(timeSeriesPT1HResult);
+        Assert.Equal(requestId, timeSeriesPT1HResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), timeSeriesPT1HResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Time series PT1H (805)", timeSeriesPT1HResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.Pt1H, timeSeriesPT1HResult.FileContent);
+
+        if (isforWholeMonth)
+        {
+            var wholeMonthResultResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
+            Assert.NotNull(wholeMonthResultResult);
+            Assert.Equal(requestId, wholeMonthResultResult.RequestId);
+            Assert.Equal(calculationFilter.Single(), wholeMonthResultResult.RequestFilter.GridAreas.Single());
+            Assert.Equal("Monthly amounts (805)", wholeMonthResultResult.PartialFileInfo.FileName);
+            Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResult.FileContent);
+        }
     }
 
     [Theory]

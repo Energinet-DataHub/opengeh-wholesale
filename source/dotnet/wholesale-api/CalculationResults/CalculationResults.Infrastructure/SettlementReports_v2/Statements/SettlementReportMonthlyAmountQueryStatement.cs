@@ -55,7 +55,7 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
 
         return $"""
                 SELECT {string.Join(", ", [
-                    "mp." + SettlementReportMonthlyAmountViewColumns.ResultId,
+                    "ma." + SettlementReportMonthlyAmountViewColumns.ResultId,
                     SettlementReportMonthlyAmountViewColumns.QuantityUnit,
                     SettlementReportMonthlyAmountViewColumns.Amount,
                     SettlementReportMonthlyAmountViewColumns.CalculationId,
