@@ -41,7 +41,8 @@ public sealed class SettlementReportChargePriceCountQueryStatement : DatabricksS
                         {SettlementReportChargePriceViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
-                        {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
+                        {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
+                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargePriceViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'")}
                 """;
     }
 }
