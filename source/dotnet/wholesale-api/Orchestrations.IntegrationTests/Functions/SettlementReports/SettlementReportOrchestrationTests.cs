@@ -38,6 +38,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class SettlementReportOrchestrationTests : IAsyncLifetime
 {
+    private const string ValidGln = "5516765471894";
+
     public SettlementReportOrchestrationTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
@@ -102,7 +104,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
-                null,
+                ValidGln,
                 null));
 
         // => Databricks SQL Statement API
@@ -171,7 +173,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
-                null,
+                ValidGln,
                 null));
 
         // => Databricks SQL Statement API
@@ -253,7 +255,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
-                null,
+                ValidGln,
                 null));
 
         // => Databricks SQL Statement API
@@ -320,7 +322,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
-        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorNumberClaim = new Claim("actornumber", ValidGln);
         var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
 
         var internalToken = new JwtSecurityToken(
