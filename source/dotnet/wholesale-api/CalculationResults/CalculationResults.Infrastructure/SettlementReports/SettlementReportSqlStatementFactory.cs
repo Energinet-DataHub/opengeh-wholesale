@@ -33,7 +33,7 @@ public static class SettlementReportSqlStatementFactory
         string? energySupplier)
     {
         var isTotalGridArea = energySupplier == null;
-        var aggregationLevel = isTotalGridArea ? DeltaTableAggregationLevel.GridArea : DeltaTableAggregationLevel.EnergySupplierAndGridArea;
+        var aggregationLevel = isTotalGridArea ? DeltaTableAggregationLevel.GridArea : DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
         var selectColumns = string.Join(
             ", ",
             @$"t1.{EnergyResultColumnNames.GridArea}",

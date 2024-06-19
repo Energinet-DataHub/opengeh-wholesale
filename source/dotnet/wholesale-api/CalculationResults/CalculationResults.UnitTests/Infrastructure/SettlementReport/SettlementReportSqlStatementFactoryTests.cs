@@ -100,7 +100,7 @@ WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
     AND t1.{EnergyResultColumnNames.CalculationType} = 'balance_fixing'
     AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
+    AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea}'
     AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{energySupplier}'
 ORDER BY t1.time
 ";

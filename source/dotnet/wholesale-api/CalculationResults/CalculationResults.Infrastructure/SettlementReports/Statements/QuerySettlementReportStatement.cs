@@ -55,7 +55,7 @@ public class QuerySettlementReportStatement : DatabricksStatement
         var isTotalGridArea = _energySupplier == null;
         var aggregationLevel = isTotalGridArea
             ? DeltaTableAggregationLevel.GridArea
-            : DeltaTableAggregationLevel.EnergySupplierAndGridArea;
+            : DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
         var selectColumns = string.Join(
             ", ",
             @$"t1.{EnergyResultColumnNames.GridArea}",
