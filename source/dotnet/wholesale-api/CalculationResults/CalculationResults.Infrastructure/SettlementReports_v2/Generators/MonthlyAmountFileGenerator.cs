@@ -34,13 +34,17 @@ public sealed class MonthlyAmountFileGenerator : ISettlementReportFileGenerator
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
+    public async Task WriteAsync(
+        SettlementReportRequestFilterDto filter,
+        SettlementReportPartialFileInfo fileInfo,
+        long maximumCalculationVersion,
+        StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportMonthlyAmountRowMap>();

@@ -335,7 +335,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26de");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.FirstCorrectionSettlement,
@@ -344,10 +344,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             SettlementReportFileContent.MonthlyAmount,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,

@@ -67,7 +67,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd2-1da0c40a26de"))
@@ -94,7 +94,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd4-1da0c40a26d4"))
@@ -122,7 +122,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
 
         var results = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>()
+                new Dictionary<string, CalculationId?>()
                 {
                     {
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd4-1da0c40a26d4"))
