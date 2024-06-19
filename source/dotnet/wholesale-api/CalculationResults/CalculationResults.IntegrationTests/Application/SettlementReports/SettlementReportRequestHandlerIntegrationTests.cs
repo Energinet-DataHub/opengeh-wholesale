@@ -277,7 +277,8 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
-        var startDate = isforWholeMonth ? new DateTimeOffset(2024, 1, 1, 1, 0, 0, DateTimeOffset.Now.Offset).UtcDateTime : DateTimeOffset.UtcNow.Date;
+        var offset = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen").GetUtcOffset(DateTime.UtcNow);
+        var startDate = isforWholeMonth ? new DateTimeOffset(2024, 1, 1, 1, 0, 0, offset).UtcDateTime : DateTimeOffset.UtcNow.Date;
         var endDate = isforWholeMonth ? startDate.AddMonths(1) : startDate.AddDays(2);
         var filter = new SettlementReportRequestFilterDto(
             calculationFilter,
