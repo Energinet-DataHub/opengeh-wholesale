@@ -29,7 +29,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from package.calculation.preparation.transformations.charge_types.get_charge_price_information_with_charge_time import (
+from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
     explode_charge_price_information_within_periods,
 )
 from package.codelists import ChargeType, ChargeResolution
