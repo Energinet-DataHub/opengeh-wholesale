@@ -17,10 +17,7 @@ from pyspark.sql import Window
 from pyspark.sql.dataframe import DataFrame
 
 import package.calculation.preparation.data_structures as d
-from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
-    explode_charge_price_information_within_periods,
-)
-from package.codelists import ChargeType, WholesaleResultResolution, ChargeResolution
+from package.codelists import ChargeType, WholesaleResultResolution
 from package.constants import Colname
 
 
@@ -103,10 +100,10 @@ def _join_with_prices(
     - The charge price is the last known charge price for the charge key.
     """
     charge_prices = charge_prices.df
-    charge_price_information_with_charge_time = (
-        explode_charge_price_information_within_periods(
-            charge_price_information, ChargeResolution.DAY, time_zone
-        )
+    charge_price_information = charge_price_information.df
+
+    charge_price_information_with_charge_time = _explode_with_daily_charge_time(
+        charge_price_information, time_zone
     )
 
     w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(
