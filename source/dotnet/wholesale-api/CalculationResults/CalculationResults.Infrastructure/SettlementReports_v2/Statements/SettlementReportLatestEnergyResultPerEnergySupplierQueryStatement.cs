@@ -70,6 +70,7 @@ public sealed class SettlementReportLatestEnergyResultPerEnergySupplierQueryStat
                                     SettlementReportEnergyResultViewColumns.Quantity,
                                     SettlementReportEnergyResultViewColumns.MeteringPointType,
                                     SettlementReportEnergyResultViewColumns.SettlementMethod,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier,
                                 ])}
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
