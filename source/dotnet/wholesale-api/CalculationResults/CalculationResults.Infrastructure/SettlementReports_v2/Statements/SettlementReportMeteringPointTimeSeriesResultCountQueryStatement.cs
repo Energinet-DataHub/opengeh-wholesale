@@ -33,7 +33,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultCountQueryState
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT(DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime})) AS count 
+                    SELECT COUNT(DISTINCT({SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId})) AS count 
                     FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}
                     WHERE
