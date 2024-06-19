@@ -29,6 +29,9 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
+from package.calculation.preparation.transformations.charge_types.get_charge_price_information_with_charge_time import (
+    explode_charge_price_information_within_periods,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -78,7 +81,7 @@ def _join_price_information_periods_and_prices_add_missing_prices(
     charge_prices = charge_prices.df
 
     charge_price_information_with_charge_time = (
-        get_charge_price_information_with_charge_time(
+        explode_charge_price_information_within_periods(
             charge_price_information, resolution, time_zone
         )
     )
@@ -99,61 +102,6 @@ def _join_price_information_periods_and_prices_add_missing_prices(
     )
 
     return charges_with_prices_and_missing_prices
-
-
-def get_charge_price_information_with_charge_time(
-    charge_price_information: ChargePriceInformation,
-    resolution: ChargeResolution,
-    time_zone: str,
-) -> DataFrame:
-    charge_price_information_df = charge_price_information.df.filter(
-        f.col(Colname.resolution) == resolution.value
-    )
-
-    def explode_within_periods() -> DataFrame:
-        if resolution == ChargeResolution.HOUR:
-            return charge_price_information_df.withColumn(
-                Colname.charge_time,
-                f.explode(
-                    f.sequence(
-                        Colname.from_date,
-                        Colname.to_date,
-                        f.expr("interval 1 hour"),
-                    )
-                ),
-            )
-        elif resolution == ChargeResolution.DAY:
-            # When resolution is DAY we need to deal with local time to get the correct start time of each day
-            return charge_price_information_df.withColumn(
-                Colname.charge_time,
-                f.explode(
-                    # Create a sequence of the start of each day in the period. The times are local time
-                    f.sequence(
-                        f.from_utc_timestamp(Colname.from_date, time_zone),
-                        f.from_utc_timestamp(Colname.to_date, time_zone),
-                        f.expr("interval 1 day"),
-                    )
-                ),
-                # Convert local day start times back to UTC
-            ).withColumn(
-                Colname.charge_time,
-                f.to_utc_timestamp(Colname.charge_time, time_zone),
-            )
-
-    # If the charge stops and starts on the same day, then the charge will be included twice, so we need to remove duplicates
-    charge_price_information_with_charge_time = explode_within_periods().dropDuplicates(
-        [Colname.charge_key, Colname.charge_time]
-    )
-
-    return charge_price_information_with_charge_time.select(
-        Colname.charge_key,
-        Colname.charge_code,
-        Colname.charge_type,
-        Colname.charge_owner,
-        Colname.charge_tax,
-        Colname.resolution,
-        Colname.charge_time,
-    )
 
 
 def _join_with_charge_link_metering_points(
