@@ -61,13 +61,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
-                csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-                const int energyPriceFieldCount = 25;
-                for (var i = 0; i < energyPriceFieldCount; ++i)
-                {
-                    csvHelper.WriteField($"ENERGYPRICE{i + 1}");
-                }
-
+                WriteChargePriceHeaders(csvHelper);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
@@ -76,6 +70,23 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
+        }
+    }
+
+    private void WriteChargePriceHeaders(CsvWriter csvHelper)
+    {
+        const int energyPriceFieldCount = 25;
+
+        csvHelper.WriteField($"CHARGETYPE");
+        csvHelper.WriteField($"CHARGETYPEID");
+        csvHelper.WriteField($"CHARGETYPEOWNER");
+        csvHelper.WriteField($"RESOLUTIONDURATION");
+        csvHelper.WriteField($"TAXINDICATOR");
+        csvHelper.WriteField($"STARTDATETIME");
+
+        for (var i = 0; i < energyPriceFieldCount; ++i)
+        {
+            csvHelper.WriteField($"ENERGYPRICE{i + 1}");
         }
     }
 
@@ -116,7 +127,6 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 .Name("STARTDATETIME");
 
             Map(r => r.EnergyPrices)
-                .Name("ENERGYPRICE1")
                 .TypeConverter<IEnumerableConverter>();
         }
     }
