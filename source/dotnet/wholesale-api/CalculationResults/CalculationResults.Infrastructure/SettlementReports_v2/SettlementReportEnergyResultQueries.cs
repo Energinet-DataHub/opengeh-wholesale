@@ -70,44 +70,14 @@ public sealed class SettlementReportEnergyResultQueries : ISettlementReportEnerg
         return InternalGetAsync(filter.CalculationId, new SettlementReportEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take), isEnergySupplierIncluded: true);
     }
 
-    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultQueryFilter filter, int skip, int take)
+    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultQueryFilter filter, int skip, int take)
     {
-        var statement = new SettlementReportLatestEnergyResultQueryStatement(_deltaTableOptions, filter, skip, take);
-        var calcVersions = new Dictionary<string, long>();
-
-        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
-        {
-            var databricksSqlRow = new DatabricksSqlRow(nextRow);
-            var calculationId = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationId]!;
-
-            if (!calcVersions.TryGetValue(calculationId, out var calculationVersion))
-            {
-                var calculation = await _calculationsClient.GetAsync(Guid.Parse(calculationId)).ConfigureAwait(false);
-                calcVersions[calculationId] = calculationVersion = calculation.Version;
-            }
-
-            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculationVersion, false);
-        }
+        return InternalGetAsync(new SettlementReportLatestEnergyResultQueryStatement(_deltaTableOptions, filter, skip, take), false);
     }
 
-    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter filter, int skip, int take)
+    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter filter, int skip, int take)
     {
-        var statement = new SettlementReportLatestEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take);
-        var calcVersions = new Dictionary<string, long>();
-
-        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
-        {
-            var databricksSqlRow = new DatabricksSqlRow(nextRow);
-            var calculationId = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationId]!;
-
-            if (!calcVersions.TryGetValue(calculationId, out var calculationVersion))
-            {
-                var calculation = await _calculationsClient.GetAsync(Guid.Parse(calculationId)).ConfigureAwait(false);
-                calcVersions[calculationId] = calculationVersion = calculation.Version;
-            }
-
-            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculationVersion, false);
-        }
+        return InternalGetAsync(new SettlementReportLatestEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take), true);
     }
 
     private async IAsyncEnumerable<SettlementReportEnergyResultRow> InternalGetAsync(Guid calculationId, DatabricksStatement statement, bool isEnergySupplierIncluded)
@@ -116,6 +86,25 @@ public sealed class SettlementReportEnergyResultQueries : ISettlementReportEnerg
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
             yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version, isEnergySupplierIncluded);
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportEnergyResultRow> InternalGetAsync(DatabricksStatement statement, bool isEnergySupplierIncluded)
+    {
+        var calcVersions = new Dictionary<string, long>();
+
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var databricksSqlRow = new DatabricksSqlRow(nextRow);
+            var calculationId = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationId]!;
+
+            if (!calcVersions.TryGetValue(calculationId, out var calculationVersion))
+            {
+                var calculation = await _calculationsClient.GetAsync(Guid.Parse(calculationId)).ConfigureAwait(false);
+                calcVersions[calculationId] = calculationVersion = calculation.Version;
+            }
+
+            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculationVersion, isEnergySupplierIncluded);
         }
     }
 
