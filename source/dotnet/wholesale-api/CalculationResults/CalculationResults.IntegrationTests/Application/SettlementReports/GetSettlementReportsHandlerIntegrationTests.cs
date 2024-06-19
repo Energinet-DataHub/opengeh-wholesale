@@ -42,7 +42,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         false,
         false,
         new SettlementReportRequestFilterDto(
-            new Dictionary<string, CalculationId>(),
+            new Dictionary<string, CalculationId?>(),
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
             CalculationType.BalanceFixing,
@@ -121,7 +121,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         items.Should().NotContain(item => item.RequestId == new SettlementReportRequestId(notUsersRequest1.ToString()));
         items.Should().NotContain(item => item.RequestId == new SettlementReportRequestId(notUsersRequest2.ToString()));
         Assert.Collection(
-            items,
+            Enumerable.Reverse(items),
             item => Assert.Equal(targetActorId, item.RequestedByActorId),
             item =>
             {

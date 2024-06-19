@@ -40,7 +40,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         await using var writeContext = _databaseManager.CreateDbContext();
         var target = new SettlementReportRepository(writeContext);
 
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
             { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
@@ -87,7 +87,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     public async Task DeleteAsync_GivenRequest_RequestIsDeleted()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
             { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
@@ -189,7 +189,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         await using var setupContext = _databaseManager.CreateDbContext();
         var setupRepository = new SettlementReportRepository(setupContext);
 
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
             { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },

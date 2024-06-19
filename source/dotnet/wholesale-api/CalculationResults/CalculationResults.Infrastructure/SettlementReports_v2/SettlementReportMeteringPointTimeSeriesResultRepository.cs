@@ -57,7 +57,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
         };
 
         return new SettlementReportMeteringPointTimeSeriesResultQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridArea,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant(),

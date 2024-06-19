@@ -96,7 +96,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             false,
             false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
@@ -166,7 +166,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             false,
             false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
@@ -249,7 +249,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             false,
             false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },

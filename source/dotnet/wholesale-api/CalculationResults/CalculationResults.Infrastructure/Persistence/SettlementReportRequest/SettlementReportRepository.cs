@@ -59,6 +59,7 @@ public sealed class SettlementReportRepository : ISettlementReportRepository
     {
         return await _context.SettlementReports
             .Where(x => x.ActorId == actorId)
+            .OrderByDescending(x => x.Id)
             .ToListAsync()
             .ConfigureAwait(false);
     }

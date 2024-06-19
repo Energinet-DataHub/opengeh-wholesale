@@ -21,233 +21,99 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
     private readonly ISettlementReportFileGeneratorFactory _fileGeneratorFactory;
+    private readonly ILatestCalculationVersionRepository _latestCalculationVersionRepository;
 
-    public SettlementReportRequestHandler(ISettlementReportFileGeneratorFactory fileGeneratorFactory)
+    public SettlementReportRequestHandler(
+        ISettlementReportFileGeneratorFactory fileGeneratorFactory,
+        ILatestCalculationVersionRepository latestCalculationVersionRepository)
     {
         _fileGeneratorFactory = fileGeneratorFactory;
+        _latestCalculationVersionRepository = latestCalculationVersionRepository;
     }
 
     public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        var setsOfFiles = new List<IAsyncEnumerable<SettlementReportFileRequestDto>>();
+        const string energyResultFileName = "Result Energy";
+        const string wholesaleResultFileName = "Result Wholesale";
 
-        switch (reportRequest.Filter.CalculationType)
+        var filesInReport = reportRequest.Filter.CalculationType switch
         {
-            case CalculationType.BalanceFixing:
-                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(true, requestId, reportRequest));
-                break;
-            case CalculationType.WholesaleFixing:
-                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
-                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.WholesaleResult, requestId, reportRequest));
-                if (reportRequest.IncludeBasisData)
-                {
-                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
-                }
+            CalculationType.BalanceFixing => new[]
+            {
+                new { Content = SettlementReportFileContent.EnergyResult, Name = energyResultFileName, reportRequest.SplitReportPerGridArea },
+            },
+            CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement =>
+            [
+                new { Content = SettlementReportFileContent.EnergyResult, Name = energyResultFileName, reportRequest.SplitReportPerGridArea },
+                new { Content = SettlementReportFileContent.WholesaleResult, Name = wholesaleResultFileName, reportRequest.SplitReportPerGridArea }
+            ],
+            _ => throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.Filter.CalculationType}."),
+        };
 
-                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+        if (reportRequest.IncludeBasisData)
+        {
+            filesInReport =
+            [
+                ..filesInReport,
+                ..reportRequest.Filter.CalculationType switch
                 {
-                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
+                    CalculationType.BalanceFixing => new[]
+                    {
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
+                    },
+                    CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement =>
+                    [
+                        new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "Charge links on metering points", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.ChargePrice, Name = "Charge Price", SplitReportPerGridArea = true },
+                    ],
+                    _ => throw new InvalidOperationException($"Cannot generate basis data for calculation type {reportRequest.Filter.CalculationType}."),
                 }
-
-                break;
-            case CalculationType.FirstCorrectionSettlement:
-                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
-                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.FirstCorrectionResult, requestId, reportRequest));
-                if (reportRequest.IncludeBasisData)
-                {
-                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
-                }
-
-                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
-                {
-                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
-                }
-
-                break;
-            case CalculationType.SecondCorrectionSettlement:
-                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
-                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.SecondCorrectionResult, requestId, reportRequest));
-                if (reportRequest.IncludeBasisData)
-                {
-                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
-                }
-
-                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
-                {
-                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
-                }
-
-                break;
-            case CalculationType.ThirdCorrectionSettlement:
-                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
-                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.ThirdCorrectionResult, requestId, reportRequest));
-                if (reportRequest.IncludeBasisData)
-                {
-                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
-                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
-                }
-
-                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
-                {
-                    setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
-                }
-
-                break;
-            default:
-                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.Filter.CalculationType}.");
+            ];
         }
 
+        if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd)
+                                               && reportRequest.Filter.CalculationType
+                                                   is CalculationType.WholesaleFixing
+                                                   or CalculationType.FirstCorrectionSettlement
+                                                   or CalculationType.SecondCorrectionSettlement
+                                                   or CalculationType.ThirdCorrectionSettlement)
+        {
+            filesInReport =
+            [
+                ..filesInReport,
+                ..new[]
+                {
+                    new { Content = SettlementReportFileContent.MonthlyAmount, Name = "Monthly amount", SplitReportPerGridArea = true },
+                },
+            ];
+        }
+
+        var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
         var filesToRequest = new List<SettlementReportFileRequestDto>();
 
-        foreach (var fileSet in setsOfFiles)
+        foreach (var file in filesInReport)
         {
-            await foreach (var fileRequest in fileSet.ConfigureAwait(false))
+            var fileRequest = new SettlementReportFileRequestDto(
+                requestId,
+                file.Content,
+                new SettlementReportPartialFileInfo(file.Name, true),
+                reportRequest.Filter,
+                maxCalculationVersion);
+
+            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, file.SplitReportPerGridArea).ConfigureAwait(false))
             {
-                filesToRequest.Add(fileRequest);
+                filesToRequest.Add(splitFileRequest);
             }
         }
 
         return filesToRequest;
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForEnergyResultsAsync(
-        bool takeLatestPerDay,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
-    {
-        var fileContent = takeLatestPerDay
-            ? SettlementReportFileContent.EnergyResultLatestPerDay
-            : SettlementReportFileContent.EnergyResultForCalculationId;
-
-        var resultEnergy = new SettlementReportFileRequestDto(
-            fileContent,
-            new SettlementReportPartialFileInfo("Result Energy", true),
-            requestId,
-            reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultEnergy, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForWholesaleResultsAsync(
-        SettlementReportFileContent wholesaleFileContent,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
-    {
-        var resultWholesale = new SettlementReportFileRequestDto(
-                wholesaleFileContent,
-                new SettlementReportPartialFileInfo("Result Wholesale", true),
-                requestId,
-                reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargeLinkPeriodsAsync(
-        SettlementReportFileContent fileContent,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
-    {
-        var resultChargeLinkPeriods = new SettlementReportFileRequestDto(
-            fileContent,
-            new SettlementReportPartialFileInfo("Charge links on metering points", true),
-            requestId,
-            reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultChargeLinkPeriods, true).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForMeteringPointMasterDataAsync(
-        SettlementReportFileContent fileContent,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
-    {
-        var request = new SettlementReportFileRequestDto(
-            fileContent,
-            new SettlementReportPartialFileInfo("Master data for metering points", true),
-            requestId,
-            reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForMonthlyAmountAsync(
-        SettlementReportFileContent fileContent,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
-    {
-        var request = new SettlementReportFileRequestDto(
-            fileContent,
-            new SettlementReportPartialFileInfo("Monthly amounts", true),
-            requestId,
-            reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForTimeSeriesAsync(
-            SettlementReportFileContent fileContent,
-            SettlementReportRequestId requestId,
-            SettlementReportRequestDto reportRequest)
-        {
-        var request = new SettlementReportFileRequestDto(
-            fileContent,
-            new SettlementReportPartialFileInfo($"Time series {fileContent.ToString().ToUpperInvariant()}", true),
-            requestId,
-            reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargePriceAsync(
-        SettlementReportFileContent fileContent,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
-    {
-        var fileRequest = new SettlementReportFileRequestDto(
-                fileContent,
-                new SettlementReportPartialFileInfo("Charge Price", true),
-                requestId,
-                reportRequest.Filter);
-
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
-        {
-            yield return splitFileRequest;
-        }
     }
 
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridAreaAsync(
@@ -271,7 +137,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 PartialFileInfo = partialFileInfo,
 
                 // Create a request with a single grid area.
-                RequestFilter = fileRequest.RequestFilter with { GridAreas = new Dictionary<string, CalculationId> { { gridAreaCode, calculationId } } },
+                RequestFilter = fileRequest.RequestFilter with { GridAreas = new Dictionary<string, CalculationId?> { { gridAreaCode, calculationId } } },
             };
 
             // Split the single grid area request into further chunks.
@@ -295,7 +161,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
         var chunks = await fileGenerator
-            .CountChunksAsync(fileRequest.RequestFilter)
+            .CountChunksAsync(fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
             .ConfigureAwait(false);
 
         for (var i = 0; i < chunks; i++)
@@ -315,5 +181,12 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             && convertedStart.Day == 1
             && convertedEnd.Day == 1
             && convertedEnd.Month - convertedStart.Month == 1;
+    }
+
+    private Task<long> GetLatestCalculationVersionAsync(CalculationType calculationType)
+    {
+        return calculationType == CalculationType.BalanceFixing
+            ? _latestCalculationVersionRepository.GetLatestCalculationVersionAsync()
+            : Task.FromResult(long.MaxValue);
     }
 }
