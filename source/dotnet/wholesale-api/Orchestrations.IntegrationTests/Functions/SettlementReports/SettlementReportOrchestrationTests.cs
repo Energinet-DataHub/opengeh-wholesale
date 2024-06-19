@@ -94,6 +94,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
@@ -161,6 +162,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             false,
             new SettlementReportRequestFilterDto(
@@ -243,6 +245,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             false,
             new SettlementReportRequestFilterDto(

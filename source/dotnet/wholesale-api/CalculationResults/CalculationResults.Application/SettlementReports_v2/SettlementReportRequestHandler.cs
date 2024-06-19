@@ -50,7 +50,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
-                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
                 {
                     setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
                 }
@@ -68,7 +68,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
-                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
                 {
                     setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
                 }
@@ -86,7 +86,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
-                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
                 {
                     setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
                 }
@@ -104,7 +104,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
-                if (IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
+                if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd))
                 {
                     setsOfFiles.Add(RequestFilesForMonthlyAmountAsync(SettlementReportFileContent.MonthlyAmount, requestId, reportRequest));
                 }
@@ -312,6 +312,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(start, "Europe/Copenhagen");
         var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(end, "Europe/Copenhagen");
         return convertedEnd.TimeOfDay.Ticks == 0
+            && convertedStart.Day == 1
             && convertedEnd.Day == 1
             && convertedEnd.Month - convertedStart.Month == 1;
     }

@@ -19,4 +19,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 public sealed record SettlementReportRequestDto(
     bool SplitReportPerGridArea,
     bool IncludeBasisData,
+    bool IncludeMonthlyAmount,
     SettlementReportRequestFilterDto Filter);

@@ -40,6 +40,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         false,
         false,
+        false,
         new SettlementReportRequestFilterDto(
             new Dictionary<string, CalculationId>(),
             DateTimeOffset.UtcNow,
