@@ -36,6 +36,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
             .ReturnsAsync(1);
 
+        mockedGenerator
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), long.MaxValue))
+            .ReturnsAsync(1);
+
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
         mockedFactory
             .Setup(factory => factory.Create(It.IsAny<SettlementReportFileContent>()))
@@ -326,7 +330,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var chargePricesResult = actual[6];
         Assert.Equal(requestId, chargePricesResult.RequestId);
         Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price", chargePricesResult.PartialFileInfo.FileName);
+        Assert.Equal("Charge Price (805)", chargePricesResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
     }
 
