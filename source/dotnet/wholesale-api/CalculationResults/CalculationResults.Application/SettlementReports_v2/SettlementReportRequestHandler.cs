@@ -88,10 +88,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             filesInReport =
             [
                 ..filesInReport,
-                ..new[]
-                {
-                    new { Content = SettlementReportFileContent.MonthlyAmount, Name = "Monthly amounts", SplitReportPerGridArea = true },
-                },
+                new { Content = SettlementReportFileContent.MonthlyAmount, Name = "Monthly amounts", SplitReportPerGridArea = true },
             ];
         }
 
