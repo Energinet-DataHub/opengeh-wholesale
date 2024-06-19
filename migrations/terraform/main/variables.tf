@@ -35,10 +35,40 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "omada_developers_security_group_object_id" {
+variable "developer_security_group_name" {
   type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
+  description = "Name of the Omada controlled security group containing developers to have access to the sub-system resources."
   default     = null
+}
+
+variable "developer_security_group_contributor_access" {
+  type        = bool
+  description = "Flag to determine if the developers should have contributor access to the resource group."
+  default     = false
+}
+
+variable "developer_security_group_reader_access" {
+  type        = bool
+  description = "Flag to determine if the developers should have reader access to the resource group."
+  default     = false
+}
+
+variable "platform_security_group_name" {
+  type        = string
+  description = "Name of the Omada controlled security group containing platform developers to have access to the sub-system resources."
+  default     = ""
+}
+
+variable "platform_security_group_contributor_access" {
+  type        = bool
+  description = "Flag to determine if the platform developers should have contributor access to the resource group."
+  default     = false
+}
+
+variable "platform_security_group_reader_access" {
+  type        = bool
+  description = "Flag to determine if the platform developers should have reader access to the resource group."
+  default     = false
 }
 
 variable "feature_flag_datahub2_time_series_import" {

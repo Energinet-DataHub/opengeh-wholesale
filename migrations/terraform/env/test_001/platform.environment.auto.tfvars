@@ -5,3 +5,4 @@ databricks_private_subnet_address_prefix           = "10.142.100.0/24"
 databricks_public_subnet_address_prefix            = "10.142.101.0/24"
 databricks_private_endpoints_subnet_address_prefix = "10.142.102.0/24"
 pim_contributor_group_name                         = "SEC-A-Datahub-Test-001-Contributor"
+developer_security_group_reader_access             = true

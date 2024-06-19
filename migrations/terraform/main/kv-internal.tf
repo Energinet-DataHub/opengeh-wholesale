@@ -20,10 +20,3 @@ resource "azurerm_role_assignment" "microsoft_azure_website_access" {
   principal_id         = "e383250e-d5d6-45b3-89f1-5321b821b063"
   role_definition_name = "Key Vault Secrets User"
 }
-
-resource "azurerm_role_assignment" "omada_developer_access" {
-  count                = var.omada_developers_security_group_object_id == null ? 0 : 1
-  scope                = module.kv_internal.id
-  principal_id         = var.omada_developers_security_group_object_id
-  role_definition_name = "Key Vault Secrets User"
-}

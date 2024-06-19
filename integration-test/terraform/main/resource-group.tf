@@ -10,3 +10,9 @@ resource "azurerm_role_assignment" "omada_developer_teams" {
   role_definition_name = "Contributor"
   principal_id         = var.omada_developers_security_group_object_id
 }
+
+resource "azurerm_role_assignment" "omada_developer_teams_blob_data_contributor" {
+  scope                = azurerm_resource_group.this.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = var.omada_developers_security_group_object_id
+}

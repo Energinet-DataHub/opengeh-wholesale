@@ -56,10 +56,40 @@ variable "enable_health_check_alerts" {
   default     = true
 }
 
-variable "omada_developers_security_group_name" {
+variable "developer_security_group_name" {
   type        = string
-  description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
+  description = "Name of the Omada controlled security group containing developers to have access to the sub-system resources."
   default     = ""
+}
+
+variable "developer_security_group_contributor_access" {
+  type        = bool
+  description = "Flag to determine if the developers should have contributor access to the resource group."
+  default     = false
+}
+
+variable "developer_security_group_reader_access" {
+  type        = bool
+  description = "Flag to determine if the developers should have reader access to the resource group."
+  default     = false
+}
+
+variable "platform_security_group_name" {
+  type        = string
+  description = "Name of the Omada controlled security group containing platform developers to have access to the sub-system resources."
+  default     = ""
+}
+
+variable "platform_security_group_contributor_access" {
+  type        = bool
+  description = "Flag to determine if the platform developers should have contributor access to the resource group."
+  default     = false
+}
+
+variable "platform_security_group_reader_access" {
+  type        = bool
+  description = "Flag to determine if the platform developers should have reader access to the resource group."
+  default     = false
 }
 
 variable "sendgrid_api_key" {

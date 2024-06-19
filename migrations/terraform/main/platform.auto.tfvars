@@ -7,7 +7,8 @@ ip_restrictions = [{
   ip_address = "20.120.143.248/29"
   name       = "github_largerunner"
 }]
-github_username                           = "PerTHenriksen"
-omada_developers_security_group_object_id = "afb8f383-9e8d-40b9-8190-b9010e54a68b"
-databricks_developers_group_id            = "729028915538231"
-databricks_migrations_group_id            = "371082943190175"
+github_username                = "PerTHenriksen"
+developer_security_group_name  = "SEC-G-Datahub-DevelopersAzure"
+platform_security_group_name   = "SEC-G-Datahub-PlatformDevelopersAzure"
+databricks_developers_group_id = "729028915538231"
+databricks_migrations_group_id = "371082943190175"

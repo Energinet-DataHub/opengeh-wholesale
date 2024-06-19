@@ -7,3 +7,4 @@ ip_restrictions = [{
   ip_address = "20.120.143.248/29"
   name       = "github_largerunner"
 }]
+platform_security_group_name = "SEC-G-Datahub-PlatformDevelopersAzure"

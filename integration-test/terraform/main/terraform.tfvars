@@ -1,6 +1,6 @@
 # This file contains values that are the same across all environments
 # For environment-specific values, refer to /env/<env_name>/environment.auto.tfvars
-github_username                     = "PerTHenriksen"
+github_username               = "PerTHenriksen"
 omada_developers_security_group_object_id = "afb8f383-9e8d-40b9-8190-b9010e54a68b"
 kv_variables = [{
   "name" : "AZURE-B2C-TENANT",
