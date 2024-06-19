@@ -28,7 +28,7 @@ from testsession_configuration import TestSessionConfiguration
 # and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
 @pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(
-    migrations_executed: None,
+    # migrations_executed: None,
     actual_and_expected_views: Tuple[list[DataframeWrapper], list[DataframeWrapper]],
     output_name: str,
     test_session_configuration: TestSessionConfiguration,

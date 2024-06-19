@@ -76,47 +76,55 @@ def spark(
             print(f"Removing metastore before clean run (path={metastore_path})")
             shutil.rmtree(metastore_path)
 
-    session = configure_spark_with_delta_pip(
-        SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
-        .config("spark.sql.streaming.schemaInference", True)
-        .config("spark.ui.showConsoleProgress", "false")
-        .config("spark.ui.enabled", "false")
-        .config("spark.ui.dagGraph.retainedRootRDDs", "1")
-        .config("spark.ui.retainedJobs", "1")
-        .config("spark.ui.retainedStages", "1")
-        .config("spark.ui.retainedTasks", "1")
-        .config("spark.sql.ui.retainedExecutions", "1")
-        .config("spark.worker.ui.retainedExecutors", "1")
-        .config("spark.worker.ui.retainedDrivers", "1")
-        .config("spark.default.parallelism", 1)
-        .config("spark.driver.memory", "2g")
-        .config("spark.executor.memory", "2g")
-        .config("spark.rdd.compress", False)
-        .config("spark.shuffle.compress", False)
-        .config("spark.shuffle.spill.compress", False)
-        .config("spark.sql.shuffle.partitions", 1)
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config(
-            "spark.sql.catalog.spark_catalog",
-            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+    session = (
+        configure_spark_with_delta_pip(
+            SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
+            .config("spark.sql.streaming.schemaInference", True)
+            .config("spark.databricks.delta.snapshotPartitions", "2")
+            .config("spark.sql.sources.parallelPartitionDiscovery.parallelism", "5")
+            .config("spark.ui.showConsoleProgress", "false")
+            .config("spark.ui.enabled", "false")
+            .config("spark.ui.dagGraph.retainedRootRDDs", "1")
+            .config("spark.ui.retainedJobs", 1)
+            .config("spark.ui.retainedStages", 1)
+            .config("spark.ui.retainedTasks", "1")
+            .config("spark.sql.ui.retainedExecutions", "1")
+            .config("spark.worker.ui.retainedExecutors", "1")
+            .config("spark.worker.ui.retainedDrivers", "1")
+            .config("spark.default.parallelism", 1)
+            .config("spark.driver.memory", "2g")
+            .config("spark.executor.memory", "2g")
+            .config("spark.rdd.compress", False)
+            .config("spark.shuffle.compress", False)
+            .config("spark.shuffle.spill.compress", False)
+            .config("spark.sql.shuffle.partitions", 5)
+            .config("delta.log.cacheSize", 3)
+            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+            .config(
+                "spark.sql.catalog.spark_catalog",
+                "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+            )
+            # Enable Hive support for persistence across test sessions
+            .config("spark.sql.catalogImplementation", "hive")
+            .config(
+                "javax.jdo.option.ConnectionURL",
+                f"jdbc:derby:;databaseName={metastore_path};create=true",
+            )
+            .config(
+                "javax.jdo.option.ConnectionDriverName",
+                "org.apache.derby.jdbc.EmbeddedDriver",
+            )
+            .config("javax.jdo.option.ConnectionUserName", "APP")
+            .config("javax.jdo.option.ConnectionPassword", "mine")
+            .config("datanucleus.autoCreateSchema", "true")
+            .config("hive.metastore.schema.verification", "false")
+            .config("hive.metastore.schema.verification.record.version", "false")
+            .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+            .enableHiveSupport()
         )
-        # Enable Hive support for persistence across test sessions
-        .config("spark.sql.catalogImplementation", "hive")
-        .config(
-            "javax.jdo.option.ConnectionURL",
-            f"jdbc:derby:;databaseName={metastore_path};create=true",
-        )
-        .config(
-            "javax.jdo.option.ConnectionDriverName",
-            "org.apache.derby.jdbc.EmbeddedDriver",
-        )
-        .config("javax.jdo.option.ConnectionUserName", "APP")
-        .config("javax.jdo.option.ConnectionPassword", "mine")
-        .config("datanucleus.autoCreateSchema", "true")
-        .config("hive.metastore.schema.verification", "false")
-        .config("hive.metastore.schema.verification.record.version", "false")
-        .enableHiveSupport()
-    ).getOrCreate()
+        .master("local[*]")
+        .getOrCreate()
+    )
 
     yield session
     session.stop()

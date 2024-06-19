@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 
 from pyspark.sql import DataFrame
 
@@ -26,8 +27,12 @@ def assert_output(
 ) -> None:
     actual_results, expected_results = actual_and_expected
 
+    print("assert_output")
+
+    print(datetime.now())
     actual_result = _get_expected_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
+    print(datetime.now())
 
     assert_dataframe_and_schema(
         actual_result,
@@ -37,6 +42,7 @@ def assert_output(
         ignore_nullability=True,
         ignore_decimal_scale=True,
     )
+    print(datetime.now())
 
 
 def _get_expected_for_output(
@@ -44,6 +50,7 @@ def _get_expected_for_output(
 ) -> DataFrame:
     for expected_result in expected_results:
         if expected_result.name == output_name:
+            expected_result.df.count()
             return expected_result.df
 
     raise Exception(f"Unknown expected name: {output_name}")

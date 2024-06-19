@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 from typing import Tuple
 
 from pyspark.sql import SparkSession
@@ -30,6 +31,7 @@ class ViewScenarioExecutor:
     def execute(
         self, scenario_folder_path: str
     ) -> Tuple[list[DataframeWrapper], list[DataframeWrapper]]:
+        print(datetime.now())
 
         input_dataframes_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/input"
@@ -38,7 +40,15 @@ class ViewScenarioExecutor:
         input_dataframes_wrappers = self.correct_dataframe_types(
             input_dataframes_wrappers
         )
+
+        for wrapper in input_dataframes_wrappers:
+            wrapper.df.count()
+
+        print(datetime.now())
+
         self._write_to_tables(input_dataframes_wrappers)
+
+        print(datetime.now())
 
         output_dataframe_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/output"
@@ -46,7 +56,17 @@ class ViewScenarioExecutor:
 
         expected = self.correct_dataframe_types(output_dataframe_wrappers)
 
+        for wrapper in expected:
+            wrapper.df.count()
+
+        print(datetime.now())
+
         actual = self._read_from_views(output_dataframe_wrappers)
+        for wrapper in actual:
+            wrapper.df.count()
+
+        print(datetime.now())
+
         return actual, expected
 
     @staticmethod
