@@ -79,7 +79,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportEnergyResultQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant());
@@ -100,7 +100,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportEnergyResultPerEnergySupplierQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.EnergySupplier!,
             filter.PeriodStart.ToInstant(),

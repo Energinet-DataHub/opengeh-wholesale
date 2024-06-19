@@ -16,12 +16,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public enum SettlementReportFileContent
 {
-    EnergyResultLatestPerDay,
-    EnergyResultForCalculationId,
+    EnergyResult,
     WholesaleResult,
-    FirstCorrectionResult,
-    SecondCorrectionResult,
-    ThirdCorrectionResult,
     ChargeLinksPeriods,
     MeteringPointMasterData,
     Pt15M,
