@@ -17,7 +17,9 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask.Client;
@@ -52,6 +54,12 @@ internal sealed class SettlementReportRequestTrigger
             {
                 Filter = settlementReportRequest.Filter with { EnergySupplier = null },
             };
+        }
+
+        if (settlementReportRequest.Filter.CalculationType != CalculationType.BalanceFixing)
+        {
+            if (settlementReportRequest.Filter.GridAreas.Any(kv => kv.Value is null))
+                return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         var instanceId = await client

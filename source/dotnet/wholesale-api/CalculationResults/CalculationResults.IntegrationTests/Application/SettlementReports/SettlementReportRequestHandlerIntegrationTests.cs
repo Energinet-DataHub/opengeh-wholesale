@@ -53,7 +53,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForBalanceFixingChunked_ReturnsPartialFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
@@ -111,7 +111,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForBalanceFixingWithoutBasisData_ReturnsExpectedFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
@@ -146,7 +146,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForBalanceFixingWithoutBasisDataWithSplitResult_ReturnsSplitFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
             { "806", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
@@ -184,7 +184,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisData_ReturnsExpectedFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
@@ -221,7 +221,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisDataWithSplitResult_ReturnsExpectedFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
             { "806", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
@@ -271,7 +271,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForWholesaleFixingWithBasisData_ReturnsExpectedFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
@@ -338,7 +338,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForWholesaleFixingWithBasisDataWithSplitResult_ReturnsExpectedFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
             { "806", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },

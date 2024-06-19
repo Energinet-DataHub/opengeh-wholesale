@@ -66,7 +66,7 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportWholesaleResultQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.CalculationType,
             filter.PeriodStart.ToInstant(),

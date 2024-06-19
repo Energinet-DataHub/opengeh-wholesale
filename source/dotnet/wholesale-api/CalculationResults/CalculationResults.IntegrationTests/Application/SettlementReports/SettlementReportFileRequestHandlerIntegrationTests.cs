@@ -112,7 +112,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.WholesaleFixing,
@@ -163,7 +163,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b3");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.WholesaleFixing,
@@ -228,7 +228,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var calculationId = Guid.Parse("891b7070-b80f-4731-8714-76221e27c366");
         var gridAreaCode = "404";
         var filter = new SettlementReportRequestFilterDto(
-            new Dictionary<string, CalculationId>
+            new Dictionary<string, CalculationId?>
             {
                 {
                     gridAreaCode, new CalculationId(calculationId)
@@ -277,7 +277,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26de");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.WholesaleFixing,
