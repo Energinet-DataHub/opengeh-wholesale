@@ -67,7 +67,7 @@ internal sealed class SettlementReportRequestTrigger
             FrontendActorMarketRole.GridAccessProvider => MarketRole.GridAccessProvider,
             FrontendActorMarketRole.EnergySupplier => MarketRole.EnergySupplier,
             FrontendActorMarketRole.SystemOperator => MarketRole.SystemOperator,
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException(nameof(_userContext.CurrentUser.Actor.MarketRole)),
         };
 
         var instanceId = await client
@@ -99,7 +99,7 @@ internal sealed class SettlementReportRequestTrigger
 
         if (marketRole == FrontendActorMarketRole.GridAccessProvider)
         {
-            if (req.Filter.EnergySupplier != null)
+            if (!string.IsNullOrWhiteSpace(req.Filter.EnergySupplier))
             {
                 return false;
             }
