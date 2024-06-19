@@ -106,13 +106,13 @@ def get_charge_price_information_with_charge_time(
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
-    charge_price_information = charge_price_information.df.filter(
+    charge_price_information_df = charge_price_information.df.filter(
         f.col(Colname.resolution) == resolution.value
     )
 
     def explode_within_periods() -> DataFrame:
         if resolution == ChargeResolution.HOUR:
-            return charge_price_information.withColumn(
+            return charge_price_information_df.withColumn(
                 Colname.charge_time,
                 f.explode(
                     f.sequence(
@@ -124,7 +124,7 @@ def get_charge_price_information_with_charge_time(
             )
         elif resolution == ChargeResolution.DAY:
             # When resolution is DAY we need to deal with local time to get the correct start time of each day
-            return charge_price_information.withColumn(
+            return charge_price_information_df.withColumn(
                 Colname.charge_time,
                 f.explode(
                     # Create a sequence of the start of each day in the period. The times are local time
