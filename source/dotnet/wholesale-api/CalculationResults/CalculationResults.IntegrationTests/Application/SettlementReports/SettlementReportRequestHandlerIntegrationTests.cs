@@ -92,7 +92,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal("Result Energy", chunkA.PartialFileInfo.FileName);
         Assert.Equal(0, chunkA.PartialFileInfo.FileOffset);
         Assert.Equal(0, chunkA.PartialFileInfo.ChunkOffset);
-        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, chunkA.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, chunkA.FileContent);
 
         var chunkB = actual[1];
         Assert.Equal(requestId, chunkB.RequestId);
@@ -100,7 +100,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal("Result Energy", chunkB.PartialFileInfo.FileName);
         Assert.Equal(0, chunkB.PartialFileInfo.FileOffset);
         Assert.Equal(1, chunkB.PartialFileInfo.ChunkOffset);
-        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, chunkB.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, chunkB.FileContent);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(filter.EnergySupplier, energyResult.RequestFilter.EnergySupplier);
         Assert.Equal(filter.GridAreas.Single(), energyResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResult.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
     }
 
     [Fact]
@@ -167,13 +167,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultA.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultB.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResult.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
 
         var wholesaleResult = actual[1];
         Assert.Equal(requestId, wholesaleResult.RequestId);
@@ -242,13 +242,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResultA.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResultB.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
 
         var wholesaleResultA = actual[2];
         Assert.Equal(requestId, wholesaleResultA.RequestId);
@@ -291,7 +291,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResult.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
 
         var wholesaleResult = actual[1];
         Assert.Equal(requestId, wholesaleResult.RequestId);
@@ -359,13 +359,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResultA.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResultB.FileContent);
+        Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
 
         var wholesaleResultA = actual[2];
         Assert.Equal(requestId, wholesaleResultA.RequestId);

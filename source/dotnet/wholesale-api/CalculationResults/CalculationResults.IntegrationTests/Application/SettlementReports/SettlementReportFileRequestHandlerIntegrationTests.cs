@@ -122,7 +122,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
             requestId,
-            SettlementReportFileContent.EnergyResultForCalculationId,
+            SettlementReportFileContent.EnergyResult,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);

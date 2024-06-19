@@ -48,9 +48,7 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
     {
         switch (fileContent)
         {
-            case SettlementReportFileContent.EnergyResultLatestPerDay:
-                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
-            case SettlementReportFileContent.EnergyResultForCalculationId:
+            case SettlementReportFileContent.EnergyResult:
                 return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.WholesaleResult:
                 return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository);

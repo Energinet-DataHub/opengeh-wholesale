@@ -42,11 +42,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         {
             CalculationType.BalanceFixing => new[]
             {
-                new { Content = SettlementReportFileContent.EnergyResultLatestPerDay, Name = energyResultFileName, reportRequest.SplitReportPerGridArea },
+                new { Content = SettlementReportFileContent.EnergyResult, Name = energyResultFileName, reportRequest.SplitReportPerGridArea },
             },
             CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement =>
             [
-                new { Content = SettlementReportFileContent.EnergyResultForCalculationId, Name = energyResultFileName, reportRequest.SplitReportPerGridArea },
+                new { Content = SettlementReportFileContent.EnergyResult, Name = energyResultFileName, reportRequest.SplitReportPerGridArea },
                 new { Content = SettlementReportFileContent.WholesaleResult, Name = wholesaleResultFileName, reportRequest.SplitReportPerGridArea }
             ],
             _ => throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.Filter.CalculationType}."),
