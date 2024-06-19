@@ -237,24 +237,8 @@ assert (
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Anonymisation algorithm for Balance or Supplier IDs:
-# MAGIC 1) Prefix anonymised ID with "4"
-# MAGIC 2) Concat random row_number over each row of unique Balance or Supplier IDs, and left-pad with "0" with same length as unique Balance or Supplier IDs
-# MAGIC 3) Concat "4"
-# MAGIC 4) Right-pad with "0" until 13 characters in total
-# MAGIC
-# MAGIC #### Example
-# MAGIC **1)**
-# MAGIC
-# MAGIC Original (fake) Balance or Supplier ID: 5582145332287 (1st after random order)
-# MAGIC
-# MAGIC Anonymised Balance or Supplier ID: 4014000000000
-# MAGIC
-# MAGIC **2)**
-# MAGIC
-# MAGIC Original (fake) Balance or Supplier ID: 5365866475198 (78th after random order)
-# MAGIC
-# MAGIC Anonymised Balance or Supplier ID: 4784000000000
+# MAGIC ### Anonymisation algorithm for Charge Owner or Supplier IDs:
+# MAGIC Use randomized GLN Generator provided by Raccoons. It generates a valid GLN with the correct length of 12 characters, it makes sure that the checksum is valid and thus provides a valid GLN.
 
 # COMMAND ----------
 
