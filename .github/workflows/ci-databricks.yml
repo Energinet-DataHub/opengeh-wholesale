@@ -143,9 +143,9 @@ jobs:
           - name: Wholesale logic
             paths: features/given_a_wholesale_calculation
           - name: Public data models
-            paths: features/public_data_models
+            paths: features/public_data_models contracts
           - name: Unit tests
-            paths: calculation/ codelists/ common/ infrastructure/
+            paths: calculation codelists common infrastructure
           - name: Entry point tests
             paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
@@ -240,6 +240,7 @@ jobs:
           calculation/
           codelists/
           common/
+          contracts/
           infrastructure/
           entry_points/
           datamigration/all_scripts
