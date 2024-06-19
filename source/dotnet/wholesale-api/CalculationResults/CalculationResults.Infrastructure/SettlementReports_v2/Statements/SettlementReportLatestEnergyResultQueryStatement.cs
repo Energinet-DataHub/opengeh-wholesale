@@ -53,7 +53,7 @@ public sealed class SettlementReportLatestEnergyResultQueryStatement : Databrick
                          {SettlementReportEnergyResultViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportEnergyResultViewColumns.CalculationVersion} <= '{_filter.MaximumCalculationVersion}' AND
+                         {SettlementReportEnergyResultViewColumns.CalculationVersion} <= {_filter.MaximumCalculationVersion} AND
                          {SettlementReportEnergyResultViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
                      GROUP BY 
                         start_of_day LIMIT {_take} OFFSET {_skip}

@@ -53,7 +53,7 @@ public sealed class SettlementReportLatestEnergyResultPerEnergySupplierQueryStat
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationVersion} <= '{_filter.MaximumCalculationVersion}' AND
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationVersion} <= {_filter.MaximumCalculationVersion} AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}' AND
                          {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
                      GROUP BY 
