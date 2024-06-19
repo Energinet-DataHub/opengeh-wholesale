@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
-public enum SettlementReportFileContent
-{
-    EnergyResult,
-    WholesaleResult,
-    ChargeLinksPeriods,
-    MeteringPointMasterData,
-    Pt15M,
-    Pt1H,
-    MonthlyAmount,
-    ChargePrice,
-}
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+
+public sealed record SettlementReportMonthlyAmountQueryFilter(
+    Guid CalculationId,
+    string GridAreaCode,
+    CalculationType CalculationType,
+    string? EnergySupplier,
+    Instant PeriodStart,
+    Instant PeriodEnd);

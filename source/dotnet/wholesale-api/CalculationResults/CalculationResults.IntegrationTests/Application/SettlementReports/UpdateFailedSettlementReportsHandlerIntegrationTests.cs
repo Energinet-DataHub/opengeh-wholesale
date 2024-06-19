@@ -45,6 +45,7 @@ public sealed class UpdateFailedSettlementReportsHandlerIntegrationTests : TestB
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId?>(),
                 DateTimeOffset.UtcNow,

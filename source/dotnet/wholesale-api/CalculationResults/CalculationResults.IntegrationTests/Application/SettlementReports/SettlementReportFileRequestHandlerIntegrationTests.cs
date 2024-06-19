@@ -89,6 +89,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
 
+        var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportMonthlyAmountQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
         var settlementReportChargePriceRepository = new SettlementReportChargePriceRepository(new SettlementReportChargePriceQueries(
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
@@ -100,6 +105,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             settlementReportChargeLinkPeriodsRepository,
             settlementReportMeteringPointMasterDataRepository,
             settlementReportMeteringPointTimeSeriesResultRepository,
+            settlementReportMonthlyAmountRepository,
             settlementReportChargePriceRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
@@ -320,6 +326,58 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             fileLines[1]);
         Assert.Equal(
             "15cba911-b91e-4782-bed4-f0d2841829e2,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,018,407,406,E17,D01,8397670583196",
+            fileLines[2]);
+    }
+
+    [Fact]
+    public async Task RequestFileAsync_ForMonthlyAmount_ReturnsExpectedCsv()
+    {
+        // Arrange
+        var calculationId = Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26de");
+        var filter = new SettlementReportRequestFilterDto(
+            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
+            _january1St.ToDateTimeOffset(),
+            _january5Th.ToDateTimeOffset(),
+            CalculationType.FirstCorrectionSettlement,
+            null,
+            null);
+
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
+            SettlementReportFileContent.MonthlyAmount,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
+            filter,
+            1);
+
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            [
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'018'", "8397670583196", "'2022-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197" ],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'018'", "8397670583196", "'2022-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197" ],
+            ]);
+
+        // Act
+        var actual = await Sut.RequestFileAsync(fileRequest);
+
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
+
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.StorageFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+        var fileContents = generatedFile.Value.Content.ToString();
+        var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.Equal(3, fileLines.Length);
+        Assert.Equal(
+            "ENERGYBUSINESSPROCESS,PROCESSVARIANT,METERINGGRIDAREAID,ENERGYSUPPLIERID,STARTDATETIME,RESOLUTIONDURATION,MEASUREUNIT,ENERGYCURRENCY,AMOUNT,CHARGETYPE,CHARGETYPEID,CHARGETYPEOWNERID",
+            fileLines[0]);
+        Assert.Equal(
+            "D32,1ST,018,8397670583196,2022-01-02T02:00:00Z,PT1H,KWH,DKK,18.012345,D03,123,8397670583197",
+            fileLines[1]);
+        Assert.Equal(
+            "D32,1ST,018,8397670583196,2022-01-02T04:00:00Z,P1D,PCS,DKK,18.012346,D01,122,8397670583197",
             fileLines[2]);
     }
 }
