@@ -111,10 +111,7 @@ internal sealed class SettlementReportRequestTrigger
 
         if (marketRole == FrontendActorMarketRole.EnergySupplier)
         {
-            if (req.Filter.EnergySupplier != _userContext.CurrentUser.Actor.ActorNumber)
-            {
-                return false;
-            }
+            return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
         }
 
         return false;
