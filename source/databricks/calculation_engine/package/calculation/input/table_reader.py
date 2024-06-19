@@ -99,6 +99,6 @@ def _read(spark: SparkSession, path: str, contract: StructType) -> DataFrame:
     assert_contract(df.schema, contract)
 
     # Select only the columns that are defined in the contract to avoid potential downstream issues
-    df.select(contract.fieldNames())
+    df = df.select(contract.fieldNames())
 
     return df

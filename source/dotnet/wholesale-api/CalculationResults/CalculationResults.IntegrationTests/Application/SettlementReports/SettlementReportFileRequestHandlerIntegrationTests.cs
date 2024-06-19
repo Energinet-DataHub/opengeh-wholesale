@@ -89,12 +89,18 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
 
+        var settlementReportChargePriceRepository = new SettlementReportChargePriceRepository(new SettlementReportChargePriceQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
         Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
             settlementReportDataRepository,
             settlementReportWholesaleRepository,
             settlementReportChargeLinkPeriodsRepository,
             settlementReportMeteringPointMasterDataRepository,
-            settlementReportMeteringPointTimeSeriesResultRepository));
+            settlementReportMeteringPointTimeSeriesResultRepository,
+            settlementReportChargePriceRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
