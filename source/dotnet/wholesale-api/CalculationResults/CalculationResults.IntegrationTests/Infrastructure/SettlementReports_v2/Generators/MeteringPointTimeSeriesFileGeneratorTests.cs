@@ -69,6 +69,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
                 null,
                 "da-DK"),
             new SettlementReportPartialFileInfo("test", false),
+            1,
             wr);
 
         // assert

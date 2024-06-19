@@ -115,10 +115,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             SettlementReportFileContent.EnergyResultForCalculationId,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
@@ -165,10 +166,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             SettlementReportFileContent.ChargeLinksPeriods,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager
             .InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
@@ -234,10 +236,12 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             content,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
+
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
@@ -276,10 +280,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
             SettlementReportFileContent.MeteringPointMasterData,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
-            requestId,
-            filter);
+            filter,
+            1);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,

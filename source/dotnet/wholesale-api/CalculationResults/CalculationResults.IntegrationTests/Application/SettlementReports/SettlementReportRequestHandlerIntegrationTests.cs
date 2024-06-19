@@ -26,9 +26,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 {
     public SettlementReportRequestHandlerIntegrationTests()
     {
+        var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
+        mockedRepository
+            .Setup(repository => repository.GetLatestCalculationVersionAsync())
+            .ReturnsAsync(1);
+
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>()))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
             .ReturnsAsync(1);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -37,6 +42,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             .Returns(mockedGenerator.Object);
 
         Fixture.Inject(mockedFactory.Object);
+        Fixture.Inject(mockedRepository.Object);
     }
 
     [Fact]
@@ -59,9 +65,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, filter);
 
+        var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
+        mockedRepository
+            .Setup(repository => repository.GetLatestCalculationVersionAsync())
+            .ReturnsAsync(1);
+
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>()))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
             .ReturnsAsync(2);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -69,7 +80,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             .Setup(factory => factory.Create(It.IsAny<SettlementReportFileContent>()))
             .Returns(mockedGenerator.Object);
 
-        var sut = new SettlementReportRequestHandler(mockedFactory.Object);
+        var sut = new SettlementReportRequestHandler(mockedFactory.Object, mockedRepository.Object);
 
         // Act
         var actual = (await sut.RequestReportAsync(requestId, reportRequest)).ToList();
@@ -165,12 +176,8 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultB.FileContent);
     }
 
-    [Theory]
-    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult)]
-    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult)]
-    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult)]
-    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult)]
-    public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisData_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
+    [Fact]
+    public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisData_ReturnsExpectedFiles()
     {
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
@@ -182,7 +189,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
-            calculationType,
+            CalculationType.WholesaleFixing,
             null,
             null);
 
@@ -203,15 +210,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, wholesaleResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
-        Assert.Equal(fileContent, wholesaleResult.FileContent);
+        Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResult.FileContent);
     }
 
-    [Theory]
-    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult)]
-    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult)]
-    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult)]
-    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult)]
-    public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisDataWithSplitResult_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
+    [Fact]
+    public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisDataWithSplitResult_ReturnsExpectedFiles()
     {
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
@@ -224,7 +227,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
-            calculationType,
+            CalculationType.WholesaleFixing,
             null,
             null);
 
@@ -251,21 +254,17 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, wholesaleResultA.RequestId);
         Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale (805)", wholesaleResultA.PartialFileInfo.FileName);
-        Assert.Equal(fileContent, wholesaleResultA.FileContent);
+        Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultA.FileContent);
 
         var wholesaleResultB = actual[3];
         Assert.Equal(requestId, wholesaleResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale (806)", wholesaleResultB.PartialFileInfo.FileName);
-        Assert.Equal(fileContent, wholesaleResultB.FileContent);
+        Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultB.FileContent);
     }
 
-    [Theory]
-    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult)]
-    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult)]
-    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult)]
-    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult)]
-    public async Task RequestReportAsync_ForWholesaleFixingWithBasisData_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
+    [Fact]
+    public async Task RequestReportAsync_ForWholesaleFixingWithBasisData_ReturnsExpectedFiles()
     {
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
@@ -277,7 +276,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
-            calculationType,
+            CalculationType.WholesaleFixing,
             null,
             null);
 
@@ -298,7 +297,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, wholesaleResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
-        Assert.Equal(fileContent, wholesaleResult.FileContent);
+        Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResult.FileContent);
 
         var chargeLinkPeriodsResult = actual[2];
         Assert.Equal(requestId, chargeLinkPeriodsResult.RequestId);
@@ -313,12 +312,8 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResult.FileContent);
     }
 
-    [Theory]
-    [InlineData(CalculationType.WholesaleFixing, SettlementReportFileContent.WholesaleResult)]
-    [InlineData(CalculationType.FirstCorrectionSettlement, SettlementReportFileContent.FirstCorrectionResult)]
-    [InlineData(CalculationType.SecondCorrectionSettlement, SettlementReportFileContent.SecondCorrectionResult)]
-    [InlineData(CalculationType.ThirdCorrectionSettlement, SettlementReportFileContent.ThirdCorrectionResult)]
-    public async Task RequestReportAsync_ForWholesaleFixingWithBasisDataWithSplitResult_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
+    [Fact]
+    public async Task RequestReportAsync_ForWholesaleFixingWithBasisDataWithSplitResult_ReturnsExpectedFiles()
     {
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
@@ -331,7 +326,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
-            calculationType,
+            CalculationType.WholesaleFixing,
             null,
             null);
 
@@ -358,13 +353,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, wholesaleResultA.RequestId);
         Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale (805)", wholesaleResultA.PartialFileInfo.FileName);
-        Assert.Equal(fileContent, wholesaleResultA.FileContent);
+        Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultA.FileContent);
 
         var wholesaleResultB = actual[3];
         Assert.Equal(requestId, wholesaleResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale (806)", wholesaleResultB.PartialFileInfo.FileName);
-        Assert.Equal(fileContent, wholesaleResultB.FileContent);
+        Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultB.FileContent);
 
         var chargeLinkPeriodsResultA = actual[4];
         Assert.Equal(requestId, chargeLinkPeriodsResultA.RequestId);
