@@ -13,6 +13,8 @@ locals {
 resource "azurerm_resource_group" "this" {
   name     = "rg-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   location = var.location
+
+  tags = local.tags
 }
 
 data "azurerm_resource_group" "shared" {

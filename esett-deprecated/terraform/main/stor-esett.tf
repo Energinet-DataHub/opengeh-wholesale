@@ -1,5 +1,5 @@
 module "stor_esett" {
-  source                     = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=v13"
+  source                     = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=14.22.0"
   name                       = "data"
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
@@ -10,7 +10,6 @@ module "stor_esett" {
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   account_replication_type   = "LRS"
   access_tier                = "Hot"
-  account_tier               = "Standard"
   containers                 = [
     {
       name: local.blob_files_raw_container_name,
