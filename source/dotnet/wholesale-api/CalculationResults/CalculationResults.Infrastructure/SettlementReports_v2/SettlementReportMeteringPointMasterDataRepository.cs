@@ -59,7 +59,7 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportMeteringPointMasterDataQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.CalculationType,
             filter.EnergySupplier,

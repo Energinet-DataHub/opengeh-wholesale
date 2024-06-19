@@ -20,7 +20,11 @@ public interface ISettlementReportFileGenerator
 {
     string FileExtension { get; }
 
-    Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter);
+    Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion);
 
-    Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination);
+    Task WriteAsync(
+        SettlementReportRequestFilterDto filter,
+        SettlementReportPartialFileInfo fileInfo,
+        long maximumCalculationVersion,
+        StreamWriter destination);
 }
