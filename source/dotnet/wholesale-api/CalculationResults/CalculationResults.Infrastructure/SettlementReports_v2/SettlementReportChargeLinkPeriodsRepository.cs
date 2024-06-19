@@ -58,7 +58,7 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportChargeLinkPeriodQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.CalculationType,
             filter.EnergySupplier,
