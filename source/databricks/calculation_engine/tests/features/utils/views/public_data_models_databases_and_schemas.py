@@ -44,7 +44,9 @@ def get_public_data_model_databases(spark: SparkSession) -> List[Database]:
 def get_expected_public_data_model_schemas() -> dict:
     schemas = {}
     current_directory = Path(__file__).parent
-    schemas_folder = current_directory / "expected_schemas"
+    schemas_folder = (
+        current_directory / ".." / ".." / ".." / ".." / "contracts" / "data_products"
+    )
 
     for root, _, files in os.walk(schemas_folder):
         for file_name in files:
