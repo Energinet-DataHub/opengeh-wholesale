@@ -140,6 +140,7 @@ def get_charge_price_information_with_charge_time(
                 f.to_utc_timestamp(Colname.charge_time, time_zone),
             )
 
+    # If the charge stops and starts on the same day, then the charge will be included twice, so we need to remove duplicates
     charge_price_information_with_charge_time = explode_within_periods().dropDuplicates(
         [Colname.charge_key, Colname.charge_time]
     )
