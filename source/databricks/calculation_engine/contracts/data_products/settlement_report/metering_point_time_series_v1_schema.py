@@ -1,53 +1,30 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+import pyspark.sql.types as t
 
-from pyspark.sql.types import (
-    StructField,
-    StringType,
-    TimestampType,
-    StructType,
-    LongType,
-    ArrayType,
-    DecimalType,
-)
-
-
-element = StructType(
+element = t.StructType(
     [
-        StructField("observation_time", TimestampType(), False),
-        StructField("quantity", DecimalType(18, 3), False),
+        t.StructField("observation_time", t.TimestampType(), False),
+        t.StructField("quantity", t.DecimalType(18, 3), False),
     ]
 )
 
-metering_point_time_series_v1_schema = StructType(
+metering_point_time_series_v1_schema = t.StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("calculation_type", StringType(), False),
-        StructField("calculation_version", LongType(), False),
-        StructField("metering_point_id", StringType(), False),
-        StructField("metering_point_type", StringType(), False),
-        StructField("resolution", StringType(), False),
-        StructField("grid_area_code", StringType(), False),
-        StructField("energy_supplier_id", StringType(), True),
-        StructField(
+        t.StructField("calculation_id", t.StringType(), False),
+        t.StructField("calculation_type", t.StringType(), False),
+        t.StructField("calculation_version", t.LongType(), False),
+        t.StructField("metering_point_id", t.StringType(), False),
+        t.StructField("metering_point_type", t.StringType(), False),
+        t.StructField("resolution", t.StringType(), False),
+        t.StructField("grid_area_code", t.StringType(), False),
+        t.StructField("energy_supplier_id", t.StringType(), True),
+        t.StructField(
             "start_date_time",
-            TimestampType(),
+            t.TimestampType(),
             False,
         ),
-        StructField(
+        t.StructField(
             "quantities",
-            ArrayType(element, False),
+            t.ArrayType(element, False),
             False,
         ),
     ]
