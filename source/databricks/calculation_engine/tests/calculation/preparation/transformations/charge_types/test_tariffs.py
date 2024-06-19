@@ -424,6 +424,9 @@ def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
 def test__get_prepared_tariffs__when_tariff_stops_and_starts_on_same_day__returns_expected_quantities(
     spark: SparkSession, charge_resolution: e.ChargeResolution
 ) -> None:
+    """
+    When the tariff stops and starts on the same day, the resulting quantities should behave as if there were just one period that crossed that day
+    """
     # Arrange
     quantity_feb_1st = Decimal(1)
     quantity_feb_2nd = Decimal(2)
@@ -494,6 +497,9 @@ def test__get_prepared_tariffs__when_tariff_stops_and_starts_on_same_day__return
 def test__get_prepared_tariffs__when_tariff_stops_for_one_day__returns_expected_quantities(
     spark: SparkSession, charge_resolution: e.ChargeResolution
 ) -> None:
+    """
+    When the tariff stops and then starts one day later, then there should not be any result on the missing day.
+    """
     # Arrange
     quantity_feb_1st = Decimal(1)
     quantity_feb_3rd = Decimal(3)
