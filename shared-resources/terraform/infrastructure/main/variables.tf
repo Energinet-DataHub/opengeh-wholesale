@@ -9,6 +9,11 @@ variable "resource_group_name" { # Should be deleted when old subscriptions are 
   default     = ""
 }
 
+variable "environment" {
+  type        = string
+  description = "Enviroment that the infrastructure code is deployed into."
+}
+
 variable "environment_short" {
   type        = string
   description = "Enviroment that the infrastructure code is deployed into."
@@ -161,16 +166,40 @@ variable "ag_primary_email_address" {
   description = "Email address of primary action group to which alerts will be routed."
 }
 
-variable "omada_developers_security_group_object_id" {
+variable "developer_security_group_name" {
   type        = string
-  description = "The Object ID of the Azure AD security group containing DataHub developers registered in Omada."
+  description = "Name of the security group containing the developers."
   default     = null
 }
 
-variable "omada_platform_team_security_group_object_id" {
+variable "developer_security_group_reader_access" {
+  type        = bool
+  description = "Determines if developers should have read access to the resource group."
+  default     = false
+}
+
+variable "developer_security_group_contributor_access" {
+  type        = bool
+  description = "Determines if developers should have contributor access to the resource group."
+  default     = false
+}
+
+variable "platform_security_group_name" {
   type        = string
-  description = "The Object ID of the Azure AD security group containing Outlaws developers registered in Omada."
+  description = "Name of the security group containing the platform team."
   default     = null
+}
+
+variable "platform_security_group_reader_access" {
+  type        = bool
+  description = "Determines if the platform team should have read access to the resource group."
+  default     = false
+}
+
+variable "platform_security_group_contributor_access" {
+  type        = bool
+  description = "Determines if the platform team should have contributor access to the resource group."
+  default     = false
 }
 
 variable "ad_group_directory_reader" {

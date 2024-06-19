@@ -23,7 +23,7 @@ module "st_testdata" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
-      principal_id         = var.omada_developers_security_group_object_id
+      principal_id         = data.azuread_group.developer_security_group_name.object_id
       role_definition_name = "Storage Blob Data Reader"
     }
   ]
