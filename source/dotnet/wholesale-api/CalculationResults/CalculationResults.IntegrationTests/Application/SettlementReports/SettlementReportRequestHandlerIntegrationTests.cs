@@ -336,6 +336,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal("Time series PT1H (805)", timeSeriesPT1HResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, timeSeriesPT1HResult.FileContent);
 
+        var chargePricesResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.ChargePrice);
+        Assert.NotNull(chargePricesResult);
+        Assert.Equal(requestId, chargePricesResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Charge Price", chargePricesResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
+
         if (isforWholeMonth)
         {
             var wholeMonthResultResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
@@ -345,12 +352,6 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             Assert.Equal("Monthly amounts (805)", wholeMonthResultResult.PartialFileInfo.FileName);
             Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResult.FileContent);
         }
-
-        var chargePricesResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
-        Assert.Equal(requestId, chargePricesResult.RequestId);
-        Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price", chargePricesResult.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
     }
 
     [Theory]
