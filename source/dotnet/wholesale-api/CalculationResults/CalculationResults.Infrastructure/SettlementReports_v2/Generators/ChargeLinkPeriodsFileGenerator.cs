@@ -74,7 +74,6 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
                 .Index(1)
                 .Convert(row => row.Value.MeteringPointType switch
                 {
-                    null => string.Empty,
                     MeteringPointType.Consumption => "E17",
                     MeteringPointType.Production => "E18",
                     MeteringPointType.Exchange => "E20",

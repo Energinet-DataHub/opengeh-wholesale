@@ -22,7 +22,15 @@ public interface ISettlementReportEnergyResultQueries
 
     Task<int> CountAsync(SettlementReportEnergyResultPerEnergySupplierQueryFilter filter);
 
+    Task<int> CountAsync(SettlementReportLatestEnergyResultQueryFilter filter);
+
+    Task<int> CountAsync(SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter filter);
+
     IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportEnergyResultQueryFilter filter, int skip, int take);
 
     IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportEnergyResultPerEnergySupplierQueryFilter filter, int skip, int take);
+
+    IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultQueryFilter filter, int skip, int take);
+
+    IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter filter, int skip, int take);
 }
