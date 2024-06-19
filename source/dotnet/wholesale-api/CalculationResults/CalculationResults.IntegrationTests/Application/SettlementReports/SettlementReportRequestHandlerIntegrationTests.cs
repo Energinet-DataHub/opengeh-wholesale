@@ -365,7 +365,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, true, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
@@ -628,7 +628,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(true, true, false, filter);
+        var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
