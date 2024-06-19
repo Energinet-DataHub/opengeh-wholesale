@@ -18,6 +18,7 @@ public class SettlementReportEnergyResultPerEnergySupplierViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
+    public const string CalculationVersion = "calculation_version";
     public const string ResultId = "result_id";
     public const string GridArea = "grid_area_code";
     public const string MeteringPointType = "metering_point_type";

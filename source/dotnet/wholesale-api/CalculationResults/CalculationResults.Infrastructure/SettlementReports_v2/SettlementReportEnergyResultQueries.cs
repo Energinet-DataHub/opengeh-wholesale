@@ -50,6 +50,16 @@ public sealed class SettlementReportEnergyResultQueries : ISettlementReportEnerg
         return InternalCountAsync(new SettlementReportEnergyResultPerEnergySupplierCountQueryStatement(_deltaTableOptions, filter));
     }
 
+    public Task<int> CountAsync(SettlementReportLatestEnergyResultQueryFilter filter)
+    {
+        return InternalCountAsync(new SettlementReportLatestEnergyResultCountQueryStatement(_deltaTableOptions, filter));
+    }
+
+    public Task<int> CountAsync(SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter filter)
+    {
+        return InternalCountAsync(new SettlementReportLatestEnergyResultPerEnergySupplierCountQueryStatement(_deltaTableOptions, filter));
+    }
+
     public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportEnergyResultQueryFilter filter, int skip, int take)
     {
         return InternalGetAsync(filter.CalculationId, new SettlementReportEnergyResultQueryStatement(_deltaTableOptions, filter, skip, take), isEnergySupplierIncluded: false);
@@ -60,12 +70,41 @@ public sealed class SettlementReportEnergyResultQueries : ISettlementReportEnerg
         return InternalGetAsync(filter.CalculationId, new SettlementReportEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take), isEnergySupplierIncluded: true);
     }
 
+    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultQueryFilter filter, int skip, int take)
+    {
+        return InternalGetAsync(new SettlementReportLatestEnergyResultQueryStatement(_deltaTableOptions, filter, skip, take), false);
+    }
+
+    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter filter, int skip, int take)
+    {
+        return InternalGetAsync(new SettlementReportLatestEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take), true);
+    }
+
     private async IAsyncEnumerable<SettlementReportEnergyResultRow> InternalGetAsync(Guid calculationId, DatabricksStatement statement, bool isEnergySupplierIncluded)
     {
         var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
             yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version, isEnergySupplierIncluded);
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportEnergyResultRow> InternalGetAsync(DatabricksStatement statement, bool isEnergySupplierIncluded)
+    {
+        var calcVersions = new Dictionary<string, long>();
+
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var databricksSqlRow = new DatabricksSqlRow(nextRow);
+            var calculationId = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationId]!;
+
+            if (!calcVersions.TryGetValue(calculationId, out var calculationVersion))
+            {
+                var calculation = await _calculationsClient.GetAsync(Guid.Parse(calculationId)).ConfigureAwait(false);
+                calcVersions[calculationId] = calculationVersion = calculation.Version;
+            }
+
+            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculationVersion, isEnergySupplierIncluded);
         }
     }
 
