@@ -47,6 +47,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
                 break;
@@ -59,6 +60,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
                 break;
@@ -71,6 +73,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
                 break;
@@ -83,6 +86,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     setsOfFiles.Add(RequestFilesForMeteringPointMasterDataAsync(SettlementReportFileContent.MeteringPointMasterData, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt15M, requestId, reportRequest));
                     setsOfFiles.Add(RequestFilesForTimeSeriesAsync(SettlementReportFileContent.Pt1H, requestId, reportRequest));
+                    setsOfFiles.Add(RequestFilesForChargePriceAsync(SettlementReportFileContent.ChargePrice, requestId, reportRequest));
                 }
 
                 break;
@@ -187,6 +191,23 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             reportRequest.Filter);
 
         await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(request, true).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargePriceAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var fileRequest = new SettlementReportFileRequestDto(
+                fileContent,
+                new SettlementReportPartialFileInfo("Charge Price", true),
+                requestId,
+                reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }

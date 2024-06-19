@@ -138,6 +138,7 @@ public static class DatabricksApiViewWireMockExtensions
         {
             SettlementReportEnergyResultViewColumns.CalculationId => $"\"{calculationId}\"",
             SettlementReportEnergyResultViewColumns.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
+            SettlementReportEnergyResultViewColumns.CalculationVersion => $"\"1\"",
             SettlementReportEnergyResultViewColumns.ResultId => "\"aaaaaaaa-1111-1111-1c1c-08d3b12d4511\"",
             SettlementReportEnergyResultViewColumns.GridArea => "\"805\"",
             SettlementReportEnergyResultViewColumns.MeteringPointType => "\"Consumption\"",

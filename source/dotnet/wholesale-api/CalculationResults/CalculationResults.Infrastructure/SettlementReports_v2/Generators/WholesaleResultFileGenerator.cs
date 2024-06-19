@@ -160,7 +160,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
             Map(r => r.Price)
                 .Name("PRICE")
                 .Index(11)
-                .Data.TypeConverterOptions.Formats = ["0.000"];
+                .Data.TypeConverterOptions.Formats = ["0.000000"];
 
             Map(r => r.Amount)
                 .Name("AMOUNT")

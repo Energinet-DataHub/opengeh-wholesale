@@ -15,19 +15,21 @@
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenerator
+public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 {
     private const int ChunkSize = 1000;
-    private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
 
-    public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
+    private readonly ISettlementReportChargePriceRepository _dataSource;
+
+    public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
     {
         _dataSource = dataSource;
     }
@@ -43,13 +45,25 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportChargeLinkPeriodsResultRowMap>();
+        csvHelper.Context.RegisterClassMap<SettlementReportChargePriceRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
+            csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
+                new TypeConverterOptions
+                {
+                    Formats = ["0.000000"],
+                });
+
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
-                csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
+                csvHelper.WriteHeader<SettlementReportChargePriceRow>();
+                const int energyPriceFieldCount = 25;
+                for (var i = 0; i < energyPriceFieldCount; ++i)
+                {
+                    csvHelper.WriteField($"ENERGYPRICE{i + 1}");
+                }
+
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
@@ -61,40 +75,12 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
         }
     }
 
-    public sealed class SettlementReportChargeLinkPeriodsResultRowMap : ClassMap<SettlementReportChargeLinkPeriodsResultRow>
+    public sealed class SettlementReportChargePriceRowMap : ClassMap<SettlementReportChargePriceRow>
     {
-        public SettlementReportChargeLinkPeriodsResultRowMap()
+        public SettlementReportChargePriceRowMap()
         {
-            Map(r => r.MeteringPointId)
-                .Name("METERINGPOINTID")
-                .Index(0);
-
-            Map(r => r.MeteringPointType)
-                .Name("TYPEOFMP")
-                .Index(1)
-                .Convert(row => row.Value.MeteringPointType switch
-                {
-                    MeteringPointType.Consumption => "E17",
-                    MeteringPointType.Production => "E18",
-                    MeteringPointType.Exchange => "E20",
-                    MeteringPointType.VeProduction => "D01",
-                    MeteringPointType.NetProduction => "D05",
-                    MeteringPointType.SupplyToGrid => "D06",
-                    MeteringPointType.ConsumptionFromGrid => "D07",
-                    MeteringPointType.WholesaleServicesInformation => "D08",
-                    MeteringPointType.OwnProduction => "D09",
-                    MeteringPointType.NetFromGrid => "D10",
-                    MeteringPointType.NetToGrid => "D11",
-                    MeteringPointType.TotalConsumption => "D12",
-                    MeteringPointType.ElectricalHeating => "D14",
-                    MeteringPointType.NetConsumption => "D15",
-                    MeteringPointType.EffectSettlement => "D19",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
-                });
-
             Map(r => r.ChargeType)
                 .Name("CHARGETYPE")
-                .Index(2)
                 .Convert(row => row.Value.ChargeType switch
                 {
                     ChargeType.Tariff => "D03",
@@ -103,25 +89,31 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.ChargeType)),
                 });
 
-            Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
-                .Index(3);
-
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
-                .Index(4);
+                .Name("CHARGETYPEID");
 
-            Map(r => r.Quantity)
-                .Name("CHARGEOCCURRENCES")
-                .Index(5);
+            Map(r => r.ChargeOwnerId)
+                .Name("CHARGETYPEOWNER");
 
-            Map(r => r.PeriodStart)
-                .Name("PERIODSTART")
-                .Index(6);
+            Map(r => r.Resolution)
+                .Name("RESOLUTIONDURATION")
+                .Convert(row => row.Value.Resolution switch
+                {
+                    Resolution.Hour => "PT1H",
+                    Resolution.Day => "P1D",
+                    Resolution.Month => "P1M",
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
+                });
 
-            Map(r => r.PeriodEnd)
-                .Name("PERIODEND")
-                .Index(7);
+            Map(r => r.TaxIndicator)
+                .Name("TAXINDICATOR");
+
+            Map(r => r.StartDateTime)
+                .Name("STARTDATETIME");
+
+            Map(r => r.EnergyPrices)
+                .Name("ENERGYPRICE1")
+                .TypeConverter<IEnumerableConverter>();
         }
     }
 }
