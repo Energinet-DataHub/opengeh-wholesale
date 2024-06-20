@@ -1,3 +1,8 @@
+-- Make columns NOT NULL
+
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1
+GO
+
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1 as
 SELECT
   c.calculation_id,

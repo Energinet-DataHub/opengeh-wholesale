@@ -80,7 +80,8 @@ def test__public_data_model_views_have_correct_schemas(
                 assert_schema(
                     actual_df.schema,
                     expected_df.schema,
-                    ignore_nullability=True,
+                    # Be explicit that nullability must be checked
+                    ignore_nullability=False,
                 )
             except Exception as e:
                 errors.append(f"{database.name}.{view.name}: {e}")
