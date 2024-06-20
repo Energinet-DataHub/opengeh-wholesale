@@ -29,6 +29,9 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
+from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
+    explode_charge_price_information_within_periods,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -76,65 +79,29 @@ def _join_price_information_periods_and_prices_add_missing_prices(
     time_zone: str,
 ) -> DataFrame:
     charge_prices = charge_prices.df
-    charge_price_information_filtered = charge_price_information.df.filter(
-        f.col(Colname.resolution) == resolution.value
+
+    charge_price_information_with_charge_time = (
+        explode_charge_price_information_within_periods(
+            charge_price_information, resolution, time_zone
+        )
     )
 
-    charges_with_no_prices = get_charges_with_no_prices(
-        charge_price_information_filtered, resolution, time_zone
-    )
-
-    charges_with_prices_and_missing_prices = charges_with_no_prices.join(
-        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
-    ).select(
-        charges_with_no_prices[Colname.charge_key],
-        charges_with_no_prices[Colname.charge_code],
-        charges_with_no_prices[Colname.charge_type],
-        charges_with_no_prices[Colname.charge_owner],
-        charges_with_no_prices[Colname.charge_tax],
-        charges_with_no_prices[Colname.resolution],
-        charges_with_no_prices[Colname.charge_time],
-        charges_with_no_prices[Colname.from_date],
-        charges_with_no_prices[Colname.to_date],
-        Colname.charge_price,
+    charges_with_prices_and_missing_prices = (
+        charge_price_information_with_charge_time.join(
+            charge_prices, [Colname.charge_key, Colname.charge_time], "left"
+        ).select(
+            charge_price_information_with_charge_time[Colname.charge_key],
+            charge_price_information_with_charge_time[Colname.charge_code],
+            charge_price_information_with_charge_time[Colname.charge_type],
+            charge_price_information_with_charge_time[Colname.charge_owner],
+            charge_price_information_with_charge_time[Colname.charge_tax],
+            charge_price_information_with_charge_time[Colname.resolution],
+            charge_price_information_with_charge_time[Colname.charge_time],
+            Colname.charge_price,
+        )
     )
 
     return charges_with_prices_and_missing_prices
-
-
-def get_charges_with_no_prices(
-    charge_price_information_filtered: DataFrame,
-    resolution: ChargeResolution,
-    time_zone: str,
-) -> DataFrame:
-    if resolution == ChargeResolution.HOUR:
-        return charge_price_information_filtered.withColumn(
-            Colname.charge_time,
-            f.explode(
-                f.sequence(
-                    Colname.from_date,
-                    Colname.to_date,
-                    f.expr("interval 1 hour"),
-                )
-            ),
-        )
-    elif resolution == ChargeResolution.DAY:
-        # When resolution is DAY we need to deal with local time to get the correct start time of each day
-        return charge_price_information_filtered.withColumn(
-            Colname.charge_time,
-            f.explode(
-                # Create a sequence of the start of each day in the period. The times are local time
-                f.sequence(
-                    f.from_utc_timestamp(Colname.from_date, time_zone),
-                    f.from_utc_timestamp(Colname.to_date, time_zone),
-                    f.expr("interval 1 day"),
-                )
-            ),
-            # Convert local day start times back to UTC
-        ).withColumn(
-            Colname.charge_time,
-            f.to_utc_timestamp(Colname.charge_time, time_zone),
-        )
 
 
 def _join_with_charge_link_metering_points(
