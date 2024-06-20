@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -23,57 +22,27 @@ using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Cal
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
+public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementReportChargePriceRow, ChargePriceFileGenerator.SettlementReportChargePriceRowMap>
 {
-    private const int ChunkSize = 1000;
-
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
+        : base(1000)
     {
         _dataSource = dataSource;
     }
 
-    public string FileExtension => ".csv";
-
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter);
     }
 
-    public async Task WriteAsync(
-        SettlementReportRequestFilterDto filter,
-        SettlementReportPartialFileInfo fileInfo,
-        long maximumCalculationVersion,
-        StreamWriter destination)
+    protected override IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportChargePriceRowMap>();
-
-        await using (csvHelper.ConfigureAwait(false))
-        {
-            csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
-                new TypeConverterOptions
-                {
-                    Formats = ["0.000000"],
-                });
-
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
-            {
-                WriteChargePriceHeaders(csvHelper);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
-            {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-        }
+        return _dataSource.GetAsync(filter, skipChunks, takeChunks);
     }
 
-    private void WriteChargePriceHeaders(CsvWriter csvHelper)
+    protected override void WriteHeader(CsvWriter csvHelper)
     {
         const int energyPriceFieldCount = 25;
 
@@ -88,6 +57,15 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
         {
             csvHelper.WriteField($"ENERGYPRICE{i + 1}");
         }
+    }
+
+    protected override void ConfigureCsv(CsvWriter csvHelper)
+    {
+        csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
+            new TypeConverterOptions
+            {
+                Formats = ["0.000000"],
+            });
     }
 
     public sealed class SettlementReportChargePriceRowMap : ClassMap<SettlementReportChargePriceRow>

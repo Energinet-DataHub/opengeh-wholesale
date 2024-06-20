@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public sealed record SettlementReportLatestEnergyResultQueryFilter(
-    string GridAreaCode,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    long MaximumCalculationVersion);
+public interface ISettlementReportMonthlyAmountQueries
+{
+    Task<int> CountAsync(SettlementReportMonthlyAmountQueryFilter filter);
+
+    IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportMonthlyAmountQueryFilter filter, int skip, int take);
+}

@@ -12,12 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public sealed record SettlementReportLatestEnergyResultQueryFilter(
-    string GridAreaCode,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    long MaximumCalculationVersion);
+public sealed record SettlementReportMonthlyAmountRow(
+    CalculationType CalculationType,
+    string GridArea,
+    string EnergySupplierId,
+    Instant StartDateTime,
+    Resolution Resolution,
+    QuantityUnit QuantityUnit,
+    Currency Currency,
+    decimal? Amount,
+    ChargeType ChargeType,
+    string? ChargeCode,
+    string ChargeOwnerId);
