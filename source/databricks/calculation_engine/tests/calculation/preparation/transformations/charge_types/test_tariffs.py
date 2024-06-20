@@ -31,6 +31,10 @@ from package.calculation.preparation.transformations import (
 from package.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+FEB_1ST = datetime(2020, 1, 31, 23)
+FEB_2ND = datetime(2020, 2, 1, 23)
+FEB_3RD = datetime(2020, 2, 2, 23)
+FEB_4TH = datetime(2020, 2, 3, 23)
 
 
 def _create_expected_prepared_tariffs_row(
@@ -414,6 +418,79 @@ def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
     assert actual.df.count() == 2
 
 
+@pytest.mark.parametrize(
+    "charge_resolution", [e.ChargeResolution.HOUR, e.ChargeResolution.DAY]
+)
+def test__get_prepared_tariffs__when_tariff_stops_and_starts_on_same_day__returns_expected_quantities(
+    spark: SparkSession, charge_resolution: e.ChargeResolution
+) -> None:
+    """
+    When the tariff stops and starts on the same day, the resulting quantities should behave as if there were just one period that crossed that day
+    """
+    # Arrange
+    quantity_feb_1st = Decimal(1)
+    quantity_feb_2nd = Decimal(2)
+    quantity_feb_3rd = Decimal(3)
+    time_series_rows = [
+        factory.create_time_series_row(
+            observation_time=FEB_1ST, quantity=quantity_feb_1st
+        ),
+        factory.create_time_series_row(
+            observation_time=FEB_2ND, quantity=quantity_feb_2nd
+        ),
+        factory.create_time_series_row(
+            observation_time=FEB_3RD, quantity=quantity_feb_3rd
+        ),
+    ]
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
+            from_date=FEB_1ST, to_date=FEB_2ND, resolution=charge_resolution
+        ),
+        factory.create_charge_price_information_row(
+            from_date=FEB_2ND, to_date=FEB_3RD, resolution=charge_resolution
+        ),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(charge_time=FEB_1ST),
+    ]
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF, from_date=FEB_1ST, to_date=FEB_3RD
+        ),
+    ]
+
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
+
+    # Act
+    actual = get_prepared_tariffs(
+        time_series,
+        charge_price_information,
+        charge_prices,
+        charge_link_metering_point_periods,
+        charge_resolution,
+        DEFAULT_TIME_ZONE,
+    )
+
+    # Assert
+    assert actual.df.count() == 2
+    actual_df = actual.df.orderBy(Colname.charge_time).collect()
+    assert actual_df[0][Colname.charge_time] == FEB_1ST
+    assert actual_df[0][Colname.quantity] == quantity_feb_1st
+    assert actual_df[1][Colname.charge_time] == FEB_2ND
+    assert actual_df[1][Colname.quantity] == quantity_feb_2nd
+
+
 def test__get_prepared_tariffs__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:
@@ -743,7 +820,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 2, 0)
         ),
     ]
     charge_prices_rows = [
@@ -799,7 +876,7 @@ def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 2, 0)
         ),
     ]
     charge_link_metering_points_rows = [
@@ -960,4 +1037,4 @@ def test__get_prepared_tariffs__can_handle_daylight_saving_time(
     )
 
     # Assert
-    assert actual.df.count() == 2
+    assert actual.df.count() == 1
