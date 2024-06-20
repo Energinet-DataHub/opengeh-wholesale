@@ -17,10 +17,10 @@ grid_loss_metering_point_time_series_v1 = t.StructType(
         t.StructField("metering_point_type", t.StringType(), False),
         # 'PT15M' | 'PT1H'
         t.StructField("resolution", t.StringType(), False),
+        # 'kWh'
+        t.StructField("quantity_unit", t.StringType(), False),
         # UTC time
         t.StructField("time", t.TimestampType(), False),
         t.StructField("quantity", t.DecimalType(18, 3), False),
-        # 'kWh'
-        t.StructField("quantity_unit", t.StringType(), False),
     ]
 )
