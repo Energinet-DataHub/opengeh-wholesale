@@ -18,7 +18,7 @@ energy_result_points_per_es_ga_v1 = t.StructType(
         #
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
-        # ‘production' | 'consumption’ | 'exchange’
+        # 'production' | 'consumption' | 'exchange'
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #
         # 'flex' | 'non_profiled'

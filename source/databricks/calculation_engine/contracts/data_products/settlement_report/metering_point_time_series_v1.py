@@ -23,10 +23,10 @@ metering_point_time_series_v1 = t.StructType(
         # GSRN number
         t.StructField("metering_point_id", t.StringType(), not nullable),
         #
-        # 'production' | ‘consumption' | 'exchange'
+        # 'production' | 'consumption' | 'exchange'
         # When wholesale calculations types also:
         # 've_production' | 'net_production' | 'supply_to_grid' 'consumption_from_grid' |
-        # 'wholesale_services_information' | 'own_production’ | 'net_from_grid' 'net_to_grid' |
+        # 'wholesale_services_information' | 'own_production' | 'net_from_grid' 'net_to_grid' |
         # 'total_consumption' | 'electrical_heating' | 'net_consumption' | 'effect_settlement'
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #

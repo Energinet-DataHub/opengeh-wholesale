@@ -28,7 +28,7 @@ metering_point_periods_v1 = t.StructType(
         #
         t.StructField("to_grid_area_code", t.StringType(), nullable),
         #
-        # ‘production' | ‘consumption' | 'exchange'
+        # 'production' | 'consumption' | 'exchange'
         # When wholesale calculations types also:
         # 've_production' | 'net_production' | 'supply_to_grid' |
         # 'consumption_from_grid' | 'wholesale_services_information' |

@@ -24,7 +24,7 @@ monthly_amounts_v1 = t.StructType(
         # UTC time
         t.StructField("time", t.TimestampType(), not nullable),
         #
-        # ‘PT1H' | ‘P1D’
+        # 'PT1H' | 'P1D'
         t.StructField("resolution", t.StringType(), not nullable),
         #
         # 'kWh' | 'pcs'
