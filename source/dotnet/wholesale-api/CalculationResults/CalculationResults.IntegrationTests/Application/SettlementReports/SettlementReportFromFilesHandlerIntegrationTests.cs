@@ -110,7 +110,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         Assert.Equal(expectedContents, inputFileContents);
     }
 
-    [Fact(Skip = "TODO: AIU Internal Testing")]
+    [Fact]
     public async Task CombineAsync_GivenLargeChunks_SplitsFilePerMillionRows()
     {
         // Arrange

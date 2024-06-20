@@ -14,11 +14,11 @@
 
 from pyspark.sql import SparkSession, DataFrame
 
-from features.utils.dataframes.columns.view_columns import ViewColumns
-from features.utils.views.public_data_models_databases_and_schemas import (
+from contracts.public_data_models_databases_and_schemas import (
     get_public_data_model_databases,
     get_expected_public_data_model_schemas,
 )
+from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
 
 

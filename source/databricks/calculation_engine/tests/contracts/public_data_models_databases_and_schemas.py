@@ -44,11 +44,11 @@ def get_public_data_model_databases(spark: SparkSession) -> List[Database]:
 def get_expected_public_data_model_schemas() -> dict:
     schemas = {}
     current_directory = Path(__file__).parent
-    schemas_folder = current_directory / "expected_schemas"
+    schemas_folder = current_directory / ".." / ".." / "contracts" / "data_products"
 
     for root, _, files in os.walk(schemas_folder):
         for file_name in files:
-            if file_name.endswith(".py") and not file_name.startswith("__"):
+            if file_name.endswith(".py"):
                 # Remove the file extension
                 schema_name = file_name[:-3]
 
@@ -58,11 +58,10 @@ def get_expected_public_data_model_schemas() -> dict:
                 spec.loader.exec_module(module)
 
                 if hasattr(module, schema_name):
-                    view_name = schema_name.replace("_schema", "")
-                    schemas[view_name] = getattr(module, schema_name)
+                    schemas[schema_name] = getattr(module, schema_name)
                 else:
                     raise AttributeError(
-                        f"Module {module} does not have the expected schema variable {schema_name}"
+                        f"The data product '{module}' does not define the expected contract '{schema_name}'"
                     )
 
     return schemas
