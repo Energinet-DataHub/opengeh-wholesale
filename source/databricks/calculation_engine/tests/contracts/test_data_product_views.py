@@ -14,22 +14,22 @@
 
 from pyspark.sql import SparkSession, DataFrame
 
-from contracts.public_data_models_databases_and_schemas import (
-    get_public_data_model_databases,
-    get_expected_public_data_model_schemas,
+from contracts.data_products_databases_and_schemas import (
+    get_data_product_databases,
+    get_expected_data_product_schemas,
 )
 from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
 
 
-def test__public_data_model_views_have_registered_column_names_and_types(
+def test__data_product_views_have_registered_column_names_and_types(
     migrations_executed: None,
     spark: SparkSession,
 ) -> None:
     """Verify that all columns in all views in all public view models match the expected column names and data types"""
 
     # Arrange
-    databases = get_public_data_model_databases(spark)
+    databases = get_data_product_databases(spark)
     errors = []
 
     # Act & Assert
@@ -48,18 +48,18 @@ def test__public_data_model_views_have_registered_column_names_and_types(
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
 
-def test__public_data_model_views_have_correct_schemas(
+def test__data_product_views_have_correct_schemas(
     migrations_executed: None,
     spark: SparkSession,
 ) -> None:
     """Verify that all schemas from all views in all public view models match the respective expected schema."""
 
     # Arrange
-    expected_schemas = get_expected_public_data_model_schemas()
+    expected_schemas = get_expected_data_product_schemas()
     if not expected_schemas:
         raise ValueError("No expected schemas found.")
 
-    databases = get_public_data_model_databases(spark)
+    databases = get_data_product_databases(spark)
     errors = []
 
     # Act & Assert

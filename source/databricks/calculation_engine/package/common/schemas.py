@@ -17,7 +17,7 @@ from pyspark.sql.types import DecimalType, StructField, StructType, ArrayType, D
 
 def assert_contract(actual_schema: StructType, contract: StructType) -> None:
     """
-    Asserts that the actual schema matches the contract of the public data model (data product data contract).
+    Asserts that the actual schema matches the contract of the data product data contract.
     Non-breaking changes are allowed, such as adding new columns or changing column ordering.
     """
     try:
