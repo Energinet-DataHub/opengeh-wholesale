@@ -73,7 +73,7 @@ class TestWhenChargePeriodStopsAndStartsOnSameDay:
     ) -> None:
 
         # Arrange
-        expected_charge_times = 49  # start and end times are included
+        expected_charge_times = 48
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
                 from_date=FEB_1ST, to_date=FEB_2ND, resolution=ChargeResolution.HOUR
@@ -105,7 +105,7 @@ class TestWhenChargePeriodStopsAndStartsOnSameDay:
     ) -> None:
 
         # Arrange
-        expected_charge_times = 3  # start and end times are included
+        expected_charge_times = 2
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
                 from_date=FEB_1ST, to_date=FEB_2ND, resolution=ChargeResolution.DAY
@@ -143,8 +143,8 @@ class TestWhenChargeStopsForOneDay:
     ) -> None:
 
         # Arrange
-        expected_charge_times_day_1 = 25  # start and end times are included
-        expected_charge_times_day_2 = 25  # start and end times are included
+        expected_charge_times_day_1 = 24
+        expected_charge_times_day_2 = 24
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
                 from_date=FEB_1ST, to_date=FEB_2ND, resolution=ChargeResolution.HOUR
@@ -185,7 +185,7 @@ class TestWhenChargeStopsForOneDay:
     ) -> None:
 
         # Arrange
-        expected_charge_times = 4
+        expected_charge_times = 2
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
                 from_date=FEB_1ST, to_date=FEB_2ND, resolution=ChargeResolution.DAY
@@ -210,6 +210,4 @@ class TestWhenChargeStopsForOneDay:
         assert actual.count() == expected_charge_times
         actual_rows = actual.orderBy(Colname.charge_time).collect()
         assert actual_rows[0][Colname.charge_time] == FEB_1ST
-        assert actual_rows[1][Colname.charge_time] == FEB_2ND
-        assert actual_rows[2][Colname.charge_time] == FEB_3RD
-        assert actual_rows[3][Colname.charge_time] == FEB_4TH
+        assert actual_rows[1][Colname.charge_time] == FEB_3RD

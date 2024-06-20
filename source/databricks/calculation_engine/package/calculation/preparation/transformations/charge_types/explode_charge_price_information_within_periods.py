@@ -38,26 +38,7 @@ def explode_charge_price_information_within_periods(
         ChargeResolution.DAY: lambda df: _explode_with_daily_charge_time(df, time_zone),
         ChargeResolution.HOUR: lambda df: _explode_with_hourly_charge_time(df),
     }
-    charge_price_information_with_charge_time = explode_with_charge_time[resolution](
-        charge_price_information_df
-    )
-
-    # If the charge stops and starts on the same day, then the charge will be included twice, so we need to remove duplicates
-    charge_price_information_with_charge_time = (
-        charge_price_information_with_charge_time.dropDuplicates(
-            [Colname.charge_key, Colname.charge_time]
-        )
-    )
-
-    return charge_price_information_with_charge_time.select(
-        Colname.charge_key,
-        Colname.charge_code,
-        Colname.charge_type,
-        Colname.charge_owner,
-        Colname.charge_tax,
-        Colname.resolution,
-        Colname.charge_time,
-    )
+    return explode_with_charge_time[resolution](charge_price_information_df)
 
 
 def _explode_with_daily_charge_time(
@@ -65,20 +46,26 @@ def _explode_with_daily_charge_time(
     time_zone: str,
 ) -> DataFrame:
     # When resolution is DAY we need to deal with local time to get the correct start time of each day
-    return charge_price_information_df.withColumn(
-        Colname.charge_time,
-        f.explode(
-            # Create a sequence of the start of each day in the period. The times are local time
-            f.sequence(
-                f.from_utc_timestamp(Colname.from_date, time_zone),
-                f.from_utc_timestamp(Colname.to_date, time_zone),
-                f.expr("interval 1 day"),
-            )
-        ),
-        # Convert local day start times back to UTC
-    ).withColumn(
-        Colname.charge_time,
-        f.to_utc_timestamp(Colname.charge_time, time_zone),
+    return (
+        charge_price_information_df.withColumn(
+            Colname.charge_time,
+            f.explode(
+                # Create a sequence of the start of each day in the period. The times are local time
+                f.sequence(
+                    f.from_utc_timestamp(Colname.from_date, time_zone),
+                    f.from_utc_timestamp(Colname.to_date, time_zone),
+                    f.expr("interval 1 day"),
+                )
+            ),
+            # Convert local day start times back to UTC
+        ).withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(Colname.charge_time, time_zone),
+        )
+    ).where(
+        # drop rows where charge_time is greater than or equal to to_date. This can happen when a charge stops and starts on the same day
+        f.col(Colname.charge_time)
+        < f.col(Colname.to_date)
     )
 
 
@@ -94,4 +81,8 @@ def _explode_with_hourly_charge_time(
                 f.expr("interval 1 hour"),
             )
         ),
+    ).where(
+        # drop rows where charge_time is greater than or equal to to_date. This can happen when a charge stops and starts on the same day
+        f.col(Colname.charge_time)
+        < f.col(Colname.to_date)
     )

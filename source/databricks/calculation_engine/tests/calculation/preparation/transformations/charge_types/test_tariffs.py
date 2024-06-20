@@ -820,7 +820,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 2, 0)
         ),
     ]
     charge_prices_rows = [
@@ -876,7 +876,7 @@ def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 2, 0)
         ),
     ]
     charge_link_metering_points_rows = [
@@ -1037,4 +1037,4 @@ def test__get_prepared_tariffs__can_handle_daylight_saving_time(
     )
 
     # Assert
-    assert actual.df.count() == 2
+    assert actual.df.count() == 1
