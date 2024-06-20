@@ -104,9 +104,6 @@ def _join_with_prices(
     """
     charge_prices = charge_prices.df
 
-    # charge_price_information_with_charge_time = _explode_with_daily_charge_time(
-    #     charge_price_information, time_zone
-    # )
     charge_price_information_with_charge_time = (
         explode_charge_price_information_within_periods(
             charge_price_information, ChargeResolution.DAY, time_zone
