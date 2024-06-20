@@ -279,20 +279,21 @@ class TestWhenChargePriceChangesDuringPeriod:
 
 
 class TestWhenChargePriceInformationPeriodStopsAndStartsAgain:
-    def test__returns_expected_charge_times(
+
+    def test__when_charge_resumes_after_one__returns_expected_charge_times(
         self,
         spark: SparkSession,
     ) -> None:
         # Arrange
-        first_period_from_date = datetime(2022, 1, 1, 23)
-        first_period_to_date = datetime(2022, 1, 3, 23)
-        second_period_from_date = datetime(2022, 1, 4, 23)
-        second_period_to_date = datetime(2022, 1, 6, 23)
+        first_period_from_date = JAN_1ST
+        first_period_to_date = JAN_3RD
+        second_period_from_date = JAN_4TH
+        second_period_to_date = JAN_6TH
         expected_charge_times = [
-            datetime(2022, 1, 1, 23),
-            datetime(2022, 1, 2, 23),
-            datetime(2022, 1, 4, 23),
-            datetime(2022, 1, 5, 23),
+            JAN_1ST,
+            JAN_2ND,
+            JAN_4TH,
+            JAN_5TH,
         ]
 
         charge_price_information = factory.create_charge_price_information(
@@ -357,6 +358,83 @@ class TestWhenChargePriceInformationPeriodStopsAndStartsAgain:
         expected_charge_times_set = set(expected_charge_times)
 
         assert actual_charge_times == expected_charge_times_set
+
+    def test__when_charge_resumes_immediately__returns_expected_charge_times(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        first_period_from_date = JAN_1ST
+        first_period_to_date = JAN_3RD
+        second_period_from_date = JAN_3RD
+        second_period_to_date = JAN_5TH
+        expected_charge_times = [
+            JAN_1ST,
+            JAN_2ND,
+            JAN_3RD,
+            JAN_4TH,
+        ]
+        expected_length = len(expected_charge_times)
+
+        charge_price_information = factory.create_charge_price_information(
+            spark,
+            [
+                factory.create_charge_price_information_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=first_period_from_date,
+                    to_date=first_period_to_date,
+                ),
+                factory.create_charge_price_information_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=second_period_from_date,
+                    to_date=second_period_to_date,
+                ),
+            ],
+        )
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark,
+                [
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.SUBSCRIPTION,
+                        from_date=first_period_from_date,
+                        to_date=first_period_to_date,
+                    ),
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.SUBSCRIPTION,
+                        from_date=second_period_from_date,
+                        to_date=second_period_to_date,
+                    ),
+                ],
+            )
+        )
+        charge_period_prices = factory.create_charge_prices(
+            spark,
+            [
+                factory.create_charge_prices_row(
+                    charge_time=first_period_from_date,
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                ),
+                factory.create_charge_prices_row(
+                    charge_time=second_period_from_date,
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                ),
+            ],
+        )
+
+        # Act
+        actual = get_prepared_subscriptions(
+            charge_price_information,
+            charge_period_prices,
+            charge_link_metering_point_periods,
+            time_zone=DEFAULT_TIME_ZONE,
+        )
+
+        # Assert
+        actual_rows = actual.df.orderBy(Colname.charge_time).collect()
+        assert len(actual_rows) == expected_length
+        for i in range(expected_length):
+            assert actual_rows[i][Colname.charge_time] == expected_charge_times[i]
 
 
 class TestWhenChargeLinkPeriodStopsAndStartsAgain:
