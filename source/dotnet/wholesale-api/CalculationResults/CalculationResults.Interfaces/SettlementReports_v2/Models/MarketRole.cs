@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public enum FrontendActorMarketRole
+public enum MarketRole
 {
-    /// <summary>
-    /// Other is used when a user's actor has a valid market role, but the role is currently irrelevant.
-    /// </summary>
     Other,
     GridAccessProvider,
     EnergySupplier,

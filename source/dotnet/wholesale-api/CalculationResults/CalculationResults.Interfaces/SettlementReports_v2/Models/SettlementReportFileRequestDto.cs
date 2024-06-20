@@ -19,4 +19,5 @@ public sealed record SettlementReportFileRequestDto(
     SettlementReportFileContent FileContent,
     SettlementReportPartialFileInfo PartialFileInfo,
     SettlementReportRequestFilterDto RequestFilter,
-    long MaximumCalculationVersion);
+    long MaximumCalculationVersion,
+    MarketRole MarketRole);
