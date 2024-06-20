@@ -27,7 +27,7 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
     private readonly ISettlementReportWholesaleRepository _dataSource;
 
     public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource)
-         : base(1000)
+         : base(100000)
     {
         _dataSource = dataSource;
     }

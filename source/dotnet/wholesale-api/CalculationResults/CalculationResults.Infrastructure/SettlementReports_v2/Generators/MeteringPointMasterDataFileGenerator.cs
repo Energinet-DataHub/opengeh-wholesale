@@ -24,7 +24,7 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
     private readonly ISettlementReportMeteringPointMasterDataRepository _dataSource;
 
     public MeteringPointMasterDataFileGenerator(ISettlementReportMeteringPointMasterDataRepository dataSource)
-        : base(1000)
+        : base(100000)
     {
         _dataSource = dataSource;
     }

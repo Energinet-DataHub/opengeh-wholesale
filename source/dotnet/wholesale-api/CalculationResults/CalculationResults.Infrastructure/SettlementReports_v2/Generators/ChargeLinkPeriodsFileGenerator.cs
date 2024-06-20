@@ -26,7 +26,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
     private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
 
     public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
-        : base(1000)
+        : base(100000)
     {
         _dataSource = dataSource;
     }
