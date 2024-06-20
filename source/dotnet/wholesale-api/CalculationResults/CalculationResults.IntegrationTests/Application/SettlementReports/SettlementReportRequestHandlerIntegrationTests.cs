@@ -87,7 +87,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var sut = new SettlementReportRequestHandler(mockedFactory.Object, mockedRepository.Object);
 
         // Act
-        var actual = (await sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var chunkA = actual[0];
@@ -128,7 +128,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResult = actual.Single();
@@ -164,7 +164,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -201,7 +201,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResult = actual[0];
@@ -239,7 +239,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -291,7 +291,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(false, true, false, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -368,7 +368,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -450,7 +450,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(true, true, false, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResultA = actual.
@@ -631,7 +631,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResultA = actual.
