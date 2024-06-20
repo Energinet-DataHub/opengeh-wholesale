@@ -25,7 +25,7 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
     private readonly ISettlementReportEnergyResultRepository _dataSource;
 
     public EnergyResultFileGenerator(ISettlementReportEnergyResultRepository dataSource)
-        : base(100000)
+        : base(250)
     {
         _dataSource = dataSource;
     }

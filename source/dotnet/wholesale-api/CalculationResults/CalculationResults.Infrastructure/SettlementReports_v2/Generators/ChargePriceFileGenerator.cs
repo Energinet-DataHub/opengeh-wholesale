@@ -27,7 +27,7 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
-        : base(100000)
+        : base(250)
     {
         _dataSource = dataSource;
     }
