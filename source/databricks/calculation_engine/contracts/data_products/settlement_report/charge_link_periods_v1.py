@@ -42,7 +42,6 @@ charge_link_periods_v1 = t.StructType(
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
         # EIC or GLN number
-        # Technically the field can be null, but the business logic should ensure a value.
         t.StructField("energy_supplier_id", t.StringType(), not nullable),
     ]
 )
