@@ -20,4 +20,5 @@ public sealed record SettlementReportLatestEnergyResultPerEnergySupplierQueryFil
     string GridAreaCode,
     string EnergySupplier,
     Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant PeriodEnd,
+    long MaximumCalculationVersion);
