@@ -168,3 +168,9 @@ variable "pim_contributor_group_name" {
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = ""
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}

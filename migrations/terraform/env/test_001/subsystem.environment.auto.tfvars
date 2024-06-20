@@ -4,3 +4,4 @@ feature_flag_datahub2_healthcheck        = true
 feature_flag_datahub2_time_series_import = true
 datahub2_ip_whitelist                    = "86.106.96.1"
 datahub2_migration_url                   = "https://b2b.te7.datahub.dk/dh3"
+alert_email_address="be265589.energinet.onmicrosoft.com@emea.teams.ms"

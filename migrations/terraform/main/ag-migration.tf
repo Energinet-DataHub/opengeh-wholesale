@@ -1,7 +1,9 @@
-module "monitor_action_group" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=14.19.1"
+module "monitor_action_group_mig" {
+  count = var.alert_email_address != null ? 1 : 0
 
-  name                 = "monitor-group"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=14.22.0"
+
+  name                 = "alerts"
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
@@ -10,9 +12,8 @@ module "monitor_action_group" {
 
   short_name                      = "mig-mon-grp"
   email_receiver_name             = "Migration Operations"
-  email_receiver_address          = "36217b88.energinet.onmicrosoft.com@emea.teams.ms"
+  email_receiver_address          = var.alert_email_address
   custom_dimension_subsystem_name = "migration"
 
-  query_alerts_list       = []
   application_insights_id = data.azurerm_key_vault_secret.appi_id.value
 }

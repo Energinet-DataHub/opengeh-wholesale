@@ -1,5 +1,5 @@
 module "func_dropzoneunzipper" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=14.22.0"
 
   name                                   = "dropzoneunzipper"
   project_name                           = var.domain_name_short
@@ -18,12 +18,12 @@ module "func_dropzoneunzipper" {
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
   app_settings                           = local.func_dropzoneunzipper.app_settings
-  health_check_alert                     = {
-    action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
+  health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
+    action_group_id = module.monitor_action_group_mig[0].id
     enabled         = var.enable_health_check_alerts
   }
   # Role assigments is needed to connect to the storage accounts using URI
-  role_assignments                       = [
+  role_assignments = [
     {
       resource_id          = module.st_dh2data.id
       role_definition_name = "Storage Blob Data Contributor"

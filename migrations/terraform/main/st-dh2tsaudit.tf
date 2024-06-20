@@ -1,5 +1,5 @@
 module "st_dh2timeseries_audit" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.22.0"
 
   name                       = "dh2tsaudit"
   project_name               = var.domain_name_short

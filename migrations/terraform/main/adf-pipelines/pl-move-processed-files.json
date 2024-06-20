@@ -50,7 +50,8 @@
                     "enablePartitionDiscovery": false
                 },
                 "formatSettings": {
-                    "type": "JsonReadSettings"
+                    "type": "JsonReadSettings",
+                    "compressionProperties": null
                 }
             },
             "sink": {
@@ -150,7 +151,8 @@
                     "enablePartitionDiscovery": false
                 },
                 "formatSettings": {
-                    "type": "JsonReadSettings"
+                    "type": "JsonReadSettings",
+                    "compressionProperties": null
                 }
             },
             "sink": {
@@ -250,7 +252,8 @@
                     "enablePartitionDiscovery": false
                 },
                 "formatSettings": {
-                    "type": "JsonReadSettings"
+                    "type": "JsonReadSettings",
+                    "compressionProperties": null
                 }
             },
             "sink": {

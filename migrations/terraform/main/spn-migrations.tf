@@ -20,7 +20,7 @@ resource "azuread_application_password" "secret" {
 }
 
 module "kvs_app_databricks_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "spn-databricks-secret"
   value        = azuread_application_password.secret.value

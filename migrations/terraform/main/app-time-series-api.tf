@@ -1,5 +1,5 @@
 module "app_time_series_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.22.0"
 
   name                                   = "timeseriesapi"
   project_name                           = var.domain_name_short
@@ -15,10 +15,12 @@ module "app_time_series_api" {
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   dotnet_framework_version               = "v8.0"
   health_check_path                      = "/monitor/ready"
-  health_check_alert_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled             = var.enable_health_check_alerts
   app_settings                           = local.app_time_series_api.app_settings
-  role_assignments                       = [
+  monitor_action_group = length(module.monitor_action_group_mig) != 1 ? null : {
+    id                  = module.monitor_action_group_mig[0].id
+    resource_group_name = azurerm_resource_group.this.name
+  }
+  role_assignments = [
     {
       resource_id          = data.azurerm_key_vault_secret.st_data_lake_id.value
       role_definition_name = "Storage Blob Data Contributor"
