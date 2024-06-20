@@ -17,10 +17,7 @@ from pyspark.sql import Window
 from pyspark.sql.dataframe import DataFrame
 
 import package.calculation.preparation.data_structures as d
-from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
-    explode_charge_price_information_within_periods,
-)
-from package.codelists import ChargeType, WholesaleResultResolution, ChargeResolution
+from package.codelists import ChargeType, WholesaleResultResolution
 from package.constants import Colname
 
 
@@ -103,10 +100,10 @@ def _join_with_prices(
     - The charge price is the last known charge price for the charge key.
     """
     charge_prices = charge_prices.df
-    charge_price_information_with_charge_time = (
-        explode_charge_price_information_within_periods(
-            charge_price_information, ChargeResolution.DAY, time_zone
-        )
+    charge_price_information = charge_price_information.df
+
+    charge_price_information_with_charge_time = _explode_with_daily_charge_time(
+        charge_price_information, time_zone
     )
 
     w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(
@@ -135,6 +132,31 @@ def _join_with_prices(
         )
     )
     return master_data_with_prices
+
+
+def _explode_with_daily_charge_time(
+    charge_price_information: DataFrame, time_zone: str
+) -> DataFrame:
+    """
+    Add charge_time column to charge_periods DataFrame.
+    The charge_time column is created by exploding charge_periods using from_date and to_date with a resolution of 1 day.
+    """
+
+    charge_periods_with_charge_time = charge_price_information.withColumn(
+        Colname.charge_time,
+        f.explode(
+            f.sequence(
+                f.from_utc_timestamp(Colname.from_date, time_zone),
+                f.from_utc_timestamp(Colname.to_date, time_zone),
+                f.expr("interval 1 day"),
+            )
+        ),
+    ).withColumn(
+        Colname.charge_time,
+        f.to_utc_timestamp(Colname.charge_time, time_zone),
+    )
+
+    return charge_periods_with_charge_time
 
 
 def _join_with_links(
