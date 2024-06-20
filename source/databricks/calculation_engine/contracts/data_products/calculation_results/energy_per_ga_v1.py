@@ -1,12 +1,16 @@
 import pyspark.sql.types as t
 
+nullable = True
+
 energy_per_ga_v1 = t.StructType(
     [
         # UUID
-        t.StructField("calculation_id", t.StringType(), False),
+        t.StructField("calculation_id", t.StringType(), not nullable),
+        #
         # 'balance_fixing' | 'aggregation' | 'wholesale_fixing' | 'first_correction_settlement' |
         # 'second_correction_settlement' | 'third_correction_settlement'
-        t.StructField("calculation_type", t.StringType(), False),
+        t.StructField("calculation_type", t.StringType(), not nullable),
+        #
         # UTC time
         t.StructField("calculation_period_start", t.TimestampType(), False),
         # UTC time

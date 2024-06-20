@@ -22,7 +22,7 @@ amounts_per_charge_v1 = t.StructType(
         t.StructField("resolution", t.StringType(), False),
         # 'kWh' | 'pcs'
         t.StructField("quantity_unit", t.StringType(), False),
-        # ‘production' | ‘consumption' | 've_production' | 'net_production' |
+        # 'production' | 'consumption' | 've_production' | 'net_production' |
         # 'supply_to_grid' | 'consumption_from_grid' | 'wholesale_services_information' |
         # 'own_production' | 'net_from_grid' 'net_to_grid' | 'total_consumption' |
         # 'electrical_heating' | 'net_consumption' | 'effect_settlement'
