@@ -114,7 +114,7 @@ def _join_with_prices(
         Colname.charge_time
     )
 
-    master_data_with_prices = (
+    charge_price_information_with_prices = (
         charge_price_information_with_charge_time.join(
             charge_prices, [Colname.charge_key, Colname.charge_time], "left"
         )
@@ -135,36 +135,7 @@ def _join_with_prices(
             Colname.charge_price,
         )
     )
-    return master_data_with_prices
-
-
-def _explode_with_daily_charge_time(
-    charge_price_information: DataFrame, time_zone: str
-) -> DataFrame:
-    """
-    Add charge_time column to charge_periods DataFrame.
-    The charge_time column is created by exploding charge_periods using from_date and to_date with a resolution of 1 day.
-    """
-
-    charge_periods_with_charge_time = (
-        charge_price_information.withColumn(
-            Colname.charge_time,
-            f.explode(
-                f.sequence(
-                    f.from_utc_timestamp(Colname.from_date, time_zone),
-                    f.from_utc_timestamp(Colname.to_date, time_zone),
-                    f.expr("interval 1 day"),
-                )
-            ),
-        )
-        .withColumn(
-            Colname.charge_time,
-            f.to_utc_timestamp(Colname.charge_time, time_zone),
-        )
-        .where(f.col(Colname.charge_time) < f.col(Colname.to_date))
-    )
-
-    return charge_periods_with_charge_time
+    return charge_price_information_with_prices
 
 
 def _join_with_links(
