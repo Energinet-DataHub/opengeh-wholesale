@@ -16,7 +16,7 @@ charge_link_periods_v1 = t.StructType(
         # GSRN number
         t.StructField("metering_point_id", t.StringType(), not nullable),
         #
-        # 'production' | ‘consumption' | 'exchange' | 've_production' |
+        # 'production' | 'consumption' | 'exchange' | 've_production' |
         # 'net_production' | 'supply_to_grid' 'consumption_from_grid' |
         # 'wholesale_services_information' | 'own_production' | 'net_from_grid' |
         # 'net_to_grid' | 'total_consumption' | 'electrical_heating' |

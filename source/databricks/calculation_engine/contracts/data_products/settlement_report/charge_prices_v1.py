@@ -30,7 +30,7 @@ charge_prices_v1 = t.StructType(
         # EIC or GLN number
         t.StructField("charge_owner_id", t.StringType(), not nullable),
         #
-        # ‘PT1H' | ‘P1D’ | ‘P1M’
+        # 'PT1H' | 'P1D' | 'P1M'
         t.StructField("resolution", t.StringType(), not nullable),
         #
         t.StructField("is_tax", t.BooleanType(), not nullable),
