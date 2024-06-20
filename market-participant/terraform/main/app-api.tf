@@ -1,5 +1,5 @@
 module "app_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.22.0"
 
   name                                   = "api"
   project_name                           = var.domain_name_short
@@ -40,7 +40,7 @@ module "app_api" {
 }
 
 module "kvs_app_markpart_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "app-markpart-api-base-url"
   value        = "https://${module.app_api.default_hostname}"
@@ -48,7 +48,7 @@ module "kvs_app_markpart_api_base_url" {
 }
 
 module "kvs_backend_api_open_id_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "api-backend-open-id-url"
   value        = "https://${module.app_api.default_hostname}/.well-known/openid-configuration"

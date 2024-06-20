@@ -1,5 +1,5 @@
 module "func_organization" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=14.22.0"
 
   name                                   = "organization"
   project_name                           = var.domain_name_short

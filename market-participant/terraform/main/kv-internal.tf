@@ -1,5 +1,5 @@
 module "kv_internal" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=14.22.0"
 
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
@@ -10,11 +10,10 @@ module "kv_internal" {
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                        = local.ip_restrictions_as_string
-  enable_rbac_authorization       = true
 }
 
 module "kvs_sendgrid_api_key" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "sendgrid-api-key"
   value        = var.sendgrid_api_key
@@ -22,7 +21,7 @@ module "kvs_sendgrid_api_key" {
 }
 
 module "kvs_sendgrid_from_email" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "sendgrid-from-email"
   value        = var.sendgrid_from_email
@@ -30,7 +29,7 @@ module "kvs_sendgrid_from_email" {
 }
 
 module "kvs_sendgrid_bcc_email" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "sendgrid-bcc-email"
   value        = var.sendgrid_bcc_email
@@ -38,7 +37,7 @@ module "kvs_sendgrid_bcc_email" {
 }
 
 module "kvs_cvr_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "cvr-password"
   value        = var.cvr_password
