@@ -172,8 +172,8 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     private static bool IsWholeMonth(DateTimeOffset start, DateTimeOffset end)
     {
-        var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(start, "Europe/Copenhagen");
-        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(end, "Europe/Copenhagen");
+        var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(start, "Romance Standard Time");
+        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(end, "Romance Standard Time");
         return convertedEnd.TimeOfDay.Ticks == 0
             && convertedStart.Day == 1
             && convertedEnd.Day == 1
