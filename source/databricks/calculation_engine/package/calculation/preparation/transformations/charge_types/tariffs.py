@@ -80,6 +80,12 @@ def _join_price_information_periods_and_prices_add_missing_prices(
 ) -> DataFrame:
     charge_prices = charge_prices.df
 
+    charge_price_information = ChargePriceInformation(
+        charge_price_information.df.filter(
+            f.col(Colname.resolution) == resolution.value
+        )
+    )
+
     charge_price_information_with_charge_time = (
         explode_charge_price_information_within_periods(
             charge_price_information, resolution, time_zone
@@ -97,6 +103,8 @@ def _join_price_information_periods_and_prices_add_missing_prices(
             charge_price_information_with_charge_time[Colname.charge_tax],
             charge_price_information_with_charge_time[Colname.resolution],
             charge_price_information_with_charge_time[Colname.charge_time],
+            charge_price_information_with_charge_time[Colname.from_date],
+            charge_price_information_with_charge_time[Colname.to_date],
             Colname.charge_price,
         )
     )

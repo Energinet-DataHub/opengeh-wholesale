@@ -58,7 +58,7 @@ public sealed class SettlementReport
         CreatedDateTime = clock.GetCurrentInstant();
         Status = SettlementReportStatus.InProgress;
         CalculationType = request.Filter.CalculationType;
-        ContainsBasisData = false;
+        ContainsBasisData = request.IncludeBasisData;
         PeriodStart = request.Filter.PeriodStart.ToInstant();
         PeriodEnd = request.Filter.PeriodEnd.ToInstant();
         GridAreaCount = request.Filter.GridAreas.Count;

@@ -1,17 +1,38 @@
 import pyspark.sql.types as t
 
+nullable = True
+
 grid_loss_metering_point_time_series_v1 = t.StructType(
     [
-        t.StructField("calculation_id", t.StringType(), False),
-        t.StructField("calculation_type", t.StringType(), False),
-        t.StructField("calculation_period_start", t.TimestampType(), False),
-        t.StructField("calculation_period_end", t.TimestampType(), False),
-        t.StructField("calculation_version", t.LongType(), False),
-        t.StructField("metering_point_id", t.StringType(), False),
-        t.StructField("metering_point_type", t.StringType(), False),
-        t.StructField("resolution", t.StringType(), False),
-        t.StructField("quantity_unit", t.StringType(), False),
-        t.StructField("time", t.TimestampType(), False),
-        t.StructField("quantity", t.DecimalType(18, 3), False),
+        # UUID
+        t.StructField("calculation_id", t.StringType(), not nullable),
+        #
+        # 'balance_fixing' | 'aggregation'
+        t.StructField("calculation_type", t.StringType(), not nullable),
+        #
+        # UTC time
+        t.StructField("calculation_period_start", t.TimestampType(), not nullable),
+        #
+        # UTC time
+        t.StructField("calculation_period_end", t.TimestampType(), not nullable),
+        #
+        t.StructField("calculation_version", t.LongType(), not nullable),
+        #
+        # GSRN number
+        t.StructField("metering_point_id", t.StringType(), not nullable),
+        #
+        # 'consumption' | 'production'
+        t.StructField("metering_point_type", t.StringType(), not nullable),
+        #
+        # 'PT15M' | 'PT1H'
+        t.StructField("resolution", t.StringType(), not nullable),
+        #
+        # 'kWh'
+        t.StructField("quantity_unit", t.StringType(), not nullable),
+        #
+        # UTC time
+        t.StructField("time", t.TimestampType(), not nullable),
+        #
+        t.StructField("quantity", t.DecimalType(18, 3), not nullable),
     ]
 )
