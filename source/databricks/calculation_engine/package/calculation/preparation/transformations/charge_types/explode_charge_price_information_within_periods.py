@@ -31,14 +31,11 @@ def explode_charge_price_information_within_periods(
     if resolution != ChargeResolution.HOUR and resolution != ChargeResolution.DAY:
         raise ValueError(f"Unsupported resolution {resolution}")
 
-    charge_price_information_df = charge_price_information.df.filter(
-        f.col(Colname.resolution) == resolution.value
-    )
     explode_with_charge_time = {
         ChargeResolution.DAY: lambda df: _explode_with_daily_charge_time(df, time_zone),
         ChargeResolution.HOUR: lambda df: _explode_with_hourly_charge_time(df),
     }
-    return explode_with_charge_time[resolution](charge_price_information_df)
+    return explode_with_charge_time[resolution](charge_price_information.df)
 
 
 def _explode_with_daily_charge_time(
