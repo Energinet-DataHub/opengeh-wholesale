@@ -24,7 +24,7 @@ $pathToPublicModelTestTemplate = "/" + $templatesPath + "public-model-test-templ
 # Define the path to the calculation test template file
 $calculationTestTemplateFilePath = Join-Path $PSScriptRoot $pathToCalculationTestTemplate
 
-# Define the path to the public data model test template file
+# Define the path to the data product test template file
 $publicModelTestTemplateFilePath = Join-Path $PSScriptRoot $pathToPublicModelTestTemplate
 
 # Ensure the template files exists
@@ -51,7 +51,7 @@ foreach ($file in $filesToUpdate)
     {
         Set-Content -Path $file.FullName -Value $calculationTestTemplateContent -NoNewLine
     }
-    elseif ($file.FullName.Contains("public_data_models"))
+    elseif ($file.FullName.Contains("data_products"))
     {
         Set-Content -Path $file.FullName -Value $publicModelTestTemplateContent -NoNewLine
     }

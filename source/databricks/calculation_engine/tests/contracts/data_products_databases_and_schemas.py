@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.catalog import Database
 
 
-def get_public_data_model_databases(spark: SparkSession) -> List[Database]:
+def get_data_product_databases(spark: SparkSession) -> List[Database]:
     """
     Get all view databases.
     """
@@ -41,7 +41,7 @@ def get_public_data_model_databases(spark: SparkSession) -> List[Database]:
     return databases
 
 
-def get_expected_public_data_model_schemas() -> dict:
+def get_expected_data_product_schemas() -> dict:
     schemas = {}
     current_directory = Path(__file__).parent
     schemas_folder = current_directory / ".." / ".." / "contracts" / "data_products"
