@@ -1,9 +1,13 @@
 resource "azuread_service_principal" "msgraph" {
+  provider = azuread.b2c
+
   client_id    = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
   use_existing = true
 }
 
 resource "azuread_application" "frontend_app" {
+  provider = azuread.b2c
+
   display_name     = "frontend-app"
   owners           = [data.azuread_client_config.current.object_id]
   sign_in_audience = "AzureADandPersonalMicrosoftAccount"
@@ -53,18 +57,24 @@ resource "azuread_application" "frontend_app" {
 }
 
 resource "azuread_service_principal" "frontend_app_sp" {
+  provider = azuread.b2c
+
   client_id                    = azuread_application.frontend_app.client_id
   app_role_assignment_required = false
   owners                       = [data.azuread_client_config.current.object_id]
 }
 
 resource "azuread_service_principal_delegated_permission_grant" "grant_frontend_app_bff_admin_consent" {
+  provider = azuread.b2c
+
   service_principal_object_id          = azuread_service_principal.frontend_app_sp.object_id
   resource_service_principal_object_id = data.azurerm_key_vault_secret.backend_bff_app_sp_id.value
   claim_values                         = ["api"]
 }
 
 resource "azuread_service_principal_delegated_permission_grant" "grant_frontend_app_openid_admin_consent" {
+  provider = azuread.b2c
+
   service_principal_object_id          = azuread_service_principal.frontend_app_sp.object_id
   resource_service_principal_object_id = azuread_service_principal.msgraph.object_id
   claim_values                         = ["openid", "offline_access"]

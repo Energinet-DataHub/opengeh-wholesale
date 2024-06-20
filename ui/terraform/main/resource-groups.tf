@@ -37,10 +37,6 @@ data "azurerm_role_definition" "locks_contributor_access" {
 }
 
 module "pim_contributor_security_group_permissions" {
-  providers = {
-    azuread = azuread.endk
-  }
-
   count = var.pim_contributor_group_name != "" ? 1 : 0
 
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=14.22.0"
@@ -56,10 +52,6 @@ module "pim_contributor_security_group_permissions" {
 }
 
 module "pim_reader_security_group_permissions" {
-  providers = {
-    azuread = azuread.endk
-  }
-
   count = var.pim_reader_group_name != "" ? 1 : 0
 
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=14.22.0"
