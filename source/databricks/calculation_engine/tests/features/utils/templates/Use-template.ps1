@@ -14,12 +14,10 @@ function CheckFileExists
     }
 }
 
-$templatesPath = "templates/"
-
 # Needs to concatenate before applying Join-Path in order to work
 # probably on all powershell versions.
-$pathToCalculationTestTemplate = "/" + $templatesPath + "calculation-test-template.py"
-$pathToPublicModelTestTemplate = "/" + $templatesPath + "public-model-test-template.py"
+$pathToCalculationTestTemplate = "/calculation-test-template.py"
+$pathToPublicModelTestTemplate = "/data-product-test-template.py"
 
 # Define the path to the calculation test template file
 $calculationTestTemplateFilePath = Join-Path $PSScriptRoot $pathToCalculationTestTemplate
