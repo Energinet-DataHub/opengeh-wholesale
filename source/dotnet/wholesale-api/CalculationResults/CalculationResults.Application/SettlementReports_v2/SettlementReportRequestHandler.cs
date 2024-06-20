@@ -79,6 +79,20 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             ];
         }
 
+        if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd)
+                                               && reportRequest.Filter.CalculationType
+                                                   is CalculationType.WholesaleFixing
+                                                   or CalculationType.FirstCorrectionSettlement
+                                                   or CalculationType.SecondCorrectionSettlement
+                                                   or CalculationType.ThirdCorrectionSettlement)
+        {
+            filesInReport =
+            [
+                ..filesInReport,
+                new { Content = SettlementReportFileContent.MonthlyAmount, Name = "Monthly amounts", SplitReportPerGridArea = true },
+            ];
+        }
+
         var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
         var filesToRequest = new List<SettlementReportFileRequestDto>();
 
@@ -156,6 +170,16 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 PartialFileInfo = partialFileInfo with { ChunkOffset = partialFileInfo.ChunkOffset + i },
             };
         }
+    }
+
+    private static bool IsWholeMonth(DateTimeOffset start, DateTimeOffset end)
+    {
+        var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(start, "Romance Standard Time");
+        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(end, "Romance Standard Time");
+        return convertedEnd.TimeOfDay.Ticks == 0
+            && convertedStart.Day == 1
+            && convertedEnd.Day == 1
+            && convertedEnd.Month - convertedStart.Month == 1;
     }
 
     private Task<long> GetLatestCalculationVersionAsync(CalculationType calculationType)
