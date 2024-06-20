@@ -29,13 +29,13 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
             return filter.EnergySupplier is not null
-                ? _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilterWithEnergySupplier(filter))
-                : _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilter(filter));
+                ? _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilterWithEnergySupplier(filter, maximumCalculationVersion))
+                : _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilter(filter, maximumCalculationVersion));
         }
 
         return filter.EnergySupplier is not null
@@ -43,15 +43,15 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             : _settlementReportResultQueries.CountAsync(ParseEnergyFilter(filter));
     }
 
-    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
     {
         IAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportEnergyResultRow> rows;
 
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
             rows = filter.EnergySupplier is not null
-                ? _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilterWithEnergySupplier(filter), skip, take)
-                : _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilter(filter), skip, take);
+                ? _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilterWithEnergySupplier(filter, maximumCalculationVersion), skip, take)
+                : _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilter(filter, maximumCalculationVersion), skip, take);
         }
         else
         {
@@ -85,14 +85,15 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             filter.PeriodEnd.ToInstant());
     }
 
-    private static SettlementReportLatestEnergyResultQueryFilter ParseLatestEnergyFilter(SettlementReportRequestFilterDto filter)
+    private static SettlementReportLatestEnergyResultQueryFilter ParseLatestEnergyFilter(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var (gridAreaCode, _) = filter.GridAreas.Single();
 
         return new SettlementReportLatestEnergyResultQueryFilter(
             gridAreaCode,
             filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.PeriodEnd.ToInstant(),
+            maximumCalculationVersion);
     }
 
     private static SettlementReportEnergyResultPerEnergySupplierQueryFilter ParseEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter)
@@ -107,7 +108,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             filter.PeriodEnd.ToInstant());
     }
 
-    private static SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter ParseLatestEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter)
+    private static SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter ParseLatestEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var (gridAreaCode, _) = filter.GridAreas.Single();
 
@@ -115,6 +116,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             gridAreaCode,
             filter.EnergySupplier!,
             filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.PeriodEnd.ToInstant(),
+            maximumCalculationVersion);
     }
 }
