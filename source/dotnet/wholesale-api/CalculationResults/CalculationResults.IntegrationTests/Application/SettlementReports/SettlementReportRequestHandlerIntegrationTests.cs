@@ -353,7 +353,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
-        var offset = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen").GetUtcOffset(DateTime.UtcNow);
+        var offset = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time").GetUtcOffset(DateTime.UtcNow);
         var startDate = new DateTimeOffset(2024, 1, 1, 1, 0, 0, offset).UtcDateTime;
         var endDate = startDate.AddMonths(1);
         var filter = new SettlementReportRequestFilterDto(
@@ -618,7 +618,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             { "806", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
-        var offset = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen").GetUtcOffset(DateTime.UtcNow);
+        var offset = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time").GetUtcOffset(DateTime.UtcNow);
         var filter = new SettlementReportRequestFilterDto(
             calculationFilter,
             new DateTimeOffset(2024, 1, 1, 1, 0, 0, offset).UtcDateTime,
