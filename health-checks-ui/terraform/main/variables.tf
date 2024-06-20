@@ -63,3 +63,9 @@ variable "platform_security_group_reader_access" {
   description = "Flag to determine if the platform developers should have reader access to the resource group."
   default     = false
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}

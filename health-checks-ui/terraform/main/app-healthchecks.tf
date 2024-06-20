@@ -1,5 +1,5 @@
 module "app_health_checks" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.22.0"
 
   name                                   = "healthchecks"
   project_name                           = var.domain_name_short
@@ -11,12 +11,16 @@ module "app_health_checks" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                    = module.webapp_service_plan.id
   health_check_path                      = "/monitor/ready"
-  health_check_alert_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled             = true
   dotnet_framework_version               = "v8.0"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+
+  monitor_action_group                   = length(module.monitor_action_group_healthcheckui) != 1 ? null : {
+    id                                   = module.monitor_action_group_healthcheckui[0].id
+    resource_group_name                  = azurerm_resource_group.this.name
+  }
+
 
   # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
   always_on = true
