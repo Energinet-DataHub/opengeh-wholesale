@@ -34,7 +34,7 @@ module "func_entrypoint_peek" {
     {
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"
-    }
+    },
   ]
   app_settings = local.func_entrypoint_peek.app_settings
 }

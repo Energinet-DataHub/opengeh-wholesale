@@ -30,7 +30,7 @@ module "func_entrypoint_ecp_inbox" {
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
-    }
+    },
   ]
   app_settings = local.func_entrypoint_ecp_inbox.app_settings
 }

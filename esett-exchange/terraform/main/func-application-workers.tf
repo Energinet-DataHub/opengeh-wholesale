@@ -26,7 +26,7 @@ module "func_entrypoint_application_workers" {
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
-    }
+    },
   ]
   app_settings = local.func_entrypoint_application_workers.app_settings
 }

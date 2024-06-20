@@ -1,5 +1,5 @@
 module "apim_biztalk_inbox" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=14.22.0"
 
   count                      = 1
   name                       = "biztalk-inbox-api"
@@ -48,7 +48,7 @@ resource "azurerm_api_management_backend" "biztalk_inbox_backend" {
 }
 
 module "apimao_biztalk_inbox" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.22.0"
 
   count                   = 1
   operation_id            = "biztalk-post-inbox"

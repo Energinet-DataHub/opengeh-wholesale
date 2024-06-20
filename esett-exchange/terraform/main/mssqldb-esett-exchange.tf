@@ -25,7 +25,7 @@ module "mssqldb_esett_exchange" {
 }
 
 module "kvs_sql_ms_esett_exchange_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "mssql-esett-exchange-database-name"
   value        = module.mssqldb_esett_exchange.name
