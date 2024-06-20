@@ -7,3 +7,6 @@ feature_management_use_energy_result_produced                    = false
 feature_management_use_request_wholesale_settlement_receiver     = true
 feature_management_use_message_delegation                        = true
 alert_email_address                                              = "4f683395.energinet.onmicrosoft.com@emea.teams.ms"
+feature_management_use_calculation_completed_event                          = true
+feature_management_use_calculation_completed_event_for_balance_fixing       = true
+feature_management_use_calculation_completed_event_for_wholesale_fixing     = true
