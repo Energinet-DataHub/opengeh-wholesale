@@ -368,7 +368,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -631,7 +631,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
 
         // Assert
         var energyResultA = actual.

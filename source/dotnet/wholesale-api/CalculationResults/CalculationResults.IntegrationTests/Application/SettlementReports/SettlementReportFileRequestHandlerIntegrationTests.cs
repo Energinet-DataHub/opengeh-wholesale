@@ -352,7 +352,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             SettlementReportFileContent.MonthlyAmount,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
-            1);
+            1,
+            MarketRole.GridAccessProvider);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
