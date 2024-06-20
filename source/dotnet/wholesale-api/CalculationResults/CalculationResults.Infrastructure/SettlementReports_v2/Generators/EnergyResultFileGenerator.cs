@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -22,48 +20,24 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
+public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementReportEnergyResultRow, EnergyResultFileGenerator.SettlementReportEnergyResultRowMap>
 {
-    private const int ChunkSize = 1000;
-
     private readonly ISettlementReportEnergyResultRepository _dataSource;
 
     public EnergyResultFileGenerator(ISettlementReportEnergyResultRepository dataSource)
+        : base(1000)
     {
         _dataSource = dataSource;
     }
 
-    public string FileExtension => ".csv";
-
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter, maximumCalculationVersion);
     }
 
-    public async Task WriteAsync(
-        SettlementReportRequestFilterDto filter,
-        SettlementReportPartialFileInfo fileInfo,
-        long maximumCalculationVersion,
-        StreamWriter destination)
+    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportEnergyResultRowMap>();
-
-        await using (csvHelper.ConfigureAwait(false))
-        {
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
-            {
-                csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
-            {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-        }
+        return _dataSource.GetAsync(filter, maximumCalculationVersion, skipChunks, takeChunks);
     }
 
     public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
