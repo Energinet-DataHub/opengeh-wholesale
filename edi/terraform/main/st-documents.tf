@@ -1,5 +1,5 @@
 module "st_documents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.22.0"
 
   name                                  = "documents"
   project_name                          = var.domain_name_short
@@ -25,7 +25,7 @@ module "st_documents" {
 }
 
 module "st_documents_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.22.0"
 
   name                                  = "backupdocs"
   project_name                          = var.domain_name_short

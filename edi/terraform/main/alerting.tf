@@ -1,6 +1,6 @@
 module "monitor_action_group_edi" {
   count  = var.alert_email_address != null ? 1 : 0
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=14.22.0"
 
   name                 = "alerts"
   project_name         = var.domain_name_short

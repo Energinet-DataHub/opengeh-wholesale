@@ -1,5 +1,5 @@
 module "apimao_ebix_peekmessage" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.22.0"
 
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
