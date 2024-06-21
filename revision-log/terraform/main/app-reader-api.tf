@@ -1,5 +1,5 @@
 module "app_reader_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.22.0"
 
   name                                   = "reader-api"
   project_name                           = var.domain_name_short

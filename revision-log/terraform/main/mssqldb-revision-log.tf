@@ -23,7 +23,7 @@ module "mssqldb_revision_log" {
 }
 
 module "kvs_sql_ms_revision_log_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
 
   name         = "mssql-revision-log-database-name"
   value        = module.mssqldb_revision_log.name
