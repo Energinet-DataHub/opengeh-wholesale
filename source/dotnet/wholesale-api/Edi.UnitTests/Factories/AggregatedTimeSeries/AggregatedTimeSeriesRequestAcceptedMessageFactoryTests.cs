@@ -69,6 +69,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         series.Should().NotBeNull();
         series!.GridArea.Should().Be(_gridArea);
         series.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        series.HasSettlementVersion.Should().BeFalse();
 
         var timeSeriesOrdered = series.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
         var earliestTimestamp = timeSeriesOrdered.First();
@@ -82,6 +83,30 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
 
         series.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.First().TimeSeriesPoints.Length);
+    }
+
+    [Fact]
+    public void Create_CalculationResultWithSettlement_CreatesAcceptedEdiMessageWithSettlementVersion()
+    {
+        // Arrange
+        var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+        var expectedReferenceId = "123456789";
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(calculationType: CalculationType.FirstCorrectionSettlement);
+
+        // Act
+        var actual = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().NotBeNull();
+        actual.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        actual.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
+        actual.Subject.Should().Be(expectedAcceptedSubject);
+
+        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(actual.Body);
+        var series = responseBody?.Series.FirstOrDefault();
+        series.Should().NotBeNull();
+        series!.SettlementVersion.Should().Be(SettlementVersion.FirstCorrection);
     }
 
     [Theory]
@@ -111,7 +136,9 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             });
     }
 
-    private IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries> CreateAggregatedTimeSeries(IReadOnlyCollection<QuantityQuality>? quantityQualities = null)
+    private IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries> CreateAggregatedTimeSeries(
+        IReadOnlyCollection<QuantityQuality>? quantityQualities = null,
+        CalculationType calculationType = CalculationType.Aggregation)
     {
         quantityQualities ??= new List<QuantityQuality> { QuantityQuality.Estimated };
 
@@ -124,7 +151,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
                 new(new DateTime(2021, 1, 1, 0, 45, 0), 3, quantityQualities),
             },
             _timeSeriesType,
-            CalculationType.Aggregation,
+            calculationType,
             DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-01-01T00:45Z").ToInstant(),
             Resolution.Quarter,

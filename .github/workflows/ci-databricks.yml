@@ -143,7 +143,7 @@ jobs:
           - name: Wholesale logic
             paths: features/given_a_wholesale_calculation
           - name: Public data models
-            paths: features/public_data_models contracts
+            paths: features/data_products contracts
           - name: Unit tests
             paths: calculation codelists common infrastructure
           - name: Entry point tests
@@ -236,7 +236,7 @@ jobs:
           calculator_job/test_start.py
           features/given_an_energy_calculation
           features/given_a_wholesale_calculation
-          features/public_data_models
+          features/data_products
           calculation/
           codelists/
           common/

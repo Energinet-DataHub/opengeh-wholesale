@@ -36,8 +36,10 @@ public sealed class SettlementReportDownloadHandler : ISettlementReportDownloadH
             .GetAsync(requestId.Id)
             .ConfigureAwait(false) ?? throw new InvalidOperationException("Report not found.");
 
-        if (!isMultitenancy && report.ActorId != actorId)
+        if (!isMultitenancy && (report.ActorId != actorId || report.IsHiddenFromActor))
+        {
             throw new InvalidOperationException("User does not have access to the report.");
+        }
 
         if (string.IsNullOrEmpty(report.BlobFileName))
             throw new InvalidOperationException("Report does not have a Blob file name.");
