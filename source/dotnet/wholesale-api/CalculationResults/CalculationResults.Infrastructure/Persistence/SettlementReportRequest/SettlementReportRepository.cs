@@ -51,6 +51,7 @@ public sealed class SettlementReportRepository : ISettlementReportRepository
     public async Task<IEnumerable<SettlementReport>> GetAsync()
     {
         return await _context.SettlementReports
+            .OrderByDescending(x => x.Id)
             .ToListAsync()
             .ConfigureAwait(false);
     }
