@@ -32,13 +32,14 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var count = await CountAsync(filter, maximumCalculationVersion).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)_chunkSize);
     }
 
     public async Task WriteAsync(
+        MarketRole marketRole,
         SettlementReportRequestFilterDto filter,
         SettlementReportPartialFileInfo fileInfo,
         long maximumCalculationVersion,
