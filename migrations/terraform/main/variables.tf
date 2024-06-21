@@ -174,3 +174,8 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
+
+variable "migration_group_name" {
+  type        = string
+  description = "Name of the AD group with elevated access."
+}
