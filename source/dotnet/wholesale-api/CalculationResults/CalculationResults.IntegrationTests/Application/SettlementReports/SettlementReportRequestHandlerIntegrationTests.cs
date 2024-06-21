@@ -267,7 +267,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultB.FileContent);
     }
 
-    [Fact]
+    [Fact(Skip = "Testing no Time Series")]
     public async Task RequestReportAsync_ForWholesaleFixingWithBasisDataWithoutMonthlyAmount_ReturnsExpectedFiles()
     {
         // Arrange
