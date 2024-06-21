@@ -44,18 +44,18 @@ wholesale_results_v1 = t.StructType(
         # 'DKK'
         t.StructField("currency", t.StringType(), not nullable),
         #
-        t.StructField("quantity", t.DecimalType(18, 3), not nullable),
+        t.StructField("quantity", t.DecimalType(18, 3), nullable),
         #
-        t.StructField("price", t.DecimalType(18, 6), not nullable),
+        t.StructField("price", t.DecimalType(18, 6), nullable),
         #
         t.StructField("amount", t.DecimalType(18, 6), nullable),
         #
         # 'subscription' | 'fee' | 'tariff'
-        t.StructField("charge_type", t.StringType(), nullable),
+        t.StructField("charge_type", t.StringType(), not nullable),
         #
-        t.StructField("charge_code", t.StringType(), nullable),
+        t.StructField("charge_code", t.StringType(), not nullable),
         #
         # EIC or GLN number
-        t.StructField("charge_owner_id", t.StringType(), nullable),
+        t.StructField("charge_owner_id", t.StringType(), not nullable),
     ]
 )
