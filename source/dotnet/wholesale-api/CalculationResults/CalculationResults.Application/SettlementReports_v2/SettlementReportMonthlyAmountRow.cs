@@ -29,9 +29,9 @@ public sealed record SettlementReportMonthlyAmountRow
         QuantityUnit quantityUnit,
         Currency currency,
         decimal? amount,
-        ChargeType chargeType,
+        ChargeType? chargeType,
         string? chargeCode,
-        string chargeOwnerId)
+        string? chargeOwnerId)
     {
         GridArea = gridArea;
         EnergySupplierId = energySupplierId;
@@ -79,11 +79,11 @@ public sealed record SettlementReportMonthlyAmountRow
 
     public decimal? Amount { get; }
 
-    public ChargeType ChargeType { get; }
+    public ChargeType? ChargeType { get; }
 
     public string? ChargeCode { get; }
 
-    public string ChargeOwnerId { get; }
+    public string? ChargeOwnerId { get; }
 
     public string EnergyBusinessProcess { get; }
 
