@@ -37,11 +37,11 @@ charge_link_periods_v1 = t.StructType(
         t.StructField("from_date", t.TimestampType(), not nullable),
         #
         # UTC time
-        t.StructField("to_date", t.TimestampType(), True),
+        t.StructField("to_date", t.TimestampType(), nullable),
         #
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
         # EIC or GLN number
-        t.StructField("energy_supplier_id", t.StringType(), not nullable),
+        t.StructField("energy_supplier_id", t.StringType(), nullable),
     ]
 )
