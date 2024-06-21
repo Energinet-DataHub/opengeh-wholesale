@@ -42,7 +42,7 @@ amounts_per_charge_v1 = t.StructType(
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #
         # 'flex' | 'non_profiled'
-        t.StructField("settlement_method", t.StringType(), not nullable),
+        t.StructField("settlement_method", t.StringType(), nullable),
         #
         t.StructField("is_tax", t.BooleanType(), not nullable),
         #
