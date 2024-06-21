@@ -36,13 +36,14 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var count = await _dataSource.CountAsync(filter, _resolution).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
     public async Task WriteAsync(
+        MarketRole marketRole,
         SettlementReportRequestFilterDto filter,
         SettlementReportPartialFileInfo fileInfo,
         long maximumCalculationVersion,

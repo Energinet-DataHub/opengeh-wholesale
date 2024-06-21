@@ -33,11 +33,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<MarketRole>(), It.IsAny<SettlementReportRequestFilterDto>(), 1))
             .ReturnsAsync(1);
 
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), long.MaxValue))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<MarketRole>(), It.IsAny<SettlementReportRequestFilterDto>(), long.MaxValue))
             .ReturnsAsync(1);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -76,7 +76,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<MarketRole>(), It.IsAny<SettlementReportRequestFilterDto>(), 1))
             .ReturnsAsync(2);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
