@@ -160,7 +160,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
         var chunks = await fileGenerator
-            .CountChunksAsync(fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
+            .CountChunksAsync(fileRequest.MarketRole, fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
             .ConfigureAwait(false);
 
         for (var i = 0; i < chunks; i++)
