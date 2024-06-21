@@ -77,7 +77,12 @@ internal sealed class SettlementReportRequestTrigger
         var requestId = new SettlementReportRequestId(instanceId);
 
         await _settlementReportInitializeHandler
-            .InitializeAsync(_userContext.CurrentUser.UserId, _userContext.CurrentUser.Actor.ActorId, requestId, settlementReportRequest)
+            .InitializeAsync(
+                _userContext.CurrentUser.UserId,
+                _userContext.CurrentUser.Actor.ActorId,
+                _userContext.CurrentUser.MultiTenancy,
+                requestId,
+                settlementReportRequest)
             .ConfigureAwait(false);
 
         var response = req.CreateResponse(HttpStatusCode.OK);
