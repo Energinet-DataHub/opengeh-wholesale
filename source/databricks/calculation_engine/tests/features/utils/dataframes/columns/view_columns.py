@@ -30,7 +30,7 @@ from features.utils.dataframes.columns.column import Column
 
 class ViewColumns:
     """
-    This class contains all the columns for views in the public data model.
+    This class contains all the columns for views in the data products.
     If the column is deprecated, postfix the respective column with "_deprecated".
     """
 
