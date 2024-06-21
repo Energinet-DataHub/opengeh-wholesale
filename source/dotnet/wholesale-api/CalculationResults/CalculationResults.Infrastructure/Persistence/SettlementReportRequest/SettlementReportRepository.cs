@@ -58,7 +58,7 @@ public sealed class SettlementReportRepository : ISettlementReportRepository
     public async Task<IEnumerable<SettlementReport>> GetAsync(Guid actorId)
     {
         return await _context.SettlementReports
-            .Where(x => x.ActorId == actorId)
+            .Where(x => x.ActorId == actorId && !x.IsHiddenFromActor)
             .OrderByDescending(x => x.Id)
             .ToListAsync()
             .ConfigureAwait(false);

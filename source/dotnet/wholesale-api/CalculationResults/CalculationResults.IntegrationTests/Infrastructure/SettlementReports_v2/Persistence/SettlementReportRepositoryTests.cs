@@ -58,6 +58,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
             new SettlementReportRequestDto(false, false, false, requestFilterDto));
 
@@ -105,6 +106,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
             new SettlementReportRequestDto(false, false, false, requestFilterDto));
 
@@ -184,7 +186,31 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         Assert.Equal(expectedRequest.Id, actual[0].Id);
     }
 
-    private async Task<SettlementReport> PrepareNewRequestAsync()
+    [Fact]
+    public async Task GetAsync_HiddenReport_ReturnsRequests()
+    {
+        // Arrange
+        var expectedRequest = await PrepareNewRequestAsync();
+        await PrepareNewRequestAsync(requestFilterDto => new SettlementReport(
+            SystemClock.Instance,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            true,
+            new SettlementReportRequestId(Guid.NewGuid().ToString()),
+            new SettlementReportRequestDto(false, false, false, requestFilterDto)));
+
+        await using var context = _databaseManager.CreateDbContext();
+        var repository = new SettlementReportRepository(context);
+
+        // Act
+        var actual = (await repository.GetAsync(expectedRequest.ActorId)).ToList();
+
+        // Assert
+        Assert.Single(actual);
+        Assert.Equal(expectedRequest.Id, actual[0].Id);
+    }
+
+    private async Task<SettlementReport> PrepareNewRequestAsync(Func<SettlementReportRequestFilterDto, SettlementReport>? createReport = null)
     {
         await using var setupContext = _databaseManager.CreateDbContext();
         var setupRepository = new SettlementReportRepository(setupContext);
@@ -207,8 +233,14 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
             new SettlementReportRequestDto(false, false, false, requestFilterDto));
+
+        if (createReport != null)
+        {
+            settlementReportRequest = createReport(requestFilterDto);
+        }
 
         await setupRepository.AddOrUpdateAsync(settlementReportRequest);
         return settlementReportRequest;
