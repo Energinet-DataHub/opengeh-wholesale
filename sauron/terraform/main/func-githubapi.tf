@@ -1,5 +1,5 @@
 module "func_github_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=14.7.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=14.22.0"
 
   name                                   = "github-api"
   project_name                           = var.domain_name_short

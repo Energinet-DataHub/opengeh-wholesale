@@ -1,5 +1,5 @@
 module "apima_bff_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=14.7.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=14.22.0"
   count  = 1
 
   name                       = "sauron-bff"
@@ -16,7 +16,7 @@ module "apima_bff_api" {
 }
 
 module "apimao_get_deployments" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.7.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.22.0"
 
   count                   = 1
   operation_id            = "get-deployments"

@@ -1,5 +1,5 @@
 module "monitor_action_group_sauron" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=14.8.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=14.22.0"
 
   name                 = "default"
   project_name         = var.domain_name_short
