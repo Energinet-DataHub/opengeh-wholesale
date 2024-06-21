@@ -20,10 +20,15 @@ using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
+using NodaTime;
+using NodaTime.Extensions;
+using NodaTime.Text;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -75,12 +80,6 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
         var queryParameters = await GetWholesaleResultQueryParametersAsync(request).ConfigureAwait(false);
-        if (!queryParameters.Calculations.Any())
-        {
-            await SendNoDateRejectMessageAsync(referenceId, cancellationToken, incomingRequest, queryParameters)
-                .ConfigureAwait(false);
-            return;
-        }
 
         var calculationResults = await _wholesaleServicesQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (!calculationResults.Any())
@@ -125,7 +124,8 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
             request.EnergySupplierId,
             request.ChargeOwnerId,
             request.ChargeTypes.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
-            latestCalculationsForRequest);
+            CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
+            new Period(request.Period.Start, request.Period.End));
     }
 
     private async Task<bool> HasDataInAnotherGridAreaAsync(

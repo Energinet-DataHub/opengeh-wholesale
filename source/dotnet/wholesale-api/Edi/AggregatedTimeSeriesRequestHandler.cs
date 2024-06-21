@@ -24,6 +24,7 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -73,17 +74,8 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         }
 
         var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
-        var queryParameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(aggregatedTimeSeriesRequestMessage).ConfigureAwait(false);
-        if (!queryParameters.LatestCalculationForPeriod.Any())
-        {
-            await SendNoDateRejectMessageAsync(
-                    referenceId,
-                    cancellationToken,
-                    aggregatedTimeSeriesRequest,
-                    aggregatedTimeSeriesRequestMessage)
-                .ConfigureAwait(false);
-            return;
-        }
+        var queryParameters =
+            CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(aggregatedTimeSeriesRequestMessage);
 
         var calculationResults = await _aggregatedTimeSeriesQueries.GetAsync(
             queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -129,9 +121,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCodes = [] };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
-            var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
-
-            if (!parameters.LatestCalculationForPeriod.Any()) return false;
+            var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(newRequest);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
                     parameters)
@@ -146,23 +136,15 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         return false;
     }
 
-    private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
+    private AggregatedTimeSeriesQueryParameters CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(
         AggregatedTimeSeriesRequest request)
     {
-        var latestCalculationsForRequest = await _completedCalculationRetriever
-            .GetLatestCompletedCalculationsForPeriodAsync(
-                request.AggregationPerRoleAndGridArea.GridAreaCodes,
-                request.Period,
-                request.RequestedCalculationType)
-            .ConfigureAwait(true);
-
-        var parameters = new AggregatedTimeSeriesQueryParameters(
+        return new AggregatedTimeSeriesQueryParameters(
             request.TimeSeriesTypes.Select(CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi).ToList(),
             request.AggregationPerRoleAndGridArea.GridAreaCodes,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId,
-            latestCalculationsForRequest);
-        return parameters;
+            new Period(request.Period.Start, request.Period.End));
     }
 
     private async Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)

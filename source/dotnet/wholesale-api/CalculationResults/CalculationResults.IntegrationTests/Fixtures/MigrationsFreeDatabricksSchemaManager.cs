@@ -43,6 +43,7 @@ public class MigrationsFreeDatabricksSchemaManager
         DeltaTableOptions = Options.Create(new DeltaTableOptions
         {
             SCHEMA_NAME = $"{schemaPrefix}_view_{postfix}",
+            BasisDataSchemaName = $"{schemaPrefix}_view_{postfix}",
         });
     }
 
@@ -63,6 +64,7 @@ public class MigrationsFreeDatabricksSchemaManager
         await CreateTableAsync(DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME, WholesaleResultsTableSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME, SettlementReportMonthlyAmountViewColumns.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME, SettlementReportChargePriceViewColumns.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.CALCULATIONS_TABLE_NAME, BasisDataCalculationsTableSchemaDefinition.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()
@@ -77,6 +79,16 @@ public class MigrationsFreeDatabricksSchemaManager
         var columnsNames = string.Join(", ", fieldInfos.Select(x => x.GetValue(null)).Cast<string>());
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => val == null ? "NULL" : $"{val}"))})"));
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES {values}";
+        return ExecuteSqlAsync(sqlStatement);
+    }
+
+    public Task InsertAsync(
+        string tableName,
+        string[] columnNames,
+        IReadOnlyCollection<IReadOnlyCollection<string?>> rows)
+    {
+        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => val == null ? "NULL" : $"{val}"))})"));
+        var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} ({string.Join(", ", columnNames)}) VALUES {values}";
         return ExecuteSqlAsync(sqlStatement);
     }
 

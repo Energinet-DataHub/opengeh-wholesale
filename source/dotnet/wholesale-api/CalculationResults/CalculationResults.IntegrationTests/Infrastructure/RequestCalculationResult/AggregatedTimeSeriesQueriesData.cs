@@ -333,10 +333,10 @@ public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlS
 
         return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesTypes: timeSeriesType ?? [TimeSeriesType.Production],
-            LatestCalculationForPeriod: calculationForPeriods,
             GridAreaCodes: gridArea != null ? [gridArea] : [],
             EnergySupplierId: energySupplierId,
-            BalanceResponsibleId: balanceResponsibleId);
+            balanceResponsibleId,
+            new Period(startOfPeriod, endOfPeriod));
     }
 
     public async Task AddDataAsync()

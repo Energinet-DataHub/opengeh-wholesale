@@ -31,9 +31,11 @@ public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(Datab
 
     protected abstract string TimeColumnName { get; }
 
-    protected abstract bool RowBelongsToNewPackage(RowData current, RowData previous);
+    protected abstract bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous);
 
-    protected abstract TPackageResult CreatePackageFromRowData(RowData rowData, List<TTimeSeriesPoint> timeSeriesPoints);
+    protected abstract TPackageResult CreatePackageFromRowData(
+        DatabricksSqlRow row,
+        List<TTimeSeriesPoint> timeSeriesPoints);
 
     protected abstract TTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row);
 
@@ -43,19 +45,14 @@ public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(Datab
     /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
     ///     results that can span multiple calculations
     /// </summary>
-    protected async IAsyncEnumerable<TPackageResult> GetDataAsync(
-        DatabricksStatement sqlStatement,
-        IReadOnlyCollection<CalculationForPeriod> calculations)
+    protected async IAsyncEnumerable<TPackageResult> GetDataAsync(DatabricksStatement sqlStatement)
     {
         var timeSeriesPoints = new List<TTimeSeriesPoint>();
-        RowData? previous = null;
+        DatabricksSqlRow? previous = null;
 
         await foreach (var databricksCurrentRow in databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
         {
-            var sqlRow = new DatabricksSqlRow(databricksCurrentRow);
-            RowData current = new(
-                sqlRow,
-                GetCalculationPeriod(sqlRow, calculations));
+            var current = new DatabricksSqlRow(databricksCurrentRow);
 
             // Yield a package created from previous data, if the current row belongs to a new package
             if (previous != null && RowBelongsToNewPackage(current, previous))
@@ -64,7 +61,7 @@ public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(Datab
                 timeSeriesPoints = [];
             }
 
-            timeSeriesPoints.Add(CreateTimeSeriesPoint(current.Row));
+            timeSeriesPoints.Add(CreateTimeSeriesPoint(current));
             previous = current;
         }
 
@@ -72,15 +69,4 @@ public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(Datab
         if (previous != null)
             yield return CreatePackageFromRowData(previous, timeSeriesPoints);
     }
-
-    private CalculationForPeriod GetCalculationPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> calculations)
-    {
-        var calculationId = Guid.Parse(row[CalculationIdColumnName]!);
-        var time = SqlResultValueConverters.ToInstant(row[TimeColumnName])!.Value;
-
-        return calculations
-            .Single(x => x.CalculationId == calculationId && x.Period.Contains(time));
-    }
-
-    protected record RowData(DatabricksSqlRow Row, CalculationForPeriod CalculationPeriod);
 }
