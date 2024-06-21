@@ -27,6 +27,6 @@ public sealed record SettlementReportMonthlyAmountRow(
     QuantityUnit QuantityUnit,
     Currency Currency,
     decimal? Amount,
-    ChargeType ChargeType,
+    ChargeType? ChargeType,
     string? ChargeCode,
-    string ChargeOwnerId);
+    string? ChargeOwnerId);
