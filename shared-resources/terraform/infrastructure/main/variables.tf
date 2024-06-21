@@ -262,3 +262,9 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
+
+variable "azure_maintenance_alerts_email_address" {
+  type        = string
+  description = "(Optional) Email address to receive subscription-wide alerts about Azure planned maintenance and incidents on a subscription level"
+  default     = null
+}

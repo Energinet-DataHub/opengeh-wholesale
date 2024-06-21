@@ -38,9 +38,13 @@ runs:
         terraform_version: ${{ steps.get-terraform-version.outputs.TERRAFORM_VERSION }}
 
     - name: Terraform init
-      shell: bash
-      working-directory: ${{ inputs.working_directory }}
-      run: terraform init -backend=false
+      uses: nick-fields/retry@v3
+      with:
+        timeout_seconds: 30
+        max_attempts: 3
+        command: |
+          cd ${{ inputs.working_directory }}
+          terraform init -backend=false
 
     - name: Terraform validate
       shell: bash
