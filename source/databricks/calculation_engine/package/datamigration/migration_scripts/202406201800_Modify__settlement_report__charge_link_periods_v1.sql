@@ -16,9 +16,7 @@ SELECT c.calculation_id,
        l.from_date,
        l.to_date,
        m.grid_area_code,
-       m.energy_supplier_id
+       COALESCE(es_ga.energy_supplier_id, 'ERROR') as energy_supplier_id -- Hack to make column NOT NULL. Defaults to 'ERROR'.
 FROM {BASIS_DATA_DATABASE_NAME}.charge_link_periods AS l
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m ON m.metering_point_id = l.metering_point_id AND m.calculation_id = l.calculation_id
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = l.calculation_id
--- Make the column NOT NULL
-WHERE energy_supplier_id IS NOT NULL
