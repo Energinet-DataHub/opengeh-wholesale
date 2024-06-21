@@ -29,4 +29,4 @@ public sealed record SettlementReportMonthlyAmountRow(
     decimal? Amount,
     ChargeType? ChargeType,
     string? ChargeCode,
-    string ChargeOwnerId);
+    string? ChargeOwnerId);

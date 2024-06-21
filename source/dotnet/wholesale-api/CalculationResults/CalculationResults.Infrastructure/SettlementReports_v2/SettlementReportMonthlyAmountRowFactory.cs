@@ -47,6 +47,6 @@ public static class SettlementReportMonthlyAmountRowFactory
             SqlResultValueConverters.ToDecimal(amount),
             chargeType is null ? null : ChargeTypeMapper.FromDeltaTableValue(chargeType),
             chargeCode,
-            chargeOwnerId!);
+            chargeOwnerId);
     }
 }

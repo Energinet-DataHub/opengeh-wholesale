@@ -31,7 +31,7 @@ public sealed record SettlementReportMonthlyAmountRow
         decimal? amount,
         ChargeType? chargeType,
         string? chargeCode,
-        string chargeOwnerId)
+        string? chargeOwnerId)
     {
         GridArea = gridArea;
         EnergySupplierId = energySupplierId;
@@ -83,7 +83,7 @@ public sealed record SettlementReportMonthlyAmountRow
 
     public string? ChargeCode { get; }
 
-    public string ChargeOwnerId { get; }
+    public string? ChargeOwnerId { get; }
 
     public string EnergyBusinessProcess { get; }
 
