@@ -29,7 +29,7 @@ public sealed record SettlementReportMonthlyAmountRow
         QuantityUnit quantityUnit,
         Currency currency,
         decimal? amount,
-        ChargeType chargeType,
+        ChargeType? chargeType,
         string? chargeCode,
         string chargeOwnerId)
     {
@@ -79,7 +79,7 @@ public sealed record SettlementReportMonthlyAmountRow
 
     public decimal? Amount { get; }
 
-    public ChargeType ChargeType { get; }
+    public ChargeType? ChargeType { get; }
 
     public string? ChargeCode { get; }
 

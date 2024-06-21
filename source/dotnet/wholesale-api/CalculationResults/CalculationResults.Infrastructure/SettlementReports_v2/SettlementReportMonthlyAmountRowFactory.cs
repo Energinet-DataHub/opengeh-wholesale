@@ -45,7 +45,7 @@ public static class SettlementReportMonthlyAmountRowFactory
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
             Currency.DKK,
             SqlResultValueConverters.ToDecimal(amount),
-            ChargeTypeMapper.FromDeltaTableValue(chargeType!),
+            chargeType is null ? null : ChargeTypeMapper.FromDeltaTableValue(chargeType),
             chargeCode,
             chargeOwnerId!);
     }
