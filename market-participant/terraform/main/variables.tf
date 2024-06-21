@@ -160,3 +160,8 @@ variable "enabled_organization_identity_update_trigger" {
   default     = true
 }
 
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}

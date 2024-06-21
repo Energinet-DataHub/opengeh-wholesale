@@ -1,4 +1,3 @@
 # This file contains values that are specific to this environment.
 # For values that persist across all environments, refer to /main/subsystem.auto.tfvars
-enabled_organization_identity_update_trigger = false
-alert_email_address                          = "a500873c.energinet.onmicrosoft.com@emea.teams.ms"
+alert_email_address = "b3dcd11d.energinet.onmicrosoft.com@emea.teams.ms"
