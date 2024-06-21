@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_revision_log" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.23.0"
 
   name                 = "revision-log"
   location             = azurerm_resource_group.this.location
