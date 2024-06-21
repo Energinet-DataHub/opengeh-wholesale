@@ -1,5 +1,5 @@
 --
--- Rename energy_results.out_grid_area_code to neighbour_grid_area_code - including the constraint
+-- Rename energy_results.out_grid_area_code to neighbor_grid_area_code - including the constraint
 --
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
