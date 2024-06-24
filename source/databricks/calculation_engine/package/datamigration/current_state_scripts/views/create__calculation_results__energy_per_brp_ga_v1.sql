@@ -1,6 +1,3 @@
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_per_brp_ga_v1
-GO
-
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_brp_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
