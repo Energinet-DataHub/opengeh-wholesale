@@ -153,12 +153,6 @@ def _calculate_net_exchange(
         metering_point_time_series, args.calculation_grid_areas
     )
     if _is_aggregation_or_balance_fixing(args.calculation_type):
-        exchange_per_neighbour_ga = (
-            exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                metering_point_time_series, args.calculation_grid_areas
-            )
-        )
-
         results.net_exchange_per_neighbour_ga = factory.create(
             args,
             exchange_per_neighbour_ga,

@@ -165,7 +165,7 @@ def _calculate_negative_or_positive(
 
 
 def calculate_total_consumption(
-    net_exchange_per_ga: EnergyResults, production_per_ga: EnergyResults
+    production_per_ga: EnergyResults, net_exchange_per_ga: EnergyResults
 ) -> EnergyResults:
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
