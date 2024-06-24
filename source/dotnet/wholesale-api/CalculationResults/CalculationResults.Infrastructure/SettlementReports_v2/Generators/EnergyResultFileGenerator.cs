@@ -30,12 +30,12 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter, maximumCalculationVersion);
     }
 
-    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, maximumCalculationVersion, skipChunks, takeChunks);
     }
