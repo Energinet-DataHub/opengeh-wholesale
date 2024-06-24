@@ -1,3 +1,5 @@
+-- Make columns NOT NULL
+
 DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.amount_per_charge_v1
 GO
 

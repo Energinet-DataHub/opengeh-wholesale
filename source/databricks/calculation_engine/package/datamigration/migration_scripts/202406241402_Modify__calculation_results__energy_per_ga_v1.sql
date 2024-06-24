@@ -1,3 +1,5 @@
+-- Make columns NOT NULL
+
 DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1
 GO
 

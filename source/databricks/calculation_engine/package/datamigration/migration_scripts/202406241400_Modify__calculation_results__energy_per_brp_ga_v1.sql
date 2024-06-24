@@ -1,3 +1,5 @@
+-- Make columns NOT NULL
+
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_brp_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
