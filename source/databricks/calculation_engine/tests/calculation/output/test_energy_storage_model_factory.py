@@ -182,7 +182,7 @@ def test__create__with_correct_aggregation_level(
         (EnergyResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (EnergyResultColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
-        (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA_CODE),
+        (EnergyResultColumnNames.neighbor_grid_area_code, DEFAULT_FROM_GRID_AREA_CODE),
         (
             EnergyResultColumnNames.balance_responsible_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
@@ -390,7 +390,7 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     if field_name == Colname.grid_area_code:
         return EnergyResultColumnNames.grid_area_code
     if field_name == Colname.from_grid_area_code:
-        return EnergyResultColumnNames.from_grid_area
+        return EnergyResultColumnNames.neighbor_grid_area_code
     if field_name == Colname.balance_responsible_id:
         return EnergyResultColumnNames.balance_responsible_id
     if field_name == Colname.energy_supplier_id:

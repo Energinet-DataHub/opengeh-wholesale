@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
@@ -41,3 +44,4 @@ SELECT c.calculation_id,
        e.metering_point_id
 FROM {OUTPUT_DATABASE_NAME}.energy_results AS e
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id
+GO
