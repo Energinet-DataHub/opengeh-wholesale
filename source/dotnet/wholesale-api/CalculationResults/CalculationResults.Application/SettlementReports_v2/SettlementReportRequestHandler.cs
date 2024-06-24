@@ -70,8 +70,8 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     [
                         new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "Charge links on metering points", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
+                        // new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
+                        // new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.ChargePrice, Name = "Charge Price", SplitReportPerGridArea = true },
                     ],
                     _ => throw new InvalidOperationException($"Cannot generate basis data for calculation type {reportRequest.Filter.CalculationType}."),
@@ -160,7 +160,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
         var chunks = await fileGenerator
-            .CountChunksAsync(fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
+            .CountChunksAsync(fileRequest.MarketRole, fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
             .ConfigureAwait(false);
 
         for (var i = 0; i < chunks; i++)
