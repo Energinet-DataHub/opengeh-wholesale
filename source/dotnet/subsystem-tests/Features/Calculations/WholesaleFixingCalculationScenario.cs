@@ -137,7 +137,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
     {
-        var expected = 116; // 5 (total_ga) + 111 (es_brp_ga)
+        var expected = 116; // 5 (total_ga) + 111 (es_brp_ga) + 111 (es_ga)(copy of es_brp_ga)
 
         // Assert
         using var assertionScope = new AssertionScope();
