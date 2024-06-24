@@ -34,7 +34,7 @@ public class EnergyResultsTableSchemaDefinition
         { EnergyResultColumnNames.CalculationId, ("string", false) },
         { EnergyResultColumnNames.CalculationType, ("string", false) },
         { EnergyResultColumnNames.CalculationExecutionTimeStart, ("timestamp", false) },
-        { EnergyResultColumnNames.FromGridArea, ("string", true) },
+        { EnergyResultColumnNames.NeighborGridArea, ("string", true) },
         { EnergyResultColumnNames.CalculationResultId, ("string", false) },
         { EnergyResultColumnNames.MeteringPointId, ("string", true) },
         { EnergyResultColumnNames.Resolution, ("string", false) },

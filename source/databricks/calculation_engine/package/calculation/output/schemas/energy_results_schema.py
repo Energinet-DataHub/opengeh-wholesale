@@ -50,7 +50,9 @@ energy_results_schema = StructType(
             False,
         ),
         # The time when the energy was consumed/produced/exchanged
-        StructField(EnergyResultColumnNames.from_grid_area, StringType(), True),
+        StructField(
+            EnergyResultColumnNames.neighbor_grid_area_code, StringType(), True
+        ),
         StructField(EnergyResultColumnNames.calculation_result_id, StringType(), False),
         StructField(EnergyResultColumnNames.metering_point_id, StringType(), True),
         StructField(EnergyResultColumnNames.resolution, StringType(), True),
