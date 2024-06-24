@@ -59,6 +59,7 @@ class TestWhenInvokedWithValidArguments:
         - message <the message>
         - operation id has value
         - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem-Area" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
 
@@ -85,6 +86,7 @@ AppTraces
 | where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
+| where Properties["Subsystem-Area"] == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count

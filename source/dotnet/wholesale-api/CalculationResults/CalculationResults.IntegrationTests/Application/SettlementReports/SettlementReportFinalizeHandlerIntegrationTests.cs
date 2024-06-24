@@ -79,7 +79,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+        await dbContext.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), false, requestId, _mockedSettlementReportRequest));
         await dbContext.SaveChangesAsync();
 
         // Act
@@ -106,7 +106,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), false, requestId, _mockedSettlementReportRequest));
         await dbContextArrange.SaveChangesAsync();
 
         // Act

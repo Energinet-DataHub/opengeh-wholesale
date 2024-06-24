@@ -21,6 +21,7 @@ public interface ISettlementReportInitializeHandler
     Task InitializeAsync(
         Guid userId,
         Guid actorId,
+        bool hideReport,
         SettlementReportRequestId requestId,
         SettlementReportRequestDto request);
 }

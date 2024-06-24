@@ -14,12 +14,14 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Serialization.Protobuf;
 using ATS = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries;
 using Period = Energinet.DataHub.Edi.Responses.Period;
+using QuantityUnit = Energinet.DataHub.Edi.Responses.QuantityUnit;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
@@ -46,7 +48,7 @@ public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
         foreach (var series in aggregatedTimeSeries)
         {
             var points = CreateTimeSeriesPoints(series);
-            response.Series.Add(new Series
+            var seriesToAdd = new Series
             {
                 GridArea = series.GridArea,
                 QuantityUnit = QuantityUnit.Kwh,
@@ -59,7 +61,15 @@ public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
                     StartOfPeriod = series.PeriodStart.ToTimestamp(),
                     EndOfPeriod = series.PeriodEnd.ToTimestamp(),
                 },
-            });
+            };
+
+            var settlementVersion = GetSettlementVersion(series);
+            if (settlementVersion != null)
+            {
+                seriesToAdd.SettlementVersion = settlementVersion.Value;
+            }
+
+            response.Series.Add(seriesToAdd);
         }
 
         return response;
@@ -81,5 +91,21 @@ public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
         }
 
         return points;
+    }
+
+    private static SettlementVersion? GetSettlementVersion(ATS series)
+    {
+        return series.CalculationType switch {
+            CalculationType.FirstCorrectionSettlement => SettlementVersion.FirstCorrection,
+            CalculationType.SecondCorrectionSettlement => SettlementVersion.SecondCorrection,
+            CalculationType.ThirdCorrectionSettlement => SettlementVersion.ThirdCorrection,
+            CalculationType.Aggregation => null,
+            CalculationType.BalanceFixing => null,
+            CalculationType.WholesaleFixing => null,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(series.CalculationType),
+                actualValue: series.CalculationType,
+                "Value does not contain a valid calculation type."),
+        };
     }
 }

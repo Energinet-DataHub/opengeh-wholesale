@@ -67,7 +67,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
         AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
         AND t1.grid_area_code = t2.grid_area_code
-        AND COALESCE(t1.out_grid_area_code, 'N/A') = COALESCE(t2.out_grid_area_code, 'N/A')
+        AND COALESCE(t1.neighbor_grid_area_code, 'N/A') = COALESCE(t2.neighbor_grid_area_code, 'N/A')
         AND t1.time_series_type = t2.time_series_type
         AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.aggregation_level = t2.aggregation_level
@@ -91,7 +91,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
         AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
         AND t1.grid_area_code = t2.grid_area_code
-        AND COALESCE(t1.out_grid_area_code, 'N/A') = COALESCE(t2.out_grid_area_code, 'N/A')
+        AND COALESCE(t1.neighbor_grid_area_code, 'N/A') = COALESCE(t2.neighbor_grid_area_code, 'N/A')
         AND t1.time_series_type = t2.time_series_type
         AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.aggregation_level = t2.aggregation_level

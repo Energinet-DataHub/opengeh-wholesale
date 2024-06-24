@@ -71,6 +71,7 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
                 {
                     Resolution.Hour => "PT1H",
                     Resolution.Day => "P1D",
+                    Resolution.Month => "P1M",
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
                 });
 
@@ -103,6 +104,7 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
                 .Index(9)
                 .Convert(row => row.Value.ChargeType switch
                 {
+                    null => string.Empty,
                     ChargeType.Tariff => "D03",
                     ChargeType.Fee => "D02",
                     ChargeType.Subscription => "D01",
