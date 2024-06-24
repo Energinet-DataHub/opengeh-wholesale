@@ -99,7 +99,10 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
                 });
 
             Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR");
+                .Name("TAXINDICATOR")
+                .TypeConverter<BooleanConverter>()
+                .TypeConverterOption.BooleanValues(true, false, "1")
+                .TypeConverterOption.BooleanValues(false, false, "0");
 
             Map(r => r.StartDateTime)
                 .Name("STARTDATETIME");
