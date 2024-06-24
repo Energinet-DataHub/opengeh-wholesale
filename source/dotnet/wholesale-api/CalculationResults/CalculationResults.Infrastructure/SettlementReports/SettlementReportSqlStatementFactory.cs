@@ -54,7 +54,7 @@ LEFT JOIN {schemaName}.{tableName} t2
     ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
         AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
         AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
-        AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
+        AND COALESCE(t1.{EnergyResultColumnNames.NeighborGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.NeighborGridArea}, 'N/A')
         AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
         AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}

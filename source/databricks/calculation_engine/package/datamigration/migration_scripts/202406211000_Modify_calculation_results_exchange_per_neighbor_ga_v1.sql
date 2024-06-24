@@ -1,4 +1,7 @@
-CREATE VIEW {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neighbor_ga_v1 as
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neighbor_ga_v1
+GO
+
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neighbor_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_period_start,
@@ -12,3 +15,4 @@ SELECT calculation_id,
        quantity_qualities
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type in ('net_exchange_per_neighboring_ga')
+GO
