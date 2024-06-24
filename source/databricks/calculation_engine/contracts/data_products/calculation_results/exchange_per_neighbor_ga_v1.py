@@ -16,8 +16,6 @@ exchange_per_neighbor_ga_v1 = t.StructType(
         # UTC time
         t.StructField("calculation_period_end", t.TimestampType(), not nullable),
         #
-        t.StructField("calculation_version", t.LongType(), not nullable),
-        #
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
         t.StructField("neighbor_grid_area_code", t.StringType(), not nullable),
