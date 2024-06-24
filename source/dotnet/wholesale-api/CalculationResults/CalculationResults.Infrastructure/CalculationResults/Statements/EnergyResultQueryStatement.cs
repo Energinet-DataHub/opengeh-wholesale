@@ -43,7 +43,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
     {
         EnergyResultColumnNames.CalculationId,
         EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.NeighborGridArea,
         EnergyResultColumnNames.TimeSeriesType,
         EnergyResultColumnNames.EnergySupplierId,
         EnergyResultColumnNames.BalanceResponsibleId,

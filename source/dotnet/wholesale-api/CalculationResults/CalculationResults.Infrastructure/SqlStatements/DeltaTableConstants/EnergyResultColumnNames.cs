@@ -31,7 +31,7 @@ public class EnergyResultColumnNames
     public const string QuantityQualities = "quantity_qualities";
     public const string AggregationLevel = "aggregation_level";
     public const string TimeSeriesType = "time_series_type";
-    public const string FromGridArea = "neighbor_grid_area_code";
+    public const string NeighborGridArea = "neighbor_grid_area_code";
     public const string MeteringPointId = "metering_point_id";
     public const string Resolution = "resolution";
 
@@ -55,7 +55,7 @@ public class EnergyResultColumnNames
              CalculationId => "string",
              CalculationType => "string",
              CalculationExecutionTimeStart => "timestamp",
-             FromGridArea => "string",
+             NeighborGridArea => "string",
              Quantity => "decimal(18,3)",
              MeteringPointId => "string",
              Resolution => "string",
