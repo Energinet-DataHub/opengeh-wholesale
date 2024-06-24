@@ -108,6 +108,40 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
         Assert.Equal(1, actual);
     }
 
+    [Theory]
+    [InlineData("f8af5e30-3c65-439e-8fd0-1da0c40a26d3", "2024-01-01T00:00:00.000+00:00", "2024-01-04T00:00:00.000+00:00", 1)]
+    [InlineData("f8af5e30-3c65-439e-8fd0-2da0c40a26d3", "2024-01-01T00:00:00.000+00:00", "2024-02-04T00:00:00.000+00:00", 2)]
+    [InlineData("f8af5e30-3c65-439e-8fd0-3da0c40a26d3", "2024-01-01T00:00:00.000+00:00", "2024-03-04T00:00:00.000+00:00", 3)]
+    public async Task Get_OverlappingDateWithFilter_ReturnsExpectedRows(string calcId, string startDate, string endDate, int returnCount)
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
+            [
+                [$"'{calcId}'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                [$"'{calcId}'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'consumption'", "'tariff'", "'40000'", "'6392825108999'", "46", "'2024-02-02T03:00:00.000+00:00'", "'2024-02-28T03:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                [$"'{calcId}'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ed'", "'consumption'", "'tariff'", "'40000'", "'6392825108910'", "46", "'2024-03-02T04:00:00.000+00:00'", "'2024-03-31T04:00:00.000+00:00'", "'404'", "'8397670583196'"],
+            ]);
+
+        var results = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>()
+                {
+                    {
+                        "404", new CalculationId(Guid.Parse(calcId))
+                    },
+                },
+                DateTimeOffset.Parse(startDate),
+                DateTimeOffset.Parse(endDate),
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            skip: 0,
+            take: int.MaxValue).ToListAsync();
+
+        Assert.Equal(returnCount, results.Count);
+        Assert.Equal(4, results[0].PeriodStart.ToDateTimeOffset().Hour);
+    }
+
     [Fact]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
