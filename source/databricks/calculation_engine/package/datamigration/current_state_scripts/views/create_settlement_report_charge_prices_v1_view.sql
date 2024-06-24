@@ -1,13 +1,13 @@
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1 as
 SELECT
   c.calculation_id,
-  COALESCE(FIRST_VALUE(c.calculation_type), 'ERROR')) as calculation_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-  COALESCE(FIRST_VALUE(c.version, -1)) as calculation_version, -- Hack to make column NOT NULL. Defaults to -1'.
-  COALESCE(FIRST_VALUE(cm.charge_type, 'ERROR')) as charge_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-  COALESCE(FIRST_VALUE(cm.charge_code, 'ERROR')) as charge_code, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-  COALESCE(FIRST_VALUE(cm.charge_owner_id, 'ERROR')) as charge_owner_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-  COALESCE(FIRST_VALUE(cm.resolution, 'ERROR')) as resolution, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-  COALESCE(FIRST_VALUE(cm.is_tax, false)) as is_tax, -- Hack to make column NOT NULL. Defaults to false.
+  COALESCE(FIRST_VALUE(c.calculation_type), 'ERROR') as calculation_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(c.version), -1) as calculation_version, -- Hack to make column NOT NULL. Defaults to -1'.
+  COALESCE(FIRST_VALUE(cm.charge_type), 'ERROR') as charge_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.charge_code), 'ERROR') as charge_code, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.charge_owner_id), 'ERROR') as charge_owner_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.resolution), 'ERROR') as resolution, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.is_tax), false) as is_tax, -- Hack to make column NOT NULL. Defaults to false.
   COALESCE(TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen')),'Europe/Copenhagen'), TIMESTAMP '1970-01-01 00:00:00') AS start_date_time, -- Hack to make
   -- column NOT NULL. Defaults to false.
   ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time AS time, cp.charge_price AS price))) AS price_points,
