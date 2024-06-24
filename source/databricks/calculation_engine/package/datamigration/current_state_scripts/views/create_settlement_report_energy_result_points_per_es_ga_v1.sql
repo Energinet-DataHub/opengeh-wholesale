@@ -9,7 +9,7 @@ SELECT calculation_id,
        COALESCE(resolution, 'ERROR') as resolution, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
        time,
        quantity,
-       COALESCE(energy_supplier_id, 'ERROR') as energy_supplier_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+       COALESCE(energy_supplier_id, 'ERROR') as energy_supplier_id -- Hack to make column NOT NULL. Defaults to 'ERROR'.
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption')
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
