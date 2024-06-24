@@ -1,5 +1,3 @@
--- Make columns NOT NULL
-
 DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1
 GO
 
