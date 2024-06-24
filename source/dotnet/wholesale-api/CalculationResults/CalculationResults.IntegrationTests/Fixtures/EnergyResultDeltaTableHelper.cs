@@ -43,7 +43,7 @@ public static class EnergyResultDeltaTableHelper
             EnergyResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
             EnergyResultColumnNames.TimeSeriesType => $@"'{timeSeriesType}'",
             EnergyResultColumnNames.GridArea => $@"'{gridArea}'",
-            EnergyResultColumnNames.FromGridArea => fromGridArea == null ? "NULL" : $@"'{fromGridArea}'",
+            EnergyResultColumnNames.NeighborGridArea => fromGridArea == null ? "NULL" : $@"'{fromGridArea}'",
             EnergyResultColumnNames.BalanceResponsibleId => $@"'{balanceResponsibleId}'",
             EnergyResultColumnNames.EnergySupplierId => $@"'{energySupplierId}'",
             EnergyResultColumnNames.Time => $@"'{time}'",

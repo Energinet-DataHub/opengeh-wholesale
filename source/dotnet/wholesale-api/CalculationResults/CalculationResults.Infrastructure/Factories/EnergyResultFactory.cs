@@ -35,7 +35,7 @@ public class EnergyResultFactory
         var energySupplierId = databricksSqlRow[EnergyResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = databricksSqlRow[EnergyResultColumnNames.BalanceResponsibleId];
         var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
-        var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
+        var fromGridArea = databricksSqlRow[EnergyResultColumnNames.NeighborGridArea];
         var meteringPointId = databricksSqlRow[EnergyResultColumnNames.MeteringPointId];
         var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[EnergyResultColumnNames.Resolution]!);
         var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
