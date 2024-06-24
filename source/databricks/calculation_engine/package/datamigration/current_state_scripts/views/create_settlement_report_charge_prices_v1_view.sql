@@ -9,7 +9,7 @@ SELECT
   COALESCE(FIRST_VALUE(cm.resolution), 'ERROR') as resolution, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
   COALESCE(FIRST_VALUE(cm.is_tax), false) as is_tax, -- Hack to make column NOT NULL. Defaults to false.
   COALESCE(TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen')),'Europe/Copenhagen'), TIMESTAMP '1970-01-01 00:00:00') AS start_date_time, -- Hack to make
-  -- column NOT NULL. Defaults to false.
+  -- column NOT NULL. Defaults to '1970-01-01 00:00:00'.
   ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time AS time, cp.charge_price AS price))) AS price_points,
   es_ga.grid_area_code,
   es_ga.energy_supplier_id
