@@ -23,5 +23,5 @@ public enum FrontendActorMarketRole
     GridAccessProvider,
     EnergySupplier,
     SystemOperator,
-    SystemAdministrator,
+    DataHubAdministrator,
 }
