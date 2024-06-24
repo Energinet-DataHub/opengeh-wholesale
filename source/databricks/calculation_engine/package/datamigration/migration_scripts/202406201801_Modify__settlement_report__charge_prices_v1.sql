@@ -6,14 +6,15 @@ GO
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1 as
 SELECT
   c.calculation_id,
-  FIRST_VALUE(c.calculation_type) as calculation_type,
-  FIRST_VALUE(c.version) as calculation_version,
-  FIRST_VALUE(cm.charge_type) as charge_type,
-  FIRST_VALUE(cm.charge_code) as charge_code,
-  FIRST_VALUE(cm.charge_owner_id) as charge_owner_id,
-  FIRST_VALUE(cm.resolution) as resolution,
-  FIRST_VALUE(cm.is_tax) as is_tax,
-  TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen')),'Europe/Copenhagen') AS start_date_time,
+  COALESCE(FIRST_VALUE(c.calculation_type), 'ERROR') as calculation_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(c.version, -1)) as calculation_version, -- Hack to make column NOT NULL. Defaults to -1'.
+  COALESCE(FIRST_VALUE(cm.charge_type, 'ERROR')) as charge_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.charge_code, 'ERROR')) as charge_code, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.charge_owner_id, 'ERROR')) as charge_owner_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.resolution, 'ERROR')) as resolution, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+  COALESCE(FIRST_VALUE(cm.is_tax, false)) as is_tax, -- Hack to make column NOT NULL. Defaults to false.
+  COALESCE(TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen')),'Europe/Copenhagen'), TIMESTAMP '1970-01-01 00:00:00')) AS start_date_time, -- Hack to make
+  -- column NOT NULL. Defaults to false.
   ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time AS time, cp.charge_price AS price))) AS price_points,
   es_ga.grid_area_code,
   es_ga.energy_supplier_id
@@ -25,13 +26,3 @@ INNER JOIN (
 ) AS es_ga ON cm.calculation_id = es_ga.calculation_id AND cm.charge_key = es_ga.charge_key
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON cm.calculation_id = c.calculation_id
 GROUP BY c.calculation_id, cm.charge_key, es_ga.grid_area_code, es_ga.energy_supplier_id, DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen'))
--- Make the columns NOT NULL
-HAVING calculation_type IS NOT NULL
-    AND calculation_version IS NOT NULL
-    AND charge_type IS NOT NULL
-    AND charge_code IS NOT NULL
-    AND charge_owner_id IS NOT NULL
-    AND resolution IS NOT NULL
-    AND is_tax IS NOT NULL
-    AND start_date_time IS NOT NULL
-    AND energy_supplier_id IS NOT NULL

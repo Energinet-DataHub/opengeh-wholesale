@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
        COALESCE(FIRST(c.calculation_type), 'ERROR') as calculation_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
