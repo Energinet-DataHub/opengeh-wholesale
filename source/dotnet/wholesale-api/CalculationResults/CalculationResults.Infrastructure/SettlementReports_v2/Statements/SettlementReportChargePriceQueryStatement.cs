@@ -50,6 +50,7 @@ public sealed class SettlementReportChargePriceQueryStatement : DatabricksStatem
                          {SettlementReportChargePriceViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                          {SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
                          {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                         {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargePriceViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")}
                          {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
                      ORDER BY 
                          {SettlementReportChargePriceViewColumns.StartTime} LIMIT {_take} OFFSET {_skip}
@@ -74,6 +75,7 @@ public sealed class SettlementReportChargePriceQueryStatement : DatabricksStatem
                         {SettlementReportChargePriceViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         cp.{SettlementReportChargePriceViewColumns.StartTime} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargePriceViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                        {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargePriceViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")}
                         {SettlementReportChargePriceViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}'
              """;
     }

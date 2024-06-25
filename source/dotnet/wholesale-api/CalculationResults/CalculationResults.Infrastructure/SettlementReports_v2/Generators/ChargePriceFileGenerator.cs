@@ -44,9 +44,15 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
 
     protected override void WriteHeader(CsvWriter csvHelper)
     {
-        csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-
         const int energyPriceFieldCount = 25;
+
+        csvHelper.WriteField($"CHARGETYPE");
+        csvHelper.WriteField($"CHARGETYPEID");
+        csvHelper.WriteField($"CHARGETYPEOWNER");
+        csvHelper.WriteField($"RESOLUTIONDURATION");
+        csvHelper.WriteField($"TAXINDICATOR");
+        csvHelper.WriteField($"STARTDATETIME");
+
         for (var i = 0; i < energyPriceFieldCount; ++i)
         {
             csvHelper.WriteField($"ENERGYPRICE{i + 1}");
@@ -93,13 +99,15 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
                 });
 
             Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR");
+                .Name("TAXINDICATOR")
+                .TypeConverter<BooleanConverter>()
+                .TypeConverterOption.BooleanValues(true, false, "1")
+                .TypeConverterOption.BooleanValues(false, false, "0");
 
             Map(r => r.StartDateTime)
                 .Name("STARTDATETIME");
 
             Map(r => r.EnergyPrices)
-                .Name("ENERGYPRICE1")
                 .TypeConverter<IEnumerableConverter>();
         }
     }
