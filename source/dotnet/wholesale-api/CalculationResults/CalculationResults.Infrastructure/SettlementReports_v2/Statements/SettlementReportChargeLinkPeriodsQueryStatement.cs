@@ -71,8 +71,8 @@ public sealed class SettlementReportChargeLinkPeriodsQueryStatement : Databricks
                 WHERE 
                         {SettlementReportChargeLinkPeriodsViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportChargeLinkPeriodsViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportChargeLinkPeriodsViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
+                        ({SettlementReportChargeLinkPeriodsViewColumns.FromDate} <= '{_filter.PeriodEnd}' AND
+                        {SettlementReportChargeLinkPeriodsViewColumns.ToDate} >= '{_filter.PeriodStart}') AND
                         {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargeLinkPeriodsViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")}
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
              """;
