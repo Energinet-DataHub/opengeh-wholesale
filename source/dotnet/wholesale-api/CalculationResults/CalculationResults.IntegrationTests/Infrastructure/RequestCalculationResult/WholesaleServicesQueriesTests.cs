@@ -704,7 +704,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
-    public async Task GetAsync_WhenRequestingChargeOwner_ReturnsCorrectData()
+    public async Task GetAsync_WhenRequestingChargeOwnerIsEmpty_ReturnsNoData()
     {
         // Arrange
         var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
