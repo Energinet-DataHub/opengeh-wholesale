@@ -57,15 +57,18 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
 
             Map(r => r.GridAreaId)
                 .Name("GRIDAREAID")
-                .Index(3);
+                .Index(3)
+                .Convert(row => row.Value.GridAreaId.PadLeft(3, '0'));
 
             Map(r => r.GridAreaToId)
                 .Name("TOGRIDAREAID")
-                .Index(4);
+                .Index(4)
+                .Convert(row => row.Value.GridAreaToId?.PadLeft(3, '0'));
 
             Map(r => r.GridAreaFromId)
                 .Name("FROMGRIDAREAID")
-                .Index(5);
+                .Index(5)
+                .Convert(row => row.Value.GridAreaFromId?.PadLeft(3, '0'));
 
             Map(r => r.MeteringPointType)
                 .Name("TYPEOFMP")
