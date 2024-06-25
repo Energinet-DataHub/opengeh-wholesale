@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -40,14 +41,19 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
         return _dataSource.GetAsync(filter, maximumCalculationVersion, skipChunks, takeChunks);
     }
 
+    protected override void RegisterClassMap(CsvWriter csvHelper, MarketRole marketRole)
+    {
+        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(marketRole));
+    }
+
     public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportEnergyResultRowMap()
+        public SettlementReportEnergyResultRowMap(MarketRole marketRole)
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
                 .Index(0)
-                .Convert(row => row.Value.GridAreaCode);
+                .Convert(row => row.Value.GridAreaCode.PadLeft(3, '0'));
 
             Map(r => r.EnergyBusinessProcess)
                 .Name("ENERGYBUSINESSPROCESS")
@@ -106,6 +112,13 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
                 .Name("ENERGYQUANTITY")
                 .Index(6)
                 .Data.TypeConverterOptions.Formats = ["0.000"];
+
+            if (marketRole == MarketRole.DataHubAdministrator)
+            {
+                Map(r => r.EnergySupplierId)
+                    .Name("ENERGYSUPPLIERID")
+                    .Index(7);
+            }
         }
     }
 }
