@@ -703,6 +703,34 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         calculationResult.TimeSeriesPoints.Should().HaveCount(pointsTime.Count);
     }
 
+    [Fact]
+    public async Task GetAsync_WhenRequestingChargeOwner_ReturnsCorrectData()
+    {
+        // Arrange
+        var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
+        var amountType = AmountType.MonthlyAmountPerCharge;
+
+        var package = new WholesaleServicesPackage(
+            CalculationPeriod: calculationPeriod,
+            Points:
+            [
+                Instant.FromUtc(2024, 1, 1, 0, 0),
+                Instant.FromUtc(2024, 1, 25, 0, 0),
+            ],
+            amountType);
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
+        await InsertData(rows);
+
+        var query = CreateQueryParameters([calculationPeriod], amountType, chargeOwnerId: string.Empty);
+
+        // Act
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        // Assert
+        actual.Should().BeEmpty();
+    }
+
     private WholesaleServicesPackage CreatePackageForFilter(
         CalculationForPeriod calculationPeriod,
         AmountType amountType = AmountType.AmountPerCharge,
