@@ -20,4 +20,5 @@ public enum MarketRole
     GridAccessProvider,
     EnergySupplier,
     SystemOperator,
+    DataHubAdministrator,
 }

@@ -63,7 +63,7 @@ def start_with_deps(
     config.configure_logging(
         cloud_role_name=cloud_role_name,
         applicationinsights_connection_string=applicationinsights_connection_string,
-        extras={"Subsystem": "wholesale"},
+        extras={"Subsystem": "wholesale", "Subsystem-Area": "wholesale-aggregations"},
     )
 
     with config.get_tracer().start_as_current_span(
