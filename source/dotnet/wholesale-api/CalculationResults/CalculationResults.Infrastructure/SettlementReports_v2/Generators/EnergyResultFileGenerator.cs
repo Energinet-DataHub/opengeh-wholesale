@@ -53,7 +53,7 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
                 .Index(0)
-                .Convert(row => row.Value.GridAreaCode);
+                .Convert(row => row.Value.GridAreaCode.PadLeft(3, '0'));
 
             Map(r => r.EnergyBusinessProcess)
                 .Name("ENERGYBUSINESSPROCESS")

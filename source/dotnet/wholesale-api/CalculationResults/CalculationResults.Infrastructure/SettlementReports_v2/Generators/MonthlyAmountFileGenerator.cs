@@ -54,7 +54,8 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
 
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID")
-                .Index(2);
+                .Index(2)
+                .Convert(row => row.Value.GridArea?.PadLeft(3, '0'));
 
             Map(r => r.EnergySupplierId)
                 .Name("ENERGYSUPPLIERID")
