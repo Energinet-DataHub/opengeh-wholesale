@@ -21,7 +21,7 @@ from pyspark.sql.types import Row
 
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
-    aggregate_net_exchange_per_neighbour_ga,
+    aggregate_net_exchange_per_neighbor_ga,
 )
 from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
@@ -94,10 +94,10 @@ def _create_row(
 @pytest.fixture(scope="module")
 def aggregated_data_frame(metering_point_time_series):
     """Perform aggregation"""
-    exchange_per_neighbour_ga = aggregate_net_exchange_per_neighbour_ga(
+    exchange_per_neighbor_ga = aggregate_net_exchange_per_neighbor_ga(
         metering_point_time_series, ALL_GRID_AREAS
     )
-    return aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
+    return aggregate_net_exchange_per_ga(exchange_per_neighbor_ga)
 
 
 def test_test_data_has_correct_row_count(metering_point_time_series):
