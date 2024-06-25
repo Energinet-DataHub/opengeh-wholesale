@@ -67,6 +67,7 @@ internal sealed class SettlementReportRequestTrigger
             FrontendActorMarketRole.GridAccessProvider => MarketRole.GridAccessProvider,
             FrontendActorMarketRole.EnergySupplier => MarketRole.EnergySupplier,
             FrontendActorMarketRole.SystemOperator => MarketRole.SystemOperator,
+            FrontendActorMarketRole.DataHubAdministrator => MarketRole.DataHubAdministrator,
             _ => throw new ArgumentOutOfRangeException(nameof(_userContext.CurrentUser.Actor.MarketRole)),
         };
 
