@@ -56,8 +56,9 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
         await using var wr = new StreamWriter(ms);
 
         await sut.WriteAsync(
+            MarketRole.SystemOperator,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "404", new CalculationId(Guid.NewGuid())
@@ -69,6 +70,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
                 null,
                 "da-DK"),
             new SettlementReportPartialFileInfo("test", false),
+            1,
             wr);
 
         // assert

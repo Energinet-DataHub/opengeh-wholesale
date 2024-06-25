@@ -102,7 +102,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(EnergyResultColumnNames.calculation_type),
         f.col(EnergyResultColumnNames.calculation_execution_time_start),
         f.col(Colname.from_grid_area_code).alias(
-            EnergyResultColumnNames.from_grid_area
+            EnergyResultColumnNames.neighbor_grid_area_code
         ),
         f.col(EnergyResultColumnNames.calculation_result_id),
         f.col(EnergyResultColumnNames.metering_point_id),

@@ -40,7 +40,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         await using var writeContext = _databaseManager.CreateDbContext();
         var target = new SettlementReportRepository(writeContext);
 
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
             { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
@@ -58,8 +58,9 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, requestFilterDto));
+            new SettlementReportRequestDto(false, false, false, requestFilterDto));
 
         // act
         await target.AddOrUpdateAsync(settlementReportRequest);
@@ -87,7 +88,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     public async Task DeleteAsync_GivenRequest_RequestIsDeleted()
     {
         // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
             { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
@@ -105,8 +106,9 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, requestFilterDto));
+            new SettlementReportRequestDto(false, false, false, requestFilterDto));
 
         await using var writeContext = _databaseManager.CreateDbContext();
         var arrangeRepository = new SettlementReportRepository(writeContext);
@@ -184,12 +186,36 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         Assert.Equal(expectedRequest.Id, actual[0].Id);
     }
 
-    private async Task<SettlementReport> PrepareNewRequestAsync()
+    [Fact]
+    public async Task GetAsync_HiddenReport_ReturnsRequests()
+    {
+        // Arrange
+        var expectedRequest = await PrepareNewRequestAsync();
+        await PrepareNewRequestAsync(requestFilterDto => new SettlementReport(
+            SystemClock.Instance,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            true,
+            new SettlementReportRequestId(Guid.NewGuid().ToString()),
+            new SettlementReportRequestDto(false, false, false, requestFilterDto)));
+
+        await using var context = _databaseManager.CreateDbContext();
+        var repository = new SettlementReportRepository(context);
+
+        // Act
+        var actual = (await repository.GetAsync(expectedRequest.ActorId)).ToList();
+
+        // Assert
+        Assert.Single(actual);
+        Assert.Equal(expectedRequest.Id, actual[0].Id);
+    }
+
+    private async Task<SettlementReport> PrepareNewRequestAsync(Func<SettlementReportRequestFilterDto, SettlementReport>? createReport = null)
     {
         await using var setupContext = _databaseManager.CreateDbContext();
         var setupRepository = new SettlementReportRepository(setupContext);
 
-        var calculationFilter = new Dictionary<string, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId?>
         {
             { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
             { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
@@ -207,8 +233,14 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, requestFilterDto));
+            new SettlementReportRequestDto(false, false, false, requestFilterDto));
+
+        if (createReport != null)
+        {
+            settlementReportRequest = createReport(requestFilterDto);
+        }
 
         await setupRepository.AddOrUpdateAsync(settlementReportRequest);
         return settlementReportRequest;

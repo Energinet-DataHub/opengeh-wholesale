@@ -94,8 +94,9 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
@@ -163,8 +164,9 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
@@ -245,8 +247,9 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
@@ -322,11 +325,12 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
         var actorNumberClaim = new Claim("actornumber", "0000000000000");
         var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
+        var multiTenancyClaim = new Claim("multitenancy", "true");
 
         var internalToken = new JwtSecurityToken(
             issuer,
             audience,
-            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
+            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim, multiTenancyClaim],
             validFrom,
             validTo,
             new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));

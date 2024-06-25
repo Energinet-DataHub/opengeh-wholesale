@@ -69,7 +69,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         // act
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "404", new CalculationId(Guid.Parse("c50f82a9-8d90-4b44-9387-a51cc059a17a"))
@@ -101,7 +101,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         // act
         var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "405", new CalculationId(Guid.Parse("c50f82a9-8d90-4b44-9387-a51cc059a17a"))
@@ -147,7 +147,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         // act
         var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "406", new CalculationId(Guid.Parse("c50f82a9-8d90-4b44-9387-a51cc059a17a"))
@@ -192,7 +192,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         // act
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "407", new CalculationId(Guid.Parse("c50f82a9-8d90-4b44-9387-a51cc059a17a"))

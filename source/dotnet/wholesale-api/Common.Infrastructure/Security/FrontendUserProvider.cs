@@ -29,7 +29,8 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
         bool multiTenancy,
         IEnumerable<Claim> claims)
     {
-        var frontendActor = new FrontendActor(actorId, GetActorNumber(claims), GetMarketRole(claims));
+        var enumeratedClaims = claims.ToList();
+        var frontendActor = new FrontendActor(actorId, GetActorNumber(enumeratedClaims), GetMarketRole(enumeratedClaims));
         var frontendUser = new FrontendUser(userId, multiTenancy, frontendActor);
 
         return Task.FromResult<FrontendUser?>(frontendUser);
@@ -45,6 +46,9 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
         return claims.Single(claim => claim.Type == MarketRolesClaim).Value switch
         {
             "GridAccessProvider" => FrontendActorMarketRole.GridAccessProvider,
+            "EnergySupplier" => FrontendActorMarketRole.EnergySupplier,
+            "SystemOperator" => FrontendActorMarketRole.SystemOperator,
+            "DataHubAdministrator" => FrontendActorMarketRole.DataHubAdministrator,
             _ => FrontendActorMarketRole.Other,
         };
     }

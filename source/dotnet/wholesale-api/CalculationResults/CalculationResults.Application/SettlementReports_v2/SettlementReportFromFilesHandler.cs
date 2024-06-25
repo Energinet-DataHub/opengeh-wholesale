@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFilesHandler
 {
-    private const int LargeTextFileThreshold = 97;
+    private const int LargeTextFileThreshold = 1_000_000;
     private readonly ISettlementReportFileRepository _fileRepository;
 
     public SettlementReportFromFilesHandler(ISettlementReportFileRepository fileRepository)

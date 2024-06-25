@@ -1,4 +1,4 @@
--- These migrations constitutes a rename from EDI specific to general public data model naming
+-- These migrations constitutes a rename from EDI specific to general data product naming
 -- The recreation of the renamed views are located in the following migration script files
 
 DROP VIEW IF EXISTS wholesale_edi_results.energy_result_points_per_ga_v1

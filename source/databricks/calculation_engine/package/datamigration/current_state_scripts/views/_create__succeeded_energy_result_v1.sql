@@ -9,7 +9,7 @@ SELECT c.calculation_id,
 
        e.calculation_result_id AS result_id,
        e.grid_area_code,
-       e.out_grid_area_code,
+       e.neighbor_grid_area_code,
        e.energy_supplier_id,
        e.balance_responsible_id AS balance_responsible_party_id,
        e.quantity,

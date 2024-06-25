@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -66,7 +67,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
@@ -93,7 +94,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "403", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
@@ -106,6 +107,44 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                 "da-DK"));
 
         Assert.Equal(1, actual);
+    }
+
+    [Theory]
+    [InlineData("f8af5e30-3c65-439e-8fd0-1da0c40a26d3", "2024-01-01T00:00:00.000+00:00", "2024-01-04T00:00:00.000+00:00", 1, new[] { "15cba911-b91e-4786-bed4-f0d28418a9eb" })]
+    [InlineData("f8af5e30-3c65-439e-8fd0-2da0c40a26d3", "2024-01-01T00:00:00.000+00:00", "2024-02-04T00:00:00.000+00:00", 2, new[] { "15cba911-b91e-4786-bed4-f0d28418a9eb", "16cba911-b91e-4786-bed4-f0d28418a9ec" })]
+    [InlineData("f8af5e30-3c65-439e-8fd0-3da0c40a26d3", "2024-01-01T00:00:00.000+00:00", "2024-03-04T00:00:00.000+00:00", 3, new[] { "15cba911-b91e-4786-bed4-f0d28418a9eb", "16cba911-b91e-4786-bed4-f0d28418a9ec", "17cba911-b91e-4786-bed4-f0d28418a9ed" })]
+    [InlineData("f8af5e30-3c65-439e-8fd0-4da0c40a26d3", "2024-02-01T00:00:00.000+00:00", "2024-02-14T00:00:00.000+00:00", 1, new[] { "16cba911-b91e-4786-bed4-f0d28418a9ec" })]
+    [InlineData("f8af5e30-3c65-439e-8fd0-5da0c40a26d3", "2024-02-05T00:00:00.000+00:00", "2024-02-14T00:00:00.000+00:00", 1, new[] { "16cba911-b91e-4786-bed4-f0d28418a9ec" })]
+    [InlineData("f8af5e30-3c65-439e-8fd0-6da0c40a26d3", "2024-02-05T00:00:00.000+00:00", "2024-03-01T00:00:00.000+00:00", 1, new[] { "16cba911-b91e-4786-bed4-f0d28418a9ec" })]
+    [InlineData("f8af5e30-3c65-439e-8fd0-7da0c40a26d3", "2024-02-05T00:00:00.000+00:00", "2024-03-16T00:00:00.000+00:00", 2, new[] { "16cba911-b91e-4786-bed4-f0d28418a9ec", "17cba911-b91e-4786-bed4-f0d28418a9ed" })]
+    public async Task Get_OverlappingDateWithFilter_ReturnsExpectedRows(string calcId, string startDate, string endDate, int returnCount, string[] expectedMeteringPointIds)
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
+            [
+                [$"'{calcId}'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                [$"'{calcId}'", "'wholesale_fixing'", "'16cba911-b91e-4786-bed4-f0d28418a9ec'", "'consumption'", "'tariff'", "'40000'", "'6392825108999'", "46", "'2024-02-02T03:00:00.000+00:00'", "'2024-02-28T03:00:00.000+00:00'", "'404'", "'8397670583196'"],
+                [$"'{calcId}'", "'wholesale_fixing'", "'17cba911-b91e-4786-bed4-f0d28418a9ed'", "'consumption'", "'tariff'", "'40000'", "'6392825108910'", "46", "'2024-03-02T04:00:00.000+00:00'", "'2024-03-31T04:00:00.000+00:00'", "'404'", "'8397670583196'"],
+            ]);
+
+        var results = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>()
+                {
+                    {
+                        "404", new CalculationId(Guid.Parse(calcId))
+                    },
+                },
+                DateTimeOffset.Parse(startDate),
+                DateTimeOffset.Parse(endDate),
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            skip: 0,
+            take: int.MaxValue).ToListAsync();
+
+        Assert.Equal(returnCount, results.Count);
+        expectedMeteringPointIds.Should().Equal(results.Select(x => x.MeteringPointId).ToList());
     }
 
     [Fact]
@@ -121,7 +160,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
 
         var results = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>()
+                new Dictionary<string, CalculationId?>()
                 {
                     {
                         "404", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))

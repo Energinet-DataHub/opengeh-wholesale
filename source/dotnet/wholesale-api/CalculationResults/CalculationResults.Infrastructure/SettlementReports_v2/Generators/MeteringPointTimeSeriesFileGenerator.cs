@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 1000;
+    private const int ChunkSize = 250;
 
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _dataSource;
     private readonly Resolution _resolution;
@@ -36,13 +36,18 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    public async Task<int> CountChunksAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var count = await _dataSource.CountAsync(filter, _resolution).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
+    public async Task WriteAsync(
+        MarketRole marketRole,
+        SettlementReportRequestFilterDto filter,
+        SettlementReportPartialFileInfo fileInfo,
+        long maximumCalculationVersion,
+        StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         var expectedQuantities = _resolution switch

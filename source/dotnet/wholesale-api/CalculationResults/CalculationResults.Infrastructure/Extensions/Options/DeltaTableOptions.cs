@@ -46,6 +46,8 @@ public class DeltaTableOptions
     /// </summary>
     public string TOTAL_MONTHLY_AMOUNTS_TABLE_NAME { get; set; } = "total_monthly_amounts";
 
+    public string CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME { get; set; } = "current_balance_fixing_calculation_version_v1";
+
     public string WHOLESALE_RESULTS_V1_VIEW_NAME { get; set; } = "wholesale_results_v1";
 
     public string ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_per_ga_v1";
@@ -59,6 +61,8 @@ public class DeltaTableOptions
     public string CHARGE_LINK_PERIODS_V1_VIEW_NAME { get; set; } = "charge_link_periods_v1";
 
     public string METERING_POINT_MASTER_DATA_V1_VIEW_NAME { get; set; } = "metering_point_periods_v1";
+
+    public string MONTHLY_AMOUNTS_V1_VIEW_NAME { get; set; } = "monthly_amounts_v1";
 
     public string CHARGE_PRICES_V1_VIEW_NAME { get; set; } = "charge_prices_v1";
 }

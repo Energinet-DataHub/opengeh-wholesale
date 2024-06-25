@@ -66,7 +66,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -76,7 +76,8 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                "da-DK"));
+                "da-DK"),
+            1);
 
         Assert.Equal(1, actual);
     }
@@ -92,7 +93,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -102,9 +103,37 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
-                "da-DK"));
+                "da-DK"),
+            1);
 
         Assert.Equal(1, actual);
+    }
+
+    [Fact]
+    public async Task LatestCount_FilterOutOfRange_ReturnsCount()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'balance_fixing'", "'5'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+            ]);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"),
+            1);
+
+        Assert.Equal(0, actual);
     }
 
     [Fact]
@@ -118,7 +147,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -128,7 +157,8 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 "8236015961810",
-                "da-DK"));
+                "da-DK"),
+            1);
 
         Assert.Equal(1, actual);
     }
@@ -144,7 +174,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -154,9 +184,37 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 "8236015961810",
-                "da-DK"));
+                "da-DK"),
+            1);
 
         Assert.Equal(1, actual);
+    }
+
+    [Fact]
+    public async Task LatestCountPerEnergySupplier_FilterOutOfRange_ReturnsCount()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'balance_fixing'", "'5'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "'8236015961810'"],
+            ]);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "018", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8236015961810",
+                "da-DK"),
+            1);
+
+        Assert.Equal(0, actual);
     }
 
     [Fact]
@@ -173,7 +231,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -184,6 +242,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            1,
             skip: 3,
             take: 1).ToListAsync();
 
@@ -212,7 +271,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -223,6 +282,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
+            10,
             skip: 3,
             take: 1).ToListAsync();
 
@@ -248,7 +308,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -259,6 +319,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 "8236015961811",
                 "da-DK"),
+            1,
             skip: 3,
             take: 1).ToListAsync();
 
@@ -287,7 +348,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "019", new CalculationId(Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
@@ -298,6 +359,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 "8236015961811",
                 "da-DK"),
+            10,
             skip: 3,
             take: 1).ToListAsync();
 

@@ -74,7 +74,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "800", new CalculationId(Guid.Parse("08d5d29f-ceac-4ab5-a1d4-98db8479fa6c"))
@@ -101,7 +101,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>
+                new Dictionary<string, CalculationId?>
                 {
                     {
                         "804", new CalculationId(Guid.Parse("08d5d29f-ceac-4ab5-a1d4-98db8479fa6c"))
@@ -110,7 +110,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
-                "8397670583191",
+                "5790001662233",
                 "da-DK"));
 
         Assert.Equal(2, actual);
@@ -128,7 +128,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
 
         var results = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>()
+                new Dictionary<string, CalculationId?>()
                 {
                     {
                         "805", new CalculationId(Guid.Parse("08d5d29f-ceac-4ab5-a1d4-98db8479fa6c"))
@@ -157,7 +157,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
 
         var results = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>()
+                new Dictionary<string, CalculationId?>()
                 {
                     {
                         "804", new CalculationId(Guid.Parse("08d5d29f-ceac-4ab5-a1d4-98db8479fa6c"))

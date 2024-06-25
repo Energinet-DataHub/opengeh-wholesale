@@ -45,8 +45,9 @@ public sealed class UpdateFailedSettlementReportsHandlerIntegrationTests : TestB
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>(),
+                new Dictionary<string, CalculationId?>(),
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
@@ -54,7 +55,7 @@ public sealed class UpdateFailedSettlementReportsHandlerIntegrationTests : TestB
                 null));
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, settlementReportRequest));
+        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), false, requestId, settlementReportRequest));
         await dbContextArrange.SaveChangesAsync();
 
         // Act

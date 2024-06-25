@@ -57,9 +57,10 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportChargePriceQueryFilter(
-            calculationId.Id,
+            calculationId!.Id,
             gridAreaCode,
             filter.CalculationType,
-            filter.PeriodStart.ToInstant());
+            filter.PeriodStart.ToInstant(),
+            filter.EnergySupplier);
     }
 }

@@ -38,8 +38,9 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         false,
         false,
+        false,
         new SettlementReportRequestFilterDto(
-            new Dictionary<string, CalculationId>(),
+            new Dictionary<string, CalculationId?>(),
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
             CalculationType.BalanceFixing,
@@ -78,7 +79,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+        await dbContext.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), false, requestId, _mockedSettlementReportRequest));
         await dbContext.SaveChangesAsync();
 
         // Act
@@ -105,7 +106,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), false, requestId, _mockedSettlementReportRequest));
         await dbContextArrange.SaveChangesAsync();
 
         // Act

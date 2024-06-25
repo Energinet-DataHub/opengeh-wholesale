@@ -15,7 +15,9 @@
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 public sealed record SettlementReportFileRequestDto(
+    SettlementReportRequestId RequestId,
     SettlementReportFileContent FileContent,
     SettlementReportPartialFileInfo PartialFileInfo,
-    SettlementReportRequestId RequestId,
-    SettlementReportRequestFilterDto RequestFilter);
+    SettlementReportRequestFilterDto RequestFilter,
+    long MaximumCalculationVersion,
+    MarketRole MarketRole);

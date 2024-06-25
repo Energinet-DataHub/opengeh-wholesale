@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -21,43 +19,24 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class MeteringPointMasterDataFileGenerator : ISettlementReportFileGenerator
+public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<SettlementReportMeteringPointMasterDataRow, MeteringPointMasterDataFileGenerator.SettlementReportMeteringPointMasterDataRowMap>
 {
-    private const int ChunkSize = 1000;
     private readonly ISettlementReportMeteringPointMasterDataRepository _dataSource;
 
     public MeteringPointMasterDataFileGenerator(ISettlementReportMeteringPointMasterDataRepository dataSource)
+        : base(250)
     {
         _dataSource = dataSource;
     }
 
-    public string FileExtension => ".csv";
-
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
+    protected override IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportMeteringPointMasterDataRowMap>();
-
-        await using (csvHelper.ConfigureAwait(false))
-        {
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
-            {
-                csvHelper.WriteHeader<SettlementReportMeteringPointMasterDataRow>();
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
-            {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-        }
+        return _dataSource.GetAsync(filter, skipChunks, takeChunks);
     }
 
     public sealed class SettlementReportMeteringPointMasterDataRowMap : ClassMap<SettlementReportMeteringPointMasterDataRow>
@@ -78,15 +57,18 @@ public sealed class MeteringPointMasterDataFileGenerator : ISettlementReportFile
 
             Map(r => r.GridAreaId)
                 .Name("GRIDAREAID")
-                .Index(3);
+                .Index(3)
+                .Convert(row => row.Value.GridAreaId.PadLeft(3, '0'));
 
             Map(r => r.GridAreaToId)
                 .Name("TOGRIDAREAID")
-                .Index(4);
+                .Index(4)
+                .Convert(row => row.Value.GridAreaToId?.PadLeft(3, '0'));
 
             Map(r => r.GridAreaFromId)
                 .Name("FROMGRIDAREAID")
-                .Index(5);
+                .Index(5)
+                .Convert(row => row.Value.GridAreaFromId?.PadLeft(3, '0'));
 
             Map(r => r.MeteringPointType)
                 .Name("TYPEOFMP")

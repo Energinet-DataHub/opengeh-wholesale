@@ -35,6 +35,8 @@ public sealed class SettlementReport
 
     public bool ContainsBasisData { get; init; }
 
+    public bool IsHiddenFromActor { get; init; }
+
     public Instant PeriodStart { get; init; }
 
     public Instant PeriodEnd { get; init; }
@@ -49,16 +51,18 @@ public sealed class SettlementReport
         IClock clock,
         Guid userId,
         Guid actorId,
+        bool hideReport,
         SettlementReportRequestId requestId,
         SettlementReportRequestDto request)
     {
         RequestId = requestId.Id;
         UserId = userId;
         ActorId = actorId;
+        IsHiddenFromActor = hideReport;
         CreatedDateTime = clock.GetCurrentInstant();
         Status = SettlementReportStatus.InProgress;
         CalculationType = request.Filter.CalculationType;
-        ContainsBasisData = false;
+        ContainsBasisData = request.IncludeBasisData;
         PeriodStart = request.Filter.PeriodStart.ToInstant();
         PeriodEnd = request.Filter.PeriodEnd.ToInstant();
         GridAreaCount = request.Filter.GridAreas.Count;

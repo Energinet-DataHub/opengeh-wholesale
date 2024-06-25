@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -23,56 +22,50 @@ using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Cal
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
+public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementReportChargePriceRow, ChargePriceFileGenerator.SettlementReportChargePriceRowMap>
 {
-    private const int ChunkSize = 1000;
-
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
+        : base(250)
     {
         _dataSource = dataSource;
     }
 
-    public string FileExtension => ".csv";
-
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter);
     }
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, StreamWriter destination)
+    protected override IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportChargePriceRowMap>();
+        return _dataSource.GetAsync(filter, skipChunks, takeChunks);
+    }
 
-        await using (csvHelper.ConfigureAwait(false))
+    protected override void WriteHeader(CsvWriter csvHelper)
+    {
+        const int energyPriceFieldCount = 25;
+
+        csvHelper.WriteField($"CHARGETYPE");
+        csvHelper.WriteField($"CHARGETYPEID");
+        csvHelper.WriteField($"CHARGETYPEOWNER");
+        csvHelper.WriteField($"RESOLUTIONDURATION");
+        csvHelper.WriteField($"TAXINDICATOR");
+        csvHelper.WriteField($"STARTDATETIME");
+
+        for (var i = 0; i < energyPriceFieldCount; ++i)
         {
-            csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
-                new TypeConverterOptions
-                {
-                    Formats = ["0.000000"],
-                });
-
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
-            {
-                csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-                const int energyPriceFieldCount = 25;
-                for (var i = 0; i < energyPriceFieldCount; ++i)
-                {
-                    csvHelper.WriteField($"ENERGYPRICE{i + 1}");
-                }
-
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
-            {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
+            csvHelper.WriteField($"ENERGYPRICE{i + 1}");
         }
+    }
+
+    protected override void ConfigureCsv(CsvWriter csvHelper)
+    {
+        csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
+            new TypeConverterOptions
+            {
+                Formats = ["0.000000"],
+            });
     }
 
     public sealed class SettlementReportChargePriceRowMap : ClassMap<SettlementReportChargePriceRow>
@@ -106,13 +99,15 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 });
 
             Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR");
+                .Name("TAXINDICATOR")
+                .TypeConverter<BooleanConverter>()
+                .TypeConverterOption.BooleanValues(true, false, "1")
+                .TypeConverterOption.BooleanValues(false, false, "0");
 
             Map(r => r.StartDateTime)
                 .Name("STARTDATETIME");
 
             Map(r => r.EnergyPrices)
-                .Name("ENERGYPRICE1")
                 .TypeConverter<IEnumerableConverter>();
         }
     }
