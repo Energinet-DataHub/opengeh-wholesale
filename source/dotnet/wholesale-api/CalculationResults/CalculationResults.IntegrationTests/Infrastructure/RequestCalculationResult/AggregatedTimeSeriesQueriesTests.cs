@@ -118,6 +118,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
 
+        // Assert
         using var assertionScope = new AssertionScope();
         actual.Select(ats => ats.Version).Should().BeEquivalentTo([256L, 512L, 1024L, 2048L]);
 
@@ -988,5 +989,29 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         calculationResult.PeriodStart.Should().Be(middleOfPeriod);
         calculationResult.PeriodEnd.Should().Be(calculationPeriodEnd);
         calculationResult.TimeSeriesPoints.Should().HaveCount(calculationResults.Count);
+    }
+
+    [Fact]
+    public async Task
+        GetAsync_WhenRequestFromEnergySupplierWithGridAreaAndEmptyBalanceResponsible_ReturnsNoData()
+    {
+        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
+
+        await _aggregatedTimeSeriesQueriesData.AddDataAsync();
+
+        var parameters = AggregatedTimeSeriesQueriesData.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            timeSeriesType: new[] { TimeSeriesType.Production },
+            gridArea: AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
+            energySupplierId: AggregatedTimeSeriesQueriesConstants.EnergySupplierB,
+            balanceResponsibleId: string.Empty);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        actual.Should().HaveCount(0);
     }
 }

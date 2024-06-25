@@ -30,12 +30,12 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter);
     }
 
-    protected override IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, skipChunks, takeChunks);
     }
@@ -54,7 +54,8 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
 
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID")
-                .Index(2);
+                .Index(2)
+                .Convert(row => row.Value.GridArea?.PadLeft(3, '0'));
 
             Map(r => r.EnergySupplierId)
                 .Name("ENERGYSUPPLIERID")

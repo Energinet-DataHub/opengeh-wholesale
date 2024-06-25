@@ -29,12 +29,12 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter);
     }
 
-    protected override IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, skipChunks, takeChunks);
     }
@@ -57,15 +57,18 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
 
             Map(r => r.GridAreaId)
                 .Name("GRIDAREAID")
-                .Index(3);
+                .Index(3)
+                .Convert(row => row.Value.GridAreaId.PadLeft(3, '0'));
 
             Map(r => r.GridAreaToId)
                 .Name("TOGRIDAREAID")
-                .Index(4);
+                .Index(4)
+                .Convert(row => row.Value.GridAreaToId?.PadLeft(3, '0'));
 
             Map(r => r.GridAreaFromId)
                 .Name("FROMGRIDAREAID")
-                .Index(5);
+                .Index(5)
+                .Convert(row => row.Value.GridAreaFromId?.PadLeft(3, '0'));
 
             Map(r => r.MeteringPointType)
                 .Name("TYPEOFMP")

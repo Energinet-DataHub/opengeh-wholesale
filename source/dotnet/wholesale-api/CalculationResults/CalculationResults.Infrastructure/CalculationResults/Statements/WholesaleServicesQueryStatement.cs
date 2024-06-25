@@ -63,10 +63,10 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
                     ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
-        if (!string.IsNullOrEmpty(_queryParameters.EnergySupplierId))
+        if (_queryParameters.EnergySupplierId is not null)
             sql += $" AND {WholesaleResultColumnNames.EnergySupplierId} = '{_queryParameters.EnergySupplierId}'";
 
-        if (!string.IsNullOrEmpty(_queryParameters.ChargeOwnerId))
+        if (_queryParameters.ChargeOwnerId is not null)
             sql += $" AND {WholesaleResultColumnNames.ChargeOwnerId} = '{_queryParameters.ChargeOwnerId}'";
 
         if (_queryParameters.ChargeTypes.Any())
