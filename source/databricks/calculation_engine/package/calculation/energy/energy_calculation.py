@@ -149,25 +149,19 @@ def _calculate_net_exchange(
     metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
-    exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
+    exchange_per_neighbor_ga = exchange_aggr.aggregate_net_exchange_per_neighbor_ga(
         metering_point_time_series, args.calculation_grid_areas
     )
     if _is_aggregation_or_balance_fixing(args.calculation_type):
-        exchange_per_neighbour_ga = (
-            exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                metering_point_time_series, args.calculation_grid_areas
-            )
-        )
-
-        results.net_exchange_per_neighbour_ga = factory.create(
+        results.net_exchange_per_neighbor_ga = factory.create(
             args,
-            exchange_per_neighbour_ga,
+            exchange_per_neighbor_ga,
             TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
             AggregationLevel.TOTAL_GA,
         )
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
-        exchange_per_neighbour_ga
+        exchange_per_neighbor_ga
     )
 
     results.net_exchange_per_ga = factory.create(

@@ -40,7 +40,7 @@ class TestWhenValidInput:
             ),
         ],
     )
-    def test__returns_distinct_qualities_from_production_and_net_exchange_from_neighbour_ga(
+    def test__returns_distinct_qualities_from_production_and_net_exchange_from_neighbor_ga(
         self,
         spark: SparkSession,
         prod_qualities: list[QuantityQuality],
@@ -60,7 +60,7 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         assert sorted(actual_row[Colname.qualities]) == sorted(expected_qualities)
 
-    def test__does_not_include_qualities_from_non_neighbour_ga_in_return(
+    def test__does_not_include_qualities_from_non_neighbor_ga_in_return(
         self,
         spark: SparkSession,
     ) -> None:
@@ -108,7 +108,7 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         assert actual_row[Colname.quantity] == expected_quantity
 
-    def test__does_not_include_quantity_from_non_neighbour_ga_in_return(
+    def test__does_not_include_quantity_from_non_neighbor_ga_in_return(
         self, spark: SparkSession
     ):
         # Arrange
