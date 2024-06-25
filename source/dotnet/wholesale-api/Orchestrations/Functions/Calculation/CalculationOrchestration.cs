@@ -35,17 +35,21 @@ internal class CalculationOrchestration
             return "Error: No input specified.";
         }
 
+        var defaultRetryOptions = CreateDefaultRetryOptions();
+
         // Create calculation (SQL)
         var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
             nameof(CreateCalculationRecordActivity),
-            input);
+            input,
+            defaultRetryOptions);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 
         // Start calculation (Databricks)
         calculationMetadata.JobId = await context.CallActivityAsync<CalculationJobId>(
             nameof(StartCalculationActivity),
-            calculationMetadata.Id);
+            calculationMetadata.Id,
+            defaultRetryOptions);
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
@@ -55,7 +59,8 @@ internal class CalculationOrchestration
             // Monitor calculation (Databricks)
             calculationMetadata.JobStatus = await context.CallActivityAsync<CalculationState>(
                 nameof(GetJobStatusActivity),
-                calculationMetadata.JobId);
+                calculationMetadata.JobId,
+                defaultRetryOptions);
             context.SetCustomStatus(calculationMetadata);
 
             if (calculationMetadata.JobStatus is CalculationState.Running
@@ -65,14 +70,16 @@ internal class CalculationOrchestration
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
                     nameof(UpdateCalculationStateFromJobStatusActivity),
-                    calculationMetadata);
+                    calculationMetadata,
+                    defaultRetryOptions);
 
                 if (calculationMetadata.JobStatus is CalculationState.Canceled)
                 {
                     // (Re) Start calculation (Databricks)
                     calculationMetadata.JobId = await context.CallActivityAsync<CalculationJobId>(
                         nameof(StartCalculationActivity),
-                        calculationMetadata.Id);
+                        calculationMetadata.Id,
+                        defaultRetryOptions);
                     calculationMetadata.OrchestrationProgress = "CalculationJobQueuedAgain";
                     context.SetCustomStatus(calculationMetadata);
                 }
@@ -90,7 +97,8 @@ internal class CalculationOrchestration
         // Update calculation execution status (SQL)
         await context.CallActivityAsync(
             nameof(UpdateCalculationStateFromJobStatusActivity),
-            calculationMetadata);
+            calculationMetadata,
+            defaultRetryOptions);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
         {
@@ -100,10 +108,12 @@ internal class CalculationOrchestration
             // OBSOLETE: Create calculation completed (SQL - Event database)
             await context.CallActivityAsync(
                 nameof(CreateCompletedCalculationActivity),
-                new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId));
+                new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId),
+                defaultRetryOptions);
 
             //// TODO XDAST: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
+            // TODO XDAST: Add retry policy when we have removed the old integration events
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
                 nameof(SendCalculationResultsActivity),
@@ -131,7 +141,8 @@ internal class CalculationOrchestration
             await UpdateCalculationOrchestrationStateAsync(
                 context,
                 calculationMetadata.Id,
-                CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
+                defaultRetryOptions);
             return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
         }
 
@@ -141,7 +152,8 @@ internal class CalculationOrchestration
         await UpdateCalculationOrchestrationStateAsync(
             context,
             calculationMetadata.Id,
-            CalculationOrchestrationState.ActorMessagesEnqueued);
+            CalculationOrchestrationState.ActorMessagesEnqueued,
+            defaultRetryOptions);
 
         // Update state to Completed
         calculationMetadata.OrchestrationProgress = "Completed";
@@ -149,7 +161,8 @@ internal class CalculationOrchestration
         await UpdateCalculationOrchestrationStateAsync(
             context,
             calculationMetadata.Id,
-            CalculationOrchestrationState.Completed);
+            CalculationOrchestrationState.Completed,
+            defaultRetryOptions);
 
         return "Success";
     }
@@ -157,11 +170,13 @@ internal class CalculationOrchestration
     private static async Task UpdateCalculationOrchestrationStateAsync(
         TaskOrchestrationContext context,
         Guid calculationId,
-        CalculationOrchestrationState newState)
+        CalculationOrchestrationState newState,
+        TaskOptions retryOptions)
     {
         await context.CallActivityAsync(
             nameof(UpdateCalculationOrchestrationStateActivity),
-            new UpdateCalculationOrchestrationStateInput(calculationId, newState));
+            new UpdateCalculationOrchestrationStateInput(calculationId, newState),
+            retryOptions);
     }
 
 #pragma warning disable CS1570 // XML comment has badly formed XML -- XML doesn't like links
@@ -201,4 +216,12 @@ internal class CalculationOrchestration
         return OrchestrationResult.Success();
     }
 #pragma warning restore CS1570 // XML comment has badly formed XML
+
+    private static TaskOptions CreateDefaultRetryOptions()
+    {
+        return TaskOptions.FromRetryPolicy(new RetryPolicy(
+            maxNumberOfAttempts: 5,
+            firstRetryInterval: TimeSpan.FromSeconds(30),
+            backoffCoefficient: 2.0));
+    }
 }
