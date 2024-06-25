@@ -110,7 +110,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
-                "8397670583191",
+                "5790001662233",
                 "da-DK"));
 
         Assert.Equal(2, actual);
