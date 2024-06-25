@@ -26,7 +26,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
     private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
 
     public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
-        : base(250)
+        : base(40_000) // About 25 rows per metering point, about 1.000.000 rows per chunk in total.
     {
         _dataSource = dataSource;
     }
