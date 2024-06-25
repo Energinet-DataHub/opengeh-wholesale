@@ -27,7 +27,7 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
     private readonly ISettlementReportWholesaleRepository _dataSource;
 
     public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource)
-         : base(250)
+         : base(1_350) // Up to 31 * 24 rows in each chunk for a month, 1.004.400 rows per chunk in total.
     {
         _dataSource = dataSource;
     }

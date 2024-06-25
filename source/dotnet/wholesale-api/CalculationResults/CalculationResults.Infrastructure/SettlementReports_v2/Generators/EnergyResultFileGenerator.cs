@@ -25,7 +25,7 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
     private readonly ISettlementReportEnergyResultRepository _dataSource;
 
     public EnergyResultFileGenerator(ISettlementReportEnergyResultRepository dataSource)
-        : base(250)
+        : base(350) // Up to 31 * 24 * 4 rows in each chunk for a month, 1.041.600 rows per chunk in total.
     {
         _dataSource = dataSource;
     }

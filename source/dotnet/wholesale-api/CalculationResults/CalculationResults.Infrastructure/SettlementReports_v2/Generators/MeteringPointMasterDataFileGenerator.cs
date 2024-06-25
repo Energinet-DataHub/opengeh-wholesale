@@ -24,7 +24,7 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
     private readonly ISettlementReportMeteringPointMasterDataRepository _dataSource;
 
     public MeteringPointMasterDataFileGenerator(ISettlementReportMeteringPointMasterDataRepository dataSource)
-        : base(250)
+        : base(200_000) // 5 rows in each chunk, 1.000.000 rows per chunk in total.
     {
         _dataSource = dataSource;
     }
