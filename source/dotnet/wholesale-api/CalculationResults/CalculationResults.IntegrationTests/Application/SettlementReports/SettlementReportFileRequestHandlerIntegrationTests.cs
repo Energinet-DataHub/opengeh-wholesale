@@ -339,7 +339,12 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         // Arrange
         var calculationId = Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26de");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => (CalculationId?)new CalculationId(calculationId)),
+            new Dictionary<string, CalculationId?>
+            {
+                {
+                    "4", new CalculationId(calculationId)
+                },
+            },
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             CalculationType.FirstCorrectionSettlement,
@@ -358,8 +363,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'018'", "8397670583196", "'2022-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197" ],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'018'", "8397670583196", "'2022-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197" ],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'4'", "8397670583196", "'2022-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197" ],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'4'", "8397670583196", "'2022-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197" ],
             ]);
 
         // Act
@@ -379,10 +384,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             "ENERGYBUSINESSPROCESS,PROCESSVARIANT,METERINGGRIDAREAID,ENERGYSUPPLIERID,STARTDATETIME,RESOLUTIONDURATION,MEASUREUNIT,ENERGYCURRENCY,AMOUNT,CHARGETYPE,CHARGETYPEID,CHARGETYPEOWNERID",
             fileLines[0]);
         Assert.Equal(
-            "D32,1ST,018,8397670583196,2022-01-02T02:00:00Z,PT1H,KWH,DKK,18.012345,D03,123,8397670583197",
+            "D32,1ST,004,8397670583196,2022-01-02T02:00:00Z,PT1H,KWH,DKK,18.012345,D03,123,8397670583197",
             fileLines[1]);
         Assert.Equal(
-            "D32,1ST,018,8397670583196,2022-01-02T04:00:00Z,P1D,PCS,DKK,18.012346,D01,122,8397670583197",
+            "D32,1ST,004,8397670583196,2022-01-02T04:00:00Z,P1D,PCS,DKK,18.012346,D01,122,8397670583197",
             fileLines[2]);
     }
 }
