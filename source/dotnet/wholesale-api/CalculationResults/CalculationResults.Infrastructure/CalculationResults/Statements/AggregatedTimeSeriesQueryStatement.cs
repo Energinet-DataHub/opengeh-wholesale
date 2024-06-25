@@ -80,12 +80,12 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
-        if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
+        if (parameters.EnergySupplierId is not null)
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
         }
 
-        if (!string.IsNullOrWhiteSpace(parameters.BalanceResponsibleId))
+        if (parameters.BalanceResponsibleId is not null)
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
         }
