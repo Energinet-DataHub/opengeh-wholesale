@@ -7,5 +7,8 @@ subscription-2-co_5550000000001;subscription;5550000000001;P1M;false;2016-01-31 
 subscription-3-co_5550000000002;subscription;5550000000002;P1M;false;2016-01-31 23:00:00;
 tariff-hourly-1-co_6660000000001;tariff;6660000000001;PT1H;false;2016-01-31 23:00:00;
 tariff-hourly-2-co_6660000000001;tariff;6660000000001;PT1H;false;2016-01-31 23:00:00;
-tariff-hourly-3-co_6660000000002;tariff;6660000000002;PT1D;false;2016-01-31 23:00:00;
-tariff-hourly-4-co_is_tax;tariff;6660000000666;PT1D;true;2016-01-31 23:00:00;
+tariff-hourly-3-co_6660000000002;tariff;6660000000002;PT1H;false;2016-01-31 23:00:00;
+tariff-hourly-4-co_is_tax;tariff;6660000000666;PT1H;true;2016-01-31 23:00:00;
+tariff-daily-1-co_6660000000001;tariff;6660000000001;P1D;false;2016-01-31 23:00:00;
+tariff-daily-2-co_6660000000001;tariff;6660000000001;P1D;false;2016-01-31 23:00:00;
+tariff-daily-3-co_is_tax;tariff;6660000000666;P1D;true;2016-01-31 23:00:00;
