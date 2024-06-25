@@ -27,7 +27,7 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
-        : base(250)
+        : base(1_750) // Up to 582 rows in each chunk for a month, 1.018.500 rows per chunk in total.
     {
         _dataSource = dataSource;
     }
