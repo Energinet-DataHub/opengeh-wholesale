@@ -34,6 +34,7 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDataLake "Read basis data and results"
+        edi -> this "Read calculation results and active data"
     }
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"
