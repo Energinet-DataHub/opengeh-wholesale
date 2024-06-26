@@ -91,8 +91,6 @@ def assert_dataframe_and_schema(
         expected.show(3000, False)
 
     try:
-        actual.show()
-        expected.show()
         assert_dataframes_equal(actual, expected)
     except AssertionError:
 
