@@ -22,7 +22,7 @@ total_monthly_amounts_v1 = t.StructType(
         t.StructField("energy_supplier_id", t.StringType(), not nullable),
         #
         # EIC or GLN number
-        t.StructField("charge_owner_id", t.StringType(), not nullable),
+        t.StructField("charge_owner_id", t.StringType(), nullable),
         #
         # 'DKK'
         t.StructField("currency", t.StringType(), not nullable),
