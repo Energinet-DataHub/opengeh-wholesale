@@ -127,7 +127,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             {
                 partialFileInfo = fileRequest.PartialFileInfo with
                 {
-                    FileName = fileRequest.PartialFileInfo.FileName + $" ({gridAreaCode})",
+                    FileName = fileRequest.PartialFileInfo.FileName + $"_{gridAreaCode}",
                 };
             }
 

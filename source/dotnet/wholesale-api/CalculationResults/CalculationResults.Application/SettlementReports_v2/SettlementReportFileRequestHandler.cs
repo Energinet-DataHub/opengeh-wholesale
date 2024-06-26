@@ -34,7 +34,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
 
-        var resultingFileName = fileRequest.PartialFileInfo.FileName + fileGenerator.FileExtension;
+        var resultingFileName = GenerateFilename(fileRequest) + fileGenerator.FileExtension;
         var storageFileName = $"{fileRequest.PartialFileInfo.FileName}_{fileRequest.PartialFileInfo.FileOffset}_{fileRequest.PartialFileInfo.ChunkOffset}{fileGenerator.FileExtension}";
 
         var writeStream = await _fileRepository
@@ -61,5 +61,30 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             fileRequest.RequestId,
             fileRequest.PartialFileInfo with { FileName = resultingFileName },
             storageFileName);
+    }
+
+    private string GenerateFilename(SettlementReportFileRequestDto fileRequest)
+    {
+        var filename = $"{fileRequest.PartialFileInfo.FileName}";
+
+        if (!string.IsNullOrWhiteSpace(fileRequest.RequestFilter.EnergySupplier))
+        {
+            filename += $"_{fileRequest.RequestFilter.EnergySupplier}";
+        }
+
+        switch (fileRequest.MarketRole)
+        {
+            case MarketRole.EnergySupplier:
+                filename += "_DDQ";
+                break;
+            case MarketRole.GridAccessProvider:
+                filename += "_DDQ";
+                break;
+        }
+
+        filename += $"_{fileRequest.RequestFilter.PeriodStart:dd-MM-yyyy}";
+        filename += $"_{fileRequest.RequestFilter.PeriodEnd:dd-MM-yyyy}";
+
+        return filename;
     }
 }
