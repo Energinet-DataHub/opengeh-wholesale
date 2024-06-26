@@ -1,14 +1,14 @@
 ﻿charge_code;charge_type;charge_owner_id;resolution;is_tax;from_date;to_date
-fee-1-co_7770000000001;fee;7770000000001;P1M;false;2016-01-31 23:00:00;
-fee-2-co_7770000000001;fee;7770000000001;P1M;false;2016-01-31 23:00:00;
-fee-3-co_7770000000002;fee;7770000000002;P1M;false;2016-01-31 23:00:00;
-subscription-1-co_5550000000001;subscription;5550000000001;P1M;false;2016-01-31 23:00:00;
-subscription-2-co_5550000000001;subscription;5550000000001;P1M;false;2016-01-31 23:00:00;
-subscription-3-co_5550000000002;subscription;5550000000002;P1M;false;2016-01-31 23:00:00;
-tariff-hourly-1-co_6660000000001;tariff;6660000000001;PT1H;false;2016-01-31 23:00:00;
-tariff-hourly-2-co_6660000000001;tariff;6660000000001;PT1H;false;2016-01-31 23:00:00;
-tariff-hourly-3-co_6660000000002;tariff;6660000000002;PT1H;false;2016-01-31 23:00:00;
+fee-1;fee;0000000000800;P1M;false;2016-01-31 23:00:00;
+fee-2;fee;0000000000800;P1M;false;2016-01-31 23:00:00;
+fee-3;fee;0000000000800;P1M;false;2016-01-31 23:00:00;
+subscription-1;subscription;0000000000800;P1M;false;2016-01-31 23:00:00;
+subscription-2;subscription;0000000000800;P1M;false;2016-01-31 23:00:00;
+subscription-3;subscription;0000000000800;P1M;false;2016-01-31 23:00:00;
+tariff-hourly-1;tariff;0000000000800;PT1H;false;2016-01-31 23:00:00;
+tariff-hourly-2;tariff;0000000000800;PT1H;false;2016-01-31 23:00:00;
+tariff-hourly-3;tariff;0000000000800;PT1H;false;2016-01-31 23:00:00;
 tariff-hourly-4-co_is_tax;tariff;6660000000666;PT1H;true;2016-01-31 23:00:00;
-tariff-daily-1-co_6660000000001;tariff;6660000000001;P1D;false;2016-01-31 23:00:00;
-tariff-daily-2-co_6660000000001;tariff;6660000000001;P1D;false;2016-01-31 23:00:00;
+tariff-daily-1;tariff;0000000000800;P1D;false;2016-01-31 23:00:00;
+tariff-daily-2;tariff;0000000000800;P1D;false;2016-01-31 23:00:00;
 tariff-daily-3-co_is_tax;tariff;6660000000666;P1D;true;2016-01-31 23:00:00;
