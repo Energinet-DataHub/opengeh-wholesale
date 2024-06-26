@@ -20,8 +20,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
@@ -45,15 +43,11 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
-        var calculationsClientMock = new Mock<ICalculationsClient>();
-        calculationsClientMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated));
-
         Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
         Fixture.Inject<ISettlementReportMeteringPointTimeSeriesResultQueries>(new SettlementReportMeteringPointTimeSeriesResultQueries(
             mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            calculationsClientMock.Object));
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
     [Fact]

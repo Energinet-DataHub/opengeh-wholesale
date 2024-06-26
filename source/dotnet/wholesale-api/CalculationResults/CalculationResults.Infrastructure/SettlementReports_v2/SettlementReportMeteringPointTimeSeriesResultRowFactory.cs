@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportMeteringPointTimeSeriesResultRowFactory
 {
-    public static SettlementReportMeterinPointTimeSeriesResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    public static SettlementReportMeterinPointTimeSeriesResultRow Create(DatabricksSqlRow databricksSqlRow)
     {
         var meteringPointId = databricksSqlRow[SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId];
         var meteringPointType = databricksSqlRow[SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointType];

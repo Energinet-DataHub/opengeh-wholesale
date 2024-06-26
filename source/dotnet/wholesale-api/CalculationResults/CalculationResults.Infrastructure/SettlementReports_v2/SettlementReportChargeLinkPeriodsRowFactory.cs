@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportChargeLinkPeriodsRowFactory
 {
-    public static SettlementReportChargeLinkPeriodsRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    public static SettlementReportChargeLinkPeriodsRow Create(DatabricksSqlRow databricksSqlRow)
     {
         var periodStart = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.FromDate];
         var periodEnd = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.ToDate];
