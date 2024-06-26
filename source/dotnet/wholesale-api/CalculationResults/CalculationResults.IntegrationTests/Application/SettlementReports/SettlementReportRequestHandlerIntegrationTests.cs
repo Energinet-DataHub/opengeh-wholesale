@@ -93,7 +93,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var chunkA = actual[0];
         Assert.Equal(requestId, chunkA.RequestId);
         Assert.Equal(calculationFilter.Single(), chunkA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy", chunkA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY", chunkA.PartialFileInfo.FileName);
         Assert.Equal(0, chunkA.PartialFileInfo.FileOffset);
         Assert.Equal(0, chunkA.PartialFileInfo.ChunkOffset);
         Assert.Equal(SettlementReportFileContent.EnergyResult, chunkA.FileContent);
@@ -101,7 +101,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var chunkB = actual[1];
         Assert.Equal(requestId, chunkB.RequestId);
         Assert.Equal(calculationFilter.Single(), chunkB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy", chunkB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY", chunkB.PartialFileInfo.FileName);
         Assert.Equal(0, chunkB.PartialFileInfo.FileOffset);
         Assert.Equal(1, chunkB.PartialFileInfo.ChunkOffset);
         Assert.Equal(SettlementReportFileContent.EnergyResult, chunkB.FileContent);
@@ -138,7 +138,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(filter.CsvFormatLocale, energyResult.RequestFilter.CsvFormatLocale);
         Assert.Equal(filter.EnergySupplier, energyResult.RequestFilter.EnergySupplier);
         Assert.Equal(filter.GridAreas.Single(), energyResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
     }
 
@@ -170,13 +170,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var energyResultA = actual[0];
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_805", energyResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_806", energyResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
     }
 
@@ -207,13 +207,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var energyResult = actual[0];
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
 
         var wholesaleResult = actual[1];
         Assert.Equal(requestId, wholesaleResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE", wholesaleResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResult.FileContent);
     }
 
@@ -245,25 +245,25 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var energyResultA = actual[0];
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_805", energyResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_806", energyResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
 
         var wholesaleResultA = actual[2];
         Assert.Equal(requestId, wholesaleResultA.RequestId);
         Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale (805)", wholesaleResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE_805", wholesaleResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultA.FileContent);
 
         var wholesaleResultB = actual[3];
         Assert.Equal(requestId, wholesaleResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale (806)", wholesaleResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE_806", wholesaleResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultB.FileContent);
     }
 
@@ -298,49 +298,49 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(energyResult);
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
 
         var wholesaleResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.WholesaleResult);
         Assert.NotNull(wholesaleResult);
         Assert.Equal(requestId, wholesaleResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE", wholesaleResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResult.FileContent);
 
         var chargeLinkPeriodsResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.ChargeLinksPeriods);
         Assert.NotNull(chargeLinkPeriodsResult);
         Assert.Equal(requestId, chargeLinkPeriodsResult.RequestId);
         Assert.Equal(calculationFilter.Single(), chargeLinkPeriodsResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResult.PartialFileInfo.FileName);
+        Assert.Equal("CHARGELINK_805", chargeLinkPeriodsResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResult.FileContent);
 
         var meteringPointMasterDataResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MeteringPointMasterData);
         Assert.NotNull(meteringPointMasterDataResult);
         Assert.Equal(requestId, meteringPointMasterDataResult.RequestId);
         Assert.Equal(calculationFilter.Single(), meteringPointMasterDataResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResult.PartialFileInfo.FileName);
+        Assert.Equal("MDMP_805", meteringPointMasterDataResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResult.FileContent);
 
         var timeSeriesPT15MResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.Pt15M);
         Assert.NotNull(timeSeriesPT15MResult);
         Assert.Equal(requestId, timeSeriesPT15MResult.RequestId);
         Assert.Equal(calculationFilter.Single(), timeSeriesPT15MResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT15M (805)", timeSeriesPT15MResult.PartialFileInfo.FileName);
+        Assert.Equal("TSSD15_805", timeSeriesPT15MResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt15M, timeSeriesPT15MResult.FileContent);
 
         var timeSeriesPT1HResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.Pt1H);
         Assert.NotNull(timeSeriesPT1HResult);
         Assert.Equal(requestId, timeSeriesPT1HResult.RequestId);
         Assert.Equal(calculationFilter.Single(), timeSeriesPT1HResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT1H (805)", timeSeriesPT1HResult.PartialFileInfo.FileName);
+        Assert.Equal("TSSD60_805", timeSeriesPT1HResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, timeSeriesPT1HResult.FileContent);
 
         var chargePricesResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.ChargePrice);
         Assert.NotNull(chargePricesResult);
         Assert.Equal(requestId, chargePricesResult.RequestId);
         Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price (805)", chargePricesResult.PartialFileInfo.FileName);
+        Assert.Equal("CHARGEPRICE_805", chargePricesResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
     }
 
@@ -375,56 +375,56 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(energyResult);
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResult.FileContent);
 
         var wholesaleResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.WholesaleResult);
         Assert.NotNull(wholesaleResult);
         Assert.Equal(requestId, wholesaleResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE", wholesaleResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResult.FileContent);
 
         var chargeLinkPeriodsResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.ChargeLinksPeriods);
         Assert.NotNull(chargeLinkPeriodsResult);
         Assert.Equal(requestId, chargeLinkPeriodsResult.RequestId);
         Assert.Equal(calculationFilter.Single(), chargeLinkPeriodsResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResult.PartialFileInfo.FileName);
+        Assert.Equal("CHARGELINK_805", chargeLinkPeriodsResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResult.FileContent);
 
         var meteringPointMasterDataResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MeteringPointMasterData);
         Assert.NotNull(meteringPointMasterDataResult);
         Assert.Equal(requestId, meteringPointMasterDataResult.RequestId);
         Assert.Equal(calculationFilter.Single(), meteringPointMasterDataResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResult.PartialFileInfo.FileName);
+        Assert.Equal("MDMP_805", meteringPointMasterDataResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResult.FileContent);
 
         var timeSeriesPT15MResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.Pt15M);
         Assert.NotNull(timeSeriesPT15MResult);
         Assert.Equal(requestId, timeSeriesPT15MResult.RequestId);
         Assert.Equal(calculationFilter.Single(), timeSeriesPT15MResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT15M (805)", timeSeriesPT15MResult.PartialFileInfo.FileName);
+        Assert.Equal("TSSD15_805", timeSeriesPT15MResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt15M, timeSeriesPT15MResult.FileContent);
 
         var timeSeriesPT1HResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.Pt1H);
         Assert.NotNull(timeSeriesPT1HResult);
         Assert.Equal(requestId, timeSeriesPT1HResult.RequestId);
         Assert.Equal(calculationFilter.Single(), timeSeriesPT1HResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT1H (805)", timeSeriesPT1HResult.PartialFileInfo.FileName);
+        Assert.Equal("TSSD60_805", timeSeriesPT1HResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, timeSeriesPT1HResult.FileContent);
 
         var chargePricesResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.ChargePrice);
         Assert.NotNull(chargePricesResult);
         Assert.Equal(requestId, chargePricesResult.RequestId);
         Assert.Equal(calculationFilter.Single(), chargePricesResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price (805)", chargePricesResult.PartialFileInfo.FileName);
+        Assert.Equal("CHARGEPRICE_805", chargePricesResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
 
         var wholeMonthResultResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
         Assert.NotNull(wholeMonthResultResult);
         Assert.Equal(requestId, wholeMonthResultResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholeMonthResultResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Monthly amounts (805)", wholeMonthResultResult.PartialFileInfo.FileName);
+        Assert.Equal("RESULTMONTHLY_805", wholeMonthResultResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResult.FileContent);
     }
 
@@ -461,7 +461,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(energyResultA);
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_805", energyResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual.
@@ -472,7 +472,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(energyResultB);
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_806", energyResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
 
         var wholesaleResultA = actual.
@@ -483,7 +483,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(wholesaleResultA);
         Assert.Equal(requestId, wholesaleResultA.RequestId);
         Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale (805)", wholesaleResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE_805", wholesaleResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultA.FileContent);
 
         var wholesaleResultB = actual.
@@ -494,7 +494,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(wholesaleResultB);
         Assert.Equal(requestId, wholesaleResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale (806)", wholesaleResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE_806", wholesaleResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultB.FileContent);
 
         var chargeLinkPeriodsResultA = actual.
@@ -505,7 +505,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargeLinkPeriodsResultA);
         Assert.Equal(requestId, chargeLinkPeriodsResultA.RequestId);
         Assert.Equal(calculationFilter.First(), chargeLinkPeriodsResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResultA.PartialFileInfo.FileName);
+        Assert.Equal("CHARGELINK_805", chargeLinkPeriodsResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResultA.FileContent);
 
         var chargeLinkPeriodsResultB = actual.
@@ -516,7 +516,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargeLinkPeriodsResultB);
         Assert.Equal(requestId, chargeLinkPeriodsResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), chargeLinkPeriodsResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge links on metering points (806)", chargeLinkPeriodsResultB.PartialFileInfo.FileName);
+        Assert.Equal("CHARGELINK_806", chargeLinkPeriodsResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResultB.FileContent);
 
         var meteringPointMasterDataResultA = actual.
@@ -527,7 +527,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(meteringPointMasterDataResultA);
         Assert.Equal(requestId, meteringPointMasterDataResultA.RequestId);
         Assert.Equal(calculationFilter.First(), meteringPointMasterDataResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResultA.PartialFileInfo.FileName);
+        Assert.Equal("MDMP_805", meteringPointMasterDataResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResultA.FileContent);
 
         var meteringPointMasterDataResultB = actual.
@@ -538,7 +538,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(meteringPointMasterDataResultB);
         Assert.Equal(requestId, meteringPointMasterDataResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), meteringPointMasterDataResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Master data for metering points (806)", meteringPointMasterDataResultB.PartialFileInfo.FileName);
+        Assert.Equal("MDMP_806", meteringPointMasterDataResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResultB.FileContent);
 
         var pt15MResultsA = actual.
@@ -549,7 +549,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt15MResultsA);
         Assert.Equal(requestId, pt15MResultsA.RequestId);
         Assert.Equal(calculationFilter.First(), pt15MResultsA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT15M (805)", pt15MResultsA.PartialFileInfo.FileName);
+        Assert.Equal("TSSD15_805", pt15MResultsA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt15M, pt15MResultsA.FileContent);
 
         var pt15MResultsB = actual.
@@ -560,7 +560,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt15MResultsB);
         Assert.Equal(requestId, pt15MResultsB.RequestId);
         Assert.Equal(calculationFilter.Last(), pt15MResultsB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT15M (806)", pt15MResultsB.PartialFileInfo.FileName);
+        Assert.Equal("TSSD15_806", pt15MResultsB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt15M, pt15MResultsB.FileContent);
 
         var pt1HResultsA = actual.
@@ -571,7 +571,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt1HResultsA);
         Assert.Equal(requestId, pt1HResultsA.RequestId);
         Assert.Equal(calculationFilter.First(), pt1HResultsA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT1H (805)", pt1HResultsA.PartialFileInfo.FileName);
+        Assert.Equal("TSSD60_805", pt1HResultsA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, pt1HResultsA.FileContent);
 
         var pt1HResultsB = actual.
@@ -582,7 +582,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt1HResultsB);
         Assert.Equal(requestId, pt1HResultsB.RequestId);
         Assert.Equal(calculationFilter.Last(), pt1HResultsB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT1H (806)", pt1HResultsB.PartialFileInfo.FileName);
+        Assert.Equal("TSSD60_806", pt1HResultsB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, pt1HResultsB.FileContent);
 
         var chargePricesResultA = actual.
@@ -593,7 +593,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargePricesResultA);
         Assert.Equal(requestId, chargePricesResultA.RequestId);
         Assert.Equal(calculationFilter.First(), chargePricesResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price (805)", chargePricesResultA.PartialFileInfo.FileName);
+        Assert.Equal("CHARGEPRICE_805", chargePricesResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultA.FileContent);
 
         var chargePricesResultB = actual.
@@ -604,7 +604,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargePricesResultB);
         Assert.Equal(requestId, chargePricesResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), chargePricesResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price (806)", chargePricesResultB.PartialFileInfo.FileName);
+        Assert.Equal("CHARGEPRICE_806", chargePricesResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultB.FileContent);
     }
 
@@ -642,7 +642,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(energyResultA);
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_805", energyResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultA.FileContent);
 
         var energyResultB = actual.
@@ -653,7 +653,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(energyResultB);
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTENERGY_806", energyResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResult, energyResultB.FileContent);
 
         var wholesaleResultA = actual.
@@ -664,7 +664,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(wholesaleResultA);
         Assert.Equal(requestId, wholesaleResultA.RequestId);
         Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale (805)", wholesaleResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE_805", wholesaleResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultA.FileContent);
 
         var wholesaleResultB = actual.
@@ -675,7 +675,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(wholesaleResultB);
         Assert.Equal(requestId, wholesaleResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Result Wholesale (806)", wholesaleResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTWHOLESALE_806", wholesaleResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.WholesaleResult, wholesaleResultB.FileContent);
 
         var chargeLinkPeriodsResultA = actual.
@@ -686,7 +686,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargeLinkPeriodsResultA);
         Assert.Equal(requestId, chargeLinkPeriodsResultA.RequestId);
         Assert.Equal(calculationFilter.First(), chargeLinkPeriodsResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge links on metering points (805)", chargeLinkPeriodsResultA.PartialFileInfo.FileName);
+        Assert.Equal("CHARGELINK_805", chargeLinkPeriodsResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResultA.FileContent);
 
         var chargeLinkPeriodsResultB = actual.
@@ -697,7 +697,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargeLinkPeriodsResultB);
         Assert.Equal(requestId, chargeLinkPeriodsResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), chargeLinkPeriodsResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge links on metering points (806)", chargeLinkPeriodsResultB.PartialFileInfo.FileName);
+        Assert.Equal("CHARGELINK_806", chargeLinkPeriodsResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargeLinksPeriods, chargeLinkPeriodsResultB.FileContent);
 
         var meteringPointMasterDataResultA = actual.
@@ -708,7 +708,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(meteringPointMasterDataResultA);
         Assert.Equal(requestId, meteringPointMasterDataResultA.RequestId);
         Assert.Equal(calculationFilter.First(), meteringPointMasterDataResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Master data for metering points (805)", meteringPointMasterDataResultA.PartialFileInfo.FileName);
+        Assert.Equal("MDMP_805", meteringPointMasterDataResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResultA.FileContent);
 
         var meteringPointMasterDataResultB = actual.
@@ -719,7 +719,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(meteringPointMasterDataResultB);
         Assert.Equal(requestId, meteringPointMasterDataResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), meteringPointMasterDataResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Master data for metering points (806)", meteringPointMasterDataResultB.PartialFileInfo.FileName);
+        Assert.Equal("MDMP_806", meteringPointMasterDataResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MeteringPointMasterData, meteringPointMasterDataResultB.FileContent);
 
         var pt15MResultsA = actual.
@@ -730,7 +730,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt15MResultsA);
         Assert.Equal(requestId, pt15MResultsA.RequestId);
         Assert.Equal(calculationFilter.First(), pt15MResultsA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT15M (805)", pt15MResultsA.PartialFileInfo.FileName);
+        Assert.Equal("TSSD15_805", pt15MResultsA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt15M, pt15MResultsA.FileContent);
 
         var pt15MResultsB = actual.
@@ -741,7 +741,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt15MResultsB);
         Assert.Equal(requestId, pt15MResultsB.RequestId);
         Assert.Equal(calculationFilter.Last(), pt15MResultsB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT15M (806)", pt15MResultsB.PartialFileInfo.FileName);
+        Assert.Equal("TSSD15_806", pt15MResultsB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt15M, pt15MResultsB.FileContent);
 
         var pt1HResultsA = actual.
@@ -752,7 +752,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt1HResultsA);
         Assert.Equal(requestId, pt1HResultsA.RequestId);
         Assert.Equal(calculationFilter.First(), pt1HResultsA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT1H (805)", pt1HResultsA.PartialFileInfo.FileName);
+        Assert.Equal("TSSD60_805", pt1HResultsA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, pt1HResultsA.FileContent);
 
         var pt1HResultsB = actual.
@@ -763,7 +763,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(pt1HResultsB);
         Assert.Equal(requestId, pt1HResultsB.RequestId);
         Assert.Equal(calculationFilter.Last(), pt1HResultsB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Time series PT1H (806)", pt1HResultsB.PartialFileInfo.FileName);
+        Assert.Equal("TSSD60_806", pt1HResultsB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.Pt1H, pt1HResultsB.FileContent);
 
         var chargePricesResultA = actual.
@@ -774,7 +774,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargePricesResultA);
         Assert.Equal(requestId, chargePricesResultA.RequestId);
         Assert.Equal(calculationFilter.First(), chargePricesResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price (805)", chargePricesResultA.PartialFileInfo.FileName);
+        Assert.Equal("CHARGEPRICE_805", chargePricesResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultA.FileContent);
 
         var chargePricesResultB = actual.
@@ -785,7 +785,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(chargePricesResultB);
         Assert.Equal(requestId, chargePricesResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), chargePricesResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Charge Price (806)", chargePricesResultB.PartialFileInfo.FileName);
+        Assert.Equal("CHARGEPRICE_806", chargePricesResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResultB.FileContent);
 
         var wholeMonthResultResultA = actual.
@@ -796,14 +796,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.NotNull(wholeMonthResultResultA);
         Assert.Equal(requestId, wholeMonthResultResultA.RequestId);
         Assert.Equal(calculationFilter.First(), wholeMonthResultResultA.RequestFilter.GridAreas.Single());
-        Assert.Equal("Monthly amounts (805)", wholeMonthResultResultA.PartialFileInfo.FileName);
+        Assert.Equal("RESULTMONTHLY_805", wholeMonthResultResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResultA.FileContent);
 
         var wholeMonthResultResultB = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount && calculationFilter.Last().Equals(x.RequestFilter.GridAreas.Single()));
         Assert.NotNull(wholeMonthResultResultB);
         Assert.Equal(requestId, wholeMonthResultResultB.RequestId);
         Assert.Equal(calculationFilter.Last(), wholeMonthResultResultB.RequestFilter.GridAreas.Single());
-        Assert.Equal("Monthly amounts (806)", wholeMonthResultResultB.PartialFileInfo.FileName);
+        Assert.Equal("RESULTMONTHLY_806", wholeMonthResultResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResultB.FileContent);
     }
 }

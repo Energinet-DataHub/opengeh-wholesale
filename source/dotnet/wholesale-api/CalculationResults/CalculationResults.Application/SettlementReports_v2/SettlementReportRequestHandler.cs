@@ -36,8 +36,8 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         SettlementReportRequestDto reportRequest,
         MarketRole marketRole)
     {
-        const string energyResultFileName = "Result Energy";
-        const string wholesaleResultFileName = "Result Wholesale";
+        const string energyResultFileName = "RESULTENERGY";
+        const string wholesaleResultFileName = "RESULTWHOLESALE";
 
         var filesInReport = reportRequest.Filter.CalculationType switch
         {
@@ -62,17 +62,17 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 {
                     CalculationType.BalanceFixing => new[]
                     {
-                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "TSSD15", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "TSSD60", SplitReportPerGridArea = true },
                     },
                     CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement =>
                     [
-                        new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "Charge links on metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.ChargePrice, Name = "Charge Price", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "CHARGELINK", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "TSSD15", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "TSSD60", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.ChargePrice, Name = "CHARGEPRICE", SplitReportPerGridArea = true },
                     ],
                     _ => throw new InvalidOperationException($"Cannot generate basis data for calculation type {reportRequest.Filter.CalculationType}."),
                 }
@@ -89,7 +89,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             filesInReport =
             [
                 ..filesInReport,
-                new { Content = SettlementReportFileContent.MonthlyAmount, Name = "Monthly amounts", SplitReportPerGridArea = true },
+                new { Content = SettlementReportFileContent.MonthlyAmount, Name = "RESULTMONTHLY", SplitReportPerGridArea = true },
             ];
         }
 
