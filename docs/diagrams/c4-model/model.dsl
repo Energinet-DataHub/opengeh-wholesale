@@ -19,6 +19,22 @@ wholesaleSubsystem = group "Wholesale" {
         # Subsystem relationships
         this -> wholesaleDataLake "Read inputs / write results"
     }
+    wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
+        description "Executes delta SQL migrations"
+        technology "Azure Databricks SQL Warehouse"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+
+        # Subsystem relationships
+        this -> wholesaleDataLake "Read executed migrations / execute new migrations"
+    }
+    wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
+        description "Executes delta SQL queries"
+        technology "Azure Databricks SQL Warehouse"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+
+        # Subsystem relationships
+        this -> wholesaleDataLake "Read basis data and results"
+    }
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"
         technology "SQL Database Schema"
@@ -35,7 +51,7 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> wholesaleDataLake "Retrieves results from"
+        this -> wholesaleRuntimeWarehouse "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
         edi -> this "Sends to Wholesale Inbox" "message/amqp" {
