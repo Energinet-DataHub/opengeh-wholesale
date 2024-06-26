@@ -122,7 +122,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement2
                                       basis_data.time_series_points t
                                       INNER JOIN basis_data.calculations AS c ON c.calculation_id = t.calculation_id
                                       INNER JOIN basis_data.metering_point_periods AS m ON m.metering_point_id = t.metering_point_id AND m.calculation_id = t.calculation_id
-                                      INNER JOIN {dates} AS d on d.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} = TO_UTC_TIMESTAMP(
+                                      INNER JOIN ({dates}) AS d on d.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} = TO_UTC_TIMESTAMP(
                                           DATE_TRUNC(
                                           'day',
                                           FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')
