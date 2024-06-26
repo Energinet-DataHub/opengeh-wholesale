@@ -2,6 +2,9 @@
 locals {
   func_orchestrationsdf = {
     app_settings = {
+      # Timeout
+      "AzureFunctionsJobHost__functionTimeout" = "05:00:00"
+
       # Logging
       # => Azure Function Worker
       # Explicit override the default "Warning" level filter set by the Application Insights SDK.
