@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportEnergyResultRowFactory
 {
-    public static SettlementReportEnergyResultRow Create(DatabricksSqlRow databricksSqlRow, long version, bool isEnergySupplierIncluded)
+    public static SettlementReportEnergyResultRow Create(DatabricksSqlRow databricksSqlRow, bool isEnergySupplierIncluded)
     {
         var calculationType = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationType];
         var gridArea = databricksSqlRow[SettlementReportEnergyResultViewColumns.GridArea];
