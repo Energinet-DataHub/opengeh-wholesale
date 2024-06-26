@@ -29,6 +29,7 @@ energy_result_points_per_ga_v1 = t.StructType(
         #
         # UTC time
         t.StructField("time", t.TimestampType(), not nullable),
+        #
         t.StructField("quantity", t.DecimalType(18, 3), not nullable),
     ]
 )

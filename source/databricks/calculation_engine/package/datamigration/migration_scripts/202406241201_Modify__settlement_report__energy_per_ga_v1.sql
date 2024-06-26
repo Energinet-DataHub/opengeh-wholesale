@@ -1,3 +1,8 @@
+-- Make columns NOT NULL
+
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1
+GO
+
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1 as
 SELECT calculation_id,
        calculation_type,

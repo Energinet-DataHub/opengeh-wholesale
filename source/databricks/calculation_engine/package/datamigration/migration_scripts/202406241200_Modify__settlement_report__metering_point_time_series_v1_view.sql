@@ -1,3 +1,8 @@
+-- Make columns NOT NULL
+
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
        COALESCE(FIRST(c.calculation_type), 'ERROR') as calculation_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
@@ -7,8 +12,8 @@ SELECT c.calculation_id,
        m.resolution,
        m.grid_area_code,
        m.energy_supplier_id,
-       TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')),'Europe/Copenhagen') AS start_date_time,
-       ARRAY_SORT(ARRAY_AGG(struct(t.observation_time, t.quantity)))                  AS quantities
+       COALESCE(TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')),'Europe/Copenhagen'), TIMESTAMP '1970-01-01 00:00:00') AS start_date_time,
+       ARRAY_SORT(ARRAY_AGG(struct(t.observation_time, t.quantity))) AS quantities
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
   INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
   INNER JOIN {BASIS_DATA_DATABASE_NAME}.time_series_points AS t ON m.metering_point_id = t.metering_point_id AND m.calculation_id = t.calculation_id
