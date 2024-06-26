@@ -105,7 +105,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             var fileRequest = new SettlementReportFileRequestDto(
                 requestId,
                 file.Content,
-                new SettlementReportPartialFileInfo(file.Name, true) { ChunkOffset = file.Content == SettlementReportFileContent.MonthlyAmountTotal ? int.MaxValue : 0 },
+                new SettlementReportPartialFileInfo(file.Name, true) { ChunkOffset = file.Content == SettlementReportFileContent.MonthlyAmountTotal ? int.MaxValue - 1 : 0 },
                 reportRequest.Filter,
                 maxCalculationVersion);
 
