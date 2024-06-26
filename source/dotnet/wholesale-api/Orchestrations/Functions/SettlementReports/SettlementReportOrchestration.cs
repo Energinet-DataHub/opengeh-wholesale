@@ -50,13 +50,22 @@ internal sealed class SettlementReportOrchestration
                 scatterInput,
                 dataSourceExceptionHandler);
 
-        var fileRequestTasks = scatterResults.Select(fileRequest => context
-            .CallActivityAsync<GeneratedSettlementReportFileDto>(
-                nameof(GenerateSettlementReportFileActivity),
-                fileRequest,
-                dataSourceExceptionHandler));
+        var generatedFiles = new List<GeneratedSettlementReportFileDto>();
+        var orderedResults = scatterResults
+            .OrderBy(x => x.PartialFileInfo.FileOffset)
+            .ThenBy(x => x.PartialFileInfo.ChunkOffset)
+            .ToList();
 
-        var generatedFiles = await Task.WhenAll(fileRequestTasks);
+        foreach (var scatterChunk in orderedResults.Chunk(10))
+        {
+            var fileRequestTasks = scatterChunk.Select(fileRequest => context
+                .CallActivityAsync<GeneratedSettlementReportFileDto>(
+                    nameof(GenerateSettlementReportFileActivity),
+                    fileRequest,
+                    dataSourceExceptionHandler));
+
+            generatedFiles.AddRange(await Task.WhenAll(fileRequestTasks));
+        }
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFilesActivity),

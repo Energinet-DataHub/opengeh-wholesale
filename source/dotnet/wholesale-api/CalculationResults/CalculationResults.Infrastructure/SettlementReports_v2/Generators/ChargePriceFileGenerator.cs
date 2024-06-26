@@ -27,26 +27,32 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
-        : base(250)
+        : base(1_750) // Up to 582 rows in each chunk for a month, 1.018.500 rows per chunk in total.
     {
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter);
     }
 
-    protected override IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, skipChunks, takeChunks);
     }
 
     protected override void WriteHeader(CsvWriter csvHelper)
     {
-        csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-
         const int energyPriceFieldCount = 25;
+
+        csvHelper.WriteField($"CHARGETYPE");
+        csvHelper.WriteField($"CHARGETYPEID");
+        csvHelper.WriteField($"CHARGETYPEOWNER");
+        csvHelper.WriteField($"RESOLUTIONDURATION");
+        csvHelper.WriteField($"TAXINDICATOR");
+        csvHelper.WriteField($"STARTDATETIME");
+
         for (var i = 0; i < energyPriceFieldCount; ++i)
         {
             csvHelper.WriteField($"ENERGYPRICE{i + 1}");
@@ -93,13 +99,15 @@ public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementRe
                 });
 
             Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR");
+                .Name("TAXINDICATOR")
+                .TypeConverter<BooleanConverter>()
+                .TypeConverterOption.BooleanValues(true, false, "1")
+                .TypeConverterOption.BooleanValues(false, false, "0");
 
             Map(r => r.StartDateTime)
                 .Name("STARTDATETIME");
 
             Map(r => r.EnergyPrices)
-                .Name("ENERGYPRICE1")
                 .TypeConverter<IEnumerableConverter>();
         }
     }

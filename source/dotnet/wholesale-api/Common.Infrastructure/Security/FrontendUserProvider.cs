@@ -48,6 +48,7 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
             "GridAccessProvider" => FrontendActorMarketRole.GridAccessProvider,
             "EnergySupplier" => FrontendActorMarketRole.EnergySupplier,
             "SystemOperator" => FrontendActorMarketRole.SystemOperator,
+            "DataHubAdministrator" => FrontendActorMarketRole.DataHubAdministrator,
             _ => FrontendActorMarketRole.Other,
         };
     }
