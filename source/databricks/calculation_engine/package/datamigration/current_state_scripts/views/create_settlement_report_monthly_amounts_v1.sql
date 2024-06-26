@@ -33,6 +33,6 @@ SELECT c.calculation_id,
        NULL as charge_type,
        NULL as charge_code,
        tma.charge_owner_id,
-       ma.is_tax
+       NULL as is_tax
 FROM {OUTPUT_DATABASE_NAME}.total_monthly_amounts AS tma
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = tma.calculation_id
