@@ -22,7 +22,7 @@ SELECT wr.calculation_id,
        wr.amount,
        COALESCE(wr.charge_type, 'ERROR') as charge_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
        COALESCE(wr.charge_code, 'ERROR') as charge_code, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-       COALESCE(wr.charge_owner_id, 'ERROR') as charge_owner_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+       COALESCE(wr.charge_owner_id, 'ERROR') as charge_owner_id -- Hack to make column NOT NULL. Defaults to 'ERROR'.
 FROM {OUTPUT_DATABASE_NAME}.wholesale_results AS wr
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = wr.calculation_id
 WHERE wr.amount_type = "amount_per_charge"
