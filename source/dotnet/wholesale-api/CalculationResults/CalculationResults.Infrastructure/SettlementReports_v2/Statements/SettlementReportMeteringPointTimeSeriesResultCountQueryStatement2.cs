@@ -33,7 +33,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultCountQueryState
     protected override string GetSqlStatement()
     {
         return $"""
-                 SELECT DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime})
+                 SELECT COUNT(DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime})) AS count
                  FROM (
                      SELECT
                          c.calculation_id,
