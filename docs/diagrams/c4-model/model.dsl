@@ -65,7 +65,6 @@ wholesaleSubsystem = group "Wholesale" {
             tags "Simple View"
         }
     }
-
     wholesaleOrchestrations = container "Wholesale Orchestrations" {
         description "Orchestrate calculation workflow, generate settlement reports"
         technology "Azure function, C#"
