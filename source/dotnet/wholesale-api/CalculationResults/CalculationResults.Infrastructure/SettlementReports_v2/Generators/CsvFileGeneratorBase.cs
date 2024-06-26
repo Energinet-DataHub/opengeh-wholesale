@@ -34,8 +34,9 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
 
     public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
     {
-        var count = await CountAsync(filter, actorInfo, maximumCalculationVersion).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)_chunkSize);
+        // var count = await CountAsync(filter, actorInfo, maximumCalculationVersion).ConfigureAwait(false);
+        // return (int)Math.Ceiling(count / (double)_chunkSize);
+        return await Task.FromResult(1).ConfigureAwait(false);
     }
 
     public async Task WriteAsync(
@@ -57,7 +58,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, fileInfo.ChunkOffset * _chunkSize, _chunkSize);
+            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, 0, _chunkSize);
 
             await foreach (var record in dataSourceEnumerable.ConfigureAwait(false))
             {

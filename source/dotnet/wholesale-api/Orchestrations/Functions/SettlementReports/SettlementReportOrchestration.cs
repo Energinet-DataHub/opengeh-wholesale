@@ -61,7 +61,7 @@ internal sealed class SettlementReportOrchestration
             var fileRequestTasks = scatterChunk.Select(fileRequest => context
                 .CallActivityAsync<GeneratedSettlementReportFileDto>(
                     nameof(GenerateSettlementReportFileActivity),
-                    new GeneraterSettlementReportFileInput(fileRequest, settlementReportRequest.ActorInfo),
+                    new GenerateSettlementReportFileInput(fileRequest, settlementReportRequest.ActorInfo),
                     dataSourceExceptionHandler));
 
             generatedFiles.AddRange(await Task.WhenAll(fileRequestTasks));

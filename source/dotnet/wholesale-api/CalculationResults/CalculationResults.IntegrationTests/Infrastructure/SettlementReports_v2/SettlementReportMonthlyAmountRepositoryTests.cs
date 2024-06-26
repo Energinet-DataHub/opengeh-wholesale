@@ -57,7 +57,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
             [
                 ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197" ],
                 ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL" ],
+                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(

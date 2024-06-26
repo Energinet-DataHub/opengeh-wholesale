@@ -25,7 +25,7 @@ public sealed class MonthlyAmountTotalFileGenerator : CsvFileGeneratorBase<Settl
     private readonly ISettlementReportMonthlyAmountTotalRepository _dataSource;
 
     public MonthlyAmountTotalFileGenerator(ISettlementReportMonthlyAmountTotalRepository dataSource)
-    : base(250)
+    : base(80000)
     {
         _dataSource = dataSource;
     }

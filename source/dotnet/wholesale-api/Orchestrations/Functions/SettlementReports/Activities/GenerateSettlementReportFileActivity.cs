@@ -29,7 +29,7 @@ public sealed class GenerateSettlementReportFileActivity
     }
 
     [Function(nameof(GenerateSettlementReportFileActivity))]
-    public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] GeneraterSettlementReportFileInput input)
+    public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] GenerateSettlementReportFileInput input)
     {
         return _settlementReportFileRequestHandler.RequestFileAsync(input.FileRequest, input.ActorInfo);
     }

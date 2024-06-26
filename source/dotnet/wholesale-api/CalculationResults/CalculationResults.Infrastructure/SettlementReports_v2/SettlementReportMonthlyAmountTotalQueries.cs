@@ -28,26 +28,22 @@ public sealed class SettlementReportMonthlyAmountTotalQueries : ISettlementRepor
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly ICalculationsClient _calculationsClient;
 
     public SettlementReportMonthlyAmountTotalQueries(
         IOptions<DeltaTableOptions> deltaTableOptions,
-        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        ICalculationsClient calculationsClient)
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _calculationsClient = calculationsClient;
         _deltaTableOptions = deltaTableOptions;
     }
 
     public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportMonthlyAmountQueryFilter filter, int skip, int take)
     {
-        var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
         var statement = new SettlementReportMonthlyAmountTotalQueryStatement(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportMonthlyAmountRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
+            yield return SettlementReportMonthlyAmountRowFactory.Create(new DatabricksSqlRow(nextRow));
         }
     }
 
