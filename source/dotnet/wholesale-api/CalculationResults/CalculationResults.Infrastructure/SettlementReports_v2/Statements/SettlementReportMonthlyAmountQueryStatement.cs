@@ -48,9 +48,10 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
                          {SettlementReportMonthlyAmountViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                          {SettlementReportMonthlyAmountViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}'
-                         {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'" : string.Empty)} 
-                         {(_filter.EnergySupplier is null ? string.Empty : " AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " IS NOT NULL")}
+                         {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                         {SettlementReportMonthlyAmountViewColumns.ChargeOwnerId} IS NOT NULL
+                         {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? "AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'" : string.Empty)} 
+                         {(_filter.EnergySupplier is null ? string.Empty : "AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'")}
                      ORDER BY 
                          {SettlementReportMonthlyAmountViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
@@ -80,9 +81,10 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
                         {SettlementReportMonthlyAmountViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportMonthlyAmountViewColumns.Time} >= '{_filter.PeriodStart}' AND
                         {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                        {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " IS NOT NULL" : string.Empty)}
-                        {(_filter.EnergySupplier is null ? string.Empty : " AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " IS NOT NULL")}
-                        {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}'
+                        {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}' AND           
+                        {SettlementReportMonthlyAmountViewColumns.ChargeOwnerId} IS NOT NULL
+                        {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? "AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " IS NOT NULL" : string.Empty)}
+                        {(_filter.EnergySupplier is null ? string.Empty : "AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'")}
              """;
     }
 }
