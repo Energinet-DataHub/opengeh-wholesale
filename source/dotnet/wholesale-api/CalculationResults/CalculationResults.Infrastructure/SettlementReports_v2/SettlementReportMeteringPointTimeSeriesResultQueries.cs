@@ -38,7 +38,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueries : ISett
 
     public async Task<int> CountAsync(SettlementReportMeteringPointTimeSeriesResultQueryFilter filter)
     {
-        var statement = new SettlementReportMeteringPointTimeSeriesResultCountQueryStatement(_deltaTableOptions, filter);
+        var statement = new SettlementReportMeteringPointTimeSeriesResultCountQueryStatement2(_deltaTableOptions, filter);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
@@ -50,7 +50,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueries : ISett
 
     public async IAsyncEnumerable<SettlementReportMeterinPointTimeSeriesResultRow> GetAsync(SettlementReportMeteringPointTimeSeriesResultQueryFilter filter, int skip, int take)
     {
-        var statement = new SettlementReportMeteringPointTimeSeriesResultQueryStatement(_deltaTableOptions, filter, skip, take);
+        var statement = new SettlementReportMeteringPointTimeSeriesResultQueryStatement2(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {

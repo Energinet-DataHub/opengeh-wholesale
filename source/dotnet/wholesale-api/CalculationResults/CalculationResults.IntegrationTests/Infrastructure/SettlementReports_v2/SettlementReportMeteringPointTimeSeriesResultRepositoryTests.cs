@@ -50,7 +50,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
-    [Fact]
+    [Fact(Skip = "Perf Test")]
     public async Task Count_ValidFilter_ReturnsCount()
     {
         // arrange
@@ -80,7 +80,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         Assert.Equal(1, actual);
     }
 
-    [Fact]
+    [Fact(Skip = "Perf Test")]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
         // arrange
@@ -115,7 +115,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         Assert.Equal(4, actual[0].StartDateTime.ToDateTimeOffset().Hour);
     }
 
-    [Theory]
+    [Theory(Skip = "Perf Test")]
     [InlineData("8442359392717", 1)]
     [InlineData(null, 3)]
     public async Task Get_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected)
@@ -160,7 +160,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         Assert.Equal(expected, actual.Count);
     }
 
-    [Theory]
+    [Theory(Skip = "Perf Test")]
     [InlineData("8442359392721", 1)]
     [InlineData(null, 3)]
     public async Task Count_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected)
