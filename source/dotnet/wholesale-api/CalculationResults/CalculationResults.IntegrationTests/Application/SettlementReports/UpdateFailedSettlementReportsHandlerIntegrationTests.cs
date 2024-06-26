@@ -52,9 +52,7 @@ public sealed class UpdateFailedSettlementReportsHandlerIntegrationTests : TestB
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
                 null,
-                null,
-                null,
-                MarketRole.GridAccessProvider));
+                null));
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
         await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), false, requestId, settlementReportRequest));

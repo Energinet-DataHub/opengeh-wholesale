@@ -70,9 +70,8 @@ public sealed class EnergyResultFileGeneratorTests
                 DateTimeOffset.Now,
                 CalculationType.WholesaleFixing,
                 null,
-                null,
-                "da-DK",
-                marketRole),
+                "da-DK"),
+            new SettlementReportRequestInputActorInfo(marketRole, null),
             new SettlementReportPartialFileInfo("test", false),
             1,
             wr);

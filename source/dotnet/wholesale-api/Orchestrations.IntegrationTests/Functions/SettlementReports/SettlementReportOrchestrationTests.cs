@@ -104,9 +104,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
                 null,
-                null,
-                null,
-                MarketRole.GridAccessProvider));
+                null));
 
         // => Databricks SQL Statement API
         Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
@@ -176,9 +174,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
                 null,
-                null,
-                null,
-                MarketRole.GridAccessProvider));
+                null));
 
         // => Databricks SQL Statement API
         Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
@@ -261,9 +257,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 CalculationType.BalanceFixing,
                 null,
-                null,
-                null,
-                MarketRole.GridAccessProvider));
+                null));
 
         // => Databricks SQL Statement API
         Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);

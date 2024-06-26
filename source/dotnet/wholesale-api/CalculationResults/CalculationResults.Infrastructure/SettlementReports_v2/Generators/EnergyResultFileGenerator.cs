@@ -31,24 +31,24 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter, maximumCalculationVersion);
     }
 
-    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, maximumCalculationVersion, skipChunks, takeChunks);
     }
 
-    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter)
+    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
     {
-        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(filter));
+        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(filter, actorInfo));
     }
 
     public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportEnergyResultRowMap(SettlementReportRequestFilterDto filter)
+        public SettlementReportEnergyResultRowMap(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
@@ -113,7 +113,7 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
                 .Index(6)
                 .Data.TypeConverterOptions.Formats = ["0.000"];
 
-            if (filter.MarketRole is MarketRole.DataHubAdministrator)
+            if (actorInfo.MarketRole is MarketRole.DataHubAdministrator)
             {
                 Map(r => r.EnergySupplierId)
                     .Name("ENERGYSUPPLIERID")

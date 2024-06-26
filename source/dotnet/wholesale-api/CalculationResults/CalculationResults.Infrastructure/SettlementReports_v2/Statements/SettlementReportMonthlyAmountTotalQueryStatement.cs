@@ -21,14 +21,14 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStatement
+public sealed class SettlementReportMonthlyAmountTotalQueryStatement : DatabricksStatement
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly SettlementReportMonthlyAmountQueryFilter _filter;
     private readonly int _skip;
     private readonly int _take;
 
-    public SettlementReportMonthlyAmountQueryStatement(IOptions<DeltaTableOptions> deltaTableOptions, SettlementReportMonthlyAmountQueryFilter filter, int skip, int take)
+    public SettlementReportMonthlyAmountTotalQueryStatement(IOptions<DeltaTableOptions> deltaTableOptions, SettlementReportMonthlyAmountQueryFilter filter, int skip, int take)
     {
         _deltaTableOptions = deltaTableOptions;
         _filter = filter;
@@ -40,20 +40,25 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
     {
         var monthlyAmount =
             $"""
-                     SELECT DISTINCT({SettlementReportMonthlyAmountViewColumns.ResultId})
-                     FROM
-                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME}
-                     WHERE 
-                         {SettlementReportMonthlyAmountViewColumns.GridAreaCode} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
-                         {SettlementReportMonthlyAmountViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                         {SettlementReportMonthlyAmountViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                         {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}'
-                         {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'" : string.Empty)} 
-                         {(_filter.EnergySupplier is null ? string.Empty : " AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " IS NOT NULL")}
-                     ORDER BY 
-                         {SettlementReportMonthlyAmountViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
-                 """.Replace(Environment.NewLine, " ");
+            SELECT DISTINCT({SettlementReportMonthlyAmountViewColumns.ResultId})
+            FROM
+                {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME}
+            WHERE 
+                {SettlementReportMonthlyAmountViewColumns.GridAreaCode} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
+                {SettlementReportMonthlyAmountViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
+                {SettlementReportMonthlyAmountViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}'
+                {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? string.Empty : " AND "
+                    + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'")} 
+                {(_filter.EnergySupplier is null ? string.Empty : " AND "
+                    + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'"
+                    + " AND " + SettlementReportMonthlyAmountViewColumns.ChargeType + " IS NULL"
+                    + " AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " IS NULL"
+                    + " AND " + SettlementReportMonthlyAmountViewColumns.ChargeCode + " IS NULL")}
+            ORDER BY 
+                {SettlementReportMonthlyAmountViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
+        """.Replace(Environment.NewLine, " ");
 
         return $"""
                 SELECT {string.Join(", ", [
@@ -74,15 +79,20 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
                 FROM 
                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME}
                 JOIN 
-                      ({monthlyAmount}) AS ma ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME}.{SettlementReportMonthlyAmountViewColumns.ResultId} = ma.{SettlementReportMonthlyAmountViewColumns.ResultId}
+                    ({monthlyAmount}) AS ma ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME}.{SettlementReportMonthlyAmountViewColumns.ResultId} = ma.{SettlementReportMonthlyAmountViewColumns.ResultId}
                 WHERE 
                         {SettlementReportMonthlyAmountViewColumns.GridAreaCode} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportMonthlyAmountViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportMonthlyAmountViewColumns.Time} >= '{_filter.PeriodStart}' AND
                         {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                        {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " IS NOT NULL" : string.Empty)}
-                        {(_filter.EnergySupplier is null ? string.Empty : " AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " IS NOT NULL")}
                         {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}'
-             """;
+                        {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? string.Empty : " AND "
+                            + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'")}
+                        {(_filter.EnergySupplier is null ? string.Empty : " AND "
+                            + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'"
+                            + " AND " + SettlementReportMonthlyAmountViewColumns.ChargeType + " IS NULL"
+                            + " AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " IS NULL"
+                            + " AND " + SettlementReportMonthlyAmountViewColumns.ChargeCode + " IS NULL")}
+                """;
     }
 }

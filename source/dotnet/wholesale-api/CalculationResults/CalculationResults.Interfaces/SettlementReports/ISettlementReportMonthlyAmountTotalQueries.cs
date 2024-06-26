@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public interface ISettlementReportWholesaleRepository
+public interface ISettlementReportMonthlyAmountTotalQueries
 {
-    Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo);
+    Task<int> CountAsync(SettlementReportMonthlyAmountQueryFilter filter);
 
-    IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, int skip, int take);
+    IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportMonthlyAmountQueryFilter filter, int skip, int take);
 }

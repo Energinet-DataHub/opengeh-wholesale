@@ -19,11 +19,11 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportMonthlyAmountRepository
+public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementReportMonthlyAmountTotalRepository
 {
-    private readonly ISettlementReportMonthlyAmountQueries _settlementReportResultQueries;
+    private readonly ISettlementReportMonthlyAmountTotalQueries _settlementReportResultQueries;
 
-    public SettlementReportMonthlyAmountRepository(ISettlementReportMonthlyAmountQueries settlementReportResultQueries)
+    public SettlementReportMonthlyAmountTotalRepository(ISettlementReportMonthlyAmountTotalQueries settlementReportResultQueries)
     {
         _settlementReportResultQueries = settlementReportResultQueries;
     }
@@ -33,7 +33,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
         return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
     }
 
-    public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo,  int skip, int take)
+    public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, int skip, int take)
     {
         var rows = _settlementReportResultQueries
             .GetAsync(ParseFilter(filter, actorInfo), skip, take)

@@ -32,14 +32,14 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
     {
-        return _dataSource.CountAsync(filter);
+        return _dataSource.CountAsync(filter, actorInfo);
     }
 
-    protected override IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        return _dataSource.GetAsync(filter, skipChunks, takeChunks);
+        return _dataSource.GetAsync(filter, actorInfo, skipChunks, takeChunks);
     }
 
     public sealed class SettlementReportWholesaleResultRowMap : ClassMap<SettlementReportWholesaleResultRow>

@@ -67,9 +67,8 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
                 DateTimeOffset.Now,
                 CalculationType.WholesaleFixing,
                 null,
-                null,
-                "da-DK",
-                MarketRole.SystemOperator),
+                "da-DK"),
+            new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null),
             new SettlementReportPartialFileInfo("test", false),
             1,
             wr);

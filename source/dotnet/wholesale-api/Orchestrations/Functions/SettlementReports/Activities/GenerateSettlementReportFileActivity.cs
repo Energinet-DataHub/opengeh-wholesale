@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
@@ -28,8 +29,8 @@ public sealed class GenerateSettlementReportFileActivity
     }
 
     [Function(nameof(GenerateSettlementReportFileActivity))]
-    public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] SettlementReportFileRequestDto fileRequest)
+    public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] GeneraterSettlementReportFileInput input)
     {
-        return _settlementReportFileRequestHandler.RequestFileAsync(fileRequest);
+        return _settlementReportFileRequestHandler.RequestFileAsync(input.FileRequest, input.ActorInfo);
     }
 }

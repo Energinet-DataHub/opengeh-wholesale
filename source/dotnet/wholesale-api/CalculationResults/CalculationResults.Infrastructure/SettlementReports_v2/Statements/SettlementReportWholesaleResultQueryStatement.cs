@@ -85,6 +85,7 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                                     {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                                     {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                                     {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
+                                    {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? $"AND {SettlementReportWholesaleViewColumns.ChargeOwnerId} = '{SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId)}'" : string.Empty)}
                                     {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                             """;
         return

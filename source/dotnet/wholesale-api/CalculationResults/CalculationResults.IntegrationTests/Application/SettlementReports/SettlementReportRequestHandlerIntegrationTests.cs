@@ -33,11 +33,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestInputActorInfo>(), 1))
             .ReturnsAsync(1);
 
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), long.MaxValue))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestInputActorInfo>(), long.MaxValue))
             .ReturnsAsync(1);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -64,12 +64,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             CalculationType.BalanceFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
         mockedRepository
@@ -78,7 +77,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestInputActorInfo>(), 1))
             .ReturnsAsync(2);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -89,7 +88,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var sut = new SettlementReportRequestHandler(mockedFactory.Object, mockedRepository.Object);
 
         // Act
-        var actual = (await sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var chunkA = actual[0];
@@ -124,15 +123,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             CalculationType.BalanceFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual.Single();
@@ -162,15 +160,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             CalculationType.BalanceFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -201,15 +198,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             CalculationType.WholesaleFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual[0];
@@ -241,15 +237,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             CalculationType.WholesaleFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -295,15 +290,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             endDate,
             CalculationType.WholesaleFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, true, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -374,15 +368,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             endDate,
             CalculationType.WholesaleFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -458,15 +451,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             CalculationType.WholesaleFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, true, false, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual.
@@ -641,15 +633,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             new DateTimeOffset(2024, 1, 1, 1, 0, 0, offset).UtcDateTime.AddMonths(1),
             CalculationType.WholesaleFixing,
             null,
-            null,
-            null,
-            MarketRole.GridAccessProvider);
+            null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
+        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual.

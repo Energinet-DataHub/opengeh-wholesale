@@ -20,11 +20,11 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<SettlementReportMonthlyAmountRow, MonthlyAmountFileGenerator.SettlementReportMonthlyAmountRowMap>
+public sealed class MonthlyAmountTotalFileGenerator : CsvFileGeneratorBase<SettlementReportMonthlyAmountRow, MonthlyAmountFileGenerator.SettlementReportMonthlyAmountRowMap>
 {
-    private readonly ISettlementReportMonthlyAmountRepository _dataSource;
+    private readonly ISettlementReportMonthlyAmountTotalRepository _dataSource;
 
-    public MonthlyAmountFileGenerator(ISettlementReportMonthlyAmountRepository dataSource)
+    public MonthlyAmountTotalFileGenerator(ISettlementReportMonthlyAmountTotalRepository dataSource)
     : base(250)
     {
         _dataSource = dataSource;

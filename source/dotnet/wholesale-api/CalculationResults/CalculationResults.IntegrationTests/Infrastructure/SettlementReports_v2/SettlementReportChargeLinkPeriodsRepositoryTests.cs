@@ -77,9 +77,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                null,
-                "da-DK",
-                MarketRole.GridAccessProvider));
+                "da-DK"));
 
         Assert.Equal(2, actual);
     }
@@ -106,9 +104,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 "8397670583191",
-                null,
-                "da-DK",
-                MarketRole.GridAccessProvider));
+                "da-DK"));
 
         Assert.Equal(1, actual);
     }
@@ -143,9 +139,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                 DateTimeOffset.Parse(endDate),
                 CalculationType.WholesaleFixing,
                 null,
-                null,
-                "da-DK",
-                MarketRole.GridAccessProvider),
+                "da-DK"),
             skip: 0,
             take: int.MaxValue).ToListAsync();
 
@@ -176,9 +170,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                 DateTimeOffset.Parse("2024-02-04T00:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                null,
-                "da-DK",
-                MarketRole.GridAccessProvider),
+                "da-DK"),
             skip: 2,
             take: 1).ToListAsync();
 
