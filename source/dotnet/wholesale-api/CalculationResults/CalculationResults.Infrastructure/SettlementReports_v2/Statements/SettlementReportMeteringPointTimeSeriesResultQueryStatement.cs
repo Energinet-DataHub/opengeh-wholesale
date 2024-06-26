@@ -38,7 +38,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement 
     {
         var meteringPoint =
             $"""
-                     SELECT DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId})
+                     SELECT DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime})
                      FROM
                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}
                      WHERE 
@@ -49,19 +49,19 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement 
                         {SettlementReportMeteringPointTimeSeriesViewColumns.Resolution} = '{SqlStringSanitizer.Sanitize(_filter.Resolution)}'
                         {(_filter.EnergySupplier is not null ? $"AND {SettlementReportMeteringPointTimeSeriesViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                      ORDER BY 
-                        {SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId} LIMIT {_take} OFFSET {_skip}
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
 
         var sqlStatement = $"""
-                                SELECT mp.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId}, {string.Join(", ", SettlementReportMeteringPointTimeSeriesViewColumns.AllNames.Except([SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId]))}
+                                SELECT mp.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime}, {string.Join(", ", SettlementReportMeteringPointTimeSeriesViewColumns.AllNames.Except([SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime]))}
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}
                                 JOIN 
-                                    ({meteringPoint}) AS mp ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId} = mp.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId}
+                                    ({meteringPoint}) AS mp ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME}.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} = mp.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime}
                                 WHERE 
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
-                                    {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
-                                    {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
+                                    mp.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
+                                    mp.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.CalculationId} = '{_filter.CalculationId}' AND
                                     {SettlementReportMeteringPointTimeSeriesViewColumns.Resolution} = '{SqlStringSanitizer.Sanitize(_filter.Resolution)}'
                                     {(_filter.EnergySupplier is not null ? $"AND {SettlementReportMeteringPointTimeSeriesViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
