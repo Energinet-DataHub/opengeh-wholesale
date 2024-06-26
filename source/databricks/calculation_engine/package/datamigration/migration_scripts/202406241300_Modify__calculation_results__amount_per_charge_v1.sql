@@ -10,9 +10,9 @@ SELECT c.calculation_id,
        wr.calculation_result_id as result_id,
        wr.grid_area_code,
        wr.energy_supplier_id,
-       CAST(COALESCE(wr.charge_code, 'ERROR') AS VARCHAR) as charge_code, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-       CAST(COALESCE(wr.charge_type, 'ERROR') AS VARCHAR) as charge_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
-       CAST(COALESCE(wr.charge_owner_id, 'ERROR') AS VARCHAR) as charge_owner_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+       CAST(COALESCE(wr.charge_code, 'ERROR') AS STRING) as charge_code, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+       CAST(COALESCE(wr.charge_type, 'ERROR') AS STRING) as charge_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
+       CAST(COALESCE(wr.charge_owner_id, 'ERROR') AS STRING) as charge_owner_id, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
        wr.resolution,
        wr.quantity_unit,
        COALESCE(wr.metering_point_type, 'ERROR') as metering_point_type, -- Hack to make column NOT NULL. Defaults to 'ERROR'.
