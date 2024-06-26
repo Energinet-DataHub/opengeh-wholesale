@@ -77,7 +77,9 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.FirstCorrectionSettlement,
                 null,
-                "da-DK"));
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider));
 
         Assert.Equal(2, actual);
     }
@@ -104,7 +106,9 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.FirstCorrectionSettlement,
                 "8397670583196",
-                "da-DK"));
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider));
 
         Assert.Equal(1, actual);
     }
@@ -132,7 +136,9 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 DateTimeOffset.Parse("2024-02-04T00:00:00.000+00:00"),
                 CalculationType.FirstCorrectionSettlement,
                 null,
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             skip: 2,
             take: 1).ToListAsync();
 

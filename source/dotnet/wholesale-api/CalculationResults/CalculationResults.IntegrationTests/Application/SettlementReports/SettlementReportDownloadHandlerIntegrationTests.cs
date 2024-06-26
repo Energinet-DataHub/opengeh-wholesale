@@ -44,7 +44,9 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
             DateTimeOffset.UtcNow,
             CalculationType.BalanceFixing,
             null,
-            null));
+            null,
+            null,
+            MarketRole.GridAccessProvider));
 
     public SettlementReportDownloadHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,

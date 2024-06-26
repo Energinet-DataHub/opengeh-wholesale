@@ -31,6 +31,6 @@ public sealed class ScatterSettlementReportFilesActivity
     [Function(nameof(ScatterSettlementReportFilesActivity))]
     public Task<IEnumerable<SettlementReportFileRequestDto>> Run([ActivityTrigger] ScatterSettlementReportFilesInput input)
     {
-        return _settlementReportRequestHandler.RequestReportAsync(input.RequestId, input.Request, input.MarketRole);
+        return _settlementReportRequestHandler.RequestReportAsync(input.RequestId, input.Request);
     }
 }

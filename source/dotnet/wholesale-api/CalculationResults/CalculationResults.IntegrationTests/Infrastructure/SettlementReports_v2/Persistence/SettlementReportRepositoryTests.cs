@@ -52,7 +52,9 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
             CalculationType.BalanceFixing,
             null,
-            null);
+            null,
+            null,
+            MarketRole.GridAccessProvider);
 
         var settlementReportRequest = new SettlementReport(
             SystemClock.Instance,
@@ -100,7 +102,9 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
             CalculationType.BalanceFixing,
             null,
-            null);
+            null,
+            null,
+            MarketRole.GridAccessProvider);
 
         var settlementReport = new SettlementReport(
             SystemClock.Instance,
@@ -227,7 +231,9 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
             CalculationType.BalanceFixing,
             null,
-            null);
+            null,
+            null,
+            MarketRole.GridAccessProvider);
 
         var settlementReportRequest = new SettlementReport(
             SystemClock.Instance,

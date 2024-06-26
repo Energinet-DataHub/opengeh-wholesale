@@ -71,8 +71,19 @@ internal sealed class SettlementReportRequestTrigger
             _ => throw new ArgumentOutOfRangeException(nameof(_userContext.CurrentUser.Actor.MarketRole)),
         };
 
+        settlementReportRequest = settlementReportRequest with
+        {
+            Filter = settlementReportRequest.Filter with
+            {
+                MarketRole = marketRole,
+                ChargeOwnerId = marketRole is MarketRole.GridAccessProvider or MarketRole.SystemOperator
+                    ? _userContext.CurrentUser.Actor.ActorNumber
+                    : string.Empty,
+            },
+        };
+
         var instanceId = await client
-            .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReport), new SettlementReportRequestInput(settlementReportRequest, marketRole))
+            .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReport), new SettlementReportRequestInput(settlementReportRequest))
             .ConfigureAwait(false);
 
         var requestId = new SettlementReportRequestId(instanceId);

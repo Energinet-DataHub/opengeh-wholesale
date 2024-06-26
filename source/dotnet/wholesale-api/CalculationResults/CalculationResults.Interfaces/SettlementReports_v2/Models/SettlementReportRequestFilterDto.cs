@@ -22,4 +22,6 @@ public sealed record SettlementReportRequestFilterDto(
     DateTimeOffset PeriodEnd,
     CalculationType CalculationType,
     string? EnergySupplier,
-    string? CsvFormatLocale);
+    string? ChargeOwnerId,
+    string? CsvFormatLocale,
+    MarketRole MarketRole);

@@ -76,7 +76,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1);
 
         Assert.Equal(1, actual);
@@ -103,7 +105,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1);
 
         Assert.Equal(1, actual);
@@ -130,7 +134,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1);
 
         Assert.Equal(0, actual);
@@ -157,7 +163,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 "8236015961810",
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1);
 
         Assert.Equal(1, actual);
@@ -184,7 +192,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 "8236015961810",
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1);
 
         Assert.Equal(1, actual);
@@ -211,7 +221,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 "8236015961810",
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1);
 
         Assert.Equal(0, actual);
@@ -241,7 +253,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1,
             skip: 3,
             take: 1).ToListAsync();
@@ -281,7 +295,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-14T00:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             10,
             skip: 3,
             take: 1).ToListAsync();
@@ -318,7 +334,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 "8236015961811",
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             1,
             skip: 3,
             take: 1).ToListAsync();
@@ -358,7 +376,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2022-01-14T00:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 "8236015961811",
-                "da-DK"),
+                null,
+                "da-DK",
+                MarketRole.GridAccessProvider),
             10,
             skip: 3,
             take: 1).ToListAsync();

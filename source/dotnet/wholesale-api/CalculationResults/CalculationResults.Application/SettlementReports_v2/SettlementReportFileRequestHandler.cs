@@ -48,7 +48,6 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             {
                 await fileGenerator
                     .WriteAsync(
-                        fileRequest.MarketRole,
                         fileRequest.RequestFilter,
                         fileRequest.PartialFileInfo,
                         fileRequest.MaximumCalculationVersion,

@@ -31,24 +31,24 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter, maximumCalculationVersion);
     }
 
-    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, maximumCalculationVersion, skipChunks, takeChunks);
     }
 
-    protected override void RegisterClassMap(CsvWriter csvHelper, MarketRole marketRole)
+    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter)
     {
-        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(marketRole));
+        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(filter));
     }
 
     public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportEnergyResultRowMap(MarketRole marketRole)
+        public SettlementReportEnergyResultRowMap(SettlementReportRequestFilterDto filter)
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
@@ -113,7 +113,7 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
                 .Index(6)
                 .Data.TypeConverterOptions.Formats = ["0.000"];
 
-            if (marketRole == MarketRole.DataHubAdministrator)
+            if (filter.MarketRole is MarketRole.DataHubAdministrator)
             {
                 Map(r => r.EnergySupplierId)
                     .Name("ENERGYSUPPLIERID")

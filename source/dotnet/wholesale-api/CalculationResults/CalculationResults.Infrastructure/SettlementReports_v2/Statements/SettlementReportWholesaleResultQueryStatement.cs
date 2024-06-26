@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -48,6 +49,7 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                          {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                          {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
+                         {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? $"AND {SettlementReportWholesaleViewColumns.ChargeOwnerId} = '{SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId)}'" : string.Empty)}
                          {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                      ORDER BY 
                          {SettlementReportWholesaleViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}

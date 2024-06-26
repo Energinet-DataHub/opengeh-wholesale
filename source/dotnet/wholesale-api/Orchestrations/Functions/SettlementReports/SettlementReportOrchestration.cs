@@ -38,7 +38,7 @@ internal sealed class SettlementReportOrchestration
         }
 
         var requestId = new SettlementReportRequestId(context.InstanceId);
-        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest.Request, settlementReportRequest.MarketRole);
+        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest.Request);
 
         var dataSourceExceptionHandler = TaskOptions.FromRetryHandler(retryContext => HandleDataSourceExceptions(
                 retryContext,

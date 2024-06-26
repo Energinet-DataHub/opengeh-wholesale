@@ -20,6 +20,5 @@ public interface ISettlementReportRequestHandler
 {
     Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest,
-        MarketRole marketRole);
+        SettlementReportRequestDto reportRequest);
 }

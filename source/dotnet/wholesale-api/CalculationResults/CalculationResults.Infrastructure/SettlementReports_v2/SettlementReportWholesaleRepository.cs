@@ -70,6 +70,8 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
             filter.CalculationType,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant(),
-            filter.EnergySupplier);
+            filter.EnergySupplier,
+            filter.ChargeOwnerId,
+            filter.MarketRole);
     }
 }

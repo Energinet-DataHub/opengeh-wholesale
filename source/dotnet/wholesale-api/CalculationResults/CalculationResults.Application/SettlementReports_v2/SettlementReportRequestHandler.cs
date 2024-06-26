@@ -33,8 +33,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest,
-        MarketRole marketRole)
+        SettlementReportRequestDto reportRequest)
     {
         const string energyResultFileName = "Result Energy";
         const string wholesaleResultFileName = "Result Wholesale";
@@ -103,8 +102,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 file.Content,
                 new SettlementReportPartialFileInfo(file.Name, true),
                 reportRequest.Filter,
-                maxCalculationVersion,
-                marketRole);
+                maxCalculationVersion);
 
             await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, file.SplitReportPerGridArea).ConfigureAwait(false))
             {
@@ -160,7 +158,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
         var chunks = await fileGenerator
-            .CountChunksAsync(fileRequest.MarketRole, fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
+            .CountChunksAsync(fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
             .ConfigureAwait(false);
 
         for (var i = 0; i < chunks; i++)
