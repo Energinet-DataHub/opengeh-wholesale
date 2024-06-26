@@ -12,7 +12,7 @@ module "monitor_action_group_mkpt" {
   short_name                      = "mkpt-alerts"
   email_receiver_name             = "Alerts-mkpt-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   email_receiver_address          = var.alert_email_address
-  custom_dimension_subsystem_name = "mkpt"
+  custom_dimension_subsystem_name = "mark-part"
 
   query_alerts_list = [
     {
