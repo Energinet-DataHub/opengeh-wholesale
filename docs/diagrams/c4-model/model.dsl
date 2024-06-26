@@ -33,7 +33,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
         # Subsystem relationships
-        this -> wholesaleDataLake "Read basis data and calculation results"
+        this -> wholesaleDataLake "Read basis data and results"
     }
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"
