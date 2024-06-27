@@ -99,7 +99,6 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
         var filesToRequest = new List<SettlementReportFileRequestDto>();
-        var offsetsPerContent = new Dictionary<string, (int FileOffset, int ChunkOffset)>();
         foreach (var file in filesInReport)
         {
             var fileRequest = new SettlementReportFileRequestDto(
@@ -109,12 +108,12 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 reportRequest.Filter,
                 maxCalculationVersion);
 
-            if (offsetsPerContent.TryGetValue(file.Name, out var offsets))
+            if (file.Content == SettlementReportFileContent.MonthlyAmountTotal)
             {
                     fileRequest = new SettlementReportFileRequestDto(
                     requestId,
                     file.Content,
-                    new SettlementReportPartialFileInfo(file.Name, true) { ChunkOffset = offsets.ChunkOffset + 1, FileOffset = offsets.FileOffset + 1 },
+                    new SettlementReportPartialFileInfo(file.Name, true) { FileOffset = int.MaxValue },
                     reportRequest.Filter,
                     maxCalculationVersion);
             }
@@ -122,7 +121,6 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, file.SplitReportPerGridArea).ConfigureAwait(false))
             {
                 filesToRequest.Add(splitFileRequest);
-                offsetsPerContent[file.Name] = (splitFileRequest.PartialFileInfo.FileOffset, splitFileRequest.PartialFileInfo.ChunkOffset);
             }
         }
 
