@@ -62,7 +62,8 @@ def _calculate_price_per_day(
     )
 
     subscriptions_with_daily_price = prepared_subscriptions.withColumn(
-        Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_period))
+        Colname.charge_price,
+        f.round((f.col(Colname.charge_price) / f.lit(days_in_period)), 6),
     )
 
     return subscriptions_with_daily_price
