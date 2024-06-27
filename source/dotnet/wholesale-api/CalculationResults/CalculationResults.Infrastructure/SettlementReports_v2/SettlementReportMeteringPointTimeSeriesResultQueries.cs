@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -28,21 +27,18 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueries : ISett
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly ICalculationsClient _calculationsClient;
 
     public SettlementReportMeteringPointTimeSeriesResultQueries(
         IOptions<DeltaTableOptions> deltaTableOptions,
-        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        ICalculationsClient calculationsClient)
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
     {
         _deltaTableOptions = deltaTableOptions;
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _calculationsClient = calculationsClient;
     }
 
     public async Task<int> CountAsync(SettlementReportMeteringPointTimeSeriesResultQueryFilter filter)
     {
-        var statement = new SettlementReportMeteringPointTimeSeriesResultCountQueryStatement(_deltaTableOptions, filter);
+        var statement = new SettlementReportMeteringPointTimeSeriesResultCountQueryStatement2(_deltaTableOptions, filter);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
@@ -54,12 +50,11 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueries : ISett
 
     public async IAsyncEnumerable<SettlementReportMeterinPointTimeSeriesResultRow> GetAsync(SettlementReportMeteringPointTimeSeriesResultQueryFilter filter, int skip, int take)
     {
-        var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
-        var statement = new SettlementReportMeteringPointTimeSeriesResultQueryStatement(_deltaTableOptions, filter, skip, take);
+        var statement = new SettlementReportMeteringPointTimeSeriesResultQueryStatement2(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportMeteringPointTimeSeriesResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
+            yield return SettlementReportMeteringPointTimeSeriesResultRowFactory.Create(new DatabricksSqlRow(nextRow));
         }
     }
 }

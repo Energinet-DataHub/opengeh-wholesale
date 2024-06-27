@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -28,26 +27,22 @@ public sealed class SettlementReportMonthlyAmountQueries : ISettlementReportMont
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly ICalculationsClient _calculationsClient;
 
     public SettlementReportMonthlyAmountQueries(
         IOptions<DeltaTableOptions> deltaTableOptions,
-        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        ICalculationsClient calculationsClient)
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _calculationsClient = calculationsClient;
         _deltaTableOptions = deltaTableOptions;
     }
 
     public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportMonthlyAmountQueryFilter filter, int skip, int take)
     {
-        var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
         var statement = new SettlementReportMonthlyAmountQueryStatement(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportMonthlyAmountRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
+            yield return SettlementReportMonthlyAmountRowFactory.Create(new DatabricksSqlRow(nextRow));
         }
     }
 
