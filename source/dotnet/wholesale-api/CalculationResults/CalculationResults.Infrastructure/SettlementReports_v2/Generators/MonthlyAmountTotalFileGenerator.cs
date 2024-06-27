@@ -25,14 +25,14 @@ public sealed class MonthlyAmountTotalFileGenerator : CsvFileGeneratorBase<Settl
     private readonly ISettlementReportMonthlyAmountTotalRepository _dataSource;
 
     public MonthlyAmountTotalFileGenerator(ISettlementReportMonthlyAmountTotalRepository dataSource)
-    : base(80000)
+    : base(250)
     {
         _dataSource = dataSource;
     }
 
     protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
     {
-        return Task.FromResult(1);
+        return _dataSource.CountAsync(filter, actorInfo);
     }
 
     protected override IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)

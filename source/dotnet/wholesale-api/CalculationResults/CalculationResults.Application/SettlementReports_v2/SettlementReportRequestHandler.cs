@@ -99,19 +99,30 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
         var filesToRequest = new List<SettlementReportFileRequestDto>();
-
+        var offsetsPerContent = new Dictionary<string, (int FileOffset, int ChunkOffset)>();
         foreach (var file in filesInReport)
         {
             var fileRequest = new SettlementReportFileRequestDto(
                 requestId,
                 file.Content,
-                new SettlementReportPartialFileInfo(file.Name, true) { ChunkOffset = file.Content == SettlementReportFileContent.MonthlyAmountTotal ? int.MaxValue - 1 : 0 },
+                new SettlementReportPartialFileInfo(file.Name, true),
                 reportRequest.Filter,
                 maxCalculationVersion);
+
+            if (offsetsPerContent.TryGetValue(file.Name, out var offsets))
+            {
+                    fileRequest = new SettlementReportFileRequestDto(
+                    requestId,
+                    file.Content,
+                    new SettlementReportPartialFileInfo(file.Name, true) { ChunkOffset = offsets.ChunkOffset + 1, FileOffset = offsets.FileOffset + 1 },
+                    reportRequest.Filter,
+                    maxCalculationVersion);
+            }
 
             await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, file.SplitReportPerGridArea).ConfigureAwait(false))
             {
                 filesToRequest.Add(splitFileRequest);
+                offsetsPerContent[file.Name] = (splitFileRequest.PartialFileInfo.FileOffset, splitFileRequest.PartialFileInfo.ChunkOffset);
             }
         }
 

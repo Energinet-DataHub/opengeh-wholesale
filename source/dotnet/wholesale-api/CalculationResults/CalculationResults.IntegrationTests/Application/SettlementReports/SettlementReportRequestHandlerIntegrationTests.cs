@@ -427,12 +427,20 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal("Charge Price (805)", chargePricesResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
 
-        var wholeMonthResultResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
-        Assert.NotNull(wholeMonthResultResult);
-        Assert.Equal(requestId, wholeMonthResultResult.RequestId);
-        Assert.Equal(calculationFilter.Single(), wholeMonthResultResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("Monthly amounts (805)", wholeMonthResultResult.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResult.FileContent);
+        var wholeMonthResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
+        Assert.NotNull(wholeMonthResult);
+        Assert.Equal(requestId, wholeMonthResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), wholeMonthResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Monthly amounts (805)", wholeMonthResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResult.FileContent);
+
+        var wholeMonthTotalResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmountTotal);
+        Assert.NotNull(wholeMonthTotalResult);
+        Assert.Equal(requestId, wholeMonthTotalResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), wholeMonthTotalResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Monthly amounts (805)", wholeMonthTotalResult.PartialFileInfo.FileName);
+        Assert.Equal(wholeMonthResult.PartialFileInfo.FileOffset + 1, wholeMonthTotalResult.PartialFileInfo.ChunkOffset);
+        Assert.Equal(SettlementReportFileContent.MonthlyAmountTotal, wholeMonthTotalResult.FileContent);
     }
 
     [Fact]
