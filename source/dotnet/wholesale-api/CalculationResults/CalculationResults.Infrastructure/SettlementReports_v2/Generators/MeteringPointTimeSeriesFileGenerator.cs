@@ -16,6 +16,7 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -82,7 +83,25 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
             await foreach (var record in _dataSource.GetAsync(filter, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteField(record.MeteringPointId);
-                csvHelper.WriteField(record.MeteringPointType);
+                csvHelper.WriteField(record.MeteringPointType switch
+                {
+                    MeteringPointType.Consumption => "E17",
+                    MeteringPointType.Production => "E18",
+                    MeteringPointType.Exchange => "E20",
+                    MeteringPointType.VeProduction => "D01",
+                    MeteringPointType.NetProduction => "D05",
+                    MeteringPointType.SupplyToGrid => "D06",
+                    MeteringPointType.ConsumptionFromGrid => "D07",
+                    MeteringPointType.WholesaleServicesInformation => "D08",
+                    MeteringPointType.OwnProduction => "D09",
+                    MeteringPointType.NetFromGrid => "D10",
+                    MeteringPointType.NetToGrid => "D11",
+                    MeteringPointType.TotalConsumption => "D12",
+                    MeteringPointType.ElectricalHeating => "D14",
+                    MeteringPointType.NetConsumption => "D15",
+                    MeteringPointType.EffectSettlement => "D19",
+                    _ => throw new ArgumentOutOfRangeException(nameof(record.MeteringPointType)),
+                });
                 csvHelper.WriteField(record.StartDateTime);
 
                 for (var i = 0; i < expectedQuantities; ++i)
