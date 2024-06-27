@@ -95,7 +95,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement2
                            m.energy_supplier_id
                          )
                      ORDER BY 
-                        {SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} LIMIT {_take} OFFSET {_skip}
+                        {SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
 
         var coolerSqlStatement = $"""
