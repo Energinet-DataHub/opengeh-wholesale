@@ -439,7 +439,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(requestId, wholeMonthTotalResult.RequestId);
         Assert.Equal(calculationFilter.Single(), wholeMonthTotalResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Monthly amounts (805)", wholeMonthTotalResult.PartialFileInfo.FileName);
-        Assert.Equal(wholeMonthResult.PartialFileInfo.FileOffset + 1, wholeMonthTotalResult.PartialFileInfo.ChunkOffset);
+        Assert.Equal(int.MaxValue, wholeMonthTotalResult.PartialFileInfo.FileOffset);
         Assert.Equal(SettlementReportFileContent.MonthlyAmountTotal, wholeMonthTotalResult.FileContent);
     }
 
