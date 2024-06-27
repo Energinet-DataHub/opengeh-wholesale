@@ -35,13 +35,12 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
     public string FileExtension => ".csv";
 
-    public Task<int> CountChunksAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter);
     }
 
-    protected override IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
-    public async Task WriteAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
 
