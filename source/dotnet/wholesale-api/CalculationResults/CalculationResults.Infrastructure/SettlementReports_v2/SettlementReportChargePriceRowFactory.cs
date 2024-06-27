@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportChargePriceRowFactory
 {
-    public static SettlementReportChargePriceRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    public static SettlementReportChargePriceRow Create(DatabricksSqlRow databricksSqlRow)
     {
         var chargeType = databricksSqlRow[SettlementReportChargePriceViewColumns.ChargeType];
         var chargeCode = databricksSqlRow[SettlementReportChargePriceViewColumns.ChargeCode];
