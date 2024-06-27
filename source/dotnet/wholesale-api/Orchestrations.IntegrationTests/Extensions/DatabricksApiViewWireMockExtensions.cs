@@ -135,7 +135,10 @@ public static class DatabricksApiViewWireMockExtensions
     private static string DatabricksEnergyStatementRowMock(Guid calculationId)
     {
         // Make sure that the order of the data matches the order of the columns defined in 'DatabricksEnergyStatementResponseMock'
-        var data = SettlementReportEnergyResultViewColumns.AllNames.Concat(SettlementReportEnergyResultCountColumns.AllNames).Select(columnName => columnName switch
+        var data = SettlementReportEnergyResultViewColumns.AllNames
+            .Concat(SettlementReportEnergyResultCountColumns.AllNames)
+            .Concat([SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier])
+            .Select(columnName => columnName switch
         {
             SettlementReportEnergyResultViewColumns.CalculationId => $"\"{calculationId}\"",
             SettlementReportEnergyResultViewColumns.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
