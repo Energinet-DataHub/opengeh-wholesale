@@ -36,9 +36,9 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement2
 
     protected override string GetSqlStatement()
     {
-        var dates =
+        var meteringPoints =
                      $"""
-                     SELECT DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime})
+                     SELECT DISTINCT({SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId})
                      FROM (
                          SELECT
                              c.calculation_id,
@@ -122,13 +122,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueryStatement2
                                       basis_data.time_series_points t
                                       INNER JOIN basis_data.calculations AS c ON c.calculation_id = t.calculation_id
                                       INNER JOIN basis_data.metering_point_periods AS m ON m.metering_point_id = t.metering_point_id AND m.calculation_id = t.calculation_id
-                                      INNER JOIN ({dates}) AS d on d.{SettlementReportMeteringPointTimeSeriesViewColumns.StartDateTime} = TO_UTC_TIMESTAMP(
-                                          DATE_TRUNC(
-                                          'day',
-                                          FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')
-                                          ),
-                                          'Europe/Copenhagen'
-                                      )
+                                      INNER JOIN ({meteringPoints}) AS d on d.{SettlementReportMeteringPointTimeSeriesViewColumns.MeteringPointId} = m.metering_point_id
                                   WHERE
                                       c.calculation_type IN (
                                         'balance_fixing',
