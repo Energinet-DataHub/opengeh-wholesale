@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record SettlementReportRequestInput(SettlementReportRequestDto Request, SettlementReportRequestInputActorInfo ActorInfo);
+public sealed record SettlementReportRequestInput(SettlementReportRequestDto Request, SettlementReportRequestedByActor ActorInfo);

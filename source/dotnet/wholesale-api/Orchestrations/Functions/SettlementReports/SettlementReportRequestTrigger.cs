@@ -50,17 +50,6 @@ internal sealed class SettlementReportRequestTrigger
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
-        if (!await IsValidAsync(settlementReportRequest).ConfigureAwait(false))
-        {
-            return req.CreateResponse(HttpStatusCode.Forbidden);
-        }
-
-        if (settlementReportRequest.Filter.CalculationType != CalculationType.BalanceFixing)
-        {
-            if (settlementReportRequest.Filter.GridAreas.Any(kv => kv.Value is null))
-                return req.CreateResponse(HttpStatusCode.BadRequest);
-        }
-
         if (_userContext.CurrentUser.Actor.MarketRole == FrontendActorMarketRole.EnergySupplier && string.IsNullOrWhiteSpace(settlementReportRequest.Filter.EnergySupplier))
         {
             settlementReportRequest = settlementReportRequest with
@@ -70,6 +59,17 @@ internal sealed class SettlementReportRequestTrigger
                     EnergySupplier = _userContext.CurrentUser.Actor.ActorNumber,
                 },
             };
+        }
+
+        if (!await IsValidAsync(settlementReportRequest).ConfigureAwait(false))
+        {
+            return req.CreateResponse(HttpStatusCode.Forbidden);
+        }
+
+        if (settlementReportRequest.Filter.CalculationType != CalculationType.BalanceFixing)
+        {
+            if (settlementReportRequest.Filter.GridAreas.Any(kv => kv.Value is null))
+                return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
         var marketRole = _userContext.CurrentUser.Actor.MarketRole switch
@@ -86,7 +86,7 @@ internal sealed class SettlementReportRequestTrigger
             ? _userContext.CurrentUser.Actor.ActorNumber
             : null;
 
-        var actorInfo = new SettlementReportRequestInputActorInfo(marketRole, chargeOwnerId);
+        var actorInfo = new SettlementReportRequestedByActor(marketRole, chargeOwnerId);
 
         var instanceId = await client
             .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReport), new SettlementReportRequestInput(settlementReportRequest, actorInfo))
@@ -134,9 +134,7 @@ internal sealed class SettlementReportRequestTrigger
 
         if (marketRole == FrontendActorMarketRole.EnergySupplier)
         {
-            if (!string.IsNullOrWhiteSpace(req.Filter.EnergySupplier)) return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
-
-            return true;
+            return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
         }
 
         return false;

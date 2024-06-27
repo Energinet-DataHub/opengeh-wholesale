@@ -28,12 +28,12 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
     }
 
-    public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo,  int skip, int take)
+    public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo,  int skip, int take)
     {
         var rows = _settlementReportResultQueries
             .GetAsync(ParseFilter(filter, actorInfo), skip, take)
@@ -56,7 +56,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
         }
     }
 
-    private static SettlementReportMonthlyAmountQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
+    private static SettlementReportMonthlyAmountQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 

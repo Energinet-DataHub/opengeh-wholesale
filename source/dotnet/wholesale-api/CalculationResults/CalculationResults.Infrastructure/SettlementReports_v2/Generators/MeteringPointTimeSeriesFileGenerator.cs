@@ -36,7 +36,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         var count = await _dataSource.CountAsync(filter, _resolution).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
@@ -44,7 +44,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     public async Task WriteAsync(
         SettlementReportRequestFilterDto filter,
-        SettlementReportRequestInputActorInfo actorInfo,
+        SettlementReportRequestedByActor actorInfo,
         SettlementReportPartialFileInfo fileInfo,
         long maximumCalculationVersion,
         StreamWriter destination)

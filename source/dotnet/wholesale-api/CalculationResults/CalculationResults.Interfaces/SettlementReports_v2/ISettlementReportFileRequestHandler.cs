@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportFileRequestHandler
 {
-    Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest, SettlementReportRequestInputActorInfo actorInfo);
+    Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest, SettlementReportRequestedByActor actorInfo);
 }

@@ -73,7 +73,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 CalculationType.FirstCorrectionSettlement,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null));
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(2, actual);
     }
@@ -102,7 +102,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 CalculationType.FirstCorrectionSettlement,
                 "8397670583196",
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null));
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(1, actual);
     }
@@ -133,7 +133,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 CalculationType.FirstCorrectionSettlement,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null),
             skip: 3,
             take: 1).ToListAsync();
 

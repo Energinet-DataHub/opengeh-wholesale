@@ -34,7 +34,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest,
-        SettlementReportRequestInputActorInfo actorInfo)
+        SettlementReportRequestedByActor actorInfo)
     {
         const string energyResultFileName = "Result Energy";
         const string wholesaleResultFileName = "Result Wholesale";
@@ -131,7 +131,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridAreaAsync(
         SettlementReportFileRequestDto fileRequest,
-        SettlementReportRequestInputActorInfo actorInfo,
+        SettlementReportRequestedByActor actorInfo,
         bool splitReportPerGridArea)
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
@@ -170,7 +170,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestIntoChunksAsync(
         SettlementReportFileRequestDto fileRequest,
-        SettlementReportRequestInputActorInfo actorInfo)
+        SettlementReportRequestedByActor actorInfo)
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
 

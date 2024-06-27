@@ -31,24 +31,24 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter, maximumCalculationVersion);
     }
 
-    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, maximumCalculationVersion, skipChunks, takeChunks);
     }
 
-    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
+    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(filter, actorInfo));
     }
 
     public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportEnergyResultRowMap(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
+        public SettlementReportEnergyResultRowMap(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")

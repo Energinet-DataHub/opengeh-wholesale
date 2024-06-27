@@ -33,11 +33,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestInputActorInfo>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), 1))
             .ReturnsAsync(1);
 
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestInputActorInfo>(), long.MaxValue))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), long.MaxValue))
             .ReturnsAsync(1);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -68,7 +68,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
         mockedRepository
@@ -77,7 +77,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestInputActorInfo>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), 1))
             .ReturnsAsync(2);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -127,7 +127,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -164,7 +164,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -202,7 +202,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -241,7 +241,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -294,7 +294,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, true, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -372,7 +372,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -463,7 +463,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, true, false, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
@@ -645,7 +645,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();

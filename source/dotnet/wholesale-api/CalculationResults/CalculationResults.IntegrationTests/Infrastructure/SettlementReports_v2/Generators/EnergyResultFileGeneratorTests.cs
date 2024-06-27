@@ -71,7 +71,7 @@ public sealed class EnergyResultFileGeneratorTests
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(marketRole, null),
+            new SettlementReportRequestedByActor(marketRole, null),
             new SettlementReportPartialFileInfo("test", false),
             1,
             wr);

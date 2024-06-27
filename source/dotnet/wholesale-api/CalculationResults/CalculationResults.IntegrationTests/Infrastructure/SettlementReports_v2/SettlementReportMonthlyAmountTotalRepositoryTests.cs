@@ -76,7 +76,7 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
                 CalculationType.FirstCorrectionSettlement,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null));
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(1, actual);
     }
@@ -106,7 +106,7 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
                 CalculationType.FirstCorrectionSettlement,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null));
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(2, actual);
     }
@@ -135,7 +135,7 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
                 CalculationType.FirstCorrectionSettlement,
                 "8397670583196",
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null));
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(1, actual);
     }
@@ -165,7 +165,7 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
                 CalculationType.FirstCorrectionSettlement,
                 "8397670583196",
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null));
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(1, actual);
     }
@@ -198,7 +198,7 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
                 CalculationType.FirstCorrectionSettlement,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null),
             skip: 2,
             take: 1).ToListAsync();
 
@@ -235,7 +235,7 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
                 CalculationType.FirstCorrectionSettlement,
                 null,
                 "da-DK"),
-            new SettlementReportRequestInputActorInfo(MarketRole.EnergySupplier, null),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null),
             skip: 2,
             take: 1).ToListAsync();
 

@@ -120,7 +120,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
@@ -172,7 +172,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager
             .InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
@@ -243,7 +243,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
@@ -288,7 +288,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
@@ -346,7 +346,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);
-        var actorInfo = new SettlementReportRequestInputActorInfo(MarketRole.GridAccessProvider, "8397670583197");
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "8397670583197");
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,

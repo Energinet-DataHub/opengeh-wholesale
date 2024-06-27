@@ -32,7 +32,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         var count = await CountAsync(filter, actorInfo, maximumCalculationVersion).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)_chunkSize);
@@ -40,7 +40,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
 
     public async Task WriteAsync(
         SettlementReportRequestFilterDto filter,
-        SettlementReportRequestInputActorInfo actorInfo,
+        SettlementReportRequestedByActor actorInfo,
         SettlementReportPartialFileInfo fileInfo,
         long maximumCalculationVersion,
         StreamWriter destination)
@@ -67,11 +67,11 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         }
     }
 
-    protected abstract Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo, long maximumCalculationVersion);
+    protected abstract Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion);
 
     protected abstract IAsyncEnumerable<TRow> GetAsync(
         SettlementReportRequestFilterDto filter,
-        SettlementReportRequestInputActorInfo actorInfo,
+        SettlementReportRequestedByActor actorInfo,
         long maximumCalculationVersion,
         int skipChunks,
         int takeChunks);
@@ -85,7 +85,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         csvHelper.WriteHeader<TRow>();
     }
 
-    protected virtual void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestInputActorInfo actorInfo)
+    protected virtual void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         csvHelper.Context.RegisterClassMap<TClassMap>();
     }

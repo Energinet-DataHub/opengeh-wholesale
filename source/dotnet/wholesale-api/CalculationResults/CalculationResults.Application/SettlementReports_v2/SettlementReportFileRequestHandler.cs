@@ -32,7 +32,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
 
     public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(
         SettlementReportFileRequestDto fileRequest,
-        SettlementReportRequestInputActorInfo actorInfo)
+        SettlementReportRequestedByActor actorInfo)
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
 
