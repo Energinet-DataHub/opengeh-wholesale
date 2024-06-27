@@ -78,7 +78,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
                 filename += "_DDQ";
                 break;
             case MarketRole.GridAccessProvider:
-                filename += "_DDQ";
+                filename += "_DDM";
                 break;
         }
 
