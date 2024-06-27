@@ -147,6 +147,7 @@ public static class DatabricksApiViewWireMockExtensions
             SettlementReportEnergyResultViewColumns.Time => "\"2022-05-16T03:00:00.000Z\"",
             SettlementReportEnergyResultViewColumns.Quantity => "\"1.123\"",
             SettlementReportEnergyResultCountColumns.Count => "\"1\"",
+            SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier => "\"0000000000000\"",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),
         }).ToArray();
         var temp = $"""[[{string.Join(",", data)}]]""";
