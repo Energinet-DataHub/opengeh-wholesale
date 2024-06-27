@@ -122,6 +122,7 @@ public static class DatabricksApiViewWireMockExtensions
             SettlementReportEnergyResultViewColumns
                 .AllNames
                 .Concat(SettlementReportEnergyResultCountColumns.AllNames)
+                .Concat([SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier])
                 .Select(name => $" {{\"name\": \"{name}\" }}"));
 
         return json.Replace("{statementId}", statementId)
