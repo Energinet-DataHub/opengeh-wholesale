@@ -19,7 +19,7 @@ from pyspark.sql import DataFrame
 
 @dataclass
 class EnergyResultsContainer:
-    net_exchange_per_neighbour_ga: DataFrame | None = None
+    net_exchange_per_neighbor_ga: DataFrame | None = None
     net_exchange_per_ga: DataFrame | None = None
     temporary_production_per_ga: DataFrame | None = None
     temporary_flex_consumption_per_ga: DataFrame | None = None

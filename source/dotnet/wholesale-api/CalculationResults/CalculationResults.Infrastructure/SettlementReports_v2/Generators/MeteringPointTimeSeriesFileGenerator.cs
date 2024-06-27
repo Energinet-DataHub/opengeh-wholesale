@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 250;
+    private const int ChunkSize = 1; // About 120.000 to 1.300.000 rows per day.
 
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _dataSource;
     private readonly Resolution _resolution;

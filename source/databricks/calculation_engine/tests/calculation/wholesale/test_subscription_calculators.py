@@ -119,7 +119,7 @@ class TestWhenValidInput:
         quantity_1 = 1
         quantity_2 = 2
         price = Decimal("3.0")
-        price_per_day = price / DefaultValues.DAYS_IN_MONTH
+        price_per_day = round((price / DefaultValues.DAYS_IN_MONTH), 6)
         expected_amount_not_rounded = (quantity_1 + quantity_2) * price_per_day
         expected_amount = round(expected_amount_not_rounded, 6)
 
