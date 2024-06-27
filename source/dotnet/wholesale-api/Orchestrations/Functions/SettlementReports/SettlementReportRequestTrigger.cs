@@ -61,6 +61,17 @@ internal sealed class SettlementReportRequestTrigger
                 return req.CreateResponse(HttpStatusCode.BadRequest);
         }
 
+        if (_userContext.CurrentUser.Actor.MarketRole == FrontendActorMarketRole.EnergySupplier && string.IsNullOrWhiteSpace(settlementReportRequest.Filter.EnergySupplier))
+        {
+            settlementReportRequest = settlementReportRequest with
+            {
+                Filter = settlementReportRequest.Filter with
+                {
+                    EnergySupplier = _userContext.CurrentUser.Actor.ActorNumber,
+                },
+            };
+        }
+
         var marketRole = _userContext.CurrentUser.Actor.MarketRole switch
         {
             FrontendActorMarketRole.Other => MarketRole.Other,
@@ -123,7 +134,9 @@ internal sealed class SettlementReportRequestTrigger
 
         if (marketRole == FrontendActorMarketRole.EnergySupplier)
         {
-            return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
+            if (!string.IsNullOrWhiteSpace(req.Filter.EnergySupplier)) return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
+
+            return true;
         }
 
         return false;
