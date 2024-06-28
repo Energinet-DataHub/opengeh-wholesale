@@ -47,9 +47,25 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         long maximumCalculationVersion,
         StreamWriter destination)
     {
+        bool IncludeHeader()
+        {
+            return fileInfo is { FileOffset: 0, ChunkOffset: 0 };
+        }
+
+        bool IsHeaderRow(ShouldQuoteArgs args)
+        {
+            return IncludeHeader() && args.Row.Row == 1;
+        }
+
+        bool ShouldQuote(ShouldQuoteArgs args)
+        {
+            return _quotedColumns is { Count: > 0 } &&
+                   _quotedColumns.Contains(args.Row.Index);
+        }
+
         var csvHelper = new CsvWriter(destination, new CsvConfiguration(new CultureInfo(filter.CsvFormatLocale ?? "en-US"))
         {
-            ShouldQuote = args => _quotedColumns is { Count: > 0 } && args.Row.Row > 1 && _quotedColumns.Contains(args.Row.Index),
+            ShouldQuote = args => !IsHeaderRow(args) && ShouldQuote(args),
         });
 
         RegisterClassMap(csvHelper, filter, actorInfo);
@@ -57,7 +73,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
+            if (IncludeHeader())
             {
                 WriteHeader(csvHelper);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
