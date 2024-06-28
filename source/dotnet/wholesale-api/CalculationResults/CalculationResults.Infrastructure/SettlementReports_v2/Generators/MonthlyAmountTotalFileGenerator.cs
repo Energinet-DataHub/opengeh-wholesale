@@ -14,20 +14,18 @@
 
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<SettlementReportWholesaleResultRow, WholesaleResultFileGenerator.SettlementReportWholesaleResultRowMap>
+public sealed class MonthlyAmountTotalFileGenerator : CsvFileGeneratorBase<SettlementReportMonthlyAmountRow, MonthlyAmountFileGenerator.SettlementReportMonthlyAmountRowMap>
 {
-    private readonly ISettlementReportWholesaleRepository _dataSource;
+    private readonly ISettlementReportMonthlyAmountTotalRepository _dataSource;
 
-    public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource)
-         : base(1_350) // Up to 31 * 24 rows in each chunk for a month, 1.004.400 rows per chunk in total.
+    public MonthlyAmountTotalFileGenerator(ISettlementReportMonthlyAmountTotalRepository dataSource)
+    : base(250)
     {
         _dataSource = dataSource;
     }
@@ -37,14 +35,14 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
         return _dataSource.CountAsync(filter, actorInfo);
     }
 
-    protected override IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, actorInfo, skipChunks, takeChunks);
     }
 
-    public sealed class SettlementReportWholesaleResultRowMap : ClassMap<SettlementReportWholesaleResultRow>
+    public sealed class SettlementReportMonthlyAmountRowMap : ClassMap<SettlementReportMonthlyAmountRow>
     {
-        public SettlementReportWholesaleResultRowMap()
+        public SettlementReportMonthlyAmountRowMap()
         {
             Map(r => r.EnergyBusinessProcess)
                 .Name("ENERGYBUSINESSPROCESS")
@@ -57,7 +55,7 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID")
                 .Index(2)
-                .Convert(row => row.Value.GridArea?.PadLeft(3, '0'));
+                .Convert(row => row.Value.GridArea.PadLeft(3, '0'));
 
             Map(r => r.EnergySupplierId)
                 .Name("ENERGYSUPPLIERID")
@@ -74,47 +72,13 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
                 {
                     Resolution.Hour => "PT1H",
                     Resolution.Day => "P1D",
+                    Resolution.Month => "P1M",
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
-                });
-
-            Map(r => r.MeteringPointType)
-                .Name("TYPEOFMP")
-                .Index(6)
-                .Convert(row => row.Value.MeteringPointType switch
-                {
-                    null => string.Empty,
-                    MeteringPointType.Consumption => "E17",
-                    MeteringPointType.Production => "E18",
-                    MeteringPointType.Exchange => "E20",
-                    MeteringPointType.VeProduction => "D01",
-                    MeteringPointType.NetProduction => "D05",
-                    MeteringPointType.SupplyToGrid => "D06",
-                    MeteringPointType.ConsumptionFromGrid => "D07",
-                    MeteringPointType.WholesaleServicesInformation => "D08",
-                    MeteringPointType.OwnProduction => "D09",
-                    MeteringPointType.NetFromGrid => "D10",
-                    MeteringPointType.NetToGrid => "D11",
-                    MeteringPointType.TotalConsumption => "D12",
-                    MeteringPointType.ElectricalHeating => "D14",
-                    MeteringPointType.NetConsumption => "D15",
-                    MeteringPointType.EffectSettlement => "D19",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
-                });
-
-            Map(r => r.SettlementMethod)
-                .Name("SETTLEMENTMETHOD")
-                .Index(7)
-                .Convert(row => row.Value.SettlementMethod switch
-                {
-                    null => string.Empty,
-                    SettlementMethod.NonProfiled => "E02",
-                    SettlementMethod.Flex => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.SettlementMethod)),
                 });
 
             Map(r => r.QuantityUnit)
                 .Name("MEASUREUNIT")
-                .Index(8)
+                .Index(6)
                 .Convert(row => row.Value.QuantityUnit switch
                 {
                     QuantityUnit.Kwh => "KWH",
@@ -124,33 +88,24 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
 
             Map(r => r.Currency)
                 .Name("ENERGYCURRENCY")
-                .Index(9)
+                .Index(7)
                 .Convert(row => row.Value.Currency switch
                 {
                     Currency.DKK => "DKK",
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Currency)),
                 });
 
-            Map(r => r.Quantity)
-                .Name("ENERGYQUANTITY")
-                .Index(10)
-                .Data.TypeConverterOptions.Formats = ["0.000"];
-
-            Map(r => r.Price)
-                .Name("PRICE")
-                .Index(11)
-                .Data.TypeConverterOptions.Formats = ["0.000000"];
-
             Map(r => r.Amount)
                 .Name("AMOUNT")
-                .Index(12)
+                .Index(8)
                 .Data.TypeConverterOptions.Formats = ["0.000000"];
 
             Map(r => r.ChargeType)
                 .Name("CHARGETYPE")
-                .Index(13)
+                .Index(9)
                 .Convert(row => row.Value.ChargeType switch
                 {
+                    null => string.Empty,
                     ChargeType.Tariff => "D03",
                     ChargeType.Fee => "D02",
                     ChargeType.Subscription => "D01",
@@ -159,11 +114,11 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
 
             Map(r => r.ChargeCode)
                 .Name("CHARGETYPEID")
-                .Index(14);
+                .Index(10);
 
             Map(r => r.ChargeOwnerId)
                 .Name("CHARGETYPEOWNERID")
-                .Index(15);
+                .Index(11);
         }
     }
 }

@@ -82,6 +82,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
+        var settlementReportMonthlyAmountTotalRepository = new SettlementReportMonthlyAmountTotalRepository(new SettlementReportMonthlyAmountTotalQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
+
         Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
             settlementReportDataRepository,
             settlementReportWholesaleRepository,
@@ -89,7 +93,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             settlementReportMeteringPointMasterDataRepository,
             settlementReportMeteringPointTimeSeriesResultRepository,
             settlementReportMonthlyAmountRepository,
-            settlementReportChargePriceRepository));
+            settlementReportChargePriceRepository,
+            settlementReportMonthlyAmountTotalRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
@@ -114,8 +119,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             SettlementReportFileContent.EnergyResult,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
-            1,
-            MarketRole.GridAccessProvider);
+            1);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
@@ -128,7 +133,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             ]);
 
         // Act
-        var actual = await Sut.RequestFileAsync(fileRequest);
+        var actual = await Sut.RequestFileAsync(fileRequest, actorInfo);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
@@ -166,8 +171,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             SettlementReportFileContent.ChargeLinksPeriods,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
-            1,
-            MarketRole.GridAccessProvider);
+            1);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager
             .InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
@@ -188,7 +193,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
                     ],
                 ]);
 
-        var actual = await Sut.RequestFileAsync(fileRequest);
+        var actual = await Sut.RequestFileAsync(fileRequest, actorInfo);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
@@ -237,8 +242,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             content,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
-            1,
-            MarketRole.GridAccessProvider);
+            1);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
@@ -248,7 +253,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             ]);
 
         // Act
-        var actual = await Sut.RequestFileAsync(fileRequest);
+        var actual = await Sut.RequestFileAsync(fileRequest, actorInfo);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
@@ -282,8 +287,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             SettlementReportFileContent.MeteringPointMasterData,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
-            1,
-            MarketRole.GridAccessProvider);
+            1);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
@@ -293,7 +298,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             ]);
 
         // Act
-        var actual = await Sut.RequestFileAsync(fileRequest);
+        var actual = await Sut.RequestFileAsync(fileRequest, actorInfo);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
@@ -340,8 +345,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             SettlementReportFileContent.MonthlyAmount,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
-            1,
-            MarketRole.GridAccessProvider);
+            1);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "8397670583197");
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
@@ -351,7 +356,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             ]);
 
         // Act
-        var actual = await Sut.RequestFileAsync(fileRequest);
+        var actual = await Sut.RequestFileAsync(fileRequest, actorInfo);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
