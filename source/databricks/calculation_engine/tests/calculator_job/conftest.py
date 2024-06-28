@@ -109,7 +109,7 @@ def balance_fixing_results_df(
     executed_balance_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
         F.col(EnergyResultColumnNames.calculation_id)
@@ -123,7 +123,7 @@ def wholesale_fixing_energy_results_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
         F.col(EnergyResultColumnNames.calculation_id)
