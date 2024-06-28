@@ -55,6 +55,12 @@ def test__schema_config__when_current_state_script_files_are_executed(
         return_value=storage_account,
     )
 
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_catalog_name.__name__,
+        return_value="some_catalog",
+    )
+
     spark_helper.reset_spark_catalog(spark)
     spark_sql_migration_helper.migrate_with_current_state(spark)
 
