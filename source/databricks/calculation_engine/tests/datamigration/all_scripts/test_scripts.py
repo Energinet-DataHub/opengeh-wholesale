@@ -64,6 +64,12 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         return_value=storage_account,
     )
 
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_catalog_name.__name__,
+        return_value="some_catalog",
+    )
+
     # Act migration scripts
     migration_scripts_prefix = "migration_scripts"
     migration_scripts_substitutions = spark_sql_migration_helper.update_substitutions(
@@ -81,7 +87,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
-        catalog_name="some_unity_catalog",
+        catalog_name="some_catalog",
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
