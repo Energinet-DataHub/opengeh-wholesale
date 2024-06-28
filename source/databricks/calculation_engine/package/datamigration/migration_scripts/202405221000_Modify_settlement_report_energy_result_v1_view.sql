@@ -24,6 +24,6 @@ SELECT e.calculation_id,
        e.quantity,
        e.energy_supplier_id,
        e.aggregation_level
-FROM {OUTPUT_DATABASE_NAME}.energy_results AS e
+FROM {HIVE_OUTPUT_DATABASE_NAME}.energy_results AS e
 INNER JOIN (SELECT calculation_id FROM {BASIS_DATA_DATABASE_NAME}.calculations) AS c ON c.calculation_id = e.calculation_id
 WHERE e.time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption', 'net_exchange_per_ga', 'total_consumption')
