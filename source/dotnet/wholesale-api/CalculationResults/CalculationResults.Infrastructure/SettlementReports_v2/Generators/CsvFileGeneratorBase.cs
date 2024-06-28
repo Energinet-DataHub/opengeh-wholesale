@@ -57,7 +57,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, 0, _chunkSize);
+            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, fileInfo.ChunkOffset * _chunkSize, _chunkSize);
 
             await foreach (var record in dataSourceEnumerable.ConfigureAwait(false))
             {
