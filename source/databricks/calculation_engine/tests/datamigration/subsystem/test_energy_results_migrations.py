@@ -30,7 +30,7 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import EnergyResultColumnNames
-from package.infrastructure.paths import OutputDatabase
+from package.infrastructure.paths import HiveOutputDatabase
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -96,7 +96,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}",
+            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}",
             overwrite=False,
         )
 
@@ -147,7 +147,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -190,7 +190,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -220,12 +220,12 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
     # Assert
     actual_df = spark.read.table(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     ).where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].quantity == quantity
 
@@ -239,9 +239,11 @@ def test__result_table__is_not_managed(
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
     Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
-    database_details = spark.sql(f"DESCRIBE DATABASE {OutputDatabase.DATABASE_NAME}")
+    database_details = spark.sql(
+        f"DESCRIBE DATABASE {HiveOutputDatabase.DATABASE_NAME}"
+    )
     table_details = spark.sql(
-        f"DESCRIBE DETAIL {OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"DESCRIBE DETAIL {HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
     database_location = database_details.where(
@@ -286,7 +288,7 @@ def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
 
     # Act + Assert
     results_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -327,7 +329,7 @@ def test__migrated_table_constraints_on_metering_point_id_with_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         results_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}",
+            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}",
             overwrite=False,
         )
 
