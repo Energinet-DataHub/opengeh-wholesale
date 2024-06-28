@@ -16,6 +16,7 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -23,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 1; // About 120.000 to 1.300.000 rows per day.
+    private const int ChunkSize = 32_500; // About 31 rows per day, 1.007.500 rows in total.
 
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _dataSource;
     private readonly Resolution _resolution;
@@ -36,15 +37,15 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         var count = await _dataSource.CountAsync(filter, _resolution).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
     public async Task WriteAsync(
-        MarketRole marketRole,
         SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo,
         SettlementReportPartialFileInfo fileInfo,
         long maximumCalculationVersion,
         StreamWriter destination)
@@ -82,7 +83,25 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
             await foreach (var record in _dataSource.GetAsync(filter, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteField(record.MeteringPointId);
-                csvHelper.WriteField(record.MeteringPointType);
+                csvHelper.WriteField(record.MeteringPointType switch
+                {
+                    MeteringPointType.Consumption => "E17",
+                    MeteringPointType.Production => "E18",
+                    MeteringPointType.Exchange => "E20",
+                    MeteringPointType.VeProduction => "D01",
+                    MeteringPointType.NetProduction => "D05",
+                    MeteringPointType.SupplyToGrid => "D06",
+                    MeteringPointType.ConsumptionFromGrid => "D07",
+                    MeteringPointType.WholesaleServicesInformation => "D08",
+                    MeteringPointType.OwnProduction => "D09",
+                    MeteringPointType.NetFromGrid => "D10",
+                    MeteringPointType.NetToGrid => "D11",
+                    MeteringPointType.TotalConsumption => "D12",
+                    MeteringPointType.ElectricalHeating => "D14",
+                    MeteringPointType.NetConsumption => "D15",
+                    MeteringPointType.EffectSettlement => "D19",
+                    _ => throw new ArgumentOutOfRangeException(nameof(record.MeteringPointType)),
+                });
                 csvHelper.WriteField(record.StartDateTime);
 
                 for (var i = 0; i < expectedQuantities; ++i)
