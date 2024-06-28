@@ -59,7 +59,6 @@ public sealed class EnergyResultFileGeneratorTests
         await using var wr = new StreamWriter(ms);
 
         await sut.WriteAsync(
-            marketRole,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId?>
                 {
@@ -72,6 +71,7 @@ public sealed class EnergyResultFileGeneratorTests
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(marketRole, null),
             new SettlementReportPartialFileInfo("test", false),
             1,
             wr);

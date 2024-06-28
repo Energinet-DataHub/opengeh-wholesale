@@ -32,21 +32,21 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        var count = await CountAsync(marketRole, filter, maximumCalculationVersion).ConfigureAwait(false);
+        var count = await CountAsync(filter, actorInfo, maximumCalculationVersion).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)_chunkSize);
     }
 
     public async Task WriteAsync(
-        MarketRole marketRole,
         SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo,
         SettlementReportPartialFileInfo fileInfo,
         long maximumCalculationVersion,
         StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        RegisterClassMap(csvHelper, marketRole);
+        RegisterClassMap(csvHelper, filter, actorInfo);
         ConfigureCsv(csvHelper);
 
         await using (csvHelper.ConfigureAwait(false))
@@ -57,7 +57,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            var dataSourceEnumerable = GetAsync(marketRole, filter, maximumCalculationVersion, fileInfo.ChunkOffset * _chunkSize, _chunkSize);
+            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, 0, _chunkSize);
 
             await foreach (var record in dataSourceEnumerable.ConfigureAwait(false))
             {
@@ -67,11 +67,11 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         }
     }
 
-    protected abstract Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion);
+    protected abstract Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion);
 
     protected abstract IAsyncEnumerable<TRow> GetAsync(
-        MarketRole marketRole,
         SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo,
         long maximumCalculationVersion,
         int skipChunks,
         int takeChunks);
@@ -85,7 +85,7 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         csvHelper.WriteHeader<TRow>();
     }
 
-    protected virtual void RegisterClassMap(CsvWriter csvHelper, MarketRole marketRole)
+    protected virtual void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         csvHelper.Context.RegisterClassMap<TClassMap>();
     }

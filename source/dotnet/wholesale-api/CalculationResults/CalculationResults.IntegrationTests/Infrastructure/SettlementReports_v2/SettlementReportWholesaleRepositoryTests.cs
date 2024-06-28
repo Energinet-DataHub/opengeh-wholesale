@@ -19,8 +19,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
@@ -46,12 +44,9 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
 
         Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
-        var calculationsClientMock = new Mock<ICalculationsClient>();
-        calculationsClientMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated));
         Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
             mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            calculationsClientMock.Object));
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
     [Fact]
@@ -75,7 +70,8 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 DateTimeOffset.Parse("2024-01-03T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                "da-DK"));
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null));
 
         Assert.Equal(1, actual);
     }
@@ -104,6 +100,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             skip: 2,
             take: 1).ToListAsync();
 
@@ -148,6 +145,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             skip: 0,
             take: int.MaxValue).ToListAsync();
 
@@ -191,7 +189,8 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 DateTimeOffset.Parse("2024-01-04T00:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 energySupplier,
-                "da-DK"));
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null));
 
         // assert
         Assert.Equal(expected, actual);
