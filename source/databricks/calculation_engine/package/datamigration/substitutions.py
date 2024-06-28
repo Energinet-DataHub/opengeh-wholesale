@@ -20,7 +20,7 @@ def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
     return {
         "{CATALOG_NAME}": migration_args.catalog_name,  # TODO: Add catalog_name to MigrationScriptArgs
         "{CONTAINER_PATH}": migration_args.storage_container_path,
-        "{OUTPUT_DATABASE_NAME}": paths.HiveOutputDatabase.DATABASE_NAME,
+        "{HIVE_OUTPUT_DATABASE_NAME}": paths.HiveOutputDatabase.DATABASE_NAME,
         "{INPUT_DATABASE_NAME}": paths.InputDatabase.DATABASE_NAME,
         "{OUTPUT_FOLDER}": paths.HiveOutputDatabase.FOLDER_NAME,
         "{INPUT_FOLDER}": migration_args.calculation_input_folder,
