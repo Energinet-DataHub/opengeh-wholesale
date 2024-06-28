@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
@@ -34,8 +35,27 @@ public class EnergyResultEventProvider(
             if (energyResultProducedV2Factory.CanCreate(energyResult))
                 yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 
-            if (energyResultProducedV2Factory.CanCreate(energyResult) && energyResult.EnergySupplierId is not null && energyResult.BalanceResponsibleId is not null)
-                yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
+            if (energyResultProducedV2Factory.CanCreate(energyResult) && energyResult.EnergySupplierId is not null &&
+                energyResult.BalanceResponsibleId is not null)
+            {
+                var energyResultSetBalanceResponsibleToNull = new EnergyResult(
+                    energyResult.Id,
+                    energyResult.CalculationId,
+                    energyResult.GridArea,
+                    energyResult.TimeSeriesType,
+                    energyResult.EnergySupplierId,
+                    null,
+                    energyResult.TimeSeriesPoints,
+                    energyResult.CalculationType,
+                    energyResult.PeriodStart,
+                    energyResult.PeriodEnd,
+                    energyResult.FromGridArea,
+                    energyResult.MeteringPointId,
+                    energyResult.Resolution,
+                    energyResult.Version);
+
+                yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResultSetBalanceResponsibleToNull));
+            }
 
             if (gridLossResultProducedV2Factory.CanCreate(energyResult))
                 yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
