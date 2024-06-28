@@ -81,7 +81,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
-        catalog_name=
+        catalog_name="some_unity_catalog",
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
@@ -93,8 +93,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     substitutions = spark_sql_migration_helper.update_substitutions(
         spark_sql_migration_helper.get_migration_script_args(spark),
         {
-            "{HIVE_OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OutputDatabase.DATABASE_NAME}",
-            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{HiveOutputDatabase.DATABASE_NAME}",
+            "{HIVE_OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{HiveOutputDatabase.DATABASE_NAME}",
+            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OutputDatabase.DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{InputDatabase.DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BasisDataDatabase.DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
