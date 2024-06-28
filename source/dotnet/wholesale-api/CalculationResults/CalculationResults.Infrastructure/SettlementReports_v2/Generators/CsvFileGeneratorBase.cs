@@ -24,10 +24,12 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
     where TClassMap : ClassMap<TRow>
 {
     private readonly int _chunkSize;
+    private readonly HashSet<int>? _quotedColumns;
 
-    protected CsvFileGeneratorBase(int chunkSize)
+    protected CsvFileGeneratorBase(int chunkSize, HashSet<int>? quotedColumns = null)
     {
         _chunkSize = chunkSize;
+        _quotedColumns = quotedColumns;
     }
 
     public string FileExtension => ".csv";
@@ -45,7 +47,11 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         long maximumCalculationVersion,
         StreamWriter destination)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
+        var csvHelper = new CsvWriter(destination, new CsvConfiguration(new CultureInfo(filter.CsvFormatLocale ?? "en-US"))
+        {
+            ShouldQuote = args => _quotedColumns is { Count: > 0 } && args.Row.Row > 1 && _quotedColumns.Contains(args.Row.Index),
+        });
+
         RegisterClassMap(csvHelper, filter, actorInfo);
         ConfigureCsv(csvHelper);
 

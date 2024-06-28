@@ -87,4 +87,56 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
         // asserts the empty quantites reserved for the extra hour during spring DST transition
         Assert.All(actualFields.Skip(3 + numberOfQuantities), x => Assert.True(x == string.Empty));
     }
+
+    [Fact]
+    public async Task Write_DataSourceRowFound_WritesExpectedQuotedColumnsCsv()
+    {
+        // arrange
+        var numberOfQuantities = 24;
+
+        var dataSourceMock = new Mock<ISettlementReportMeteringPointTimeSeriesResultRepository>();
+
+        dataSourceMock
+            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), Resolution.Hour, It.IsAny<int>(), It.IsAny<int>()))
+            .Returns(
+                new List<SettlementReportMeteringPointTimeSeriesResultRow>
+                {
+                    new(
+                        "1",
+                        MeteringPointType.Consumption,
+                        DateTimeOffset.Now.ToInstant(),
+                        Enumerable.Range(0, numberOfQuantities).Select(x => new SettlementReportMeteringPointTimeSeriesResultQuantity(DateTimeOffset.Now.ToInstant(), 10.1m + x)).ToList()),
+                }.ToAsyncEnumerable());
+
+        var sut = new MeteringPointTimeSeriesFileGenerator(dataSourceMock.Object, Resolution.Hour);
+
+        // act
+        await using var ms = new MemoryStream();
+        await using var wr = new StreamWriter(ms);
+
+        await sut.WriteAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "404", new CalculationId(Guid.NewGuid())
+                    },
+                },
+                DateTimeOffset.Now,
+                DateTimeOffset.Now,
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
+            new SettlementReportPartialFileInfo("test", false),
+            1,
+            wr);
+
+        // assert
+        var actualRows = Encoding.UTF8.GetString(ms.ToArray())
+            .Split(["\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
+
+        Assert.StartsWith("METERINGPOINTID;", actualRows[0]);
+        Assert.StartsWith("\"1\";", actualRows[1]);
+    }
 }
