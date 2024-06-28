@@ -46,6 +46,7 @@ def get_schema_config(catalog_name: str) -> list[Schema]:
                     schema=energy_results_schema,
                 ),
             ],
+            views=[],
         ),
         Schema(
             name=paths.HiveOutputDatabase.DATABASE_NAME,
