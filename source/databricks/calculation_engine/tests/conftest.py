@@ -377,6 +377,7 @@ def infrastructure_settings(
     return InfrastructureSettings(
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+        catalog_name="foo",
         wholesale_container_path=data_lake_path,
         calculation_input_path=calculation_input_path,
         time_series_points_table_name=None,
