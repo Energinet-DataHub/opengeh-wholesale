@@ -30,7 +30,9 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
         _fileRepository = fileRepository;
     }
 
-    public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest)
+    public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(
+        SettlementReportFileRequestDto fileRequest,
+        SettlementReportRequestedByActor actorInfo)
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
 
@@ -48,8 +50,8 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             {
                 await fileGenerator
                     .WriteAsync(
-                        fileRequest.MarketRole,
                         fileRequest.RequestFilter,
+                        actorInfo,
                         fileRequest.PartialFileInfo,
                         fileRequest.MaximumCalculationVersion,
                         streamWriter)
