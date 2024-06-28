@@ -81,6 +81,7 @@ def parse_job_arguments(
         infrastructure_settings = InfrastructureSettings(
             data_storage_account_name=storage_account_name,
             data_storage_account_credentials=credential,
+            catalog_name=env_vars.get_catalog_name(),
             wholesale_container_path=paths.get_container_root_path(
                 storage_account_name
             ),

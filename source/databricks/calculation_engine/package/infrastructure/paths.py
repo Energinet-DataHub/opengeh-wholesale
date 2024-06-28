@@ -106,10 +106,6 @@ WHOLESALE_CONTAINER_NAME = "wholesale"
 """The name of the container in the storage account"""
 
 
-def get_catalog_name() -> str:
-    return env_vars.get_catalog_name()
-
-
 def get_storage_account_url(storage_account_name: str) -> str:
     return f"https://{storage_account_name}.dfs.core.windows.net"
 

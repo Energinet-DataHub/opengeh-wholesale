@@ -28,6 +28,7 @@ class MigrationScriptArgs:
         self,
         data_storage_account_url: str,
         data_storage_account_name: str,
+        catalog_name: str,
         schema_migration_storage_container_path: str,
         storage_container_path: str,
         spark: SparkSession,
@@ -35,6 +36,7 @@ class MigrationScriptArgs:
     ) -> None:
         self.storage_account_url = data_storage_account_url
         self.storage_account_name = data_storage_account_name
+        self.catalog_name = catalog_name
         self.schema_migration_storage_container_path = (
             schema_migration_storage_container_path
         )
