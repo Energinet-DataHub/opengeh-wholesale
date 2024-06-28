@@ -44,7 +44,9 @@ public sealed class SettlementReportMonthlyAmountCountQueryStatement : Databrick
                         {SettlementReportMonthlyAmountViewColumns.Time} >= '{_filter.PeriodStart}' AND
                         {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
                         {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}' AND
-                        {SettlementReportMonthlyAmountViewColumns.ChargeOwnerId} IS NOT NULL
+                        {SettlementReportMonthlyAmountViewColumns.ChargeOwnerId} IS NOT NULL AND
+                        {SettlementReportMonthlyAmountViewColumns.ChargeCode} IS NOT NULL AND
+                        {SettlementReportMonthlyAmountViewColumns.ChargeType} IS NOT NULL
                         {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? "AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'" : string.Empty)}
                         {(_filter.EnergySupplier is null ? string.Empty : "AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'")}
                        
