@@ -15,7 +15,6 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -159,5 +158,13 @@ public class MigrationsFreeDatabricksSchemaManager
 
         var sqlStatement = $"CREATE TABLE IF NOT EXISTS {SchemaName}.{tableName} ({columnDefinitions})";
         await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
+    }
+
+    private sealed class DatabricksSqlException : Exception
+    {
+        public DatabricksSqlException(string message)
+            : base(message)
+        {
+        }
     }
 }
