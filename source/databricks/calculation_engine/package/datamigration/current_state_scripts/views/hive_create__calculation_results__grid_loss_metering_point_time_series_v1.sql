@@ -10,6 +10,6 @@ SELECT calculation_id,
        unit as quantity_unit,
        time,
        quantity
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     time_series_type in ('negative_grid_loss', 'positive_grid_loss')

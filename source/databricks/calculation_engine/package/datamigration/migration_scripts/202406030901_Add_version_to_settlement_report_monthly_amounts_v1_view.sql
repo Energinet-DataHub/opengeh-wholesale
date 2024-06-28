@@ -16,7 +16,7 @@ SELECT c.calculation_id,
        wr.charge_type,
        wr.charge_code,
        wr.charge_owner_id
-FROM {OUTPUT_DATABASE_NAME}.wholesale_results AS wr
+FROM {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results AS wr
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = wr.calculation_id
 WHERE wr.amount_type = "monthly_amount_per_charge"
 
@@ -36,5 +36,5 @@ SELECT c.calculation_id,
        NULL as charge_type,
        NULL as charge_code,
        tma.charge_owner_id
-FROM {OUTPUT_DATABASE_NAME}.total_monthly_amounts AS tma
+FROM {HIVE_OUTPUT_DATABASE_NAME}.total_monthly_amounts AS tma
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = tma.calculation_id
