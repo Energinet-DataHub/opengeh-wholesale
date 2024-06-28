@@ -11,8 +11,8 @@ SELECT c.calculation_id,
        m.grid_area_code,
        m.energy_supplier_id,
        -- There is a row for each 'observation_time' with an associated 'quantity' although the final settlement report
-       -- has a row per day with multiple quantity columns for that day. It turns out to that performance increases when
-       -- rows to columns are done on the consumer's side outside this view.
+       -- has a row per day with multiple quantity columns for that day. It turns out that performance increases when
+       -- the rows-to-columns transformation is done outside this view on the consumer's side .
        t.observation_time,
        t.quantity
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
