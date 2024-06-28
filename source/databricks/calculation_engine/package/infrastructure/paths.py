@@ -27,7 +27,13 @@ class InputDatabase:
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 
+# TODO: Use this new UC database
 class OutputDatabase:
+    DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
+    ENERGY_RESULT_TABLE_NAME = "energy_results"
+
+
+class HiveOutputDatabase:
     FOLDER_NAME = "calculation-output"
     """The folder in the storage account container"""
 
@@ -98,6 +104,10 @@ TEST = ""
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 """The name of the container in the storage account"""
+
+
+def get_catalog_name() -> str:
+    return env_vars.get_catalog_name()
 
 
 def get_storage_account_url(storage_account_name: str) -> str:

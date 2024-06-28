@@ -222,7 +222,7 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 
 @pytest.fixture(scope="session")
 def calculation_output_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/{paths.OutputDatabase.FOLDER_NAME}"
+    return f"{data_lake_path}/{paths.HiveOutputDatabase.FOLDER_NAME}"
 
 
 @pytest.fixture(scope="session")
