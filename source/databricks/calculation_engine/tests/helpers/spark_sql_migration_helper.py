@@ -120,7 +120,6 @@ def configure_spark_sql_migration(
         schema_config=schema_config,
         substitution_variables=substitution_variables,
         table_prefix=table_prefix,
-        catalog_name="spark_catalog",
     )
 
     create_and_configure_container(configuration)
