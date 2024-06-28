@@ -13,5 +13,5 @@ SELECT c.calculation_id,
        "DKK" as currency,
        ma.time,
        ma.amount
-FROM {OUTPUT_DATABASE_NAME}.monthly_amounts as ma
+FROM {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts as ma
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = ma.calculation_id

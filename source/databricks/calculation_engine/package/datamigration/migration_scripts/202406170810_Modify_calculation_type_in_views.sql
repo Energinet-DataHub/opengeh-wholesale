@@ -21,7 +21,7 @@ SELECT calculation_id,
        resolution,
        time,
        quantity
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption', 'net_exchange_per_ga', 'total_consumption')
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
 AND aggregation_level = 'total_ga'
@@ -42,7 +42,7 @@ SELECT calculation_id,
        time,
        quantity,
        energy_supplier_id
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption')
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
 AND aggregation_level = 'es_brp_ga'
@@ -67,7 +67,7 @@ SELECT calculation_id,
        quantity,
        unit as quantity_unit,
        quantity_qualities
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     calculation_type in ('balance_fixing', 'aggregation')
     AND aggregation_level = 'brp_ga'
@@ -94,7 +94,7 @@ SELECT calculation_id,
        quantity,
        unit as quantity_unit,
        quantity_qualities
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     aggregation_level = 'es_brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')

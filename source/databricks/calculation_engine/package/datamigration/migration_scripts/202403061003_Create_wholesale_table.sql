@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
+CREATE TABLE IF NOT EXISTS {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results
 (
     -- 36 characters UUID
     calculation_id STRING NOT NULL,
