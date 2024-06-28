@@ -42,7 +42,7 @@ def get_schema_config(catalog_name: str) -> list[Schema]:
             name=f"{catalog_name}.{paths.OutputDatabase.DATABASE_NAME}",
             tables=[
                 Table(
-                    name=f"{catalog_name}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}",
+                    name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
                     schema=energy_results_schema,
                 ),
             ],
