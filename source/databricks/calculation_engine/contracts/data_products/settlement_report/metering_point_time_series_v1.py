@@ -2,12 +2,6 @@ import pyspark.sql.types as t
 
 nullable = True
 
-quantity = t.StructType(
-    [
-        t.StructField("observation_time", t.TimestampType(), not nullable),
-        t.StructField("quantity", t.DecimalType(18, 3), not nullable),
-    ]
-)
 
 metering_point_time_series_v1 = t.StructType(
     [
@@ -38,13 +32,15 @@ metering_point_time_series_v1 = t.StructType(
         # EIC or GLN number
         t.StructField("energy_supplier_id", t.StringType(), nullable),
         #
+        # There is a row for each 'observation_time' with an associated 'quantity' although the final settlement report
+        # has a row per day with multiple quantity columns for that day. It turns out to that performance increases when
+        # rows to columns are done outside this view.
         # UTC time
         t.StructField(
             "observation_time",
             t.TimestampType(),
             not nullable,
         ),
-        #
         t.StructField("quantity", t.DecimalType(18, 3), not nullable),
     ]
 )
