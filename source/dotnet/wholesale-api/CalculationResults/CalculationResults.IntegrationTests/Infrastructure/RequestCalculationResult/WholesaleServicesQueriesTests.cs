@@ -729,7 +729,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters([calculationPeriod], amountType, chargeOwnerId: string.Empty);
+        var query = CreateQueryParameters(calculationPeriod.Period, amountType, chargeOwnerId: string.Empty);
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();

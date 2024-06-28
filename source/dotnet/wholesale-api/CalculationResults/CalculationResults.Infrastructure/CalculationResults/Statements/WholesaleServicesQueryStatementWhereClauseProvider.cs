@@ -35,14 +35,14 @@ public class WholesaleServicesQueryStatementWhereClauseProvider
                     """;
         }
 
-        if (!string.IsNullOrEmpty(queryParameters.EnergySupplierId))
+        if (queryParameters.EnergySupplierId is not null)
         {
             sql += $"""
                     AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
                     """;
         }
 
-        if (!string.IsNullOrEmpty(queryParameters.ChargeOwnerId))
+        if (queryParameters.ChargeOwnerId is not null)
         {
             sql += $"""
                     AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
