@@ -62,15 +62,14 @@ public class SettlementReportFileRequestHandlerTests
             SettlementReportFileContent.ChargePrice,
             new SettlementReportPartialFileInfo(_fileName, true),
             filter,
-            1,
-            marketRole);
+            1);
 
         var sut = new SettlementReportFileRequestHandler(
             settlementReportFileGeneratorFactory.Object,
             settlementReportFileRepository.Object);
 
         // Act
-        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest);
+        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest, new SettlementReportRequestedByActor(marketRole, null));
         var resultedFileName = resultGeneratedSettlementReportFile.FileInfo.FileName;
 
         // Assert
@@ -111,15 +110,14 @@ public class SettlementReportFileRequestHandlerTests
             SettlementReportFileContent.ChargePrice,
             new SettlementReportPartialFileInfo(_fileName, true),
             filter,
-            1,
-            marketRole);
+            1);
 
         var sut = new SettlementReportFileRequestHandler(
             settlementReportFileGeneratorFactory.Object,
             settlementReportFileRepository.Object);
 
         // Act
-        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest);
+        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest, new SettlementReportRequestedByActor(marketRole, null));
         var resultedFileName = resultGeneratedSettlementReportFile.FileInfo.FileName;
 
         // Assert
@@ -156,15 +154,14 @@ public class SettlementReportFileRequestHandlerTests
             SettlementReportFileContent.ChargePrice,
             new SettlementReportPartialFileInfo(_fileName, true),
             filter,
-            1,
-            MarketRole.SystemOperator);
+            1);
 
         var sut = new SettlementReportFileRequestHandler(
             settlementReportFileGeneratorFactory.Object,
             settlementReportFileRepository.Object);
 
         // Act
-        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest);
+        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest, new SettlementReportRequestedByActor(MarketRole.SystemOperator, null));
         var resultedFileName = resultGeneratedSettlementReportFile.FileInfo.FileName;
 
         // Assert

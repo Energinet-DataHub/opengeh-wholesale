@@ -30,11 +30,13 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
         _fileRepository = fileRepository;
     }
 
-    public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest)
+    public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(
+        SettlementReportFileRequestDto fileRequest,
+        SettlementReportRequestedByActor actorInfo)
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
 
-        var resultingFileName = GenerateFilename(fileRequest) + fileGenerator.FileExtension;
+        var resultingFileName = GenerateFilename(fileRequest, actorInfo) + fileGenerator.FileExtension;
         var storageFileName = $"{fileRequest.PartialFileInfo.FileName}_{fileRequest.PartialFileInfo.FileOffset}_{fileRequest.PartialFileInfo.ChunkOffset}{fileGenerator.FileExtension}";
 
         var writeStream = await _fileRepository
@@ -48,8 +50,8 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             {
                 await fileGenerator
                     .WriteAsync(
-                        fileRequest.MarketRole,
                         fileRequest.RequestFilter,
+                        actorInfo,
                         fileRequest.PartialFileInfo,
                         fileRequest.MaximumCalculationVersion,
                         streamWriter)
@@ -63,7 +65,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             storageFileName);
     }
 
-    private string GenerateFilename(SettlementReportFileRequestDto fileRequest)
+    private string GenerateFilename(SettlementReportFileRequestDto fileRequest, SettlementReportRequestedByActor actorInfo)
     {
         var filename = $"{fileRequest.PartialFileInfo.FileName}";
 
@@ -72,7 +74,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             filename += $"_{fileRequest.RequestFilter.EnergySupplier}";
         }
 
-        switch (fileRequest.MarketRole)
+        switch (actorInfo.MarketRole)
         {
             case MarketRole.EnergySupplier:
                 filename += "_DDQ";

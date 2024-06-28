@@ -33,11 +33,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<MarketRole>(), It.IsAny<SettlementReportRequestFilterDto>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), 1))
             .ReturnsAsync(1);
 
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<MarketRole>(), It.IsAny<SettlementReportRequestFilterDto>(), long.MaxValue))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), long.MaxValue))
             .ReturnsAsync(1);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -68,6 +68,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
         mockedRepository
@@ -76,7 +77,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<MarketRole>(), It.IsAny<SettlementReportRequestFilterDto>(), 1))
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), 1))
             .ReturnsAsync(2);
 
         var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
@@ -87,7 +88,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var sut = new SettlementReportRequestHandler(mockedFactory.Object, mockedRepository.Object);
 
         // Act
-        var actual = (await sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var chunkA = actual[0];
@@ -126,9 +127,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual.Single();
@@ -162,9 +164,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -199,9 +202,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual[0];
@@ -237,9 +241,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -289,9 +294,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, true, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -366,9 +372,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -420,12 +427,20 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal("CHARGEPRICE_805", chargePricesResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.ChargePrice, chargePricesResult.FileContent);
 
-        var wholeMonthResultResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
-        Assert.NotNull(wholeMonthResultResult);
-        Assert.Equal(requestId, wholeMonthResultResult.RequestId);
-        Assert.Equal(calculationFilter.Single(), wholeMonthResultResult.RequestFilter.GridAreas.Single());
-        Assert.Equal("RESULTMONTHLY_805", wholeMonthResultResult.PartialFileInfo.FileName);
-        Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResultResult.FileContent);
+        var wholeMonthResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmount);
+        Assert.NotNull(wholeMonthResult);
+        Assert.Equal(requestId, wholeMonthResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), wholeMonthResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Monthly amounts (805)", wholeMonthResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.MonthlyAmount, wholeMonthResult.FileContent);
+
+        var wholeMonthTotalResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.MonthlyAmountTotal);
+        Assert.NotNull(wholeMonthTotalResult);
+        Assert.Equal(requestId, wholeMonthTotalResult.RequestId);
+        Assert.Equal(calculationFilter.Single(), wholeMonthTotalResult.RequestFilter.GridAreas.Single());
+        Assert.Equal("Monthly amounts (805)", wholeMonthTotalResult.PartialFileInfo.FileName);
+        Assert.Equal(int.MaxValue, wholeMonthTotalResult.PartialFileInfo.FileOffset);
+        Assert.Equal(SettlementReportFileContent.MonthlyAmountTotal, wholeMonthTotalResult.FileContent);
     }
 
     [Fact]
@@ -448,9 +463,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, true, false, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual.
@@ -629,9 +645,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, MarketRole.GridAccessProvider)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
 
         // Assert
         var energyResultA = actual.
