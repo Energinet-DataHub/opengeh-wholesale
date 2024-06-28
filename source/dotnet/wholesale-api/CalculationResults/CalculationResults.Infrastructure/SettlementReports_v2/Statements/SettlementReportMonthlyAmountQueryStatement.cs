@@ -50,6 +50,8 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
                          {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
                          {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}' AND
                          {SettlementReportMonthlyAmountViewColumns.ChargeOwnerId} IS NOT NULL
+                         {SettlementReportMonthlyAmountViewColumns.ChargeCode} IS NULL
+                         {SettlementReportMonthlyAmountViewColumns.ChargeType} IS NULL
                          {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? "AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "'" : string.Empty)} 
                          {(_filter.EnergySupplier is null ? string.Empty : "AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'")}
                      ORDER BY 
@@ -83,6 +85,8 @@ public sealed class SettlementReportMonthlyAmountQueryStatement : DatabricksStat
                         {SettlementReportMonthlyAmountViewColumns.Time} < '{_filter.PeriodEnd}' AND
                         {SettlementReportMonthlyAmountViewColumns.CalculationId} = '{_filter.CalculationId}' AND           
                         {SettlementReportMonthlyAmountViewColumns.ChargeOwnerId} IS NOT NULL
+                        {SettlementReportMonthlyAmountViewColumns.ChargeCode} IS NULL
+                        {SettlementReportMonthlyAmountViewColumns.ChargeType} IS NULL
                         {(_filter is { MarketRole: MarketRole.SystemOperator or MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? "AND " + SettlementReportMonthlyAmountViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " IS NOT NULL" : string.Empty)}
                         {(_filter.EnergySupplier is null ? string.Empty : "AND " + SettlementReportMonthlyAmountViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "'")}
              """;
