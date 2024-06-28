@@ -19,7 +19,7 @@ from .migration_script_args import MigrationScriptArgs
 def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
     return {
         "{CONTAINER_PATH}": migration_args.storage_container_path,
-        "{OUTPUT_DATABASE_NAME}": paths.OutputDatabase.DATABASE_NAME,
+        "{HIVE_OUTPUT_DATABASE_NAME}": paths.OutputDatabase.DATABASE_NAME,
         "{INPUT_DATABASE_NAME}": paths.InputDatabase.DATABASE_NAME,
         "{OUTPUT_FOLDER}": paths.OutputDatabase.FOLDER_NAME,
         "{INPUT_FOLDER}": migration_args.calculation_input_folder,
