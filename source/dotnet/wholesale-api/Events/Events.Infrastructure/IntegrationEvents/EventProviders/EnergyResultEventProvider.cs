@@ -34,6 +34,9 @@ public class EnergyResultEventProvider(
             if (energyResultProducedV2Factory.CanCreate(energyResult))
                 yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 
+            if (energyResultProducedV2Factory.CanCreate(energyResult) && energyResult.EnergySupplierId is not null && energyResult.BalanceResponsibleId is not null)
+                yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
+
             if (gridLossResultProducedV2Factory.CanCreate(energyResult))
                 yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
         }
