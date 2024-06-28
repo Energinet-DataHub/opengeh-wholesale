@@ -75,6 +75,7 @@ class ViewColumns:
     metering_point_id = Column("metering_point_id", StringType())
     metering_point_type = Column("metering_point_type", StringType())
     neighbor_grid_area_code = Column("neighbor_grid_area_code", StringType())
+    observation_time = Column("observation_time", TimestampType())
     price = Column("price", DecimalType(18, 6))
     price_points = Column(
         "price_points",
