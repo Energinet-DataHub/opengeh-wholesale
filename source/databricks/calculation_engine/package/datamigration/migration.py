@@ -23,7 +23,7 @@ import package.datamigration.constants as c
 import package.infrastructure.environment_variables as env_vars
 from package.infrastructure import paths, initialize_spark
 from .migration_script_args import MigrationScriptArgs
-from .schema_config import schema_config
+from .schema_config import get_schema_config
 from .substitutions import substitutions
 
 
@@ -61,7 +61,7 @@ def migrate_data_lake() -> None:
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
-        schema_config=schema_config,
+        schema_config=get_schema_config(catalog_name),
         substitution_variables=substitutions(migration_args),
         catalog_name="spark_catalog",
     )
