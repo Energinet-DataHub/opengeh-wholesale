@@ -61,9 +61,9 @@ def migrate_data_lake() -> None:
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
-        schema_config=get_schema_config(catalog_name),
+        schema_config=get_schema_config(migration_args.catalog_name),
         substitution_variables=substitutions(migration_args),
-        catalog_name="spark_catalog",
+        catalog_name=migration_args.catalog_name,
     )
 
     create_and_configure_container(spark_config)
