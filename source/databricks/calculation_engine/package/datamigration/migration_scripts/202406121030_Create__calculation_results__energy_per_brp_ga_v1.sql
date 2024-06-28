@@ -17,7 +17,7 @@ SELECT calculation_id,
        quantity,
        unit as quantity_unit,
        quantity_qualities
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     calculation_type in ('BalanceFixing', 'Aggregation')
     AND aggregation_level = 'brp_ga'

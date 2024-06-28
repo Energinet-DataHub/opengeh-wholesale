@@ -1,4 +1,4 @@
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
@@ -12,7 +12,7 @@ SET TBLPROPERTIES(
 
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )

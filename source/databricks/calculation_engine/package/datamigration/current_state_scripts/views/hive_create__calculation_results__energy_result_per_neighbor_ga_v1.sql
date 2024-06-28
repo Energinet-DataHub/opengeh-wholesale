@@ -10,5 +10,5 @@ SELECT calculation_id,
        quantity,
        unit as quantity_unit,
        quantity_qualities
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type in ('net_exchange_per_neighboring_ga')

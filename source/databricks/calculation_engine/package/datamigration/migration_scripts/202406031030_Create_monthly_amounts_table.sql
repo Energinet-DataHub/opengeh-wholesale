@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.monthly_amounts
+CREATE TABLE IF NOT EXISTS {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts
 (
     -- 36 characters UUID
     calculation_id STRING NOT NULL,
