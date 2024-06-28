@@ -16,16 +16,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public interface ISettlementReportFileGenerator
+public interface ISettlementReportMonthlyAmountTotalRepository
 {
-    string FileExtension { get; }
+    Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo);
 
-    Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion);
-
-    Task WriteAsync(
-        SettlementReportRequestFilterDto filter,
-        SettlementReportRequestedByActor actorInfo,
-        SettlementReportPartialFileInfo fileInfo,
-        long maximumCalculationVersion,
-        StreamWriter destination);
+    IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take);
 }

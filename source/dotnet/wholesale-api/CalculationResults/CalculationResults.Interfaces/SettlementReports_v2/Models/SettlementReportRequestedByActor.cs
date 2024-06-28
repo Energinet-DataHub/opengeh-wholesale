@@ -12,18 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
-
-public sealed record SettlementReportWholesaleResultQueryFilter(
-    Guid CalculationId,
-    string GridAreaCode,
-    CalculationType CalculationType,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    string? EnergySupplier,
-    string? ChargeOwnerId,
-    MarketRole MarketRole);
+public sealed record SettlementReportRequestedByActor(MarketRole MarketRole, string? ChargeOwnerId);

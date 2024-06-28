@@ -122,6 +122,7 @@ public static class DatabricksApiViewWireMockExtensions
             SettlementReportEnergyResultViewColumns
                 .AllNames
                 .Concat(SettlementReportEnergyResultCountColumns.AllNames)
+                .Concat([SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier])
                 .Select(name => $" {{\"name\": \"{name}\" }}"));
 
         return json.Replace("{statementId}", statementId)
@@ -134,7 +135,10 @@ public static class DatabricksApiViewWireMockExtensions
     private static string DatabricksEnergyStatementRowMock(Guid calculationId)
     {
         // Make sure that the order of the data matches the order of the columns defined in 'DatabricksEnergyStatementResponseMock'
-        var data = SettlementReportEnergyResultViewColumns.AllNames.Concat(SettlementReportEnergyResultCountColumns.AllNames).Select(columnName => columnName switch
+        var data = SettlementReportEnergyResultViewColumns.AllNames
+            .Concat(SettlementReportEnergyResultCountColumns.AllNames)
+            .Concat([SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier])
+            .Select(columnName => columnName switch
         {
             SettlementReportEnergyResultViewColumns.CalculationId => $"\"{calculationId}\"",
             SettlementReportEnergyResultViewColumns.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
@@ -147,6 +151,7 @@ public static class DatabricksApiViewWireMockExtensions
             SettlementReportEnergyResultViewColumns.Time => "\"2022-05-16T03:00:00.000Z\"",
             SettlementReportEnergyResultViewColumns.Quantity => "\"1.123\"",
             SettlementReportEnergyResultCountColumns.Count => "\"1\"",
+            SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier => "\"0000000000000\"",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),
         }).ToArray();
         var temp = $"""[[{string.Join(",", data)}]]""";

@@ -14,18 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 
-public interface ISettlementReportFileGenerator
-{
-    string FileExtension { get; }
-
-    Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion);
-
-    Task WriteAsync(
-        SettlementReportRequestFilterDto filter,
-        SettlementReportRequestedByActor actorInfo,
-        SettlementReportPartialFileInfo fileInfo,
-        long maximumCalculationVersion,
-        StreamWriter destination);
-}
+public sealed record GenerateSettlementReportFileInput(SettlementReportFileRequestDto FileRequest, SettlementReportRequestedByActor ActorInfo);
