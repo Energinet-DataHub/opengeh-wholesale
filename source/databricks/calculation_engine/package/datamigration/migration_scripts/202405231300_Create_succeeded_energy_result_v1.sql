@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1 as
+CREATE VIEW IF NOT EXISTS {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
        c.period_start AS calculation_period_start,
@@ -39,5 +39,5 @@ SELECT c.calculation_id,
            WHEN e.time_series_type = 'temp_flex_consumption' THEN 'flex'
        END as settlement_method,
        e.metering_point_id
-FROM {OUTPUT_DATABASE_NAME}.energy_results AS e
+FROM {HIVE_OUTPUT_DATABASE_NAME}.energy_results AS e
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id
