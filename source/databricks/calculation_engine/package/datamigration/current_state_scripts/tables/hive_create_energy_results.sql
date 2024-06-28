@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
+CREATE TABLE IF NOT EXISTS {HIVE_OUTPUT_DATABASE_NAME}.energy_results
 (
     grid_area_code STRING NOT NULL,
     energy_supplier_id STRING,

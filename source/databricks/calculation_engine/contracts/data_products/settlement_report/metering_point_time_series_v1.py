@@ -2,12 +2,6 @@ import pyspark.sql.types as t
 
 nullable = True
 
-quantity = t.StructType(
-    [
-        t.StructField("observation_time", t.TimestampType(), not nullable),
-        t.StructField("quantity", t.DecimalType(18, 3), not nullable),
-    ]
-)
 
 metering_point_time_series_v1 = t.StructType(
     [
@@ -40,16 +34,10 @@ metering_point_time_series_v1 = t.StructType(
         #
         # UTC time
         t.StructField(
-            "start_date_time",
+            "observation_time",
             t.TimestampType(),
             not nullable,
         ),
-        #
-        # [ (time, quantity) ]
-        t.StructField(
-            "quantities",
-            t.ArrayType(quantity, not nullable),
-            not nullable,
-        ),
+        t.StructField("quantity", t.DecimalType(18, 3), not nullable),
     ]
 )

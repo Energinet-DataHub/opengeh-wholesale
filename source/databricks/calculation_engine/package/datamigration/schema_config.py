@@ -37,27 +37,27 @@ from package.calculation.output.schemas.wholesale_results_schema import (
 
 schema_config = [
     Schema(
-        name=paths.OutputDatabase.DATABASE_NAME,
+        name=paths.HiveOutputDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.OutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
+                name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
                 schema=wholesale_results_schema,
             ),
             Table(
-                name=paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME,
+                name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
             ),
             Table(
-                name=paths.OutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
+                name=paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
                 schema=monthly_amounts_schema,
             ),
             Table(
-                name=paths.OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+                name=paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
                 schema=total_monthly_amounts_schema,
             ),
         ],
         views=[
-            View(name=paths.OutputDatabase.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
+            View(name=paths.HiveOutputDatabase.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
         ],
     ),
     Schema(
