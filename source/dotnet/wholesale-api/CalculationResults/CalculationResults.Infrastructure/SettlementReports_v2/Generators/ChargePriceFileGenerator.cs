@@ -94,7 +94,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
         });
 
         csvHelper.WriteField(record.ChargeCode);
-        csvHelper.WriteField(record.ChargeOwnerId);
+        csvHelper.WriteField(record.ChargeOwnerId, shouldQuote: true);
 
         csvHelper.WriteField(record.Resolution switch
         {
