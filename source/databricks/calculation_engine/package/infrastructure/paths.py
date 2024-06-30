@@ -28,6 +28,11 @@ class InputDatabase:
 
 
 class OutputDatabase:
+    DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
+    ENERGY_RESULT_TABLE_NAME = "energy_results"
+
+
+class HiveOutputDatabase:
     FOLDER_NAME = "calculation-output"
     """The folder in the storage account container"""
 

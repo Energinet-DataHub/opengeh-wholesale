@@ -145,11 +145,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
         Assert.Equal("METERINGGRIDAREAID,ENERGYBUSINESSPROCESS,STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY", fileLines[0]);
-        Assert.Equal("018,D05,2022-01-10T03:15:00Z,PT15M,E17,E02,1.100", fileLines[1]);
-        Assert.Equal("018,D05,2022-01-11T18:30:00Z,PT15M,E17,E02,2.100", fileLines[2]);
-        Assert.Equal("018,D05,2022-01-12T23:15:00Z,PT15M,E17,E02,2.200", fileLines[3]);
-        Assert.Equal("018,D05,2022-01-13T12:00:00Z,PT15M,E17,E02,1.200", fileLines[4]);
-        Assert.Equal("018,D05,2022-01-14T12:15:00Z,PT15M,E17,E02,3.200", fileLines[5]);
+        Assert.Equal("\"018\",D05,2022-01-10T03:15:00Z,PT15M,E17,E02,1.100", fileLines[1]);
+        Assert.Equal("\"018\",D05,2022-01-11T18:30:00Z,PT15M,E17,E02,2.100", fileLines[2]);
+        Assert.Equal("\"018\",D05,2022-01-12T23:15:00Z,PT15M,E17,E02,2.200", fileLines[3]);
+        Assert.Equal("\"018\",D05,2022-01-13T12:00:00Z,PT15M,E17,E02,1.200", fileLines[4]);
+        Assert.Equal("\"018\",D05,2022-01-14T12:15:00Z,PT15M,E17,E02,3.200", fileLines[5]);
     }
 
     [Fact]
@@ -208,10 +208,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             "METERINGPOINTID,TYPEOFMP,CHARGETYPE,CHARGETYPEOWNERID,CHARGETYPEID,CHARGEOCCURRENCES,PERIODSTART,PERIODEND",
             fileLines[0]);
         Assert.Equal(
-            "15cba911-b91e-4786-bed4-f0d28418a9e2,E17,D03,6392825108998,40000,46,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z",
+            "\"15cba911-b91e-4786-bed4-f0d28418a9e2\",E17,D03,\"6392825108998\",40000,46,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z",
             fileLines[1]);
         Assert.Equal(
-            "15cba911-b91e-4786-bed4-f0d28418a9eb,E17,D03,6392825108998,40000,46,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z",
+            "\"15cba911-b91e-4786-bed4-f0d28418a9eb\",E17,D03,\"6392825108998\",40000,46,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z",
             fileLines[2]);
     }
 
@@ -314,10 +314,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             "METERINGPOINTID,VALIDFROM,VALIDTO,GRIDAREAID,TOGRIDAREAID,FROMGRIDAREAID,TYPEOFMP,SETTLEMENTMETHOD,ENERGYSUPPLIERID",
             fileLines[0]);
         Assert.Equal(
-            "15cba911-b91e-4782-bed4-f0d2841829e1,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,018,407,406,E17,D01,8397670583196",
+            "\"15cba911-b91e-4782-bed4-f0d2841829e1\",2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,\"018\",\"407\",\"406\",E17,D01,\"8397670583196\"",
             fileLines[1]);
         Assert.Equal(
-            "15cba911-b91e-4782-bed4-f0d2841829e2,2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,018,407,406,E17,D01,8397670583196",
+            "\"15cba911-b91e-4782-bed4-f0d2841829e2\",2022-01-02T02:00:00Z,2022-01-03T02:00:00Z,\"018\",\"407\",\"406\",E17,D01,\"8397670583196\"",
             fileLines[2]);
     }
 
@@ -372,10 +372,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             "ENERGYBUSINESSPROCESS,PROCESSVARIANT,METERINGGRIDAREAID,ENERGYSUPPLIERID,STARTDATETIME,RESOLUTIONDURATION,MEASUREUNIT,ENERGYCURRENCY,AMOUNT,CHARGETYPE,CHARGETYPEID,CHARGETYPEOWNERID",
             fileLines[0]);
         Assert.Equal(
-            "D32,1ST,004,8397670583196,2022-01-02T02:00:00Z,PT1H,KWH,DKK,18.012345,D03,123,8397670583197",
+            "D32,1ST,\"004\",\"8397670583196\",2022-01-02T02:00:00Z,PT1H,KWH,DKK,18.012345,D03,123,\"8397670583197\"",
             fileLines[1]);
         Assert.Equal(
-            "D32,1ST,004,8397670583196,2022-01-02T04:00:00Z,P1D,PCS,DKK,18.012346,D01,122,8397670583197",
+            "D32,1ST,\"004\",\"8397670583196\",2022-01-02T04:00:00Z,P1D,PCS,DKK,18.012346,D01,122,\"8397670583197\"",
             fileLines[2]);
     }
 }
