@@ -1,4 +1,7 @@
-CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_ga_v999_test AS
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_ga_v1
+GO
+
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
        calculation_period_start,
