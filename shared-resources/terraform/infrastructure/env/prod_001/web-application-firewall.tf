@@ -65,6 +65,16 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
         action  = "Log"
       }
     }
+
+    override {
+      rule_group_name = "MS-ThreatIntel-SQLI"
+      # SQL Comment Sequence Detected, blocks CIM/XML cim:mRID where values contains hypens
+      rule {
+        rule_id = "99031002"
+        enabled = true
+        action  = "Log"
+      }
+    }
   }
 
   managed_rule {
