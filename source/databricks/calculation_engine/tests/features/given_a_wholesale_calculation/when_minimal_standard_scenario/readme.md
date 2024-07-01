@@ -10,10 +10,31 @@ two other grid areas than the one it is in.
 
 ## Coverage
 
-- E20 (exchange energy in)
-- E20 (exchange to other GA)
-- E17 (flex)
-- E17 (nonprofiled)
-- E17 (glmp)
-- E18
-- E18 (skmp)
+3 fees, all start date before calculation period
+
+charge masterdata
+ - from-to covers whole calc. period
+ 
+charge link periods
+ - quantity = 1
+ - quantity > 1
+
+ 
+fee_per_ga_co_es
+
+Aggregation
+	charge time (day)
+	charge-key
+	MP type
+
+Check that identical aggregations are correctly summed and different aggregations have separate rows
+
+monthly_fee_per_ga_co_es
+
+Aggregation
+	charge time (month)
+	charge-key
+Check that identical aggregations are correctly summed and different aggregations have separate rows
+
+
+
