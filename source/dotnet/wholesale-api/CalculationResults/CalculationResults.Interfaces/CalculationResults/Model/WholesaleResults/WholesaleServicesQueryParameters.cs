@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
+// TODO (MWO): Bruges også i Wholesale.EDI og er derfor endt her. Kan vi ikke gøre noget bedre?
 public record WholesaleServicesQueryParameters(
     AmountType AmountType,
     IReadOnlyCollection<string> GridAreaCodes,

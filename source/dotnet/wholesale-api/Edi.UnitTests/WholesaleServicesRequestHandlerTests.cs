@@ -82,7 +82,6 @@ public class WholesaleServicesRequestHandlerTests
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
-            completedCalculationRetriever.Object,
             queries.Object,
             mapper.Object,
             logger.Object);
@@ -111,8 +110,7 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
-        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(WholesaleServicesRequestRejected);
@@ -126,7 +124,6 @@ public class WholesaleServicesRequestHandlerTests
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
-            completedCalculationRetriever.Object,
             queries.Object,
             mapper.Object,
             logger.Object);
@@ -156,8 +153,7 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
-        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(WholesaleServicesRequestRejected);
@@ -178,7 +174,6 @@ public class WholesaleServicesRequestHandlerTests
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
-            completedCalculationRetriever.Object,
             queries.Object,
             mapper.Object,
             logger.Object);
@@ -208,8 +203,7 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
-        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(WholesaleServicesRequestRejected);
@@ -233,7 +227,6 @@ public class WholesaleServicesRequestHandlerTests
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
-            completedCalculationRetriever.Object,
             queries.Object,
             mapper.Object,
             logger.Object);

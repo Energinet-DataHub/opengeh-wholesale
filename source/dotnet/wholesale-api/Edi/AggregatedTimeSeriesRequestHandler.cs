@@ -15,7 +15,6 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
@@ -31,29 +30,20 @@ namespace Energinet.DataHub.Wholesale.Edi;
 /// <summary>
 /// Handles AggregatedTimeSeriesRequest messages (typically received from the EDI subsystem through the WholesaleInbox service bus queue)
 /// </summary>
-public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
+public class AggregatedTimeSeriesRequestHandler(
+    IEdiClient ediClient,
+    IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
+    IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
+    ILogger<AggregatedTimeSeriesRequestHandler> logger)
+    : IWholesaleInboxRequestHandler
 {
-    private readonly IEdiClient _ediClient;
-    private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
-    private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
-    private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly CompletedCalculationRetriever _completedCalculationRetriever;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
-    public AggregatedTimeSeriesRequestHandler(
-        IEdiClient ediClient,
-        IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
-        IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
-        ILogger<AggregatedTimeSeriesRequestHandler> logger,
-        CompletedCalculationRetriever completedCalculationRetriever)
-    {
-        _ediClient = ediClient;
-        _validator = validator;
-        _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
-        _logger = logger;
-        _completedCalculationRetriever = completedCalculationRetriever;
-    }
+    private readonly IEdiClient _ediClient = ediClient;
+    private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator = validator;
+    private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
+    private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger = logger;
 
     public bool CanHandle(string requestSubject) => requestSubject.Equals(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Descriptor.Name);
 

@@ -20,16 +20,13 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
+public class AggregatedTimeSeriesQueryStatement(
+    AggregatedTimeSeriesQueryParameters parameters,
+    DeltaTableOptions deltaTableOptions)
+    : DatabricksStatement
 {
-    private readonly AggregatedTimeSeriesQueryParameters _parameters;
-    private readonly DeltaTableOptions _deltaTableOptions;
-
-    public AggregatedTimeSeriesQueryStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
-    {
-        _parameters = parameters;
-        _deltaTableOptions = deltaTableOptions;
-    }
+    private readonly AggregatedTimeSeriesQueryParameters _parameters = parameters;
+    private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
     protected override string GetSqlStatement()
     {

@@ -38,6 +38,61 @@ public class WholesaleServicesQueries(
 
     public async IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters)
     {
+        var calculationTypePerGridAreas =
+            await GetCalculationTypePerGridAreasAsync(queryParameters).ConfigureAwait(false);
+
+        var sqlStatement = new WholesaleServicesQueryStatement(
+            WholesaleServicesQueryStatement.StatementType.Select,
+            queryParameters,
+            calculationTypePerGridAreas,
+            _whereClauseProvider,
+            _deltaTableOptions.Value);
+
+        var resultStream = GetDataAsync(sqlStatement);
+
+        await foreach (var wholesaleServices in resultStream.ConfigureAwait(false))
+            yield return wholesaleServices;
+    }
+
+    public async Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
+    {
+        var calculationTypePerGridAreas =
+            await GetCalculationTypePerGridAreasAsync(queryParameters).ConfigureAwait(false);
+
+        var sqlStatement = new WholesaleServicesQueryStatement(
+            WholesaleServicesQueryStatement.StatementType.Exists,
+            queryParameters,
+            calculationTypePerGridAreas,
+            _whereClauseProvider,
+            _deltaTableOptions.Value);
+
+        return await _databricksSqlWarehouseQueryExecutor
+            .ExecuteStatementAsync(sqlStatement)
+            .AnyAsync()
+            .ConfigureAwait(false);
+    }
+
+    protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
+    {
+        return WholesaleServicesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column])
+               || current[WholesaleResultColumnNames.CalculationId] != previous[WholesaleResultColumnNames.CalculationId];
+    }
+
+    protected override WholesaleServices CreatePackageFromRowData(
+        DatabricksSqlRow rowData,
+        List<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    {
+        return WholesaleServicesFactory.Create(rowData, timeSeriesPoints);
+    }
+
+    protected override WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
+    {
+        return WholesaleTimeSeriesPointFactory.Create(row);
+    }
+
+    private async Task<List<CalculationTypePerGridArea>> GetCalculationTypePerGridAreasAsync(
+        WholesaleServicesQueryParameters queryParameters)
+    {
         var calculationTypePerGridAreaStatement =
             new CalculationTypePerGridAreaStatement(_deltaTableOptions.Value, _whereClauseProvider, queryParameters);
 
@@ -45,8 +100,10 @@ public class WholesaleServicesQueries(
             .ExecuteStatementAsync(calculationTypePerGridAreaStatement, Format.JsonArray)
             .Select(d =>
             {
-                var o = new DatabricksSqlRow(d);
-                return new CalculationTypePerGridArea(o[WholesaleResultColumnNames.GridArea]!, o[WholesaleResultColumnNames.CalculationType]!);
+                var databricksSqlRow = new DatabricksSqlRow(d);
+                return new CalculationTypePerGridArea(
+                    databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
+                    databricksSqlRow[WholesaleResultColumnNames.CalculationType]!);
             })
             .ToListAsync()
             .ConfigureAwait(false);
@@ -83,102 +140,7 @@ public class WholesaleServicesQueries(
             .Where(ctpga => queryParameters.CalculationType is not null || ctpga.CalculationType != DeltaTableCalculationType.WholesaleFixing)
             .Distinct()
             .ToList();
-
-        var sqlStatement = new WholesaleServicesQueryStatement(
-            WholesaleServicesQueryStatement.StatementType.Select,
-            queryParameters,
-            foo,
-            _whereClauseProvider,
-            _deltaTableOptions.Value);
-
-        var resultStream = GetDataAsync(sqlStatement);
-
-        await foreach (var wholesaleServices in resultStream.ConfigureAwait(false))
-            yield return wholesaleServices;
-    }
-
-    public async Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
-    {
-        var calculationTypePerGridAreaStatement =
-            new CalculationTypePerGridAreaStatement(_deltaTableOptions.Value, _whereClauseProvider, queryParameters);
-
-        var calculationTypesForGridAreas = await _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(calculationTypePerGridAreaStatement, Format.JsonArray)
-            .Select(d => new CalculationTypePerGridArea((string)d[WholesaleResultColumnNames.GridArea], (string)d[WholesaleResultColumnNames.CalculationType]))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var foo = calculationTypesForGridAreas
-            .GroupBy(ctpga => ctpga.GridArea)
-            .Select(g =>
-            {
-                if (g.Select(ctpga => ctpga.CalculationType)
-                    .Contains(DeltaTableCalculationType.ThirdCorrectionSettlement))
-                {
-                    return new CalculationTypePerGridArea(g.Key, DeltaTableCalculationType.ThirdCorrectionSettlement);
-                }
-
-                if (g.Select(ctpga => ctpga.CalculationType)
-                    .Contains(DeltaTableCalculationType.SecondCorrectionSettlement))
-                {
-                    return new CalculationTypePerGridArea(g.Key, DeltaTableCalculationType.SecondCorrectionSettlement);
-                }
-
-                if (g.Select(ctpga => ctpga.CalculationType)
-                    .Contains(DeltaTableCalculationType.FirstCorrectionSettlement))
-                {
-                    return new CalculationTypePerGridArea(g.Key, DeltaTableCalculationType.FirstCorrectionSettlement);
-                }
-
-                return new CalculationTypePerGridArea(g.Key, DeltaTableCalculationType.WholesaleFixing);
-            })
-            .Where(ctpga => ctpga.CalculationType != DeltaTableCalculationType.WholesaleFixing)
-            .Distinct()
-            .ToList();
-
-        var sqlStatement = new WholesaleServicesQueryStatement(
-            WholesaleServicesQueryStatement.StatementType.Exists,
-            queryParameters,
-            foo,
-            _whereClauseProvider,
-            _deltaTableOptions.Value);
-
-        return await _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(sqlStatement)
-            .AnyAsync()
-            .ConfigureAwait(false);
-    }
-
-    protected override string CalculationIdColumnName => WholesaleResultColumnNames.CalculationId;
-
-    protected override string TimeColumnName => WholesaleResultColumnNames.Time;
-
-    protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
-    {
-        var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] !=
-                                   previous[EnergyResultColumnNames.CalculationId];
-        // var notSameVersion = current[BasisDataCalculationsColumnNames.Version] != previous[BasisDataCalculationsColumnNames.Version];
-        var isInDifferentCalculationPeriod = notSameCalculationId; // || notSameVersion;
-
-        return HasDifferentColumnValues(current, previous) || isInDifferentCalculationPeriod;
-    }
-
-    protected override WholesaleServices CreatePackageFromRowData(
-        DatabricksSqlRow rowData,
-        List<WholesaleTimeSeriesPoint> timeSeriesPoints)
-    {
-        return WholesaleServicesFactory.Create(rowData, timeSeriesPoints);
-    }
-
-    protected override WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
-    {
-        return WholesaleTimeSeriesPointFactory.Create(row);
-    }
-
-    private static bool HasDifferentColumnValues(DatabricksSqlRow row1, DatabricksSqlRow row2)
-    {
-        return WholesaleServicesQueryStatement.ColumnsToGroupBy.Any(column => row1[column] != row2[column])
-               || row1[WholesaleResultColumnNames.CalculationId] != row2[WholesaleResultColumnNames.CalculationId];
+        return foo;
     }
 
     private class CalculationTypePerGridAreaStatement(

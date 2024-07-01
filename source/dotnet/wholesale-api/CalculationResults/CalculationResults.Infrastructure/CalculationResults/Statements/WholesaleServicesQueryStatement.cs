@@ -61,10 +61,8 @@ public class WholesaleServicesQueryStatement(
                     ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
                     """;
 
-        //sql = _whereClauseProvider.AddWhereClauseToSqlExpression(sql, _queryParameters);
-
         // The order is important for combining the rows into packages, since the sql rows are streamed and
-        //      packages are created on-the-fly each time a new row is received.
+        // packages are created on-the-fly each time a new row is received.
         sql += $"""
                 {"\n"}ORDER BY {string.Join(", ", ColumnsToGroupBy)}, {WholesaleResultColumnNames.Time}
                 """;

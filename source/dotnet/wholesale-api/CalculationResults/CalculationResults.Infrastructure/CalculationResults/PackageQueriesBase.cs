@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
@@ -27,10 +26,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 /// </summary>
 public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
 {
-    protected abstract string CalculationIdColumnName { get; }
-
-    protected abstract string TimeColumnName { get; }
-
     protected abstract bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous);
 
     protected abstract TPackageResult CreatePackageFromRowData(
@@ -41,9 +36,9 @@ public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(Datab
 
     /// <summary>
     /// Retrieves a stream of sql rows from the Databricks SQL Warehouse and groups the sql rows into packages
-    ///     which are streamed back as they are finished
+    /// which are streamed back as they are finished.
     /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
-    ///     results that can span multiple calculations
+    /// results that can span multiple calculations
     /// </summary>
     protected async IAsyncEnumerable<TPackageResult> GetDataAsync(DatabricksStatement sqlStatement)
     {
