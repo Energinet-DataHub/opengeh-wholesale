@@ -49,7 +49,10 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                          {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                          {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
-                         {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? $"AND {SettlementReportWholesaleViewColumns.ChargeOwnerId} = '{SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId)}'" : string.Empty)}
+                         {(_filter is { MarketRole: MarketRole.SystemOperator, ChargeOwnerId: not null } ? " AND "
+                            + SettlementReportWholesaleViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportWholesaleViewColumns.IsTax + " = 0" : string.Empty)}
+                         {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND "
+                            + SettlementReportWholesaleViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportWholesaleViewColumns.IsTax + " = 1" : string.Empty)}
                          {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                      ORDER BY 
                          {SettlementReportWholesaleViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
@@ -85,7 +88,10 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                                     {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                                     {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                                     {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
-                                    {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? $"AND {SettlementReportWholesaleViewColumns.ChargeOwnerId} = '{SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId)}'" : string.Empty)}
+                                    {(_filter is { MarketRole: MarketRole.SystemOperator, ChargeOwnerId: not null } ? " AND "
+                                        + SettlementReportWholesaleViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportWholesaleViewColumns.IsTax + " = 0" : string.Empty)}
+                                    {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND "
+                                         + SettlementReportWholesaleViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportWholesaleViewColumns.IsTax + " = 1" : string.Empty)}
                                     {(_filter.EnergySupplier is not null ? $"AND {SettlementReportWholesaleViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'" : string.Empty)}
                             """;
         return
