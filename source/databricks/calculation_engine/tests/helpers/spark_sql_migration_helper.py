@@ -25,10 +25,10 @@ from spark_sql_migrations import (
 )
 from spark_sql_migrations.utility import delta_table_helper
 
-import package.datamigration.constants as c
-from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.datamigration.schema_config import get_schema_config
-from package.datamigration.substitutions import substitutions
+import package.datamigration_hive.constants as c
+from package.datamigration_hive.migration_script_args import MigrationScriptArgs
+from package.datamigration_hive.schema_config import schema_config
+from package.datamigration_hive.substitutions import substitutions
 
 schema_migration_schema_name = "schema_migration"
 schema_migration_location = "schema_migration"
@@ -119,7 +119,7 @@ def configure_spark_sql_migration(
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
-        schema_config=get_schema_config(catalog_name),
+        schema_config=schema_config,
         substitution_variables=substitution_variables,
         table_prefix=table_prefix,
         catalog_name=catalog_name,

@@ -11,11 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from unittest.mock import Mock
-
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField
-import package.datamigration.schema_config as schema_config
+
+import package.datamigration_hive.schema_config as schema_config
 
 
 def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
