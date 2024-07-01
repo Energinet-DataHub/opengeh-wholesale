@@ -19,7 +19,6 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
@@ -51,8 +50,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -72,7 +70,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
                 It.IsAny<IReadOnlyCollection<string>>(),
                 It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
                 It.IsAny<RequestedCalculationType>()))
@@ -84,7 +82,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                         end),
                     Guid.NewGuid(),
                     1),
-            }.AsReadOnly());
+            }.AsReadOnly());*/
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -115,8 +113,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -137,7 +134,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
                 It.IsAny<IReadOnlyCollection<string>>(),
                 It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
                 It.IsAny<RequestedCalculationType>()))
@@ -149,7 +146,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                         end),
                     Guid.NewGuid(),
                     1),
-            }.AsReadOnly());
+            }.AsReadOnly());*/
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -223,8 +220,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -247,7 +243,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridAreaCodes.Count == 0)))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
                 It.IsAny<IReadOnlyCollection<string>>(),
                 It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
                 It.IsAny<RequestedCalculationType>()))
@@ -259,7 +255,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                         end),
                     Guid.NewGuid(),
                     1),
-            }.AsReadOnly());
+            }.AsReadOnly());*/
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -291,8 +287,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -306,12 +301,12 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
                 It.IsAny<IReadOnlyCollection<string>>(),
                 It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
                 It.IsAny<RequestedCalculationType>()))
             .ReturnsAsync(new List<CalculationForPeriod>
-            { }.AsReadOnly());
+            { }.AsReadOnly());*/
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,

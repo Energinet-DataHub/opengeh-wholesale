@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories;
@@ -52,8 +51,7 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
-        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
-        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
@@ -70,14 +68,14 @@ public class WholesaleServicesRequestHandlerTests
                 wholesaleServices,
             }.ToAsyncEnumerable());
 
-        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
             It.IsAny<IReadOnlyCollection<string>>(),
             It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
             It.IsAny<RequestedCalculationType>()))
             .ReturnsAsync(new List<CalculationForPeriod>
             {
                 new(new Period(wholesaleServices.Period.Start, wholesaleServices.Period.End), Guid.NewGuid(), 1),
-            }.AsReadOnly());
+            }.AsReadOnly());*/
 
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,

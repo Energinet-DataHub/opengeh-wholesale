@@ -24,14 +24,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class WholesaleServicesQueryStatement(
     WholesaleServicesQueryStatement.StatementType statementType,
     WholesaleServicesQueryParameters queryParameters,
-    IReadOnlyCollection<CalculationTypePerGridArea> calculationTypePerGridAreas,
+    IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
     WholesaleServicesQueryStatementWhereClauseProvider whereClauseProvider,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
     private readonly StatementType _statementType = statementType;
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
-    private readonly IReadOnlyCollection<CalculationTypePerGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
+    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
     private readonly WholesaleServicesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
 

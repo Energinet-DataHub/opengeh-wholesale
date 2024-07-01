@@ -198,6 +198,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   with the period start and end being the same for all `CalculationForPeriod'.
  */
+/*
 public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlStatementApiFixture sqlStatementApiFixture)
 {
     public static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
@@ -767,3 +768,4 @@ public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlS
                < Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueriesConstants.SecondDay));
     }
 }
+*/

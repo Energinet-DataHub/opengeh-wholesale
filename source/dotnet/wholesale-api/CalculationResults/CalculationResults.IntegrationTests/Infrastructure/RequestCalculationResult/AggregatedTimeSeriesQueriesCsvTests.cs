@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;

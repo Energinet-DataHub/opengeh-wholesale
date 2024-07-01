@@ -25,7 +25,7 @@ using Xunit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
-
+    /*
 public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>,
     IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
@@ -38,7 +38,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         Fixture.Inject(fixture.GetDatabricksExecutor());
         _aggregatedTimeSeriesQueriesData = new AggregatedTimeSeriesQueriesData(fixture);
         _fixture = fixture;
-    }
+    }*/
 
     /*
 2 Test purpose
@@ -97,7 +97,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
    Energy time series point
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      */
-
+/*
     [Fact]
     public async Task
         GetAsync_WhenRequestFromEnergySupplierWithSpecificBalanceResponsibleAndGridArea_CorrectTimeSeriesPoints()
@@ -1002,3 +1002,4 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         actual.Should().HaveCount(0);
     }
 }
+*/

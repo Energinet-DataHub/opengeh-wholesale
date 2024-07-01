@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public record CalculationForPeriod(
-    Period Period,
-    Guid CalculationId,
-    long CalculationVersion);
+public readonly record struct CalculationTypeForGridArea(string GridArea, string CalculationType);

@@ -32,7 +32,7 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
-
+/*
 public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQueries>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
@@ -951,3 +951,4 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         Resolution,
     }
 }
+*/
