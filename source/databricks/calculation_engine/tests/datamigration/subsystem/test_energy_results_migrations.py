@@ -41,7 +41,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.quantity: Decimal("1.123"),
         EnergyResultColumnNames.quantity_qualities: ["missing"],
         EnergyResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        EnergyResultColumnNames.aggregation_level: "total_ga",
+        EnergyResultColumnNames.aggregation_level: AggregationLevel.GRID_AREA,
         EnergyResultColumnNames.time_series_type: "production",
         EnergyResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         EnergyResultColumnNames.calculation_type: "balance_fixing",

@@ -17,6 +17,10 @@ from enum import Enum
 
 
 class AggregationLevel(Enum):
-    TOTAL_GA = "total_ga"
-    ES_PER_BRP_PER_GA = "es_brp_ga"
-    BRP_PER_GA = "brp_ga"
+    GRID_AREA = "total_ga"
+    BALANCE_RESPONSIBLE_PARTY = "brp_ga"
+    ENERGY_SUPPLIER = "es_brp_ga"
+
+    # GRID_AREA = "grid_area"
+    # BALANCE_RESPONSIBLE_PARTY = "balance_responsible_party"
+    # ENERGY_SUPPLIER = "energy_supplier"
