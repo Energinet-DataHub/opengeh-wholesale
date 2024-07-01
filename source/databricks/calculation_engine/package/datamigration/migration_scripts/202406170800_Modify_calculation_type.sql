@@ -1,9 +1,9 @@
 -- Modify calculation_type column in energy_results to snake_case
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
     DROP CONSTRAINT IF EXISTS calculation_type_chk
 GO
 
-UPDATE {OUTPUT_DATABASE_NAME}.energy_results
+UPDATE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
 SET calculation_type =
     CASE
         WHEN calculation_type = 'BalanceFixing' THEN 'balance_fixing'
@@ -16,7 +16,7 @@ SET calculation_type =
     END
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('balance_fixing', 'aggregation', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement'))
 GO
 
@@ -43,11 +43,11 @@ ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
 GO
 
 -- Modify calculation_type column in wholesale_results to snake_case
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results
     DROP CONSTRAINT IF EXISTS calculation_type_chk
 GO
 
-UPDATE {OUTPUT_DATABASE_NAME}.wholesale_results
+UPDATE {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results
 SET calculation_type =
     CASE
         WHEN calculation_type = 'WholesaleFixing' THEN 'wholesale_fixing'
@@ -58,16 +58,16 @@ SET calculation_type =
     END
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement'))
 GO
 
 -- Modify calculation_type column in monthly_amounts to snake_case
-ALTER TABLE {OUTPUT_DATABASE_NAME}.monthly_amounts
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts
     DROP CONSTRAINT IF EXISTS calculation_type_chk
 GO
 
-UPDATE {OUTPUT_DATABASE_NAME}.monthly_amounts
+UPDATE {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts
 SET calculation_type =
     CASE
         WHEN calculation_type = 'WholesaleFixing' THEN 'wholesale_fixing'
@@ -78,16 +78,16 @@ SET calculation_type =
     END
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.monthly_amounts
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement'))
 GO
 
 -- Modify calculation_type column in total_monthly_amounts to snake_case
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.total_monthly_amounts
     DROP CONSTRAINT IF EXISTS calculation_type_chk
 GO
 
-UPDATE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
+UPDATE {HIVE_OUTPUT_DATABASE_NAME}.total_monthly_amounts
 SET calculation_type =
     CASE
         WHEN calculation_type = 'WholesaleFixing' THEN 'wholesale_fixing'
@@ -98,6 +98,6 @@ SET calculation_type =
     END
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.total_monthly_amounts
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement'))
 GO

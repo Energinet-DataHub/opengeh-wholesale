@@ -28,6 +28,7 @@ public class SettlementReportChargeLinkPeriodsViewColumns
     public const string ToDate = "to_date";
     public const string GridArea = "grid_area_code";
     public const string EnergySupplierId = "energy_supplier_id";
+    public const string IsTax = "is_tax";
 
     public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
     {
@@ -43,5 +44,6 @@ public class SettlementReportChargeLinkPeriodsViewColumns
         { ToDate, ("timestamp", true) },
         { GridArea, ("string", false) },
         { EnergySupplierId, ("string", true) },
+        { IsTax, ("boolean", true) },
     };
 }

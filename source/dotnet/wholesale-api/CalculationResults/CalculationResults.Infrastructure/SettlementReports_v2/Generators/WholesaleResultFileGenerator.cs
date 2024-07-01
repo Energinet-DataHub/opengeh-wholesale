@@ -27,7 +27,9 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
     private readonly ISettlementReportWholesaleRepository _dataSource;
 
     public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource)
-         : base(1_350) // Up to 31 * 24 rows in each chunk for a month, 1.004.400 rows per chunk in total.
+        : base(
+            1_350, // Up to 31 * 24 rows in each chunk for a month, 1.004.400 rows per chunk in total.
+            quotedColumns: [2, 3, 15])
     {
         _dataSource = dataSource;
     }
@@ -57,7 +59,7 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID")
                 .Index(2)
-                .Convert(row => row.Value.GridArea?.PadLeft(3, '0'));
+                .Convert(row => row.Value.GridArea.PadLeft(3, '0'));
 
             Map(r => r.EnergySupplierId)
                 .Name("ENERGYSUPPLIERID")

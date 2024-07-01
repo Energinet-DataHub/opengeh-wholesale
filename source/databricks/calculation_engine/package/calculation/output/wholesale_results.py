@@ -15,7 +15,7 @@ from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import OutputDatabase
+from package.infrastructure.paths import HiveOutputDatabase
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
@@ -41,5 +41,5 @@ def _write(name: str, df: DataFrame) -> None:
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
-            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
         )

@@ -16,7 +16,7 @@ SELECT calculation_id,
        quantity,
        unit as quantity_unit,
        quantity_qualities
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     -- Only include results that must be sent to the actors
     time_series_type in ('production', 'non_profiled_consumption', 'net_exchange_per_ga', 'flex_consumption', 'total_consumption')

@@ -30,7 +30,7 @@ from package.calculation.energy.data_structures.energy_results import (
 )
 from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
-from package.infrastructure.paths import OutputDatabase
+from package.infrastructure.paths import HiveOutputDatabase
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -60,13 +60,14 @@ OTHER_CALCULATION_EXECUTION_START = datetime(2023, 6, 10, 13, 15)
 OTHER_QUANTITY = "1.2"
 OTHER_QUALITY = e.QuantityQuality.CALCULATED
 OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
-OTHER_AGGREGATION_LEVEL = e.AggregationLevel.ES_PER_GA
 OTHER_OBSERVATION_TIME = datetime(2021, 1, 1, 0, 0)
 OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
-TABLE_NAME = f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+TABLE_NAME = (
+    f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+)
 
 
 @pytest.fixture(scope="module")
