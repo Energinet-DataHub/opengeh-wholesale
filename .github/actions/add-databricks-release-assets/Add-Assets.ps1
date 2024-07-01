@@ -20,15 +20,8 @@ function Add-Assets {
     }
 
     Move-Item -Path "${WorkingDirectory}/package/datamigration/migration_scripts" -Destination $destination
-}
 
-function Add-Assets-Hive {
-    param(
-        [Parameter(Mandatory)]
-        [string]
-        $WorkingDirectory
-    )
-
+    # Hive
     $destination = "${WorkingDirectory}/artifacts/hive"
 
     if ((Test-Path -Path $destination) -eq $false) {

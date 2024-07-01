@@ -1,4 +1,4 @@
-Describe "Add-Assets-Hive" {
+Describe "Add-Assets" {
     BeforeAll {
         . $PSScriptRoot/Add-Assets.ps1
     }
@@ -41,7 +41,7 @@ Describe "Add-Assets-Hive" {
     Context "Given a working directory containing wheel distribution files" {
         It "resulting artifacts folder should contain schema migration scripts" {
             # Act
-            Add-Assets-Hive -WorkingDirectory '.\test-files'
+            Add-Assets -WorkingDirectory '.\test-files'
 
             # Assert
             Test-Path '.\test-files\artifacts\hive\migration_scripts\test-script-1.sql' |
