@@ -30,11 +30,13 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
         _fileRepository = fileRepository;
     }
 
-    public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest)
+    public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(
+        SettlementReportFileRequestDto fileRequest,
+        SettlementReportRequestedByActor actorInfo)
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
 
-        var resultingFileName = fileRequest.PartialFileInfo.FileName + fileGenerator.FileExtension;
+        var resultingFileName = GenerateFilename(fileRequest, actorInfo) + fileGenerator.FileExtension;
         var storageFileName = $"{fileRequest.PartialFileInfo.FileName}_{fileRequest.PartialFileInfo.FileOffset}_{fileRequest.PartialFileInfo.ChunkOffset}{fileGenerator.FileExtension}";
 
         var writeStream = await _fileRepository
@@ -48,8 +50,8 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             {
                 await fileGenerator
                     .WriteAsync(
-                        fileRequest.MarketRole,
                         fileRequest.RequestFilter,
+                        actorInfo,
                         fileRequest.PartialFileInfo,
                         fileRequest.MaximumCalculationVersion,
                         streamWriter)
@@ -61,5 +63,30 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             fileRequest.RequestId,
             fileRequest.PartialFileInfo with { FileName = resultingFileName },
             storageFileName);
+    }
+
+    private string GenerateFilename(SettlementReportFileRequestDto fileRequest, SettlementReportRequestedByActor actorInfo)
+    {
+        var filename = $"{fileRequest.PartialFileInfo.FileName}";
+
+        if (!string.IsNullOrWhiteSpace(fileRequest.RequestFilter.EnergySupplier))
+        {
+            filename += $"_{fileRequest.RequestFilter.EnergySupplier}";
+        }
+
+        switch (actorInfo.MarketRole)
+        {
+            case MarketRole.EnergySupplier:
+                filename += "_DDQ";
+                break;
+            case MarketRole.GridAccessProvider:
+                filename += "_DDM";
+                break;
+        }
+
+        filename += $"_{fileRequest.RequestFilter.PeriodStart:dd-MM-yyyy}";
+        filename += $"_{fileRequest.RequestFilter.PeriodEnd:dd-MM-yyyy}";
+
+        return filename;
     }
 }

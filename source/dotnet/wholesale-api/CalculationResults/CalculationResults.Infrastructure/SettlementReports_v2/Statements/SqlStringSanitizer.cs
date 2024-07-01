@@ -16,10 +16,13 @@ using System.Text.RegularExpressions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public static class SqlStringSanitizer
+public static partial class SqlStringSanitizer
 {
-    public static string Sanitize(string input)
+    public static string Sanitize(string? input)
     {
-        return Regex.Replace(input, "[^a-zA-Z0-9-]", string.Empty).Trim('-');
+        return input is null ? string.Empty : SanitizeRegEx().Replace(input, string.Empty).Trim('-');
     }
+
+    [GeneratedRegex("[^a-zA-Z0-9-]")]
+    private static partial Regex SanitizeRegEx();
 }

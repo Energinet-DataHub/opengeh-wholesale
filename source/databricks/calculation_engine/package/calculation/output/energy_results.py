@@ -38,5 +38,5 @@ def _write(name: str, df: DataFrame) -> None:
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
-            f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+            f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
         )

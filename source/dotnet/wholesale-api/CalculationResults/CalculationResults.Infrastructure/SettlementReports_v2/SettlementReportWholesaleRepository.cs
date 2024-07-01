@@ -28,15 +28,15 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
+        return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
     }
 
-    public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take)
     {
         var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter), skip, take)
+            .GetAsync(ParseFilter(filter, actorInfo), skip, take)
             .ConfigureAwait(false);
 
         await foreach (var row in rows.ConfigureAwait(false))
@@ -60,7 +60,7 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
         }
     }
 
-    private static SettlementReportWholesaleResultQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
+    private static SettlementReportWholesaleResultQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
@@ -70,6 +70,8 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
             filter.CalculationType,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant(),
-            filter.EnergySupplier);
+            filter.EnergySupplier,
+            actorInfo.ChargeOwnerId,
+            actorInfo.MarketRole);
     }
 }

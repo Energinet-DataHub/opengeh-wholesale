@@ -109,7 +109,7 @@ def balance_fixing_results_df(
     executed_balance_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
         F.col(EnergyResultColumnNames.calculation_id)
@@ -123,7 +123,7 @@ def wholesale_fixing_energy_results_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
         F.col(EnergyResultColumnNames.calculation_id)
@@ -137,7 +137,7 @@ def wholesale_fixing_wholesale_results_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
     )
     return results_df.where(
         F.col(WholesaleResultColumnNames.calculation_id)
@@ -151,7 +151,7 @@ def wholesale_fixing_total_monthly_amounts(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
         F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
@@ -164,7 +164,7 @@ def wholesale_fixing_monthly_amounts(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
         F.col(WholesaleResultColumnNames.calculation_id)
