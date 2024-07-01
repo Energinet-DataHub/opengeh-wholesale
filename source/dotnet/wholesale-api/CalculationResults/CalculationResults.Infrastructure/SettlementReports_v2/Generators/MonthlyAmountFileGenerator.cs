@@ -25,7 +25,7 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
     private readonly ISettlementReportMonthlyAmountRepository _dataSource;
 
     public MonthlyAmountFileGenerator(ISettlementReportMonthlyAmountRepository dataSource)
-    : base(250)
+        : base(250, quotedColumns: [2, 3, 11])
     {
         _dataSource = dataSource;
     }
@@ -55,7 +55,7 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID")
                 .Index(2)
-                .Convert(row => row.Value.GridArea?.PadLeft(3, '0'));
+                .Convert(row => row.Value.GridArea.PadLeft(3, '0'));
 
             Map(r => r.EnergySupplierId)
                 .Name("ENERGYSUPPLIERID")

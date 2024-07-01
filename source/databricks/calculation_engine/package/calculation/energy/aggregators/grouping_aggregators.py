@@ -19,16 +19,6 @@ from package.calculation.energy.data_structures.energy_results import EnergyResu
 from package.constants import Colname
 
 
-def aggregate_per_ga_and_es(df: EnergyResults) -> EnergyResults:
-    group_by = [
-        Colname.grid_area_code,
-        Colname.energy_supplier_id,
-        Colname.observation_time,
-    ]
-    result = aggregate_sum_quantity_and_qualities(df.df, group_by)
-    return EnergyResults(result)
-
-
 def aggregate_per_ga(df: EnergyResults) -> EnergyResults:
     group_by = [Colname.grid_area_code, Colname.observation_time]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)

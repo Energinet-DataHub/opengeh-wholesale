@@ -26,7 +26,9 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
     private readonly ISettlementReportEnergyResultRepository _dataSource;
 
     public EnergyResultFileGenerator(ISettlementReportEnergyResultRepository dataSource)
-        : base(350) // Up to 31 * 24 * 4 rows in each chunk for a month, 1.041.600 rows per chunk in total.
+        : base(
+            350, // Up to 31 * 24 * 4 rows in each chunk for a month, 1.041.600 rows per chunk in total.
+            quotedColumns: [0, 7])
     {
         _dataSource = dataSource;
     }
@@ -43,12 +45,12 @@ public sealed class EnergyResultFileGenerator : CsvFileGeneratorBase<SettlementR
 
     protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(filter, actorInfo));
+        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(actorInfo));
     }
 
     public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportEnergyResultRowMap(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
+        public SettlementReportEnergyResultRowMap(SettlementReportRequestedByActor actorInfo)
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")

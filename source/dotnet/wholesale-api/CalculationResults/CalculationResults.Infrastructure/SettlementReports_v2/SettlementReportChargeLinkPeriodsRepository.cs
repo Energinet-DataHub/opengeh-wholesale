@@ -28,15 +28,15 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
+        return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
     }
 
-    public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo,  int skip, int take)
     {
         var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter), skip, take)
+            .GetAsync(ParseFilter(filter, actorInfo), skip, take)
             .ConfigureAwait(false);
 
         await foreach (var row in rows.ConfigureAwait(false))
@@ -53,7 +53,7 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
         }
     }
 
-    private static SettlementReportChargeLinkPeriodQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
+    private static SettlementReportChargeLinkPeriodQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
@@ -62,7 +62,9 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
             gridAreaCode,
             filter.CalculationType,
             filter.EnergySupplier,
+            actorInfo.ChargeOwnerId,
             filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.PeriodEnd.ToInstant(),
+            actorInfo.MarketRole);
     }
 }

@@ -82,7 +82,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
             await foreach (var record in _dataSource.GetAsync(filter, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                csvHelper.WriteField(record.MeteringPointId);
+                csvHelper.WriteField(record.MeteringPointId, shouldQuote: true);
                 csvHelper.WriteField(record.MeteringPointType switch
                 {
                     MeteringPointType.Consumption => "E17",
