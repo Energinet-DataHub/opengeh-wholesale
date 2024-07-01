@@ -17,6 +17,9 @@ locals {
       "DatabricksOptions__HealthCheckStartHour" = 5
       "DatabricksOptions__HealthCheckEndHour"   = 16
 
+      # Unity Catalog
+      "CatalogOptions__CatalogName"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog)"
+
       # Logging
       "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_DEFAULT
       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
