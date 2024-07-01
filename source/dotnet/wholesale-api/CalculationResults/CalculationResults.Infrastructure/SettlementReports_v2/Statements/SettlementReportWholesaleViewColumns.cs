@@ -33,6 +33,7 @@ public class SettlementReportWholesaleViewColumns
     public const string ChargeType = "charge_type";
     public const string ChargeCode = "charge_code";
     public const string ChargeOwnerId = "charge_owner_id";
+    public const string IsTax = "is_tax";
 
     public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
     {
@@ -53,5 +54,6 @@ public class SettlementReportWholesaleViewColumns
         { ChargeType, ("string", false) },
         { ChargeCode, ("string", true) },
         { ChargeOwnerId, ("string", false) },
+        { IsTax, ("boolean", true) },
     };
 }
