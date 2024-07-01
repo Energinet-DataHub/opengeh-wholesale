@@ -139,7 +139,7 @@ internal sealed class SettlementReportRequestTrigger
 
         if (marketRole == FrontendActorMarketRole.SystemOperator)
         {
-            return !string.IsNullOrWhiteSpace(_userContext.CurrentUser.Actor.ActorNumber);
+            return true;
         }
 
         return false;
