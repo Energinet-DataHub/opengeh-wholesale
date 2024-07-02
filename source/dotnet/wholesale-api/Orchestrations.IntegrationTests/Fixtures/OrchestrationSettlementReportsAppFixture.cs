@@ -16,7 +16,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Azure.Storage.Blobs;
-using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -91,10 +90,6 @@ public class OrchestrationSettlementReportsAppFixture : IAsyncLifetime
         // Prepare host settings
         var port = 8100;
         var appHostSettings = CreateAppHostSettings(ref port);
-
-        // Storage: DataLake + Blob Containers
-        await EnsureCalculationStorageContainerExistsAsync();
-        await EnsureSettlementReportStorageContainerExistsAsync();
 
         // Create and start host
         AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);
@@ -208,32 +203,6 @@ public class OrchestrationSettlementReportsAppFixture : IAsyncLifetime
             AzuriteManager.BlobStorageServiceUri + "/");
 
         return appHostSettings;
-    }
-
-    /// <summary>
-    /// Create storage container.
-    /// Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it,
-    /// we can still create the container like this.
-    /// </summary>
-    private async Task EnsureCalculationStorageContainerExistsAsync()
-    {
-        // Uses BlobStorageConnectionString instead of Uri and DefaultAzureCredential for faster test execution
-        // (new DefaultAzureCredential() takes >30 seconds to check credentials)
-        var dataLakeServiceClient = new DataLakeServiceClient(AzuriteManager.BlobStorageConnectionString);
-        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient("wholesale");
-        if (!await fileSystemClient.ExistsAsync())
-            await fileSystemClient.CreateAsync();
-    }
-
-    private async Task EnsureSettlementReportStorageContainerExistsAsync()
-    {
-        // Uses BlobStorageConnectionString instead of Uri and DefaultAzureCredential for faster test execution
-        // (new DefaultAzureCredential() takes >30 seconds to check credentials)
-        var blobClient = new BlobServiceClient(AzuriteManager.BlobStorageConnectionString);
-        var blobContainerClient = blobClient.GetBlobContainerClient("settlement-report-container");
-        var containerExists = await blobContainerClient.ExistsAsync();
-        if (!containerExists)
-            await blobContainerClient.CreateAsync();
     }
 
     private static void StartHost(FunctionAppHostManager hostManager)
