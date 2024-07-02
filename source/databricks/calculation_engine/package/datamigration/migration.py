@@ -15,7 +15,6 @@ UNUSED = "UNUSED"  # Marks fields that were only used in the old hive implementa
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
-
     catalog_name = env_vars.get_catalog_name()
 
     spark_config = SparkSqlMigrationsConfiguration(

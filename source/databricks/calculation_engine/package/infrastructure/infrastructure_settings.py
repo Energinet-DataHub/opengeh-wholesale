@@ -22,7 +22,6 @@ class InfrastructureSettings:
     data_storage_account_name: str
     # Prevent the credentials from being printed or logged (using e.g. print() or repr())
     data_storage_account_credentials: ClientSecretCredential = field(repr=False)
-    catalog_name: str  # TODO BJM: Remove?
     wholesale_container_path: str
     calculation_input_path: str
     time_series_points_table_name: str | None
