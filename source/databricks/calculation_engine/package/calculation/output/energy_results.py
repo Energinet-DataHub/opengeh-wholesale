@@ -35,8 +35,15 @@ def _write(name: str, df: DataFrame) -> None:
         # Not all energy results have a value - it depends on the type of calculation
         if df is None:
             return None
+        # ToDo JMG: Remove when we are on Unity Catalog
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
             f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        )
+
+        df.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(
+            f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
         )
