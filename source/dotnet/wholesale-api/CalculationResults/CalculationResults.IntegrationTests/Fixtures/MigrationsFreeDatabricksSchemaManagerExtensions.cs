@@ -40,14 +40,14 @@ public static class MigrationsFreeDatabricksSchemaManagerExtensions
         var rows = new List<string[]>();
         while (await csvReader.ReadAsync())
         {
-            var row = new string[csvReader.HeaderRecord.Length];
+            var row = new string[csvReader.HeaderRecord!.Length];
             for (var columnIndex = 0; columnIndex < csvReader.ColumnCount; columnIndex++)
                 row[columnIndex] = ParseColumnValue(schemaInformation, csvReader, columnIndex);
 
             rows.Add(row);
         }
 
-        await schemaManager.InsertAsync(tableName, csvReader.HeaderRecord, rows);
+        await schemaManager.InsertAsync(tableName, csvReader.HeaderRecord!, rows);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public static class MigrationsFreeDatabricksSchemaManagerExtensions
         CsvReader csvReader,
         int columnIndex)
     {
-        var columnName = csvReader.HeaderRecord[columnIndex];
+        var columnName = csvReader.HeaderRecord![columnIndex];
         var columnValue = csvReader.GetField(columnIndex);
 
         if (!schemaInformation[columnName].IsNullable && columnValue == string.Empty)
@@ -74,7 +74,7 @@ public static class MigrationsFreeDatabricksSchemaManagerExtensions
 
         if (schemaInformation[columnName].DataType.Equals("ARRAY<STRING>", StringComparison.InvariantCultureIgnoreCase))
         {
-            var arrayContent = columnValue
+            var arrayContent = columnValue!
                 .Replace('[', '(')
                 .Replace(']', ')');
 
