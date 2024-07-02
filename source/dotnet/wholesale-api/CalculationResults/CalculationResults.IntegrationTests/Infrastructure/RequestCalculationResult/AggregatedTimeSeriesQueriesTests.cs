@@ -24,8 +24,9 @@ using NodaTime;
 using Xunit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
+// TODO (MWO): Merge with CSV-version of test
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
-
+    /*
 public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>,
     IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
@@ -38,7 +39,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         Fixture.Inject(fixture.GetDatabricksExecutor());
         _aggregatedTimeSeriesQueriesData = new AggregatedTimeSeriesQueriesData(fixture);
         _fixture = fixture;
-    }
+    }*/
 
     /*
 2 Test purpose
@@ -97,7 +98,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
    Energy time series point
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      */
-
+/*
     [Fact]
     public async Task
         GetAsync_WhenRequestFromEnergySupplierWithSpecificBalanceResponsibleAndGridArea_CorrectTimeSeriesPoints()
@@ -836,21 +837,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             [gridArea],
             null,
             null,
-            new List<CalculationForPeriod>
-            {
-                new(
-                    new Period(calc1Period1Start, calc1Period1End),
-                    calc1Id,
-                    calc1Version),
-                new(
-                    new Period(calc2PeriodStart, calc2PeriodEnd),
-                    calc2Id,
-                    calc2Version),
-                new(
-                    new Period(calc1Period2Start, calc1Period2End),
-                    calc1Id,
-                    calc1Version),
-            });
+            new Period(totalPeriodStart, totalPeriodEnd));
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -877,8 +864,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         var calc1Id = Guid.NewGuid();
         List<string> expectedGridAreas = ["100", "200"];
 
-        const int calc1Version = 1;
-
+        //const int calc1Version = 1;
         var rows = new List<IReadOnlyCollection<string>>
         {
             EnergyResultDeltaTableHelper.CreateRowValues(
@@ -909,13 +895,14 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             expectedGridAreas,
             null,
             null,
-            new List<CalculationForPeriod>
-            {
-                new(
-                    new Period(periodStart, periodEnd),
-                    calc1Id,
-                    calc1Version),
-            });
+            new Period(periodStart, periodEnd));
+        // new List<CalculationForPeriod>
+        // {
+        //     new(
+        //         new Period(periodStart, periodEnd),
+        //         calc1Id,
+        //         calc1Version),
+        // });
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -944,7 +931,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
 
         var calculationId = Guid.NewGuid();
         const string gridArea = "100";
-        const int calculationVersion = 1;
+        //const int calculationVersion = 1;
 
         // Created calculation results for the last half of the month
         var calculationResults = new List<IReadOnlyCollection<string>>();
@@ -972,13 +959,14 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             [gridArea],
             null,
             null,
-            new List<CalculationForPeriod>
-            {
-                new(
-                    new Period(calculationPeriodStart, calculationPeriodEnd),
-                    calculationId,
-                    calculationVersion),
-            });
+            new Period(calculationPeriodStart, calculationPeriodEnd));
+        // new List<CalculationForPeriod>
+        // {
+        //     new(
+        //         new Period(calculationPeriodStart, calculationPeriodEnd),
+        //         calculationId,
+        //         calculationVersion),
+        // });
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -1015,3 +1003,4 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         actual.Should().HaveCount(0);
     }
 }
+*/

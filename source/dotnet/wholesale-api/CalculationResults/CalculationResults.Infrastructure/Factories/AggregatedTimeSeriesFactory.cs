@@ -20,12 +20,11 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
-public class AggregatedTimeSeriesFactory
+public static class AggregatedTimeSeriesFactory
 {
     public static AggregatedTimeSeries Create(
         DatabricksSqlRow databricksSqlRow,
-        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints,
-        long version)
+        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints)
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
@@ -40,6 +39,6 @@ public class AggregatedTimeSeriesFactory
             periodStart: period.Start,
             periodEnd: period.End,
             resolution,
-            version: version);
+            SqlResultValueConverters.ToInt(databricksSqlRow[BasisDataCalculationsColumnNames.Version]!)!.Value);
     }
 }
