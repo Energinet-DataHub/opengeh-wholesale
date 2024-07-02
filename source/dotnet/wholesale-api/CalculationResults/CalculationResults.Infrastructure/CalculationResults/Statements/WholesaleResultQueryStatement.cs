@@ -35,10 +35,6 @@ public class WholesaleResultQueryStatement : DatabricksStatement
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
 WHERE {WholesaleResultColumnNames.CalculationId} = '{_calculationId}'
-UNION ALL
-SELECT {string.Join(", ", SqlColumnNamesMonthlyAmounts)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{"monthly_amounts"}
-WHERE {WholesaleResultColumnNames.CalculationId} = '{_calculationId}'
 ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColumnNames.Time}
 ";
     }
@@ -63,29 +59,6 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
         WholesaleResultColumnNames.Quantity,
         WholesaleResultColumnNames.QuantityQualities,
         WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.Amount,
-    };
-
-    public static string[] SqlColumnNamesMonthlyAmounts { get; } =
-    {
-        WholesaleResultColumnNames.CalculationId,
-        WholesaleResultColumnNames.CalculationResultId,
-        WholesaleResultColumnNames.CalculationType,
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
-        $"'monthly_amount_per_charge' AS {WholesaleResultColumnNames.AmountType}",
-        $"NULL AS {WholesaleResultColumnNames.MeteringPointType}",
-        $"NULL AS {WholesaleResultColumnNames.SettlementMethod}",
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.ChargeCode,
-        WholesaleResultColumnNames.ChargeOwnerId,
-        $"'P1M' AS {WholesaleResultColumnNames.Resolution}",
-        WholesaleResultColumnNames.IsTax,
-        WholesaleResultColumnNames.QuantityUnit,
-        WholesaleResultColumnNames.Time,
-        $"NULL AS {WholesaleResultColumnNames.Quantity}",
-        $"NULL AS {WholesaleResultColumnNames.QuantityQualities}",
-        $"NULL AS {WholesaleResultColumnNames.Price}",
         WholesaleResultColumnNames.Amount,
     };
 }
