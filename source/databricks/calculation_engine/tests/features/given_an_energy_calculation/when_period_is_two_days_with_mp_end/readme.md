@@ -1,4 +1,4 @@
-# When Minimal Standard Scenario
+# When period is two days with MP period ending
 
 The purpose is to test that we can handle a metering point being discontinued.
 

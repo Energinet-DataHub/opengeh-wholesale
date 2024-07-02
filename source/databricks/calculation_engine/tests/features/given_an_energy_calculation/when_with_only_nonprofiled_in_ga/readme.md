@@ -1,6 +1,7 @@
-# When Minimal Standard Scenario
+# When only non-profiled consumption MP in GA
 
-The purpose of this test is the scenario where a grid area only has non-profiled consumption metering points, specifically that grid loss calculation is correct.
+The purpose of this test is the scenario where a grid area only has non-profiled consumption metering points,
+specifically that grid loss calculation is correct.
 
 ## Design considerations
 
