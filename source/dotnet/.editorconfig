@@ -579,7 +579,7 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 # The intention of this section is to match c# code files
 # that is either Durable Function Orchestrations or Activities.
 #
-[**/Orchestrations/Functions/**/*{Orchestration}.cs]
+[**/Orchestration*/Functions/**/*{Orchestration}.cs]
 
 dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
@@ -588,6 +588,6 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 # The intention of this section is to match c# code files
 # that is either function Triggers, Durable Function Orchestrations or Activities.
 #
-[**/Orchestrations/Functions/**/*{Orchestration,Activity,Trigger}.cs]
+[**/Orchestration*/Functions/**/*{Orchestration,Activity,Trigger}.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods

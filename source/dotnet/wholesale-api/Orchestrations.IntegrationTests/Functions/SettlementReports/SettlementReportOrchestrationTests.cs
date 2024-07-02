@@ -39,14 +39,14 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 public class SettlementReportOrchestrationTests : IAsyncLifetime
 {
     public SettlementReportOrchestrationTests(
-        OrchestrationsAppFixture fixture,
+        OrchestrationSettlementReportsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
     }
 
-    private OrchestrationsAppFixture Fixture { get; }
+    private OrchestrationSettlementReportsAppFixture Fixture { get; }
 
     public Task InitializeAsync()
     {

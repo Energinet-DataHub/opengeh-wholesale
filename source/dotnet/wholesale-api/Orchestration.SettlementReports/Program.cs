@@ -20,14 +20,10 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.Depende
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults(worker =>
+    .ConfigureFunctionsWebApplication(worker =>
     {
         // Http => Authentication
         worker.UseUserMiddlewareForIsolatedWorker<FrontendUser>();
@@ -44,21 +40,10 @@ var host = new HostBuilder()
         // Shared by modules
         services.AddNodaTimeForApplication();
         services.AddDatabricksJobsForApplication(context.Configuration);
-        services
-            .AddOptions<CalculationOrchestrationMonitorOptions>()
-            .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
-
-        // Handle Wholesale inbox messages
-        services.AddWholesaleInboxHandling(context.Configuration);
 
         // Modules
         services.AddCalculationsModule(context.Configuration);
         services.AddCalculationResultsV2Module(context.Configuration);
-
-        // => Sub-modules of Events
-        services.AddEventsDatabase(context.Configuration);
-        services.AddIntegrationEventsPublishing(context.Configuration);
-        services.AddCompletedCalculationsHandling();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

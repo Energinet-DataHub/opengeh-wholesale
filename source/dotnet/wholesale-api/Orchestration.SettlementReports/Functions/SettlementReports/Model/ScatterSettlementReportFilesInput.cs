@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-/// <summary>
-/// A xUnit collection fixture for ensuring tests don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
-/// </summary>
-[CollectionDefinition(nameof(OrchestrationsAppCollectionFixture))]
-public class OrchestrationsAppCollectionFixture : ICollectionFixture<OrchestrationsAppFixture>, ICollectionFixture<OrchestrationSettlementReportsAppFixture>
-{
-}
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
+
+public sealed record ScatterSettlementReportFilesInput(SettlementReportRequestId RequestId, SettlementReportRequestDto Request, SettlementReportRequestedByActor ActorInfo);
