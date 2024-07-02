@@ -18,7 +18,7 @@ SELECT calculation_id,
        quantity,
        unit as quantity_unit,
        quantity_qualities
-FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     aggregation_level = 'es_brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')

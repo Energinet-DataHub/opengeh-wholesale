@@ -24,17 +24,19 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
     private readonly ISettlementReportMeteringPointMasterDataRepository _dataSource;
 
     public MeteringPointMasterDataFileGenerator(ISettlementReportMeteringPointMasterDataRepository dataSource)
-        : base(200_000) // 5 rows in each chunk, 1.000.000 rows per chunk in total.
+        : base(
+            200_000, // 5 rows in each chunk, 1.000.000 rows per chunk in total.
+            quotedColumns: [0, 3, 4, 5, 8])
     {
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter);
     }
 
-    protected override IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
         return _dataSource.GetAsync(filter, skipChunks, takeChunks);
     }

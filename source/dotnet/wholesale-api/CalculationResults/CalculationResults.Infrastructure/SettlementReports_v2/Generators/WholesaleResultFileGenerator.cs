@@ -27,19 +27,21 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
     private readonly ISettlementReportWholesaleRepository _dataSource;
 
     public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource)
-         : base(1_350) // Up to 31 * 24 rows in each chunk for a month, 1.004.400 rows per chunk in total.
+        : base(
+            1_350, // Up to 31 * 24 rows in each chunk for a month, 1.004.400 rows per chunk in total.
+            quotedColumns: [2, 3, 15])
     {
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        return _dataSource.CountAsync(filter);
+        return _dataSource.CountAsync(filter, actorInfo);
     }
 
-    protected override IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    protected override IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        return _dataSource.GetAsync(filter, skipChunks, takeChunks);
+        return _dataSource.GetAsync(filter, actorInfo, skipChunks, takeChunks);
     }
 
     public sealed class SettlementReportWholesaleResultRowMap : ClassMap<SettlementReportWholesaleResultRow>
@@ -57,7 +59,7 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID")
                 .Index(2)
-                .Convert(row => row.Value.GridArea?.PadLeft(3, '0'));
+                .Convert(row => row.Value.GridArea.PadLeft(3, '0'));
 
             Map(r => r.EnergySupplierId)
                 .Name("ENERGYSUPPLIERID")

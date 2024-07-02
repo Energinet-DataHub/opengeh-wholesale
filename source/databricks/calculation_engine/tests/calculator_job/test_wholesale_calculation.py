@@ -48,67 +48,55 @@ from . import configuration as c
 ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.NET_EXCHANGE_PER_GA.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
 }
 

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using CsvHelper;
-using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
@@ -22,93 +22,96 @@ using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Cal
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class ChargePriceFileGenerator : CsvFileGeneratorBase<SettlementReportChargePriceRow, ChargePriceFileGenerator.SettlementReportChargePriceRowMap>
+public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 {
+    private const int ChunkSize = 1_750; // Up to 582 rows in each chunk for a month, 1.018.500 rows per chunk in total.
+
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
-        : base(1_750) // Up to 582 rows in each chunk for a month, 1.018.500 rows per chunk in total.
     {
         _dataSource = dataSource;
     }
 
-    protected override Task<int> CountAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public string FileExtension => ".csv";
+
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         return _dataSource.CountAsync(filter);
     }
 
-    protected override IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(MarketRole marketRole, SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skipChunks, int takeChunks)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
     {
-        return _dataSource.GetAsync(filter, skipChunks, takeChunks);
+        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
+
+        await using (csvHelper.ConfigureAwait(false))
+        {
+            csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
+                new TypeConverterOptions
+                {
+                    Formats = ["0.000000"],
+                });
+
+            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
+            {
+                await WriteHeaderAsync(csvHelper).ConfigureAwait(false);
+            }
+
+            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            {
+                await WriteRecordAsync(csvHelper, record).ConfigureAwait(false);
+            }
+        }
     }
 
-    protected override void WriteHeader(CsvWriter csvHelper)
+    private static async Task WriteHeaderAsync(CsvWriter csvHelper)
     {
         const int energyPriceFieldCount = 25;
 
-        csvHelper.WriteField($"CHARGETYPE");
-        csvHelper.WriteField($"CHARGETYPEID");
-        csvHelper.WriteField($"CHARGETYPEOWNER");
-        csvHelper.WriteField($"RESOLUTIONDURATION");
-        csvHelper.WriteField($"TAXINDICATOR");
-        csvHelper.WriteField($"STARTDATETIME");
+        csvHelper.WriteField("CHARGETYPE");
+        csvHelper.WriteField("CHARGETYPEID");
+        csvHelper.WriteField("CHARGETYPEOWNER");
+        csvHelper.WriteField("RESOLUTIONDURATION");
+        csvHelper.WriteField("TAXINDICATOR");
+        csvHelper.WriteField("STARTDATETIME");
 
         for (var i = 0; i < energyPriceFieldCount; ++i)
         {
             csvHelper.WriteField($"ENERGYPRICE{i + 1}");
         }
+
+        await csvHelper.NextRecordAsync().ConfigureAwait(false);
     }
 
-    protected override void ConfigureCsv(CsvWriter csvHelper)
+    private static async Task WriteRecordAsync(CsvWriter csvHelper, SettlementReportChargePriceRow record)
     {
-        csvHelper.Context.TypeConverterOptionsCache.AddOptions<decimal>(
-            new TypeConverterOptions
-            {
-                Formats = ["0.000000"],
-            });
-    }
-
-    public sealed class SettlementReportChargePriceRowMap : ClassMap<SettlementReportChargePriceRow>
-    {
-        public SettlementReportChargePriceRowMap()
+        csvHelper.WriteField(record.ChargeType switch
         {
-            Map(r => r.ChargeType)
-                .Name("CHARGETYPE")
-                .Convert(row => row.Value.ChargeType switch
-                {
-                    ChargeType.Tariff => "D03",
-                    ChargeType.Fee => "D02",
-                    ChargeType.Subscription => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.ChargeType)),
-                });
+            ChargeType.Tariff => "D03",
+            ChargeType.Fee => "D02",
+            ChargeType.Subscription => "D01",
+            _ => throw new ArgumentOutOfRangeException(nameof(record.ChargeType)),
+        });
 
-            Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID");
+        csvHelper.WriteField(record.ChargeCode);
+        csvHelper.WriteField(record.ChargeOwnerId, shouldQuote: true);
 
-            Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNER");
+        csvHelper.WriteField(record.Resolution switch
+        {
+            Resolution.Hour => "PT1H",
+            Resolution.Day => "P1D",
+            Resolution.Month => "P1M",
+            _ => throw new ArgumentOutOfRangeException(nameof(record.Resolution)),
+        });
 
-            Map(r => r.Resolution)
-                .Name("RESOLUTIONDURATION")
-                .Convert(row => row.Value.Resolution switch
-                {
-                    Resolution.Hour => "PT1H",
-                    Resolution.Day => "P1D",
-                    Resolution.Month => "P1M",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
-                });
+        csvHelper.WriteField(record.TaxIndicator ? "1" : "0");
+        csvHelper.WriteField(record.StartDateTime);
 
-            Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR")
-                .TypeConverter<BooleanConverter>()
-                .TypeConverterOption.BooleanValues(true, false, "1")
-                .TypeConverterOption.BooleanValues(false, false, "0");
-
-            Map(r => r.StartDateTime)
-                .Name("STARTDATETIME");
-
-            Map(r => r.EnergyPrices)
-                .TypeConverter<IEnumerableConverter>();
+        foreach (var energyPrice in record.EnergyPrices)
+        {
+            csvHelper.WriteField(energyPrice);
         }
+
+        await csvHelper.NextRecordAsync().ConfigureAwait(false);
     }
 }

@@ -50,6 +50,17 @@ internal sealed class SettlementReportRequestTrigger
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
+        if (_userContext.CurrentUser.Actor.MarketRole == FrontendActorMarketRole.EnergySupplier && string.IsNullOrWhiteSpace(settlementReportRequest.Filter.EnergySupplier))
+        {
+            settlementReportRequest = settlementReportRequest with
+            {
+                Filter = settlementReportRequest.Filter with
+                {
+                    EnergySupplier = _userContext.CurrentUser.Actor.ActorNumber,
+                },
+            };
+        }
+
         if (!await IsValidAsync(settlementReportRequest).ConfigureAwait(false))
         {
             return req.CreateResponse(HttpStatusCode.Forbidden);
@@ -71,8 +82,14 @@ internal sealed class SettlementReportRequestTrigger
             _ => throw new ArgumentOutOfRangeException(nameof(_userContext.CurrentUser.Actor.MarketRole)),
         };
 
+        var chargeOwnerId = marketRole is MarketRole.GridAccessProvider or MarketRole.SystemOperator
+            ? _userContext.CurrentUser.Actor.ActorNumber
+            : null;
+
+        var actorInfo = new SettlementReportRequestedByActor(marketRole, chargeOwnerId);
+
         var instanceId = await client
-            .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReport), new SettlementReportRequestInput(settlementReportRequest, marketRole))
+            .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReport), new SettlementReportRequestInput(settlementReportRequest, actorInfo))
             .ConfigureAwait(false);
 
         var requestId = new SettlementReportRequestId(instanceId);
@@ -118,6 +135,11 @@ internal sealed class SettlementReportRequestTrigger
         if (marketRole == FrontendActorMarketRole.EnergySupplier)
         {
             return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
+        }
+
+        if (marketRole == FrontendActorMarketRole.SystemOperator)
+        {
+            return true;
         }
 
         return false;
