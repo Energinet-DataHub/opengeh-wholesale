@@ -24,6 +24,7 @@ using NodaTime;
 using Xunit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
+// TODO (MWO): Merge with CSV-version of test
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
     /*
 public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>,
