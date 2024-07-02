@@ -2,8 +2,8 @@ from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
 
-from package.calculation.output.schemas.energy_results_schema import (
-    energy_results_schema,
+from package.calculation.output.schemas.total_monthly_amounts_schema import (
+    total_monthly_amounts_schema,
 )
 
 schema_config = [
@@ -11,8 +11,8 @@ schema_config = [
         name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.WholesaleResultsInternalDatabase.ENERGY_RESULT_TABLE_NAME,
-                schema=energy_results_schema,
+                name=paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+                schema=total_monthly_amounts_schema,
             ),
         ],
         views=[],

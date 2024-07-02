@@ -205,6 +205,8 @@ jobs:
             paths: datamigration/subsystem
           - name: Test Migration scripts
             paths: datamigration/migration_scripts
+          - name: Test Unity Catalog
+            paths: datamigration/unity_catalog
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
@@ -258,7 +260,8 @@ jobs:
           datamigration/all_scripts
           datamigration/current_state
           datamigration/subsystem
-          datamigration/migration_scripts"
+          datamigration/migration_scripts
+          datamigration/unity_catalog"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
