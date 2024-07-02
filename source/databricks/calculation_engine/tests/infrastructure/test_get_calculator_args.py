@@ -80,6 +80,7 @@ def sys_argv_from_contract(contract_parameters) -> list[str]:
 @pytest.fixture(scope="session")
 def job_environment_variables() -> dict:
     return {
+        EnvironmentVariable.CATALOG_NAME.name: "some_catalog",
         EnvironmentVariable.TIME_ZONE.name: "Europe/Copenhagen",
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.name: "some_storage_account_name",
         EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.name: "input",
