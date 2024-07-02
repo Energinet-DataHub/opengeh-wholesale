@@ -304,8 +304,8 @@ from package.calculation.preparation.transformations import (
             #       2023-02-04   2023-02-06   2023-02-08    2023-02-10
             #   MMP     |------------|            |-------------|
             #
-            #   2023-02-02                                         2023-02-18
-            #   CLP |--------------------------------------------------|
+            #              2023-02-05                2023-02-9
+            #   CLP            |-------------------------|
             [
                 prepaired_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 3, 23, 0, 0),
@@ -318,18 +318,18 @@ from package.calculation.preparation.transformations import (
             ],
             [
                 prepaired_charge_link_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 1, 23, 0, 0),
-                    to_date=datetime(2023, 2, 17, 23, 0, 0),
+                    from_date=datetime(2023, 2, 4, 23, 0, 0),
+                    to_date=datetime(2023, 2, 8, 23, 0, 0),
                 )
             ],
             [
                 prepaired_charge_link_metering_point_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 3, 23, 0, 0),
+                    from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
                 prepaired_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 7, 23, 0, 0),
-                    to_date=datetime(2023, 2, 9, 23, 0, 0),
+                    to_date=datetime(2023, 2, 8, 23, 0, 0),
                 ),
             ],
         ),
