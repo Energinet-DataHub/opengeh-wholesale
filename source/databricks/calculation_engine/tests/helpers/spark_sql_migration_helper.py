@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
-import pyspark.sql.functions as f
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as f
 from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
     create_and_configure_container,
@@ -67,7 +68,7 @@ def migrate(
         _remove_registration_of_modified_scripts(spark, migrations_execution)
 
     configure_spark_sql_migration(
-        spark, "spark_catalog", substitution_variables=substitution_variables
+        spark, "", substitution_variables=substitution_variables
     )
     schema_migration_pipeline.migrate()
 
@@ -103,7 +104,6 @@ def _remove_registration_of_modified_scripts(
 
 def configure_spark_sql_migration(
     spark: SparkSession,
-    catalog_name: str,
     table_prefix: str = "",
     substitution_variables: dict[str, str] | None = None,
 ) -> None:
@@ -122,7 +122,7 @@ def configure_spark_sql_migration(
         schema_config=schema_config,
         substitution_variables=substitution_variables,
         table_prefix=table_prefix,
-        catalog_name=catalog_name,
+        catalog_name="spark_catalog",
     )
 
     create_and_configure_container(configuration)
