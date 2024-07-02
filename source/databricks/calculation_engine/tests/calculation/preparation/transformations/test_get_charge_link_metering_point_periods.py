@@ -137,6 +137,74 @@ from package.calculation.preparation.transformations import (
                 )
             ],
         ),
+        (
+            #   Metering point period and charge link period don't overlap.
+            #   Expected empty result set.
+            #                              2023-02-02       2023-02-10
+            #                               MMP |---------------|
+            #   2023-01-25     2023-01-28
+            #   CLP |---------------|
+            [
+                prepaired_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                )
+            ],
+            [
+                prepaired_charge_link_periods_factory.create_row(
+                    from_date=datetime(2023, 1, 25, 23, 0, 0),
+                    to_date=datetime(2023, 1, 28, 23, 0, 0),
+                )
+            ],
+            [],
+        ),
+        (
+            #   Metering point period and charge link period don't overlap.
+            #   Expected empty result set.
+            #   2023-02-02        2023-02-10
+            #   MMP |-----------------|
+            #                            2023-02-25     2023-02-28
+            #                            CLP |---------------|
+            [
+                prepaired_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                )
+            ],
+            [
+                prepaired_charge_link_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 12, 23, 0, 0),
+                    to_date=datetime(2023, 2, 20, 23, 0, 0),
+                )
+            ],
+            [],
+        ),
+        (
+            #   Metering point period and charge link period don't overlap.
+            #   Expected 1 result set.
+            #             2023-02-02        2023-02-10
+            #              MMP |-----------------|
+            #       2023-01-25                    2023-02-15
+            #        CLP |-----------------------------|
+            [
+                prepaired_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                )
+            ],
+            [
+                prepaired_charge_link_periods_factory.create_row(
+                    from_date=datetime(2023, 1, 25, 23, 0, 0),
+                    to_date=datetime(2023, 2, 15, 23, 0, 0),
+                )
+            ],
+            [
+                prepaired_charge_link_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                )
+            ],
+        ),
     ],
 )
 def test_get_charge_link_metering_point_periods(
