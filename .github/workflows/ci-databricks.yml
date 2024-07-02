@@ -63,9 +63,9 @@ jobs:
         run: |
           # This step verifies:
           # 1. That all files in main branch exists in the PR branch TODO JMG: remove this check when we the pipeline supports deleting scripts
-          # 2. The timestamp of the latest script in the PR branch is greater than the latest script in the main branch
-          # 3. The timestamp of the latest script in the PR branch is less than the current datetime
-          # 4. The timestamp of the latest script in the PR branch has an underscore after the datetime
+          # 2. The timestamp of the new scripts in the PR branch is greater than the latest script in the main branch
+          # 3. The timestamp of the new scripts in the PR branch  in the PR branch is less than the current datetime
+          # 4. The timestamp of the new scripts in the PR branch does not have an underscore at the 13th character  (assuming the first 12 are YYYYMMDDHHMM)
 
           CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
           #Internal Field Seperator
@@ -162,9 +162,9 @@ jobs:
         run: |
           # This step verifies:
           # 1. That all files in main branch exists in the PR branch TODO JMG: remove this check when we the pipeline supports deleting scripts
-          # 2. The timestamp of the latest script in the PR branch is greater than the latest script in the main branch
-          # 3. The timestamp of the latest script in the PR branch is less than the current datetime
-          # 4. The timestamp of the latest script in the PR branch has an underscore after the datetime
+          # 2. The timestamp of the new scripts in the PR branch is greater than the latest script in the main branch
+          # 3. The timestamp of the new scripts in the PR branch  in the PR branch is less than the current datetime
+          # 4. The timestamp of the new scripts in the PR branch does not have an underscore at the 13th character  (assuming the first 12 are YYYYMMDDHHMM)
 
           CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
           #Internal Field Seperator
