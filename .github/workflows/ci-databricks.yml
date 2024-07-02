@@ -44,7 +44,7 @@ jobs:
         id: get_script_files_in_pr
         run: |
           # Gets all files in migration_scripts folder on the branch being merged excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_PR=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          SCRIPT_FILES_IN_PR=$(find ./source/databricks/calculation_engine/package/datamigration_hive/migration_scripts -type f -not -name '__init__*' -printf "%f,")
           echo "::set-output name=script_files_in_pr::$SCRIPT_FILES_IN_PR"
 
       - name: Checkout main branch
@@ -55,8 +55,19 @@ jobs:
       - name: Get files from main branch
         id: get_script_files_in_main
         run: |
-          # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
+          # Define the primary and secondary directories
+          PRIMARY_DIR="./source/databricks/calculation_engine/package/datamigration_hive/migration_scripts"
+          SECONDARY_DIR="./source/databricks/calculation_engine/package/datamigration/migration_scripts"
+
+          # Check if there are files in the primary directory
+          if [ "$(ls -A $PRIMARY_DIR)" ]; then
+              DIR_TO_USE=$PRIMARY_DIR
+          else
+              DIR_TO_USE=$SECONDARY_DIR
+          fi
+
+          # Gets all files in the chosen directory excluding the __init__ file and put them into a comma-separated string
+          SCRIPT_FILES_IN_MAIN=$(find $DIR_TO_USE -type f -name '*.sql' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
       - name: Verify migration scripts
@@ -75,14 +86,15 @@ jobs:
           # Turns comma seperated string in to an array using the IFS
           read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
 
-          for item in "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}"
-          do
-            # If a item from the SCRIPT_FILES_IN_MAIN_ARRAY does not exist in the SCRIPT_FILES_IN_PR_ARRAY then
-            if [[ ! " ${SCRIPT_FILES_IN_PR_ARRAY[@]} " =~ "${item}" ]]; then
-              echo "Error: Existing file: ${item} has been deleted in migration_scripts folder"
-              exit 1
-            fi
-          done
+          # TODO JMG: Uncomment this code after 'datamigration' has been renamed to 'datamigration-hive' in main
+          # for item in "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}"
+          # do
+          #   # If a item from the SCRIPT_FILES_IN_MAIN_ARRAY does not exist in the SCRIPT_FILES_IN_PR_ARRAY then
+          #   if [[ ! " ${SCRIPT_FILES_IN_PR_ARRAY[@]} " =~ "${item}" ]]; then
+          #     echo "Error: Existing file: ${item} has been deleted in migration_scripts folder"
+          #     exit 1
+          #   fi
+          # done
 
           # Reverse sort the SCRIPT_FILES_IN_MAIN_ARRAY to get the file with the latest prefix datetime first
           script_files_in_main_reverse_sorted=($(echo "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}" | tr ' ' '\n' | sort -r))

@@ -22,8 +22,8 @@ from package.infrastructure.paths import (
     SettlementReportPublicDataModel,
     CalculationResultsPublicDataModel,
 )
-import package.datamigration.migration as sut
-import package.datamigration.schema_config as schema_config
+import package.datamigration_hive.migration as sut
+import package.datamigration_hive.schema_config as schema_config
 import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 
