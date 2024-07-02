@@ -39,10 +39,6 @@ public class AggregatedTimeSeriesQueries(
             yield return aggregatedTimeSeries;
     }
 
-    protected virtual string CalculationIdColumnName => EnergyResultColumnNames.CalculationId;
-
-    protected virtual string TimeColumnName => EnergyResultColumnNames.Time;
-
     protected override AggregatedTimeSeries CreatePackageFromRowData(
         DatabricksSqlRow rowData,
         List<EnergyTimeSeriesPoint> timeSeriesPoints)
