@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public static partial class SqlStringSanitizer
+public sealed class SettlementReportWholesaleViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportWholesaleViewEntity>
 {
-    public static string Sanitize(string? input)
+    public void Configure(EntityTypeBuilder<SettlementReportWholesaleViewEntity> builder)
     {
-        return input is null ? string.Empty : SanitizeRegEx().Replace(input, string.Empty).Trim('-');
+        builder.ToTable("wholesale_results_v1");
+        builder.HasNoKey();
     }
-
-    [GeneratedRegex("[^a-zA-Z0-9-_]")]
-    private static partial Regex SanitizeRegEx();
 }

@@ -12,17 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.RegularExpressions;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
-
-public static partial class SqlStringSanitizer
+public interface ISettlementReportDatabricksContext
 {
-    public static string Sanitize(string? input)
-    {
-        return input is null ? string.Empty : SanitizeRegEx().Replace(input, string.Empty).Trim('-');
-    }
-
-    [GeneratedRegex("[^a-zA-Z0-9-_]")]
-    private static partial Regex SanitizeRegEx();
+    IQueryable<SettlementReportWholesaleViewEntity> WholesaleView { get; }
 }

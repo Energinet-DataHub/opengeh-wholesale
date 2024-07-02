@@ -15,6 +15,7 @@
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
@@ -58,9 +59,9 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
-        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(new SettlementReportWholesaleResultQueries(
-            mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
+        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(
+            new SettlementReportDatabricksContext(mockedOptions.Object, _databricksSqlStatementApiFixture.GetDatabricksExecutor()),
+            new SettlementReportWholesaleResultQueries(mockedOptions.Object, _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
         var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
             mockedOptions.Object,

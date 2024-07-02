@@ -14,6 +14,7 @@
 
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
@@ -42,11 +43,17 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
+        var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
+
         Fixture.Inject(mockedOptions);
-        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
+        Fixture.Inject(sqlWarehouseQueryExecutor);
         Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
             mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
+            sqlWarehouseQueryExecutor));
+
+        Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
+            mockedOptions.Object,
+            sqlWarehouseQueryExecutor));
     }
 
     [Fact]
@@ -71,7 +78,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
-            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null));
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null));
 
         Assert.Equal(1, actual);
     }
@@ -100,7 +107,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
-            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             skip: 2,
             take: 1).ToListAsync();
 
@@ -145,7 +152,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
-            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             skip: 0,
             take: int.MaxValue).ToListAsync();
 
