@@ -29,7 +29,7 @@ from package.constants import Colname
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)
-DEFAULT_GRID_AREA = "805"
+DEFAULT_GRID_AREA_CODE = "805"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = InputMeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = InputSettlementMethod.FLEX
@@ -42,16 +42,17 @@ DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 
 
 def create_row(
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: InputMeteringPointType = DEFAULT_METERING_POINT_TYPE,
     settlement_method: InputSettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime = DEFAULT_TO_DATE,
-    grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str = DEFAULT_TO_GRID_AREA,
+    grid_area: str = DEFAULT_GRID_AREA_CODE,
+    from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
+    to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
 ) -> Row:
     row = {
-        Colname.metering_point_id: DEFAULT_METERING_POINT_ID,
+        Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: "foo",
         Colname.settlement_method: settlement_method.value,
