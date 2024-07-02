@@ -39,8 +39,6 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
     "entry_point_name",
     [
         "start_calculator",
-        "lock_storage",
-        "unlock_storage",
         "migrate_data_lake",
     ],
 )
