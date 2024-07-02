@@ -60,8 +60,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
         var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(
-            new SettlementReportDatabricksContext(mockedOptions.Object, _databricksSqlStatementApiFixture.GetDatabricksExecutor()),
-            new SettlementReportWholesaleResultQueries(mockedOptions.Object, _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
+            new SettlementReportDatabricksContext(mockedOptions.Object, _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
         var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
             mockedOptions.Object,

@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
@@ -28,14 +27,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public sealed class SettlementReportWholesaleRepository : ISettlementReportWholesaleRepository
 {
     private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
-    private readonly ISettlementReportWholesaleResultQueries _settlementReportResultQueries;
 
-    public SettlementReportWholesaleRepository(
-        ISettlementReportDatabricksContext settlementReportDatabricksContext,
-        ISettlementReportWholesaleResultQueries settlementReportResultQueries)
+    public SettlementReportWholesaleRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
     {
         _settlementReportDatabricksContext = settlementReportDatabricksContext;
-        _settlementReportResultQueries = settlementReportResultQueries;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
@@ -119,20 +114,5 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
         }
 
         return source;
-    }
-
-    private static SettlementReportWholesaleResultQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
-    {
-        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
-
-        return new SettlementReportWholesaleResultQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.CalculationType,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant(),
-            filter.EnergySupplier,
-            actorInfo.ChargeOwnerId,
-            actorInfo.MarketRole);
     }
 }

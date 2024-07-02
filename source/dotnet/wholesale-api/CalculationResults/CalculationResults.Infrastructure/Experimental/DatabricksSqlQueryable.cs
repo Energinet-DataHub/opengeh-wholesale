@@ -17,7 +17,7 @@ using System.Linq.Expressions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
-// Wrap an existing IQueryable and adds our provider.
+// Wraps an existing IQueryable and adds our provider.
 // All IQueryable methods are forwarded to the core IQueryable, which does the heavy lifting.
 // Synchronous methods are not implemented; they are neither needed nor possible without using EF internal API.
 public class DatabricksSqlQueryable : IOrderedQueryable

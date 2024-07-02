@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -44,12 +43,6 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
         });
 
         var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
-
-        Fixture.Inject(mockedOptions);
-        Fixture.Inject(sqlWarehouseQueryExecutor);
-        Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
-            mockedOptions.Object,
-            sqlWarehouseQueryExecutor));
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
             mockedOptions.Object,
