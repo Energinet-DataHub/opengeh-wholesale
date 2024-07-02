@@ -27,14 +27,14 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports
 internal sealed class SettlementReportOrchestration
 {
     [Function(nameof(OrchestrateSettlementReport))]
-    public async Task<string> OrchestrateSettlementReport(
+    public async Task OrchestrateSettlementReport(
          [OrchestrationTrigger] TaskOrchestrationContext context,
          FunctionContext executionContext)
     {
         var settlementReportRequest = context.GetInput<SettlementReportRequestInput>();
         if (settlementReportRequest == null)
         {
-            return "Error: No input specified.";
+            throw new ArgumentNullException(nameof(settlementReportRequest));
         }
 
         var requestId = new SettlementReportRequestId(context.InstanceId);
@@ -50,22 +50,13 @@ internal sealed class SettlementReportOrchestration
                 scatterInput,
                 dataSourceExceptionHandler);
 
-        var generatedFiles = new List<GeneratedSettlementReportFileDto>();
-        var orderedResults = scatterResults
-            .OrderBy(x => x.PartialFileInfo.FileOffset)
-            .ThenBy(x => x.PartialFileInfo.ChunkOffset)
-            .ToList();
+        var fileRequestTasks = scatterResults.Select(fileRequest => context
+            .CallActivityAsync<GeneratedSettlementReportFileDto>(
+                nameof(GenerateSettlementReportFileActivity),
+                new GenerateSettlementReportFileInput(fileRequest, settlementReportRequest.ActorInfo),
+                dataSourceExceptionHandler));
 
-        foreach (var scatterChunk in orderedResults.Chunk(15))
-        {
-            var fileRequestTasks = scatterChunk.Select(fileRequest => context
-                .CallActivityAsync<GeneratedSettlementReportFileDto>(
-                    nameof(GenerateSettlementReportFileActivity),
-                    new GenerateSettlementReportFileInput(fileRequest, settlementReportRequest.ActorInfo),
-                    dataSourceExceptionHandler));
-
-            generatedFiles.AddRange(await Task.WhenAll(fileRequestTasks));
-        }
+        var generatedFiles = await Task.WhenAll(fileRequestTasks);
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFilesActivity),
@@ -74,8 +65,6 @@ internal sealed class SettlementReportOrchestration
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReportActivity),
             generatedSettlementReport);
-
-        return "Success";
     }
 
     private static bool HandleDataSourceExceptions(RetryContext retryContext, ILogger<SettlementReportOrchestration> logger)
