@@ -2,10 +2,15 @@ from datetime import datetime
 
 from pyspark import Row
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StringType
+from pyspark.sql.types import (
+    StringType,
+    StructType,
+    StructField,
+    IntegerType,
+    TimestampType,
+)
 
 import package.codelists as e
-from package.calculation.input.schemas import charge_link_periods_schema
 from package.constants import Colname
 
 
@@ -51,6 +56,18 @@ def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFram
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
+    return spark.createDataFrame(data, schema=_schema)
 
-    extended_schema = charge_link_periods_schema.add(Colname.charge_key, StringType())
-    return spark.createDataFrame(data, schema=extended_schema)
+
+_schema = StructType(
+    [
+        StructField("charge_code", StringType(), False),
+        StructField("charge_type", StringType(), False),
+        StructField("charge_owner_id", StringType(), False),
+        StructField("metering_point_id", StringType(), False),
+        StructField("quantity", IntegerType(), False),
+        StructField("from_date", TimestampType(), False),
+        StructField("to_date", TimestampType(), True),
+        StructField("charge_key", StringType(), False),
+    ]
+)

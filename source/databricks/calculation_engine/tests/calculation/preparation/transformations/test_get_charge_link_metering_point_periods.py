@@ -18,13 +18,10 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from calculation.charges_factory import (
-    create_charge_link_metering_point_periods,
-)
-from calculation.input.table_reader import input_metering_point_periods_factory
 from calculation.wholesale.factories import (
-    input_charge_link_periods_factory,
-    input_charge_link_metering_point_periods_factory,
+    prepaired_charge_link_periods_factory,
+    prepaired_metering_point_periods_factory,
+    prepaired_charge_link_metering_point_periods_factory,
 )
 from helpers.data_frame_utils import assert_dataframes_equal
 from package.calculation.preparation.transformations import (
@@ -36,25 +33,55 @@ from package.calculation.preparation.transformations import (
     "input_metering_point_periods_rows, input_charge_link_periods_rows, expected_rows",
     [
         (
+            #   Only a charge link period.
+            #   Expected empty result set.
+            #   2023-02-02             2023-02-10
+            #   CLP |----------------------|
+            [],
             [
-                input_metering_point_periods_factory.create_row(
+                prepaired_charge_link_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                )
+            ],
+            [],
+        ),
+        (
+            #   Only a metering point period.
+            #   Expected empty result set.
+            #   2023-02-02             2023-02-10
+            #   MPP |----------------------|
+            [
+                prepaired_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                )
+            ],
+            [],
+            [],
+        ),
+        (
+            #   Metering point period and charge link period are identical.
+            #   Expected 1 result set.
+            #   2023-02-02             2023-02-10
+            #   MMP |----------------------|
+            #   CLP |----------------------|
+            [
+                prepaired_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 )
             ],
             [
-                input_charge_link_periods_factory.create_row(
+                prepaired_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 )
             ],
             [
-                input_charge_link_metering_point_periods_factory.create_row(
+                prepaired_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
-                    grid_area=input_metering_point_periods_factory.DEFAULT_GRID_AREA_CODE,
-                    energy_supplier_id=input_metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
-                    metering_point_type=input_metering_point_periods_factory.DEFAULT_METERING_POINT_TYPE.value,
                 )
             ],
         ),
@@ -67,13 +94,15 @@ def test_get_charge_link_metering_point_periods(
     expected_rows: List[Row],
 ) -> None:
     # Arrange
-    expected = create_charge_link_metering_point_periods(spark, data=expected_rows)
+    expected = prepaired_charge_link_metering_point_periods_factory.create(
+        spark, data=expected_rows
+    )
 
-    input_metering_point_periods = input_metering_point_periods_factory.create(
+    input_metering_point_periods = prepaired_metering_point_periods_factory.create(
         spark, data=input_metering_point_periods_rows
     )
 
-    input_charge_link_periods = input_charge_link_periods_factory.create(
+    input_charge_link_periods = prepaired_charge_link_periods_factory.create(
         spark, data=input_charge_link_periods_rows
     )
 
@@ -83,4 +112,4 @@ def test_get_charge_link_metering_point_periods(
     )
 
     # Assert
-    assert_dataframes_equal(actual.df, expected.df)
+    assert_dataframes_equal(actual.df, expected)
