@@ -35,18 +35,18 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.SettlementReports;
 
-[Collection(nameof(OrchestrationsAppCollectionFixture))]
+[Collection(nameof(OrchestrationSettlementReportsAppCollectionFixture))]
 public class SettlementReportOrchestrationTests : IAsyncLifetime
 {
     public SettlementReportOrchestrationTests(
-        OrchestrationsAppFixture fixture,
+        OrchestrationSettlementReportsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
     }
 
-    private OrchestrationsAppFixture Fixture { get; }
+    private OrchestrationSettlementReportsAppFixture Fixture { get; }
 
     public Task InitializeAsync()
     {
