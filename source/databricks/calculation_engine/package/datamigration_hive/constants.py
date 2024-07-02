@@ -12,4 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .data_lake_file_manager import DataLakeFileManager
+COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
+WHEEL_NAME = "package"
+MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration_hive.migration_scripts"
+CURRENT_STATE_SCHEMAS_FOLDER_PATH = (
+    "package.datamigration_hive.current_state_scripts.schemas"
+)
+CURRENT_STATE_TABLES_FOLDER_PATH = (
+    "package.datamigration_hive.current_state_scripts.tables"
+)
+CURRENT_STATE_VIEWS_FOLDER_PATH = (
+    "package.datamigration_hive.current_state_scripts.views"
+)

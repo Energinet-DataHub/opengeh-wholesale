@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .data_lake_file_manager import DataLakeFileManager
+# File required in order for importlib.resources.contents to see the resources in the package
