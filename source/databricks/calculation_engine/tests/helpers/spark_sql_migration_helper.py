@@ -12,25 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import shutil
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
-from spark_sql_migrations import (
-    SparkSqlMigrationsConfiguration,
-    create_and_configure_container,
-    schema_migration_pipeline,
-)
+from spark_sql_migrations import SparkSqlMigrationsConfiguration
 from spark_sql_migrations.utility import delta_table_helper
 
 import package.datamigration_hive.constants as c
+from package.datamigration.migration import migrate_data_lake
 from package.datamigration_hive.migration_script_args import MigrationScriptArgs
-from package.datamigration_hive.schema_config import schema_config
+from package.datamigration_hive.schema_config import schema_config as schema_config_hive
 from package.datamigration_hive.substitutions import substitutions
+from package.datamigration.schema_config import schema_config
 
+catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
 schema_migration_location = "schema_migration"
 schema_migration_table_name = "executed_migrations"
@@ -51,6 +49,15 @@ class MigrationsExecution(Enum):
     """Execute only the migrations that have been modified since the last execution."""
 
 
+def _create_databases(spark: SparkSession) -> None:
+    """
+    Create Unity Catalog databases as they are not created by migration scripts.
+    They are created by infrastructure (in the real environments)
+    In tests they are created in the single available default database."""
+    for schema in schema_config:
+        spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema.name}")
+
+
 def migrate(
     spark: SparkSession,
     substitution_variables: dict[str, str] | None = None,
@@ -67,10 +74,12 @@ def migrate(
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
         _remove_registration_of_modified_scripts(spark, migrations_execution)
 
-    configure_spark_sql_migration(
+    _create_databases(spark)
+
+    spark_config = create_spark_sql_migrations_configuration(
         spark, "", substitution_variables=substitution_variables
     )
-    schema_migration_pipeline.migrate()
+    migrate_data_lake(catalog_name, spark_config_hive=spark_config)
 
 
 def _remove_registration_of_modified_scripts(
@@ -78,7 +87,7 @@ def _remove_registration_of_modified_scripts(
 ) -> None:
     migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
     if not delta_table_helper.delta_table_exists(
-        spark, schema_migration_schema_name, schema_migration_table_name
+        spark, catalog_name, schema_migration_schema_name, schema_migration_table_name
     ):
         print(
             f"Table {migrations_table} does not exist. Skipping removal of modified scripts"
@@ -102,15 +111,15 @@ def _remove_registration_of_modified_scripts(
         spark.sql(sql)
 
 
-def configure_spark_sql_migration(
+def create_spark_sql_migrations_configuration(
     spark: SparkSession,
     table_prefix: str = "",
     substitution_variables: dict[str, str] | None = None,
-) -> None:
+) -> SparkSqlMigrationsConfiguration:
     if substitution_variables is None:
         substitution_variables = update_substitutions(get_migration_script_args(spark))
 
-    configuration = SparkSqlMigrationsConfiguration(
+    return SparkSqlMigrationsConfiguration(
         migration_schema_name=schema_migration_schema_name,
         migration_schema_location="",
         migration_table_name=schema_migration_table_name,
@@ -119,13 +128,11 @@ def configure_spark_sql_migration(
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
-        schema_config=schema_config,
+        schema_config=schema_config_hive,
         substitution_variables=substitution_variables,
         table_prefix=table_prefix,
-        catalog_name="spark_catalog",
+        catalog_name=catalog_name,
     )
-
-    create_and_configure_container(configuration)
 
 
 def get_migration_script_args(spark: SparkSession) -> MigrationScriptArgs:
@@ -182,7 +189,7 @@ def _get_recently_modified_migration_scripts(
 ) -> list[str]:
     recent_files = []
 
-    # Traverse the folder and its subfolders
+    # Traverse the folder and its sub-folders
     for subdir, _, files in os.walk(root_folder):
         for file in files:
             if file.endswith(".sql"):

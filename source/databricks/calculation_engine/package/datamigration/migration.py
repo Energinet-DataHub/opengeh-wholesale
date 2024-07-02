@@ -23,9 +23,9 @@ def migrate_data_lake(
     """
 
     catalog_name = catalog_name or env_vars.get_catalog_name()
-    spark_config_uc = _create_spark_config_uc(catalog_name)
+    spark_config = _create_spark_config(catalog_name)
 
-    create_and_configure_container(spark_config_uc)
+    create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()
 
     # Execute the hive migrations until they are finally removed
@@ -34,7 +34,7 @@ def migrate_data_lake(
     hive_migration.migrate_data_lake(spark_config_hive)
 
 
-def _create_spark_config_uc(catalog_name: str) -> SparkSqlMigrationsConfiguration:
+def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
     return SparkSqlMigrationsConfiguration(
         migration_schema_name="schema_migration",
         migration_schema_location=UNUSED,

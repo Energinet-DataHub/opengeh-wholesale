@@ -15,6 +15,8 @@ from unittest.mock import Mock
 
 import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
 from pyspark.sql import SparkSession
+
+from package.container import create_and_configure_container
 from package.infrastructure.paths import (
     HiveOutputDatabase,
     InputDatabase,
@@ -78,12 +80,12 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_FOLDER}": f"{migration_scripts_prefix}input_folder",
         },
     )
-    spark_sql_migration_helper.configure_spark_sql_migration(
+    spark_sql_migration_helper.create_spark_sql_migrations_configuration(
         spark,
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
-    schema_migration_pipeline.migrate()
+    sut.migrate_data_lake()
 
     # Act current state scripts
     current_state_prefix = "current_state"
@@ -100,15 +102,16 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_FOLDER}": f"{current_state_prefix}input_folder",
         },
     )
-    spark_sql_migration_helper.configure_spark_sql_migration(
+    spark_config = spark_sql_migration_helper.create_spark_sql_migrations_configuration(
         spark,
         substitution_variables=substitutions,
         table_prefix="migration_",
     )
+    create_and_configure_container(spark_config)
     schema_migration_pipeline._migrate(0)
 
     # Clean up DI
-    spark_sql_migration_helper.configure_spark_sql_migration(spark)
+    spark_sql_migration_helper.create_spark_sql_migrations_configuration(spark)
 
     # Assert
     migration_databases = spark.catalog.listDatabases()

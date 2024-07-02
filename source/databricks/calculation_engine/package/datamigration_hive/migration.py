@@ -28,7 +28,13 @@ from .substitutions import substitutions
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def migrate_data_lake() -> None:
+def migrate_data_lake(spark_config: SparkSqlMigrationsConfiguration = None) -> None:
+    spark_config = spark_config or _create_spark_config()
+    create_and_configure_container(spark_config)
+    schema_migration_pipeline.migrate()
+
+
+def _create_spark_config() -> SparkSqlMigrationsConfiguration:
     storage_account_name = env_vars.get_storage_account_name()
     calculation_input_folder = env_vars.get_calculation_input_folder_name()
 
@@ -50,7 +56,7 @@ def migrate_data_lake() -> None:
         calculation_input_folder=calculation_input_folder,
     )
 
-    spark_config = SparkSqlMigrationsConfiguration(
+    return SparkSqlMigrationsConfiguration(
         migration_schema_name="schema_migration",
         migration_schema_location=migration_args.schema_migration_storage_container_path,
         migration_table_name="executed_migrations",
@@ -63,6 +69,3 @@ def migrate_data_lake() -> None:
         substitution_variables=substitutions(migration_args),
         catalog_name="spark_catalog",
     )
-
-    create_and_configure_container(spark_config)
-    schema_migration_pipeline.migrate()
