@@ -18,7 +18,6 @@ from .migration_script_args import MigrationScriptArgs
 
 def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
     return {
-        "{CATALOG_NAME}": migration_args.catalog_name,
         "{CONTAINER_PATH}": migration_args.storage_container_path,
         "{HIVE_OUTPUT_DATABASE_NAME}": paths.HiveOutputDatabase.DATABASE_NAME,
         "{INPUT_DATABASE_NAME}": paths.InputDatabase.DATABASE_NAME,

@@ -21,7 +21,6 @@ from package.infrastructure.paths import (
     BasisDataDatabase,
     SettlementReportPublicDataModel,
     CalculationResultsPublicDataModel,
-    OutputDatabase,
 )
 import package.datamigration_hive.migration as sut
 import package.datamigration_hive.schema_config as schema_config
@@ -64,12 +63,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         return_value=storage_account,
     )
 
-    mocker.patch.object(
-        sut.env_vars,
-        sut.env_vars.get_catalog_name.__name__,
-        return_value="some_catalog",
-    )
-
     # Act migration scripts
     migration_scripts_prefix = "migration_scripts"
     migration_scripts_substitutions = spark_sql_migration_helper.update_substitutions(
@@ -87,7 +80,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
-        catalog_name="some_catalog",
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
@@ -100,7 +92,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         spark_sql_migration_helper.get_migration_script_args(spark),
         {
             "{HIVE_OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{HiveOutputDatabase.DATABASE_NAME}",
-            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OutputDatabase.DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{InputDatabase.DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BasisDataDatabase.DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
