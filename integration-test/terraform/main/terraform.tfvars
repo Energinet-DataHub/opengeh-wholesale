@@ -14,17 +14,17 @@ kv_variables = [{
   },
   {
     "name" : "AZURE-B2C-BFF-APP-ID",
-    "value" : "3648e1ec-a357-4684-ab21-65433642e5dd"
+    "value" : "3648e1ec-a357-4684-ab21-65433642e5dd"  # TODO: Remove once TestCommon 6.0.0 has been adopted by all product teams
   },
   {
     "name" : "AZURE-B2C-BACKEND-APP-ID",
-    "value" : "b215178c-7118-479b-bfdc-45cbe63cad9e"
+    "value" : "b215178c-7118-479b-bfdc-45cbe63cad9e"  # TODO: Remove once TestCommon 6.0.0 has been adopted by all product teams
   },
   {
     "name" : "AZURE-B2C-BACKEND-SPN-OBJECTID",
-    "value" : "95c85cd8-89e4-4adf-9039-c93e6f629c40"
+    "value" : "95c85cd8-89e4-4adf-9039-c93e6f629c40"  # TODO: Remove once TestCommon 6.0.0 has been adopted by all product teams
   },
   {
     "name" : "AZURE-B2C-BACKEND-APP-OBJECTID",
-    "value" : "f6fd2a75-b6d8-462c-a8b3-23f5c6657dd2"
+    "value" : "f6fd2a75-b6d8-462c-a8b3-23f5c6657dd2"  # TODO: Remove once TestCommon 6.0.0 has been adopted by all product teams
 }]

@@ -5,7 +5,6 @@ terraform {
       source  = "hashicorp/azuread"
       version = "2.47.0"
     }
-
     databricks = {
       source  = "databricks/databricks"
       version = "1.38.0"
