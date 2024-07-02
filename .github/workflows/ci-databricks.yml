@@ -66,7 +66,7 @@ jobs:
           # 2. The timestamp of the latest script in the PR branch is greater than the latest script in the main branch
           # 3. The timestamp of the latest script in the PR branch is less than the current datetime
           # 4. The timestamp of the latest script in the PR branch has an underscore after the datetime
-     
+
           CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
           #Internal Field Seperator
           IFS=','
@@ -165,7 +165,7 @@ jobs:
           # 2. The timestamp of the latest script in the PR branch is greater than the latest script in the main branch
           # 3. The timestamp of the latest script in the PR branch is less than the current datetime
           # 4. The timestamp of the latest script in the PR branch has an underscore after the datetime
-          
+
           CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
           #Internal Field Seperator
           IFS=','
