@@ -106,7 +106,7 @@ public class OrchestrationSettlementReportsAppFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        AppHostManager.Dispose();
+        AppHostManager?.Dispose();
         MockServer.Dispose();
         DurableTaskManager.Dispose();
 
@@ -118,7 +118,7 @@ public class OrchestrationSettlementReportsAppFixture : IAsyncLifetime
 
     public void EnsureAppHostUsesMockedDatabricksJobs()
     {
-        AppHostManager.RestartHostIfChanges(new Dictionary<string, string>
+        AppHostManager?.RestartHostIfChanges(new Dictionary<string, string>
         {
             {
                 nameof(DatabricksJobsOptions.WorkspaceUrl), MockServer.Url!
