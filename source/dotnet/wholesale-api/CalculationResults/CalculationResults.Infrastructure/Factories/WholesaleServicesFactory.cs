@@ -23,7 +23,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class WholesaleServicesFactory
 {
-    public static WholesaleServices Create(DatabricksSqlRow databricksSqlRow, IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, long version)
+    public static WholesaleServices Create(
+        DatabricksSqlRow databricksSqlRow,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
         var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!);
         var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
@@ -42,6 +44,6 @@ public static class WholesaleServicesFactory
             Currency.DKK,
             CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.CalculationType]!),
             timeSeriesPoints,
-            version);
+            SqlResultValueConverters.ToInt(databricksSqlRow[BasisDataCalculationsColumnNames.Version]!)!.Value);
     }
 }
