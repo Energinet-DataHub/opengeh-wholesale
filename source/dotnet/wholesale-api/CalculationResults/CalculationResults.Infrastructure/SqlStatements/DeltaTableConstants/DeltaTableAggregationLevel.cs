@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 public static class DeltaTableAggregationLevel
 {
     public const string GridArea = "total_ga";
-    public const string EnergySupplierAndGridArea = "es_ga";
+    public const string EnergySupplierAndGridArea = "es_brp_ga";
     public const string BalanceResponsibleAndGridArea = "brp_ga";
     public const string EnergySupplierAndBalanceResponsibleAndGridArea = "es_brp_ga";
 }
