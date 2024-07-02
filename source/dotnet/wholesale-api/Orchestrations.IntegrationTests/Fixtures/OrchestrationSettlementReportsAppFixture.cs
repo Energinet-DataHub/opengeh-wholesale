@@ -55,7 +55,7 @@ public class OrchestrationSettlementReportsAppFixture : IAsyncLifetime
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
-        MockServer = WireMockServer.Start(port: 1024);
+        MockServer = WireMockServer.Start(port: 2048);
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
