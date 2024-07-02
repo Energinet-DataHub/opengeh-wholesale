@@ -65,4 +65,6 @@ public class DeltaTableOptions
     public string MONTHLY_AMOUNTS_V1_VIEW_NAME { get; set; } = "monthly_amounts_v1";
 
     public string CHARGE_PRICES_V1_VIEW_NAME { get; set; } = "charge_prices_v1";
+
+    public string CALCULATIONS_TABLE_NAME { get; set; } = "calculations";
 }
