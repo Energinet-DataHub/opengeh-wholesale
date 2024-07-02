@@ -1,72 +1,49 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-
 from spark_sql_migrations import (
     create_and_configure_container,
     schema_migration_pipeline,
     SparkSqlMigrationsConfiguration,
 )
 
-import package.datamigration_hive.constants as c
+import package.datamigration_hive.migration as hive_migration
 import package.infrastructure.environment_variables as env_vars
-from package.infrastructure import paths, initialize_spark
-from .migration_script_args import MigrationScriptArgs
 from .schema_config import schema_config
-from .substitutions import substitutions
+from ..infrastructure import paths
+
+MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
+UNUSED = "UNUSED"  # Marks fields that were only used in the old hive implementation
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
-    catalog_name = "spark-catalog"
-    storage_account_name = env_vars.get_storage_account_name()
-    calculation_input_folder = env_vars.get_calculation_input_folder_name()
-
-    spark = initialize_spark()
-    # Set hive metastore catalog specifically as Unity Catalog is not the default catalog
-    spark.catalog.setCurrentCatalog(catalog_name)
-
-    storage_account_url = paths.get_storage_account_url(
-        storage_account_name,
-    )
-
-    spark_container_url = paths.get_spark_sql_migrations_path(storage_account_name)
-    container_url = paths.get_container_root_path(storage_account_name)
-
-    migration_args = MigrationScriptArgs(
-        data_storage_account_url=storage_account_url,
-        data_storage_account_name=storage_account_name,
-        schema_migration_storage_container_path=spark_container_url,
-        storage_container_path=container_url,
-        spark=spark,
-        calculation_input_folder=calculation_input_folder,
-        catalog_name=catalog_name,
-    )
+    catalog_name = env_vars.get_catalog_name()
 
     spark_config = SparkSqlMigrationsConfiguration(
         migration_schema_name="schema_migration",
-        migration_schema_location=migration_args.schema_migration_storage_container_path,
+        migration_schema_location=UNUSED,
         migration_table_name="executed_migrations",
-        migration_table_location=migration_args.schema_migration_storage_container_path,
-        migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
-        current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
-        current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
-        current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
+        migration_table_location=UNUSED,
+        migration_scripts_folder_path=MIGRATION_SCRIPTS_FOLDER_PATH,
+        current_state_schemas_folder_path=UNUSED,
+        current_state_tables_folder_path=UNUSED,
+        current_state_views_folder_path=UNUSED,
         schema_config=schema_config,
-        substitution_variables=substitutions(migration_args),
+        substitution_variables=substitutions(catalog_name),
         catalog_name=catalog_name,
     )
 
     create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()
+
+    # Execute the hive migrations until they are finally removed
+    # IMPORTANT: Do this _after_ the UC migrations as the hive migrations changes the
+    #            dependency injection container registrations
+    hive_migration.migrate_data_lake()
+
+
+def substitutions(catalog_name: str) -> dict[str, str]:
+    return {
+        "{CATALOG_NAME}": catalog_name,
+        "{BASIS_DATA_DATABASE_NAME}": paths.BasisDataDatabase.DATABASE_NAME,
+        "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
+        "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SettlementReportPublicDataModel.DATABASE_NAME,
+    }
