@@ -69,7 +69,6 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         });
 
         RegisterClassMap(csvHelper, filter, actorInfo);
-        ConfigureCsv(csvHelper);
 
         await using (csvHelper.ConfigureAwait(false))
         {
@@ -97,10 +96,6 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         long maximumCalculationVersion,
         int skipChunks,
         int takeChunks);
-
-    protected virtual void ConfigureCsv(CsvWriter csvHelper)
-    {
-    }
 
     protected virtual void WriteHeader(CsvWriter csvHelper)
     {
