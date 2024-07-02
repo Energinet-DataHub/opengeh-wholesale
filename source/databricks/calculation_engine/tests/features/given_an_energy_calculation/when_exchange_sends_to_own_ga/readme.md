@@ -1,4 +1,4 @@
-# When Minimal Standard Scenario
+# When exchange MP sends to own GA
 
 The purpose is to test a scenario where there are exchange MPs where from and to grid area is the same.
 

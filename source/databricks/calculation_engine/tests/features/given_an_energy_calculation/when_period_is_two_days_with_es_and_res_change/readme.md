@@ -1,6 +1,7 @@
-# When Minimal Standard Scenario
+# When period is two days with ES and RES change
 
-The purpose is to test every resolution (from 1H to 15M), es and brp change for metering point types relevant for energy results.
+The purpose is to test every resolution (from 1H to 15M), es and brp change for metering point types relevant for energy
+results.
 
 ## Design considerations
 
