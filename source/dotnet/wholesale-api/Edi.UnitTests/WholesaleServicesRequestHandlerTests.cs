@@ -100,6 +100,7 @@ public class WholesaleServicesRequestHandlerTests
                     message.Subject.Equals(expectedAcceptedSubject)
                     && message.ApplicationProperties.ContainsKey("ReferenceId")
                     && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                serviceBusReceivedMessage,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -145,6 +146,7 @@ public class WholesaleServicesRequestHandlerTests
                     && message.WithErrorCode(expectedValidationErrorCode)
                     && message.ApplicationProperties.ContainsKey("ReferenceId")
                     && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                serviceBusReceivedMessage,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -197,6 +199,7 @@ public class WholesaleServicesRequestHandlerTests
                     && message.WithErrorCode(expectedValidationErrorCode)
                     && message.ApplicationProperties.ContainsKey("ReferenceId")
                     && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                serviceBusReceivedMessage,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

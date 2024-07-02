@@ -69,7 +69,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         if (validationErrors.Any())
         {
             _logger.LogWarning("Validation errors for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
-            await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
+            await SendRejectedMessageAsync(receivedMessage, validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -77,7 +77,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         var queryParameters = await GetWholesaleResultQueryParametersAsync(request).ConfigureAwait(false);
         if (!queryParameters.Calculations.Any())
         {
-            await SendNoDateRejectMessageAsync(referenceId, cancellationToken, incomingRequest, queryParameters)
+            await SendNoDateRejectMessageAsync(receivedMessage, referenceId, cancellationToken, incomingRequest, queryParameters)
                 .ConfigureAwait(false);
             return;
         }
@@ -85,16 +85,17 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         var calculationResults = await _wholesaleServicesQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (!calculationResults.Any())
         {
-            await SendNoDateRejectMessageAsync(referenceId, cancellationToken, incomingRequest, queryParameters)
+            await SendNoDateRejectMessageAsync(receivedMessage, referenceId, cancellationToken, incomingRequest, queryParameters)
                 .ConfigureAwait(false);
             return;
         }
 
         _logger.LogInformation("Sending WholesaleServicesRequest accepted message with reference id {reference_id}", referenceId);
-        await SendAcceptedMessageAsync(calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
+        await SendAcceptedMessageAsync(receivedMessage, calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task SendNoDateRejectMessageAsync(
+        ServiceBusReceivedMessage asResponseToMessage,
         string referenceId,
         CancellationToken cancellationToken,
         DataHub.Edi.Requests.WholesaleServicesRequest incomingRequest,
@@ -108,7 +109,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         };
 
         _logger.LogInformation("No data available for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
-        await SendRejectedMessageAsync(errors, referenceId, cancellationToken).ConfigureAwait(false);
+        await SendRejectedMessageAsync(asResponseToMessage, errors, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<WholesaleServicesQueryParameters> GetWholesaleResultQueryParametersAsync(WholesaleServicesRequest request)
@@ -150,15 +151,15 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         return false;
     }
 
-    private async Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    private async Task SendRejectedMessageAsync(ServiceBusReceivedMessage asResponseToMessage, IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
     {
         var message = WholesaleServicesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
-        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        await _ediClient.SendAsync(message, asResponseToMessage, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<WholesaleServices> results, string referenceId, CancellationToken cancellationToken)
+    private async Task SendAcceptedMessageAsync(ServiceBusReceivedMessage asResponseToMessage, IReadOnlyCollection<WholesaleServices> results, string referenceId, CancellationToken cancellationToken)
     {
         var message = WholesaleServiceRequestAcceptedMessageFactory.Create(results, referenceId);
-        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        await _ediClient.SendAsync(message, asResponseToMessage, cancellationToken).ConfigureAwait(false);
     }
 }

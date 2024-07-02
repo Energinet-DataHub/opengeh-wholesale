@@ -29,8 +29,10 @@ public class EdiClient : IEdiClient, IAsyncDisposable
         _sender = serviceBusClient.CreateSender(ediInboxQueueOptions.Value.QueueName);
     }
 
-    public async Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken)
+    public async Task SendAsync(ServiceBusMessage message, ServiceBusReceivedMessage asResponseToMessage, CancellationToken cancellationToken)
     {
+        message.CorrelationId = asResponseToMessage.MessageId;
+
         await _sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
     }
 

@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Client;
 public interface IEdiClient
 {
     /// <summary>
-    /// Responsible of sending a message to Edi inbox
+    /// Responsible of sending a message to Edi inbox (as response to a received service bus message)
     /// </summary>
-    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
+    public Task SendAsync(ServiceBusMessage message, ServiceBusReceivedMessage asResponseToMessage, CancellationToken cancellationToken);
 }
