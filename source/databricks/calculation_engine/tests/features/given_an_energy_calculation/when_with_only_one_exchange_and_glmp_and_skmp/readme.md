@@ -1,4 +1,4 @@
-# When Minimal Standard Scenario
+# When only Exchange, GLMP and SKMP in GA
 
 The purpose of this test is to check the edge case where a grid area only has GLMP, SKMP and an exchange metering point.
 I.e. no consumption or production metering points.
