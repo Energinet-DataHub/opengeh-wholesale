@@ -55,4 +55,9 @@ def get_charge_link_metering_point_periods(
         metering_points[Colname.energy_supplier_id],
     )
 
+    # If from_date is greater than to_date, the period is invalid
+    charge_link_metering_point_periods = charge_link_metering_point_periods.filter(
+        f.col(Colname.from_date) < f.col(Colname.to_date)
+    )
+
     return ChargeLinkMeteringPointPeriods(charge_link_metering_point_periods)
