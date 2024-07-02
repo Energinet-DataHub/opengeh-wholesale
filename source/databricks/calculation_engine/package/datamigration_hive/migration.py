@@ -19,7 +19,7 @@ from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
 )
 
-import package.datamigration.constants as c
+import package.datamigration_hive.constants as c
 import package.infrastructure.environment_variables as env_vars
 from package.infrastructure import paths, initialize_spark
 from .migration_script_args import MigrationScriptArgs

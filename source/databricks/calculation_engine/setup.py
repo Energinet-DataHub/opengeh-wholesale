@@ -22,9 +22,9 @@ setup(
     license="MIT",
     package_data={
         "package": [
-            "datamigration/migration_scripts/*.sql",
-            "datamigration/current_state_scripts/schemas/*.sql",
-            "datamigration/current_state_scripts/tables/*.sql",
+            "datamigration_hive/migration_scripts/*.sql",
+            "datamigration_hive/current_state_scripts/schemas/*.sql",
+            "datamigration_hive/current_state_scripts/tables/*.sql",
         ]
     },
     packages=find_packages(exclude=["tests*"]),
@@ -44,7 +44,7 @@ setup(
     entry_points={
         "console_scripts": [
             "start_calculator = package.calculator_job:start",
-            "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
+            "migrate_data_lake = package.datamigration_hive.migration:migrate_data_lake",
         ]
     },
 )
