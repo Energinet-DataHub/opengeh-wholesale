@@ -1,4 +1,4 @@
-# When Minimal Standard Scenario
+# When period is two days with GLMP and SKMP changing ES
 
 The purpose is to test that grid loss and system correction metering points can change energy supplier and balance
 responsible.

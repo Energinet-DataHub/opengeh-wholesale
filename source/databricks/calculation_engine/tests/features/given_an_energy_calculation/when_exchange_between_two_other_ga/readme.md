@@ -1,4 +1,4 @@
-# When Minimal Standard Scenario
+# When exchange between two other GA
 
 The purpose of this test is the scenario that an exchange metering point is in a grid area, but is exchanging between
 two other grid areas than the one it is in.
