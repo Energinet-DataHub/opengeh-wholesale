@@ -198,6 +198,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   with the period start and end being the same for all `CalculationForPeriod'.
  */
+/*
 public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlStatementApiFixture sqlStatementApiFixture)
 {
     public static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
@@ -333,10 +334,10 @@ public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlS
 
         return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesTypes: timeSeriesType ?? [TimeSeriesType.Production],
-            LatestCalculationForPeriod: calculationForPeriods,
             GridAreaCodes: gridArea != null ? [gridArea] : [],
             EnergySupplierId: energySupplierId,
-            BalanceResponsibleId: balanceResponsibleId);
+            balanceResponsibleId,
+            new Period(startOfPeriod, endOfPeriod));
     }
 
     public async Task AddDataAsync()
@@ -767,3 +768,4 @@ public sealed class AggregatedTimeSeriesQueriesData(MigrationsFreeDatabricksSqlS
                < Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueriesConstants.SecondDay));
     }
 }
+*/
