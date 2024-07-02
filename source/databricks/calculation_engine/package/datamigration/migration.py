@@ -14,7 +14,7 @@ UNUSED = "UNUSED"  # Marks fields that were only used in the old hive implementa
 
 
 def migrate_data_lake(
-    catalog_name: str = None,
+    catalog_name: str | None = None,
     spark_config_hive: SparkSqlMigrationsConfiguration = None,
 ) -> None:
     """
