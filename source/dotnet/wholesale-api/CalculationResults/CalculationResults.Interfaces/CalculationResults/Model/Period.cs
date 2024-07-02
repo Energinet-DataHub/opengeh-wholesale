@@ -16,15 +16,10 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public record Period(Instant Start, Instant End)
+public readonly record struct Period(Instant Start, Instant End)
 {
     public Period(Instant start, Duration duration)
         : this(start, start.Plus(duration))
     {
-    }
-
-    public bool Contains(Instant time)
-    {
-        return new Interval(Start, End).Contains(time);
     }
 }
