@@ -73,7 +73,8 @@ public class AggregatedTimeSeriesQueryStatement(
 
         whereClausesSql +=
             $"""
-             AND (erv.{EnergyResultColumnNames.Time} BETWEEN '{parameters.Period.Start}' AND '{parameters.Period.End}')
+             AND (erv.{EnergyResultColumnNames.Time} >= '{parameters.Period.Start}'
+                  AND erv.{EnergyResultColumnNames.Time} < '{parameters.Period.End}')
              """;
 
         if (parameters.GridAreaCodes.Count > 0)

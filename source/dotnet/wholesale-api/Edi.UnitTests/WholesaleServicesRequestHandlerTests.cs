@@ -68,15 +68,6 @@ public class WholesaleServicesRequestHandlerTests
                 wholesaleServices,
             }.ToAsyncEnumerable());
 
-        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-            It.IsAny<IReadOnlyCollection<string>>(),
-            It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
-            It.IsAny<RequestedCalculationType>()))
-            .ReturnsAsync(new List<CalculationForPeriod>
-            {
-                new(new Period(wholesaleServices.Period.Start, wholesaleServices.Period.End), Guid.NewGuid(), 1),
-            }.AsReadOnly());*/
-
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,

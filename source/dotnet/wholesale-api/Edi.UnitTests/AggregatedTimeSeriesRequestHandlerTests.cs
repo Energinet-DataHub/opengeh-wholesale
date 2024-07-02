@@ -70,20 +70,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-                It.IsAny<IReadOnlyCollection<string>>(),
-                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
-                It.IsAny<RequestedCalculationType>()))
-            .ReturnsAsync(new List<CalculationForPeriod>
-            {
-                new(
-                    new Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period(
-                        start,
-                        end),
-                    Guid.NewGuid(),
-                    1),
-            }.AsReadOnly());*/
-
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
@@ -133,20 +119,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
-
-        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-                It.IsAny<IReadOnlyCollection<string>>(),
-                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
-                It.IsAny<RequestedCalculationType>()))
-            .ReturnsAsync(new List<CalculationForPeriod>
-            {
-                new(
-                    new Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period(
-                        start,
-                        end),
-                    Guid.NewGuid(),
-                    1),
-            }.AsReadOnly());*/
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -243,20 +215,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridAreaCodes.Count == 0)))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-                It.IsAny<IReadOnlyCollection<string>>(),
-                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
-                It.IsAny<RequestedCalculationType>()))
-            .ReturnsAsync(new List<CalculationForPeriod>
-            {
-                new(
-                    new Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period(
-                        start,
-                        end),
-                    Guid.NewGuid(),
-                    1),
-            }.AsReadOnly());*/
-
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
@@ -300,13 +258,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
-
-        /*completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-                It.IsAny<IReadOnlyCollection<string>>(),
-                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
-                It.IsAny<RequestedCalculationType>()))
-            .ReturnsAsync(new List<CalculationForPeriod>
-            { }.AsReadOnly());*/
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
