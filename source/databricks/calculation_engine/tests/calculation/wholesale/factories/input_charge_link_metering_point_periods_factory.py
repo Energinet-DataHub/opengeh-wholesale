@@ -2,12 +2,13 @@ from datetime import datetime
 
 from pyspark import Row
 
+from package.codelists import ChargeType
 from package.constants import Colname
 
 
 class DefaultValues:
     GRID_AREA = "543"
-    CHARGE_TYPE = "fee"
+    CHARGE_TYPE = ChargeType.FEE
     CHARGE_CODE = "4000"
     CHARGE_OWNER = "001"
     ENERGY_SUPPLIER_ID = "1234567890123"
@@ -20,7 +21,7 @@ class DefaultValues:
 
 
 def create_row(
-    charge_type: str = DefaultValues.CHARGE_TYPE,
+    charge_type: str = DefaultValues.CHARGE_TYPE.value,
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
     quantity: int = DefaultValues.QUANTITY,

@@ -48,8 +48,8 @@ def create_row(
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime = DEFAULT_TO_DATE,
     grid_area: str = DEFAULT_GRID_AREA_CODE,
-    from_grid_area: str = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str = DEFAULT_TO_GRID_AREA,
+    from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
+    to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,

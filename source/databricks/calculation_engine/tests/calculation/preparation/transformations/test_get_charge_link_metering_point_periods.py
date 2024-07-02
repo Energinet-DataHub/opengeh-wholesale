@@ -53,9 +53,8 @@ from package.calculation.preparation.transformations import (
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                     grid_area=input_metering_point_periods_factory.DEFAULT_GRID_AREA_CODE,
-                    charge_type="fee",
                     energy_supplier_id=input_metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
-                    metering_point_type="E17",
+                    metering_point_type=input_metering_point_periods_factory.DEFAULT_METERING_POINT_TYPE.value,
                 )
             ],
         ),
@@ -69,6 +68,7 @@ def test_get_charge_link_metering_point_periods(
 ) -> None:
     # Arrange
     expected = create_charge_link_metering_point_periods(spark, data=expected_rows)
+
     input_metering_point_periods = input_metering_point_periods_factory.create(
         spark, data=input_metering_point_periods_rows
     )
