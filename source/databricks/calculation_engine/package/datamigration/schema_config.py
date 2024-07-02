@@ -8,10 +8,10 @@ from package.calculation.output.schemas.energy_results_schema import (
 
 schema_config = [
     Schema(
-        name=paths.OutputDatabase.DATABASE_NAME,
+        name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME,
+                name=paths.WholesaleResultsInternalDatabase.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
             ),
         ],

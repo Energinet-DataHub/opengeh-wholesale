@@ -32,7 +32,7 @@ def migrate_data_lake() -> None:
     storage_account_name = env_vars.get_storage_account_name()
     calculation_input_folder = env_vars.get_calculation_input_folder_name()
 
-    catalog_name = env_vars.get_catalog_name()
+    catalog_name = "spark_catalog"
 
     spark = initialize_spark()
 
@@ -50,7 +50,6 @@ def migrate_data_lake() -> None:
         storage_container_path=container_url,
         spark=spark,
         calculation_input_folder=calculation_input_folder,
-        catalog_name=catalog_name,
     )
 
     spark_config = SparkSqlMigrationsConfiguration(
@@ -64,7 +63,7 @@ def migrate_data_lake() -> None:
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
         substitution_variables=substitutions(migration_args),
-        catalog_name="spark_catalog",
+        catalog_name=catalog_name,
     )
 
     create_and_configure_container(spark_config)

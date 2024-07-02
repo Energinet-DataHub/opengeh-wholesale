@@ -132,7 +132,6 @@ def get_migration_script_args(spark: SparkSession) -> MigrationScriptArgs:
     return MigrationScriptArgs(
         data_storage_account_url="url",
         data_storage_account_name="data",
-        catalog_name="some_catalog",
         calculation_input_folder="calculation_input",
         spark=spark,
         storage_container_path="container",

@@ -35,7 +35,6 @@ from package.calculation.output.schemas.wholesale_results_schema import (
     wholesale_results_schema,
 )
 
-
 schema_config = [
     Schema(
         name=paths.HiveOutputDatabase.DATABASE_NAME,

@@ -44,7 +44,5 @@ def migrate_data_lake() -> None:
 def substitutions(catalog_name: str) -> dict[str, str]:
     return {
         "{CATALOG_NAME}": catalog_name,
-        "{BASIS_DATA_DATABASE_NAME}": paths.BasisDataDatabase.DATABASE_NAME,
-        "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
-        "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SettlementReportPublicDataModel.DATABASE_NAME,
+        "{OUTPUT_DATABASE_NAME}": paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
     }
