@@ -1,4 +1,5 @@
 # Basis data
+
 The calculations are derived from the following basis data:
 
 ```sql
@@ -8,7 +9,8 @@ where period_start between '2021-12-31T23:00:00.000' and '2022-01-31T23:00:00.00
 order by period_start, execution_time_start
 ```
 
-Do note that the aggregation `9602d2dd-e704-48f7-9112-ab3e06ff4527` has been changed to version 11. This is due to bug #393, where two calculations ended up with the same version. 
+Do note that the aggregation `9602d2dd-e704-48f7-9112-ab3e06ff4527` has been changed to version 11. This is due to bug
+#393, where two calculations ended up with the same version.
 
 # Energy results
 
@@ -16,15 +18,16 @@ The data is limited to the period 2020-01-01 to 2022-01-15 due to size constrain
 
 ```sql
 select er.*
-from wholesale_output.energy_results er inner join basis_data.calculations cs on er.calculation_id = cs.calculation_id
+from wholesale_output.energy_results er
+         inner join basis_data.calculations cs on er.calculation_id = cs.calculation_id
 where (time BETWEEN '2021-12-31T23:00:00Z' AND '2022-01-15T23:00:00Z')
-and (
+  and (
     (energy_supplier_id IN ('5790002617263', '5790000701414', '5790001687137'))
-    or (energy_supplier_id is null and balance_responsible_id IN ("5790000701414","5790001964597"))
-    or (energy_supplier_id is null and balance_responsible_id is null)
-)
-and grid_area_code in ("543","584","804")
-and er.calculation_type in ("balance_fixing", "aggregation")
+        or (energy_supplier_id is null and balance_responsible_id IN ("5790000701414", "5790001964597"))
+        or (energy_supplier_id is null and balance_responsible_id is null)
+    )
+  and grid_area_code in ("543", "584", "804")
+  and er.calculation_type in ("balance_fixing", "aggregation")
 ```
 
 The actors and grid areas are related as follows:
@@ -36,13 +39,16 @@ The actors and grid areas are related as follows:
 | 5790002617263   | 5790001964597, 5790000701414 | 804        |
 
 # Wholesale results
-The data constitutes the entirety of January 2022---limited to a sub-set of energy suppliers, balance responsibles, and grid areas.
+
+The data constitutes the entirety of January 2022---limited to a subset of energy suppliers, balance responsibles, and
+grid areas.
 
 ```sql
 SELECT er.*
-FROM (wholesale_output.wholesale_results er INNER JOIN basis_data.calculations cs ON er.calculation_id = cs.calculation_id)
+FROM (wholesale_output.wholesale_results er INNER JOIN basis_data.calculations cs
+      ON er.calculation_id = cs.calculation_id)
 WHERE (`time` BETWEEN '2021-12-31T23:00:00Z' AND '2022-01-31T22:00:00Z')
-AND energy_supplier_id IN ('5790001095390', '5790000701278', '5790001687137')
+  AND energy_supplier_id IN ('5790001095390', '5790000701278', '5790001687137')
 ```
 
 The actors and grid areas are related as follows:
