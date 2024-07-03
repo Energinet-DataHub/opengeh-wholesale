@@ -16,39 +16,13 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Anoymise dataset for test environments
-# MAGIC This notebook transforms the data from the p-001 to an anonymised version that could be transfered to t001 environment.
-# MAGIC We use this method to ensure we can not recalculate the anonymised ids via any function and the data in the test environment is safe
-# MAGIC We should keep this notebook to ensure we can anonymise data if it should be needed again.
+# MAGIC # Step 0: Run the main notebook
+# MAGIC Do not run this notebook directly, as it has dependecies that is not included in this notebook. Instead run "**anonymise_wholesale_output_main**" as it will generate the anonymised GLNs to be used later in this notebook.
 
 # COMMAND ----------
 
-import pyspark.sql.functions as F
-from pyspark.sql.window import Window
-
-# Source variables
-source_database = "hive_metastore.wholesale_output" # FILL IN
-source_energy_results_table_name = "energy_results"
-source_metering_points_database_and_table_name = "wholesale_input.metering_point_periods"
-source_calculation_id_to_use = "51d60f89-bbc5-4f7a-be98-6139aab1c1b2" # FILL IN
-
-# Target variables
-target_database = "hive_metastore.wholesale_output_anonymised" # FILL IN
-target_energy_results_table_name = "energy_results"
-target_storage_account_name = "stdatalakeshresdwe001" # FILL IN
-target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/wholesale_output_anonymised" # FILL IN
-
-# Source columns variables
-grid_area_code_column_name = "grid_area_code"
-metering_point_id_column_name = "metering_point_id"
-balance_responsible_id_column_name = "balance_responsible_id"
-energy_supplier_id_column_name = "energy_supplier_id"
-calculation_id_column_name = "calculation_id"
-
-# Anonymised columns variables
-anonymised_grid_area_code_column_name = "anonymised_grid_area_code"
-anonymised_balance_or_supplier_id_column_name = "anonymised_balance_or_supplier_id"
-anonymised_metering_point_id_column_name = "anonymised_metering_point_id"
+if not df_anonymised_gln_numbers:
+    raise Exception("Please run anonymise_wholesale_output_main instead!")
 
 # COMMAND ----------
 
@@ -60,6 +34,15 @@ anonymised_metering_point_id_column_name = "anonymised_metering_point_id"
 # Add schema
 query = f"""
 CREATE SCHEMA IF NOT EXISTS {target_database}
+"""
+print(query)
+spark.sql(query)
+
+# COMMAND ----------
+
+# Drop table to clear anonymisation
+query = f"""
+DROP TABLE IF EXISTS {target_database}.{target_energy_results_table_name}
 """
 print(query)
 spark.sql(query)
@@ -168,190 +151,6 @@ assert (
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ###Anonymisation algorithm for Metering Point IDs:
-# MAGIC 1) Prefix anonymised ID with "5"
-# MAGIC 2) Concat random row_number over each row of unique MP IDs, and left-pad with "0" with same length as unique MP IDs
-# MAGIC 3) Concat "5"
-# MAGIC 4) Right-pad with "0" until 18 characters in total
-# MAGIC
-# MAGIC #### Example
-# MAGIC **1)**
-# MAGIC
-# MAGIC Original (fake) MP ID: 514526978536898745 (1st after random order)
-# MAGIC
-# MAGIC Anonymised MP ID: 500000015000000000
-# MAGIC
-# MAGIC **2)**
-# MAGIC
-# MAGIC Original (fake) MP ID: 525865741589334125 (532435th after random order)
-# MAGIC
-# MAGIC Anonymised MP ID: 505324355000000000
-
-# COMMAND ----------
-
-df_all_metering_point_ids = (
-    df_source_energy_results_table.select(metering_point_id_column_name)
-    .distinct()
-).cache()
-
-count_distinct_mpids = len(str(df_all_metering_point_ids.count()))
-window_random_order = Window.orderBy(F.rand())
-
-df_anonymised_metering_points = (
-    df_all_metering_point_ids.withColumn(
-        anonymised_metering_point_id_column_name,
-        F.rpad(
-            F.concat(
-                F.lit("5"), F.lpad(F.row_number().over(window_random_order), count_distinct_mpids, "0"), F.lit("5")
-            ),
-            18,
-            "0",
-        ),
-    )
-    .withColumn(
-        anonymised_metering_point_id_column_name,
-        F.when(
-            F.col(metering_point_id_column_name).isNull(),
-            F.lit(None),
-        ).otherwise(F.col(anonymised_metering_point_id_column_name)),
-    )
-    .na.drop()
-).cache()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC Assert that:
-# MAGIC 1) There are no duplicates in the new anonymised MP IDs, meaning that we have a 1:1 relationship between original MP IDs to anonymised MP IDs.
-
-# COMMAND ----------
-
-assert (
-    df_anonymised_metering_points.groupBy(anonymised_metering_point_id_column_name)
-    .agg(F.sum(F.lit(1)).alias("mp_id_count"))
-    .filter("mp_id_count > 1")
-    .count()
-    == 0
-)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Anonymisation algorithm for Charge Owner or Supplier IDs:
-# MAGIC Use randomized GLN Generator provided by Raccoons. It generates a valid GLN with the correct length of 12 characters, it makes sure that the checksum is valid and thus provides a valid GLN.
-
-# COMMAND ----------
-
-tmp_balance_and_supplier_id_column_name = "balance_and_supplier_id"
-
-df_all_supplier_and_balancers = (
-    df_source_energy_results_table.select(F.col(energy_supplier_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
-    .union(
-        df_source_energy_results_table.select(F.col(balance_responsible_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
-    )
-    .distinct()
-)
-
-list_of_gln_numbers = [row[tmp_balance_and_supplier_id_column_name] for row in df_all_supplier_and_balancers.collect()]
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC The functions below are a direct translation from C# to Python, and is a translation of Raccoons GLN Generator
-
-# COMMAND ----------
-
-import random
-import math
-
-
-def create_random_gln():
-    rng = random.Random()
-    location = ''.join(str(rng.randint(0, 9)) for _ in range(12))
-    
-    for check_digit in range(10):
-        gln = location + str(check_digit)
-        if calculate_checksum(gln) == check_digit:
-            return gln
-    
-    raise Exception("Should not happen")
-
-
-def calculate_checksum(gln_number):
-    sum_of_odd_numbers = 0
-    sum_of_even_numbers = 0
-
-    for i in range(1, len(gln_number)):
-        current_number = int(gln_number[i - 1])
-
-        if i % 2 == 0:
-            sum_of_even_numbers += current_number
-        else:
-            sum_of_odd_numbers += current_number
-    
-    sum = sum_of_even_numbers * 3 + sum_of_odd_numbers
-
-    return (math.ceil(sum / 10.0) * 10) - sum
-
-# COMMAND ----------
-
-list_of_anonymised_gln_numbers = []
-anonymised_gln_numbers_mapping = []
-for gln_number in list_of_gln_numbers:
-    if gln_number is None:
-        list_of_anonymised_gln_numbers.append(None)
-        anonymised_gln_numbers_mapping.append((None, None))
-        continue
-
-    anonymised_gln_number = create_random_gln()
-
-    # Create a new GLN number until we get one we haven't seen yet
-    while anonymised_gln_number in list_of_anonymised_gln_numbers:
-        anonymised_gln_number = create_random_gln()
-    
-    # Add to list of anonymised GLN numbers as well as the mapping
-    list_of_anonymised_gln_numbers.append(anonymised_gln_number)
-    anonymised_gln_numbers_mapping.append((gln_number, anonymised_gln_number))
-
-# COMMAND ----------
-
-df_anonymised_suppliers_and_balancers = spark.createDataFrame(anonymised_gln_numbers_mapping, [tmp_balance_and_supplier_id_column_name, anonymised_balance_or_supplier_id_column_name]).cache()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC Assert that:
-# MAGIC 1. There are no duplicates in the new anonymised Balance or Supplier IDs, meaning that we have a 1:1 relationship between original Balance or Supplier IDs to anonymised Balance or Supplier IDs.
-# MAGIC 2. That we have the same amount of distinct IDs before and after.
-# MAGIC 3. That we have the same amount of nulls before and after anonymisation.
-
-# COMMAND ----------
-
-assert (
-    df_anonymised_suppliers_and_balancers.groupBy(anonymised_balance_or_supplier_id_column_name)
-    .agg(F.sum(F.lit(1)).alias("id_count"))
-    .filter("id_count > 1")
-    .count()
-    == 0
-)
-
-# COMMAND ----------
-
-assert (
-    df_anonymised_suppliers_and_balancers.select(anonymised_balance_or_supplier_id_column_name).distinct().count()
-    == df_all_supplier_and_balancers.select(tmp_balance_and_supplier_id_column_name).distinct().count()
-)
-
-# COMMAND ----------
-
-assert (
-    df_anonymised_suppliers_and_balancers.filter(F.col(anonymised_balance_or_supplier_id_column_name).isNull()).count()
-    == df_all_supplier_and_balancers.filter(F.col(tmp_balance_and_supplier_id_column_name).isNull()).count()
-)
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC # Step 4: Create the anonymised energy_results table
 
 # COMMAND ----------
@@ -361,10 +160,11 @@ assert (
 
 # COMMAND ----------
 
-df_anonymised_suppliers_and_balancers = df_anonymised_suppliers_and_balancers.select(
-    F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
-    F.col(tmp_balance_and_supplier_id_column_name).alias(energy_supplier_id_column_name),
-    anonymised_balance_or_supplier_id_column_name,
+df_anonymised_suppliers_balancers_and_metering_points = df_anonymised_gln_numbers.select(
+    F.col(gln_original_column_name).alias(metering_point_id_column_name),
+    F.col(gln_original_column_name).alias(balance_responsible_id_column_name),
+    F.col(gln_original_column_name).alias(energy_supplier_id_column_name),
+    gln_anonymised_column_name,
 )
 
 # COMMAND ----------
@@ -373,31 +173,31 @@ df_source_energy_results_table_anonymised = (
     df_source_energy_results_table
     # Anonymise Metering Point Id
     .join(
-        df_anonymised_metering_points,
-        df_source_energy_results_table[metering_point_id_column_name].eqNullSafe(df_anonymised_metering_points[metering_point_id_column_name]),
+        df_anonymised_suppliers_balancers_and_metering_points.select(metering_point_id_column_name, gln_anonymised_column_name),
+        df_source_energy_results_table[metering_point_id_column_name].eqNullSafe(df_anonymised_suppliers_balancers_and_metering_points[metering_point_id_column_name]),
         "left",
     )
-    .drop(df_anonymised_metering_points[metering_point_id_column_name])
-    .withColumn(metering_point_id_column_name, F.col(anonymised_metering_point_id_column_name))
-    .drop(df_anonymised_metering_points[metering_point_id_column_name], anonymised_metering_point_id_column_name)
+    .drop(df_anonymised_suppliers_balancers_and_metering_points[metering_point_id_column_name])
+    .withColumn(metering_point_id_column_name, F.col(gln_anonymised_column_name))
+    .drop(gln_anonymised_column_name)
     # Anonymise Energy Supplier Id
     .join(
-        df_anonymised_suppliers_and_balancers,
-        df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name].eqNullSafe(df_source_energy_results_table[energy_supplier_id_column_name]),
+        df_anonymised_suppliers_balancers_and_metering_points.select(energy_supplier_id_column_name, gln_anonymised_column_name),
+        df_anonymised_suppliers_balancers_and_metering_points[energy_supplier_id_column_name].eqNullSafe(df_source_energy_results_table[energy_supplier_id_column_name]),
         "left",
     )
-    .drop(df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name], df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name])
-    .withColumn(energy_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
-    .drop(anonymised_balance_or_supplier_id_column_name)
+    .drop(df_anonymised_suppliers_balancers_and_metering_points[energy_supplier_id_column_name], df_anonymised_suppliers_balancers_and_metering_points[balance_responsible_id_column_name])
+    .withColumn(energy_supplier_id_column_name, F.col(gln_anonymised_column_name))
+    .drop(gln_anonymised_column_name)
     # Anonymise Balance Supplier Id
     .join(
-        df_anonymised_suppliers_and_balancers,
-        df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name].eqNullSafe(df_source_energy_results_table[balance_responsible_id_column_name]),
+        df_anonymised_suppliers_balancers_and_metering_points.select(balance_responsible_id_column_name, gln_anonymised_column_name),
+        df_anonymised_suppliers_balancers_and_metering_points[balance_responsible_id_column_name].eqNullSafe(df_source_energy_results_table[balance_responsible_id_column_name]),
         "left",
     )
-    .drop(df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name], df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name])
-    .withColumn(balance_responsible_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
-    .drop(anonymised_balance_or_supplier_id_column_name)
+    .drop(df_anonymised_suppliers_balancers_and_metering_points[energy_supplier_id_column_name], df_anonymised_suppliers_balancers_and_metering_points[balance_responsible_id_column_name])
+    .withColumn(balance_responsible_id_column_name, F.col(gln_anonymised_column_name))
+    .drop(gln_anonymised_column_name)
     # Anonymise Grid Area Code
     .join(
         df_anonymised_grid_area_codes,
@@ -437,6 +237,14 @@ assert (
     .count()
     == 0
 )
+
+# COMMAND ----------
+
+print(df_source_energy_results_table_anonymised.select(metering_point_id_column_name).distinct().collect())
+
+# COMMAND ----------
+
+print(df_source_energy_results_table.select(metering_point_id_column_name).distinct().collect())
 
 # COMMAND ----------
 
