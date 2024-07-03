@@ -6,6 +6,7 @@ module "mssql_database_application_access" {
   application_hosts_names = [
     module.func_receiver.name,
     module.b2c_web_api.name,
+    module.b2c_web_api.slot_name,
   ]
   depends_on = [
     module.func_receiver.name,

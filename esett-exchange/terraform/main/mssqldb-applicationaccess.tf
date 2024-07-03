@@ -10,6 +10,7 @@ module "mssql_database_application_access" {
     module.func_entrypoint_ecp_outbox.name,
     module.func_entrypoint_application_workers.name,
     module.app_webapi.name,
+    module.app_webapi.slot_name,
   ]
 
   depends_on = [
