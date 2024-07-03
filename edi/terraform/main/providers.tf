@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     # It is recommended to pin to a given version of the Azure provider
-    azurerm = "3.98.0"
+    azurerm = "3.105.0"
 
     azuread = "2.39.0"
 

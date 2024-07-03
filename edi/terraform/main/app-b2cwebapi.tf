@@ -1,5 +1,5 @@
 module "b2c_web_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.30.0"
 
   name                       = "b2cwebapi"
   project_name               = var.domain_name_short

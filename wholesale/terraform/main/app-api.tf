@@ -1,5 +1,5 @@
 module "app_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.30.0"
 
   name                                   = "api"
   project_name                           = var.domain_name_short
@@ -19,14 +19,14 @@ module "app_api" {
   scm_ip_restrictions                    = var.ip_restrictions
   # Always on would make Azure poll /GET frequently to keep the app warm.
   # But (1) that endpoint doesn't exist and generates 404 responses, and (2) it's not needed as the app is being kept warm by the health checks
-  always_on                              = false
+  always_on = false
 
-  monitor_action_group                   = length(module.monitor_action_group_wholesale) == 1 ? {
+  monitor_action_group = length(module.monitor_action_group_wholesale) == 1 ? {
     id                  = module.monitor_action_group_wholesale[0].id
     resource_group_name = azurerm_resource_group.this.name
   } : null
 
-  role_assignments                       = [
+  role_assignments = [
     {
       // DataLake
       resource_id          = data.azurerm_key_vault_secret.st_data_lake_id.value
