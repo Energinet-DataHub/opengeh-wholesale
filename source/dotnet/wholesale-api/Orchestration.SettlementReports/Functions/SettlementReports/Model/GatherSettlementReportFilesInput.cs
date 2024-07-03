@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
 
-public sealed record SettlementReportHttpResponse(SettlementReportRequestId RequestId);
+public sealed record GatherSettlementReportFilesInput(
+    SettlementReportRequestId RequestId,
+    IReadOnlyCollection<GeneratedSettlementReportFileDto> GeneratedFiles);

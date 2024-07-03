@@ -14,10 +14,10 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Activities;
 
 public sealed class GenerateSettlementReportFileActivity
 {

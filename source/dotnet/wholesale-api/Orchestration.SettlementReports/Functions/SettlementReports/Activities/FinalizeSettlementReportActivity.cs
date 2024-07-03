@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Microsoft.Azure.Functions.Worker;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Activities;
 
 public sealed class FinalizeSettlementReportActivity
 {
