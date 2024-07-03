@@ -1,7 +1,10 @@
 
 locals {
-  func_orchestrationsdf = {
+  func_settlement_reports_df = {
     app_settings = {
+      # Timeout
+      "AzureFunctionsJobHost__functionTimeout" = "01:00:00"
+
       # Logging
       # => Azure Function Worker
       # Explicit override the default "Warning" level filter set by the Application Insights SDK.
@@ -19,13 +22,6 @@ locals {
       "SettlementReportStorage__StorageAccountUri"    = local.BLOB_STORAGE_ACCOUNT_URI
       "SettlementReportStorage__StorageContainerName" = local.BLOB_CONTAINER_SETTLEMENTREPORTS_NAME
 
-      # Service Bus
-      "ServiceBus__ConnectionString"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
-      "IntegrationEvents__TopicName"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
-      "IntegrationEvents__SubscriptionName" = module.sbtsub_wholesale_integration_event_listener.name
-      "WholesaleInbox__QueueName"           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
-      "EdiInbox__QueueName"                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
-
       # Databricks
       WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token;SecretVersion=${module.kvs_databricks_dbw_workspace_token.version})"
       WorkspaceUrl   = "https://${module.dbw.workspace_url}"
@@ -36,7 +32,7 @@ locals {
 
       # Durable Functions Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
-      "OrchestrationsTaskHubName" = "Wholesale01"
+      "OrchestrationsTaskHubName" = "Wholesale02"
     }
   }
 }
