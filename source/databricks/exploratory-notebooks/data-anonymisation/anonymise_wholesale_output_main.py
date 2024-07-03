@@ -119,6 +119,7 @@ df_all_gln_numbers_for_mp = (
         df_source_energy_results_table.select(F.col(metering_point_id_column_name).alias(tmp_gln_column_name))
     )
     .distinct()
+    .filter(F.col(tmp_gln_column_name).isNotNull())
 )
 
 df_all_gln_numbers_for_others = (
@@ -143,6 +144,7 @@ df_all_gln_numbers_for_others = (
         df_source_wholesale_results_table.select(F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name))
     )
     .distinct()
+    .filter(F.col(tmp_gln_column_name).isNotNull())
 )
 
 list_of_gln_numbers_for_mp = [row[tmp_gln_column_name] for row in df_all_gln_numbers_for_mp.collect()]
@@ -200,11 +202,6 @@ def get_mapping_for_gln_numbers(list_of_gln: List, length_of_gln: int) -> List[T
     list_of_anonymised_gln_numbers = []
     anonymised_gln_numbers_mapping = []
     for gln_number in list_of_gln:
-        if gln_number is None:
-            list_of_anonymised_gln_numbers.append(None)
-            anonymised_gln_numbers_mapping.append((None, None))
-            continue
-
         anonymised_gln_number = create_random_gln(length_of_gln)
 
         # Create a new GLN number until we get one we haven't seen yet or one that doesn't match a real GLN
@@ -220,10 +217,12 @@ def get_mapping_for_gln_numbers(list_of_gln: List, length_of_gln: int) -> List[T
 
 anonymised_gln_numbers_mapping_for_mp = get_mapping_for_gln_numbers(list_of_gln_numbers_for_mp, length_of_gln=18)
 anonymised_gln_numbers_mapping_for_others = get_mapping_for_gln_numbers(list_of_gln_numbers_for_others, length_of_gln=12)
+anonymised_all_gln_numbers_and_null = anonymised_gln_numbers_mapping_for_mp + anonymised_gln_numbers_mapping_for_others + [(None, None)] # Add (None, None) to keep mapping for Null GLN Keys
+
 
 # COMMAND ----------
 
-df_anonymised_gln_numbers = spark.createDataFrame(anonymised_gln_numbers_mapping_for_mp + anonymised_gln_numbers_mapping_for_others, [gln_original_column_name, gln_anonymised_column_name]).cache()
+df_anonymised_gln_numbers = spark.createDataFrame(anonymised_all_gln_numbers_and_null, [gln_original_column_name, gln_anonymised_column_name]).cache()
 
 # COMMAND ----------
 
@@ -273,7 +272,7 @@ assert (
     df_anonymised_gln_numbers
     .count()
     == 
-    df_all_gln_numbers
+    anonymised_all_gln_numbers_and_null
     .count()
 )
 
@@ -284,14 +283,10 @@ assert (
     .distinct()
     .count()
     == 
-    df_all_gln_numbers
+    anonymised_all_gln_numbers_and_null
     .distinct()
     .count()
 )
-
-# COMMAND ----------
-
-len("4955891054730")
 
 # COMMAND ----------
 
