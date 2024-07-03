@@ -134,6 +134,7 @@ public class AggregatedTimeSeriesRequestHandler(
             request.AggregationPerRoleAndGridArea.GridAreaCodes,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId,
+            CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
             new Period(request.Period.Start, request.Period.End));
     }
 
