@@ -14,7 +14,7 @@
 from typing import Tuple
 
 import package.calculation.output.wholesale_storage_model_factory as wholesale_results_factory
-import package.calculation.output.monthly_amounts_storage_model_factory as monthly_amounts_factory
+import package.calculation.output.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
 import package.calculation.output.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
 
 import package.calculation.wholesale.fee_calculators as fee_calculator
