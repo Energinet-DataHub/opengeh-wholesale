@@ -30,6 +30,7 @@ class InputDatabase:
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
+    MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
 
 
 class HiveOutputDatabase:
