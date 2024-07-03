@@ -142,18 +142,6 @@ variable "feature_management_use_calculation_completed_event" {
   default     = false
 }
 
-variable "feature_management_use_calculation_completed_event_for_balance_fixing" {
-  type        = bool
-  description = "Should use Calculation Completed event for Balance Fixing sent from Wholesale."
-  default     = false
-}
-
-variable "feature_management_use_calculation_completed_event_for_wholesale_fixing" {
-  type        = bool
-  description = "Should use Calculation Completed event for Wholesale Fixing sent from Wholesale."
-  default     = false
-}
-
 variable "apim_maintenance_mode" {
   type        = bool
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."
