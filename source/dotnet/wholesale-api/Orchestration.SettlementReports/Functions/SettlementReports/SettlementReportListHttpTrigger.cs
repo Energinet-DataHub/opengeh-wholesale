@@ -21,7 +21,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask.Client;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports;
 
 internal sealed class SettlementReportListHttpTrigger
 {
