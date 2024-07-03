@@ -9,5 +9,5 @@ def get_substitutions(catalog_name: str) -> dict[str, str]:
 
     return {
         "{CATALOG_NAME}": catalog_name,
-        "{OUTPUT_DATABASE_NAME}": paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+        "{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}": paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
     }
