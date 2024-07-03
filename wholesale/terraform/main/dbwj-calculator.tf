@@ -26,12 +26,13 @@ resource "databricks_job" "calculator_job" {
         "spark.databricks.aggressiveWindowDownS" : 300
       }
       spark_env_vars = {
-        "TENANT_ID"                     = var.tenant_id,
-        "SPN_APP_ID"                    = databricks_secret.spn_app_id.config_reference
-        "SPN_APP_SECRET"                = databricks_secret.spn_app_secret.config_reference
-        "DATA_STORAGE_ACCOUNT_NAME"     = data.azurerm_key_vault_secret.st_data_lake_name.value
-        "TIME_ZONE"                     = local.TIME_ZONE
-        "CALCULATION_INPUT_FOLDER_NAME" = var.calculation_input_folder,
+        "TENANT_ID"                                = var.tenant_id,
+        "SPN_APP_ID"                               = databricks_secret.spn_app_id.config_reference
+        "SPN_APP_SECRET"                           = databricks_secret.spn_app_secret.config_reference
+        "DATA_STORAGE_ACCOUNT_NAME"                = data.azurerm_key_vault_secret.st_data_lake_name.value
+        "TIME_ZONE"                                = local.TIME_ZONE
+        "CATALOG_NAME"                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+        "CALCULATION_INPUT_FOLDER_NAME"            = var.calculation_input_folder
         "QUARTERLY_RESOLUTION_TRANSITION_DATETIME" = var.quarterly_resolution_transition_datetime
         # Using the name 'APPLICATIONINSIGHTS_CONNECTION_STRING' ensures the logging module is configured automatically
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
