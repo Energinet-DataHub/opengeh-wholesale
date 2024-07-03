@@ -19,6 +19,7 @@ from azure.identity import ClientSecretCredential
 
 @dataclass
 class InfrastructureSettings:
+    catalog_name: str
     data_storage_account_name: str
     # Prevent the credentials from being printed or logged (using e.g. print() or repr())
     data_storage_account_credentials: ClientSecretCredential = field(repr=False)
