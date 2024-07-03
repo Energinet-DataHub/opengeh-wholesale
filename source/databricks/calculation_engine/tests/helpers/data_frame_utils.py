@@ -54,9 +54,7 @@ def assert_no_duplicates(df: DataFrame) -> None:
 
 
 def show_duplicates(df: DataFrame) -> DataFrame:
-    duplicates = df.groupby(df.columns)\
-                   .count()\
-                   .where(f.col('count') > 1)
+    duplicates = df.groupby(df.columns).count().where(f.col('count') > 1)
     return duplicates
 
 
@@ -154,7 +152,9 @@ def assert_dataframe_and_schema(
         ):
             actual, expected = drop_columns_if_the_same(actual, expected)
 
-        print(f"NUMBER OF ROWS MISMATCH: Actual: {actual.count()}, Expected: {expected.count()}")
+        print(
+            f"NUMBER OF ROWS MISMATCH: Actual: {actual.count()}, Expected: {expected.count()}"
+        )
         raise
 
 
