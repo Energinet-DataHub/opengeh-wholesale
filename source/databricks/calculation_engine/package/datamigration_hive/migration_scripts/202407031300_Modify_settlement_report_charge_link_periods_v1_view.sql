@@ -18,7 +18,7 @@ SELECT c.calculation_id,
     CASE
         WHEN l.to_date < m.to_date THEN l.to_date
         ELSE m.to_date
-    END as to_date
+    END as to_date,
        m.grid_area_code,
        m.energy_supplier_id,
        cp.is_tax
