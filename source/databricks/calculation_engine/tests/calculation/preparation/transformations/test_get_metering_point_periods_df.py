@@ -118,7 +118,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             factory.DEFAULT_FROM_DATE,
             factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            [factory.DEFAULT_GRID_AREA_CODE],
         )
 
         # Assert
@@ -150,7 +150,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             factory.DEFAULT_FROM_DATE,
             factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            [factory.DEFAULT_GRID_AREA_CODE],
         )
 
         # Assert
@@ -176,7 +176,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             factory.DEFAULT_FROM_DATE,
             factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            [factory.DEFAULT_GRID_AREA_CODE],
         )
 
         # Assert
@@ -191,7 +191,7 @@ class TestWhenValidInput:
             == MeteringPointType.CONSUMPTION.value
         )
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
-        assert actual_row[Colname.grid_area_code] == factory.DEFAULT_GRID_AREA
+        assert actual_row[Colname.grid_area_code] == factory.DEFAULT_GRID_AREA_CODE
         assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
         assert actual_row[Colname.from_grid_area_code] == factory.DEFAULT_FROM_GRID_AREA
         assert actual_row[Colname.to_grid_area_code] == factory.DEFAULT_TO_GRID_AREA
@@ -227,7 +227,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             factory.DEFAULT_FROM_DATE,
             factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            [factory.DEFAULT_GRID_AREA_CODE],
         )
 
         # Assert
@@ -301,7 +301,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             period_start,
             period_end,
-            [factory.DEFAULT_GRID_AREA],
+            [factory.DEFAULT_GRID_AREA_CODE],
         )
 
         # Assert

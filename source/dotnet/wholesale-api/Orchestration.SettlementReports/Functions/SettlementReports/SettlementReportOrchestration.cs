@@ -15,26 +15,26 @@
 using Azure;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Activities;
+using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 using Microsoft.Extensions.Logging;
 using RetryContext = Microsoft.DurableTask.RetryContext;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports;
 
 internal sealed class SettlementReportOrchestration
 {
     [Function(nameof(OrchestrateSettlementReport))]
-    public async Task OrchestrateSettlementReport(
+    public async Task<string> OrchestrateSettlementReport(
          [OrchestrationTrigger] TaskOrchestrationContext context,
          FunctionContext executionContext)
     {
         var settlementReportRequest = context.GetInput<SettlementReportRequestInput>();
         if (settlementReportRequest == null)
         {
-            throw new ArgumentNullException(nameof(settlementReportRequest));
+            return "Error: No input specified.";
         }
 
         var requestId = new SettlementReportRequestId(context.InstanceId);
@@ -50,13 +50,22 @@ internal sealed class SettlementReportOrchestration
                 scatterInput,
                 dataSourceExceptionHandler);
 
-        var fileRequestTasks = scatterResults.Select(fileRequest => context
-            .CallActivityAsync<GeneratedSettlementReportFileDto>(
-                nameof(GenerateSettlementReportFileActivity),
-                new GenerateSettlementReportFileInput(fileRequest, settlementReportRequest.ActorInfo),
-                dataSourceExceptionHandler));
+        var generatedFiles = new List<GeneratedSettlementReportFileDto>();
+        var orderedResults = scatterResults
+            .OrderBy(x => x.PartialFileInfo.FileOffset)
+            .ThenBy(x => x.PartialFileInfo.ChunkOffset)
+            .ToList();
 
-        var generatedFiles = await Task.WhenAll(fileRequestTasks);
+        foreach (var scatterChunk in orderedResults.Chunk(15))
+        {
+            var fileRequestTasks = scatterChunk.Select(fileRequest => context
+                .CallActivityAsync<GeneratedSettlementReportFileDto>(
+                    nameof(GenerateSettlementReportFileActivity),
+                    new GenerateSettlementReportFileInput(fileRequest, settlementReportRequest.ActorInfo),
+                    dataSourceExceptionHandler));
+
+            generatedFiles.AddRange(await Task.WhenAll(fileRequestTasks));
+        }
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFilesActivity),
@@ -65,6 +74,8 @@ internal sealed class SettlementReportOrchestration
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReportActivity),
             generatedSettlementReport);
+
+        return "Success";
     }
 
     private static bool HandleDataSourceExceptions(RetryContext retryContext, ILogger<SettlementReportOrchestration> logger)
