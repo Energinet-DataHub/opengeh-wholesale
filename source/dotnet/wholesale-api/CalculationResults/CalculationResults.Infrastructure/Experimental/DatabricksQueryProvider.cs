@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore.Query;
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
 // The purpose of this provider is to ensure that all chained IQueryable are of our type DatabricksSqlQueryable.
-// The actual implementations are always delegating to the core provider.
+// The actual implementations are always delegated to the core provider.
 public sealed class DatabricksQueryProvider : IAsyncQueryProvider
 {
     private readonly IAsyncQueryProvider _coreProvider;

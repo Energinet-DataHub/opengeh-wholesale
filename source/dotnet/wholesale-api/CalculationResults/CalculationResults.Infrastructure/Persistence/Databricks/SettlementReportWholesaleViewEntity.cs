@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;

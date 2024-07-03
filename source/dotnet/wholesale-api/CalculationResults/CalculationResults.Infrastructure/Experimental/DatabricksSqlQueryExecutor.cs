@@ -12,20 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Dynamic;
+using System.Globalization;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
-using NodaTime.Serialization.SystemTextJson;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
 public sealed class DatabricksSqlQueryExecutor
 {
+    private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)>> _mapCache = new();
+
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly DatabricksSqlQueryCompiler _sqlQueryCompiler;
 
@@ -64,24 +67,53 @@ public sealed class DatabricksSqlQueryExecutor
             .ExecuteStatementAsync(databricksStatement, Format.JsonArray, cancellationToken)
             .ConfigureAwait(false);
 
+        var propertyMap = _mapCache.GetOrAdd(typeof(TElement), CreatePropertyMap);
+
         await foreach (ExpandoObject row in rows)
         {
-            // TODO: Do not ask...
-            var serialized = JsonSerializer.Serialize(row);
-            serialized = serialized.Replace("\"false\"", "false");
-            serialized = serialized.Replace("\"false\"", "false");
-            var deserialize = JsonSerializer.Deserialize<TElement>(serialized, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-                NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            }.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb))!;
-
-            yield return deserialize;
+            yield return Hydrate<TElement>(row, propertyMap);
         }
+    }
+
+    private static TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
+    {
+        var instance = Activator.CreateInstance<TElement>();
+
+        foreach (var property in expandoObject)
+        {
+            if (propertyMap.TryGetValue(property.Key, out var prop))
+            {
+                var convertedValue = prop.Converter.ConvertFrom(null, CultureInfo.InvariantCulture, property.Value!);
+                prop.Property.SetValue(instance, convertedValue);
+            }
+        }
+
+        return instance;
+    }
+
+    private static IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> CreatePropertyMap(Type targetType)
+    {
+        var propDict = new Dictionary<string, (PropertyInfo Property, TypeConverter Converter)>();
+
+        foreach (var propertyInfo in targetType.GetProperties())
+        {
+            var typeConverter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
+
+            propDict.Add(propertyInfo.Name, (propertyInfo, typeConverter));
+
+            var columnAttribute = propertyInfo.GetCustomAttribute<ColumnAttribute>();
+            if (columnAttribute != null && !string.IsNullOrEmpty(columnAttribute.Name))
+            {
+                propDict.Add(columnAttribute.Name, (propertyInfo, typeConverter));
+            }
+        }
+
+        return propDict;
     }
 
     private sealed class CountResult
     {
+        [Column("count")]
         public int Count { get; set; }
     }
 }
