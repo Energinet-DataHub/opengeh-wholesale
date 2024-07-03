@@ -104,6 +104,18 @@ resource "azurerm_data_factory_dataset_json" "stdh2data_ts_sync_processed" {
   encoding = "UTF-8"
 }
 
+resource "azurerm_data_factory_dataset_json" "stdh2dropzonearchive" {
+  name                = "stdh2dropzonearchive"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service_archive.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dropzonearchive.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
 
 #
 # Ensure that the Data Factory has access to the storage account using managed identity and over private endpoint
@@ -121,6 +133,12 @@ resource "azurerm_role_assignment" "ra_dh2dropzone_adf_contributor" {
   principal_id         = azurerm_data_factory.this.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "ra_dh2dropzonearchive_adf_contributor" {
+  scope                = module.st_dh2dropzone_archive.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_data_factory.this.identity[0].principal_id
+}
+
 resource "azurerm_data_factory_managed_private_endpoint" "adfpe_blob" {
   name               = "adfpe-blob-${local.resources_suffix}"
   data_factory_id    = azurerm_data_factory.this.id
@@ -133,6 +151,13 @@ resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "linked_se
   data_factory_id      = azurerm_data_factory.this.id
   use_managed_identity = true
   url                  = module.st_dh2data.fully_qualified_domain_name
+}
+
+resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "linked_service_archive" {
+  name                 = "ls_adls_${lower(module.st_dh2dropzone_archive.name)}"
+  data_factory_id      = azurerm_data_factory.this.id
+  use_managed_identity = true
+  url                  = module.st_dh2dropzone_archive.fully_qualified_domain_name
 }
 
 # Approve private endpoints created by Azure Data Factory
