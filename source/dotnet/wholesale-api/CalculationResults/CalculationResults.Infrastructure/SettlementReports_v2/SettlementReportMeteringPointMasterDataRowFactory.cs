@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportMeteringPointMasterDataRowFactory
 {
-    public static SettlementReportMeteringPointMasterDataRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    public static SettlementReportMeteringPointMasterDataRow Create(DatabricksSqlRow databricksSqlRow)
     {
         var periodStart = databricksSqlRow[SettlementReportMeteringPointMasterDataViewColumns.FromDate];
         var periodEnd = databricksSqlRow[SettlementReportMeteringPointMasterDataViewColumns.ToDate];

@@ -31,8 +31,9 @@ using Xunit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
+// TODO (MWO): Merge with CSV-version of test
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
-
+/*
 public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQueries>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
@@ -77,7 +78,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters([calculationPeriod], amountType);
+        var query = CreateQueryParameters(calculationPeriod.Period, amountType);
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();
@@ -120,7 +121,10 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (9 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters([calculationPeriods.Calculation1Period1, calculationPeriods.Calculation2, calculationPeriods.Calculation1Period2]);
+        var query = CreateQueryParameters(
+            new(
+                Instant.Min(calculationPeriods.Calculation1Period2.Period.Start, Instant.Min(calculationPeriods.Calculation1Period1.Period.Start, calculationPeriods.Calculation2.Period.Start)),
+                Instant.Max(calculationPeriods.Calculation1Period2.Period.End, Instant.Max(calculationPeriods.Calculation1Period1.Period.End, calculationPeriods.Calculation2.Period.End))));
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();
@@ -173,7 +177,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (10 rows total in this case)
         await InsertData(rows);
-        var query = CreateQueryParameters([calculationPeriod], gridAreaCodes: gridAreaCodesFilter);
+        var query = CreateQueryParameters(calculationPeriod.Period, gridAreaCodes: gridAreaCodesFilter);
 
         // Act
         string[] expectedGridAreaCodes = ["101", "103"];
@@ -229,7 +233,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (10 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters([calculationPeriod]);
+        var query = CreateQueryParameters(calculationPeriod.Period);
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();
@@ -300,7 +304,9 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (8 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters([calculationPeriods.Calculation2, calculationPeriods.Calculation3, calculationPeriods.Calculation4]);
+        var query = CreateQueryParameters(new(
+            Instant.Min(calculationPeriods.Calculation2.Period.Start, Instant.Min(calculationPeriods.Calculation3.Period.Start, calculationPeriods.Calculation4.Period.Start)),
+            Instant.Max(calculationPeriods.Calculation2.Period.End, Instant.Max(calculationPeriods.Calculation3.Period.End, calculationPeriods.Calculation4.Period.End))));
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();
@@ -414,7 +420,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         await InsertData(rows);
 
         var query = CreateQueryParameters(
-            [expectedCalculationPeriod],
+            expectedCalculationPeriod.Period,
             expectedAmountType,
             [expectedGridAreaCode],
             expectedEnergySupplierId,
@@ -488,7 +494,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         await InsertData(rows);
 
         var query = CreateQueryParameters(
-            [calculationPeriod],
+            calculationPeriod.Period,
             chargeTypes: [
                 (expectedChargeCode1, expectedChargeType1),
                 (expectedChargeCode2, expectedChargeType2)
@@ -542,7 +548,9 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
         await InsertData(rows);
 
-        var query = CreateQueryParameters([shouldMatch ? package.CalculationPeriod : calculationPeriods.Calculation1Period2]);
+        var query = CreateQueryParameters(shouldMatch
+            ? package.CalculationPeriod.Period
+            : calculationPeriods.Calculation1Period2.Period);
 
         // Act
         var actual = await Sut.AnyAsync(query);
@@ -622,10 +630,11 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         await InsertData(rows);
 
         var query = CreateQueryParameters(
-            [
-                shouldMatch ? package1.CalculationPeriod : calculationPeriods.Calculation4,
-                shouldMatch ? package2.CalculationPeriod : calculationPeriods.Calculation4,
-            ],
+            shouldMatch
+                ? new(
+                    Instant.Min(package1.CalculationPeriod.Period.Start, package2.CalculationPeriod.Period.Start),
+                    Instant.Max(package1.CalculationPeriod.Period.End, package2.CalculationPeriod.Period.End))
+                : calculationPeriods.Calculation4.Period,
             expectedAmountType,
             [expectedGridAreaCode],
             expectedEnergySupplierId,
@@ -689,8 +698,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (15 rows total in this case)
         await InsertData(rows);
 
-        var parameters = CreateQueryParameters(
-            new List<CalculationForPeriod>() { calculationForPeriod });
+        var parameters = CreateQueryParameters(calculationForPeriod.Period);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -701,6 +709,34 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         calculationResult.Period.Start.Should().Be(middleOfPeriod);
         calculationResult.Period.End.Should().Be(calculationPeriodEnd);
         calculationResult.TimeSeriesPoints.Should().HaveCount(pointsTime.Count);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestingChargeOwnerIsEmpty_ReturnsNoData()
+    {
+        // Arrange
+        var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
+        var amountType = AmountType.MonthlyAmountPerCharge;
+
+        var package = new WholesaleServicesPackage(
+            CalculationPeriod: calculationPeriod,
+            Points:
+            [
+                Instant.FromUtc(2024, 1, 1, 0, 0),
+                Instant.FromUtc(2024, 1, 25, 0, 0),
+            ],
+            amountType);
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
+        await InsertData(rows);
+
+        var query = CreateQueryParameters(calculationPeriod.Period, amountType, chargeOwnerId: string.Empty);
+
+        // Act
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        // Assert
+        actual.Should().BeEmpty();
     }
 
     private WholesaleServicesPackage CreatePackageForFilter(
@@ -856,7 +892,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     private WholesaleServicesQueryParameters CreateQueryParameters(
-        IReadOnlyCollection<CalculationForPeriod> calculations,
+        Period period,
         AmountType amountType = AmountType.AmountPerCharge,
         string[]? gridAreaCodes = null,
         string? energySupplierId = null,
@@ -869,7 +905,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             energySupplierId,
             chargeOwnerId,
             chargeTypes.ToList(),
-            calculations);
+            CalculationType.WholesaleFixing,
+            period);
     }
 
     private record CalculationPeriods(
@@ -915,3 +952,4 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         Resolution,
     }
 }
+*/

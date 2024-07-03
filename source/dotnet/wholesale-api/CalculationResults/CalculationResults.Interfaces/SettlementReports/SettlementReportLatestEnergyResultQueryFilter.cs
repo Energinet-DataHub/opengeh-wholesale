@@ -19,4 +19,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 public sealed record SettlementReportLatestEnergyResultQueryFilter(
     string GridAreaCode,
     Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant PeriodEnd,
+    long MaximumCalculationVersion);

@@ -33,10 +33,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
+        SettlementReportRequestDto reportRequest,
+        SettlementReportRequestedByActor actorInfo)
     {
-        const string energyResultFileName = "Result Energy";
-        const string wholesaleResultFileName = "Result Wholesale";
+        const string energyResultFileName = "RESULTENERGY";
+        const string wholesaleResultFileName = "RESULTWHOLESALE";
 
         var filesInReport = reportRequest.Filter.CalculationType switch
         {
@@ -61,26 +62,43 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 {
                     CalculationType.BalanceFixing => new[]
                     {
-                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "TSSD15", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "TSSD60", SplitReportPerGridArea = true },
                     },
                     CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement =>
                     [
-                        new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "Charge links on metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "Master data for metering points", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt15M, Name = "Time series PT15M", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.Pt1H, Name = "Time series PT1H", SplitReportPerGridArea = true },
-                        new { Content = SettlementReportFileContent.ChargePrice, Name = "Charge Price", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "CHARGELINK", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "TSSD15", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "TSSD60", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.ChargePrice, Name = "CHARGEPRICE", SplitReportPerGridArea = true },
                     ],
                     _ => throw new InvalidOperationException($"Cannot generate basis data for calculation type {reportRequest.Filter.CalculationType}."),
                 }
             ];
         }
 
+        if (reportRequest.IncludeMonthlyAmount && IsWholeMonth(reportRequest.Filter.PeriodStart, reportRequest.Filter.PeriodEnd)
+                                               && reportRequest.Filter.CalculationType
+                                                   is CalculationType.WholesaleFixing
+                                                   or CalculationType.FirstCorrectionSettlement
+                                                   or CalculationType.SecondCorrectionSettlement
+                                                   or CalculationType.ThirdCorrectionSettlement)
+        {
+            filesInReport =
+            [
+                ..filesInReport,
+                ..new[]
+                {
+                    new { Content = SettlementReportFileContent.MonthlyAmount, Name = "RESULTMONTHLY", SplitReportPerGridArea = true },
+                    new { Content = SettlementReportFileContent.MonthlyAmountTotal, Name = "RESULTMONTHLY", SplitReportPerGridArea = true },
+                }
+            ];
+        }
+
         var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
         var filesToRequest = new List<SettlementReportFileRequestDto>();
-
         foreach (var file in filesInReport)
         {
             var fileRequest = new SettlementReportFileRequestDto(
@@ -90,7 +108,17 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 reportRequest.Filter,
                 maxCalculationVersion);
 
-            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, file.SplitReportPerGridArea).ConfigureAwait(false))
+            if (file.Content == SettlementReportFileContent.MonthlyAmountTotal)
+            {
+                    fileRequest = new SettlementReportFileRequestDto(
+                    requestId,
+                    file.Content,
+                    new SettlementReportPartialFileInfo(file.Name, true) { FileOffset = int.MaxValue },
+                    reportRequest.Filter,
+                    maxCalculationVersion);
+            }
+
+            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, file.SplitReportPerGridArea).ConfigureAwait(false))
             {
                 filesToRequest.Add(splitFileRequest);
             }
@@ -101,6 +129,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridAreaAsync(
         SettlementReportFileRequestDto fileRequest,
+        SettlementReportRequestedByActor actorInfo,
         bool splitReportPerGridArea)
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
@@ -111,7 +140,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             {
                 partialFileInfo = fileRequest.PartialFileInfo with
                 {
-                    FileName = fileRequest.PartialFileInfo.FileName + $" ({gridAreaCode})",
+                    FileName = fileRequest.PartialFileInfo.FileName + $"_{gridAreaCode}",
                 };
             }
 
@@ -124,7 +153,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             };
 
             // Split the single grid area request into further chunks.
-            await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestForSingleGridArea).ConfigureAwait(false))
+            await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestForSingleGridArea, actorInfo).ConfigureAwait(false))
             {
                 yield return splitFileRequest;
 
@@ -138,13 +167,14 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     }
 
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestIntoChunksAsync(
-        SettlementReportFileRequestDto fileRequest)
+        SettlementReportFileRequestDto fileRequest,
+        SettlementReportRequestedByActor actorInfo)
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
 
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
         var chunks = await fileGenerator
-            .CountChunksAsync(fileRequest.RequestFilter, fileRequest.MaximumCalculationVersion)
+            .CountChunksAsync(fileRequest.RequestFilter, actorInfo, fileRequest.MaximumCalculationVersion)
             .ConfigureAwait(false);
 
         for (var i = 0; i < chunks; i++)
@@ -154,6 +184,16 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 PartialFileInfo = partialFileInfo with { ChunkOffset = partialFileInfo.ChunkOffset + i },
             };
         }
+    }
+
+    private static bool IsWholeMonth(DateTimeOffset start, DateTimeOffset end)
+    {
+        var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(start, "Romance Standard Time");
+        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(end, "Romance Standard Time");
+        return convertedEnd.TimeOfDay.Ticks == 0
+            && convertedStart.Day == 1
+            && convertedEnd.Day == 1
+            && convertedEnd.Month - convertedStart.Month == 1;
     }
 
     private Task<long> GetLatestCalculationVersionAsync(CalculationType calculationType)

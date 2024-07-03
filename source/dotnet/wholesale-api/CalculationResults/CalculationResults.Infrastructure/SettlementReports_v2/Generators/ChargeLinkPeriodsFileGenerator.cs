@@ -12,57 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using static Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators.ChargeLinkPeriodsFileGenerator;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenerator
+public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<SettlementReportChargeLinkPeriodsResultRow, SettlementReportChargeLinkPeriodsResultRowMap>
 {
-    private const int ChunkSize = 1000;
     private readonly ISettlementReportChargeLinkPeriodsRepository _dataSource;
 
     public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
+        : base(
+            40_000, // About 25 rows per metering point, about 1.000.000 rows per chunk in total.
+            quotedColumns: [0, 3])
     {
         _dataSource = dataSource;
     }
 
-    public string FileExtension => ".csv";
-
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    protected override Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter, actorInfo);
     }
 
-    public async Task WriteAsync(
-        SettlementReportRequestFilterDto filter,
-        SettlementReportPartialFileInfo fileInfo,
-        long maximumCalculationVersion,
-        StreamWriter destination)
+    protected override IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skipChunks, int takeChunks)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportChargeLinkPeriodsResultRowMap>();
-
-        await using (csvHelper.ConfigureAwait(false))
-        {
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
-            {
-                csvHelper.WriteHeader<SettlementReportChargeLinkPeriodsResultRow>();
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
-            {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
-        }
+        return _dataSource.GetAsync(filter, actorInfo, skipChunks, takeChunks);
     }
 
     public sealed class SettlementReportChargeLinkPeriodsResultRowMap : ClassMap<SettlementReportChargeLinkPeriodsResultRow>

@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -28,16 +27,13 @@ public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWh
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly ICalculationsClient _calculationsClient;
 
     public SettlementReportWholesaleResultQueries(
         IOptions<DeltaTableOptions> deltaTableOptions,
-        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        ICalculationsClient calculationsClient)
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
     {
         _deltaTableOptions = deltaTableOptions;
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _calculationsClient = calculationsClient;
     }
 
     public async Task<int> CountAsync(SettlementReportWholesaleResultQueryFilter filter)
@@ -55,12 +51,11 @@ public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWh
 
     public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportWholesaleResultQueryFilter filter, int skip, int take)
     {
-        var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
         var statement = new SettlementReportWholesaleResultQueryStatement(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportWholesaleResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
+            yield return SettlementReportWholesaleResultRowFactory.Create(new DatabricksSqlRow(nextRow));
         }
     }
 }

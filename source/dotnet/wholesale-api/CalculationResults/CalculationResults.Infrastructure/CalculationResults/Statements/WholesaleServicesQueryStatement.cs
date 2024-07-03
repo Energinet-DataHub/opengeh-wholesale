@@ -14,99 +14,82 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class WholesaleServicesQueryStatement : DatabricksStatement
+public class WholesaleServicesQueryStatement(
+    WholesaleServicesQueryStatement.StatementType statementType,
+    WholesaleServicesQueryParameters queryParameters,
+    IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
+    WholesaleServicesQueryStatementWhereClauseProvider whereClauseProvider,
+    DeltaTableOptions deltaTableOptions)
+    : DatabricksStatement
 {
-    private readonly StatementType _statementType;
-    private readonly WholesaleServicesQueryParameters _queryParameters;
-    private readonly DeltaTableOptions _deltaTableOptions;
-
-    public WholesaleServicesQueryStatement(StatementType statementType, WholesaleServicesQueryParameters queryParameters, DeltaTableOptions deltaTableOptions)
-    {
-        _statementType = statementType;
-        _queryParameters = queryParameters;
-        _deltaTableOptions = deltaTableOptions;
-    }
+    private readonly StatementType _statementType = statementType;
+    private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
+    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
+    private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
+    private readonly WholesaleServicesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
 
     protected override string GetSqlStatement()
     {
         var selectTarget = _statementType switch
         {
-            StatementType.Select => $"{string.Join(", ", ColumnsToSelect)}",
+            StatementType.Select =>
+                $"{string.Join(", ", ColumnsToSelect.Select(cts => $"`wrv`.`{cts}`"))}, `wrv`.`{BasisDataCalculationsColumnNames.Version}`",
             StatementType.Exists => "1",
             _ => throw new ArgumentOutOfRangeException(nameof(_statementType), _statementType, "Unknown StatementType"),
         };
 
-        var sql = $@"
-            SELECT {selectTarget}
-            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
-            WHERE {WholesaleResultColumnNames.AmountType} = '{AmountTypeMapper.ToDeltaTableValue(_queryParameters.AmountType)}'
-        ";
-
-        var calculationPeriodSql = _queryParameters.Calculations
-            .Select(calculationForPeriod => $@"
-                ({WholesaleResultColumnNames.CalculationId} = '{calculationForPeriod.CalculationId}'  
-                AND {WholesaleResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
-                AND {WholesaleResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
-            .ToList();
-
-        sql += $" AND ({string.Join(" OR ", calculationPeriodSql)})";
-
-        if (_queryParameters.GridAreaCodes.Count != 0)
-        {
-            sql += @$" AND {WholesaleResultColumnNames.GridArea} in 
-                    ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
-        }
-
-        if (!string.IsNullOrEmpty(_queryParameters.EnergySupplierId))
-            sql += $" AND {WholesaleResultColumnNames.EnergySupplierId} = '{_queryParameters.EnergySupplierId}'";
-
-        if (!string.IsNullOrEmpty(_queryParameters.ChargeOwnerId))
-            sql += $" AND {WholesaleResultColumnNames.ChargeOwnerId} = '{_queryParameters.ChargeOwnerId}'";
-
-        if (_queryParameters.ChargeTypes.Any())
-        {
-            var chargeTypesSql = _queryParameters.ChargeTypes
-                .Select(c => CreateChargeTypeSqlStatement(c.ChargeCode, c.ChargeType))
-                .ToList();
-
-            sql += $" AND ({string.Join(" OR ", chargeTypesSql)})";
-        }
+        var sql = $"""
+                    SELECT {selectTarget}
+                    FROM (SELECT {string.Join(", ", ColumnsToSelect.Select(cts => $"`wr`.`{cts}`"))}, `cs`.`{BasisDataCalculationsColumnNames.Version}`
+                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
+                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
+                    ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
+                    WHERE {GenerateLatestOrFixedCalculationTypeWhereClause()}) wrv
+                    INNER JOIN (SELECT max({BasisDataCalculationsColumnNames.Version}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", ColumnsToGroupBy.Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
+                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
+                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
+                    ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
+                    {_whereClauseProvider.GetWhereClauseToSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
+                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
+                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
+                    """;
 
         // The order is important for combining the rows into packages, since the sql rows are streamed and
-        //      packages are created on-the-fly each time a new row is received.
-        sql += $@"
-                ORDER BY 
-                    {string.Join(", ", ColumnsToGroupBy)},
-                    {WholesaleResultColumnNames.Time}";
+        // packages are created on-the-fly each time a new row is received.
+        sql += $"""
+                {"\n"}ORDER BY {string.Join(", ", ColumnsToGroupBy)}, {WholesaleResultColumnNames.Time}
+                """;
 
         return sql;
     }
 
-    private string CreateChargeTypeSqlStatement(string? chargeCode, ChargeType? chargeType)
+    private string GenerateLatestOrFixedCalculationTypeWhereClause()
     {
-        if (chargeCode == null && chargeType == null)
-            throw new ArgumentException("Both chargeCode and chargeType cannot be null");
+        if (_queryParameters.CalculationType is not null)
+        {
+            return $"""
+                    wr.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    """;
+        }
 
-        var sqlStatements = new List<string>();
+        if (_calculationTypePerGridAreas.IsNullOrEmpty())
+        {
+            throw new ArgumentOutOfRangeException(nameof(_calculationTypePerGridAreas));
+        }
 
-        if (!string.IsNullOrEmpty(chargeCode))
-            sqlStatements.Add($"{WholesaleResultColumnNames.ChargeCode} = '{chargeCode}'");
+        var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
+            .Select(ctpga => $"""
+                              (wr.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND wr.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              """);
 
-        if (chargeType != null)
-            sqlStatements.Add($"{WholesaleResultColumnNames.ChargeType} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
-
-        var combinedString = string.Join(" AND ", sqlStatements);
-
-        if (sqlStatements.Count > 1)
-            combinedString = $"({combinedString})";
-
-        return combinedString;
+        return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
     }
 
     /// <summary>
@@ -124,7 +107,6 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.Resolution,
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
-        WholesaleResultColumnNames.CalculationId,
     ];
 
     private static string[] ColumnsToSelect { get; } =

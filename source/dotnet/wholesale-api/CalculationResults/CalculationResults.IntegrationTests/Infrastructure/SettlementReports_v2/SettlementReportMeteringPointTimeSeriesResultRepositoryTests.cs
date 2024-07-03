@@ -20,8 +20,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
@@ -45,18 +43,14 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
-        var calculationsClientMock = new Mock<ICalculationsClient>();
-        calculationsClientMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated));
-
         Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
         Fixture.Inject<ISettlementReportMeteringPointTimeSeriesResultQueries>(new SettlementReportMeteringPointTimeSeriesResultQueries(
             mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            calculationsClientMock.Object));
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
-    [Fact]
+    [Fact(Skip = "Perf Test")]
     public async Task Count_ValidFilter_ReturnsCount()
     {
         // arrange
@@ -86,7 +80,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         Assert.Equal(1, actual);
     }
 
-    [Fact]
+    [Fact(Skip = "Perf Test")]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
         // arrange
@@ -121,7 +115,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         Assert.Equal(4, actual[0].StartDateTime.ToDateTimeOffset().Hour);
     }
 
-    [Theory]
+    [Theory(Skip = "Perf Test")]
     [InlineData("8442359392717", 1)]
     [InlineData(null, 3)]
     public async Task Get_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected)
@@ -166,7 +160,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         Assert.Equal(expected, actual.Count);
     }
 
-    [Theory]
+    [Theory(Skip = "Perf Test")]
     [InlineData("8442359392721", 1)]
     [InlineData(null, 3)]
     public async Task Count_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected)

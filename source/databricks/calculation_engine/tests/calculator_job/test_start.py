@@ -44,7 +44,6 @@ class TestWhenInvokedWithValidArguments:
             parse_command_line_args=lambda: command_line_args,
             parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
             calculation_executor=lambda args, reader, spark: None,
-            is_storage_locked_checker=lambda name, cred: False,
         )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
@@ -59,6 +58,7 @@ class TestWhenInvokedWithValidArguments:
         - message <the message>
         - operation id has value
         - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem-Area" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
 
@@ -85,6 +85,7 @@ AppTraces
 | where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
+| where Properties["Subsystem-Area"] == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count

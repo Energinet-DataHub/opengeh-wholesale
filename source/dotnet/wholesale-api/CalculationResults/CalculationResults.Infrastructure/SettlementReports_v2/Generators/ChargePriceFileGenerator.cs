@@ -14,7 +14,6 @@
 
 using System.Globalization;
 using CsvHelper;
-using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
@@ -25,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 1000;
+    private const int ChunkSize = 1_750; // Up to 582 rows in each chunk for a month, 1.018.500 rows per chunk in total.
 
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
@@ -36,20 +35,14 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter);
     }
 
-    public async Task WriteAsync(
-        SettlementReportRequestFilterDto filter,
-        SettlementReportPartialFileInfo fileInfo,
-        long maximumCalculationVersion,
-        StreamWriter destination)
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportChargePriceRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
@@ -61,63 +54,64 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
             if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
             {
-                csvHelper.WriteHeader<SettlementReportChargePriceRow>();
-                const int energyPriceFieldCount = 25;
-                for (var i = 0; i < energyPriceFieldCount; ++i)
-                {
-                    csvHelper.WriteField($"ENERGYPRICE{i + 1}");
-                }
-
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+                await WriteHeaderAsync(csvHelper).ConfigureAwait(false);
             }
 
             await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+                await WriteRecordAsync(csvHelper, record).ConfigureAwait(false);
             }
         }
     }
 
-    public sealed class SettlementReportChargePriceRowMap : ClassMap<SettlementReportChargePriceRow>
+    private static async Task WriteHeaderAsync(CsvWriter csvHelper)
     {
-        public SettlementReportChargePriceRowMap()
+        const int energyPriceFieldCount = 25;
+
+        csvHelper.WriteField("CHARGETYPE");
+        csvHelper.WriteField("CHARGETYPEID");
+        csvHelper.WriteField("CHARGETYPEOWNER");
+        csvHelper.WriteField("RESOLUTIONDURATION");
+        csvHelper.WriteField("TAXINDICATOR");
+        csvHelper.WriteField("STARTDATETIME");
+
+        for (var i = 0; i < energyPriceFieldCount; ++i)
         {
-            Map(r => r.ChargeType)
-                .Name("CHARGETYPE")
-                .Convert(row => row.Value.ChargeType switch
-                {
-                    ChargeType.Tariff => "D03",
-                    ChargeType.Fee => "D02",
-                    ChargeType.Subscription => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.ChargeType)),
-                });
-
-            Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID");
-
-            Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNER");
-
-            Map(r => r.Resolution)
-                .Name("RESOLUTIONDURATION")
-                .Convert(row => row.Value.Resolution switch
-                {
-                    Resolution.Hour => "PT1H",
-                    Resolution.Day => "P1D",
-                    Resolution.Month => "P1M",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
-                });
-
-            Map(r => r.TaxIndicator)
-                .Name("TAXINDICATOR");
-
-            Map(r => r.StartDateTime)
-                .Name("STARTDATETIME");
-
-            Map(r => r.EnergyPrices)
-                .Name("ENERGYPRICE1")
-                .TypeConverter<IEnumerableConverter>();
+            csvHelper.WriteField($"ENERGYPRICE{i + 1}");
         }
+
+        await csvHelper.NextRecordAsync().ConfigureAwait(false);
+    }
+
+    private static async Task WriteRecordAsync(CsvWriter csvHelper, SettlementReportChargePriceRow record)
+    {
+        csvHelper.WriteField(record.ChargeType switch
+        {
+            ChargeType.Tariff => "D03",
+            ChargeType.Fee => "D02",
+            ChargeType.Subscription => "D01",
+            _ => throw new ArgumentOutOfRangeException(nameof(record.ChargeType)),
+        });
+
+        csvHelper.WriteField(record.ChargeCode);
+        csvHelper.WriteField(record.ChargeOwnerId, shouldQuote: true);
+
+        csvHelper.WriteField(record.Resolution switch
+        {
+            Resolution.Hour => "PT1H",
+            Resolution.Day => "P1D",
+            Resolution.Month => "P1M",
+            _ => throw new ArgumentOutOfRangeException(nameof(record.Resolution)),
+        });
+
+        csvHelper.WriteField(record.TaxIndicator ? "1" : "0");
+        csvHelper.WriteField(record.StartDateTime);
+
+        foreach (var energyPrice in record.EnergyPrices)
+        {
+            csvHelper.WriteField(energyPrice);
+        }
+
+        await csvHelper.NextRecordAsync().ConfigureAwait(false);
     }
 }

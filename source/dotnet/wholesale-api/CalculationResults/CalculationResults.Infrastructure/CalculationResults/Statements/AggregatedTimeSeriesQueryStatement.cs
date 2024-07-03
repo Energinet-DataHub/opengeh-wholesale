@@ -20,30 +20,35 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
+public class AggregatedTimeSeriesQueryStatement(
+    AggregatedTimeSeriesQueryParameters parameters,
+    DeltaTableOptions deltaTableOptions)
+    : DatabricksStatement
 {
-    private readonly AggregatedTimeSeriesQueryParameters _parameters;
-    private readonly DeltaTableOptions _deltaTableOptions;
-
-    public AggregatedTimeSeriesQueryStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
-    {
-        _parameters = parameters;
-        _deltaTableOptions = deltaTableOptions;
-    }
+    private readonly AggregatedTimeSeriesQueryParameters _parameters = parameters;
+    private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
     protected override string GetSqlStatement()
     {
-        var sql = $@"
-            SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
-            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            WHERE ({CreateSqlQueryFilters(_parameters)})";
+        var sql = $"""
+                   SELECT {string.Join(", ", SqlColumnNames.Select(scn => $"`erv`.`{scn}`"))}, `erv`.`{BasisDataCalculationsColumnNames.Version}`
+                   FROM (SELECT {string.Join(", ", SqlColumnNames.Select(scn => $"`er`.`{scn}`"))}, `er`.`{EnergyResultColumnNames.AggregationLevel}`, `cs`.`{BasisDataCalculationsColumnNames.Version}`
+                   FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} er
+                   INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
+                   ON er.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}) erv
+                   INNER JOIN (SELECT max({BasisDataCalculationsColumnNames.Version}) AS max_version, {EnergyResultColumnNames.Time} AS max_time
+                   FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} er
+                   INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
+                   ON er.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
+                   GROUP BY {EnergyResultColumnNames.Time}) maxver
+                   ON erv.{EnergyResultColumnNames.Time} = maxver.max_time AND erv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version
+                   WHERE ({CreateSqlQueryFilters(_parameters)})
+                   """;
 
-        // The order is important for combining the rows into packages, since the sql rows are streamed and
-        //      packages are created on-the-fly each time a new row is received.
+        // The order is important for combining the rows into packages, since the sql rows are streamed and packages
+        // are created on-the-fly each time a new row is received.
         sql += $"""
-                ORDER BY
-                    {string.Join(", ", ColumnsToGroupBy.Select(columnName => $"t1.{columnName}"))},
-                    t1.{EnergyResultColumnNames.Time}
+                ORDER BY {string.Join(", ", ColumnsToGroupBy)}, {EnergyResultColumnNames.Time};
                 """;
 
         return sql;
@@ -63,31 +68,30 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         TimeSeriesType timeSeriesType)
     {
         var whereClausesSql = $@"
-                t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}')
-            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'";
+                erv.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}')
+            AND erv.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'";
 
-        var calculationPeriodFilter = parameters.LatestCalculationForPeriod
-            .Select(calculationForPeriod => $@"
-                (t1.{EnergyResultColumnNames.CalculationId} = '{calculationForPeriod.CalculationId}'  
-                AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
-                AND t1.{EnergyResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
-            .ToList();
-
-        whereClausesSql += $" AND ({string.Join(" OR ", calculationPeriodFilter)})";
+        whereClausesSql +=
+            $"""
+             AND (erv.{EnergyResultColumnNames.Time} >= '{parameters.Period.Start}'
+                  AND erv.{EnergyResultColumnNames.Time} < '{parameters.Period.End}')
+             """;
 
         if (parameters.GridAreaCodes.Count > 0)
         {
-            whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
+            whereClausesSql +=
+                $" AND erv.{EnergyResultColumnNames.GridArea} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
-        if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
+        if (parameters.EnergySupplierId is not null)
         {
-            whereClausesSql += $"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
+            whereClausesSql += $" AND erv.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
         }
 
-        if (!string.IsNullOrWhiteSpace(parameters.BalanceResponsibleId))
+        if (parameters.BalanceResponsibleId is not null)
         {
-            whereClausesSql += $"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
+            whereClausesSql +=
+                $" AND erv.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
         }
 
         return whereClausesSql;
@@ -101,14 +105,13 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
     [
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.TimeSeriesType,
-        EnergyResultColumnNames.CalculationId,
     ];
 
     private static string[] SqlColumnNames { get; } =
-    {
+    [
         EnergyResultColumnNames.CalculationId,
         EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.NeighborGridArea,
         EnergyResultColumnNames.TimeSeriesType,
         EnergyResultColumnNames.EnergySupplierId,
         EnergyResultColumnNames.BalanceResponsibleId,
@@ -118,5 +121,5 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         EnergyResultColumnNames.CalculationResultId,
         EnergyResultColumnNames.CalculationType,
         EnergyResultColumnNames.Resolution,
-    };
+    ];
 }

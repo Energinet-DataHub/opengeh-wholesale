@@ -40,6 +40,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         false,
         false,
+        false,
         new SettlementReportRequestFilterDto(
             new Dictionary<string, CalculationId?>(),
             DateTimeOffset.UtcNow,
@@ -148,6 +149,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
             clockMock.Object,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             requestId,
             _mockedSettlementReportRequest);
 
@@ -182,6 +184,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
             clockMock.Object,
             Guid.NewGuid(),
             Guid.NewGuid(),
+            false,
             requestId,
             _mockedSettlementReportRequest);
 
@@ -215,6 +218,6 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
 
     private SettlementReport CreateMockedSettlementReport(Guid userId, Guid actorId, SettlementReportRequestId requestId)
     {
-        return new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
+        return new SettlementReport(SystemClock.Instance, userId, actorId, false, requestId, _mockedSettlementReportRequest);
     }
 }

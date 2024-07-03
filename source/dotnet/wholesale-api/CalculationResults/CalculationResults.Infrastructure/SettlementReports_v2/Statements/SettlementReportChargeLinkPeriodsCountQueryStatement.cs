@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
@@ -40,10 +41,15 @@ public sealed class SettlementReportChargeLinkPeriodsCountQueryStatement : Datab
                     WHERE
                         {SettlementReportChargeLinkPeriodsViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportChargeLinkPeriodsViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportChargeLinkPeriodsViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
+                        ({SettlementReportChargeLinkPeriodsViewColumns.FromDate} <= '{_filter.PeriodEnd}' AND
+                        {SettlementReportChargeLinkPeriodsViewColumns.ToDate} >= '{_filter.PeriodStart}') AND
                         {(_filter.EnergySupplier is null ? string.Empty : SettlementReportChargeLinkPeriodsViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")} 
                         {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
+                        {(_filter is { MarketRole: MarketRole.SystemOperator, ChargeOwnerId: not null } ? " AND "
+                            + SettlementReportChargeLinkPeriodsViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportChargeLinkPeriodsViewColumns.IsTax + " = 0" : string.Empty)}
+                        {(_filter is { MarketRole: MarketRole.GridAccessProvider, ChargeOwnerId: not null } ? " AND "
+                            + SettlementReportChargeLinkPeriodsViewColumns.ChargeOwnerId + " = '" + SqlStringSanitizer.Sanitize(_filter.ChargeOwnerId) + "' AND " + SettlementReportChargeLinkPeriodsViewColumns.IsTax + " = 1" : string.Empty)}
+                        
                 """;
     }
 

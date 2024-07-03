@@ -25,7 +25,7 @@ from package.codelists import MeteringPointType, QuantityQuality, SettlementMeth
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
-DEFAULT_NEIGHBOUR_GRID_AREA = "200"
+DEFAULT_NEIGHBOR_GRID_AREA = "200"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITY = QuantityQuality.MEASURED
@@ -94,7 +94,7 @@ def create_exchange_row(
 
 def create_from_row(
     grid_area: str = DEFAULT_GRID_AREA,
-    to_grid_area: str = DEFAULT_NEIGHBOUR_GRID_AREA,
+    to_grid_area: str = DEFAULT_NEIGHBOR_GRID_AREA,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
@@ -114,7 +114,7 @@ def create_from_row(
 
 def create_to_row(
     grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str = DEFAULT_NEIGHBOUR_GRID_AREA,
+    from_grid_area: str = DEFAULT_NEIGHBOR_GRID_AREA,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,

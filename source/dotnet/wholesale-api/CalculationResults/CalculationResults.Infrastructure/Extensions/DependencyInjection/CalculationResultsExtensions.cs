@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
@@ -78,6 +79,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
+        services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
 
         return services;
     }
@@ -119,10 +121,14 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportChargeLinkPeriodsQueries, SettlementReportChargeLinkPeriodsQueries>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataRepository, SettlementReportMeteringPointMasterDataRepository>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataQueries, SettlementReportMeteringPointMasterDataQueries>();
+        services.AddScoped<ISettlementReportMonthlyAmountRepository, SettlementReportMonthlyAmountRepository>();
+        services.AddScoped<ISettlementReportMonthlyAmountQueries, SettlementReportMonthlyAmountQueries>();
         services.AddScoped<ILatestCalculationVersionRepository, LatestCalculationVersionRepository>();
         services.AddScoped<ILatestCalculationVersionQueries, LatestCalculationVersionQueries>();
         services.AddScoped<ISettlementReportChargePriceRepository, SettlementReportChargePriceRepository>();
         services.AddScoped<ISettlementReportChargePriceQueries, SettlementReportChargePriceQueries>();
+        services.AddScoped<ISettlementReportMonthlyAmountTotalRepository, SettlementReportMonthlyAmountTotalRepository>();
+        services.AddScoped<ISettlementReportMonthlyAmountTotalQueries, SettlementReportMonthlyAmountTotalQueries>();
         services.AddSettlementReportBlobStorage();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
@@ -153,6 +159,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<ITotalMonthlyAmountResultQueries, TotalMonthlyAmountResultQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
+        services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
 
         return services;
     }

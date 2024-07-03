@@ -19,8 +19,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
@@ -54,12 +52,9 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
 
         Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
-        var calculationsClientMock = new Mock<ICalculationsClient>();
-        calculationsClientMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated));
         Fixture.Inject<ISettlementReportChargePriceQueries>(new SettlementReportChargePriceQueries(
             mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            calculationsClientMock.Object));
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
     [Fact]
@@ -110,7 +105,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
-                "8397670583191",
+                "5790001662233",
                 "da-DK"));
 
         Assert.Equal(2, actual);

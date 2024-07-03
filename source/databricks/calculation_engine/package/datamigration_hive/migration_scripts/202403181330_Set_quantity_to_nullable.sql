@@ -1,0 +1,3 @@
+ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results
+    ALTER COLUMN quantity DROP NOT NULL
+GO

@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
+using CsvHelper;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -44,6 +45,7 @@ public class MigrationsFreeDatabricksSchemaManager
         DeltaTableOptions = Options.Create(new DeltaTableOptions
         {
             SCHEMA_NAME = $"{schemaPrefix}_view_{postfix}",
+            BasisDataSchemaName = $"{schemaPrefix}_view_{postfix}",
         });
     }
 
@@ -62,7 +64,9 @@ public class MigrationsFreeDatabricksSchemaManager
         await CreateTableAsync(DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME, SettlementReportMeteringPointMasterDataViewColumns.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, EnergyResultsTableSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME, WholesaleResultsTableSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME, SettlementReportMonthlyAmountViewColumns.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME, SettlementReportChargePriceViewColumns.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.CALCULATIONS_TABLE_NAME, BasisDataCalculationsTableSchemaDefinition.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()
@@ -80,10 +84,84 @@ public class MigrationsFreeDatabricksSchemaManager
         return ExecuteSqlAsync(sqlStatement);
     }
 
+    public Task InsertAsync(
+        string tableName,
+        string[] columnNames,
+        IReadOnlyCollection<IReadOnlyCollection<string?>> rows)
+    {
+        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => val == null ? "NULL" : $"{val}"))})"));
+        var sqlStatement = $"INSERT INTO {SchemaName}.{tableName} ({string.Join(", ", columnNames)}) VALUES {values}";
+        return ExecuteSqlAsync(sqlStatement);
+    }
+
     public Task EmptyAsync(string tableName)
     {
         var sqlStatement = $@"DELETE FROM {SchemaName}.{tableName}";
         return ExecuteSqlAsync(sqlStatement);
+    }
+
+        /// <summary>
+    /// Expects a CSV file which was exported from Databricks.
+    /// It means the header must contain the column names and each row must contain the delta table values per column.
+    /// Delta table arrays must be parsed differently, but otherwise all values can be parsed from the CSV into strings.
+    /// All parsed rows are then inserted into a delta table.
+    /// </summary>
+    public async Task InsertFromCsvFileAsync(
+        string tableName,
+        Dictionary<string, (string DataType, bool IsNullable)> schemaInformation,
+        string testFilePath)
+    {
+        using var streamReader = new StreamReader(testFilePath);
+        using var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
+
+        await csvReader.ReadAsync();
+        csvReader.ReadHeader();
+
+        var rows = new List<string[]>();
+        while (await csvReader.ReadAsync())
+        {
+            var row = new string[csvReader.HeaderRecord!.Length];
+            for (var columnIndex = 0; columnIndex < csvReader.ColumnCount; columnIndex++)
+                row[columnIndex] = ParseColumnValue(schemaInformation, csvReader, columnIndex);
+
+            rows.Add(row);
+        }
+
+        await InsertAsync(tableName, csvReader.HeaderRecord!, rows);
+    }
+
+    /// <summary>
+    /// Parse CSV column value into a delta table "insertable" value.
+    /// Only arrays require special handling; all other values can be inserted as "strings".
+    /// </summary>
+    private static string ParseColumnValue(
+        Dictionary<string, (string DataType, bool IsNullable)> schemaInformation,
+        CsvReader csvReader,
+        int columnIndex)
+    {
+        var columnName = csvReader.HeaderRecord![columnIndex];
+        var columnValue = csvReader.GetField(columnIndex);
+
+        if (!schemaInformation[columnName].IsNullable && columnValue == string.Empty)
+        {
+            throw new InvalidOperationException($"Column '{columnName}' is not nullable, but the value is empty.");
+        }
+
+        if (schemaInformation[columnName].IsNullable && columnValue == string.Empty)
+        {
+            return "NULL";
+        }
+
+        if (schemaInformation[columnName].DataType.Equals("ARRAY<STRING>", StringComparison.InvariantCultureIgnoreCase))
+        {
+            var arrayContent = columnValue!
+                .Replace('[', '(')
+                .Replace(']', ')');
+
+            return $"Array{arrayContent}";
+        }
+
+        return $"'{columnValue}'";
     }
 
     private async Task ExecuteSqlAsync(string sqlStatement)
@@ -158,5 +236,13 @@ public class MigrationsFreeDatabricksSchemaManager
 
         var sqlStatement = $"CREATE TABLE IF NOT EXISTS {SchemaName}.{tableName} ({columnDefinitions})";
         await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
+    }
+
+    private sealed class DatabricksSqlException : Exception
+    {
+        public DatabricksSqlException(string message)
+            : base(message)
+        {
+        }
     }
 }

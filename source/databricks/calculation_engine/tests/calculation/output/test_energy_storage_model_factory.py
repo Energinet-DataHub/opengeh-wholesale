@@ -30,7 +30,7 @@ from package.calculation.energy.data_structures.energy_results import (
 )
 from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
-from package.infrastructure.paths import OutputDatabase
+from package.infrastructure.paths import HiveOutputDatabase
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -44,7 +44,7 @@ DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = e.QuantityQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = e.TimeSeriesType.PRODUCTION
-DEFAULT_AGGREGATION_LEVEL = e.AggregationLevel.TOTAL_GA
+DEFAULT_AGGREGATION_LEVEL = e.AggregationLevel.GRID_AREA
 DEFAULT_OBSERVATION_TIME = datetime(2020, 1, 1, 0, 0)
 DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.PRODUCTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
@@ -60,13 +60,14 @@ OTHER_CALCULATION_EXECUTION_START = datetime(2023, 6, 10, 13, 15)
 OTHER_QUANTITY = "1.2"
 OTHER_QUALITY = e.QuantityQuality.CALCULATED
 OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
-OTHER_AGGREGATION_LEVEL = e.AggregationLevel.ES_PER_GA
 OTHER_OBSERVATION_TIME = datetime(2021, 1, 1, 0, 0)
 OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
-TABLE_NAME = f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+TABLE_NAME = (
+    f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+)
 
 
 @pytest.fixture(scope="module")
@@ -182,7 +183,7 @@ def test__create__with_correct_aggregation_level(
         (EnergyResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (EnergyResultColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
-        (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA_CODE),
+        (EnergyResultColumnNames.neighbor_grid_area_code, DEFAULT_FROM_GRID_AREA_CODE),
         (
             EnergyResultColumnNames.balance_responsible_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
@@ -390,7 +391,7 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     if field_name == Colname.grid_area_code:
         return EnergyResultColumnNames.grid_area_code
     if field_name == Colname.from_grid_area_code:
-        return EnergyResultColumnNames.from_grid_area
+        return EnergyResultColumnNames.neighbor_grid_area_code
     if field_name == Colname.balance_responsible_id:
         return EnergyResultColumnNames.balance_responsible_id
     if field_name == Colname.energy_supplier_id:

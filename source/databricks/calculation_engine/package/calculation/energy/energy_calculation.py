@@ -149,32 +149,26 @@ def _calculate_net_exchange(
     metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
-    exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
+    exchange_per_neighbor_ga = exchange_aggr.aggregate_net_exchange_per_neighbor_ga(
         metering_point_time_series, args.calculation_grid_areas
     )
     if _is_aggregation_or_balance_fixing(args.calculation_type):
-        exchange_per_neighbour_ga = (
-            exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                metering_point_time_series, args.calculation_grid_areas
-            )
-        )
-
-        results.net_exchange_per_neighbour_ga = factory.create(
+        results.net_exchange_per_neighbor_ga = factory.create(
             args,
-            exchange_per_neighbour_ga,
+            exchange_per_neighbor_ga,
             TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
-            AggregationLevel.TOTAL_GA,
+            AggregationLevel.GRID_AREA,
         )
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
-        exchange_per_neighbour_ga
+        exchange_per_neighbor_ga
     )
 
     results.net_exchange_per_ga = factory.create(
         args,
         exchange_per_grid_area,
         TimeSeriesType.NET_EXCHANGE_PER_GA,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     return exchange_per_grid_area
@@ -215,7 +209,7 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
         args,
         temporary_production_per_ga,
         TimeSeriesType.TEMP_PRODUCTION,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     return temporary_production_per_ga_and_brp_and_es
@@ -242,7 +236,7 @@ def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
         args,
         temporary_flex_consumption_per_ga,
         TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     return temporary_flex_consumption_per_ga_and_brp_and_es
@@ -267,7 +261,7 @@ def _calculate_grid_loss(
     grid_loss.cache_internal()
 
     results.grid_loss = factory.create(
-        args, grid_loss, TimeSeriesType.GRID_LOSS, AggregationLevel.TOTAL_GA
+        args, grid_loss, TimeSeriesType.GRID_LOSS, AggregationLevel.GRID_AREA
     )
 
     positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(
@@ -278,7 +272,7 @@ def _calculate_grid_loss(
         args,
         positive_grid_loss,
         TimeSeriesType.POSITIVE_GRID_LOSS,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(
@@ -289,7 +283,7 @@ def _calculate_grid_loss(
         args,
         negative_grid_loss,
         TimeSeriesType.NEGATIVE_GRID_LOSS,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     return positive_grid_loss, negative_grid_loss
@@ -335,29 +329,22 @@ def _calculate_production(
     production_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
-    # production per balance responsible
+    # production per energy supplier
     results.production_per_ga_and_brp_and_es = factory.create(
         args,
         production_per_ga_and_brp_and_es,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.ES_PER_BRP_PER_GA,
+        AggregationLevel.ENERGY_SUPPLIER,
     )
 
     if _is_aggregation_or_balance_fixing(args.calculation_type):
+        # production per balance responsible
         results.production_per_ga_and_brp = factory.create(
             args,
             grouping_aggr.aggregate_per_ga_and_brp(production_per_ga_and_brp_and_es),
             TimeSeriesType.PRODUCTION,
-            AggregationLevel.BRP_PER_GA,
+            AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
         )
-
-    # production per energy supplier
-    results.production_per_ga_and_es = factory.create(
-        args,
-        grouping_aggr.aggregate_per_ga_and_es(production_per_ga_and_brp_and_es),
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.ES_PER_GA,
-    )
 
     # production per grid area
     aggregate_per_ga = grouping_aggr.aggregate_per_ga(production_per_ga_and_brp_and_es)
@@ -365,7 +352,7 @@ def _calculate_production(
         args,
         aggregate_per_ga,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     return aggregate_per_ga
@@ -382,33 +369,26 @@ def _calculate_flex_consumption(
         args,
         grouping_aggr.aggregate_per_ga(flex_consumption_per_ga_and_brp_and_es),
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
     # flex consumption per energy supplier
-    results.flex_consumption_per_ga_and_es = factory.create(
-        args,
-        grouping_aggr.aggregate_per_ga_and_es(flex_consumption_per_ga_and_brp_and_es),
-        TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.ES_PER_GA,
-    )
-
-    # flex consumption per balance responsible
     results.flex_consumption_per_ga_and_brp_and_es = factory.create(
         args,
         flex_consumption_per_ga_and_brp_and_es,
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.ES_PER_BRP_PER_GA,
+        AggregationLevel.ENERGY_SUPPLIER,
     )
 
     if _is_aggregation_or_balance_fixing(args.calculation_type):
+        # flex consumption per balance responsible
         results.flex_consumption_per_ga_and_brp = factory.create(
             args,
             grouping_aggr.aggregate_per_ga_and_brp(
                 flex_consumption_per_ga_and_brp_and_es
             ),
             TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.BRP_PER_GA,
+            AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
         )
 
 
@@ -418,40 +398,31 @@ def _calculate_non_profiled_consumption(
     non_profiled_consumption_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
-    # Non-profiled consumption per balance responsible
+    # Non-profiled consumption per energy supplier
     results.non_profiled_consumption_per_ga_and_brp_and_es = factory.create(
         args,
         non_profiled_consumption_per_ga_and_brp_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.ES_PER_BRP_PER_GA,
+        AggregationLevel.ENERGY_SUPPLIER,
     )
 
     if _is_aggregation_or_balance_fixing(args.calculation_type):
+        # Non-profiled consumption per balance responsible
         results.non_profiled_consumption_per_ga_and_brp = factory.create(
             args,
             grouping_aggr.aggregate_per_ga_and_brp(
                 non_profiled_consumption_per_ga_and_brp_and_es
             ),
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.BRP_PER_GA,
+            AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
         )
-
-    # Non-profiled consumption per energy supplier
-    results.non_profiled_consumption_per_ga_and_es = factory.create(
-        args,
-        grouping_aggr.aggregate_per_ga_and_es(
-            non_profiled_consumption_per_ga_and_brp_and_es
-        ),
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.ES_PER_GA,
-    )
 
     # Non-profiled consumption per grid area
     results.non_profiled_consumption_per_ga = factory.create(
         args,
         grouping_aggr.aggregate_per_ga(non_profiled_consumption_per_ga_and_brp_and_es),
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
 
@@ -468,7 +439,7 @@ def _calculate_total_consumption(
             production_per_ga, net_exchange_per_ga
         ),
         TimeSeriesType.TOTAL_CONSUMPTION,
-        AggregationLevel.TOTAL_GA,
+        AggregationLevel.GRID_AREA,
     )
 
 

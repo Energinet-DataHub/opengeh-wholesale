@@ -22,9 +22,9 @@ setup(
     license="MIT",
     package_data={
         "package": [
-            "datamigration/migration_scripts/*.sql",
-            "datamigration/current_state_scripts/schemas/*.sql",
-            "datamigration/current_state_scripts/tables/*.sql",
+            "datamigration_hive/migration_scripts/*.sql",
+            "datamigration_hive/current_state_scripts/schemas/*.sql",
+            "datamigration_hive/current_state_scripts/tables/*.sql",
         ]
     },
     packages=find_packages(exclude=["tests*"]),
@@ -39,14 +39,12 @@ setup(
         "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.2.0",
-        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.6.1#subdirectory=source/spark_sql_migrations",
+        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.7.5#subdirectory=source/spark_sql_migrations",
     ],
     entry_points={
         "console_scripts": [
             "start_calculator = package.calculator_job:start",
-            "lock_storage = package.infrastructure.storage_account_access.lock_storage:lock",
-            "unlock_storage = package.infrastructure.storage_account_access.lock_storage:unlock",
-            "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
+            "migrate_data_lake = package.datamigration_hive.migration:migrate_data_lake",
         ]
     },
 )

@@ -34,11 +34,9 @@ from package.constants import (
     Colname,
     MonthlyAmountsColumnNames,
 )
-from package.infrastructure.paths import OutputDatabase
+from package.infrastructure.paths import HiveOutputDatabase
 
-TABLE_NAME = (
-    f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
-)
+TABLE_NAME = f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"

@@ -22,7 +22,7 @@ using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
@@ -39,14 +39,14 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 public class SettlementReportOrchestrationTests : IAsyncLifetime
 {
     public SettlementReportOrchestrationTests(
-        OrchestrationsAppFixture fixture,
+        OrchestrationSettlementReportsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
     }
 
-    private OrchestrationsAppFixture Fixture { get; }
+    private OrchestrationSettlementReportsAppFixture Fixture { get; }
 
     public Task InitializeAsync()
     {
@@ -92,6 +92,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             false,
             new SettlementReportRequestFilterDto(
@@ -161,6 +162,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         await dbContext.SaveChangesAsync();
 
         var settlementReportRequest = new SettlementReportRequestDto(
+            false,
             false,
             false,
             new SettlementReportRequestFilterDto(
@@ -245,6 +247,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var settlementReportRequest = new SettlementReportRequestDto(
             false,
             false,
+            false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId?>
                 {
@@ -322,11 +325,12 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
         var actorNumberClaim = new Claim("actornumber", "0000000000000");
         var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
+        var multiTenancyClaim = new Claim("multitenancy", "true");
 
         var internalToken = new JwtSecurityToken(
             issuer,
             audience,
-            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
+            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim, multiTenancyClaim],
             validFrom,
             validTo,
             new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));
