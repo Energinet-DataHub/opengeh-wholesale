@@ -19,9 +19,9 @@ from pyspark import Row
 from pyspark.sql import SparkSession
 
 from calculation.wholesale.factories import (
-    prepaired_charge_link_periods_factory,
-    prepaired_metering_point_periods_factory,
-    prepaired_charge_link_metering_point_periods_factory,
+    prepared_charge_link_periods_factory,
+    prepared_metering_point_periods_factory,
+    prepared_charge_link_metering_point_periods_factory,
 )
 from helpers.data_frame_utils import assert_dataframes_equal
 from package.calculation.preparation.transformations import (
@@ -39,7 +39,7 @@ from package.calculation.preparation.transformations import (
             #   CLP |----------------------|
             [],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
@@ -52,7 +52,7 @@ from package.calculation.preparation.transformations import (
             #   2023-02-02             2023-02-10
             #   MPP |----------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
@@ -67,19 +67,19 @@ from package.calculation.preparation.transformations import (
             #   MMP |----------------------|
             #   CLP |----------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
@@ -93,19 +93,19 @@ from package.calculation.preparation.transformations import (
             #               2023-02-05            2023-02-13
             #               CLP |----------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 12, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
@@ -119,19 +119,19 @@ from package.calculation.preparation.transformations import (
             #   2023-01-25            2023-02-05
             #   CLP |----------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 1, 24, 23, 0, 0),
                     to_date=datetime(2023, 2, 4, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 4, 23, 0, 0),
                 )
@@ -145,13 +145,13 @@ from package.calculation.preparation.transformations import (
             #   2023-01-25     2023-01-28
             #   CLP |---------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 1, 24, 23, 0, 0),
                     to_date=datetime(2023, 1, 27, 23, 0, 0),
                 )
@@ -166,13 +166,13 @@ from package.calculation.preparation.transformations import (
             #                            2023-02-12     2023-02-28
             #                            CLP |---------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 21, 23, 0, 0),
                     to_date=datetime(2023, 2, 27, 23, 0, 0),
                 )
@@ -187,19 +187,19 @@ from package.calculation.preparation.transformations import (
             #       2023-01-25                    2023-02-15
             #        CLP |-----------------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 1, 25, 23, 0, 0),
                     to_date=datetime(2023, 2, 14, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 )
@@ -213,19 +213,19 @@ from package.calculation.preparation.transformations import (
             #                 2023-02-04  2023-02-08
             #                  CLP |----------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 7, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 7, 23, 0, 0),
                 )
@@ -238,27 +238,27 @@ from package.calculation.preparation.transformations import (
             #   MMP |-----------------|-----------------|
             #   CLP |-----------------------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 ),
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 10, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 ),
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 10, 23, 0, 0),
                 ),
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 10, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 ),
@@ -272,27 +272,27 @@ from package.calculation.preparation.transformations import (
             #      2023-02-04   2023-02-06   2023-02-08    2023-02-10
             #   CLP    |------------|            |-------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 2, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 8, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 8, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
@@ -307,27 +307,27 @@ from package.calculation.preparation.transformations import (
             #              2023-02-05                2023-02-09
             #   CLP            |-------------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 3, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 7, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 8, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 4, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 7, 23, 0, 0),
                     to_date=datetime(2023, 2, 8, 23, 0, 0),
                 ),
@@ -340,27 +340,27 @@ from package.calculation.preparation.transformations import (
             #   MMP |------------------------------------------|
             #   CLP |--------------------|---------------------|
             [
-                prepaired_metering_point_periods_factory.create_row(
+                prepared_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 )
             ],
             [
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
-                prepaired_charge_link_periods_factory.create_row(
+                prepared_charge_link_periods_factory.create_row(
                     from_date=datetime(2023, 2, 5, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
             ],
             [
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 5, 23, 0, 0),
                 ),
-                prepaired_charge_link_metering_point_periods_factory.create_row(
+                prepared_charge_link_metering_point_periods_factory.create_row(
                     from_date=datetime(2023, 2, 5, 23, 0, 0),
                     to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
@@ -375,15 +375,15 @@ def test_get_charge_link_metering_point_periods(
     expected_rows: List[Row],
 ) -> None:
     # Arrange
-    expected = prepaired_charge_link_metering_point_periods_factory.create(
+    expected = prepared_charge_link_metering_point_periods_factory.create(
         spark, data=expected_rows
     )
 
-    input_metering_point_periods = prepaired_metering_point_periods_factory.create(
+    input_metering_point_periods = prepared_metering_point_periods_factory.create(
         spark, data=input_metering_point_periods_rows
     )
 
-    input_charge_link_periods = prepaired_charge_link_periods_factory.create(
+    input_charge_link_periods = prepared_charge_link_periods_factory.create(
         spark, data=input_charge_link_periods_rows
     )
 
