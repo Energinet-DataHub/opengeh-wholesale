@@ -14,23 +14,23 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Activities;
 
-public sealed class ScatterSettlementReportFilesActivity
+public sealed class GatherSettlementReportFilesActivity
 {
-    private readonly ISettlementReportRequestHandler _settlementReportRequestHandler;
+    private readonly ISettlementReportFromFilesHandler _settlementReportFromFilesHandler;
 
-    public ScatterSettlementReportFilesActivity(ISettlementReportRequestHandler settlementReportRequestHandler)
+    public GatherSettlementReportFilesActivity(ISettlementReportFromFilesHandler settlementReportFromFilesHandler)
     {
-        _settlementReportRequestHandler = settlementReportRequestHandler;
+        _settlementReportFromFilesHandler = settlementReportFromFilesHandler;
     }
 
-    [Function(nameof(ScatterSettlementReportFilesActivity))]
-    public Task<IEnumerable<SettlementReportFileRequestDto>> Run([ActivityTrigger] ScatterSettlementReportFilesInput input)
+    [Function(nameof(GatherSettlementReportFilesActivity))]
+    public Task<GeneratedSettlementReportDto> Run([ActivityTrigger] GatherSettlementReportFilesInput input)
     {
-        return _settlementReportRequestHandler.RequestReportAsync(input.RequestId, input.Request, input.ActorInfo);
+        return _settlementReportFromFilesHandler.CombineAsync(input.RequestId, input.GeneratedFiles);
     }
 }

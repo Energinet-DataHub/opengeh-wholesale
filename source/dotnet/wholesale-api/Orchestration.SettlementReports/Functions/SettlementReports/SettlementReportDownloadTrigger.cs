@@ -21,7 +21,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
+namespace Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports;
 
 internal sealed class SettlementReportDownloadTrigger
 {
@@ -35,7 +35,7 @@ internal sealed class SettlementReportDownloadTrigger
     }
 
     [Function(nameof(SettlementReportDownload))]
-    public async Task<HttpResponseData> SettlementReportDownload(
+    public async Task SettlementReportDownload(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData req,
         [FromBody] SettlementReportRequestId settlementReportRequestId,
@@ -43,18 +43,22 @@ internal sealed class SettlementReportDownloadTrigger
     {
         try
         {
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "application/octet-stream");
             await _settlementReportDownloadHandler
-                .DownloadReportAsync(settlementReportRequestId, response.Body, _userContext.CurrentUser.Actor.ActorId, _userContext.CurrentUser.MultiTenancy)
+                .DownloadReportAsync(
+                    settlementReportRequestId,
+                    () =>
+                    {
+                        var response = req.CreateResponse(HttpStatusCode.OK);
+                        response.Headers.Add("Content-Type", "application/octet-stream");
+                        return response.Body;
+                    },
+                    _userContext.CurrentUser.Actor.ActorId,
+                    _userContext.CurrentUser.MultiTenancy)
                 .ConfigureAwait(false);
-
-            return response;
         }
         catch (Exception ex) when (ex is InvalidOperationException or RequestFailedException)
         {
-            var response = req.CreateResponse(HttpStatusCode.NotFound);
-            return response;
+            _ = req.CreateResponse(HttpStatusCode.NotFound);
         }
     }
 }

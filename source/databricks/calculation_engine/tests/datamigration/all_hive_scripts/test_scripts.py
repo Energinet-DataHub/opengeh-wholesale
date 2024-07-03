@@ -13,8 +13,16 @@
 # limitations under the License.
 from unittest.mock import Mock
 
-import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
 from pyspark.sql import SparkSession
+from spark_sql_migrations import (
+    create_and_configure_container,
+    schema_migration_pipeline,
+)
+
+import package.datamigration_hive.migration as sut
+import package.datamigration_hive.schema_config as schema_config
+import tests.helpers.mock_helper as mock_helper
+import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 from package.infrastructure.paths import (
     HiveOutputDatabase,
     InputDatabase,
@@ -22,10 +30,6 @@ from package.infrastructure.paths import (
     SettlementReportPublicDataModel,
     CalculationResultsPublicDataModel,
 )
-import package.datamigration_hive.migration as sut
-import package.datamigration_hive.schema_config as schema_config
-import tests.helpers.mock_helper as mock_helper
-import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 
 
 def test__current_state_and_migration_scripts__should_give_same_result(
@@ -78,12 +82,12 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_FOLDER}": f"{migration_scripts_prefix}input_folder",
         },
     )
-    spark_sql_migration_helper.configure_spark_sql_migration(
+    spark_config = spark_sql_migration_helper.create_spark_sql_migrations_configuration(
         spark,
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
-    schema_migration_pipeline.migrate()
+    sut.migrate_data_lake(spark_config)
 
     # Act current state scripts
     current_state_prefix = "current_state"
@@ -94,24 +98,27 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{HIVE_OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{HiveOutputDatabase.DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{InputDatabase.DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BasisDataDatabase.DATABASE_NAME}",
+            "{CALCULATION_RESULTS_DATABASE_NAME}": f"{current_state_prefix}{CalculationResultsPublicDataModel.DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{current_state_prefix}migration_test",
             "{BASIS_DATA_FOLDER}": f"{current_state_prefix}basis_folder",
             "{INPUT_FOLDER}": f"{current_state_prefix}input_folder",
         },
     )
-    spark_sql_migration_helper.configure_spark_sql_migration(
+    spark_config = spark_sql_migration_helper.create_spark_sql_migrations_configuration(
         spark,
         substitution_variables=substitutions,
         table_prefix="migration_",
     )
+    create_and_configure_container(spark_config)
     schema_migration_pipeline._migrate(0)
 
     # Clean up DI
-    spark_sql_migration_helper.configure_spark_sql_migration(spark)
+    spark_sql_migration_helper.create_spark_sql_migrations_configuration(spark)
 
     # Assert
     migration_databases = spark.catalog.listDatabases()
+
     assert len(migration_databases) > 0
 
     for db in migration_databases:
