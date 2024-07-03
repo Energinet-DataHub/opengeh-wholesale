@@ -24,7 +24,7 @@ SELECT calculation_id,
 FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption', 'net_exchange_per_ga', 'total_consumption')
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
-AND aggregation_level = 'grid_area'
+AND aggregation_level = 'total_ga'
 GO
 
 DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1
@@ -45,7 +45,7 @@ SELECT calculation_id,
 FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption')
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
-AND aggregation_level = 'energy_supplier'
+AND aggregation_level = 'es_brp_ga'
 GO
 
 DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_brp_ga_v1
@@ -70,7 +70,7 @@ SELECT calculation_id,
 FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     calculation_type in ('balance_fixing', 'aggregation')
-    AND aggregation_level = 'balance_responsible_party'
+    AND aggregation_level = 'brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
 GO
 
@@ -96,7 +96,7 @@ SELECT calculation_id,
        quantity_qualities
 FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
-    aggregation_level = 'energy_supplier'
+    aggregation_level = 'es_brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
 GO
 

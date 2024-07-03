@@ -21,4 +21,4 @@ WHERE
     -- Only include results that must be sent to the actors
     time_series_type in ('production', 'non_profiled_consumption', 'net_exchange_per_ga', 'flex_consumption', 'total_consumption')
     -- Only include results that are aggregated per grid area
-    AND aggregation_level = 'grid_area'
+    AND aggregation_level = 'total_ga'

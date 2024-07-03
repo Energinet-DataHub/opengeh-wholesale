@@ -5,5 +5,5 @@ ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
     DROP CONSTRAINT IF EXISTS aggregation_level_chk
 GO
 ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
-    ADD CONSTRAINT aggregation_level_chk CHECK (aggregation_level IN ('grid_area', 'energy_supplier', 'balance_responsible_party'))
+    ADD CONSTRAINT aggregation_level_chk CHECK (aggregation_level IN ('total_ga', 'es_brp_ga', 'brp_ga'))
 GO

@@ -20,5 +20,5 @@ SELECT calculation_id,
        quantity_qualities
 FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
-    aggregation_level = 'energy_supplier'
+    aggregation_level = 'es_brp_ga'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')

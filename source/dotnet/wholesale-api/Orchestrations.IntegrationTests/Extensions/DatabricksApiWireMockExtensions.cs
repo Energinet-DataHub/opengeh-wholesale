@@ -409,7 +409,7 @@ public static class DatabricksApiWireMockExtensions
             EnergyResultColumnNames.Time => "\"2022-05-16T03:00:00.000Z\"",
             EnergyResultColumnNames.Quantity => "\"1.123\"",
             EnergyResultColumnNames.QuantityQualities => "\"[\\\"missing\\\"]\"",
-            EnergyResultColumnNames.AggregationLevel => "\"grid_area\"",
+            EnergyResultColumnNames.AggregationLevel => "\"total_ga\"",
             EnergyResultColumnNames.MeteringPointId => "\"1234567\"",
             EnergyResultColumnNames.Resolution => "\"PT15M\"",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),

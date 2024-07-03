@@ -36,7 +36,7 @@ public class EnergyResultEventProvider(
                 yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 
             // This is to trigger CreateForEnergySupplier in factory. We have removed the calculation for es_ga,
-            // so we are using energy_supplier instead and need to trigger the correct factory method. Events will be completely remove by Mosaic.
+            // so we are using es_brp_ga instead and need to trigger the correct factory method. Events will be completely remove by Mosaic.
             if (energyResultProducedV2Factory.CanCreate(energyResult) && energyResult.EnergySupplierId is not null &&
                 energyResult.BalanceResponsibleId is not null)
             {
