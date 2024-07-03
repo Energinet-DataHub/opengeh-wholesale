@@ -209,25 +209,21 @@ def test__migrated_table_does_not_round_valid_decimal(
     assert actual_df.collect()[0].amount == amount
 
 
-def test__total_monthly_amounts_table__is_not_managed(
+def test__total_monthly_amounts_table__is_managed(
     spark: SparkSession, migrations_executed: None
 ) -> None:
     """
-    It is desired that the table is unmanaged to provide for greater flexibility.
-    According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
-    "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
+    It has been decided that all delta tables in Datahub should be managed, since it gives several benefits
+    such enabling more Databricks features and ensuring that access rights are only managed by Unity Catalog
     """
-    database_details = spark.sql(
-        f"DESCRIBE DATABASE {WholesaleResultsInternalDatabase.DATABASE_NAME}"
-    )
-    table_details = spark.sql(
-        f"DESCRIBE DETAIL {WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+
+    table_properties = spark.sql(
+        f"SHOW TBLPROPERTIES {WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
-    database_location = database_details.where(
-        col("info_name") == "Location"
-    ).collect()[0]["info_value"]
-    table_location = table_details.collect()[0]["location"]
+    is_managed = any(
+        prop["property"] == "Table Type" and prop["value"] == "MANAGED"
+        for prop in table_properties.collect()
+    )
 
-    assert not table_location.startswith(database_location)
+    assert is_managed
