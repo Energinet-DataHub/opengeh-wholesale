@@ -15,10 +15,7 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Dynamic;
-using System.Globalization;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Microsoft.EntityFrameworkCore;
@@ -31,10 +28,12 @@ public sealed class DatabricksSqlQueryExecutor
 
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly DatabricksSqlQueryCompiler _sqlQueryCompiler;
+    private readonly DatabricksSqlRowHydrator _sqlRowHydrator;
 
     public DatabricksSqlQueryExecutor(DbContext dbContext, DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
     {
         _sqlQueryCompiler = new DatabricksSqlQueryCompiler(dbContext);
+        _sqlRowHydrator = new DatabricksSqlRowHydrator();
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     }
 
@@ -59,56 +58,10 @@ public sealed class DatabricksSqlQueryExecutor
         return ExecuteStatementAsync<TElement>(databricksStatement, cancellationToken);
     }
 
-    private async IAsyncEnumerable<TElement> ExecuteStatementAsync<TElement>(
-        DatabricksStatement databricksStatement,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    private IAsyncEnumerable<TElement> ExecuteStatementAsync<TElement>(DatabricksStatement databricksStatement, CancellationToken cancellationToken = default)
     {
-        var rows = _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(databricksStatement, Format.JsonArray, cancellationToken)
-            .ConfigureAwait(false);
-
-        var propertyMap = _mapCache.GetOrAdd(typeof(TElement), CreatePropertyMap);
-
-        await foreach (ExpandoObject row in rows)
-        {
-            yield return Hydrate<TElement>(row, propertyMap);
-        }
-    }
-
-    private static TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
-    {
-        var instance = Activator.CreateInstance<TElement>();
-
-        foreach (var property in expandoObject)
-        {
-            if (propertyMap.TryGetValue(property.Key, out var prop))
-            {
-                var convertedValue = prop.Converter.ConvertFrom(null, CultureInfo.InvariantCulture, property.Value!);
-                prop.Property.SetValue(instance, convertedValue);
-            }
-        }
-
-        return instance;
-    }
-
-    private static IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> CreatePropertyMap(Type targetType)
-    {
-        var propDict = new Dictionary<string, (PropertyInfo Property, TypeConverter Converter)>();
-
-        foreach (var propertyInfo in targetType.GetProperties())
-        {
-            var typeConverter = TypeDescriptor.GetConverter(propertyInfo.PropertyType);
-
-            propDict.Add(propertyInfo.Name, (propertyInfo, typeConverter));
-
-            var columnAttribute = propertyInfo.GetCustomAttribute<ColumnAttribute>();
-            if (columnAttribute != null && !string.IsNullOrEmpty(columnAttribute.Name))
-            {
-                propDict.Add(columnAttribute.Name, (propertyInfo, typeConverter));
-            }
-        }
-
-        return propDict;
+        var rows = _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(databricksStatement, Format.JsonArray, cancellationToken);
+        return _sqlRowHydrator.HydrateAsync<TElement>(rows, cancellationToken);
     }
 
     private sealed class CountResult
