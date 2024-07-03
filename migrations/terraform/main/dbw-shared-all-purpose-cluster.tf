@@ -3,7 +3,7 @@ resource "databricks_cluster" "shared_all_purpose" {
   cluster_name            = "Shared all-purpose"
   spark_version           = local.databricks_runtime_version
   node_type_id            = "Standard_DS5_v2"
-  data_security_mode      = "SINGLE_USER"
+  data_security_mode      = "USER_ISOLATION"
   autotermination_minutes = 15
   num_workers             = 1
   spark_conf = {
