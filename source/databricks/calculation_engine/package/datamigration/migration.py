@@ -23,6 +23,8 @@ def migrate_data_lake(
     """
 
     catalog_name = catalog_name or env_vars.get_catalog_name()
+    print(f"Executing Unity Catalog migrations for catalog {catalog_name}")
+
     spark_config = _create_spark_config(catalog_name)
 
     create_and_configure_container(spark_config)
