@@ -110,7 +110,7 @@ def assert_dataframe_and_schema(
         ):
             actual, expected = drop_columns_if_the_same(actual, expected)
 
-        print(f"DUPLICATED ROWS IN ACTUAL:")
+        print("DUPLICATED ROWS IN ACTUAL:")
         show_duplicates(actual).show(3000, False)
         raise
 
@@ -123,7 +123,7 @@ def assert_dataframe_and_schema(
         ):
             actual, expected = drop_columns_if_the_same(actual, expected)
 
-        print(f"DUPLICATED ROWS IN EXPECTED:")
+        print("DUPLICATED ROWS IN EXPECTED:")
         show_duplicates(expected).show(3000, False)
         raise
 
