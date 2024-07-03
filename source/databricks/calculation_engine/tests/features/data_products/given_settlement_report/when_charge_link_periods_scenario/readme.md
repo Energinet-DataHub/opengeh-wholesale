@@ -8,4 +8,7 @@ The purpose is to test that the settlement reports data product view charge_link
 
 ## Coverage
 
-- TODO There are two metering points in 'metering_point_periods', but only one of them is in 'charge_link_periods'
+- There are 14 test cases involving 'metering_point_periods' and 'charge_link_periods'.
+- See test_get_charge_link_metering_point_periods.py for details.
+
+```
