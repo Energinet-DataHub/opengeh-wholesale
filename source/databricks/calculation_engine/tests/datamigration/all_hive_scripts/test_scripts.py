@@ -119,11 +119,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     # Assert
     migration_databases = spark.catalog.listDatabases()
 
-    for db in migration_databases:
-        print(f"Database={db.name}")
-        for table in spark.catalog.listTables(db.name):
-            print(f"  Table={table.name}")
-
     assert len(migration_databases) > 0
 
     for db in migration_databases:
