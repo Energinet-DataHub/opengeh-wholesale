@@ -147,6 +147,13 @@ def get_migration_script_args(spark: SparkSession) -> MigrationScriptArgs:
 
 
 def migrate_with_current_state(spark: SparkSession) -> None:
+    """
+    This function enforces the next migration to be executed to be the current state scripts.
+
+    This is based on a hack where all scripts are registered in the "executed_migrations" table,
+    but no tables exist. This forces the next migration to be the current state scripts.
+    """
+
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
     spark.sql(
         f"CREATE TABLE IF NOT EXISTS {schema_migration_schema_name}.{schema_migration_table_name} (migration_name STRING NOT NULL, execution_datetime TIMESTAMP NOT NULL) USING delta LOCATION '{schema_migration_location}/{schema_migration_table_name}'"
