@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_result_points_per_es_brp_ga_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_es_brp_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
@@ -19,3 +22,4 @@ FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     aggregation_level = 'energy_supplier'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
+
