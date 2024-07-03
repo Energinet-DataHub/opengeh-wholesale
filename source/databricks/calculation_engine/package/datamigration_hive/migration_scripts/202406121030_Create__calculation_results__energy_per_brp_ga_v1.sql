@@ -20,5 +20,5 @@ SELECT calculation_id,
 FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
     calculation_type in ('BalanceFixing', 'Aggregation')
-    AND aggregation_level = 'brp_ga'
+    AND aggregation_level = 'balance_responsible_party'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')

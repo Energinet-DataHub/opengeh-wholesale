@@ -31,7 +31,7 @@ public static class EnergyResultDeltaTableHelper
         string time = "2022-05-16T03:00:00.000Z",
         string quantity = "1.123",
         string quantityQuality = "missing",
-        string aggregationLevel = "total_ga",
+        string aggregationLevel = "grid_area",
         string? meteringPointId = null,
         string resolution = "PT15M")
     {
