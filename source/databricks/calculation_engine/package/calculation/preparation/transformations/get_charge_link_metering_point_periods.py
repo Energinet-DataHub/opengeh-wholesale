@@ -25,39 +25,41 @@ def get_charge_link_metering_point_periods(
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> ChargeLinkMeteringPointPeriods:
-    charge_link_metering_point_periods = charge_links.join(
-        metering_points,
-        [
-            charge_links[Colname.metering_point_id]
-            == metering_points[Colname.metering_point_id],
-        ],
-        "inner",
-    ).select(
-        charge_links[Colname.charge_key],
-        charge_links[Colname.charge_type],
-        charge_links[Colname.metering_point_id],
-        charge_links[Colname.quantity],
-        f.when(
-            charge_links[Colname.from_date] > metering_points[Colname.from_date],
-            charge_links[Colname.from_date],
+    charge_link_metering_point_periods = (
+        charge_links.join(
+            metering_points,
+            [
+                charge_links[Colname.metering_point_id]
+                == metering_points[Colname.metering_point_id],
+            ],
+            "inner",
         )
-        .otherwise(metering_points[Colname.from_date])
-        .alias(Colname.from_date),
-        f.when(
-            charge_links[Colname.to_date] < metering_points[Colname.to_date],
-            charge_links[Colname.to_date],
+        # We only want the overlap between the metering point period and the charge link period.
+        .where(
+            (charge_links[Colname.from_date] <= metering_points[Colname.to_date])
+            & (charge_links[Colname.to_date] > metering_points[Colname.from_date])
+        ).select(
+            charge_links[Colname.charge_key],
+            charge_links[Colname.charge_type],
+            charge_links[Colname.metering_point_id],
+            charge_links[Colname.quantity],
+            f.when(
+                charge_links[Colname.from_date] > metering_points[Colname.from_date],
+                charge_links[Colname.from_date],
+            )
+            .otherwise(metering_points[Colname.from_date])
+            .alias(Colname.from_date),
+            f.when(
+                charge_links[Colname.to_date] < metering_points[Colname.to_date],
+                charge_links[Colname.to_date],
+            )
+            .otherwise(metering_points[Colname.to_date])
+            .alias(Colname.to_date),
+            metering_points[Colname.metering_point_type],
+            metering_points[Colname.settlement_method],
+            metering_points[Colname.grid_area_code],
+            metering_points[Colname.energy_supplier_id],
         )
-        .otherwise(metering_points[Colname.to_date])
-        .alias(Colname.to_date),
-        metering_points[Colname.metering_point_type],
-        metering_points[Colname.settlement_method],
-        metering_points[Colname.grid_area_code],
-        metering_points[Colname.energy_supplier_id],
-    )
-
-    # If from_date is greater than to_date, the period is invalid
-    charge_link_metering_point_periods = charge_link_metering_point_periods.filter(
-        f.col(Colname.from_date) < f.col(Colname.to_date)
     )
 
     return ChargeLinkMeteringPointPeriods(charge_link_metering_point_periods)
