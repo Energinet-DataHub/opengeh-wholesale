@@ -304,7 +304,7 @@ from package.calculation.preparation.transformations import (
             #       2023-02-04   2023-02-06   2023-02-08    2023-02-10
             #   MMP     |------------|            |-------------|
             #
-            #              2023-02-05                2023-02-9
+            #              2023-02-05                2023-02-09
             #   CLP            |-------------------------|
             [
                 prepaired_metering_point_periods_factory.create_row(
