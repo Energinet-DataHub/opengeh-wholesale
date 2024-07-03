@@ -20,12 +20,12 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public sealed class SettlementReportMeteringPointLatestMasterDataCountQueryStatement : DatabricksStatement
+public sealed class SettlementReportLatestMeteringPointMasterDataCountQueryStatement : DatabricksStatement
 {
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly SettlementReportMeteringPointMasterDataQueryFilter _filter;
 
-    public SettlementReportMeteringPointLatestMasterDataCountQueryStatement(IOptions<DeltaTableOptions> deltaTableOptions, SettlementReportMeteringPointMasterDataQueryFilter filter)
+    public SettlementReportLatestMeteringPointMasterDataCountQueryStatement(IOptions<DeltaTableOptions> deltaTableOptions, SettlementReportMeteringPointMasterDataQueryFilter filter)
     {
         _deltaTableOptions = deltaTableOptions;
         _filter = filter;
