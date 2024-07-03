@@ -39,6 +39,10 @@ def assert_output(
     if "result_id" in expected_result.columns:
         columns_to_skip.append("result_id")
 
+    # Sort actual_result and expected_result
+    actual_result = actual_result.sort(actual_result.columns)
+    expected_result = expected_result.sort(expected_result.columns)
+
     assert_dataframe_and_schema(
         actual_result,
         expected_result,
