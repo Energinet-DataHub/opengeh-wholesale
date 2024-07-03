@@ -220,6 +220,7 @@ def test__total_monthly_amounts_table__is_managed(
     table_properties = spark.sql(
         f"DESCRIBE EXTENDED {WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
+    table_properties.show()
 
     is_managed = any(
         prop["property"] == "Type" and prop["value"] == "MANAGED"
