@@ -213,16 +213,16 @@ def test__total_monthly_amounts_table__is_managed(
     spark: SparkSession, migrations_executed: None
 ) -> None:
     """
-    It has been decided that all Delta Tables in the DataHub 3.0 system should be managed, since it gives several benefits
+    It has been decided that all Delta Tables in the system should be managed, since it gives several benefits
     such enabling more Databricks features and ensuring that access rights are only managed by Unity Catalog
     """
 
     table_properties = spark.sql(
-        f"SHOW TBLPROPERTIES {WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"DESCRIBE EXTENDED {WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
     is_managed = any(
-        prop["property"] == "Table Type" and prop["value"] == "MANAGED"
+        prop["property"] == "Type" and prop["value"] == "MANAGED"
         for prop in table_properties.collect()
     )
 
