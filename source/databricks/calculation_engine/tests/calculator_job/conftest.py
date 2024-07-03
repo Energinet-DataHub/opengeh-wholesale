@@ -151,7 +151,7 @@ def wholesale_fixing_total_monthly_amounts(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
         F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id

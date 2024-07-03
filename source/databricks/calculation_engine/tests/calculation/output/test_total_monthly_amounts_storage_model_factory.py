@@ -31,9 +31,9 @@ from package.codelists import (
     CalculationType,
 )
 from package.constants import Colname, TotalMonthlyAmountsColumnNames
-from package.infrastructure.paths import HiveOutputDatabase
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
-TABLE_NAME = f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
