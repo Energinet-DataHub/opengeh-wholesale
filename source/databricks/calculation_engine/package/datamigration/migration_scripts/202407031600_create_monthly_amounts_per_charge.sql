@@ -31,6 +31,3 @@ TBLPROPERTIES (
     delta.constraints.charge_type_chk = "charge_type IN ( 'subscription' , 'fee' , 'tariff' )",
     delta.constraints.quantity_unit_chk = "quantity_unit IN ( 'kWh' , 'pcs' )"
 )
--- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
--- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/monthly_amounts'
