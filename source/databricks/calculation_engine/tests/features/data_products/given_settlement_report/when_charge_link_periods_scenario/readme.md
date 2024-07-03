@@ -10,5 +10,3 @@ The purpose is to test that the settlement reports data product view charge_link
 
 - There are 14 test cases involving 'metering_point_periods' and 'charge_link_periods'.
 - See test_get_charge_link_metering_point_periods.py for details.
-
-```
