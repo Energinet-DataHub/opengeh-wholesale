@@ -22,7 +22,7 @@ using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
