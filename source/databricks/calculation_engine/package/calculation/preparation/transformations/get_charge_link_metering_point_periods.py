@@ -36,7 +36,7 @@ def get_charge_link_metering_point_periods(
         )
         # We only want the overlap between the metering point period and the charge link period.
         .where(
-            (charge_links[Colname.from_date] <= metering_points[Colname.to_date])
+            (charge_links[Colname.from_date] < metering_points[Colname.to_date])
             & (charge_links[Colname.to_date] > metering_points[Colname.from_date])
         ).select(
             charge_links[Colname.charge_key],
