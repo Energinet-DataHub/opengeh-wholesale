@@ -74,8 +74,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 1, 23, 0), 7),
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 1, 23, 0), Instant.FromUtc(2022, 1, 3, 23, 0), 8),
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 3, 23, 0), Instant.FromUtc(2022, 1, 5, 23, 0), 8),
-                ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 5, 23, 0),
-                    Instant.FromUtc(2022, 1, 6, 23, 0), 16),
+                ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 5, 23, 0), Instant.FromUtc(2022, 1, 6, 23, 0), 16),
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 6, 23, 0), Instant.FromUtc(2022, 1, 7, 23, 0), 8),
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 7, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), 6),
                 ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 1, 23, 0), 7),
@@ -334,6 +333,49 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 2, 23, 0), Instant.FromUtc(2022, 1, 4, 23, 0), 10),
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 4, 23, 0), Instant.FromUtc(2022, 1, 6, 23, 0), 11),
                 ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 6, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), 9),
+            ]);
+
+        actual.Should().AllSatisfy(ats =>
+        {
+            ats.TimeSeriesPoints.Should()
+                .AllSatisfy(etsp => etsp.Time.ToInstant().Should().BeGreaterOrEqualTo(ats.PeriodStart))
+                .And.AllSatisfy(etsp => etsp.Time.ToInstant().Should().BeLessThan(ats.PeriodEnd))
+                .And.AllSatisfy(etsp =>
+                {
+                    etsp.Time.Minute.Should().Be(0);
+                    etsp.Time.Second.Should().Be(0);
+                })
+                .And.HaveCount((int)ats.PeriodEnd.Minus(ats.PeriodStart).TotalHours)
+                .And.OnlyHaveUniqueItems(etsp => etsp.Time);
+        });
+    }
+
+    [Fact]
+    public async Task Given_EnergySupplierAndBalanceResponsibleWithLatestCorrection_Then_DataFromNewestCorrectionsReturned()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 8, 23, 0));
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            TimeSeriesTypes: [TimeSeriesType.NonProfiledConsumption],
+            GridAreaCodes: [],
+            EnergySupplierId: EnergySupplierThree,
+            BalanceResponsibleId: BalanceResponsibleOne,
+            CalculationType: null,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.CalculationType, ats.Version))
+            .Should()
+            .BeEquivalentTo([
+                ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 3),
+                ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.ThirdCorrectionSettlement, 2),
             ]);
 
         actual.Should().AllSatisfy(ats =>

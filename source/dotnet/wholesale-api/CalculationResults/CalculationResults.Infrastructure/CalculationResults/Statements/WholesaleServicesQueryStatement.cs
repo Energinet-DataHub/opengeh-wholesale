@@ -56,7 +56,7 @@ public class WholesaleServicesQueryStatement(
                     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
                     INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
                     ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                    {_whereClauseProvider.GetWhereClauseToSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
+                    {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
                     GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
                     ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
                     """;
