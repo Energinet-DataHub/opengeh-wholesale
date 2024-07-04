@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import Provide
+from dependency_injector.wiring import inject, Provide
 
 from package.calculation.calculation_results import BasisDataContainer
 from package.container import Container
@@ -22,6 +22,13 @@ from package.infrastructure.paths import HiveBasisDataDatabase, BasisDataDatabas
 
 @logging_configuration.use_span("calculation.write.basis_data")
 def write_basis_data(
+    basis_data: BasisDataContainer,
+) -> None:
+    _write_basis_data(basis_data)
+
+
+@inject
+def _write_basis_data(
     basis_data: BasisDataContainer,
     infrastructure_settings: InfrastructureSettings = Provide[
         Container.infrastructure_settings
