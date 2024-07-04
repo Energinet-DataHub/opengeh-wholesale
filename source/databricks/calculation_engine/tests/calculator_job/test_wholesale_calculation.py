@@ -43,6 +43,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
 ENERGY_RESULT_TYPES = {
@@ -314,10 +315,6 @@ def test__when_wholesale_calculation__basis_data_is_stored(
             paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
         ),
-        (
-            paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-            grid_loss_metering_points_schema,
-        ),
     ],
 )
 def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
@@ -325,10 +322,11 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     executed_wholesale_fixing: None,
     basis_data_table_name: str,
     expected_schema: StructType,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{infrastructure_settings.catalog_name}.{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.
@@ -336,6 +334,22 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 
     # Assert
     assert actual.schema == expected_schema
+
+
+def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_correct_schema(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+    )
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert
+    assert actual.schema == grid_loss_metering_points_schema
 
 
 @pytest.mark.parametrize(

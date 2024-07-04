@@ -22,6 +22,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
 ALL_ENERGY_RESULT_TYPES = {
@@ -151,19 +152,36 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 @pytest.mark.parametrize(
     "basis_data_table_name",
     [
-        paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
-        paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+        paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
     ],
 )
 def test__when_energy_calculation__basis_data_is_stored(
     spark: SparkSession,
     executed_balance_fixing: None,
     basis_data_table_name: str,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{infrastructure_settings.catalog_name}.{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+    ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
+
+
+def test__when_energy_calculation__calculation_is_stored(
+    spark: SparkSession,
+    executed_balance_fixing: None,
+    infrastructure_settings: InfrastructureSettings,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
     ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
