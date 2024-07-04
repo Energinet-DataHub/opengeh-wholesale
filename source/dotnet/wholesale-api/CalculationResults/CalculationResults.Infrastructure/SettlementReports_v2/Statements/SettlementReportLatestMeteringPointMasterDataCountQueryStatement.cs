@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
@@ -33,35 +34,45 @@ public sealed class SettlementReportLatestMeteringPointMasterDataCountQueryState
 
     protected override string GetSqlStatement()
     {
+        var calcQuery = $"""
+                        SELECT DISTINCT(enResult.{SettlementReportEnergyResultViewColumns.CalculationId})
+                        FROM
+                            {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME} AS enResult
+                        JOIN (
+                            SELECT
+                                DATE_TRUNC(
+                                    'day',
+                                    FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
+                                ) as day,
+                                MAX({SettlementReportEnergyResultViewColumns.CalculationVersion}) AS MaxCalcVersion
+                            FROM
+                                {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
+                            WHERE
+                                {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                                {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}'
+                            GROUP BY day ) AS prDay ON enResult.{SettlementReportEnergyResultViewColumns.CalculationVersion} = prDay.MaxCalcVersion AND DATE_TRUNC(
+                                    'day',
+                                    FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
+                                ) = prDay.Day
+                            WHERE
+                                {SettlementReportEnergyResultViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
+                                {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                                {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                                {SettlementReportEnergyResultViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
+                        """;
+
         return $"""
-                SELECT COUNT(DISTINCT(enResult.{SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId})) AS {Columns.Count}
+                SELECT COUNT(DISTINCT({SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId})) AS {Columns.Count}
                 FROM
-                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME} AS enResult
-                JOIN (
-                    SELECT 
-                        DATE_TRUNC(
-                            'day',
-                            FROM_UTC_TIMESTAMP({SettlementReportEnergyResultPerEnergySupplierViewColumns.Time}, 'Europe/Copenhagen')
-                        ) as day,
-                        MAX(CalculationVersion) AS MaxCalcVersion
-                    FROM 
-                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
-                    WHERE 
-                        {SettlementReportMeteringPointMasterDataViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportMeteringPointMasterDataViewColumns.ToDate} < '{_filter.PeriodEnd}'
-                    GROUP BY 
-                        day
-                        ) AS prDay ON enResult.CalculationVersion = prDay.MaxCalcVersion AND DATE_TRUNC(
-                            'day',
-                            FROM_UTC_TIMESTAMP({SettlementReportEnergyResultPerEnergySupplierViewColumns.Time}, 'Europe/Copenhagen')
-                        ) = prDay.Day
+                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}
+                JOIN
+                    ({calcQuery}) as calc ON calc.{SettlementReportEnergyResultViewColumns.CalculationId} = {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}.{SettlementReportMeteringPointMasterDataViewColumns.CalculationId}
                 WHERE
                     {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                     {SettlementReportMeteringPointMasterDataViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                     {SettlementReportMeteringPointMasterDataViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
-                    {SettlementReportMeteringPointMasterDataViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
-                    {(_filter.EnergySupplier is null ? string.Empty : SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")} 
-                    {SettlementReportMeteringPointMasterDataViewColumns.CalculationId} = enResult.{SettlementReportMeteringPointMasterDataViewColumns.CalculationId}
+                    {SettlementReportMeteringPointMasterDataViewColumns.ToDate} < '{_filter.PeriodEnd}'
+                    {(_filter.EnergySupplier is null ? string.Empty : " AND " + SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier))}
                 """;
     }
 
