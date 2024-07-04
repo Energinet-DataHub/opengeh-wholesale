@@ -26,7 +26,7 @@ import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 from package.infrastructure.paths import (
     HiveOutputDatabase,
     InputDatabase,
-    BasisDataDatabase,
+    HiveBasisDataDatabase,
     SettlementReportPublicDataModel,
     CalculationResultsPublicDataModel,
 )
@@ -74,7 +74,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         {
             "{HIVE_OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{HiveOutputDatabase.DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{InputDatabase.DATABASE_NAME}",
-            "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BasisDataDatabase.DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{HiveBasisDataDatabase.DATABASE_NAME}",
             "{CALCULATION_RESULTS_DATABASE_NAME}": f"{migration_scripts_prefix}{CalculationResultsPublicDataModel.DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
@@ -97,7 +97,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         {
             "{HIVE_OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{HiveOutputDatabase.DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{InputDatabase.DATABASE_NAME}",
-            "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BasisDataDatabase.DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{HiveBasisDataDatabase.DATABASE_NAME}",
             "{CALCULATION_RESULTS_DATABASE_NAME}": f"{current_state_prefix}{CalculationResultsPublicDataModel.DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{current_state_prefix}migration_test",
