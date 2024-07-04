@@ -20,7 +20,9 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output import monthly_amounts_storage_model_factory as sut
+from package.calculation.output import (
+    monthly_amounts_per_charge_storage_model_factory as sut,
+)
 from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
 from package.calculation.wholesale.data_structures.monthly_amount_per_charge import (
     monthly_amount_per_charge_schema,
@@ -34,9 +36,11 @@ from package.constants import (
     Colname,
     MonthlyAmountsColumnNames,
 )
-from package.infrastructure.paths import HiveOutputDatabase
+from package.infrastructure.paths import (
+    WholesaleResultsInternalDatabase,
+)
 
-TABLE_NAME = f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
