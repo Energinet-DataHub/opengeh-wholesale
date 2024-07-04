@@ -45,7 +45,7 @@ def _write(
     name: str,
     df: DataFrame,
     infrastructure_settings: InfrastructureSettings = Provide[
-        Container.InfrastructureSettings
+        Container.infrastructure_settings
     ],
 ) -> None:
     with logging_configuration.start_span(name):
