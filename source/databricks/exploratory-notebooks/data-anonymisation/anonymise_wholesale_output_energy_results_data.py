@@ -21,7 +21,7 @@
 
 # COMMAND ----------
 
-if not df_anonymised_gln_numbers:
+if not df_anonymised_gln_numbers_with_mps:
     raise Exception("Please run anonymise_wholesale_output_main instead!")
 
 # COMMAND ----------
@@ -160,7 +160,7 @@ assert (
 
 # COMMAND ----------
 
-df_anonymised_suppliers_balancers_and_metering_points = df_anonymised_gln_numbers.select(
+df_anonymised_suppliers_balancers_and_metering_points = df_anonymised_gln_numbers_with_mps.select(
     F.col(gln_original_column_name).alias(metering_point_id_column_name),
     F.col(gln_original_column_name).alias(balance_responsible_id_column_name),
     F.col(gln_original_column_name).alias(energy_supplier_id_column_name),
@@ -237,14 +237,6 @@ assert (
     .count()
     == 0
 )
-
-# COMMAND ----------
-
-print(df_source_energy_results_table_anonymised.select(metering_point_id_column_name).distinct().collect())
-
-# COMMAND ----------
-
-print(df_source_energy_results_table.select(metering_point_id_column_name).distinct().collect())
 
 # COMMAND ----------
 

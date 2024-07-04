@@ -21,7 +21,7 @@
 
 # COMMAND ----------
 
-if not df_anonymised_gln_numbers:
+if not df_anonymised_gln_numbers_with_mps:
     raise Exception("Please run anonymise_wholesale_output_main instead!")
 
 # COMMAND ----------
@@ -160,7 +160,7 @@ assert (
 
 # COMMAND ----------
 
-df_anonymised_suppliers_and_charge_owner = df_anonymised_gln_numbers.select(
+df_anonymised_suppliers_and_charge_owner = df_anonymised_gln_numbers_with_mps.select(
     F.col(gln_original_column_name).alias(charge_owner_id_column_name),
     F.col(gln_original_column_name).alias(energy_supplier_id_column_name),
     gln_anonymised_column_name,

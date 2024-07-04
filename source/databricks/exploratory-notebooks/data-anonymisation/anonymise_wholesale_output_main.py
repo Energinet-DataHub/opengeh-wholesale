@@ -147,9 +147,55 @@ df_all_gln_numbers_for_others = (
     .filter(F.col(tmp_gln_column_name).isNotNull())
 )
 
-list_of_gln_numbers_for_mp = [row[tmp_gln_column_name] for row in df_all_gln_numbers_for_mp.collect()]
-
 list_of_gln_numbers_for_others = [row[tmp_gln_column_name] for row in df_all_gln_numbers_for_others.collect()]
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ###Anonymisation algorithm for Metering Point IDs:
+# MAGIC 1) Prefix anonymised ID with "5"
+# MAGIC 2) Concat random row_number over each row of unique MP IDs, and left-pad with "0" with same length as unique MP IDs
+# MAGIC 3) Concat "5"
+# MAGIC 4) Right-pad with "0" until 18 characters in total
+# MAGIC
+# MAGIC #### Example
+# MAGIC **1)**
+# MAGIC Original (fake) MP ID: 514526978536898745 (1st after random order)
+# MAGIC Anonymised MP ID: 500000015000000000
+# MAGIC
+# MAGIC **2)**
+# MAGIC Original (fake) MP ID: 525865741589334125 (532435th after random order)
+# MAGIC Anonymised MP ID: 505324355000000000
+
+# COMMAND ----------
+
+df_all_metering_point_ids = (
+    df_all_gln_numbers_for_mp.select(F.col(tmp_gln_column_name).alias(gln_original_column_name))
+    .distinct()
+).cache()
+
+count_distinct_mpids = len(str(df_all_metering_point_ids.count()))
+window_random_order = Window.orderBy(F.rand())
+
+df_anonymised_metering_points = (
+    df_all_metering_point_ids.withColumn(
+        gln_anonymised_column_name,
+        F.rpad(
+            F.concat(
+                F.lit("5"), F.lpad(F.row_number().over(window_random_order), count_distinct_mpids, "0"), F.lit("5")
+            ),
+            18,
+            "0",
+        ),
+    )
+    .withColumn(
+        gln_anonymised_column_name,
+        F.when(
+            F.col(gln_original_column_name).isNull(),
+            F.lit(None),
+        ).otherwise(F.col(gln_anonymised_column_name)),
+    )
+).cache()
 
 # COMMAND ----------
 
@@ -215,14 +261,12 @@ def get_mapping_for_gln_numbers(list_of_gln: List, length_of_gln: int) -> List[T
 
 # COMMAND ----------
 
-anonymised_gln_numbers_mapping_for_mp = get_mapping_for_gln_numbers(list_of_gln_numbers_for_mp, length_of_gln=18)
 anonymised_gln_numbers_mapping_for_others = get_mapping_for_gln_numbers(list_of_gln_numbers_for_others, length_of_gln=12)
-anonymised_all_gln_numbers_and_null = anonymised_gln_numbers_mapping_for_mp + anonymised_gln_numbers_mapping_for_others + [(None, None)] # Add (None, None) to keep mapping for Null GLN Keys
-
 
 # COMMAND ----------
 
-df_anonymised_gln_numbers = spark.createDataFrame(anonymised_all_gln_numbers_and_null, [gln_original_column_name, gln_anonymised_column_name]).cache()
+df_anonymised_gln_numbers = spark.createDataFrame(anonymised_gln_numbers_mapping_for_others + [(None, None)], [gln_original_column_name, gln_anonymised_column_name]).cache()
+df_anonymised_gln_numbers_with_mps = df_anonymised_gln_numbers.union(df_anonymised_metering_points).cache()
 
 # COMMAND ----------
 
@@ -231,13 +275,11 @@ df_anonymised_gln_numbers = spark.createDataFrame(anonymised_all_gln_numbers_and
 # MAGIC 1. We have no duplicates of GLNs in the original column of the anonymisation table
 # MAGIC 2. We have no duplicates of GLNs in the anonymisation column of the anonymisation table
 # MAGIC 3. We have the same amount of unique GLNs in the original column and the anonymisation column
-# MAGIC 4. We have the same amount of rows in the anonymisation table as in the all GLNs table
-# MAGIC 5. We have the same amount of unique GLNs in the anonymisation table as in the all GLNs table
 
 # COMMAND ----------
 
 assert (
-    df_anonymised_gln_numbers.groupBy(gln_original_column_name)
+    df_anonymised_gln_numbers_with_mps.groupBy(gln_original_column_name)
     .agg(F.sum(F.lit(1)).alias("id_count"))
     .filter("id_count > 1")
     .count()
@@ -247,7 +289,7 @@ assert (
 # COMMAND ----------
 
 assert (
-    df_anonymised_gln_numbers.groupBy(gln_anonymised_column_name)
+    df_anonymised_gln_numbers_with_mps.groupBy(gln_anonymised_column_name)
     .agg(F.sum(F.lit(1)).alias("id_count"))
     .filter("id_count > 1")
     .count()
@@ -257,33 +299,11 @@ assert (
 # COMMAND ----------
 
 assert (
-    df_anonymised_gln_numbers.select(gln_original_column_name)
+    df_anonymised_gln_numbers_with_mps.select(gln_original_column_name)
     .distinct()
     .count()
     == 
-    df_anonymised_gln_numbers.select(gln_anonymised_column_name)
-    .distinct()
-    .count()
-)
-
-# COMMAND ----------
-
-assert (
-    df_anonymised_gln_numbers
-    .count()
-    == 
-    anonymised_all_gln_numbers_and_null
-    .count()
-)
-
-# COMMAND ----------
-
-assert (
-    df_anonymised_gln_numbers
-    .distinct()
-    .count()
-    == 
-    anonymised_all_gln_numbers_and_null
+    df_anonymised_gln_numbers_with_mps.select(gln_anonymised_column_name)
     .distinct()
     .count()
 )
