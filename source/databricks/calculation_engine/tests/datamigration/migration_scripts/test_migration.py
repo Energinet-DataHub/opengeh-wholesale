@@ -72,7 +72,10 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
             continue
 
         # Skip Unity Catalog databases
-        if db.name in [paths.WholesaleResultsInternalDatabase.DATABASE_NAME]:
+        if db.name in [
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleInternalDatabase.DATABASE_NAME,
+        ]:
             continue
 
         schema = next((x for x in schemas if x.name == db.name), None)
