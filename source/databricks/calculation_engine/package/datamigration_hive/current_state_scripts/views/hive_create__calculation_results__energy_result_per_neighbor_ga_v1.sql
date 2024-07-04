@@ -1,4 +1,4 @@
-CREATE VIEW {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neighbor_ga_v1 as
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neighbor_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_period_start,
