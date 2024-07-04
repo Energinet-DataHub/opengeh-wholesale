@@ -272,7 +272,7 @@ def test__monthly_amounts__are_stored(
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.HiveBasisDataDatabase.TABLE_NAMES,
+    paths.BasisDataDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
