@@ -159,6 +159,42 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
     }
 
     [Fact]
+    public async Task Count_LatestValidFilterNoEnergySupplier_ReturnsCount()
+    {
+        var calculationId1 = Guid.NewGuid().ToString();
+        var calculationId2 = Guid.NewGuid().ToString();
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
+            [
+                [$"'{calculationId1}'", "'wholesale_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId2}'", "'wholesale_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+            ]);
+
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            [
+                [$"'{calculationId2}'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId1}'", "'wholesale_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+            ]);
+
+        var actual = await Sut.CountLatestAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"));
+
+        Assert.Equal(1, actual);
+    }
+
+    [Fact]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(

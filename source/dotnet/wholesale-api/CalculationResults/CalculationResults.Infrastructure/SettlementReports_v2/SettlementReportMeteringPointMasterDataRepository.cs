@@ -33,6 +33,11 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
     }
 
+    public Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter)
+    {
+        return _settlementReportResultQueries.CountLatestAsync(ParseFilter(filter));
+    }
+
     public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
         var rows = _settlementReportResultQueries

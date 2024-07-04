@@ -58,4 +58,17 @@ public sealed class SettlementReportMeteringPointMasterDataQueries : ISettlement
 
         throw new InvalidOperationException("Could not count result for SettlementReportMeteringPointMasterDataQueries.");
     }
+
+    public async Task<int> CountLatestAsync(SettlementReportMeteringPointMasterDataQueryFilter filter)
+    {
+        var statement = new SettlementReportLatestMeteringPointMasterDataCountQueryStatement(_deltaTableOptions, filter);
+
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var rawValue = new DatabricksSqlRow(nextRow)[SettlementReportChargeLinkPeriodsCountQueryStatement.Columns.Count];
+            return SqlResultValueConverters.ToInt(rawValue)!.Value;
+        }
+
+        throw new InvalidOperationException("Could not count result for SettlementReportMeteringPointMasterDataQueries.");
+    }
 }
