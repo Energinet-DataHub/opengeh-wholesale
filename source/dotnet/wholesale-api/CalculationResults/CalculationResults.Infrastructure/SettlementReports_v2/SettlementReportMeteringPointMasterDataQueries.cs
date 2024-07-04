@@ -46,6 +46,16 @@ public sealed class SettlementReportMeteringPointMasterDataQueries : ISettlement
         }
     }
 
+    public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetLatestAsync(SettlementReportMeteringPointMasterDataQueryFilter filter, int skip, int take)
+    {
+        var statement = new SettlementReportLatestMeteringPointMasterDataQueryStatement(_deltaTableOptions, filter, skip, take);
+
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
+        {
+            yield return SettlementReportMeteringPointMasterDataRowFactory.Create(new DatabricksSqlRow(nextRow));
+        }
+    }
+
     public async Task<int> CountAsync(SettlementReportMeteringPointMasterDataQueryFilter filter)
     {
         var statement = new SettlementReportMeteringPointMasterDataCountQueryStatement(_deltaTableOptions, filter);

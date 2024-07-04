@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -30,19 +32,28 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
-    }
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            return CountLatestAsync(filter);
+        }
 
-    public Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter)
-    {
-        return _settlementReportResultQueries.CountLatestAsync(ParseFilter(filter));
+        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
     }
 
     public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
-        var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter), skip, take)
-            .ConfigureAwait(false);
+        ConfiguredCancelableAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportMeteringPointMasterDataRow> rows;
+
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            rows = GetLatest(filter, skip, take);
+        }
+        else
+        {
+            rows = _settlementReportResultQueries
+                .GetAsync(ParseFilter(filter), skip, take)
+                .ConfigureAwait(false);
+        }
 
         await foreach (var row in rows.ConfigureAwait(false))
         {
@@ -57,6 +68,20 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 row.PeriodStart,
                 row.PeriodEnd);
         }
+    }
+
+    private Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter)
+    {
+        return _settlementReportResultQueries.CountLatestAsync(ParseFilter(filter));
+    }
+
+    private ConfiguredCancelableAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportMeteringPointMasterDataRow> GetLatest(SettlementReportRequestFilterDto filter, int skip, int take)
+    {
+        var rows = _settlementReportResultQueries
+            .GetLatestAsync(ParseFilter(filter), skip, take)
+            .ConfigureAwait(false);
+
+        return rows;
     }
 
     private static SettlementReportMeteringPointMasterDataQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
