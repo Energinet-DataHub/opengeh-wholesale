@@ -151,7 +151,7 @@ def wholesale_fixing_total_monthly_amounts(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
         F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
@@ -159,12 +159,12 @@ def wholesale_fixing_total_monthly_amounts(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_monthly_amounts(
+def wholesale_fixing_monthly_amounts_per_charge(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
         F.col(WholesaleResultColumnNames.calculation_id)
