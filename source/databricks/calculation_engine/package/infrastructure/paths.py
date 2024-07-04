@@ -27,6 +27,11 @@ class InputDatabase:
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 
+class WholesaleInternalDatabase:
+    DATABASE_NAME = "wholesale_internal"
+    EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
+
+
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
