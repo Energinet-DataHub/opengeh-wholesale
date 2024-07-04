@@ -63,6 +63,7 @@ def calculator_args_wholesale_fixing(
 
 @pytest.fixture(scope="session")
 def executed_balance_fixing(
+    spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
@@ -84,6 +85,7 @@ def executed_balance_fixing(
 
 @pytest.fixture(scope="session")
 def executed_wholesale_fixing(
+    spark: SparkSession,
     calculator_args_wholesale_fixing: CalculatorArgs,
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
