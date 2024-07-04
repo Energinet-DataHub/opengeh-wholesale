@@ -57,6 +57,13 @@ class BasisDataDatabase:
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
+    TABLE_NAMES = [
+        METERING_POINT_PERIODS_TABLE_NAME,
+        TIME_SERIES_POINTS_TABLE_NAME,
+        CHARGE_LINK_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_POINTS_TABLE_NAME,
+    ]
 
 
 class HiveBasisDataDatabase:
