@@ -17,6 +17,7 @@ from pyspark.sql import DataFrame
 from package.calculation.calculation_results import (
     WholesaleResultsContainer,
 )
+from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -43,7 +44,9 @@ def write_total_monthly_amounts(
 def _write(
     name: str,
     df: DataFrame,
-    infrastructure_settings: InfrastructureSettings = Provide[InfrastructureSettings],
+    infrastructure_settings: InfrastructureSettings = Provide[
+        Container.InfrastructureSettings
+    ],
 ) -> None:
     with logging_configuration.start_span(name):
         df.write.format("delta").mode("append").option(
