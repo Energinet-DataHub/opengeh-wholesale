@@ -52,7 +52,7 @@ def _write(
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
-            f"{infrastructure_settings}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
         )
 
         # ToDo JMG: Remove when we are on Unity Catalog
