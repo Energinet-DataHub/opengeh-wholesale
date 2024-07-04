@@ -27,7 +27,7 @@ public class ChargeCodeValidationRule : IValidationRule<DataHub.Edi.Requests.Who
 
         if (chargeTypesWithToLongType.Count != 0)
         {
-            var errors = chargeTypesWithToLongType.Select(chargeType => _chargeTypeIdIsToLongError.WithPropertyName(chargeType.ChargeType_)).ToList();
+            var errors = chargeTypesWithToLongType.Select(chargeType => _chargeTypeIdIsToLongError.WithPropertyName(chargeType.ChargeCode)).ToList();
             return Task.FromResult<IList<ValidationError>>(errors);
         }
 

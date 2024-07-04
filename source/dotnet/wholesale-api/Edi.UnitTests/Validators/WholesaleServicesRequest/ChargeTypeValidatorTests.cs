@@ -89,7 +89,7 @@ public class ChargeTypeValidatorTests
 
         foreach (var t in chargeTypes)
         {
-            expectedErrors.Add(_chargeTypeIdIsToLongError.WithPropertyName(t.ChargeType_));
+            expectedErrors.Add(_chargeTypeIdIsToLongError.WithPropertyName(t.ChargeCode));
         }
 
         var message = new WholesaleServicesRequestBuilder()
