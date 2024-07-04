@@ -50,11 +50,11 @@ public sealed class DatabricksSqlQueryCompiler
             }
         }
 
-        var databricksStatement = DatabricksStatement.FromRawSql(TranslateToAnsi(sqlStatement));
+        var databricksStatement = DatabricksStatement.FromRawSql(TranslateTransactToAnsi(sqlStatement));
         return databricksStatement.Build();
     }
 
-    private static string TranslateToAnsi(string transactSqlQuery)
+    private static string TranslateTransactToAnsi(string transactSqlQuery)
     {
         var strBuilder = new StringBuilder(transactSqlQuery)
             .Replace('[', '`')

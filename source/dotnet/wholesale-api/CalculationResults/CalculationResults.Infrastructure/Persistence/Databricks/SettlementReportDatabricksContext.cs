@@ -34,9 +34,15 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     public IQueryable<SettlementReportWholesaleViewEntity> WholesaleView => Set<SettlementReportWholesaleViewEntity>();
 
+    public IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> EnergyResultPointsPerGridAreaView => Set<SettlementReportEnergyResultPointsPerGridAreaViewEntity>();
+
+    public IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> EnergyResultPointsPerEnergySupplierGridAreaView => Set<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(_schemaName);
         modelBuilder.ApplyConfiguration(new SettlementReportWholesaleViewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntityConfiguration());
     }
 }

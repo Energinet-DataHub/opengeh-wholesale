@@ -115,7 +115,6 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddScoped<ISettlementReportWholesaleRepository, SettlementReportWholesaleRepository>();
         services.AddScoped<ISettlementReportEnergyResultRepository, SettlementReportEnergyResultRepository>();
-        services.AddScoped<ISettlementReportEnergyResultQueries, SettlementReportEnergyResultQueries>();
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultRepository, SettlementReportMeteringPointTimeSeriesResultRepository>();
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultQueries, SettlementReportMeteringPointTimeSeriesResultQueries>();
         services.AddScoped<ISettlementReportChargeLinkPeriodsRepository, SettlementReportChargeLinkPeriodsRepository>();

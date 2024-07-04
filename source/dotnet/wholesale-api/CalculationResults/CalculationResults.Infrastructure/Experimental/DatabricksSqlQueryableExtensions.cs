@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NodaTime;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
 public static class DatabricksSqlQueryableExtensions
@@ -26,5 +28,11 @@ public static class DatabricksSqlQueryableExtensions
         return ((DatabricksQueryProvider)dbSource.Provider)
             .DatabricksSqlQueryExecutor
             .CountAsync(dbSource, cancellationToken);
+    }
+
+    public static class Functions
+    {
+        public static Instant ToStartOfDayInTimeZone(Instant source, string timeZone)
+            => throw new NotSupportedException("Do not call the user-defined EF Core function.");
     }
 }

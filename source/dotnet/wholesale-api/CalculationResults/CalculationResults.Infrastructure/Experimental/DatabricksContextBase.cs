@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data;
+using System.Linq.Expressions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
@@ -73,6 +77,34 @@ public abstract class DatabricksContextBase : IDisposable
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder
+                .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone))!)
+                .HasTranslation(args =>
+                {
+                    var paramDate = args[0];
+                    var paramTimeZone = args[1];
+
+                    return new SqlFunctionExpression(
+                        "DATE_TRUNC",
+                        [
+                            new SqlConstantExpression(Expression.Constant("DAY"), new StringTypeMapping("VARCHAR", DbType.String)),
+                            new SqlFunctionExpression(
+                                "FROM_UTC_TIMESTAMP",
+                                [
+                                    paramDate,
+                                    paramTimeZone
+                                ],
+                                false,
+                                [false, false],
+                                paramDate.Type,
+                                paramDate.TypeMapping)
+                        ],
+                        false,
+                        [false, false],
+                        paramDate.Type,
+                        paramDate.TypeMapping);
+                });
+
             _createModel(modelBuilder);
         }
     }
