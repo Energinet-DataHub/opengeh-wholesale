@@ -356,9 +356,6 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
         await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
 
-        const string wholesaleOutputEnergyResultsCsv = "wholesale_output.energy_results.csv";
-        var energyTestFile = Path.Combine("TestData", wholesaleOutputEnergyResultsCsv);
-
         const string basisDataCalculationsCsv = "basis_data.calculations.csv";
         var basisDataTestFile = Path.Combine("TestData", basisDataCalculationsCsv);
 
@@ -367,9 +364,15 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
             BasisDataCalculationsTableSchemaDefinition.SchemaDefinition,
             basisDataTestFile);
 
-        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-            EnergyResultsTableSchemaDefinition.SchemaDefinition,
-            energyTestFile);
+        foreach (var index in new[] { 0, 1, 2 })
+        {
+            var wholesaleOutputEnergyResultsCsv = $"wholesale_output.energy_results_{index}.csv";
+            var energyTestFile = Path.Combine("TestData", wholesaleOutputEnergyResultsCsv);
+
+            await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
+                EnergyResultsTableSchemaDefinition.SchemaDefinition,
+                energyTestFile);
+        }
     }
 }

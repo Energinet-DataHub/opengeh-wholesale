@@ -21,5 +21,5 @@ public record AggregatedTimeSeriesQueryParameters(
     IReadOnlyCollection<string> GridAreaCodes,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
-    CalculationType CalculationType,
+    CalculationType? CalculationType,
     Period Period);

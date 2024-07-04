@@ -18,15 +18,18 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
 public class AggregatedTimeSeriesQueryStatement(
     AggregatedTimeSeriesQueryParameters parameters,
+    IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
     private readonly AggregatedTimeSeriesQueryParameters _parameters = parameters;
+    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
     protected override string GetSqlStatement()
@@ -41,7 +44,7 @@ public class AggregatedTimeSeriesQueryStatement(
                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} er
                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
                    ON er.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                   WHERE ({CreateSqlQueryFilters(_parameters, "er")})
+                   WHERE {GenerateLatestOrFixedCalculationTypeWhereClause()} AND ({CreateSqlQueryFilters(_parameters, "er")})
                    GROUP BY {EnergyResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
                    ON erv.{EnergyResultColumnNames.Time} = maxver.max_time AND erv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(erv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
                    WHERE ({CreateSqlQueryFilters(_parameters, "erv")})
@@ -98,10 +101,29 @@ public class AggregatedTimeSeriesQueryStatement(
                 $" AND {table}.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
         }
 
-        whereClausesSql +=
-            $" AND {table}.{EnergyResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(parameters.CalculationType)}'";
-
         return whereClausesSql;
+    }
+
+    private string GenerateLatestOrFixedCalculationTypeWhereClause()
+    {
+        if (_parameters.CalculationType is not null)
+        {
+            return $"""
+                    er.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_parameters.CalculationType.Value)}'
+                    """;
+        }
+
+        if (_calculationTypePerGridAreas.IsNullOrEmpty())
+        {
+            throw new ArgumentOutOfRangeException(nameof(_calculationTypePerGridAreas));
+        }
+
+        var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
+            .Select(ctpga => $"""
+                              (er.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND er.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              """);
+
+        return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
     }
 
     /// <summary>

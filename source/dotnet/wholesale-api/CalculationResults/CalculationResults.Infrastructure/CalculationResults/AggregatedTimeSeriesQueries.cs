@@ -31,7 +31,7 @@ public class AggregatedTimeSeriesQueries(
 {
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, deltaTableOptions.Value);
+        var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, [], deltaTableOptions.Value);
 
         var resultStream = GetDataAsync(sqlStatement);
 
