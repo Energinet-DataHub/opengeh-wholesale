@@ -47,14 +47,19 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     ), "Dataframes data are not equal"
 
 
-def assert_no_duplicates(df: DataFrame) -> None:
+def _assert_no_duplicates(df: DataFrame) -> None:
     original_count = df.count()
     distinct_count = df.dropDuplicates().count()
     assert original_count == distinct_count, "The DataFrame contains duplicate rows"
 
 
-def show_duplicates(df: DataFrame) -> DataFrame:
-    duplicates = df.groupby(df.columns).count().where(f.col("count") > 1)
+def _show_duplicates(df: DataFrame) -> DataFrame:
+    duplicates = (
+        df.groupby(df.columns)
+        .count()
+        .where(f.col("count") > 1)
+        .withColumnRenamed("count", "duplicate_count")
+    )
     return duplicates
 
 
@@ -70,6 +75,11 @@ def assert_dataframe_and_schema(
 ) -> None:
     assert actual is not None, "Actual data frame is None"
     assert expected is not None, "Expected data frame is None"
+
+    if feature_tests_configuration.show_actual_and_expected_count:
+        print("\n")
+        print(f"Number of rows in actual: {actual.count()}")
+        print(f"Number of rows in expected: {expected.count()}")
 
     if columns_to_skip is not None and len(columns_to_skip) > 0:
         # Assert that the expected value is "IGNORED" to ensure that the skip is explicit in the expected value
@@ -102,7 +112,7 @@ def assert_dataframe_and_schema(
         expected.show(3000, False)
 
     try:
-        assert_no_duplicates(actual)
+        _assert_no_duplicates(actual)
     except AssertionError:
 
         if (
@@ -111,11 +121,11 @@ def assert_dataframe_and_schema(
             actual, expected = drop_columns_if_the_same(actual, expected)
 
         print("DUPLICATED ROWS IN ACTUAL:")
-        show_duplicates(actual).show(3000, False)
+        _show_duplicates(actual).show(3000, False)
         raise
 
     try:
-        assert_no_duplicates(expected)
+        _assert_no_duplicates(expected)
     except AssertionError:
 
         if (
@@ -124,7 +134,7 @@ def assert_dataframe_and_schema(
             actual, expected = drop_columns_if_the_same(actual, expected)
 
         print("DUPLICATED ROWS IN EXPECTED:")
-        show_duplicates(expected).show(3000, False)
+        _show_duplicates(expected).show(3000, False)
         raise
 
     try:
