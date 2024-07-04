@@ -390,6 +390,47 @@ from package.calculation.preparation.transformations import (
             ],
             [],
         ),
+        (
+            #   4 metering point periods and 1 charge link period.
+            #   Expected 1 result set.
+            #   2023-02-02      2023-02-04     2023-02-08       2023-02-12
+            #   MMP |----------------|--------------|----------------|
+            #   CLP |------------------------------------------------|
+            [
+                prepared_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 1, 23, 0, 0),
+                    to_date=datetime(2023, 2, 3, 23, 0, 0),
+                ),
+                prepared_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 3, 23, 0, 0),
+                    to_date=datetime(2023, 2, 7, 23, 0, 0),
+                ),
+                prepared_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 7, 23, 0, 0),
+                    to_date=datetime(2023, 2, 11, 23, 0, 0),
+                ),
+            ],
+            [
+                prepared_charge_link_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 1, 23, 0, 0),
+                    to_date=datetime(2023, 2, 11, 23, 0, 0),
+                ),
+            ],
+            [
+                prepared_charge_link_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 1, 23, 0, 0),
+                    to_date=datetime(2023, 2, 3, 23, 0, 0),
+                ),
+                prepared_charge_link_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 3, 23, 0, 0),
+                    to_date=datetime(2023, 2, 7, 23, 0, 0),
+                ),
+                prepared_charge_link_metering_point_periods_factory.create_row(
+                    from_date=datetime(2023, 2, 7, 23, 0, 0),
+                    to_date=datetime(2023, 2, 11, 23, 0, 0),
+                ),
+            ],
+        ),
     ],
 )
 def test_get_charge_link_metering_point_periods(
