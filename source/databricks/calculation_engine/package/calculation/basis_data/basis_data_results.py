@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import Provide, Container
+from dependency_injector.wiring import Provide
 
 from package.calculation.calculation_results import BasisDataContainer
+from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import HiveBasisDataDatabase, BasisDataDatabase
