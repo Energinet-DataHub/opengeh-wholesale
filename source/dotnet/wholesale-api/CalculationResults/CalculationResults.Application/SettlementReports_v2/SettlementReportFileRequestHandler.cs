@@ -85,7 +85,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
         }
 
         var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(fileRequest.RequestFilter.PeriodStart, "Romance Standard Time");
-        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(fileRequest.RequestFilter.PeriodEnd, "Romance Standard Time");
+        var convertedEnd = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(fileRequest.RequestFilter.PeriodEnd.AddMilliseconds(-1), "Romance Standard Time");
         filename += $"_{convertedStart:dd-MM-yyyy}";
         filename += $"_{convertedEnd:dd-MM-yyyy}";
 
