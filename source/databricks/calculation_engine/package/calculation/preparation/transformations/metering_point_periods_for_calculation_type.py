@@ -79,6 +79,7 @@ def _get_child_metering_points_with_energy_suppliers(
     )
 
     es = "energy_supplier_id_temp"
+    brp = "balance_responsible_id_temp"
     mp = "metering_point_id_temp"
     from_date = "from_date_temp"
     to_date = "to_date_temp"
@@ -86,6 +87,7 @@ def _get_child_metering_points_with_energy_suppliers(
         production_and_consumption_metering_points.select(
             f.col(Colname.metering_point_id).alias(mp),
             f.col(Colname.energy_supplier_id).alias(es),
+            f.col(Colname.balance_responsible_id).alias(brp),
             f.col(Colname.from_date).alias(from_date),
             f.col(Colname.to_date).alias(to_date),
         )
@@ -147,7 +149,9 @@ def _get_child_metering_points_with_energy_suppliers(
         potential_parent_metering_points[es].alias(
             Colname.energy_supplier_id
         ),  # energy_supplier_id is always null on child metering points
-        all_child_metering_points[Colname.balance_responsible_id],
+        potential_parent_metering_points[brp].alias(
+            Colname.balance_responsible_id
+        ),  # balance_responsible_id is always null on child metering points
         f.when(
             potential_parent_metering_points[from_date]
             > all_child_metering_points[Colname.from_date],

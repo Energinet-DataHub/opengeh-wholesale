@@ -49,6 +49,8 @@ class TestWhenMeteringPointPeriodsHasMeteringPointType:
             factory.create_row(
                 metering_point_type=metering_point_type,
                 parent_metering_point_id="parent_metering_point_id",
+                energy_supplier_id=None,
+                balance_responsible_id=None,
             ),
             factory.create_row(metering_point_id="parent_metering_point_id"),
         ]
@@ -61,6 +63,37 @@ class TestWhenMeteringPointPeriodsHasMeteringPointType:
 
         # Assert
         assert actual.count() == 1
+
+
+class TestWhenMeteringPointPeriodsHasChildParentConnection:
+    def test__returns_child_metering_point_with_energy_supplier_and_balance_responsible_party(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_type=MeteringPointType.NET_PRODUCTION,
+                parent_metering_point_id="parent_metering_point_id",
+                energy_supplier_id=None,
+                balance_responsible_id=None,
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                energy_supplier_id="es_parent_id",
+                balance_responsible_id="brp_parent_id",
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+
+        # Act
+        actual = _get_child_metering_points_with_energy_suppliers(
+            metering_point_periods,
+        )
+
+        # Assert
+        assert actual.collect()[0][Colname.energy_supplier_id] == "es_parent_id"
+        assert actual.collect()[0][Colname.balance_responsible_id] == "brp_parent_id"
 
 
 class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPeriod:
@@ -83,6 +116,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_1",
+                balance_responsible_id="brp_parent_1",
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -90,6 +124,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_2",
+                balance_responsible_id="brp_parent_2",
                 from_date=datetime(2020, 1, 15, 23),
                 to_date=datetime(2020, 1, 31, 23),
             ),
@@ -97,6 +132,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 parent_metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.NET_CONSUMPTION,
                 energy_supplier_id=None,
+                balance_responsible_id=None,
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 31, 23),
                 settlement_method=None,
@@ -120,6 +156,14 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert (
             actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
+        )
+        assert (
+            actual_metering_points_sorted[0][Colname.balance_responsible_id]
+            == "brp_parent_1"
+        )
+        assert (
+            actual_metering_points_sorted[1][Colname.balance_responsible_id]
+            == "brp_parent_2"
         )
         assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2019, 12, 31, 23
@@ -153,6 +197,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_1",
+                balance_responsible_id="brp_parent_1",
                 from_date=datetime(2019, 12, 15, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -160,6 +205,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_2",
+                balance_responsible_id="brp_parent_2",
                 from_date=datetime(2020, 1, 15, 23),
                 to_date=datetime(2020, 2, 15, 23),
             ),
@@ -167,6 +213,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 parent_metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.NET_CONSUMPTION,
                 energy_supplier_id=None,
+                balance_responsible_id=None,
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 31, 23),
                 settlement_method=None,
@@ -190,6 +237,14 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert (
             actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
+        )
+        assert (
+            actual_metering_points_sorted[0][Colname.balance_responsible_id]
+            == "brp_parent_1"
+        )
+        assert (
+            actual_metering_points_sorted[1][Colname.balance_responsible_id]
+            == "brp_parent_2"
         )
         assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2019, 12, 31, 23
@@ -223,6 +278,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_1",
+                balance_responsible_id="brp_parent_1",
                 from_date=datetime(2020, 1, 5, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -230,6 +286,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_2",
+                balance_responsible_id="brp_parent_2",
                 from_date=datetime(2020, 1, 15, 23),
                 to_date=datetime(2020, 1, 25, 23),
             ),
@@ -237,6 +294,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 parent_metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.NET_CONSUMPTION,
                 energy_supplier_id=None,
+                balance_responsible_id=None,
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 31, 23),
                 settlement_method=None,
@@ -260,6 +318,14 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert (
             actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
+        )
+        assert (
+            actual_metering_points_sorted[0][Colname.balance_responsible_id]
+            == "brp_parent_1"
+        )
+        assert (
+            actual_metering_points_sorted[1][Colname.balance_responsible_id]
+            == "brp_parent_2"
         )
         assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2020, 1, 5, 23
@@ -295,6 +361,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_1",
+                balance_responsible_id="brp_parent_1",
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -302,6 +369,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_2",
+                balance_responsible_id="brp_parent_2",
                 from_date=datetime(2020, 1, 15, 23),
                 to_date=datetime(2020, 1, 31, 23),
             ),
@@ -309,6 +377,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_3",
+                balance_responsible_id="brp_parent_3",
                 from_date=datetime(2020, 1, 31, 23),
                 to_date=datetime(2020, 2, 15, 23),
             ),
@@ -316,6 +385,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_4",
+                balance_responsible_id="brp_parent_4",
                 from_date=datetime(2019, 12, 15, 23),
                 to_date=datetime(2019, 12, 31, 23),
             ),
@@ -323,6 +393,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
                 parent_metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.NET_CONSUMPTION,
                 energy_supplier_id=None,
+                balance_responsible_id=None,
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 31, 23),
                 settlement_method=None,
@@ -347,14 +418,20 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
             actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
         )
-
+        assert (
+            actual_metering_points_sorted[0][Colname.balance_responsible_id]
+            == "brp_parent_1"
+        )
+        assert (
+            actual_metering_points_sorted[1][Colname.balance_responsible_id]
+            == "brp_parent_2"
+        )
         assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2019, 12, 31, 23
         )
         assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
             2020, 1, 15, 23
         )
-
         assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
             2020, 1, 15, 23
         )
@@ -374,6 +451,7 @@ class TestGetMeteringPointPeriodsWholesaleCalculation:
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.CONSUMPTION,
                 energy_supplier_id="es_parent_1",
+                balance_responsible_id="brp_parent_1",
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -381,6 +459,7 @@ class TestGetMeteringPointPeriodsWholesaleCalculation:
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.PRODUCTION,
                 energy_supplier_id="es_parent_1",
+                balance_responsible_id="brp_parent_1",
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -388,6 +467,7 @@ class TestGetMeteringPointPeriodsWholesaleCalculation:
                 metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.EXCHANGE,
                 energy_supplier_id=None,
+                balance_responsible_id=None,
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 15, 23),
             ),
@@ -395,6 +475,7 @@ class TestGetMeteringPointPeriodsWholesaleCalculation:
                 parent_metering_point_id="parent_metering_point_id",
                 metering_point_type=MeteringPointType.NET_CONSUMPTION,
                 energy_supplier_id=None,
+                balance_responsible_id=None,
                 from_date=datetime(2019, 12, 31, 23),
                 to_date=datetime(2020, 1, 31, 23),
                 settlement_method=None,
@@ -430,6 +511,8 @@ class TestWhenNoMeteringPointIdMatchingParentMeteringPointId:
             factory.create_row(
                 metering_point_type=MeteringPointType.CONSUMPTION_FROM_GRID,
                 parent_metering_point_id="parent_metering_point_id",
+                energy_supplier_id=None,
+                balance_responsible_id=None,
             )
         ]
         metering_point_periods = factory.create(spark, rows)
