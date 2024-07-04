@@ -23,12 +23,12 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServices
 
 public class ChargeTypeValidatorTests
 {
-    private static readonly ValidationError _chargeTypeIdIsToLongError = new ValidationError(
+    private static readonly ValidationError _chargeTypeIdIsToLongError = new(
         "Følgende chargeType mRID er for lang: {PropertyName}. Den må højst indeholde 10 karaktere/"
         + "The following chargeType mRID is to long: {PropertyName} It must at most be 10 characters",
         "D14");
 
-    private readonly ChargeTypeValidationRule _sut = new();
+    private readonly ChargeCodeValidationRule _sut = new();
 
     [Theory]
     [InlineData(null)]
@@ -37,13 +37,13 @@ public class ChargeTypeValidatorTests
     [InlineData("0000000000")]
     [InlineData("1234567890")]
     [InlineData("-234567890")]
-    public async Task Validate_WhenChargeTypeContainsAValidType_returnsExpectedValidationError(string? chargeTypeId)
+    public async Task Validate_WhenChargeTypeContainsAValidType_returnsExpectedValidationError(string? chargeCode)
     {
         // Arrange
         var chargeTypes = Array.Empty<ChargeType>();
 
-        if (chargeTypeId is not null)
-            chargeTypes = [new ChargeType() { ChargeType_ = chargeTypeId, ChargeCode = "D01" }];
+        if (chargeCode is not null)
+            chargeTypes = [new ChargeType() { ChargeType_ = "D01", ChargeCode = chargeCode }];
 
         var message = new WholesaleServicesRequestBuilder()
             .WithChargeTypes(chargeTypes)
@@ -58,10 +58,10 @@ public class ChargeTypeValidatorTests
 
     [Theory]
     [InlineData("12345678901")] // 11 char long
-    public async Task Validate_WhenChargeTypeContainsAInvalidType_returnsExpectedValidationError(string chargeTypeId)
+    public async Task Validate_WhenChargeTypeContainsAInvalidType_returnsExpectedValidationError(string chargeCode)
     {
         // Arrange
-        var chargeTypes = new ChargeType() { ChargeType_ = chargeTypeId, ChargeCode = "D01" };
+        var chargeTypes = new ChargeType() { ChargeType_ = "D01", ChargeCode = chargeCode };
 
         var message = new WholesaleServicesRequestBuilder()
             .WithChargeTypes(chargeTypes)
@@ -73,7 +73,7 @@ public class ChargeTypeValidatorTests
         // Assert
         validationErrors.Should().ContainSingle()
             .Subject.Should().Be(
-                _chargeTypeIdIsToLongError.WithPropertyName(chargeTypeId));
+                _chargeTypeIdIsToLongError.WithPropertyName(chargeCode));
     }
 
     [Fact]
@@ -82,14 +82,14 @@ public class ChargeTypeValidatorTests
         // Arrange
         var chargeTypes = new ChargeType[]
             {
-                new ChargeType() { ChargeType_ = "12345678901", ChargeCode = "D01" },
-                new ChargeType() { ChargeType_ = "10987654321", ChargeCode = "D01" },
+                new() { ChargeType_ = "D01", ChargeCode = "12345678901" },
+                new() { ChargeType_ = "D01", ChargeCode = "10987654321" },
             };
         var expectedErrors = new List<ValidationError>();
 
-        for (var i = 0; i < chargeTypes.Count(); i++)
+        foreach (var t in chargeTypes)
         {
-            expectedErrors.Add(_chargeTypeIdIsToLongError.WithPropertyName(chargeTypes[i].ChargeType_));
+            expectedErrors.Add(_chargeTypeIdIsToLongError.WithPropertyName(t.ChargeType_));
         }
 
         var message = new WholesaleServicesRequestBuilder()
@@ -107,12 +107,12 @@ public class ChargeTypeValidatorTests
     public async Task Validate_WhenMultipleChargeTypeButOneHasInvalidType_returnsExpectedValidationError()
     {
         // Arrange
-        var invalidCharType = "ThisIsMoreThan10Charlong";
+        var invalidChargeCode = "ThisIsMoreThan10CharacterLong";
         var chargeTypes = new ChargeType[]
             {
-                new ChargeType() { ChargeType_ = "valid1", ChargeCode = "D01" },
-                new ChargeType() { ChargeType_ = invalidCharType, ChargeCode = "D01" },
-                new ChargeType() { ChargeType_ = "valid2", ChargeCode = "D01" },
+                new() { ChargeType_ = "D01", ChargeCode = "valid1" },
+                new() { ChargeType_ = "D01", ChargeCode = invalidChargeCode },
+                new() { ChargeType_ = "D01", ChargeCode = "valid2" },
             };
 
         var message = new WholesaleServicesRequestBuilder()
@@ -123,6 +123,6 @@ public class ChargeTypeValidatorTests
         var validationErrors = await _sut.ValidateAsync(message);
 
         // Assert
-        validationErrors.Should().ContainSingle().Subject.Should().Be(_chargeTypeIdIsToLongError.WithPropertyName(invalidCharType));
+        validationErrors.Should().ContainSingle().Subject.Should().Be(_chargeTypeIdIsToLongError.WithPropertyName(invalidChargeCode));
     }
 }
