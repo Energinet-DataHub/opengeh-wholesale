@@ -17,7 +17,10 @@ from package.calculation.calculation_results import (
     WholesaleResultsContainer,
 )
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import HiveOutputDatabase
+from package.infrastructure.paths import (
+    HiveOutputDatabase,
+    WholesaleResultsInternalDatabase,
+)
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
@@ -36,6 +39,13 @@ def write_total_monthly_amounts(
 
 def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
+        df.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(
+            f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        )
+
+        # ToDo JMG: Remove when we are on Unity Catalog
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
