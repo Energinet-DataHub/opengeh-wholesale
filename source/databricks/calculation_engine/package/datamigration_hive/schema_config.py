@@ -77,7 +77,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_period_schema,
+                schema=basis_data_schemas.hive_metering_point_period_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,

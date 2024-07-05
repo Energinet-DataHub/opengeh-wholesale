@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_DATABASE_NAME}.m
     energy_supplier_id STRING,
     balance_responsible_id STRING,
     from_date TIMESTAMP NOT NULL,
-    to_date TIMESTAMP
+    to_date TIMESTAMP NOT NULL
 )
 USING DELTA
 TBLPROPERTIES (
