@@ -231,10 +231,12 @@ def migrations_executed(
     calculation_output_path: str,
     energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     # Execute all migrations
     sql_migration_helper.migrate(
         spark,
+        infrastructure_settings.catalog_name,
         migrations_execution=test_session_configuration.migrations.execute,
     )
 
@@ -377,7 +379,7 @@ def infrastructure_settings(
     data_lake_path: str, calculation_input_path: str
 ) -> InfrastructureSettings:
     return InfrastructureSettings(
-        catalog_name="spark_catalog",
+        catalog_name="some_unity_catalog",
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,

@@ -28,7 +28,7 @@ from package.datamigration_hive.schema_config import schema_config as schema_con
 from package.datamigration_hive.substitutions import substitutions
 from package.datamigration.schema_config import schema_config
 
-catalog_name = "spark_catalog"
+# catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
 schema_migration_location = "schema_migration"
 schema_migration_table_name = "executed_migrations"
@@ -49,17 +49,18 @@ class MigrationsExecution(Enum):
     """Execute only the migrations that have been modified since the last execution."""
 
 
-def _create_databases(spark: SparkSession) -> None:
+def _create_databases(spark: SparkSession, catalog_name: str) -> None:
     """
     Create Unity Catalog databases as they are not created by migration scripts.
     They are created by infrastructure (in the real environments)
     In tests they are created in the single available default database."""
     for schema in schema_config:
-        spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema.name}")
+        spark.sql(f"CREATE DATABASE IF NOT EXISTS {catalog_name}.{schema.name}")
 
 
 def migrate(
     spark: SparkSession,
+    catalog_name: str,
     substitution_variables: dict[str, str] | None = None,
     migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
@@ -72,20 +73,24 @@ def migrate(
         return
 
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
-        _remove_registration_of_modified_scripts(spark, migrations_execution)
+        _remove_registration_of_modified_scripts(
+            spark, migrations_execution, catalog_name
+        )
 
-    _create_databases(spark)
+    _create_databases(spark, catalog_name)
 
     spark_config = create_spark_sql_migrations_configuration(
-        spark, "", substitution_variables=substitution_variables
+        spark, catalog_name, substitution_variables=substitution_variables
     )
     migrate_data_lake(catalog_name, spark_config_hive=spark_config)
 
 
 def _remove_registration_of_modified_scripts(
-    spark: SparkSession, migrations_execution: MigrationsExecution
+    spark: SparkSession, migrations_execution: MigrationsExecution, catalog_name: str
 ) -> None:
-    migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
+    migrations_table = (
+        f"{catalog_name}.{schema_migration_schema_name}.{schema_migration_table_name}"
+    )
     if not delta_table_helper.delta_table_exists(
         spark, catalog_name, schema_migration_schema_name, schema_migration_table_name
     ):
@@ -113,6 +118,7 @@ def _remove_registration_of_modified_scripts(
 
 def create_spark_sql_migrations_configuration(
     spark: SparkSession,
+    catalog_name: str,
     table_prefix: str = "",
     substitution_variables: dict[str, str] | None = None,
 ) -> SparkSqlMigrationsConfiguration:
