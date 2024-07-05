@@ -43,7 +43,6 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
         });
 
         Fixture.Inject(mockedOptions);
-        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
             mockedOptions.Object,
