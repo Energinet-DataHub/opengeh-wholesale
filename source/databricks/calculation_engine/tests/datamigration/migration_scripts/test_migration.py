@@ -75,6 +75,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
         if db.name in [
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
             paths.WholesaleInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataDatabase.DATABASE_NAME,
         ]:
             continue
 
