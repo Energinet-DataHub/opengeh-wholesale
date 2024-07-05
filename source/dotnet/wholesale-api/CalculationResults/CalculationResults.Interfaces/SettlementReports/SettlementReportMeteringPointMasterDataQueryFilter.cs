@@ -23,4 +23,5 @@ public sealed record SettlementReportMeteringPointMasterDataQueryFilter(
     CalculationType CalculationType,
     string? EnergySupplier,
     Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant PeriodEnd,
+    long MaximumCalculationVersion);

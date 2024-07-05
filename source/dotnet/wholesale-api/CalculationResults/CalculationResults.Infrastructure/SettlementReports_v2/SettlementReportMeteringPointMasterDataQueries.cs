@@ -56,6 +56,16 @@ public sealed class SettlementReportMeteringPointMasterDataQueries : ISettlement
         }
     }
 
+    public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetLatestPerEnergySupplierAsync(SettlementReportMeteringPointMasterDataQueryFilter filter, int skip, int take)
+    {
+        var statement = new SettlementReportLatestMeteringPointMasterDataPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take);
+
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
+        {
+            yield return SettlementReportMeteringPointMasterDataRowFactory.Create(new DatabricksSqlRow(nextRow));
+        }
+    }
+
     public async Task<int> CountAsync(SettlementReportMeteringPointMasterDataQueryFilter filter)
     {
         var statement = new SettlementReportMeteringPointMasterDataCountQueryStatement(_deltaTableOptions, filter);
@@ -72,6 +82,19 @@ public sealed class SettlementReportMeteringPointMasterDataQueries : ISettlement
     public async Task<int> CountLatestAsync(SettlementReportMeteringPointMasterDataQueryFilter filter)
     {
         var statement = new SettlementReportLatestMeteringPointMasterDataCountQueryStatement(_deltaTableOptions, filter);
+
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var rawValue = new DatabricksSqlRow(nextRow)[SettlementReportChargeLinkPeriodsCountQueryStatement.Columns.Count];
+            return SqlResultValueConverters.ToInt(rawValue)!.Value;
+        }
+
+        throw new InvalidOperationException("Could not count result for SettlementReportMeteringPointMasterDataQueries.");
+    }
+
+    public async Task<int> CountLatestPerEnergySupplierAsync(SettlementReportMeteringPointMasterDataQueryFilter filter)
+    {
+        var statement = new SettlementReportLatestMeteringPointMasterDataPerEnergySupplierCountQueryStatement(_deltaTableOptions, filter);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {

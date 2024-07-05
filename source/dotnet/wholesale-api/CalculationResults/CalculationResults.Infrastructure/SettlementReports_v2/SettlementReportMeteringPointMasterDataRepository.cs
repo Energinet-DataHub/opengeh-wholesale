@@ -30,28 +30,32 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
-            return CountLatestAsync(filter);
+            return filter.EnergySupplier is not null
+                ? CountLatestPerEnergySupplierAsync(filter, maximumCalculationVersion)
+                : CountLatestAsync(filter, maximumCalculationVersion);
         }
 
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
+        return _settlementReportResultQueries.CountAsync(ParseFilter(filter, maximumCalculationVersion));
     }
 
-    public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take, long maximumCalculationVersion)
     {
         ConfiguredCancelableAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportMeteringPointMasterDataRow> rows;
 
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
-            rows = GetLatest(filter, skip, take);
+            rows = filter.EnergySupplier is not null
+                ? GetLatestPerEnergySupplier(filter, skip, take, maximumCalculationVersion)
+                : GetLatest(filter, skip, take, maximumCalculationVersion);
         }
         else
         {
             rows = _settlementReportResultQueries
-                .GetAsync(ParseFilter(filter), skip, take)
+                .GetAsync(ParseFilter(filter, maximumCalculationVersion), skip, take)
                 .ConfigureAwait(false);
         }
 
@@ -70,21 +74,35 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         }
     }
 
-    private Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter)
+    private Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
-        return _settlementReportResultQueries.CountLatestAsync(ParseFilter(filter));
+        return _settlementReportResultQueries.CountLatestAsync(ParseFilter(filter, maximumCalculationVersion));
     }
 
-    private ConfiguredCancelableAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportMeteringPointMasterDataRow> GetLatest(SettlementReportRequestFilterDto filter, int skip, int take)
+    private Task<int> CountLatestPerEnergySupplierAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    {
+        return _settlementReportResultQueries.CountLatestPerEnergySupplierAsync(ParseFilter(filter, maximumCalculationVersion));
+    }
+
+    private ConfiguredCancelableAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportMeteringPointMasterDataRow> GetLatest(SettlementReportRequestFilterDto filter, int skip, int take, long maximumCalculationVersion)
     {
         var rows = _settlementReportResultQueries
-            .GetLatestAsync(ParseFilter(filter), skip, take)
+            .GetLatestAsync(ParseFilter(filter, maximumCalculationVersion), skip, take)
             .ConfigureAwait(false);
 
         return rows;
     }
 
-    private static SettlementReportMeteringPointMasterDataQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
+    private ConfiguredCancelableAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportMeteringPointMasterDataRow> GetLatestPerEnergySupplier(SettlementReportRequestFilterDto filter, int skip, int take, long maximumCalculationVersion)
+    {
+        var rows = _settlementReportResultQueries
+            .GetLatestPerEnergySupplierAsync(ParseFilter(filter, maximumCalculationVersion), skip, take)
+            .ConfigureAwait(false);
+
+        return rows;
+    }
+
+    private static SettlementReportMeteringPointMasterDataQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
@@ -94,6 +112,7 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
             filter.CalculationType,
             filter.EnergySupplier,
             filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+            filter.PeriodEnd.ToInstant(),
+            maximumCalculationVersion);
     }
 }

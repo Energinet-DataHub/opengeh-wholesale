@@ -24,5 +24,9 @@ public interface ISettlementReportMeteringPointMasterDataQueries
 
     Task<int> CountLatestAsync(SettlementReportMeteringPointMasterDataQueryFilter filter);
 
+    Task<int> CountLatestPerEnergySupplierAsync(SettlementReportMeteringPointMasterDataQueryFilter filter);
+
     IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetLatestAsync(SettlementReportMeteringPointMasterDataQueryFilter filter, int skip, int take);
+
+    IAsyncEnumerable<SettlementReportMeteringPointMasterDataRow> GetLatestPerEnergySupplierAsync(SettlementReportMeteringPointMasterDataQueryFilter filter, int skip, int take);
 }
