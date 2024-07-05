@@ -43,5 +43,8 @@ charge_link_periods_v1 = t.StructType(
         #
         # EIC or GLN number
         t.StructField("energy_supplier_id", t.StringType(), nullable),
+        #
+        # Taxation type
+        t.StructField("is_tax", t.BooleanType(), not nullable),
     ]
 )
