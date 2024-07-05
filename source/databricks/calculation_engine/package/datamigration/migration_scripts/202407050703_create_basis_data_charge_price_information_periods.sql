@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_information_periods
+CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_DATABASE_NAME}.charge_price_information_periods
 (
     calculation_id STRING NOT NULL,
     charge_key STRING NOT NULL,
