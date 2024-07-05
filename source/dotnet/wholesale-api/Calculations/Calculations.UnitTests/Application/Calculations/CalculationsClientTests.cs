@@ -100,27 +100,4 @@ public class CalculationsClientTests
         // Assert
         searchResult.Count().Should().Be(numberOfCalculations);
     }
-
-    [Fact]
-    public void ExecutionTimeEnd_Should_BeTheSameAs_ActorMessagesEnqueuedTimeEnd()
-    {
-        // Arrange
-        var now = SystemClock.Instance.GetCurrentInstant();
-        var calculated = now.PlusMinutes(1);
-        var enqueueing = now.PlusMinutes(2);
-        var expected = now.PlusMinutes(3);
-
-        var sut = new CalculationBuilder().Build();
-        sut.MarkAsSubmitted(new CalculationJobId(1));
-        sut.MarkAsCalculating();
-        sut.MarkAsCalculated(calculated);
-        sut.MarkAsActorMessagesEnqueuing(enqueueing);
-
-        // Act
-        sut.MarkAsActorMessagesEnqueued(expected);
-
-        // Assert
-        sut.ExecutionTimeEnd.Should().Be(expected);
-        sut.ExecutionTimeEnd.Should().Be(sut.ActorMessagesEnqueuedTimeEnd);
-    }
 }

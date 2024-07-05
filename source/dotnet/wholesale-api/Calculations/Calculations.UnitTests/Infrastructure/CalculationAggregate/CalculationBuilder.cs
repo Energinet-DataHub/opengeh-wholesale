@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
@@ -144,6 +145,8 @@ public class CalculationBuilder
             calculation.MarkAsScheduled();
             calculation.MarkAsCalculating();
             calculation.MarkAsCalculated(SystemClock.Instance.GetCurrentInstant());
+            calculation.MarkAsActorMessagesEnqueuing(SystemClock.Instance.GetCurrentInstant().PlusMinutes(1));
+            calculation.MarkAsActorMessagesEnqueued(SystemClock.Instance.GetCurrentInstant().PlusMinutes(2));
         }
         else if (_state == CalculationExecutionState.Failed)
         {

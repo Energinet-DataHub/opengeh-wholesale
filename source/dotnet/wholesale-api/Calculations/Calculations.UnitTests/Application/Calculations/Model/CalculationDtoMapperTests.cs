@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 using Xunit;
 
@@ -62,14 +63,24 @@ public class CalculationDtoMapperTests
     {
         // Arrange
         var calculation = new CalculationBuilder().Build();
-        calculation.MarkAsCalculating(); // this sets ExecutionTimeStart
-        calculation.MarkAsCalculated(calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var calculated = now.PlusMinutes(1);
+        var enqueueing = now.PlusMinutes(2);
+        var expected = now.PlusMinutes(3);
+
+        calculation.MarkAsSubmitted(new CalculationJobId(1));
+        calculation.MarkAsCalculating();
+        calculation.MarkAsCalculated(calculated);
+        calculation.MarkAsActorMessagesEnqueuing(enqueueing);
+
+        // Act
+        calculation.MarkAsActorMessagesEnqueued(expected); // this sets ExecutionTimeEnd
 
         // Act
         var calculationDto = sut.Map(calculation);
 
         // Assert
-        calculationDto.ExecutionTimeStart.Should().Be(calculation.ExecutionTimeStart.Value.ToDateTimeOffset());
+        calculationDto.ExecutionTimeStart.Should().Be(calculation.ExecutionTimeStart!.Value.ToDateTimeOffset());
         calculationDto.ExecutionTimeEnd.Should().Be(calculation.ExecutionTimeEnd!.Value.ToDateTimeOffset());
     }
 

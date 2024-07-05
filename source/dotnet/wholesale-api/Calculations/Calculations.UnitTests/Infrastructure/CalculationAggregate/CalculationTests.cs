@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
@@ -303,17 +304,26 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCalculated_SetsExecutionTimeEnd()
+    public void MarkAsActorMessagesEnqueued_SetsExecutionTimeEnd()
     {
         // Arrange
-        var sut = new CalculationBuilder().WithStateExecuting().Build();
-        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var calculated = now.PlusMinutes(1);
+        var enqueueing = now.PlusMinutes(2);
+        var expected = now.PlusMinutes(3);
+
+        var sut = new CalculationBuilder().Build();
+        sut.MarkAsSubmitted(new CalculationJobId(1));
+        sut.MarkAsCalculating();
+        sut.MarkAsCalculated(calculated);
+        sut.MarkAsActorMessagesEnqueuing(enqueueing);
 
         // Act
-        sut.MarkAsCalculated(executionTimeEndGreaterThanStart);
+        sut.MarkAsActorMessagesEnqueued(expected);
 
         // Assert
-        sut.ExecutionTimeEnd.Should().NotBeNull();
+        sut.ExecutionTimeEnd.Should().Be(expected);
+        sut.ExecutionTimeEnd.Should().Be(sut.ActorMessagesEnqueuedTimeEnd);
     }
 
     [Fact]
