@@ -26,3 +26,9 @@ feature_tests:
   # `False` is the default.
   # Recommendation: Keep it as False.
   show_columns_when_actual_and_expected_are_equal: False
+
+  # Use this setting to enable or disable showing the number of rows of the dataframes actual and expected in the test console.
+  # Options: True | False
+  # `False` is the default.
+  # Recommendation: Keep it as False.
+  show_actual_and_expected_count: False

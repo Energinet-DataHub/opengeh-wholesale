@@ -24,6 +24,7 @@ from typing import Any
 class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
+    CATALOG_NAME = "CATALOG_NAME"
     CALCULATION_INPUT_FOLDER_NAME = "CALCULATION_INPUT_FOLDER_NAME"
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
@@ -67,6 +68,10 @@ def get_quarterly_resolution_transition_datetime() -> datetime:
     return datetime.strptime(
         quarterly_resolution_transition_datetime, "%Y-%m-%dT%H:%M:%SZ"
     )
+
+
+def get_catalog_name() -> str:
+    return get_env_variable_or_throw(EnvironmentVariable.CATALOG_NAME)
 
 
 def get_calculation_input_folder_name() -> str:
