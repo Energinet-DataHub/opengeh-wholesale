@@ -88,7 +88,9 @@ def migrate(
 def _remove_registration_of_modified_scripts(
     spark: SparkSession, migrations_execution: MigrationsExecution, catalog_name: str
 ) -> None:
-    migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
+    migrations_table = (
+        f"{catalog_name}.{schema_migration_schema_name}.{schema_migration_table_name}"
+    )
     if not delta_table_helper.delta_table_exists(
         spark, catalog_name, schema_migration_schema_name, schema_migration_table_name
     ):

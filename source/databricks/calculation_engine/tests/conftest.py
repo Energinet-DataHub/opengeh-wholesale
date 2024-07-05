@@ -236,6 +236,7 @@ def migrations_executed(
     # Execute all migrations
     sql_migration_helper.migrate(
         spark,
+        infrastructure_settings.catalog_name,
         migrations_execution=test_session_configuration.migrations.execute,
     )
 
