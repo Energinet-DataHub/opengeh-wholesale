@@ -45,15 +45,15 @@ public sealed class SettlementReportLatestMeteringPointMasterDataCountQueryState
                                     FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
                                 ) as day,
                                 MAX({SettlementReportEnergyResultViewColumns.CalculationVersion}) AS MaxCalcVersion
-                        FROM
-                            {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
-                        WHERE
-                            {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                            {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}'
-                        GROUP BY day ) AS prDay ON enResult.{SettlementReportEnergyResultViewColumns.CalculationVersion} = prDay.MaxCalcVersion AND DATE_TRUNC(
-                                'day',
-                                FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
-                            ) = prDay.Day
+                            FROM
+                                {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
+                            WHERE
+                                {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                                {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}'
+                            GROUP BY day ) AS prDay ON enResult.{SettlementReportEnergyResultViewColumns.CalculationVersion} = prDay.MaxCalcVersion AND DATE_TRUNC(
+                                    'day',
+                                    FROM_UTC_TIMESTAMP({SettlementReportEnergyResultViewColumns.Time}, 'Europe/Copenhagen')
+                                ) = prDay.Day
                         WHERE
                             {SettlementReportEnergyResultViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                             {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND

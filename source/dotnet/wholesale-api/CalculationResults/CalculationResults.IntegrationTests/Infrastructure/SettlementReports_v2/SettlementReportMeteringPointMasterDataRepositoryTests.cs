@@ -300,11 +300,11 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ee'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
             ]);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
@@ -343,13 +343,114 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
+            1,
+            1,
+            int.MaxValue).ToListAsync();
+
+        var actual2 = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"),
             2,
-            5,
+            1,
             int.MaxValue).ToListAsync();
 
         Assert.Equal(3, count);
         Assert.Single(actual);
-        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual.Last().MeteringPointId);
+        Assert.Single(actual2);
+        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829eb", actual.First().MeteringPointId);
+        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual2.First().MeteringPointId);
+    }
+
+    [Fact]
+    public async Task Get_LatestValidFilterWithEnergySupplier_SkipTakeReturnsCorrectRows()
+    {
+        var calculationId1 = Guid.NewGuid().ToString();
+        var calculationId2 = Guid.NewGuid().ToString();
+        var calculationId3 = Guid.NewGuid().ToString();
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
+            [
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583198'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+            ]);
+
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
+            [
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "8297670583196"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "8297670583198"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634", "8297670583196"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634", "8297670583196"],
+            ]);
+
+        var count = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8297670583196",
+                "da-DK"),
+            int.MaxValue);
+
+        var actual = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8297670583196",
+                "da-DK"),
+            0,
+            1,
+            int.MaxValue).ToListAsync();
+
+        var actual2 = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8297670583196",
+                "da-DK"),
+            1,
+            1,
+            int.MaxValue).ToListAsync();
+
+        Assert.Equal(2, count);
+        Assert.Single(actual);
+        Assert.Single(actual2);
+        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829eb", actual.First().MeteringPointId);
+        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual2.First().MeteringPointId);
     }
 
     [Fact]

@@ -67,8 +67,6 @@ public sealed class SettlementReportLatestMeteringPointMasterDataPerEnergySuppli
                 {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationVersion} <= {_filter.MaximumCalculationVersion} AND
                 {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} <= {_filter.EnergySupplier} AND
                 {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
-            ORDER BY prDay.Day
-            LIMIT {_take} OFFSET {_skip}        
             """;
 
         return $"""
@@ -84,7 +82,7 @@ public sealed class SettlementReportLatestMeteringPointMasterDataPerEnergySuppli
                 SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId,
             ])}
             FROM 
-                {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
+                {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}
             JOIN
                 ({calcQuery}) as calc ON calc.{SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}.{SettlementReportMeteringPointMasterDataViewColumns.CalculationId}
             WHERE 
