@@ -55,6 +55,9 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
+        Fixture.Inject(mockedOptions);
+        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
+
         var settlementReportDataRepository = new SettlementReportEnergyResultRepository(
             new SettlementReportDatabricksContext(
                 mockedOptions.Object,

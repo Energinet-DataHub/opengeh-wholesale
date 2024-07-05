@@ -42,6 +42,9 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
+        Fixture.Inject(mockedOptions);
+        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
+
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
