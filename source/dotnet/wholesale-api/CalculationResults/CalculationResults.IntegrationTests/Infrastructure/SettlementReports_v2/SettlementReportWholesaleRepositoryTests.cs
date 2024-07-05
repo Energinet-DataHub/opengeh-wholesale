@@ -42,11 +42,12 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
 
-        var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
+        Fixture.Inject(mockedOptions);
+        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
             mockedOptions.Object,
-            sqlWarehouseQueryExecutor));
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
     [Fact]
