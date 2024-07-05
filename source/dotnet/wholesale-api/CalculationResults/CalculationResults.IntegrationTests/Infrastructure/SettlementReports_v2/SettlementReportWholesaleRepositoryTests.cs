@@ -19,15 +19,13 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportDatabricksSqlCollectionFixture))]
+public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
@@ -35,17 +33,11 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
-        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
-        {
-            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-        });
-
-        Fixture.Inject(mockedOptions);
+        _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName =
+            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME;
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
-            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 

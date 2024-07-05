@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +21,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experime
 
 public sealed class DatabricksSqlQueryExecutor
 {
-    private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)>> _mapCache = new();
-
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly DatabricksSqlQueryCompiler _sqlQueryCompiler;
     private readonly DatabricksSqlRowHydrator _sqlRowHydrator;

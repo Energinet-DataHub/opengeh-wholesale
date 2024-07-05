@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
@@ -19,15 +20,13 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementReportEnergyResultRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportDatabricksSqlCollectionFixture))]
+public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementReportEnergyResultRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
@@ -35,19 +34,14 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
-        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
-        {
-            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-        });
+        _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName =
+            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME;
 
-        Fixture.Inject(mockedOptions);
-        var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
+        Debugger.Log(0, null, $"SettlementReportEnergyResultRepository : {_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName}");
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
-            mockedOptions.Object,
-            sqlWarehouseQueryExecutor));
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
     [Fact]
