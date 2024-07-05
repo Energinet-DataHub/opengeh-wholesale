@@ -84,6 +84,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     )
     spark_config = spark_sql_migration_helper.create_spark_sql_migrations_configuration(
         spark,
+        catalog_name="spark_catalog",
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
@@ -107,6 +108,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     )
     spark_config = spark_sql_migration_helper.create_spark_sql_migrations_configuration(
         spark,
+        catalog_name="spark_catalog",
         substitution_variables=substitutions,
         table_prefix="migration_",
     )
@@ -114,7 +116,10 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     schema_migration_pipeline._migrate(0)
 
     # Clean up DI
-    spark_sql_migration_helper.create_spark_sql_migrations_configuration(spark)
+    spark_sql_migration_helper.create_spark_sql_migrations_configuration(
+        spark,
+        catalog_name="spark_catalog",
+    )
 
     # Assert
     migration_databases = spark.catalog.listDatabases()

@@ -80,7 +80,7 @@ def migrate(
     _create_databases(spark, catalog_name)
 
     spark_config = create_spark_sql_migrations_configuration(
-        spark, "", substitution_variables=substitution_variables
+        spark, catalog_name, substitution_variables=substitution_variables
     )
     migrate_data_lake(catalog_name, spark_config_hive=spark_config)
 
@@ -116,6 +116,7 @@ def _remove_registration_of_modified_scripts(
 
 def create_spark_sql_migrations_configuration(
     spark: SparkSession,
+    catalog_name: str,
     table_prefix: str = "",
     substitution_variables: dict[str, str] | None = None,
 ) -> SparkSqlMigrationsConfiguration:
