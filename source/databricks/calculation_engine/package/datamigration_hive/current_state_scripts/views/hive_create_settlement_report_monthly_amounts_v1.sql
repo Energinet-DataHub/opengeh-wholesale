@@ -15,7 +15,7 @@ SELECT c.calculation_id,
        ma.charge_owner_id,
        ma.is_tax
 FROM {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts AS ma
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = ma.calculation_id
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = ma.calculation_id
 
 UNION
 
@@ -35,4 +35,4 @@ SELECT c.calculation_id,
        tma.charge_owner_id,
        NULL as is_tax
 FROM {HIVE_OUTPUT_DATABASE_NAME}.total_monthly_amounts AS tma
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = tma.calculation_id
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = tma.calculation_id
