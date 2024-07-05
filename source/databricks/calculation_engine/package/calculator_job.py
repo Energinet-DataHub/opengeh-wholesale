@@ -80,6 +80,9 @@ def start_with_deps(
             args, infrastructure_settings = parse_job_args(command_line_args)
             create_and_configure_container(infrastructure_settings)
 
+            if args.is_simulation:
+                raise NotImplementedError("Simulation is not implemented.")
+
             spark = initialize_spark()
             prepared_data_reader = create_prepared_data_reader(
                 infrastructure_settings, spark
