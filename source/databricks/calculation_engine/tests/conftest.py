@@ -231,6 +231,7 @@ def migrations_executed(
     calculation_output_path: str,
     energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     # Execute all migrations
     sql_migration_helper.migrate(

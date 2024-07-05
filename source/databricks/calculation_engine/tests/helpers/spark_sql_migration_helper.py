@@ -28,7 +28,7 @@ from package.datamigration_hive.schema_config import schema_config as schema_con
 from package.datamigration_hive.substitutions import substitutions
 from package.datamigration.schema_config import schema_config
 
-catalog_name = "spark_catalog"
+# catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
 schema_migration_location = "schema_migration"
 schema_migration_table_name = "executed_migrations"
@@ -49,17 +49,18 @@ class MigrationsExecution(Enum):
     """Execute only the migrations that have been modified since the last execution."""
 
 
-def _create_databases(spark: SparkSession) -> None:
+def _create_databases(spark: SparkSession, catalog_name: str) -> None:
     """
     Create Unity Catalog databases as they are not created by migration scripts.
     They are created by infrastructure (in the real environments)
     In tests they are created in the single available default database."""
     for schema in schema_config:
-        spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema.name}")
+        spark.sql(f"CREATE DATABASE IF NOT EXISTS {catalog_name}.{schema.name}")
 
 
 def migrate(
     spark: SparkSession,
+    catalog_name: str,
     substitution_variables: dict[str, str] | None = None,
     migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
@@ -74,7 +75,7 @@ def migrate(
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
         _remove_registration_of_modified_scripts(spark, migrations_execution)
 
-    _create_databases(spark)
+    _create_databases(spark, catalog_name)
 
     spark_config = create_spark_sql_migrations_configuration(
         spark, "", substitution_variables=substitution_variables
