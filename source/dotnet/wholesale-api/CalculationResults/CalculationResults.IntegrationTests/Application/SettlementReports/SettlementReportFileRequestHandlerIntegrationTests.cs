@@ -61,7 +61,9 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
                 databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
         var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(
-            new SettlementReportDatabricksContext(mockedOptions.Object, _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
+            new SettlementReportDatabricksContext(
+                mockedOptions.Object,
+                _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
 
         var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
             mockedOptions.Object,
@@ -216,7 +218,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             fileLines[2]);
     }
 
-    [Theory(Skip = "Perf Test")]
+    [Theory]
     [InlineData(SettlementReportFileContent.Pt15M, "400000000000000004,Exchange,2022-01-02T02:00:00Z,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")]
     [InlineData(SettlementReportFileContent.Pt1H, "400000000000000004,Exchange,2022-01-02T02:00:00Z,679.900,,,,,,,,,,,,,,,,,,,,,,,,")]
     public async Task RequestFileAsync_ForWholesaleFixingMeteringPointTimeSeries_ReturnsExpectedCsv(SettlementReportFileContent content, string expected)
