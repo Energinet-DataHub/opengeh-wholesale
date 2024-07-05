@@ -65,8 +65,6 @@ public sealed class SettlementReportLatestMeteringPointMasterDataQueryStatement 
                 {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
                 {SettlementReportEnergyResultViewColumns.CalculationVersion} <= {_filter.MaximumCalculationVersion} AND
                 {SettlementReportEnergyResultViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(CalculationType.BalanceFixing)}'
-            ORDER BY prDay.Day
-            LIMIT {_take} OFFSET {_skip}        
             """;
 
         return $"""
@@ -91,6 +89,8 @@ public sealed class SettlementReportLatestMeteringPointMasterDataQueryStatement 
                 {SettlementReportMeteringPointMasterDataViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
                 {SettlementReportMeteringPointMasterDataViewColumns.ToDate} < '{_filter.PeriodEnd}'
                 {(_filter.EnergySupplier is null ? string.Empty : " And " + SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")}
+            ORDER BY {SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId}
+            LIMIT {_take} OFFSET {_skip}
         """;
     }
 }

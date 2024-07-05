@@ -52,6 +52,7 @@ public sealed class SettlementReportLatestMeteringPointMasterDataPerEnergySuppli
                 FROM
                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
                 WHERE
+                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}' AND
                     {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
                     {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}'
                 GROUP BY day 
@@ -85,14 +86,15 @@ public sealed class SettlementReportLatestMeteringPointMasterDataPerEnergySuppli
             FROM 
                 {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
             JOIN
-                ({calcQuery}) as calc ON calc.{SettlementReportEnergyResultViewColumns.CalculationId} = {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}.{SettlementReportMeteringPointMasterDataViewColumns.CalculationId}
+                ({calcQuery}) as calc ON calc.{SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME}.{SettlementReportMeteringPointMasterDataViewColumns.CalculationId}
             WHERE 
                 {SettlementReportMeteringPointMasterDataViewColumns.GridArea} = '{SqlStringSanitizer.Sanitize(_filter.GridAreaCode)}' AND
                 {SettlementReportMeteringPointMasterDataViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                 {SettlementReportMeteringPointMasterDataViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
                 {SettlementReportMeteringPointMasterDataViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
-                {SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId} <= {_filter.EnergySupplier}
-                {(_filter.EnergySupplier is null ? string.Empty : " And " + SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId + " = '" + SqlStringSanitizer.Sanitize(_filter.EnergySupplier) + "' AND")}
+                {SettlementReportMeteringPointMasterDataViewColumns.EnergySupplierId} = '{SqlStringSanitizer.Sanitize(_filter.EnergySupplier)}'
+            ORDER BY {SettlementReportMeteringPointMasterDataViewColumns.MeteringPointId}
+            LIMIT {_take} OFFSET {_skip}
         """;
     }
 }
