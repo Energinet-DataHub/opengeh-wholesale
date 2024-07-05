@@ -19,7 +19,6 @@ from package.infrastructure import paths
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
             paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
         ),
-        (),
     ],
 )
 def test__when_migrations_executed__created_table_is_managed(
