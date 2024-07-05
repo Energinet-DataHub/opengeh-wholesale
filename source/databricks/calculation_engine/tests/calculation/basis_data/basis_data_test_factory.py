@@ -134,8 +134,6 @@ def create_charge_link_row(
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_type: ChargeType = DefaultValues.CHARGE_TYPE,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
-    charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = DefaultValues.CHARGE_PRICE,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     quantity: int = DefaultValues.CHARGE_QUANTITY,
     from_date: datetime = DefaultValues.FROM_DATE,
