@@ -18,8 +18,12 @@ using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Moq;
+using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations;
@@ -95,5 +99,28 @@ public class CalculationsClientTests
 
         // Assert
         searchResult.Count().Should().Be(numberOfCalculations);
+    }
+
+    [Fact]
+    public void ExecutionTimeEnd_Should_BeTheSameAs_ActorMessagesEnqueuedTimeEnd()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var calculated = now.PlusMinutes(1);
+        var enqueueing = now.PlusMinutes(2);
+        var expected = now.PlusMinutes(3);
+
+        var sut = new CalculationBuilder().Build();
+        sut.MarkAsSubmitted(new CalculationJobId(1));
+        sut.MarkAsCalculating();
+        sut.MarkAsCalculated(calculated);
+        sut.MarkAsActorMessagesEnqueuing(enqueueing);
+
+        // Act
+        sut.MarkAsActorMessagesEnqueued(expected);
+
+        // Assert
+        sut.ExecutionTimeEnd.Should().Be(expected);
+        sut.ExecutionTimeEnd.Should().Be(sut.ActorMessagesEnqueuedTimeEnd);
     }
 }
