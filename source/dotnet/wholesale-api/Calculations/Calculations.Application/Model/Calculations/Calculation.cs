@@ -284,7 +284,6 @@ public class Calculation
         }
 
         ExecutionState = CalculationExecutionState.Completed;
-        ExecutionTimeEnd = executionTimeEnd;
         OrchestrationState = CalculationOrchestrationState.Calculated;
     }
 
@@ -312,6 +311,7 @@ public class Calculation
         }
 
         ActorMessagesEnqueuedTimeEnd = enqueuedTimeEnd;
+        ExecutionTimeEnd = enqueuedTimeEnd;
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
     }
 
