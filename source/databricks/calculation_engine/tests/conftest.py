@@ -378,7 +378,7 @@ def infrastructure_settings(
     data_lake_path: str, calculation_input_path: str
 ) -> InfrastructureSettings:
     return InfrastructureSettings(
-        catalog_name="spark_catalog",
+        catalog_name="some_unity_catalog",
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,

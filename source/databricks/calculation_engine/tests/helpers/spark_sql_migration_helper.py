@@ -73,7 +73,9 @@ def migrate(
         return
 
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
-        _remove_registration_of_modified_scripts(spark, migrations_execution)
+        _remove_registration_of_modified_scripts(
+            spark, migrations_execution, catalog_name
+        )
 
     _create_databases(spark, catalog_name)
 
@@ -84,7 +86,7 @@ def migrate(
 
 
 def _remove_registration_of_modified_scripts(
-    spark: SparkSession, migrations_execution: MigrationsExecution
+    spark: SparkSession, migrations_execution: MigrationsExecution, catalog_name: str
 ) -> None:
     migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
     if not delta_table_helper.delta_table_exists(
