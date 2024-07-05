@@ -1,7 +1,7 @@
 CREATE EXTERNAL TABLE if not exists {INPUT_DATABASE_NAME}.charge_price_information_periods
     USING DELTA LOCATION '{CONTAINER_PATH}/{INPUT_FOLDER}/charge_price_information_periods'
 GO
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_information_periods
+CREATE TABLE IF NOT EXISTS {HIVE_BASIS_DATA_DATABASE_NAME}.charge_price_information_periods
 (
     calculation_id STRING NOT NULL,
     charge_key STRING NOT NULL,

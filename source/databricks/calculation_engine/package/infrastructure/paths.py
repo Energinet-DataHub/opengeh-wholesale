@@ -50,7 +50,7 @@ class HiveOutputDatabase:
     SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
 
 
-class BasisDataDatabase:
+class HiveBasisDataDatabase:
     FOLDER_NAME = "basis_data"
     """The folder in the storage account container"""
 

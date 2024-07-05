@@ -21,11 +21,11 @@ ALTER TABLE {HIVE_OUTPUT_DATABASE_NAME}.energy_results
 GO
 
 -- Modify calculation_type column in basis data calculations to snake_case
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
     DROP CONSTRAINT IF EXISTS calculation_type_chk
 GO
 
-UPDATE {BASIS_DATA_DATABASE_NAME}.calculations
+UPDATE {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
 SET calculation_type =
     CASE
         WHEN calculation_type = 'BalanceFixing' THEN 'balance_fixing'
@@ -38,7 +38,7 @@ SET calculation_type =
     END
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('balance_fixing', 'aggregation', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement'))
 GO
 
