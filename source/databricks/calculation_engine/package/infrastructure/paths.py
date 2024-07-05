@@ -51,7 +51,7 @@ class HiveOutputDatabase:
 
 
 class WholesaleBasisDataDatabase:
-    DATABASE_NAME = "basis_data"
+    DATABASE_NAME = "wholesale_basis_data"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
