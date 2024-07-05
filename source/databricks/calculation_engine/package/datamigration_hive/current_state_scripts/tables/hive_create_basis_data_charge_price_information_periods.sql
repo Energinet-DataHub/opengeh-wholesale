@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_information_p
     resolution STRING NOT NULL,
     is_tax BOOLEAN NOT NULL,
     from_date TIMESTAMP NOT NULL,
-    to_date TIMESTAMP
+    to_date TIMESTAMP NOT NULL
 )
 USING DELTA
 TBLPROPERTIES (

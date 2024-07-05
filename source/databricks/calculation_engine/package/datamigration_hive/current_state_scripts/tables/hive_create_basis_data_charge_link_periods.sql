@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
     metering_point_id STRING NOT NULL,
     quantity int NOT NULL,
     from_date TIMESTAMP NOT NULL,
-    to_date TIMESTAMP
+    to_date TIMESTAMP NOT NULL
 )
 USING DELTA
 TBLPROPERTIES (
