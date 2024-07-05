@@ -20,5 +20,5 @@ SELECT c.calculation_id,
        wr.charge_owner_id,
        wr.is_tax
 FROM {HIVE_OUTPUT_DATABASE_NAME}.wholesale_results AS wr
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = wr.calculation_id
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = wr.calculation_id
 WHERE wr.amount_type = "amount_per_charge"

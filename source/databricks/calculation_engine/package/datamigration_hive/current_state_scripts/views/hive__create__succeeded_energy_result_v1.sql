@@ -40,4 +40,4 @@ SELECT c.calculation_id,
        END as settlement_method,
        e.metering_point_id
 FROM {HIVE_OUTPUT_DATABASE_NAME}.energy_results AS e
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id

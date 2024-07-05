@@ -13,9 +13,9 @@ SELECT c.calculation_id,
        m.grid_area_code,
        m.energy_supplier_id,
        cp.is_tax
-FROM {BASIS_DATA_DATABASE_NAME}.charge_link_periods AS l
+FROM {HIVE_BASIS_DATA_DATABASE_NAME}.charge_link_periods AS l
 INNER JOIN (
-  SELECT distinct calculation_id, metering_point_id, metering_point_type, energy_supplier_id, grid_area_code FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods
+  SELECT distinct calculation_id, metering_point_id, metering_point_type, energy_supplier_id, grid_area_code FROM {HIVE_BASIS_DATA_DATABASE_NAME}.metering_point_periods
 ) AS m ON m.metering_point_id = l.metering_point_id AND m.calculation_id = l.calculation_id
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = l.calculation_id
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.charge_price_information_periods AS cp ON cp.calculation_id = l.calculation_id AND cp.charge_key = l.charge_key
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = l.calculation_id
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.charge_price_information_periods AS cp ON cp.calculation_id = l.calculation_id AND cp.charge_key = l.charge_key

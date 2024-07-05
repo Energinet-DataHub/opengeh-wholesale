@@ -19,49 +19,49 @@ SET TBLPROPERTIES(
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.metering_point_periods
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.time_series_points
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.time_series_points
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_price_points
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.charge_price_points
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_link_periods
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.charge_link_periods
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
 
 GO
 
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
+ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
 SET TBLPROPERTIES(
     delta.deletedFileRetentionDuration = "interval 30 days"
 )
