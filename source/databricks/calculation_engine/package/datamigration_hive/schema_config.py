@@ -85,11 +85,11 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_link_periods_schema,
+                schema=basis_data_schemas.hive_charge_link_periods_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_information_periods_schema,
+                schema=basis_data_schemas.hive_charge_price_information_periods_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,

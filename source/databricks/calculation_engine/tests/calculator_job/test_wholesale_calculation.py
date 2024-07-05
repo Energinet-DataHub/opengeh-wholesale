@@ -18,10 +18,10 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema,
+    hive_charge_link_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
+    hive_charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,

@@ -23,10 +23,10 @@ from calculation.output.calculations_storage_model_test_factory import (
     create_calculations,
 )
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema,
+    hive_charge_link_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
+    hive_charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
@@ -175,7 +175,7 @@ def create_charge_price_information(
         data = [create_charge_price_information_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, charge_price_information_periods_schema)
+    df = spark.createDataFrame(data, hive_charge_price_information_periods_schema)
     return ChargePriceInformation(df)
 
 
@@ -197,7 +197,7 @@ def create_charge_links(
         data = [create_charge_link_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data, charge_link_periods_schema)
+    return spark.createDataFrame(data, hive_charge_link_periods_schema)
 
 
 def create_calculation_args() -> CalculatorArgs:
@@ -211,6 +211,7 @@ def create_calculation_args() -> CalculatorArgs:
         time_zone=DefaultValues.TIME_ZONE,
         quarterly_resolution_transition_datetime=DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
         created_by_user_id=DefaultValues.CREATED_BY_USER_ID,
+        is_simulation=False,
     )
 
 
