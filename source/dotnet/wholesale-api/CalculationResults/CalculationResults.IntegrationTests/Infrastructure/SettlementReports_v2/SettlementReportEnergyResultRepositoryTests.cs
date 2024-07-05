@@ -43,11 +43,11 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
         });
 
         Fixture.Inject(mockedOptions);
-        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
+        var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
             mockedOptions.Object,
-            _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
+            sqlWarehouseQueryExecutor));
     }
 
     [Fact]
