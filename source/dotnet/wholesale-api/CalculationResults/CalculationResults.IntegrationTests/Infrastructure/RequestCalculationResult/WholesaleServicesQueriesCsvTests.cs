@@ -264,7 +264,7 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         */
 
         await ClearAndAddDatabricksDataAsync();
-        await DoTheThing("5790001687137", Instant.FromUtc(2022, 1, 15, 0, 0), null);
+        await RemoveDataForEnergySupplierInTimespan("5790001687137", Instant.FromUtc(2022, 1, 15, 0, 0), null);
 
         var totalPeriod = new Period(
             Instant.FromUtc(2021, 12, 31, 23, 0),
@@ -298,7 +298,10 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     public async Task Given_EnergySupplierWithAHoleInData_Then_DataReturnedInOneChunkWithAHole()
     {
         await ClearAndAddDatabricksDataAsync();
-        await DoTheThing("5790001687137", Instant.FromUtc(2022, 1, 20, 0, 0), Instant.FromUtc(2022, 1, 10, 0, 0));
+        await RemoveDataForEnergySupplierInTimespan(
+            "5790001687137",
+            Instant.FromUtc(2022, 1, 20, 0, 0),
+            Instant.FromUtc(2022, 1, 10, 0, 0));
 
         var totalPeriod = new Period(
             Instant.FromUtc(2021, 12, 31, 23, 0),
@@ -377,7 +380,7 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             wholesaleTestFile);
     }
 
-    private async Task DoTheThing(string energySupplierId, Instant before, Instant? after)
+    private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)
     {
         var statement = new DeleteStatement(
             _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,

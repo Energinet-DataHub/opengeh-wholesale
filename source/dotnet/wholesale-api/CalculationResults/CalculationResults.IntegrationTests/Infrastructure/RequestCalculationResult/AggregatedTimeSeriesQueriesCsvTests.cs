@@ -13,10 +13,14 @@
 // limitations under the License.
 
 using AutoFixture;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -393,6 +397,130 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         });
     }
 
+    [Fact]
+    public async Task
+        Given_NoEnergySupplierAndBalanceResponsibleAndGridArea_IdenticalToRequestsForEachGridAreaIndividually()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 8, 23, 0));
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            TimeSeriesTypes: [TimeSeriesType.NonProfiledConsumption],
+            GridAreaCodes: [],
+            EnergySupplierId: null,
+            BalanceResponsibleId: null,
+            CalculationType: CalculationType.Aggregation,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        var eachGridAreaIndividually = new List<AggregatedTimeSeries>();
+        foreach (var parametersForGridArea in new[] { "543", "584", "804", }
+                     .Select(gridArea => parameters with { GridAreaCodes = [gridArea] }))
+        {
+            eachGridAreaIndividually.AddRange(await Sut.GetAsync(parametersForGridArea).ToListAsync());
+        }
+
+        actual.Should().NotBeEmpty().And.BeEquivalentTo(eachGridAreaIndividually);
+    }
+
+    [Fact]
+    public async Task Given_EnergySupplierOnlyHaveDataForHalfOfThePeriod_Then_DataReturnedWithModifiedPeriod()
+    {
+        /*
+         Business case example:
+         When a new Energy Supplier is being made responsible for a metering point in the middle of the month,
+         and they do not yet have a metering point in the grid area from the beginning of the month.
+         The result is that the Energy Supplier will only have results for the last half of the month.
+        */
+
+        await ClearAndAddDatabricksDataAsync();
+        await RemoveDataForEnergySupplierInTimespan("5790002617263", Instant.FromUtc(2022, 1, 4, 0, 0), null);
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 8, 23, 0));
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            TimeSeriesTypes: [TimeSeriesType.NonProfiledConsumption],
+            GridAreaCodes: [],
+            EnergySupplierId: "5790002617263",
+            BalanceResponsibleId: null,
+            CalculationType: CalculationType.SecondCorrectionSettlement,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.CalculationType,
+                ats.Version))
+            .Should()
+            .BeEquivalentTo([
+                ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 4, 1, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 3),
+            ]);
+
+        actual.Should().AllSatisfy(ats =>
+        {
+            ats.TimeSeriesPoints.Should()
+                .AllSatisfy(etsp => etsp.Time.ToInstant().Should().BeGreaterOrEqualTo(ats.PeriodStart))
+                .And.AllSatisfy(etsp => etsp.Time.ToInstant().Should().BeLessThan(ats.PeriodEnd))
+                .And.AllSatisfy(etsp =>
+                {
+                    etsp.Time.Minute.Should().Be(0);
+                    etsp.Time.Second.Should().Be(0);
+                })
+                .And.OnlyHaveUniqueItems(etsp => etsp.Time);
+        });
+    }
+
+    [Fact]
+    public async Task Given_EnergySupplierWithAHoleInData_Then_DataReturnedInOneChunkWithAHole()
+    {
+        await ClearAndAddDatabricksDataAsync();
+        await RemoveDataForEnergySupplierInTimespan(
+            "5790002617263",
+            Instant.FromUtc(2022, 1, 5, 0, 0),
+            Instant.FromUtc(2022, 1, 3, 0, 0));
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 8, 23, 0));
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            TimeSeriesTypes: [TimeSeriesType.NonProfiledConsumption],
+            GridAreaCodes: [],
+            EnergySupplierId: "5790002617263",
+            BalanceResponsibleId: null,
+            CalculationType: CalculationType.ThirdCorrectionSettlement,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.CalculationType,
+                ats.Version))
+            .Should()
+            .BeEquivalentTo([
+                ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.ThirdCorrectionSettlement, 2),
+            ]);
+
+        actual.Should().AllSatisfy(ats =>
+        {
+            ats.TimeSeriesPoints.Should().AllSatisfy(etsp =>
+            {
+                ((object)etsp.Time).Should().Match<DateTimeOffset>(time =>
+                    time <= new DateTimeOffset(2022, 1, 3, 0, 0, 0, TimeSpan.Zero)
+                    || time > new DateTimeOffset(2022, 1, 5, 0, 0, 0, TimeSpan.Zero));
+            });
+        });
+    }
+
     private async Task ClearAndAddDatabricksDataAsync()
     {
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
@@ -415,6 +543,39 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
                 _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
                 EnergyResultsTableSchemaDefinition.SchemaDefinition,
                 energyTestFile);
+        }
+    }
+
+    private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)
+    {
+        var statement = new DeleteStatement(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+            energySupplierId,
+            before,
+            after);
+
+        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+    }
+
+    private class DeleteStatement(
+        DeltaTableOptions deltaTableOptions,
+        string energySupplierId,
+        Instant before,
+        Instant? after) : DatabricksStatement
+    {
+        private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
+        private readonly string _energySupplierId = energySupplierId;
+        private readonly Instant _before = before;
+        private readonly Instant? _after = after;
+
+        protected override string GetSqlStatement()
+        {
+            return $"""
+                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+                    WHERE {EnergyResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
+                    AND {EnergyResultColumnNames.Time} <= '{_before}'
+                    {(_after is not null ? $"AND {EnergyResultColumnNames.Time} > '{_after}'" : string.Empty)}
+                    """;
         }
     }
 }
