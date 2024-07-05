@@ -50,7 +50,6 @@ public class AggregatedTimeSeriesQueryStatement(
                    {_whereClauseProvider.GetWhereClauseSqlExpression(_parameters, "er")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
                    GROUP BY {EnergyResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
                    ON erv.{EnergyResultColumnNames.Time} = maxver.max_time AND erv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(erv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
-                   --{_whereClauseProvider.GetWhereClauseSqlExpression(_parameters, "erv")}
                    """;
 
         // The order is important for combining the rows into packages, since the sql rows are streamed and packages

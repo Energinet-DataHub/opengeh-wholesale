@@ -37,7 +37,6 @@ public class AggregatedTimeSeriesQueries(
 
     private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
-    /*private readonly WholesaleServicesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;*/
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
