@@ -177,7 +177,6 @@ def test__when_energy_calculation__basis_data_is_stored(
 def test__when_energy_calculation__calculation_is_stored(
     spark: SparkSession,
     executed_balance_fixing: None,
-    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     # Arrange
     actual = spark.read.table(
