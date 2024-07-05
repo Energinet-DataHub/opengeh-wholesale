@@ -44,6 +44,7 @@ def calculator_args_balance_fixing() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
+        is_simulation=False,
     )
 
 
@@ -80,7 +81,7 @@ def executed_balance_fixing(
         calculation_input_path,
     )
     prepared_data_reader = PreparedDataReader(table_reader)
-    calculation.execute(calculator_args_balance_fixing, prepared_data_reader, spark)
+    calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
@@ -100,7 +101,7 @@ def executed_wholesale_fixing(
 
     table_reader = TableReader(spark, calculation_input_path)
     prepared_data_reader = PreparedDataReader(table_reader)
-    calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader, spark)
+    calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
