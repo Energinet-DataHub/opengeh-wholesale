@@ -14,20 +14,20 @@
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public class ChargeTypeValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
+public class ChargeCodeValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
-    private static readonly ValidationError _chargeTypeIdIsToLongError = new ValidationError(
+    private static readonly ValidationError _chargeCodeLengthInvalidError = new(
         "Følgende chargeType mRID er for lang: {PropertyName}. Den må højst indeholde 10 karaktere/"
         + "The following chargeType mRID is to long: {PropertyName} It must at most be 10 characters",
         "D14");
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
-        var chargeTypesWithToLongType = subject.ChargeTypes.Where(chargeType => chargeType.ChargeType_.Length > 10).ToList();
+        var chargeTypesWithToLongType = subject.ChargeTypes.Where(chargeType => chargeType.ChargeCode.Length > 10).ToList();
 
-        if (chargeTypesWithToLongType.Any())
+        if (chargeTypesWithToLongType.Count != 0)
         {
-            var errors = chargeTypesWithToLongType.Select(chargeType => _chargeTypeIdIsToLongError.WithPropertyName(chargeType.ChargeType_)).ToList();
+            var errors = chargeTypesWithToLongType.Select(chargeType => _chargeCodeLengthInvalidError.WithPropertyName(chargeType.ChargeCode)).ToList();
             return Task.FromResult<IList<ValidationError>>(errors);
         }
 

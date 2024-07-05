@@ -53,7 +53,8 @@ public class DatabricksCalculatorJobParametersFactoryTests
             .Replace("{calculation-id}", calculation.Id.ToString())
             .Replace("\r", string.Empty)
             .Split("\n") // Split lines
-            .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
+            .Where(l => !l.StartsWith("#") && l.Length > 0) // Remove empty and comment lines
+            .Where(l => l != "--simulation"); // Ignore optional simulation parameter
         var expected = RunParameters.CreatePythonParams(pythonParams);
 
         // Act
