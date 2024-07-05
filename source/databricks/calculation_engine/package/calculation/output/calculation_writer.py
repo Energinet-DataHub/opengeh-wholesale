@@ -15,7 +15,7 @@ from dependency_injector.wiring import inject
 from pyspark.sql import DataFrame
 
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import BasisDataDatabase
+from package.infrastructure.paths import HiveBasisDataDatabase
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
@@ -26,5 +26,5 @@ def write_calculation(calculations: DataFrame) -> None:
     calculations.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(
-        f"{BasisDataDatabase.DATABASE_NAME}.{BasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+        f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
     )
