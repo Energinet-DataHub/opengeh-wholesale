@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Test.Core;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 using Xunit;
 
@@ -61,14 +62,33 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
     [Fact]
     public async Task AddAsync_CalculationContainsExecutionTime()
     {
+        /*        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var calculated = now.PlusMinutes(1);
+        var enqueueing = now.PlusMinutes(2);
+        var expected = now.PlusMinutes(3);
+
+        var sut = new CalculationBuilder().Build();
+        sut.MarkAsSubmitted(new CalculationJobId(1));
+        sut.MarkAsCalculating();
+        sut.MarkAsCalculated(calculated);
+        sut.MarkAsActorMessagesEnqueuing(enqueueing);
+
+        // Act
+        sut.MarkAsActorMessagesEnqueued(expected);*/
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var calculation = CreateCalculation(someGridAreasIds);
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var calculated = now.PlusMinutes(1);
+        var enqueueing = now.PlusMinutes(2);
+        var expected = now.PlusMinutes(3);
         var sut = new CalculationRepository(writeContext);
         calculation.MarkAsCalculating(); // This call will ensure ExecutionTimeStart is set
-        calculation.MarkAsCalculated(
-            calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
+        calculation.MarkAsCalculated(calculated);
+        calculation.MarkAsActorMessagesEnqueuing(enqueueing);
+        calculation.MarkAsActorMessagesEnqueued(expected);
         calculation.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
         calculation.ExecutionTimeStart.Should().NotBeNull(); // Additional check
 
