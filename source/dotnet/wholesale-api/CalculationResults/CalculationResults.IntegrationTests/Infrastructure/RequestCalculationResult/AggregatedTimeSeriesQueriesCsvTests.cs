@@ -51,7 +51,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     }
 
     [Fact]
-    public async Task Energy_supplier_across_grid_areas()
+    public async Task Given_EnergySupplierAcrossGridAreas_Then_RelevantDataFromRelevantGridAreasReturned()
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -111,7 +111,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     }
 
     [Fact]
-    public async Task Energy_supplier_in_single_grid_area()
+    public async Task Given_EnergySupplierAndGridArea_Then_RelevantDataFromSpecifiedGridAreaReturned()
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -165,7 +165,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     }
 
     [Fact]
-    public async Task Energy_supplier_and_balance_responsible()
+    public async Task Given_EnergySupplierAndBalanceResponsibleAndGridArea_Then_DataFilteredCorrectlyReturned()
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -213,7 +213,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     }
 
     [Fact]
-    public async Task Balance_responsible_without_energy_supplier_and_grid_area()
+    public async Task Given_BalanceResponsibleAndGridArea_Then_RelevantDataFromGridAreaReturned()
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -262,7 +262,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     }
 
     [Fact]
-    public async Task Grid_owner_for_grid_area()
+    public async Task Given_GridArea_Then_GridOperatorDataForGridAreaReturned()
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -399,7 +399,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
 
     [Fact]
     public async Task
-        Given_NoEnergySupplierAndBalanceResponsibleAndGridArea_IdenticalToRequestsForEachGridAreaIndividually()
+        Given_NoEnergySupplierAndBalanceResponsibleAndGridArea_Then_IdenticalToRequestsForEachGridAreaIndividually()
     {
         await ClearAndAddDatabricksDataAsync();
 
