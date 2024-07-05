@@ -25,7 +25,7 @@ def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
         "{INPUT_FOLDER}": migration_args.calculation_input_folder,
         "{TEST}": paths.TEST,
         "{BASIS_DATA_FOLDER}": paths.HiveBasisDataDatabase.FOLDER_NAME,
-        "{BASIS_DATA_DATABASE_NAME}": paths.HiveBasisDataDatabase.DATABASE_NAME,
+        "{HIVE_BASIS_DATA_DATABASE_NAME}": paths.HiveBasisDataDatabase.DATABASE_NAME,
         "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
         "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SettlementReportPublicDataModel.DATABASE_NAME,
     }
