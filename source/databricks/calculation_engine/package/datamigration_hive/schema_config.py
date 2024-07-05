@@ -15,7 +15,6 @@ from spark_sql_migrations import Schema, Table, View
 
 import package.calculation.basis_data.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
-
 # calculation_input
 from package.calculation.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
@@ -23,13 +22,12 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
 from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
 )
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
-    total_monthly_amounts_schema,
-)
 from package.calculation.output.schemas.monthly_amounts_schema import (
     monthly_amounts_schema,
 )
-
+from package.calculation.output.schemas.total_monthly_amounts_schema import (
+    total_monthly_amounts_schema,
+)
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
     wholesale_results_schema,
@@ -127,7 +125,7 @@ schema_config = [
             ),
             View(name=paths.SettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1),
             View(
-                name=paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+                name=paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_PER_ES_VIEW_NAME_V1
             ),
             View(
                 name=paths.SettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1

@@ -382,7 +382,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_PER_ES_VIEW_NAME_V1}",
             True,
         ),
         (
