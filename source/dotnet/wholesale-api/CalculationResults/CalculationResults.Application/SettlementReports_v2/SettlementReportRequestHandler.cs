@@ -60,15 +60,15 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 ..filesInReport,
                 ..reportRequest.Filter.CalculationType switch
                 {
-                    CalculationType.BalanceFixing => filesInReport,
-                    CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement =>
-                    [
+                    CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement => new[]
+                    {
                         new { Content = SettlementReportFileContent.ChargeLinksPeriods, Name = "CHARGELINK", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.Pt15M, Name = "TSSD15", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.Pt1H, Name = "TSSD60", SplitReportPerGridArea = true },
                         new { Content = SettlementReportFileContent.ChargePrice, Name = "CHARGEPRICE", SplitReportPerGridArea = true },
-                    ],
+                    },
+                    CalculationType.BalanceFixing => [],
                     _ => throw new InvalidOperationException($"Cannot generate basis data for calculation type {reportRequest.Filter.CalculationType}."),
                 }
             ];
