@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     StructType,
 )
 
-charge_link_periods_schema = StructType(
+hive_charge_link_periods_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("charge_key", StringType(), False),
