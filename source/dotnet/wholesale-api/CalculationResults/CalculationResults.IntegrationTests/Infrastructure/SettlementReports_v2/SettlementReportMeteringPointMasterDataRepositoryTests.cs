@@ -200,6 +200,47 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
     }
 
     [Fact]
+    public async Task Count_LatestValidFilterWithEnergySupplier_ReturnsCount()
+    {
+        var calculationId1 = Guid.NewGuid().ToString();
+        var calculationId2 = Guid.NewGuid().ToString();
+        var calculationId3 = Guid.NewGuid().ToString();
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
+            [
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ea'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583197'"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
+            ]);
+
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultPerEnergySupplierViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME,
+            [
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "8297670583196"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634", "8297670583197"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634", "8297670583197"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634", "8297670583197"],
+            ]);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                "8297670583197",
+                "da-DK"),
+            int.MaxValue);
+
+        Assert.Equal(2, actual);
+    }
+
+    [Fact]
     public async Task Get_LatestValidFilterNoEnergySupplier_ReturnsCorrectRows()
     {
         var calculationId1 = Guid.NewGuid().ToString();
