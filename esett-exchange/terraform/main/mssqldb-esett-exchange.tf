@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_esett_exchange" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.23.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.32.0"
 
   name                 = "esett-exchange"
   enclave_type         = null

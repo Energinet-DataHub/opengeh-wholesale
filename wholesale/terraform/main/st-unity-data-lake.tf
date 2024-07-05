@@ -1,5 +1,5 @@
 module "st_data_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.32.0"
 
   name                       = "data"
   project_name               = var.domain_name_short
@@ -10,7 +10,6 @@ module "st_data_wholesale" {
   account_replication_type   = "GRS"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
-  prevent_deletion           = true
   role_assignments = [
     {
       principal_id         = data.azurerm_key_vault_secret.shared_access_connector_principal_id.value

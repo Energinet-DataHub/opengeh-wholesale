@@ -1,5 +1,5 @@
 module "st_data_lake" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.32.0"
 
   name                       = "datalake"
   project_name               = var.domain_name_short

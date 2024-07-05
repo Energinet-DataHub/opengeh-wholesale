@@ -4,7 +4,7 @@
 }
 
 module "mssqldb" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.23.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.32.0"
 
   name                 = "data"
   location             = azurerm_resource_group.this.location
