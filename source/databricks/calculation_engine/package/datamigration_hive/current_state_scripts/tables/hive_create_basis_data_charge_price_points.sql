@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
+CREATE TABLE IF NOT EXISTS {HIVE_BASIS_DATA_DATABASE_NAME}.charge_price_points
 (
     calculation_id STRING NOT NULL,
     charge_key STRING NOT NULL,
