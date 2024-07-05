@@ -79,6 +79,7 @@ jobs:
               - '.github/workflows/ci-dotnet.yml'
               - '.github/actions/dotnet-*/**'
               - 'source/dotnet/!(Packages/**)/**'
+              - 'source/databricks/calculation_engine/contracts/calculation-job-parameters-reference.txt'
             packages:
               - 'source/dotnet/wholesale-integration-events-package/**'
               - 'source/dotnet/wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**'
