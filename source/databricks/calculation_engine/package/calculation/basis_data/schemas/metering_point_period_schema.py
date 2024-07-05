@@ -33,7 +33,7 @@ metering_point_period_schema = StructType(
         StructField("energy_supplier_id", StringType(), True),
         StructField("balance_responsible_id", StringType(), True),
         StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), True),
+        StructField("to_date", TimestampType(), False),
     ]
 )
 
