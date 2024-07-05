@@ -30,8 +30,7 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
 [Collection(nameof(SettlementReportFileCollectionFixture))]
-public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>,
-    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>
 {
     private const string GridAreaA = "018";
     private readonly string[] _gridAreaCodes = [GridAreaA];
