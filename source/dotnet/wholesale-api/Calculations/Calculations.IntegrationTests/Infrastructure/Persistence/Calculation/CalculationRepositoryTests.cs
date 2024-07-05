@@ -62,20 +62,6 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
     [Fact]
     public async Task AddAsync_CalculationContainsExecutionTime()
     {
-        /*        // Arrange
-        var now = SystemClock.Instance.GetCurrentInstant();
-        var calculated = now.PlusMinutes(1);
-        var enqueueing = now.PlusMinutes(2);
-        var expected = now.PlusMinutes(3);
-
-        var sut = new CalculationBuilder().Build();
-        sut.MarkAsSubmitted(new CalculationJobId(1));
-        sut.MarkAsCalculating();
-        sut.MarkAsCalculated(calculated);
-        sut.MarkAsActorMessagesEnqueuing(enqueueing);
-
-        // Act
-        sut.MarkAsActorMessagesEnqueued(expected);*/
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
