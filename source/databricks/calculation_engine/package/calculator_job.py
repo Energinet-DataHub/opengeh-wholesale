@@ -31,7 +31,6 @@ from package.calculator_job_args import (
 from package.container import create_and_configure_container
 from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
-from package.infrastructure.storage_account_access import islocked
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -56,7 +55,6 @@ def start_with_deps(
         ..., Tuple[CalculatorArgs, InfrastructureSettings]
     ] = parse_job_arguments,
     calculation_executor: Callable[..., None] = calculation.execute,
-    is_storage_locked_checker: Callable[..., bool] = islocked,
 ) -> None:
     """Start overload with explicit dependencies for easier testing."""
 
@@ -80,17 +78,17 @@ def start_with_deps(
             span.set_attributes(config.get_extras())
 
             args, infrastructure_settings = parse_job_args(command_line_args)
-            create_and_configure_container(infrastructure_settings)
 
-            raise_if_storage_is_locked(
-                is_storage_locked_checker, infrastructure_settings
-            )
+            if args.is_simulation:
+                raise NotImplementedError("Simulation is not implemented.")
 
             spark = initialize_spark()
+            create_and_configure_container(spark, infrastructure_settings)
+
             prepared_data_reader = create_prepared_data_reader(
                 infrastructure_settings, spark
             )
-            calculation_executor(args, prepared_data_reader, spark)
+            calculation_executor(args, prepared_data_reader)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
@@ -126,14 +124,3 @@ def create_prepared_data_reader(
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
     return prepared_data_reader
-
-
-def raise_if_storage_is_locked(
-    is_storage_locked_checker: Callable[..., bool], settings: InfrastructureSettings
-) -> None:
-    if is_storage_locked_checker(
-        settings.data_storage_account_name, settings.data_storage_account_credentials
-    ):
-        raise Exception(
-            "Exiting because storage is locked due to data migrations running."
-        )

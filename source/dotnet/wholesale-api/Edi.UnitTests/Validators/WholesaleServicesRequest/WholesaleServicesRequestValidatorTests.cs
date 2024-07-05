@@ -136,7 +136,7 @@ public sealed class WholesaleServicesRequestValidatorTests
     public async Task Validate_WhenChargeTypeIsToLong_ReturnsUnsuccessfulValidation()
     {
         // Arrange
-        var chargeTypeInRequest = new ChargeType() { ChargeCode = "123", ChargeType_ = "ThisIsMoreThan10CharsLong", };
+        var chargeTypeInRequest = new ChargeType() { ChargeCode = "ThisIsMoreThan10CharsLong", ChargeType_ = "123", };
 
         var request = new WholesaleServicesRequestBuilder()
             .WithChargeTypes(chargeTypeInRequest)

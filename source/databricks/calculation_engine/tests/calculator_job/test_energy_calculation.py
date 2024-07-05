@@ -27,83 +27,71 @@ from . import configuration as c
 ALL_ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NET_EXCHANGE_PER_GA.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.BALANCE_RESPONSIBLE_PARTY.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.BALANCE_RESPONSIBLE_PARTY.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.BALANCE_RESPONSIBLE_PARTY.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
 }
 
@@ -163,9 +151,9 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 @pytest.mark.parametrize(
     "basis_data_table_name",
     [
-        paths.BasisDataDatabase.CALCULATIONS_TABLE_NAME,
-        paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+        paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
+        paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
     ],
 )
 def test__when_energy_calculation__basis_data_is_stored(
@@ -175,7 +163,7 @@ def test__when_energy_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.

@@ -24,7 +24,7 @@ from package.calculation.basis_data.schemas import calculations_schema
 from package.calculation.input import TableReader
 from package.codelists import CalculationType
 from package.constants.basis_data_colname import CalculationsColumnName
-from package.infrastructure.paths import BasisDataDatabase
+from package.infrastructure.paths import HiveBasisDataDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -69,15 +69,15 @@ class TestWhenValidInput:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         calculations_table_location = (
-            f"{calculation_input_path}/{BasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+            f"{calculation_input_path}/{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
         )
         row = _create_calculation_row()
         df = spark.createDataFrame(data=[row], schema=calculations_schema)
         write_dataframe_to_table(
             spark,
             df,
-            BasisDataDatabase.DATABASE_NAME,
-            BasisDataDatabase.CALCULATIONS_TABLE_NAME,
+            HiveBasisDataDatabase.DATABASE_NAME,
+            HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
             calculations_table_location,
             calculations_schema,
         )

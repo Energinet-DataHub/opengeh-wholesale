@@ -70,6 +70,7 @@ jobs:
               - '.devcontainer/docker-compose.yml'
               - '.docker/requirements.txt'
             delta_migrations:
+              - 'source/databricks/calculation_engine/package/datamigration_hive/**'
               - 'source/databricks/calculation_engine/package/datamigration/**'
               - 'source/databricks/calculation_engine/tests/datamigration/**'
               - 'source/databricks/calculation_engine/tests/helpers/spark_sql_migration_helper.py'
@@ -78,7 +79,7 @@ jobs:
               - '.github/workflows/ci-dotnet.yml'
               - '.github/actions/dotnet-*/**'
               - 'source/dotnet/!(Packages/**)/**'
-              - 'source/databricks/calculation_engine/package/datamigration/migration_scripts/**'
+              - 'source/databricks/calculation_engine/contracts/calculation-job-parameters-reference.txt'
             packages:
               - 'source/dotnet/wholesale-integration-events-package/**'
               - 'source/dotnet/wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**'

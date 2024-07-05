@@ -43,8 +43,7 @@ class TestWhenInvokedWithValidArguments:
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
             parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=lambda args, reader, spark: None,
-            is_storage_locked_checker=lambda name, cred: False,
+            calculation_executor=lambda args, reader: None,
         )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(

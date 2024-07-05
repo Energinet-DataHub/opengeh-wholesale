@@ -24,10 +24,12 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
     where TClassMap : ClassMap<TRow>
 {
     private readonly int _chunkSize;
+    private readonly HashSet<int>? _quotedColumns;
 
-    protected CsvFileGeneratorBase(int chunkSize)
+    protected CsvFileGeneratorBase(int chunkSize, HashSet<int>? quotedColumns = null)
     {
         _chunkSize = chunkSize;
+        _quotedColumns = quotedColumns;
     }
 
     public string FileExtension => ".csv";
@@ -45,19 +47,38 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         long maximumCalculationVersion,
         StreamWriter destination)
     {
-        var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
+        bool IncludeHeader()
+        {
+            return fileInfo is { FileOffset: 0, ChunkOffset: 0 };
+        }
+
+        bool IsHeaderRow(ShouldQuoteArgs args)
+        {
+            return IncludeHeader() && args.Row.Row == 1;
+        }
+
+        bool ShouldQuote(ShouldQuoteArgs args)
+        {
+            return _quotedColumns is { Count: > 0 } &&
+                   _quotedColumns.Contains(args.Row.Index);
+        }
+
+        var csvHelper = new CsvWriter(destination, new CsvConfiguration(new CultureInfo(filter.CsvFormatLocale ?? "en-US"))
+        {
+            ShouldQuote = args => !IsHeaderRow(args) && ShouldQuote(args),
+        });
+
         RegisterClassMap(csvHelper, filter, actorInfo);
-        ConfigureCsv(csvHelper);
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            if (fileInfo is { FileOffset: 0, ChunkOffset: 0 })
+            if (IncludeHeader())
             {
                 WriteHeader(csvHelper);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, 0, _chunkSize);
+            var dataSourceEnumerable = GetAsync(filter, actorInfo, maximumCalculationVersion, fileInfo.ChunkOffset * _chunkSize, _chunkSize);
 
             await foreach (var record in dataSourceEnumerable.ConfigureAwait(false))
             {
@@ -75,10 +96,6 @@ public abstract class CsvFileGeneratorBase<TRow, TClassMap> : ISettlementReportF
         long maximumCalculationVersion,
         int skipChunks,
         int takeChunks);
-
-    protected virtual void ConfigureCsv(CsvWriter csvHelper)
-    {
-    }
 
     protected virtual void WriteHeader(CsvWriter csvHelper)
     {

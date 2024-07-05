@@ -31,27 +31,19 @@ public class AggregatedTimeSeriesQueries(
 {
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        if (parameters.LatestCalculationForPeriod.Count == 0)
-            yield break;
-
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, deltaTableOptions.Value);
 
-        var resultStream = GetDataAsync(sqlStatement, parameters.LatestCalculationForPeriod);
+        var resultStream = GetDataAsync(sqlStatement);
 
         await foreach (var aggregatedTimeSeries in resultStream.ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
-    protected override string CalculationIdColumnName => EnergyResultColumnNames.CalculationId;
-
-    protected override string TimeColumnName => EnergyResultColumnNames.Time;
-
-    protected override AggregatedTimeSeries CreatePackageFromRowData(RowData rowData, List<EnergyTimeSeriesPoint> timeSeriesPoints)
+    protected override AggregatedTimeSeries CreatePackageFromRowData(
+        DatabricksSqlRow rowData,
+        List<EnergyTimeSeriesPoint> timeSeriesPoints)
     {
-        return AggregatedTimeSeriesFactory.Create(
-            rowData.Row,
-            timeSeriesPoints,
-            rowData.CalculationPeriod.CalculationVersion);
+        return AggregatedTimeSeriesFactory.Create(rowData, timeSeriesPoints);
     }
 
     protected override EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
@@ -59,14 +51,11 @@ public class AggregatedTimeSeriesQueries(
         return EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(row);
     }
 
-    protected override bool RowBelongsToNewPackage(RowData current, RowData previous)
+    protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
-        var isInDifferentCalculationPeriod = current.CalculationPeriod != previous.CalculationPeriod;
-        return HasDifferentColumnValues(current.Row, previous.Row) || isInDifferentCalculationPeriod;
-    }
+        var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] != previous[EnergyResultColumnNames.CalculationId];
+        var hasDifferentColumnValues = AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column]);
 
-    private bool HasDifferentColumnValues(DatabricksSqlRow row1, DatabricksSqlRow row2)
-    {
-        return AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => row1[column] != row2[column]);
+        return hasDifferentColumnValues || notSameCalculationId;
     }
 }

@@ -18,10 +18,10 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema,
+    hive_charge_link_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
+    hive_charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
@@ -48,67 +48,55 @@ from . import configuration as c
 ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.NET_EXCHANGE_PER_GA.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ES_PER_GA.value,
+        AggregationLevel.ENERGY_SUPPLIER.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ES_PER_BRP_PER_GA.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
     (
         TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.TOTAL_GA.value,
+        AggregationLevel.GRID_AREA.value,
     ),
 }
 
@@ -271,7 +259,7 @@ def test__total_monthly_amounts__are_stored(
 
 def test__monthly_amounts__are_stored(
     spark: SparkSession,
-    wholesale_fixing_monthly_amounts: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge: DataFrame,
 ) -> None:
     # Arrange
 
@@ -279,12 +267,12 @@ def test__monthly_amounts__are_stored(
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert wholesale_fixing_monthly_amounts.count() > 0
+    assert wholesale_fixing_monthly_amounts_per_charge.count() > 0
 
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.BasisDataDatabase.TABLE_NAMES,
+    paths.HiveBasisDataDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -293,7 +281,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -307,27 +295,27 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
             metering_point_period_schema,
         ),
         (
-            paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-            charge_link_periods_schema,
+            paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            hive_charge_link_periods_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-            charge_price_information_periods_schema,
+            paths.HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            hive_charge_price_information_periods_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
         ),
         (
-            paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
             grid_loss_metering_points_schema,
         ),
     ],
@@ -340,7 +328,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.
