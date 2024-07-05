@@ -44,7 +44,7 @@ public sealed class SettlementReportWholesaleViewEntity
     public string MeteringPointType { get; set; } = null!;
 
     [Column("settlement_method")]
-    public string SettlementMethod { get; set; } = null!;
+    public string? SettlementMethod { get; set; }
 
     [Column("quantity_unit")]
     public string QuantityUnit { get; set; } = null!;
@@ -55,10 +55,10 @@ public sealed class SettlementReportWholesaleViewEntity
     [Column("quantity", TypeName = "decimal(18,3)")]
     public decimal? Quantity { get; set; }
 
-    [Column("price", TypeName = "decimal(18,3)")]
+    [Column("price", TypeName = "decimal(18,6)")]
     public decimal? Price { get; set; }
 
-    [Column("amount", TypeName = "decimal(18,3)")]
+    [Column("amount", TypeName = "decimal(18,6)")]
     public decimal? Amount { get; set; }
 
     [Column("charge_type")]
@@ -71,5 +71,5 @@ public sealed class SettlementReportWholesaleViewEntity
     public string ChargeOwnerId { get; set; } = null!;
 
     [Column("is_tax", TypeName = "int")]
-    public bool? IsTax { get; set; }
+    public bool IsTax { get; set; }
 }

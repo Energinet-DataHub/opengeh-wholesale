@@ -68,7 +68,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
     public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
     {
         return filter.EnergySupplier is not null
-            ? GetForEnergySupplierAsync(filter, maximumCalculationVersion, skip, take)
+            ? GetWithEnergySupplierAsync(filter, maximumCalculationVersion, skip, take)
             : GetWithoutEnergySupplierAsync(filter, maximumCalculationVersion, skip, take);
     }
 
@@ -94,7 +94,11 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             rows = filteredView
                 .Join(
                     chunkByDate,
-                    outer => new { max_calc_version = outer.CalculationVersion, start_of_day = DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen") },
+                    outer => new
+                    {
+                        max_calc_version = outer.CalculationVersion,
+                        start_of_day = DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
+                    },
                     inner => inner,
                     (outer, inner) => outer)
                 .AsAsyncEnumerable();
@@ -131,7 +135,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         }
     }
 
-    private async IAsyncEnumerable<SettlementReportEnergyResultRow> GetForEnergySupplierAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
+    private async IAsyncEnumerable<SettlementReportEnergyResultRow> GetWithEnergySupplierAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
     {
         IAsyncEnumerable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> rows;
 
@@ -153,7 +157,11 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             rows = filteredView
                 .Join(
                     chunkByDate,
-                    outer => new { max_calc_version = outer.CalculationVersion, start_of_day = DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen") },
+                    outer => new
+                    {
+                        max_calc_version = outer.CalculationVersion,
+                        start_of_day = DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
+                    },
                     inner => inner,
                     (outer, inner) => outer)
                 .AsAsyncEnumerable();
