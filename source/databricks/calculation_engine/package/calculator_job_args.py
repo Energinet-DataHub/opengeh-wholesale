@@ -74,7 +74,7 @@ def parse_job_arguments(
             created_by_user_id=job_args.created_by_user_id,
             time_zone=time_zone,
             quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
-            is_simulation=job_args.is_simulation,
+            is_simulation=job_args.simulation,
         )
 
         storage_account_name = env_vars.get_storage_account_name()
@@ -110,7 +110,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-end-datetime", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
     p.add("--created-by-user-id", type=str, required=True)
-    p.add("--is-simulation", type=bool, required=False, default=False)
+    p.add("--simulation", action="store_true")  # Flag, true if present, false otherwise
     # Infrastructure settings
     p.add("--calculation_input_folder_name", type=str, required=False)
     p.add("--time_series_points_table_name", type=str, required=False)

@@ -11,4 +11,5 @@
 --period-end-datetime=2022-06-01T22:00:00Z
 --calculation-type=balance_fixing
 --created-by-user-id=c2975345-d935-44a2-b7bf-2629db4aa8bf
---is-simulation=false
+# It's a flag: True if present, otherwise false
+--simulation
