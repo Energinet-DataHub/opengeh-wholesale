@@ -22,14 +22,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persiste
 
 public sealed class SettlementReportDatabricksContext : DatabricksContextBase, ISettlementReportDatabricksContext
 {
-    private readonly string _schemaName;
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
 
     public SettlementReportDatabricksContext(
         IOptions<DeltaTableOptions> deltaTableOptions,
         DatabricksSqlWarehouseQueryExecutor sqlWarehouseQueryExecutor)
         : base(sqlWarehouseQueryExecutor)
     {
-        _schemaName = deltaTableOptions.Value.SettlementReportSchemaName;
+        _deltaTableOptions = deltaTableOptions;
     }
 
     public IQueryable<SettlementReportWholesaleViewEntity> WholesaleView => Set<SettlementReportWholesaleViewEntity>();
@@ -40,7 +40,7 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema(_schemaName);
+        modelBuilder.HasDefaultSchema(_deltaTableOptions.Value.SettlementReportSchemaName);
         modelBuilder.ApplyConfiguration(new SettlementReportWholesaleViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntityConfiguration());
