@@ -13,8 +13,8 @@ SELECT m.calculation_id,
        m.energy_supplier_id,
        DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')) AS observation_day,
        ARRAY_SORT(ARRAY_AGG(struct(t.observation_time, t.quantity)))                  AS quantities
-FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
-         JOIN (SELECT * FROM {BASIS_DATA_DATABASE_NAME}.time_series_points order by observation_time) AS t ON m.metering_point_id = t.metering_point_id AND m
+FROM {HIVE_BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
+         JOIN (SELECT * FROM {HIVE_BASIS_DATA_DATABASE_NAME}.time_series_points order by observation_time) AS t ON m.metering_point_id = t.metering_point_id AND m
              .calculation_id = t.calculation_id
 WHERE t.observation_time >= m.from_date
 AND (m.to_date IS NULL OR t.observation_time < m.to_date)

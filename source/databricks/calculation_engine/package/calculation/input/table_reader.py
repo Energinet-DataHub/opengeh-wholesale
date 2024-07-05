@@ -15,7 +15,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 from package.common import assert_schema
-from package.infrastructure.paths import InputDatabase, BasisDataDatabase
+from package.infrastructure.paths import InputDatabase, HiveBasisDataDatabase
 from .schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
@@ -82,7 +82,7 @@ class TableReader:
         return _read(self._spark, path, grid_loss_metering_points_schema)
 
     def read_calculations(self) -> DataFrame:
-        table_name = f"{BasisDataDatabase.DATABASE_NAME}.{BasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+        table_name = f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
         df = self._spark.read.format("delta").table(table_name)
 
         # Though it's our own table, we still want to make sure it has the expected schema as
