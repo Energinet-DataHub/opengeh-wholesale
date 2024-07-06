@@ -310,20 +310,20 @@ def test__when_wholesale_calculation__calculation_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-                paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                metering_point_period_schema_uc,
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            metering_point_period_schema_uc,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
         (
-                paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-                charge_link_periods_schema_uc,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            charge_link_periods_schema_uc,
         ),
         (
-                paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                charge_price_information_periods_schema_uc,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            charge_price_information_periods_schema_uc,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
