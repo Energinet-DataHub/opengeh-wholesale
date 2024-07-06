@@ -28,7 +28,7 @@ energy_per_ga_v1 = t.StructType(
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #
         # 'flex' | 'non_profiled'
-        t.StructField("settlement_method", t.StringType(), not nullable),
+        t.StructField("settlement_method", t.StringType(), nullable),
         #
         # 'PT15M' | 'PT1H'
         t.StructField("resolution", t.StringType(), not nullable),
