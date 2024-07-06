@@ -19,7 +19,7 @@ from pyspark.sql.types import (
     StructType,
 )
 
-hive_metering_point_period_schema = StructType(
+metering_point_period_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("metering_point_id", StringType(), False),
