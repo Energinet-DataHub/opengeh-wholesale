@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_DATABASE_NAME}.m
     to_grid_area_code STRING,
     parent_metering_point_id STRING,
     energy_supplier_id STRING,
-    balance_responsible_id STRING,
+    balance_responsible_party_id STRING,
     from_date TIMESTAMP NOT NULL,
     to_date TIMESTAMP NOT NULL
 )
