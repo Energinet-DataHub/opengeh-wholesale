@@ -22,26 +22,26 @@ schema_config = [
         views=[],
     ),
     Schema(
-        name=paths.WholesaleBasisDataDatabase.DATABASE_NAME,
+        name=paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.WholesaleBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+                name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.metering_point_period_schema,
             ),
             Table(
-                name=paths.WholesaleBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+                name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.time_series_point_schema,
             ),
             Table(
-                name=paths.WholesaleBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
-                name=paths.WholesaleBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
-                name=paths.WholesaleBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_points_schema,
             ),
         ],

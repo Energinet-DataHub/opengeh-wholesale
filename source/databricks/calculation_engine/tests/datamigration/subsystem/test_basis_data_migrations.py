@@ -14,12 +14,12 @@
 import pytest
 from pyspark.sql import SparkSession
 
-from package.infrastructure.paths import WholesaleBasisDataDatabase
+from package.infrastructure.paths import WholesaleBasisDataInternalDatabase
 
 
 @pytest.mark.parametrize(
     "table_name",
-    WholesaleBasisDataDatabase.TABLE_NAMES,
+    WholesaleBasisDataInternalDatabase.TABLE_NAMES,
 )
 def test__basis_data_table__is_managed(
     spark: SparkSession, migrations_executed: None, table_name: str
@@ -30,7 +30,7 @@ def test__basis_data_table__is_managed(
     """
 
     table_description = spark.sql(
-        f"DESCRIBE EXTENDED {WholesaleBasisDataDatabase.DATABASE_NAME}.{table_name}"
+        f"DESCRIBE EXTENDED {WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{table_name}"
     )
 
     is_managed = any(

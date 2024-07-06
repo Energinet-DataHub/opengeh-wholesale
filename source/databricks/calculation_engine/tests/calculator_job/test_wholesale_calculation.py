@@ -272,7 +272,7 @@ def test__monthly_amounts__are_stored(
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.WholesaleBasisDataDatabase.TABLE_NAMES,
+    paths.WholesaleBasisDataInternalDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -281,7 +281,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.WholesaleBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -295,23 +295,23 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.WholesaleBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
             metering_point_period_schema,
         ),
         (
-            paths.WholesaleBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
         (
-            paths.WholesaleBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
             charge_link_periods_schema,
         ),
         (
-            paths.WholesaleBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         ),
         (
-            paths.WholesaleBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
         ),
     ],
@@ -325,7 +325,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.

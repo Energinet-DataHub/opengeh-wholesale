@@ -152,8 +152,8 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 @pytest.mark.parametrize(
     "basis_data_table_name",
     [
-        paths.WholesaleBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        paths.WholesaleBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+        paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
     ],
 )
 def test__when_energy_calculation__basis_data_is_stored(
@@ -164,7 +164,7 @@ def test__when_energy_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.

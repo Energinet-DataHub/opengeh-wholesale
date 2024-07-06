@@ -50,8 +50,8 @@ class HiveOutputDatabase:
     SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
 
 
-class WholesaleBasisDataDatabase:
-    DATABASE_NAME = "wholesale_basis_data"
+class WholesaleBasisDataInternalDatabase:
+    DATABASE_NAME = "wholesale_basis_data_internal"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
