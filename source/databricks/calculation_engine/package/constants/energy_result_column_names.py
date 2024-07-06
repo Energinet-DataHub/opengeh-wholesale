@@ -18,13 +18,19 @@ from .result_column_names import ResultColumnNames
 
 class EnergyResultColumnNames(ResultColumnNames):
     time_series_type = "time_series_type"
+    """Obsolete"""
     neighbor_grid_area_code = "neighbor_grid_area_code"
     """The delta table column name ought to be renamed to 'from_grid_area'.
     It is, however, rather complicated compared to the value unless using Delta Lake column mapping,
     which comes with its own set of problems/limitations."""
     balance_responsible_id = "balance_responsible_id"
+    """Obsolete"""
     aggregation_level = "aggregation_level"
+    """Obsolete"""
+    metering_point_type = "metering_point_type"
     metering_point_id = "metering_point_id"
     quantity = "quantity"
     quantity_qualities = "quantity_qualities"
+    quantity_unit = "quantity_unit"
     resolution = "resolution"
+    settlement_method = "settlement_method"
