@@ -27,5 +27,5 @@ TBLPROPERTIES (
     delta.constraints.to_grid_area_code_chk = "to_grid_area_code IS NULL OR LENGTH ( to_grid_area_code ) = 3",
     delta.constraints.parent_metering_point_id_chk = "parent_metering_point_id IS NULL OR LENGTH ( parent_metering_point_id ) = 18",
     delta.constraints.energy_supplier_id_chk = "energy_supplier_id IS NULL OR LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
-    delta.constraints.balance_responsible_id_chk = "balance_responsible_id IS NULL OR LENGTH ( balance_responsible_id ) = 13 OR LENGTH ( balance_responsible_id ) = 16"
+    delta.constraints.balance_responsible_party_id_chk = "balance_responsible_party_id IS NULL OR LENGTH ( balance_responsible_party_id ) = 13 OR LENGTH ( balance_responsible_party_id ) = 16"
 )
