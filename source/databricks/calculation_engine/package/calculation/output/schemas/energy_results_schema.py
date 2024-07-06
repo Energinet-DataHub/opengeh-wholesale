@@ -24,7 +24,7 @@ from pyspark.sql.types import (
 from package.constants import EnergyResultColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
-energy_results_schema = StructType(
+hive_energy_results_schema = StructType(
     [
         # The grid area in question. In case of exchange it's the to-grid area.
         StructField(EnergyResultColumnNames.grid_area_code, StringType(), False),

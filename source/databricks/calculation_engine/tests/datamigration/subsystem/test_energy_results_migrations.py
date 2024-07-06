@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 
 from helpers.data_frame_utils import set_column
-from package.calculation.output.schemas import energy_results_schema
+from package.calculation.output.schemas import hive_energy_results_schema
 from package.codelists import (
     AggregationLevel,
     CalculationType,
@@ -53,7 +53,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.metering_point_id: None,
         EnergyResultColumnNames.resolution: MeteringPointResolution.QUARTER.value,
     }
-    return spark.createDataFrame(data=[row], schema=energy_results_schema)
+    return spark.createDataFrame(data=[row], schema=hive_energy_results_schema)
 
 
 @pytest.mark.parametrize(
