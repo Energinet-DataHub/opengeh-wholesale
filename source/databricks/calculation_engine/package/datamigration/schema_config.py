@@ -2,6 +2,9 @@ from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
 import package.calculation.basis_data.schemas as basis_data_schemas
+from package.calculation.output.schemas.monthly_amounts_schema import (
+    monthly_amounts_schema,
+)
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
@@ -16,7 +19,7 @@ schema_config = [
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
-                schema=total_monthly_amounts_schema,
+                schema=monthly_amounts_schema,
             ),
         ],
         views=[],

@@ -290,6 +290,22 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     assert actual.count() > 0
 
 
+def test__when_wholesale_calculation__calculation_is_stored(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
+
+
 @pytest.mark.parametrize(
     "basis_data_table_name, expected_schema",
     [
