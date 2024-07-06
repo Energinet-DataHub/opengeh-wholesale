@@ -21,7 +21,7 @@ import package.calculation.output.schemas as schemas
 from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
-from package.calculation.output.schemas import energy_results_schema
+from package.calculation.output.schemas import hive_energy_results_schema
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure import paths
@@ -150,7 +150,7 @@ def _write_to_hive(name: str, df: DataFrame) -> None:
         if df is None:
             return None
 
-        df = df.select(energy_results_schema.fieldNames())
+        df = df.select(hive_energy_results_schema.fieldNames())
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
