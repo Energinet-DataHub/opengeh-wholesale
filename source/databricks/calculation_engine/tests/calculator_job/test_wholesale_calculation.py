@@ -30,7 +30,7 @@ from package.calculation.basis_data.schemas.grid_loss_metering_points_schema imp
     grid_loss_metering_points_schema,
 )
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
-    metering_point_period_schema,
+    hive_metering_point_period_schema,
 )
 from package.calculation.basis_data.schemas.time_series_point_schema import (
     time_series_point_schema,
@@ -296,7 +296,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     [
         (
             paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_period_schema,
+            hive_metering_point_period_schema,
         ),
         (
             paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,

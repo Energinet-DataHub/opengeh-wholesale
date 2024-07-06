@@ -21,7 +21,7 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.output.schemas.energy_results_schema import (
-    energy_results_schema,
+    hive_energy_results_schema,
 )
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
@@ -45,7 +45,7 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
-                schema=energy_results_schema,
+                schema=hive_energy_results_schema,
             ),
             Table(
                 name=paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
@@ -77,7 +77,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_period_schema,
+                schema=basis_data_schemas.hive_metering_point_period_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
