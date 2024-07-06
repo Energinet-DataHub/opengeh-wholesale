@@ -11,15 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pyspark.sql.functions as f
+from dataclasses import fields
+
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
+from pyspark.sql.types import StructType
 
+import package.calculation.output.schemas as schemas
 from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
-from package.codelists import AggregationLevel
-from package.constants import EnergyResultColumnNames
+from package.calculation.output.schemas import energy_results_schema
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure import paths
@@ -33,10 +35,17 @@ from package.infrastructure.paths import (
 def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     """Write each energy result to the output table."""
 
+    # TODO BJM: Remove when we're on Unity Catalog
+    print("Writing energy results to Hive")
+    for field in fields(energy_results):
+        _write_to_hive(field.name, getattr(energy_results, field.name))
+
+    print("Writing energy results to Unity Catalog")
     _write(
         "net_exchange_per_neighbor_ga",
         energy_results.net_exchange_per_neighbor_ga,
         WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_GA_TABLE_NAME,
+        schemas.exchange_per_neighbor_ga_schema_uc,
     )
 
     energy_per_ga = _union(
@@ -53,6 +62,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "energy_per_ga",
         energy_per_ga,
         WholesaleResultsInternalDatabase.ENERGY_PER_GA_TABLE_NAME,
+        schemas.energy_per_ga_schema_uc,
     )
 
     energy_per_brp = _union(
@@ -64,6 +74,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "energy_per_brp",
         energy_per_brp,
         WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        schemas.energy_per_brp_schema_uc,
     )
 
     energy_per_es = _union(
@@ -78,6 +89,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "energy_per_es",
         energy_per_es,
         WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        schemas.energy_per_es_schema_uc,
     )
 
     grid_loss_metering_point_time_series = _union(
@@ -88,6 +100,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "grid_loss_metering_point_time_series",
         grid_loss_metering_point_time_series,
         WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
+        schemas.grid_loss_metering_point_time_series_schema_uc,
     )
 
 
@@ -111,6 +124,7 @@ def _write(
     name: str,
     df: DataFrame,
     table_name: str,
+    schema: StructType,
     infrastructure_settings: InfrastructureSettings = Provide[
         Container.infrastructure_settings
     ],
@@ -121,13 +135,23 @@ def _write(
         if df is None:
             return None
 
+        df = df.select(schema.fieldNames())
+
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
         )
 
-        # TODO BJM: Remove when we're on Unity Catalog
+
+def _write_to_hive(name: str, df: DataFrame) -> None:
+    with logging_configuration.start_span(name):
+        # Not all energy results have a value - it depends on the type of calculation
+        if df is None:
+            return None
+
+        df = df.select(energy_results_schema.fieldNames())
+
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
