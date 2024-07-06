@@ -296,7 +296,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     [
         (
             paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_period_schema,
+            hive_metering_point_period_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
