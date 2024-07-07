@@ -83,6 +83,7 @@ def test__migrated_table_accepts_valid_data(
     )
 
 
+# ToDo JMG: Remove when on Unity Catalog
 def test__table__is_not_managed(spark: SparkSession, migrations_executed: None) -> None:
     """
     It is desired that the table is unmanaged to provide for greater flexibility.
