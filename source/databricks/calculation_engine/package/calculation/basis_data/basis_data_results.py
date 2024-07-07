@@ -14,6 +14,7 @@
 from dependency_injector.wiring import inject, Provide
 
 from package.calculation.calculation_results import BasisDataContainer
+from package.constants import Colname
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -38,7 +39,13 @@ def _write_basis_data(
     ],
 ) -> None:
     with logging_configuration.start_span("metering_point_periods"):
-        basis_data.metering_point_periods.write.format("delta").mode("append").option(
+        basis_data.metering_point_periods.withColumnRenamed(  # ToDO JMG: rename to "balance_responsible_party_id" earlier (TableReader?)
+            Colname.balance_responsible_id, Colname.balance_responsible_party_id
+        ).write.format(
+            "delta"
+        ).mode(
+            "append"
+        ).option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
