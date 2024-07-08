@@ -14,7 +14,7 @@
 
 
 class StorageColumnNames:
-    balance_responsible_party_id = "balance_responsible_id"
+    balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
     charge_key = "charge_key"
     charge_owner_id = "charge_owner_id"
