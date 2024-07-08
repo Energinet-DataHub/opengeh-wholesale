@@ -39,6 +39,8 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     """Write each energy result to the output table."""
 
     print("Writing energy results to Unity Catalog")
+
+    # Write exchange per neighbor grid area
     _write(
         "net_exchange_per_neighbor_ga",
         energy_results.net_exchange_per_neighbor_ga,
@@ -46,6 +48,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         schemas.exchange_per_neighbor_ga_schema_uc,
     )
 
+    # Write energy per grid area
     energy_per_ga = _union(
         energy_results.total_consumption,
         energy_results.net_exchange_per_ga,
@@ -63,6 +66,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         schemas.energy_per_ga_schema_uc,
     )
 
+    # Write energy per balance responsible party
     energy_per_brp = _union(
         energy_results.production_per_ga_and_brp,
         energy_results.flex_consumption_per_ga_and_brp,
@@ -75,6 +79,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         schemas.energy_per_brp_schema_uc,
     )
 
+    # Write energy per energy supplier
     energy_per_es = _union(
         energy_results.production_per_ga_and_es,
         energy_results.flex_consumption_per_ga_and_es,
@@ -90,16 +95,21 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         schemas.energy_per_es_schema_uc,
     )
 
+    # Write positive and negative grid loss time series
     grid_loss_metering_point_time_series = _union(
         energy_results.positive_grid_loss,
         energy_results.negative_grid_loss,
-    ).withColumn(
-        EnergyResultColumnNames.metering_point_type,
-        f.when(
-            f.col(EnergyResultColumnNames.quantity) > 0,
-            f.lit(MeteringPointType.CONSUMPTION.value),
-        ).otherwise(MeteringPointType.PRODUCTION.value),
     )
+    if grid_loss_metering_point_time_series:
+        grid_loss_metering_point_time_series = (
+            grid_loss_metering_point_time_series.withColumn(
+                EnergyResultColumnNames.metering_point_type,
+                f.when(
+                    f.col(EnergyResultColumnNames.quantity) > 0,
+                    f.lit(MeteringPointType.CONSUMPTION.value),
+                ).otherwise(MeteringPointType.PRODUCTION.value),
+            )
+        )
     _write(
         "grid_loss_metering_point_time_series",
         grid_loss_metering_point_time_series,
