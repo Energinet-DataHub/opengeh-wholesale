@@ -27,15 +27,7 @@ from package.constants import MonthlyAmountsColumnNames
 monthly_amounts_schema = StructType(
     [
         StructField(MonthlyAmountsColumnNames.calculation_id, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.calculation_type, StringType(), False),
-        StructField(
-            MonthlyAmountsColumnNames.calculation_execution_time_start,
-            TimestampType(),
-            False,
-        ),
-        StructField(
-            MonthlyAmountsColumnNames.calculation_result_id, StringType(), False
-        ),
+        StructField(MonthlyAmountsColumnNames.result_id, StringType(), False),
         StructField(MonthlyAmountsColumnNames.grid_area_code, StringType(), False),
         StructField(MonthlyAmountsColumnNames.energy_supplier_id, StringType(), False),
         StructField(MonthlyAmountsColumnNames.quantity_unit, StringType(), False),
