@@ -14,8 +14,6 @@
 
 
 class StorageColumnNames:
-    balance_responsible_id = "balance_responsible_id"
-    """Obsolete. Use balance_responsible_party_id"""
     balance_responsible_party_id = "balance_responsible_id"
     charge_code = "charge_code"
     charge_key = "charge_key"
@@ -23,10 +21,14 @@ class StorageColumnNames:
     charge_price = "charge_price"
     charge_time = "charge_time"
     charge_type = "charge_type"
-    calculation_execution_time_start = "calculation_execution_time_start"
+    calculation_execution_time_start = "execution_time_start"
     calculation_id = "calculation_id"
+    calculation_period_start = "calculation_period_start"
+    calculation_period_end = "calculation_period_end"
     calculation_result_id = "calculation_result_id"
     calculation_type = "calculation_type"
+    calculation_version = "version"
+    created_by_user_id = "created_by_user_id"
     energy_supplier_id = "energy_supplier_id"
     from_date = "from_date"
     from_grid_area_code = "from_grid_area_code"

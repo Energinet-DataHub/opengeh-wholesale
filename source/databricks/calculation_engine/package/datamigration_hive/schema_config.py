@@ -101,7 +101,7 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
-                schema=basis_data_schemas.calculations_schema,
+                schema=basis_data_schemas.hive_calculations_schema,
             ),
         ],
         views=[],
