@@ -44,8 +44,11 @@ public sealed class DatabricksSqlRowHydrator
         {
             if (propertyMap.TryGetValue(property.Key, out var prop))
             {
-                var convertedValue = prop.Converter.ConvertFrom(null, CultureInfo.InvariantCulture, property.Value!);
-                prop.Property.SetValue(instance, convertedValue);
+                if (property.Value != null)
+                {
+                    var convertedValue = prop.Converter.ConvertFrom(null, CultureInfo.InvariantCulture, property.Value);
+                    prop.Property.SetValue(instance, convertedValue);
+                }
             }
         }
 
