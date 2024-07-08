@@ -310,7 +310,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     }
 
     [Fact]
-    public async Task Given_FullQueryParametersForAggregation_Then_DataFromNewestAggregationsReturned()
+    public async Task Given_FullQueryParametersForAggregation_Then_DataFromNewestVersionsReturned()
     {
         await ClearAndAddDatabricksDataAsync();
 
