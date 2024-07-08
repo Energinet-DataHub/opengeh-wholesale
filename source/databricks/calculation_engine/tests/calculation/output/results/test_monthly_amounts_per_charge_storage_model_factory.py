@@ -209,6 +209,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         MonthlyAmountsColumnNames.time,
         MonthlyAmountsColumnNames.amount,
         MonthlyAmountsColumnNames.is_tax,
+        MonthlyAmountsColumnNames.result_id,
+        MonthlyAmountsColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
     all_columns = [
         getattr(MonthlyAmountsColumnNames, attribute_name)
