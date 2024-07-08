@@ -22,4 +22,5 @@ class ResultColumnNames:
     result_id = "result_id"
     grid_area_code = "grid_area_code"
     energy_supplier_id = "energy_supplier_id"
+    balance_responsible_party_id = "balance_responsible_party_id"
     time = "time"

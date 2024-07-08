@@ -14,20 +14,18 @@
 
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportCollectionFixture))]
+public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
@@ -35,17 +33,11 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
-        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
-        {
-            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-        });
+        _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName =
+            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME;
 
-        Fixture.Inject(mockedOptions);
-        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
-        Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
-            mockedOptions.Object,
+        Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
@@ -71,7 +63,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
-            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null));
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null));
 
         Assert.Equal(1, actual);
     }
@@ -100,12 +92,48 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
-            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             skip: 2,
             take: 1).ToListAsync();
 
         Assert.Single(results);
         Assert.Equal(4, results[0].StartDateTime.ToDateTimeOffset().Hour);
+    }
+
+    [Fact]
+    public async Task Get_NullableValues_ReturnsNull()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+            [
+                ["'f9af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'404'", "'8397670583196'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "NULL", "'kWh'", "'DKK'", "NULL", "NULL", "NULL", "'tariff'", "'40000'", "'6392825108998'", "0"],
+                ["'f9af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ea'", "'404'", "'8397670583196'", "'2024-01-02T03:00:00.000+00:00'", "'PT1H'", "'consumption'", "NULL", "'kWh'", "'DKK'", "NULL", "NULL", "NULL", "'tariff'", "'40000'", "'6392825108998'", "0"],
+                ["'f9af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'404'", "'8397670583196'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "NULL", "'kWh'", "'DKK'", "NULL", "NULL", "NULL", "'tariff'", "'40000'", "'6392825108998'", "0"],
+            ]);
+
+        var results = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>()
+                {
+                    {
+                        "404", new CalculationId(Guid.Parse("f9af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
+            skip: 2,
+            take: 1).ToListAsync();
+
+        Assert.Single(results);
+        Assert.Equal(4, results[0].StartDateTime.ToDateTimeOffset().Hour);
+        Assert.Null(results[0].SettlementMethod);
+        Assert.Null(results[0].Amount);
+        Assert.Null(results[0].Price);
+        Assert.Null(results[0].Quantity);
     }
 
     [Theory]
@@ -145,7 +173,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
                 CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
-            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             skip: 0,
             take: int.MaxValue).ToListAsync();
 

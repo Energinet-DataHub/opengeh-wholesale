@@ -25,7 +25,7 @@ from package.calculation.wholesale.calculate_total_quantity_and_amount import (
 from package.codelists import ChargeType
 
 
-def calculate_tariff_price_per_ga_co_es(
+def calculate_tariff_price_per_co_es(
     prepared_tariffs: PreparedTariffs,
 ) -> WholesaleResults:
     """

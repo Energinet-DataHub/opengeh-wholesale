@@ -23,6 +23,6 @@ public static partial class SqlStringSanitizer
         return input is null ? string.Empty : SanitizeRegEx().Replace(input, string.Empty).Trim('-');
     }
 
-    [GeneratedRegex("[^a-zA-Z0-9-]")]
+    [GeneratedRegex("[^a-zA-Z0-9-_]")]
     private static partial Regex SanitizeRegEx();
 }

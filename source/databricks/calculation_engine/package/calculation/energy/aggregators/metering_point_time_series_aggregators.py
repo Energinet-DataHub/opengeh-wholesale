@@ -31,7 +31,7 @@ from package.codelists import (
 from package.constants import Colname
 
 
-def aggregate_per_ga_and_brp_and_es(
+def aggregate_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | None,
@@ -69,29 +69,29 @@ def aggregate_per_ga_and_brp_and_es(
     return EnergyResults(result)
 
 
-def aggregate_non_profiled_consumption_ga_brp_es(
+def aggregate_non_profiled_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
-    return aggregate_per_ga_and_brp_and_es(
+    return aggregate_per_es(
         metering_point_time_series,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
 
 
-def aggregate_flex_consumption_ga_brp_es(
+def aggregate_flex_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
-    return aggregate_per_ga_and_brp_and_es(
+    return aggregate_per_es(
         metering_point_time_series,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
 
 
-def aggregate_production_ga_brp_es(
+def aggregate_production_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
-    return aggregate_per_ga_and_brp_and_es(
+    return aggregate_per_es(
         metering_point_time_series, MeteringPointType.PRODUCTION, None
     )
