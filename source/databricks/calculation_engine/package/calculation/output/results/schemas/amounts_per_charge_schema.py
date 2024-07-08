@@ -23,7 +23,6 @@ from pyspark.sql.types import (
 )
 
 from package.calculation.output.output_table_column_names import OutputTableColumnNames
-from package.constants import WholesaleResultColumnNames
 
 amounts_per_charge_schema = StructType(
     [
@@ -40,13 +39,13 @@ amounts_per_charge_schema = StructType(
         ),
         StructField(OutputTableColumnNames.time, TimestampType(), False),
         StructField(OutputTableColumnNames.resolution, StringType(), False),
-        StructField(OutputTableColumnNames.metering_point_type, StringType(), True),
+        StructField(OutputTableColumnNames.metering_point_type, StringType(), False),
         StructField(OutputTableColumnNames.settlement_method, StringType(), True),
         StructField(OutputTableColumnNames.price, DecimalType(18, 6), True),
         StructField(OutputTableColumnNames.amount, DecimalType(18, 6), True),
-        StructField(OutputTableColumnNames.is_tax, BooleanType(), True),
-        StructField(OutputTableColumnNames.charge_code, StringType(), True),
-        StructField(OutputTableColumnNames.charge_type, StringType(), True),
-        StructField(OutputTableColumnNames.charge_owner_id, StringType(), True),
+        StructField(OutputTableColumnNames.is_tax, BooleanType(), False),
+        StructField(OutputTableColumnNames.charge_code, StringType(), False),
+        StructField(OutputTableColumnNames.charge_type, StringType(), False),
+        StructField(OutputTableColumnNames.charge_owner_id, StringType(), False),
     ]
 )
