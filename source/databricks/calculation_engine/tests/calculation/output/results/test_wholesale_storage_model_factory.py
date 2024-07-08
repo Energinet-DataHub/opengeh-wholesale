@@ -20,7 +20,9 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output import wholesale_storage_model_factory as sut
+from package.calculation.output.results import (
+    wholesale_storage_model_factory as sut,
+)
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
     wholesale_results_schema,

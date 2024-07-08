@@ -17,23 +17,30 @@ from decimal import Decimal
 from typing import Any
 
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output import (
-    total_monthly_amounts_storage_model_factory as sut,
+from package.calculation.output.results import (
+    monthly_amounts_per_charge_storage_model_factory as sut,
 )
-from package.calculation.wholesale.data_structures import TotalMonthlyAmount
-from package.calculation.wholesale.data_structures.total_monthly_amount import (
-    total_monthly_amount_schema,
+from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
+from package.calculation.wholesale.data_structures.monthly_amount_per_charge import (
+    monthly_amount_per_charge_schema,
 )
 from package.codelists import (
+    ChargeType,
+    ChargeUnit,
     CalculationType,
 )
-from package.constants import Colname, TotalMonthlyAmountsColumnNames
-from package.infrastructure.paths import WholesaleResultsInternalDatabase
+from package.constants import (
+    Colname,
+    MonthlyAmountsColumnNames,
+)
+from package.infrastructure.paths import (
+    WholesaleResultsInternalDatabase,
+)
 
-TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -44,8 +51,12 @@ DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA_CODE = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
+DEFAULT_CHARGE_CODE = "4000"
+DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "5790001330552"
+DEFAULT_CHARGE_TAX = True
 DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
+DEFAULT_UNIT = ChargeUnit.KWH
 
 
 @pytest.fixture(scope="module")
@@ -60,35 +71,43 @@ def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
 
 
 def _create_result_row(
-    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER_ID,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    unit: ChargeUnit = DEFAULT_UNIT,
     charge_time: datetime = DEFAULT_CHARGE_TIME,
     total_amount: Decimal = DEFAULT_TOTAL_AMOUNT,
+    charge_tax: bool = DEFAULT_CHARGE_TAX,
+    charge_code: str = DEFAULT_CHARGE_CODE,
+    charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
+    charge_owner: str = DEFAULT_CHARGE_OWNER_ID,
 ) -> dict:
     row = {
-        Colname.energy_supplier_id: energy_supplier_id,
         Colname.grid_area_code: grid_area_code,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.unit: unit.value,
         Colname.charge_time: charge_time,
-        Colname.charge_owner: charge_owner,
         Colname.total_amount: total_amount,
+        Colname.charge_tax: charge_tax,
+        Colname.charge_code: charge_code,
+        Colname.charge_type: charge_type.value,
+        Colname.charge_owner: charge_owner,
     }
 
     return row
 
 
-def _create_default_total_monthly_amounts(
+def _create_default_result(
     spark: SparkSession,
-) -> TotalMonthlyAmount:
+) -> MonthlyAmountPerCharge:
     row = [_create_result_row()]
-    return TotalMonthlyAmount(
-        spark.createDataFrame(data=row, schema=total_monthly_amount_schema)
+    return MonthlyAmountPerCharge(
+        spark.createDataFrame(data=row, schema=monthly_amount_per_charge_schema)
     )
 
 
-def _create_multiple_total_monthly_amounts(
+def _create_result_df_corresponding_to_multiple_calculation_results(
     spark: SparkSession,
-) -> TotalMonthlyAmount:
+) -> DataFrame:
     # 3 calculation results with just one row each
     rows = [
         _create_result_row(grid_area_code="001"),
@@ -96,26 +115,27 @@ def _create_multiple_total_monthly_amounts(
         _create_result_row(grid_area_code="003"),
     ]
 
-    return TotalMonthlyAmount(spark.createDataFrame(data=rows))
+    return spark.createDataFrame(data=rows)
 
 
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (TotalMonthlyAmountsColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (MonthlyAmountsColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (MonthlyAmountsColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (
-            TotalMonthlyAmountsColumnNames.calculation_type,
-            DEFAULT_CALCULATION_TYPE.value,
-        ),
-        (
-            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+            MonthlyAmountsColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (TotalMonthlyAmountsColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
-        (TotalMonthlyAmountsColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (TotalMonthlyAmountsColumnNames.time, DEFAULT_CHARGE_TIME),
-        (TotalMonthlyAmountsColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
-        (TotalMonthlyAmountsColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
+        (MonthlyAmountsColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
+        (MonthlyAmountsColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (MonthlyAmountsColumnNames.quantity_unit, DEFAULT_UNIT.value),
+        (MonthlyAmountsColumnNames.time, DEFAULT_CHARGE_TIME),
+        (MonthlyAmountsColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
+        (MonthlyAmountsColumnNames.is_tax, DEFAULT_CHARGE_TAX),
+        (MonthlyAmountsColumnNames.charge_code, DEFAULT_CHARGE_CODE),
+        (MonthlyAmountsColumnNames.charge_type, DEFAULT_CHARGE_TYPE.value),
+        (MonthlyAmountsColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
     ],
 )
 def test__create__returns_dataframe_with_column(
@@ -127,10 +147,10 @@ def test__create__returns_dataframe_with_column(
     """Test all columns except calculation_result_id. It is tested separately in another test."""
 
     # Arrange
-    total_monthly_amounts = _create_default_total_monthly_amounts(spark)
+    result_df = _create_default_result(spark)
 
     # Act
-    actual_df = sut.create(args, total_monthly_amounts)
+    actual_df = sut.create(args, result_df)
 
     # Assert
     actual_row = actual_df.collect()[0]
@@ -142,11 +162,13 @@ def test__create__returns_dataframe_with_calculation_result_id(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    total_monthly_amounts = _create_multiple_total_monthly_amounts(spark)
+    result_df = MonthlyAmountPerCharge(
+        _create_result_df_corresponding_to_multiple_calculation_results(spark)
+    )
     expected_number_of_calculation_result_ids = 3
 
     # Act
-    actual_df = sut.create(args, total_monthly_amounts)
+    actual_df = sut.create(args, result_df)
 
     # Assert
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
@@ -158,6 +180,8 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     # Arrange
     expected_column_names = [
         Colname.calculation_id,
+        Colname.charge_type,
+        Colname.charge_code,
         Colname.charge_owner,
         Colname.grid_area_code,
         Colname.energy_supplier_id,
@@ -178,15 +202,17 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        TotalMonthlyAmountsColumnNames.calculation_type,
-        TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
-        TotalMonthlyAmountsColumnNames.calculation_result_id,
-        TotalMonthlyAmountsColumnNames.time,
-        TotalMonthlyAmountsColumnNames.amount,
+        MonthlyAmountsColumnNames.calculation_type,
+        MonthlyAmountsColumnNames.calculation_execution_time_start,
+        MonthlyAmountsColumnNames.calculation_result_id,
+        MonthlyAmountsColumnNames.quantity_unit,
+        MonthlyAmountsColumnNames.time,
+        MonthlyAmountsColumnNames.amount,
+        MonthlyAmountsColumnNames.is_tax,
     ]
     all_columns = [
-        getattr(TotalMonthlyAmountsColumnNames, attribute_name)
-        for attribute_name in dir(TotalMonthlyAmountsColumnNames)
+        getattr(MonthlyAmountsColumnNames, attribute_name)
+        for attribute_name in dir(MonthlyAmountsColumnNames)
         if not attribute_name.startswith("__")
     ]
 
