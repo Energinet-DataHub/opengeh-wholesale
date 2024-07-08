@@ -1,21 +1,19 @@
 from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
-from package.calculation.output.schemas import (
+from package.calculation.output.results.schemas import (
+    energy_per_ga_schema_uc,
     energy_per_brp_schema_uc,
     energy_per_es_schema_uc,
     grid_loss_metering_point_time_series_schema_uc,
     exchange_per_neighbor_ga_schema_uc,
 )
-from package.calculation.output.schemas.energy_per_ga_schema_uc import (
-    energy_per_ga_schema_uc,
-)
 
-import package.calculation.basis_data.schemas as basis_data_schemas
-from package.calculation.output.schemas.monthly_amounts_schema import (
+import package.calculation.output.basis_data.schemas as basis_data_schemas
+from package.calculation.output.results.schemas.monthly_amounts_schema import (
     monthly_amounts_schema,
 )
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
+from package.calculation.output.results.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
 
