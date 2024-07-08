@@ -24,7 +24,7 @@ from package.calculation.output.basis_data.schemas.charge_price_information_peri
 from package.calculation.output.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
-from package.calculation.output.basis_data import (
+from package.calculation.output.basis_data.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.output.basis_data.schemas.metering_point_period_schema import (
