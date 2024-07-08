@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 from package.constants import Colname
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,

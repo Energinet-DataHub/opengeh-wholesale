@@ -22,7 +22,6 @@ from package.codelists import (
 )
 from package.constants import Colname
 import calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
-import calculation.wholesale.factories.total_monthly_amount_factory as total_monthly_amount_factory
 from package.calculation.wholesale.total_monthly_amount_calculator import (
     calculate_per_ga_co_es,
     calculate_per_ga_es,
