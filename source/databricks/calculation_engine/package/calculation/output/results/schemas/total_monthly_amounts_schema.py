@@ -20,20 +20,19 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
 from package.constants import TotalMonthlyAmountsColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 total_monthly_amounts_schema_uc = StructType(
     [
-        StructField(TotalMonthlyAmountsColumnNames.calculation_id, StringType(), False),
-        StructField(TotalMonthlyAmountsColumnNames.result_id, StringType(), False),
-        StructField(TotalMonthlyAmountsColumnNames.grid_area_code, StringType(), False),
-        StructField(
-            TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), True
-        ),
-        StructField(TotalMonthlyAmountsColumnNames.time, TimestampType(), False),
-        StructField(TotalMonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
-        StructField(TotalMonthlyAmountsColumnNames.charge_owner_id, StringType(), True),
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.result_id, StringType(), False),
+        StructField(OutputTableColumnNames.grid_area_code, StringType(), False),
+        StructField(OutputTableColumnNames.energy_supplier_id, StringType(), True),
+        StructField(OutputTableColumnNames.time, TimestampType(), False),
+        StructField(OutputTableColumnNames.amount, DecimalType(18, 6), True),
+        StructField(OutputTableColumnNames.charge_owner_id, StringType(), True),
     ]
 )
 
