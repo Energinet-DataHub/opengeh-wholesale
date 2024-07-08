@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Tuple
 
 import package.calculation.output.wholesale_storage_model_factory as wholesale_results_factory
 import package.calculation.output.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
