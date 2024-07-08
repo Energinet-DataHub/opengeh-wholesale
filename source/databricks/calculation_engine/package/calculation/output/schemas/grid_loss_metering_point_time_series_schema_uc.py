@@ -15,8 +15,8 @@ grid_loss_metering_point_time_series_schema_uc = t.StructType(
             t.StringType(),
             not nullable,
         ),
+        # Settlement method is flex for consumption, and null for production
         t.StructField(cname.metering_point_type, t.StringType(), not nullable),
-        t.StructField(cname.settlement_method, t.StringType(), nullable),
         t.StructField(cname.metering_point_id, t.StringType(), not nullable),
         t.StructField(cname.resolution, t.StringType(), not nullable),
         t.StructField(cname.time, t.TimestampType(), not nullable),

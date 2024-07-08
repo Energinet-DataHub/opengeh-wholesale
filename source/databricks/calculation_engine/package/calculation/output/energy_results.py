@@ -23,6 +23,7 @@ from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
 from package.calculation.output.schemas import hive_energy_results_schema
+from package.codelists import MeteringPointType
 from package.constants import EnergyResultColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
@@ -36,11 +37,6 @@ from package.infrastructure.paths import (
 @logging_configuration.use_span("calculation.write.energy")
 def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     """Write each energy result to the output table."""
-
-    # TODO BJM: Remove when we're on Unity Catalog
-    print("Writing energy results to Hive")
-    for field in fields(energy_results):
-        _write_to_hive(field.name, getattr(energy_results, field.name))
 
     print("Writing energy results to Unity Catalog")
     _write(
@@ -97,6 +93,12 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     grid_loss_metering_point_time_series = _union(
         energy_results.positive_grid_loss,
         energy_results.negative_grid_loss,
+    ).withColumn(
+        EnergyResultColumnNames.metering_point_type,
+        f.when(
+            f.col(EnergyResultColumnNames.quantity) > 0,
+            f.lit(MeteringPointType.CONSUMPTION.value),
+        ).otherwise(MeteringPointType.PRODUCTION.value),
     )
     _write(
         "grid_loss_metering_point_time_series",
@@ -104,6 +106,11 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
         schemas.grid_loss_metering_point_time_series_schema_uc,
     )
+
+    # TODO BJM: Remove when we're on Unity Catalog
+    print("Writing energy results to Hive")
+    for field in fields(energy_results):
+        _write_to_hive(field.name, getattr(energy_results, field.name))
 
 
 def _union(*dfs: DataFrame) -> DataFrame | None:
