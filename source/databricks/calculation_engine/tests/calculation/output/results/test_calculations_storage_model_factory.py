@@ -16,9 +16,9 @@ from unittest.mock import patch
 
 from pyspark.sql import Row
 
-from package.calculation.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.calculations_storage_model_factory import (
+from package.calculation.output.results.calculations_storage_model_factory import (
     create_calculation,
 )
 from package.calculation.preparation import PreparedDataReader

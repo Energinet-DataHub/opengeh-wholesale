@@ -14,9 +14,8 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pyspark.sql import Row, SparkSession
+from pyspark.sql import SparkSession
 
-import package.codelists as e
 import tests.calculation.charges_factory as factory
 
 from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (

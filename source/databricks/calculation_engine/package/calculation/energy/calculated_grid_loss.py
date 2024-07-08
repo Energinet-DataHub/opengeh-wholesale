@@ -24,7 +24,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    MeteringPointResolution,
     QuantityQuality,
 )
 from package.constants import Colname

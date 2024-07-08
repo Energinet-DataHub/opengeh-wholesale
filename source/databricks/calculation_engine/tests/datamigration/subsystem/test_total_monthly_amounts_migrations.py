@@ -19,7 +19,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
+from package.calculation.output.results.schemas import (
     total_monthly_amounts_schema,
 )
 from package.codelists import CalculationType
