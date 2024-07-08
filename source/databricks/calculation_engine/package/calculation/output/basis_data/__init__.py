@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .basis_data_results import write_basis_data
+from .basis_data import get_metering_point_periods_basis_data

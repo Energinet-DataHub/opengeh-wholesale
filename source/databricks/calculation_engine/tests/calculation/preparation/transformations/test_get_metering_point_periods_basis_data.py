@@ -18,7 +18,9 @@ from calculation.preparation.transformations import metering_point_periods_facto
 from package.calculation.output.basis_data import (
     get_metering_point_periods_basis_data,
 )
-from package.calculation.output.basis_data import hive_metering_point_period_schema
+from package.calculation.output.basis_data.schemas import (
+    hive_metering_point_period_schema,
+)
 from package.codelists import (
     MeteringPointResolution,
 )
