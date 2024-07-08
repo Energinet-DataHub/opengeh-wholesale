@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es
 (
     calculation_id STRING NOT NULL,
-    calculation_result_id STRING NOT NULL,
+    result_id STRING NOT NULL,
     grid_area_code STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     balance_responsible_party_id STRING NOT NULL,
