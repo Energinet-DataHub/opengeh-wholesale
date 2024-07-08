@@ -88,7 +88,7 @@ public static class EdiExtensions
                 Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.EnergySupplierValidationRule>()
             .AddSingleton<
                 IValidationRule<WholesaleServicesRequest>,
-                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.ChargeTypeValidationRule>()
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.ChargeCodeValidationRule>()
             .AddScoped<
                 IValidationRule<WholesaleServicesRequest>,
                 Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.PeriodValidationRule>()
