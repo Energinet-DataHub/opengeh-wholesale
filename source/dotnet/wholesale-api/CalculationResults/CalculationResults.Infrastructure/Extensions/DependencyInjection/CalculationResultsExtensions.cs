@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -108,13 +109,12 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportDownloadHandler, SettlementReportDownloadHandler>();
         services.AddScoped<IUpdateFailedSettlementReportsHandler, UpdateFailedSettlementReportsHandler>();
 
+        services.AddScoped<ISettlementReportDatabricksContext, SettlementReportDatabricksContext>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<IRemoveExpiredSettlementReports, RemoveExpiredSettlementReports>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddScoped<ISettlementReportWholesaleRepository, SettlementReportWholesaleRepository>();
-        services.AddScoped<ISettlementReportWholesaleResultQueries, SettlementReportWholesaleResultQueries>();
         services.AddScoped<ISettlementReportEnergyResultRepository, SettlementReportEnergyResultRepository>();
-        services.AddScoped<ISettlementReportEnergyResultQueries, SettlementReportEnergyResultQueries>();
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultRepository, SettlementReportMeteringPointTimeSeriesResultRepository>();
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultQueries, SettlementReportMeteringPointTimeSeriesResultQueries>();
         services.AddScoped<ISettlementReportChargeLinkPeriodsRepository, SettlementReportChargeLinkPeriodsRepository>();
