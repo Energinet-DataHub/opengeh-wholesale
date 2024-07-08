@@ -11,6 +11,10 @@ from package.calculation.output.schemas.energy_per_ga_schema_uc import (
     energy_per_ga_schema_uc,
 )
 
+import package.calculation.basis_data.schemas as basis_data_schemas
+from package.calculation.output.schemas.monthly_amounts_schema import (
+    monthly_amounts_schema,
+)
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
@@ -19,10 +23,6 @@ schema_config = [
     Schema(
         name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
         tables=[
-            Table(
-                name=paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=total_monthly_amounts_schema,
-            ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_GA_TABLE_NAME,
                 schema=energy_per_ga_schema_uc,
@@ -42,6 +42,39 @@ schema_config = [
             Table(
                 name=paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
                 schema=grid_loss_metering_point_time_series_schema_uc,
+            Table(
+                name=paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
+                schema=monthly_amounts_schema,
+            ),
+            Table(
+                name=paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+                schema=total_monthly_amounts_schema,
+            ),
+        ],
+        views=[],
+    ),
+    Schema(
+        name=paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+        tables=[
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.metering_point_period_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.time_series_point_schema,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_link_periods_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_information_periods_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_points_schema,
             ),
         ],
         views=[],
