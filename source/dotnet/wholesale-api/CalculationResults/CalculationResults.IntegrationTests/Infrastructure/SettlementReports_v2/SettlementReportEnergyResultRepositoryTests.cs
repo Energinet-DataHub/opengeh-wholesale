@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics;
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
@@ -36,8 +35,6 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName =
             databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME;
-
-        Debugger.Log(0, null, $"SettlementReportEnergyResultRepository : {_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName}");
 
         Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,

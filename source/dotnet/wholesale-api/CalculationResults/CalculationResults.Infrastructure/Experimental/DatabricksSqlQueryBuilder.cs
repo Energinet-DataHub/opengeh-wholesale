@@ -22,41 +22,75 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
-public sealed class DatabricksSqlQueryCompiler
+public sealed class DatabricksSqlQueryBuilder
 {
     private readonly DbContext _context;
 
-    public DatabricksSqlQueryCompiler(DbContext context)
+    public DatabricksSqlQueryBuilder(DbContext context)
     {
         _context = context;
     }
 
-    public DatabricksStatement Compile(DatabricksSqlQueryable query)
+    public DatabricksStatement Build(DatabricksSqlQueryable query)
+    {
+        return Build(query, q => q);
+    }
+
+    public DatabricksStatement Build(DatabricksSqlQueryable query, Func<string, string> extendRawSql)
+    {
+        var sqlStatement = PrepareSqlStatement(query, extendRawSql, out var sqlParameters);
+
+        var databricksStatement = DatabricksStatement.FromRawSql(sqlStatement);
+
+        foreach (var (paramName, paramValue) in sqlParameters)
+        {
+            databricksStatement.WithParameter(paramName, paramValue);
+        }
+
+        return databricksStatement.Build();
+    }
+
+    private string PrepareSqlStatement(DatabricksSqlQueryable query, Func<string, string> extendRawQuery, out IEnumerable<KeyValuePair<string, string>> sqlParameters)
     {
         using var dbCommand = query.CreateDbCommand();
-        var sqlStatement = dbCommand.CommandText;
+
+        var inputQuery = extendRawQuery(dbCommand.CommandText);
+
+        var sqlStatement = new StringBuilder(inputQuery);
+        var sqlParams = new List<KeyValuePair<string, string>>();
+
         var typeMapper = _context.GetService<IRelationalTypeMappingSource>();
 
         foreach (SqlParameter parameter in dbCommand.Parameters)
         {
+            string parameterSubstitution;
+
             if (parameter.Value == null)
             {
-                sqlStatement = sqlStatement.Replace(parameter.ParameterName, "NULL");
+                parameterSubstitution = "NULL";
+            }
+            else if (parameter.Value is string str)
+            {
+                var parameterName = parameter.ParameterName[1..];
+                parameterSubstitution = $":{parameterName}";
+
+                sqlParams.Add(new KeyValuePair<string, string>(parameterName, str));
             }
             else
             {
-                var mapped = typeMapper.GetMapping(parameter.Value.GetType()).GenerateSqlLiteral(parameter.Value);
-                sqlStatement = sqlStatement.Replace(parameter.ParameterName, mapped);
+                parameterSubstitution = typeMapper.GetMapping(parameter.Value.GetType()).GenerateSqlLiteral(parameter.Value);
             }
+
+            sqlStatement = sqlStatement.Replace(parameter.ParameterName, parameterSubstitution);
         }
 
-        var databricksStatement = DatabricksStatement.FromRawSql(TranslateTransactToAnsi(sqlStatement));
-        return databricksStatement.Build();
+        sqlParameters = sqlParams;
+        return TranslateTransactToAnsi(sqlStatement);
     }
 
-    private static string TranslateTransactToAnsi(string transactSqlQuery)
+    private static string TranslateTransactToAnsi(StringBuilder transactSqlQuery)
     {
-        var strBuilder = new StringBuilder(transactSqlQuery)
+        var strBuilder = transactSqlQuery
             .Replace('[', '`')
             .Replace(']', '`')
             .Replace('"', '\'')

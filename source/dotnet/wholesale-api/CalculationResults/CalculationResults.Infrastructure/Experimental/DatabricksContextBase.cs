@@ -77,6 +77,7 @@ public abstract class DatabricksContextBase : IDisposable
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Emits custom function: DATE_TRUNC('day', FROM_UTC_TIMESTAMP(@param1, @param2))
             modelBuilder
                 .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone))!)
                 .HasTranslation(args =>

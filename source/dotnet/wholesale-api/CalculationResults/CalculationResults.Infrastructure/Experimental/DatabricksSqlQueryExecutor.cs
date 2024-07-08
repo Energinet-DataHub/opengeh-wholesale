@@ -22,26 +22,22 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experime
 public sealed class DatabricksSqlQueryExecutor
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly DatabricksSqlQueryCompiler _sqlQueryCompiler;
+    private readonly DatabricksSqlQueryBuilder _sqlQueryBuilder;
     private readonly DatabricksSqlRowHydrator _sqlRowHydrator;
 
     public DatabricksSqlQueryExecutor(DbContext dbContext, DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
     {
-        _sqlQueryCompiler = new DatabricksSqlQueryCompiler(dbContext);
+        _sqlQueryBuilder = new DatabricksSqlQueryBuilder(dbContext);
         _sqlRowHydrator = new DatabricksSqlRowHydrator();
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     }
 
     public async Task<int> CountAsync(DatabricksSqlQueryable query, CancellationToken cancellationToken = default)
     {
-        var databricksStatement = _sqlQueryCompiler.Compile(query);
-        var countStatement = DatabricksStatement
-            .FromRawSql($"SELECT COUNT(*) AS count FROM ({databricksStatement})")
-            .Build();
+        var countStatement = _sqlQueryBuilder.Build(query, sqlQuery => $"SELECT COUNT(*) AS count FROM ({sqlQuery})");
+        var rows = ExecuteStatementAsync<CountResult>(countStatement, cancellationToken);
 
-        var rows = ExecuteStatementAsync<CountResult>(countStatement, cancellationToken).ConfigureAwait(false);
-
-        await foreach (var row in rows)
+        await foreach (var row in rows.ConfigureAwait(false))
             return row.Count;
 
         return 0;
@@ -49,7 +45,7 @@ public sealed class DatabricksSqlQueryExecutor
 
     public IAsyncEnumerable<TElement> ExecuteAsync<TElement>(DatabricksSqlQueryable query, CancellationToken cancellationToken = default)
     {
-        var databricksStatement = _sqlQueryCompiler.Compile(query);
+        var databricksStatement = _sqlQueryBuilder.Build(query);
         return ExecuteStatementAsync<TElement>(databricksStatement, cancellationToken);
     }
 
