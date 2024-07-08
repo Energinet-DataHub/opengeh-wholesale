@@ -93,15 +93,20 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     )
 
     # Write positive and negative grid loss time series
-    grid_loss_metering_point_time_series = _union(
-        energy_results.positive_grid_loss.withColumn(
+    positive_grid_loss = energy_results.positive_grid_loss
+    if positive_grid_loss:
+        positive_grid_loss = energy_results.positive_grid_loss.withColumn(
             EnergyResultColumnNames.metering_point_type,
             f.lit(MeteringPointType.CONSUMPTION.value),
-        ),
-        energy_results.negative_grid_loss.withColumn(
+        )
+    negative_grid_loss = energy_results.negative_grid_loss
+    if energy_results.negative_grid_loss:
+        negative_grid_loss = energy_results.negative_grid_loss.withColumn(
             EnergyResultColumnNames.metering_point_type,
             f.lit(MeteringPointType.PRODUCTION.value),
-        ),
+        )
+    grid_loss_metering_point_time_series = _union(
+        positive_grid_loss, negative_grid_loss
     )
     _write(
         "grid_loss_metering_point_time_series",
