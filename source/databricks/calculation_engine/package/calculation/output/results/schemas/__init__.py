@@ -14,6 +14,6 @@
 
 
 from .energy_results_schema import hive_energy_results_schema
-from .wholesale_results_schema import wholesale_results_schema
+from .hive_wholesale_results_schema import hive_wholesale_results_schema
 from .monthly_amounts_schema import monthly_amounts_schema
 from .total_monthly_amounts_schema import total_monthly_amounts_schema

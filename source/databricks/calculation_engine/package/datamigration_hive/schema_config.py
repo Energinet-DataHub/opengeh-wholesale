@@ -31,8 +31,8 @@ from package.calculation.output.results.schemas import (
 )
 
 # calculation_output
-from package.calculation.output.results.schemas.wholesale_results_schema import (
-    wholesale_results_schema,
+from package.calculation.output.results.schemas.hive_wholesale_results_schema import (
+    hive_wholesale_results_schema,
 )
 
 schema_config = [
@@ -41,7 +41,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
-                schema=wholesale_results_schema,
+                schema=hive_wholesale_results_schema,
             ),
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,

@@ -24,21 +24,11 @@ from pyspark.sql.types import (
 
 from package.constants import WholesaleResultColumnNames
 
-# Note: The order of the columns must match the order of the columns in the Delta table
-wholesale_results_schema = StructType(
+amounts_per_charge_schema = StructType(
     [
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
-        StructField(
-            WholesaleResultColumnNames.calculation_execution_time_start,
-            TimestampType(),
-            False,
-        ),
-        StructField(
-            WholesaleResultColumnNames.calculation_result_id, StringType(), False
-        ),
+        StructField(WholesaleResultColumnNames.result_id, StringType(), False),
         StructField(WholesaleResultColumnNames.grid_area_code, StringType(), False),
-        # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
@@ -57,6 +47,5 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
         StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
         StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
-        StructField(WholesaleResultColumnNames.amount_type, StringType(), False),
     ]
 )

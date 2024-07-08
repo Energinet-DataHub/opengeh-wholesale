@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
 from package.calculation.output.results.schemas import (
-    wholesale_results_schema,
+    hive_wholesale_results_schema,
 )
 from package.codelists import (
     AmountType,
@@ -63,7 +63,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.charge_owner_id: "1234567890123",
         WholesaleResultColumnNames.amount_type: "amount_per_charge",
     }
-    return spark.createDataFrame(data=[row], schema=wholesale_results_schema)
+    return spark.createDataFrame(data=[row], schema=hive_wholesale_results_schema)
 
 
 @pytest.mark.parametrize(
