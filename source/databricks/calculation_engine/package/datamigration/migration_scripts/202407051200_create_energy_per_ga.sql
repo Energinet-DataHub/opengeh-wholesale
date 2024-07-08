@@ -19,8 +19,6 @@ TBLPROPERTIES (
     delta.constraints.result_id_chk = "LENGTH ( result_id ) = 36",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
     delta.constraints.time_series_type_chk = "time_series_type IN ( 'production' , 'non_profiled_consumption' , 'net_exchange_per_ga' , 'flex_consumption' , 'grid_loss' , 'total_consumption' , 'temp_flex_consumption' , 'temp_production' )",
-    delta.constraints.metering_point_type_chk = "metering_point_type IN ( 'production' , 'consumption' , 'exchange')",
-    delta.constraints.settlement_method_chk = "settlement_method IS NULL OR ( metering_point_type = 'consumption' AND settlement_method IN ( 'non_profiled' , 'flex' ) )",
     delta.constraints.resolution_chk = "resolution IN ( 'PT15M' , 'PT1H' )",
     delta.constraints.quantity_qualities_chk = "array_size ( array_except ( quantity_qualities , array ( 'missing' , 'calculated' , 'measured' , 'estimated' ) ) ) = 0 AND array_size ( quantity_qualities ) > 0"
 )
