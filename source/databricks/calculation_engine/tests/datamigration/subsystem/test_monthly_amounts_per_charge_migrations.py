@@ -23,7 +23,7 @@ from package.calculation.output.output_table_column_names import OutputTableColu
 from package.calculation.output.results.schemas import (
     monthly_amounts_schema_uc,
 )
-from package.codelists import CalculationType, ChargeType
+from package.codelists import ChargeType
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 from tests.helpers.data_frame_utils import set_column
 
