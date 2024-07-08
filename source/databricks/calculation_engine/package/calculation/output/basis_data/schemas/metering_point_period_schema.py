@@ -19,25 +19,25 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.calculation.output.storage_column_names import StorageColumnNames
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
 
 metering_point_period_schema_uc = StructType(
     [
-        StructField(StorageColumnNames.calculation_id, StringType(), False),
-        StructField(StorageColumnNames.metering_point_id, StringType(), False),
-        StructField(StorageColumnNames.metering_point_type, StringType(), False),
-        StructField(StorageColumnNames.settlement_method, StringType(), True),
-        StructField(StorageColumnNames.grid_area_code, StringType(), False),
-        StructField(StorageColumnNames.resolution, StringType(), False),
-        StructField(StorageColumnNames.from_grid_area_code, StringType(), True),
-        StructField(StorageColumnNames.to_grid_area_code, StringType(), True),
-        StructField(StorageColumnNames.parent_metering_point_id, StringType(), True),
-        StructField(StorageColumnNames.energy_supplier_id, StringType(), True),
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_type, StringType(), False),
+        StructField(OutputTableColumnNames.settlement_method, StringType(), True),
+        StructField(OutputTableColumnNames.grid_area_code, StringType(), False),
+        StructField(OutputTableColumnNames.resolution, StringType(), False),
+        StructField(OutputTableColumnNames.from_grid_area_code, StringType(), True),
+        StructField(OutputTableColumnNames.to_grid_area_code, StringType(), True),
+        StructField(OutputTableColumnNames.parent_metering_point_id, StringType(), True),
+        StructField(OutputTableColumnNames.energy_supplier_id, StringType(), True),
         StructField(
-            StorageColumnNames.balance_responsible_party_id, StringType(), True
+            OutputTableColumnNames.balance_responsible_party_id, StringType(), True
         ),
-        StructField(StorageColumnNames.from_date, TimestampType(), False),
-        StructField(StorageColumnNames.to_date, TimestampType(), False),
+        StructField(OutputTableColumnNames.from_date, TimestampType(), False),
+        StructField(OutputTableColumnNames.to_date, TimestampType(), False),
     ]
 )
 

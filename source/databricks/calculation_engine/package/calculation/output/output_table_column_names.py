@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class StorageColumnNames:
+class OutputTableColumnNames:
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
     charge_key = "charge_key"
