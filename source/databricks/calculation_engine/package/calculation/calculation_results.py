@@ -35,25 +35,25 @@ class EnergyResultsContainer:
     flex_consumption_per_ga: DataFrame | None = None
     flex_consumption_per_es: DataFrame | None = None
     flex_consumption_per_brp: DataFrame | None = None
-    total_consumption: DataFrame | None = None
+    total_consumption_per_ga: DataFrame | None = None
 
 
 @dataclass
 class WholesaleResultsContainer:
-    hourly_tariff_per_ga_co_es: DataFrame | None = None
-    monthly_tariff_from_hourly_per_ga_co_es: DataFrame | None = None
-    monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount: DataFrame | None = None
-    daily_tariff_per_ga_co_es: DataFrame | None = None
-    monthly_tariff_from_daily_per_ga_co_es: DataFrame | None = None
-    monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount: DataFrame | None = None
-    subscription_per_ga_co_es: DataFrame | None = None
-    monthly_subscription_per_ga_co_es: DataFrame | None = None
-    monthly_subscription_per_ga_co_es_as_monthly_amount: DataFrame | None = None
-    fee_per_ga_co_es: DataFrame | None = None
-    monthly_fee_per_ga_co_es: DataFrame | None = None
-    monthly_fee_per_ga_co_es_as_monthly_amount: DataFrame | None = None
-    total_monthly_amounts_per_ga_co_es: DataFrame | None = None
-    total_monthly_amounts_per_ga_es: DataFrame | None = None
+    hourly_tariff_per_co_es: DataFrame | None = None
+    monthly_tariff_from_hourly_per_co_es: DataFrame | None = None
+    monthly_tariff_from_hourly_per_co_es_as_monthly_amount: DataFrame | None = None
+    daily_tariff_per_co_es: DataFrame | None = None
+    monthly_tariff_from_daily_per_co_es: DataFrame | None = None
+    monthly_tariff_from_daily_per_co_es_as_monthly_amount: DataFrame | None = None
+    subscription_per_co_es: DataFrame | None = None
+    monthly_subscription_per_co_es: DataFrame | None = None
+    monthly_subscription_per_co_es_as_monthly_amount: DataFrame | None = None
+    fee_per_co_es: DataFrame | None = None
+    monthly_fee_per_co_es: DataFrame | None = None
+    monthly_fee_per_co_es_as_monthly_amount: DataFrame | None = None
+    total_monthly_amounts_per_co_es: DataFrame | None = None
+    total_monthly_amounts_per_es: DataFrame | None = None
 
 
 @dataclass

@@ -31,12 +31,12 @@ def write_total_monthly_amounts(
     total_monthly_amounts: WholesaleResultsContainer,
 ) -> None:
     _write(
-        "total_monthly_amounts_per_ga_co_es",
-        total_monthly_amounts.total_monthly_amounts_per_ga_co_es,
+        "total_monthly_amounts_per_co_es",
+        total_monthly_amounts.total_monthly_amounts_per_co_es,
     )
     _write(
-        "total_monthly_amounts_per_ga_es",
-        total_monthly_amounts.total_monthly_amounts_per_ga_es,
+        "total_monthly_amounts_per_es",
+        total_monthly_amounts.total_monthly_amounts_per_es,
     )
 
 

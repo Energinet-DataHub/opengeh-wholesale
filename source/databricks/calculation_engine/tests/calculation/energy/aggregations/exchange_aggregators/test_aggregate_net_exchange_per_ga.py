@@ -17,8 +17,8 @@ from pyspark.sql import SparkSession
 
 import tests.calculation.energy.metering_point_time_series_factories as factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
-    aggregate_net_exchange_per_ga,
-    aggregate_net_exchange_per_neighbor_ga,
+    aggregate_exchange_per_ga,
+    aggregate_exchange_per_neighbor_ga,
 )
 from package.codelists import QuantityQuality
 from package.constants import Colname
@@ -85,10 +85,10 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        exchange_per_neighbor_ga = aggregate_net_exchange_per_neighbor_ga(
+        exchange_per_neighbor_ga = aggregate_exchange_per_neighbor_ga(
             metering_point_time_series, [from_grid_area, to_grid_area]
         )
-        actual = aggregate_net_exchange_per_ga(exchange_per_neighbor_ga)
+        actual = aggregate_exchange_per_ga(exchange_per_neighbor_ga)
 
         # Assert
         actual_rows = actual.df.collect()
@@ -124,10 +124,10 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        exchange_per_neighbor_ga = aggregate_net_exchange_per_neighbor_ga(
+        exchange_per_neighbor_ga = aggregate_exchange_per_neighbor_ga(
             metering_point_time_series, all_grid_areas
         )
-        actual = aggregate_net_exchange_per_ga(exchange_per_neighbor_ga)
+        actual = aggregate_exchange_per_ga(exchange_per_neighbor_ga)
 
         # Assert
         actual_grid_areas = [row[Colname.grid_area_code] for row in actual.df.collect()]
@@ -160,10 +160,10 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        exchange_per_neighbor_ga = aggregate_net_exchange_per_neighbor_ga(
+        exchange_per_neighbor_ga = aggregate_exchange_per_neighbor_ga(
             metering_point_time_series, [selected_grid_area]
         )
-        actual = aggregate_net_exchange_per_ga(exchange_per_neighbor_ga)
+        actual = aggregate_exchange_per_ga(exchange_per_neighbor_ga)
 
         # Assert
         actual_rows = actual.df.collect()

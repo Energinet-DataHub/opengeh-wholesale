@@ -18,7 +18,7 @@ from pyspark.sql import SparkSession
 
 import tests.calculation.energy.metering_point_time_series_factories as factories
 from package.calculation.energy.aggregators.metering_point_time_series_aggregators import (
-    aggregate_per_ga_and_brp_and_es,
+    aggregate_per_es,
 )
 from package.codelists import MeteringPointType, SettlementMethod
 from package.constants import Colname
@@ -35,7 +35,7 @@ class TestWhenValidInput:
         metering_point_time_series = factories.create(spark, [row, row])
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             metering_point_time_series,
             factories.DEFAULT_METERING_POINT_TYPE,
             None,
@@ -72,7 +72,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, factories.DEFAULT_METERING_POINT_TYPE, None
         )
 
@@ -92,7 +92,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, factories.DEFAULT_METERING_POINT_TYPE, None
         )
 
@@ -109,7 +109,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, factories.DEFAULT_METERING_POINT_TYPE, None
         )
 
@@ -126,7 +126,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, factories.DEFAULT_METERING_POINT_TYPE, None
         )
 
@@ -149,7 +149,7 @@ class TestWhenValidInputAndFilteringApplied:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, MeteringPointType.CONSUMPTION, None
         )
 
@@ -171,7 +171,7 @@ class TestWhenValidInputAndFilteringApplied:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, factories.DEFAULT_METERING_POINT_TYPE, SettlementMethod.FLEX
         )
 
@@ -193,7 +193,7 @@ class TestWhenValidInputAndFilteringApplied:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_brp_and_es(
+        actual = aggregate_per_es(
             df, factories.DEFAULT_METERING_POINT_TYPE, None
         )
 

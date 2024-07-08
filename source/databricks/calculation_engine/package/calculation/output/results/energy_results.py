@@ -50,7 +50,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
     # Write energy per grid area
     energy_per_ga = _union(
-        energy_results.total_consumption,
+        energy_results.total_consumption_per_ga,
         energy_results.exchange_per_ga,
         energy_results.production_per_ga,
         energy_results.flex_consumption_per_ga,

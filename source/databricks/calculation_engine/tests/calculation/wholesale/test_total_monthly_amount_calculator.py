@@ -23,8 +23,8 @@ from package.codelists import (
 from package.constants import Colname
 import calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
 from package.calculation.wholesale.total_monthly_amount_calculator import (
-    calculate_per_ga_co_es,
-    calculate_per_ga_es,
+    calculate_per_co_es,
+    calculate_per_es,
 )
 
 
@@ -32,7 +32,7 @@ SYSTEM_OPERATOR_ID = "system_operator_id"
 GRID_ACCESS_PROVIDER_ID = "grid_access_provider_id"
 
 
-def test__calculate_per_ga_co_es__sums_across_charge_types(
+def test__calculate_per_co_es__sums_across_charge_types(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -58,7 +58,7 @@ def test__calculate_per_ga_co_es__sums_across_charge_types(
     )
 
     # Act
-    actual = calculate_per_ga_co_es(
+    actual = calculate_per_co_es(
         monthly_amounts,
     ).df
 
@@ -67,7 +67,7 @@ def test__calculate_per_ga_co_es__sums_across_charge_types(
     assert actual.count() == 1
 
 
-def test__calculate_per_ga_co_es__sums_per_energy_supplier(
+def test__calculate_per_co_es__sums_per_energy_supplier(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -93,7 +93,7 @@ def test__calculate_per_ga_co_es__sums_per_energy_supplier(
     )
 
     # Act
-    actual = calculate_per_ga_co_es(
+    actual = calculate_per_co_es(
         monthly_amounts,
     ).df
 
@@ -114,7 +114,7 @@ def test__calculate_per_ga_co_es__sums_per_energy_supplier(
         [GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")],
     ],
 )
-def test__calculate_per_ga_co_es__adds_tax_amount_only_to_grid_access_operator(
+def test__calculate_per_co_es__adds_tax_amount_only_to_grid_access_operator(
     spark: SparkSession, charge_owner: str, expected: Decimal
 ) -> None:
     # Arrange
@@ -137,7 +137,7 @@ def test__calculate_per_ga_co_es__adds_tax_amount_only_to_grid_access_operator(
     )
 
     # Act
-    actual = calculate_per_ga_co_es(
+    actual = calculate_per_co_es(
         monthly_amounts,
     ).df
 
@@ -154,7 +154,7 @@ def test__calculate_per_ga_co_es__adds_tax_amount_only_to_grid_access_operator(
         [None, None, None],
     ],
 )
-def test__calculate_per_ga_co_es__ignores_null_in_sum(
+def test__calculate_per_co_es__ignores_null_in_sum(
     spark: SparkSession,
     amount_without_tax: Decimal,
     amount_with_tax: Decimal,
@@ -180,7 +180,7 @@ def test__calculate_per_ga_co_es__ignores_null_in_sum(
     )
 
     # Act
-    actual = calculate_per_ga_co_es(
+    actual = calculate_per_co_es(
         monthly_amounts,
     ).df
 
@@ -189,7 +189,7 @@ def test__calculate_per_ga_co_es__ignores_null_in_sum(
     assert actual.count() == 1
 
 
-def test__calculate_per_ga_co_es__when_multiple_charge_owners_with_multiple_energy_suppliers__return_expected_number_of_rows(
+def test__calculate_per_co_es__when_multiple_charge_owners_with_multiple_energy_suppliers__return_expected_number_of_rows(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -240,7 +240,7 @@ def test__calculate_per_ga_co_es__when_multiple_charge_owners_with_multiple_ener
     )
 
     # Act
-    actual = calculate_per_ga_co_es(
+    actual = calculate_per_co_es(
         monthly_amounts,
     ).df
 
@@ -248,7 +248,7 @@ def test__calculate_per_ga_co_es__when_multiple_charge_owners_with_multiple_ener
     assert actual.count() == 6
 
 
-def test__calculate_per_ga_co_es__when_tax_charge_has_other_energy_supplier__ignores_tax_charge_in_sum(
+def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignores_tax_charge_in_sum(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -271,7 +271,7 @@ def test__calculate_per_ga_co_es__when_tax_charge_has_other_energy_supplier__ign
     )
 
     # Act
-    actual = calculate_per_ga_co_es(
+    actual = calculate_per_co_es(
         monthly_amounts,
     ).df
 
@@ -330,7 +330,7 @@ def test__calculate_per_ga_co_es__when_tax_charge_has_other_energy_supplier__ign
         ],
     ],
 )
-def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_time__group_them_and_ignore_charge_owner(
+def test__calculate_per_es__when_grid_area_and_energy_supplier_and_charge_time__group_them_and_ignore_charge_owner(
     grid_area: str,
     energy_supplier_id: str,
     total_amount: Decimal,
@@ -360,7 +360,7 @@ def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_tim
     monthly_amounts = monthly_amount_per_charge_factory.create(spark, rows)
 
     # Act
-    actual = calculate_per_ga_es(
+    actual = calculate_per_es(
         monthly_amounts,
     )
 
@@ -370,7 +370,7 @@ def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_tim
     assert actual.df.collect()[0][Colname.charge_owner] is None
 
 
-def test__calculate_per_ga_es__sums_when_different_charge_tax(
+def test__calculate_per_es__sums_when_different_charge_tax(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -395,7 +395,7 @@ def test__calculate_per_ga_es__sums_when_different_charge_tax(
     monthly_amounts = monthly_amount_per_charge_factory.create(spark, rows)
 
     # Act
-    actual = calculate_per_ga_es(
+    actual = calculate_per_es(
         monthly_amounts,
     )
 
