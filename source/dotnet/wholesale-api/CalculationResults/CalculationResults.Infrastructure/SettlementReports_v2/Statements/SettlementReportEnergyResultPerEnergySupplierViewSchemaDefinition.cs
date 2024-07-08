@@ -24,10 +24,10 @@ public class SettlementReportEnergyResultPerEnergySupplierViewSchemaDefinition
         { SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId, ("string", false) },
         { SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea, ("string", false) },
         { SettlementReportEnergyResultPerEnergySupplierViewColumns.MeteringPointType, ("string", false) },
-        { SettlementReportEnergyResultPerEnergySupplierViewColumns.SettlementMethod, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.SettlementMethod, ("string", true) },
         { SettlementReportEnergyResultPerEnergySupplierViewColumns.Resolution, ("string", false) },
         { SettlementReportEnergyResultPerEnergySupplierViewColumns.Time, ("timestamp", false) },
-        { SettlementReportEnergyResultPerEnergySupplierViewColumns.Quantity, ("decimal(18,3)", true) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.Quantity, ("decimal(18,3)", false) },
         { SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier, ("string", false) },
     };
 }
