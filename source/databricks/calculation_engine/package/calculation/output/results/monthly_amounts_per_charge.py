@@ -15,6 +15,8 @@ from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.constants import Colname, MonthlyAmountsColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -56,7 +58,11 @@ def _write(
     ],
 ) -> None:
     with logging_configuration.start_span(name):
-        df.write.format("delta").mode("append").option(
+        df.withColumnRenamed(
+            # ToDo JMG: Remove when we are on Unity Catalog
+            MonthlyAmountsColumnNames.calculation_result_id,
+            OutputTableColumnNames.result_id,
+        ).write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
