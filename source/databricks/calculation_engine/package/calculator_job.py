@@ -78,13 +78,17 @@ def start_with_deps(
             span.set_attributes(config.get_extras())
 
             args, infrastructure_settings = parse_job_args(command_line_args)
-            create_and_configure_container(infrastructure_settings)
+
+            if args.is_simulation:
+                raise NotImplementedError("Simulation is not implemented.")
 
             spark = initialize_spark()
+            create_and_configure_container(spark, infrastructure_settings)
+
             prepared_data_reader = create_prepared_data_reader(
                 infrastructure_settings, spark
             )
-            calculation_executor(args, prepared_data_reader, spark)
+            calculation_executor(args, prepared_data_reader)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:

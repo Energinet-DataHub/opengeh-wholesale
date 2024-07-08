@@ -14,4 +14,4 @@ SELECT c.calculation_id,
        ma.time,
        ma.amount
 FROM {HIVE_OUTPUT_DATABASE_NAME}.monthly_amounts as ma
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = ma.calculation_id
+INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = ma.calculation_id

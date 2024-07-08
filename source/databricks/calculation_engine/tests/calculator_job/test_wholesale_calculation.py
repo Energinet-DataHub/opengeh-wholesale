@@ -18,10 +18,10 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema,
+    hive_charge_link_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
+    hive_charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
@@ -30,7 +30,7 @@ from package.calculation.basis_data.schemas.grid_loss_metering_points_schema imp
     grid_loss_metering_points_schema,
 )
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
-    metering_point_period_schema,
+    hive_metering_point_period_schema,
 )
 from package.calculation.basis_data.schemas.time_series_point_schema import (
     time_series_point_schema,
@@ -272,7 +272,7 @@ def test__monthly_amounts__are_stored(
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.BasisDataDatabase.TABLE_NAMES,
+    paths.HiveBasisDataDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -281,7 +281,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -295,27 +295,27 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_period_schema,
+            paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            hive_metering_point_period_schema,
         ),
         (
-            paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-            charge_link_periods_schema,
+            paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            hive_charge_link_periods_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-            charge_price_information_periods_schema,
+            paths.HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            hive_charge_price_information_periods_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
         ),
         (
-            paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+            paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
             grid_loss_metering_points_schema,
         ),
     ],
@@ -328,7 +328,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.

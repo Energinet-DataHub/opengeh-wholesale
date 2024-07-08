@@ -417,11 +417,48 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
                     pytest.fail(f"An unexpected exception was raised: {error}")
 
 
+class TestWhenIsSimulationFlagPresent:
+    def test_simulation_is_true(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+
+                # Act
+                actual_args, actual_settings = parse_job_arguments(command_line_args)
+
+        # Assert
+        assert actual_args.is_simulation
+
+
+class TestWhenIsSimulationFlagNotPresent:
+    def test_simulation_is_false(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        sys_argv_from_contract.remove("--simulation")
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+
+                # Act
+                actual_args, actual_settings = parse_job_arguments(command_line_args)
+
+        # Assert
+        assert not actual_args.is_simulation
+
+
 class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
     def test_when_within_period_raise_exception_for_calculation(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract,
+        sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
         period_start_datetime = datetime(2023, 1, 30, 23)
@@ -451,7 +488,7 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
     def test_when_not_local_midnight_raise_exception_for_calculation(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract,
+        sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
         quarter_transition_datetime = "2023-01-31T22:00:00Z"

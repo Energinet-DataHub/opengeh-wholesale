@@ -49,7 +49,6 @@ class ScenarioExecutor:
         actual = _execute(
             self.test_calculation_args,
             PreparedDataReader(self.table_reader),
-            self.spark,
         )
         expected = self._get_expected_results(self.spark)
         return actual, expected
