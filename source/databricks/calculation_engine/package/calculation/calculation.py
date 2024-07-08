@@ -31,16 +31,16 @@ from .calculation_results import (
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
-from package.calculation.output import write_calculation
+from package.calculation.output.results import (
+    write_calculation,
+    write_monthly_amounts_per_charge,
+    write_total_monthly_amounts,
+    write_wholesale_results,
+    write_energy_results,
+)
 from package.calculation.output.results.calculations_storage_model_factory import (
     create_calculation,
 )
-from package.calculation.output import write_energy_results
-from package.calculation.output.results.monthly_amounts_per_charge import (
-    write_monthly_amounts_per_charge,
-)
-from package.calculation.output import write_total_monthly_amounts
-from package.calculation.output import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
