@@ -15,10 +15,12 @@
 from pyspark.sql import SparkSession, Row
 
 from calculation.preparation.transformations import metering_point_periods_factory
-from package.calculation.basis_data.basis_data import (
+from package.calculation.output.basis_data import (
     get_metering_point_periods_basis_data,
 )
-from package.calculation.basis_data.schemas import metering_point_period_schema
+from package.calculation.output.basis_data.schemas import (
+    hive_metering_point_period_schema,
+)
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -38,7 +40,7 @@ def test__when_valid_input__returns_df_with_expected_schema(
     )
 
     # Assert
-    assert_schema(actual.schema, metering_point_period_schema)
+    assert_schema(actual.schema, hive_metering_point_period_schema)
 
 
 def test__each_metering_point_has_a_row(spark: SparkSession) -> None:

@@ -17,22 +17,20 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.calculation.basis_data.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema,
+from package.calculation.output.basis_data.schemas import (
+    charge_price_information_periods_schema_uc,
+    charge_link_periods_schema_uc,
 )
-from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
-)
-from package.calculation.basis_data.schemas.charge_price_points_schema import (
+from package.calculation.output.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
-from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+from package.calculation.output.basis_data.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
-from package.calculation.basis_data.schemas.metering_point_period_schema import (
-    metering_point_period_schema,
+from package.calculation.output.basis_data.schemas.metering_point_period_schema import (
+    metering_point_period_schema_uc,
 )
-from package.calculation.basis_data.schemas.time_series_point_schema import (
+from package.calculation.output.basis_data.schemas.time_series_point_schema import (
     time_series_point_schema,
 )
 from package.codelists import (
@@ -43,6 +41,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
 ENERGY_RESULT_TYPES = {
@@ -259,7 +258,7 @@ def test__total_monthly_amounts__are_stored(
 
 def test__monthly_amounts__are_stored(
     spark: SparkSession,
-    wholesale_fixing_monthly_amounts: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge: DataFrame,
 ) -> None:
     # Arrange
 
@@ -267,12 +266,12 @@ def test__monthly_amounts__are_stored(
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert wholesale_fixing_monthly_amounts.count() > 0
+    assert wholesale_fixing_monthly_amounts_per_charge.count() > 0
 
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.BasisDataDatabase.TABLE_NAMES,
+    paths.WholesaleBasisDataInternalDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -281,7 +280,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -291,32 +290,44 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     assert actual.count() > 0
 
 
+def test__when_wholesale_calculation__calculation_is_stored(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
+
+
 @pytest.mark.parametrize(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_period_schema,
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            metering_point_period_schema_uc,
         ),
         (
-            paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-            charge_link_periods_schema,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            charge_link_periods_schema_uc,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-            charge_price_information_periods_schema,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            charge_price_information_periods_schema_uc,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
-        ),
-        (
-            paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-            grid_loss_metering_points_schema,
         ),
     ],
 )
@@ -325,10 +336,11 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     executed_wholesale_fixing: None,
     basis_data_table_name: str,
     expected_schema: StructType,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
+        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.
@@ -336,6 +348,22 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 
     # Assert
     assert actual.schema == expected_schema
+
+
+def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_correct_schema(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+    )
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert
+    assert actual.schema == grid_loss_metering_points_schema
 
 
 @pytest.mark.parametrize(

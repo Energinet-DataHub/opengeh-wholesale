@@ -19,12 +19,12 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
+from package.calculation.output.results.schemas import (
     total_monthly_amounts_schema,
 )
 from package.codelists import CalculationType
 from package.constants import TotalMonthlyAmountsColumnNames
-from package.infrastructure.paths import HiveOutputDatabase
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 from tests.helpers.data_frame_utils import set_column
 
 
@@ -84,7 +84,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}",
+            f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}",
             overwrite=False,
         )
 
@@ -137,7 +137,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
 
@@ -169,7 +169,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
 
@@ -199,35 +199,11 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
     # Assert
     actual_df = spark.read.table(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     ).where(col(TotalMonthlyAmountsColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].amount == amount
-
-
-def test__total_monthly_amounts_table__is_not_managed(
-    spark: SparkSession, migrations_executed: None
-) -> None:
-    """
-    It is desired that the table is unmanaged to provide for greater flexibility.
-    According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
-    "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
-    """
-    database_details = spark.sql(
-        f"DESCRIBE DATABASE {HiveOutputDatabase.DATABASE_NAME}"
-    )
-    table_details = spark.sql(
-        f"DESCRIBE DETAIL {HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
-    )
-
-    database_location = database_details.where(
-        col("info_name") == "Location"
-    ).collect()[0]["info_value"]
-    table_location = table_details.collect()[0]["location"]
-
-    assert not table_location.startswith(database_location)

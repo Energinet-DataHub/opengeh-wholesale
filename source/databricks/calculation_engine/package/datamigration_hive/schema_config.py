@@ -13,25 +13,25 @@
 # limitations under the License.
 from spark_sql_migrations import Schema, Table, View
 
-import package.calculation.basis_data.schemas as basis_data_schemas
+import package.calculation.output.basis_data.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
 from package.calculation.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
-from package.calculation.output.schemas.energy_results_schema import (
-    energy_results_schema,
+from package.calculation.output.results.schemas import (
+    hive_energy_results_schema,
 )
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
+from package.calculation.output.results.schemas import (
     total_monthly_amounts_schema,
 )
-from package.calculation.output.schemas.monthly_amounts_schema import (
+from package.calculation.output.results.schemas import (
     monthly_amounts_schema,
 )
 
 # calculation_output
-from package.calculation.output.schemas.wholesale_results_schema import (
+from package.calculation.output.results.schemas.wholesale_results_schema import (
     wholesale_results_schema,
 )
 
@@ -45,7 +45,7 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
-                schema=energy_results_schema,
+                schema=hive_energy_results_schema,
             ),
             Table(
                 name=paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
@@ -73,35 +73,35 @@ schema_config = [
         views=[],
     ),
     Schema(
-        name=paths.BasisDataDatabase.DATABASE_NAME,
+        name=paths.HiveBasisDataDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_period_schema,
+                name=paths.HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.hive_metering_point_period_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+                name=paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.time_series_point_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_link_periods_schema,
+                name=paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.hive_charge_link_periods_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_information_periods_schema,
+                name=paths.HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.hive_charge_price_information_periods_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+                name=paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_points_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                name=paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.CALCULATIONS_TABLE_NAME,
-                schema=basis_data_schemas.calculations_schema,
+                name=paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
+                schema=basis_data_schemas.hive_calculations_schema,
             ),
         ],
         views=[],

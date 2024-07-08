@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from package.calculation import TableReader
-from package.calculation.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from package.calculation.input.schemas import (
     metering_point_period_schema,
     time_series_point_schema,
@@ -30,7 +30,7 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
     """
     return {
         "calculations.csv": (
-            calculations_schema,
+            hive_calculations_schema,
             table_reader.read_calculations,
         ),
         "metering_point_periods.csv": (

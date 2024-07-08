@@ -20,11 +20,11 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.calculation.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from package.calculation.input import TableReader
 from package.codelists import CalculationType
 from package.constants.basis_data_colname import CalculationsColumnName
-from package.infrastructure.paths import BasisDataDatabase
+from package.infrastructure.paths import HiveBasisDataDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -46,7 +46,7 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_calculation_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=calculations_schema)
+        df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
@@ -69,17 +69,17 @@ class TestWhenValidInput:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         calculations_table_location = (
-            f"{calculation_input_path}/{BasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+            f"{calculation_input_path}/{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
         )
         row = _create_calculation_row()
-        df = spark.createDataFrame(data=[row], schema=calculations_schema)
+        df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         write_dataframe_to_table(
             spark,
             df,
-            BasisDataDatabase.DATABASE_NAME,
-            BasisDataDatabase.CALCULATIONS_TABLE_NAME,
+            HiveBasisDataDatabase.DATABASE_NAME,
+            HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
             calculations_table_location,
-            calculations_schema,
+            hive_calculations_schema,
         )
         expected = df
 

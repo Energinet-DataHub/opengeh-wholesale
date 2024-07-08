@@ -27,7 +27,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
-[Collection(nameof(SettlementReportFileCollectionFixture))]
+[Collection(nameof(SettlementReportCollectionFixture))]
 public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<SettlementReportDownloadHandler>,
     IClassFixture<WholesaleDatabaseFixture<SettlementReportDatabaseContext>>
 {
@@ -81,7 +81,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act
         await using var downloadStream = new MemoryStream();
-        await Sut.DownloadReportAsync(requestId, downloadStream, actorId, false);
+        await Sut.DownloadReportAsync(requestId, () => downloadStream, actorId, false);
 
         // Assert
         Assert.NotNull(downloadStream);
@@ -111,7 +111,8 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act + Assert
         await using var downloadStream = new MemoryStream();
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), false));
+        // ReSharper disable once AccessToDisposedClosure
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, () => downloadStream, Guid.NewGuid(), false));
     }
 
     [Fact]
@@ -137,7 +138,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act
         await using var downloadStream = new MemoryStream();
-        await Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), true);
+        await Sut.DownloadReportAsync(requestId, () => downloadStream, Guid.NewGuid(), true);
 
         // Assert
         Assert.NotNull(downloadStream);
@@ -166,7 +167,8 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act + Assert
         await using var downloadStream = new MemoryStream();
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, downloadStream, actorId, false));
+        // ReSharper disable once AccessToDisposedClosure
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, () => downloadStream, actorId, false));
     }
 
     private Task MakeTestFileAsync(SettlementReportRequestId requestId)
