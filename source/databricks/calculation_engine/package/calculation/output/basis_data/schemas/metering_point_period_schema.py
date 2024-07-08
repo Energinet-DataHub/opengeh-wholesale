@@ -31,7 +31,9 @@ metering_point_period_schema_uc = StructType(
         StructField(OutputTableColumnNames.resolution, StringType(), False),
         StructField(OutputTableColumnNames.from_grid_area_code, StringType(), True),
         StructField(OutputTableColumnNames.to_grid_area_code, StringType(), True),
-        StructField(OutputTableColumnNames.parent_metering_point_id, StringType(), True),
+        StructField(
+            OutputTableColumnNames.parent_metering_point_id, StringType(), True
+        ),
         StructField(OutputTableColumnNames.energy_supplier_id, StringType(), True),
         StructField(
             OutputTableColumnNames.balance_responsible_party_id, StringType(), True
@@ -40,7 +42,6 @@ metering_point_period_schema_uc = StructType(
         StructField(OutputTableColumnNames.to_date, TimestampType(), False),
     ]
 )
-
 
 # ToDo JMG: Remove when we are on Unity Catalog
 hive_metering_point_period_schema = StructType(

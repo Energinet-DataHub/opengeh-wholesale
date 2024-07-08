@@ -29,9 +29,13 @@ calculations_schema = StructType(
         StructField(
             OutputTableColumnNames.calculation_period_start, TimestampType(), False
         ),
-        StructField(OutputTableColumnNames.calculation_period_end, TimestampType(), False),
         StructField(
-            OutputTableColumnNames.calculation_execution_time_start, TimestampType(), False
+            OutputTableColumnNames.calculation_period_end, TimestampType(), False
+        ),
+        StructField(
+            OutputTableColumnNames.calculation_execution_time_start,
+            TimestampType(),
+            False,
         ),
         StructField(OutputTableColumnNames.created_by_user_id, StringType(), False),
         StructField(OutputTableColumnNames.calculation_version, LongType(), False),
