@@ -1,7 +1,10 @@
 from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
-
+import package.calculation.basis_data.schemas as basis_data_schemas
+from package.calculation.output.schemas.monthly_amounts_schema import (
+    monthly_amounts_schema,
+)
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
@@ -13,6 +16,36 @@ schema_config = [
             Table(
                 name=paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
                 schema=total_monthly_amounts_schema,
+            ),
+            Table(
+                name=paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
+                schema=monthly_amounts_schema,
+            ),
+        ],
+        views=[],
+    ),
+    Schema(
+        name=paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+        tables=[
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.metering_point_period_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.time_series_point_schema,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_link_periods_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_information_periods_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_points_schema,
             ),
         ],
         views=[],
