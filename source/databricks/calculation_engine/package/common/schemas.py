@@ -84,6 +84,13 @@ def assert_schema(
             Actual field names: {actual.fieldNames()}."""
         )
 
+    if len(actual_fields) > len(expected_fields):
+        _raise(
+            f"""Actual schema has more fields than expected schema.
+             Expected field names: {expected.fieldNames()}.
+             Actual field names: {actual.fieldNames()}."""
+        )
+
     for actual_field, expected_field in zip(actual_fields, expected_fields):
         _assert_column_name(actual_field, expected_field)
         _assert_field(
