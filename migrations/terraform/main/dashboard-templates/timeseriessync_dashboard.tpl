@@ -375,6 +375,71 @@
         },
         "6": {
           "position": {
+            "x": 12,
+            "y": 4,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
+                        },
+                        "name": "InstanceCount",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.web/sites",
+                        "metricVisualization": {
+                          "displayName": "Automatic Scaling Instance Count",
+                          "resourceDisplayName": "${timeseriessync_name}"
+                        }
+                      }
+                    ],
+                    "title": "Avg Automatic Scaling Instance Count for ${timeseriessync_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "7": {
+          "position": {
             "x": 0,
             "y": 8,
             "colSpan": 2,
@@ -394,7 +459,7 @@
             }
           }
         },
-        "7": {
+        "8": {
           "position": {
             "x": 2,
             "y": 8,
@@ -480,7 +545,7 @@
             }
           }
         },
-        "8": {
+        "9": {
           "position": {
             "x": 7,
             "y": 8,
@@ -566,7 +631,7 @@
             }
           }
         },
-        "9": {
+        "10": {
           "position": {
             "x": 12,
             "y": 8,
@@ -624,24 +689,24 @@
                         }
                       }
                     ],
-                    "title": "Avg ArchiveTimeSeriesMessageDuration, Avg DequeueTimeSeriesMessageDuration, and Avg SendTimeSeriesMessageDuration",
-                    "titleKind": 1,
+                    "title": "Avg ArchiveTimeSeriesMessageDuration, Avg DequeueTimeSeriesMessageDuration, and Avg SendTimeSeriesMessageDuration in milliseconds",
+                    "titleKind": 2,
                     "visualization": {
                       "chartType": 2,
                       "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
                         "hideHoverCard": false,
-                        "hideLabelNames": true
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
                       },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
                       "disablePinning": true
@@ -652,7 +717,7 @@
             }
           }
         },
-        "10": {
+        "11": {
           "position": {
             "x": 17,
             "y": 8,
@@ -688,24 +753,24 @@
                         }
                       }
                     ],
-                    "title": "Avg PeekedTimeSeriesMessageAge for ${appi_sharedres_name}",
-                    "titleKind": 1,
+                    "title": "Avg PeekedTimeSeriesMessageAge in seconds",
+                    "titleKind": 2,
                     "visualization": {
                       "chartType": 2,
                       "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
                         "hideHoverCard": false,
-                        "hideLabelNames": true
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
                       },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
                       "disablePinning": true
@@ -716,7 +781,7 @@
             }
           }
         },
-        "11": {
+        "12": {
           "position": {
             "x": 0,
             "y": 12,
@@ -737,7 +802,7 @@
             }
           }
         },
-        "12": {
+        "13": {
           "position": {
             "x": 2,
             "y": 12,
@@ -814,7 +879,7 @@
             }
           }
         },
-        "13": {
+        "14": {
           "position": {
             "x": 7,
             "y": 12,
@@ -839,21 +904,28 @@
                   "chart": {
                     "metrics": [
                       {
-                        "aggregationType": 4,
-                        "metricVisualization": {
-                          "displayName": "Count of dead-lettered messages in a Queue/Topic.",
-                          "resourceDisplayName": "${sbns_shared_name}"
-                        },
-                        "name": "DeadletteredMessages",
-                        "namespace": "microsoft.servicebus/namespaces",
                         "resourceMetadata": {
                           "id": "${sbns_shared_id}"
+                        },
+                        "name": "DeadletteredMessages",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.servicebus/namespaces",
+                        "metricVisualization": {
+                          "displayName": "Count of dead-lettered messages in Topic.",
+                          "resourceDisplayName": "${sbns_shared_name}"
                         }
                       }
                     ],
-                    "title": "Dead-lettered messages in time series ServiceBus Queue",
+                    "title": "Dead-lettered messages in time series Service Bus Topic",
                     "titleKind": 2,
                     "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -864,14 +936,7 @@
                           "isVisible": true
                         }
                       },
-                      "chartType": 2,
-                      "disablePinning": true,
-                      "legendVisualization": {
-                        "hideHoverCard": false,
-                        "hideLabelNames": true,
-                        "isVisible": true,
-                        "position": 2
-                      }
+                      "disablePinning": true
                     }
                   }
                 }
@@ -889,7 +954,7 @@
             }
           }
         },
-        "14": {
+        "15": {
           "position": {
             "x": 12,
             "y": 12,
@@ -964,7 +1029,7 @@
             }
           }
         },
-        "15": {
+        "16": {
           "position": {
             "x": 17,
             "y": 12,
@@ -1108,19 +1173,20 @@
               "value": "Past 24 hours"
             },
             "filteredPartIds": [
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0238",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f023a",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f023c",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f023e",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0240",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0244",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0246",
-              "StartboardPart-LogsDashboardPart-7a22d007-957e-478d-86cc-6fea417f0248",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f02a1",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f024c",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f024e",
-              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0250",
-              "StartboardPart-MonitorChartPart-dc5fc6be-36cc-46c6-8512-10866aac01a1"
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5674",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5676",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5678",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d567a",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d567c",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d56ec",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5680",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5682",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5684",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5686",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d568a",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d568c",
+              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d568e",
+              "StartboardPart-LogsDashboardPart-b45e38ad-1cde-454e-83fc-369e8e3d5690"
             ]
           }
         }
