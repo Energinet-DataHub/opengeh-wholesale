@@ -20,7 +20,7 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.calculation.output.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from package.calculation.input import TableReader
 from package.codelists import CalculationType
 from package.constants.basis_data_colname import CalculationsColumnName
@@ -46,7 +46,7 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_calculation_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=calculations_schema)
+        df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
@@ -72,14 +72,14 @@ class TestWhenValidInput:
             f"{calculation_input_path}/{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
         )
         row = _create_calculation_row()
-        df = spark.createDataFrame(data=[row], schema=calculations_schema)
+        df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         write_dataframe_to_table(
             spark,
             df,
             HiveBasisDataDatabase.DATABASE_NAME,
             HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
             calculations_table_location,
-            calculations_schema,
+            hive_calculations_schema,
         )
         expected = df
 

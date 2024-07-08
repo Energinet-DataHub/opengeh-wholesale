@@ -267,6 +267,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.price,
         WholesaleResultColumnNames.amount,
         WholesaleResultColumnNames.is_tax,
+        WholesaleResultColumnNames.result_id,
+        WholesaleResultColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
     all_columns = [
         getattr(WholesaleResultColumnNames, attribute_name)

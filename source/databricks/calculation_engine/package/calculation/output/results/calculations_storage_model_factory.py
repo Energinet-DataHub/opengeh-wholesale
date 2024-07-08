@@ -15,7 +15,7 @@ from dependency_injector.wiring import Provide
 from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
-from package.calculation.output.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
 from package.container import Container
@@ -55,4 +55,6 @@ def _create_calculation(
         CalculationColumnNames.version: next_version,
     }
 
-    return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
+    return spark.createDataFrame(
+        data=[Row(**calculation)], schema=hive_calculations_schema
+    )

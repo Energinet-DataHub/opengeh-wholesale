@@ -367,10 +367,13 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         EnergyResultColumnNames.time,
         EnergyResultColumnNames.quantity_qualities,
         EnergyResultColumnNames.quantity,
+        EnergyResultColumnNames.metering_point_type,
         # The field that defines results
         EnergyResultColumnNames.calculation_result_id,
+        EnergyResultColumnNames.result_id,
         EnergyResultColumnNames.metering_point_id,
         EnergyResultColumnNames.resolution,
+        EnergyResultColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
     all_columns = _get_energy_result_column_names()
 
@@ -396,6 +399,8 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
         return EnergyResultColumnNames.neighbor_grid_area_code
     if field_name == Colname.balance_responsible_id:
         return EnergyResultColumnNames.balance_responsible_id
+    if field_name == Colname.balance_responsible_party_id:
+        return EnergyResultColumnNames.balance_responsible_party_id
     if field_name == Colname.energy_supplier_id:
         return EnergyResultColumnNames.energy_supplier_id
     return field_name

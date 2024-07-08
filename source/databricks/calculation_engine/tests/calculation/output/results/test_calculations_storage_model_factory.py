@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 from pyspark.sql import Row
 
-from package.calculation.output.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output.results.calculations_storage_model_factory import (
     create_calculation,
@@ -35,7 +35,7 @@ def test__when_valid_input__creates_calculation_with_expected_schema(
         return_value=0,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.schema == calculations_schema
+        assert actual.schema == hive_calculations_schema
 
 
 def test__when_valid_input__creates_expected_calculation(

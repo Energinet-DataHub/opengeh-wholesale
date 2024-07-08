@@ -45,7 +45,7 @@ public class SettlementReportWholesaleViewColumns
         { Time, ("timestamp", false) },
         { Resolution, ("string", false) },
         { MeteringPointType, ("string", false) },
-        { SettlementMethod, ("string", false) },
+        { SettlementMethod, ("string", true) },
         { QuantityUnit, ("string", false) },
         { Currency, ("string", false) },
         { Quantity, ("decimal(18,3)", true) },
