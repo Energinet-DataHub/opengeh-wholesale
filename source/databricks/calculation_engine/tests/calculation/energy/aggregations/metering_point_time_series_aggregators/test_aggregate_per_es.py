@@ -72,9 +72,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_es(
-            df, factories.DEFAULT_METERING_POINT_TYPE, None
-        )
+        actual = aggregate_per_es(df, factories.DEFAULT_METERING_POINT_TYPE, None)
 
         # assert
         actual_rows = actual.df.collect()
@@ -92,9 +90,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_es(
-            df, factories.DEFAULT_METERING_POINT_TYPE, None
-        )
+        actual = aggregate_per_es(df, factories.DEFAULT_METERING_POINT_TYPE, None)
 
         # assert
         actual_rows = actual.df.collect()
@@ -109,9 +105,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_es(
-            df, factories.DEFAULT_METERING_POINT_TYPE, None
-        )
+        actual = aggregate_per_es(df, factories.DEFAULT_METERING_POINT_TYPE, None)
 
         # assert
         actual_rows = actual.df.collect()
@@ -126,9 +120,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_es(
-            df, factories.DEFAULT_METERING_POINT_TYPE, None
-        )
+        actual = aggregate_per_es(df, factories.DEFAULT_METERING_POINT_TYPE, None)
 
         # assert
         actual_rows = actual.df.collect()
@@ -149,9 +141,7 @@ class TestWhenValidInputAndFilteringApplied:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_es(
-            df, MeteringPointType.CONSUMPTION, None
-        )
+        actual = aggregate_per_es(df, MeteringPointType.CONSUMPTION, None)
 
         # assert
         actual_rows = actual.df.collect()
@@ -193,9 +183,7 @@ class TestWhenValidInputAndFilteringApplied:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_es(
-            df, factories.DEFAULT_METERING_POINT_TYPE, None
-        )
+        actual = aggregate_per_es(df, factories.DEFAULT_METERING_POINT_TYPE, None)
 
         # assert
         actual_rows = actual.df.collect()

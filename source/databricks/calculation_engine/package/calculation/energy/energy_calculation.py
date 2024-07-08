@@ -71,7 +71,7 @@ def _calculate(
     results = EnergyResultsContainer()
 
     # cache of net exchange per grid area did not improve performance (01/12/2023)
-    net_exchange_per_ga = _calculate_net_exchange(
+    exchange_per_ga = _calculate_exchange(
         args,
         metering_point_time_series,
         results,
@@ -92,7 +92,7 @@ def _calculate(
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
         args,
-        net_exchange_per_ga,
+        exchange_per_ga,
         temporary_production_per_es,
         temporary_flex_consumption_per_es,
         non_profiled_consumption_per_es,
@@ -128,13 +128,13 @@ def _calculate(
         results,
     )
 
-    _calculate_total_consumption(args, production_per_ga, net_exchange_per_ga, results)
+    _calculate_total_consumption(args, production_per_ga, exchange_per_ga, results)
 
     return results, positive_grid_loss, negative_grid_loss
 
 
-@logging_configuration.use_span("calculate_net_exchange")
-def _calculate_net_exchange(
+@logging_configuration.use_span("calculate_exchange")
+def _calculate_exchange(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
@@ -146,7 +146,7 @@ def _calculate_net_exchange(
         results.exchange_per_neighbor_ga = factory.create(
             args,
             exchange_per_neighbor_ga,
-            TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
+            TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA,
             AggregationLevel.GRID_AREA,
         )
 
@@ -157,7 +157,7 @@ def _calculate_net_exchange(
     results.exchange_per_ga = factory.create(
         args,
         exchange_per_grid_area,
-        TimeSeriesType.NET_EXCHANGE_PER_GA,
+        TimeSeriesType.EXCHANGE_PER_GA,
         AggregationLevel.GRID_AREA,
     )
 
@@ -229,7 +229,7 @@ def _calculate_temporary_flex_consumption_per_es(
 @logging_configuration.use_span("calculate_grid_loss")
 def _calculate_grid_loss(
     args: CalculatorArgs,
-    net_exchange_per_ga: EnergyResults,
+    exchange_per_ga: EnergyResults,
     temporary_production_per_es: EnergyResults,
     temporary_flex_consumption_per_es: EnergyResults,
     non_profiled_consumption_per_es: EnergyResults,
@@ -237,7 +237,7 @@ def _calculate_grid_loss(
     results: EnergyResultsContainer,
 ) -> tuple[EnergyResults, EnergyResults]:
     grid_loss = grid_loss_aggr.calculate_grid_loss(
-        net_exchange_per_ga,
+        exchange_per_ga,
         non_profiled_consumption_per_es,
         temporary_flex_consumption_per_es,
         temporary_production_per_es,
@@ -408,14 +408,12 @@ def _calculate_non_profiled_consumption(
 def _calculate_total_consumption(
     args: CalculatorArgs,
     production_per_ga: EnergyResults,
-    net_exchange_per_ga: EnergyResults,
+    exchange_per_ga: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
     results.total_consumption_per_ga = factory.create(
         args,
-        grid_loss_aggr.calculate_total_consumption(
-            production_per_ga, net_exchange_per_ga
-        ),
+        grid_loss_aggr.calculate_total_consumption(production_per_ga, exchange_per_ga),
         TimeSeriesType.TOTAL_CONSUMPTION,
         AggregationLevel.GRID_AREA,
     )
