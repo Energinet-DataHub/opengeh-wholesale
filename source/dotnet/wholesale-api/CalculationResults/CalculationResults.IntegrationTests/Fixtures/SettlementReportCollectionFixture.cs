@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 /// xUnit documentation of collection fixtures:
 ///  * https://xunit.net/docs/shared-context#collection-fixture
 /// </summary>
-[CollectionDefinition(nameof(SettlementReportFileCollectionFixture))]
-public sealed class SettlementReportFileCollectionFixture : ICollectionFixture<SettlementReportFileBlobStorageFixture>, ICollectionFixture<SettlementReportDatabricksSqlCollectionFixture>
+[CollectionDefinition(nameof(SettlementReportCollectionFixture))]
+public sealed class SettlementReportCollectionFixture : ICollectionFixture<SettlementReportFileBlobStorageFixture>, ICollectionFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
 }

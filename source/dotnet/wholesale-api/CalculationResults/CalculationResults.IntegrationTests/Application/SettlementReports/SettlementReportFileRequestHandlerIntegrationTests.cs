@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
-[Collection(nameof(SettlementReportFileCollectionFixture))]
+[Collection(nameof(SettlementReportCollectionFixture))]
 public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>
 {
     private const string GridAreaA = "018";
