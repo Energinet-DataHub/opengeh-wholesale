@@ -123,31 +123,6 @@ def test__balance_fixing_result__is_created(
     assert result_df.count() > 0
 
 
-@pytest.mark.parametrize(
-    "time_series_type, aggregation_level",
-    ALL_ENERGY_RESULT_TYPES,
-)
-def test__balance_fixing_result__is_created(
-    balance_fixing_results_df: DataFrame,
-    time_series_type: str,
-    aggregation_level: str,
-) -> None:
-    # Arrange
-    result_df = (
-        balance_fixing_results_df.where(
-            f.col(EnergyResultColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
-        )
-        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
-        .where(f.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixtures `balance_fixing_results_df` and `executed_balance_fixing`
-
-    # Assert: The result is created if there are rows
-    assert result_df.count() > 0
-
-
 def test__balance_fixing_result__has_expected_number_of_result_types(
     balance_fixing_results_df: DataFrame,
 ) -> None:
