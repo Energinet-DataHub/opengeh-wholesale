@@ -19,25 +19,22 @@ from pyspark.sql import DataFrame
 
 @dataclass
 class EnergyResultsContainer:
-    net_exchange_per_neighbor_ga: DataFrame | None = None
-    net_exchange_per_ga: DataFrame | None = None
+    exchange_per_neighbor_ga: DataFrame | None = None
+    exchange_per_ga: DataFrame | None = None
     temporary_production_per_ga: DataFrame | None = None
     temporary_flex_consumption_per_ga: DataFrame | None = None
     grid_loss: DataFrame | None = None
     positive_grid_loss: DataFrame | None = None
     negative_grid_loss: DataFrame | None = None
-    non_profiled_consumption_per_ga_and_brp: DataFrame | None = None
-    non_profiled_consumption_per_ga_and_brp_and_es: DataFrame | None = None
-    non_profiled_consumption_per_ga_and_es: DataFrame | None = None
+    non_profiled_consumption_per_brp: DataFrame | None = None
+    non_profiled_consumption_per_es: DataFrame | None = None
     non_profiled_consumption_per_ga: DataFrame | None = None
-    production_per_ga_and_brp_and_es: DataFrame | None = None
-    production_per_ga_and_brp: DataFrame | None = None
-    production_per_ga_and_es: DataFrame | None = None
+    production_per_es: DataFrame | None = None
+    production_per_brp: DataFrame | None = None
     production_per_ga: DataFrame | None = None
     flex_consumption_per_ga: DataFrame | None = None
-    flex_consumption_per_ga_and_es: DataFrame | None = None
-    flex_consumption_per_ga_and_brp_and_es: DataFrame | None = None
-    flex_consumption_per_ga_and_brp: DataFrame | None = None
+    flex_consumption_per_es: DataFrame | None = None
+    flex_consumption_per_brp: DataFrame | None = None
     total_consumption: DataFrame | None = None
 
 
