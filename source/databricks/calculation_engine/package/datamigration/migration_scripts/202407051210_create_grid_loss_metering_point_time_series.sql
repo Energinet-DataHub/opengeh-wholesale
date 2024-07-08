@@ -25,7 +25,6 @@ TBLPROPERTIES (
     delta.constraints.balance_responsible_party_id_chk = "balance_responsible_party_id IS NULL OR LENGTH ( balance_responsible_party_id ) = 13 OR LENGTH ( balance_responsible_party_id ) = 16",
     delta.constraints.metering_point_type_chk = "metering_point_type IN ( 'production' , 'consumption')",
     delta.constraints.metering_point_id_chk = "metering_point_id IS NULL OR LENGTH ( metering_point_id ) = 18",
-    delta.constraints.metering_point_id_conditional_chk = "( time_series_type IN ( 'negative_grid_loss' , 'positive_grid_loss' ) AND metering_point_id IS NOT NULL ) OR ( time_series_type NOT IN ( 'negative_grid_loss' , 'positive_grid_loss' ) AND metering_point_id IS NULL )",
     delta.constraints.resolution_chk = "resolution IN ( 'PT15M' , 'PT1H' )",
     delta.constraints.quantity_qualities_chk = "array_size ( array_except ( quantity_qualities , array ( 'missing' , 'calculated' , 'measured' , 'estimated' ) ) ) = 0 AND array_size ( quantity_qualities ) > 0"
 )
