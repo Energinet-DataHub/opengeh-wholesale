@@ -15,7 +15,7 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.calculation.output.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from package.codelists import CalculationType
 from package.constants.calculation_column_names import CalculationColumnNames
 
@@ -59,8 +59,8 @@ def create_calculations(
         data = [create_calculation_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data=data, schema=calculations_schema)
+    return spark.createDataFrame(data=data, schema=hive_calculations_schema)
 
 
 def create_empty_calculations(spark: SparkSession) -> DataFrame:
-    return spark.createDataFrame(data=[], schema=calculations_schema)
+    return spark.createDataFrame(data=[], schema=hive_calculations_schema)

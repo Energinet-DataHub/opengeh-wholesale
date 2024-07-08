@@ -19,24 +19,29 @@ from pyspark.sql.types import (
     StructType,
 )
 
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+
 metering_point_period_schema_uc = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("metering_point_id", StringType(), False),
-        StructField("metering_point_type", StringType(), False),
-        StructField("settlement_method", StringType(), True),
-        StructField("grid_area_code", StringType(), False),
-        StructField("resolution", StringType(), False),
-        StructField("from_grid_area_code", StringType(), True),
-        StructField("to_grid_area_code", StringType(), True),
-        StructField("parent_metering_point_id", StringType(), True),
-        StructField("energy_supplier_id", StringType(), True),
-        StructField("balance_responsible_party_id", StringType(), True),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), False),
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_type, StringType(), False),
+        StructField(OutputTableColumnNames.settlement_method, StringType(), True),
+        StructField(OutputTableColumnNames.grid_area_code, StringType(), False),
+        StructField(OutputTableColumnNames.resolution, StringType(), False),
+        StructField(OutputTableColumnNames.from_grid_area_code, StringType(), True),
+        StructField(OutputTableColumnNames.to_grid_area_code, StringType(), True),
+        StructField(
+            OutputTableColumnNames.parent_metering_point_id, StringType(), True
+        ),
+        StructField(OutputTableColumnNames.energy_supplier_id, StringType(), True),
+        StructField(
+            OutputTableColumnNames.balance_responsible_party_id, StringType(), True
+        ),
+        StructField(OutputTableColumnNames.from_date, TimestampType(), False),
+        StructField(OutputTableColumnNames.to_date, TimestampType(), False),
     ]
 )
-
 
 # ToDo JMG: Remove when we are on Unity Catalog
 hive_metering_point_period_schema = StructType(
