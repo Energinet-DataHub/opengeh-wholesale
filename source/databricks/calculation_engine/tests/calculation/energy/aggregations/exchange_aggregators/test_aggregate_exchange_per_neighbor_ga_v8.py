@@ -20,7 +20,7 @@ from pyspark.sql.types import Row
 
 from calculation.energy import metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
-    aggregate_net_exchange_per_neighbor_ga,
+    aggregate_exchange_per_neighbor_ga,
 )
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
@@ -85,7 +85,7 @@ def _create_row(
 
 
 def test_aggregate_net_exchange_per_neighbor_ga_single_hour(single_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbor_ga(
+    df = aggregate_exchange_per_neighbor_ga(
         single_quarter_test_data, ALL_GRID_AREAS
     ).df.orderBy(
         Colname.to_grid_area_code, Colname.from_grid_area_code, Colname.observation_time
@@ -102,7 +102,7 @@ def test_aggregate_net_exchange_per_neighbor_ga_single_hour(single_quarter_test_
 
 
 def test_aggregate_net_exchange_per_neighbor_ga_multi_hour(multi_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbor_ga(
+    df = aggregate_exchange_per_neighbor_ga(
         multi_quarter_test_data, ALL_GRID_AREAS
     ).df.orderBy(
         Colname.to_grid_area_code, Colname.from_grid_area_code, Colname.observation_time

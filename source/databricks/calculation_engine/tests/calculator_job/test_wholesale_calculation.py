@@ -46,7 +46,7 @@ from . import configuration as c
 
 ENERGY_RESULT_TYPES = {
     (
-        TimeSeriesType.NET_EXCHANGE_PER_GA.value,
+        TimeSeriesType.EXCHANGE_PER_GA.value,
         AggregationLevel.GRID_AREA.value,
     ),
     (

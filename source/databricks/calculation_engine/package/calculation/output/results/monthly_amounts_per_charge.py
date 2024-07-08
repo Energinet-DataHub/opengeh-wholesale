@@ -30,20 +30,20 @@ def write_monthly_amounts_per_charge(
 ) -> None:
     """Write each wholesale result to the output table."""
     _write(
-        "monthly_tariff_from_hourly_per_ga_co_es",
-        wholesale_results.monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount,
+        "monthly_tariff_from_hourly_per_co_es",
+        wholesale_results.monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
     )
     _write(
-        "monthly_tariff_from_daily_per_ga_co_es",
-        wholesale_results.monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount,
+        "monthly_tariff_from_daily_per_co_es",
+        wholesale_results.monthly_tariff_from_daily_per_co_es_as_monthly_amount,
     )
     _write(
-        "monthly_subscription_per_ga_co_es",
-        wholesale_results.monthly_subscription_per_ga_co_es_as_monthly_amount,
+        "monthly_subscription_per_co_es",
+        wholesale_results.monthly_subscription_per_co_es_as_monthly_amount,
     )
     _write(
-        "monthly_fee_per_ga_co_es",
-        wholesale_results.monthly_fee_per_ga_co_es_as_monthly_amount,
+        "monthly_fee_per_co_es",
+        wholesale_results.monthly_fee_per_co_es_as_monthly_amount,
     )
 
 
