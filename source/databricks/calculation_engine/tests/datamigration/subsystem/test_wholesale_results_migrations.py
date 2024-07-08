@@ -276,6 +276,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     assert actual_df.collect()[0].quantity == quantity
 
 
+# ToDo JMG: Remove when on Unity Catalog
 def test__wholesale_results_table__is_not_managed(
     spark: SparkSession, migrations_executed: None
 ) -> None:
