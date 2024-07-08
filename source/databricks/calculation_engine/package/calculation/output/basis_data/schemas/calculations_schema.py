@@ -20,7 +20,29 @@ from pyspark.sql.types import (
     LongType,
 )
 
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+
 calculations_schema = StructType(
+    [
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.calculation_type, StringType(), False),
+        StructField(
+            OutputTableColumnNames.calculation_period_start, TimestampType(), False
+        ),
+        StructField(
+            OutputTableColumnNames.calculation_period_end, TimestampType(), False
+        ),
+        StructField(
+            OutputTableColumnNames.calculation_execution_time_start,
+            TimestampType(),
+            False,
+        ),
+        StructField(OutputTableColumnNames.created_by_user_id, StringType(), False),
+        StructField(OutputTableColumnNames.calculation_version, LongType(), False),
+    ]
+)
+
+hive_calculations_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("calculation_type", StringType(), False),
