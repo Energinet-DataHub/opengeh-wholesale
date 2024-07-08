@@ -14,6 +14,7 @@
 
 
 class OutputTableColumnNames:
+    amount = "amount"
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
     charge_key = "charge_key"
@@ -25,7 +26,7 @@ class OutputTableColumnNames:
     calculation_id = "calculation_id"
     calculation_period_start = "calculation_period_start"
     calculation_period_end = "calculation_period_end"
-    calculation_result_id = "calculation_result_id"
+    result_id = "result_id"
     calculation_type = "calculation_type"
     calculation_version = "version"
     created_by_user_id = "created_by_user_id"
@@ -38,8 +39,10 @@ class OutputTableColumnNames:
     metering_point_type = "metering_point_type"
     neighbor_grid_area_code = "neighbor_grid_area_code"
     observation_time = "observation_time"
+    price = "price"
     parent_metering_point_id = "parent_metering_point_id"
     quantity = "quantity"
+    quantity_unit = "quantity_unit"
     quality = "quality"
     quantity_qualities = "quantity_qualities"
     resolution = "resolution"

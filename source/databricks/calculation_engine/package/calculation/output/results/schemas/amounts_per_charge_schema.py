@@ -22,30 +22,31 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
 from package.constants import WholesaleResultColumnNames
 
 amounts_per_charge_schema = StructType(
     [
-        StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.result_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.grid_area_code, StringType(), False),
-        StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
-        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.result_id, StringType(), False),
+        StructField(OutputTableColumnNames.grid_area_code, StringType(), False),
+        StructField(OutputTableColumnNames.energy_supplier_id, StringType(), False),
+        StructField(OutputTableColumnNames.quantity, DecimalType(18, 3), True),
+        StructField(OutputTableColumnNames.quantity_unit, StringType(), False),
         StructField(
-            WholesaleResultColumnNames.quantity_qualities,
+            OutputTableColumnNames.quantity_qualities,
             ArrayType(StringType()),
             True,
         ),
-        StructField(WholesaleResultColumnNames.time, TimestampType(), False),
-        StructField(WholesaleResultColumnNames.resolution, StringType(), False),
-        StructField(WholesaleResultColumnNames.metering_point_type, StringType(), True),
-        StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
-        StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), True),
-        StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), True),
-        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), True),
-        StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
-        StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
-        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
+        StructField(OutputTableColumnNames.time, TimestampType(), False),
+        StructField(OutputTableColumnNames.resolution, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_type, StringType(), True),
+        StructField(OutputTableColumnNames.settlement_method, StringType(), True),
+        StructField(OutputTableColumnNames.price, DecimalType(18, 6), True),
+        StructField(OutputTableColumnNames.amount, DecimalType(18, 6), True),
+        StructField(OutputTableColumnNames.is_tax, BooleanType(), True),
+        StructField(OutputTableColumnNames.charge_code, StringType(), True),
+        StructField(OutputTableColumnNames.charge_type, StringType(), True),
+        StructField(OutputTableColumnNames.charge_owner_id, StringType(), True),
     ]
 )
