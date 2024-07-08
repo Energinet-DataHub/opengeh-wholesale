@@ -51,7 +51,7 @@ gantt
 
 ## Energy results
 
-The data is limited to the period 2020-01-01 to 2022-01-15 due to size constraints on databricks requests.
+The data is limited to the period 2022-01-01 to 2022-01-15 due to size constraints on databricks requests.
 
 ```sql
 select er.*
