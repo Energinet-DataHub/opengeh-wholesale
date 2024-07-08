@@ -91,9 +91,6 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.balance_responsible_id).alias(
             EnergyResultColumnNames.balance_responsible_id
         ),
-        f.col(Colname.balance_responsible_id).alias(
-            EnergyResultColumnNames.balance_responsible_party_id
-        ),
         f.col(Colname.quantity)
         .alias(EnergyResultColumnNames.quantity)
         .cast(DecimalType(18, 3)),
@@ -108,9 +105,6 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
             EnergyResultColumnNames.neighbor_grid_area_code
         ),
         f.col(EnergyResultColumnNames.calculation_result_id),
-        f.col(EnergyResultColumnNames.calculation_result_id).alias(
-            EnergyResultColumnNames.result_id
-        ),
         f.col(EnergyResultColumnNames.metering_point_id),
         f.col(EnergyResultColumnNames.resolution),
     )

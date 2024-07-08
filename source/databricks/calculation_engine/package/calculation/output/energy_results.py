@@ -15,6 +15,7 @@ from dataclasses import fields
 
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as f
 from pyspark.sql.types import StructType
 
 import package.calculation.output.schemas as schemas
@@ -22,6 +23,7 @@ from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
 from package.calculation.output.schemas import hive_energy_results_schema
+from package.constants import EnergyResultColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure import paths
@@ -135,7 +137,18 @@ def _write(
         if df is None:
             return None
 
-        df = df.select(schema.fieldNames())
+        # Adjust to match the schema
+        df = (
+            df.withColumn(
+                EnergyResultColumnNames.balance_responsible_party_id,
+                f.col(EnergyResultColumnNames.balance_responsible_id),
+            )
+            .withColumn(
+                EnergyResultColumnNames.result_id,
+                f.col(EnergyResultColumnNames.calculation_result_id),
+            )
+            .select(schema.fieldNames())
+        )
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
