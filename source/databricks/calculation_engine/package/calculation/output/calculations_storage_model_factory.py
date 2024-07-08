@@ -11,23 +11,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dependency_injector.wiring import Provide
 from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
 from package.calculation.basis_data.schemas import calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
+from package.container import Container
 
 
 def create_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
-    spark: SparkSession,
 ) -> DataFrame:
     """
     Creates a data frame with a row representing the currently executing calculation.
     The version is the next available version for the given calculation type.
     """
+    return _create_calculation(args, prepared_data_reader)
+
+
+def _create_calculation(
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
+    spark: SparkSession = Provide[Container.spark],
+) -> DataFrame:
 
     latest_version = prepared_data_reader.get_latest_calculation_version(
         args.calculation_type

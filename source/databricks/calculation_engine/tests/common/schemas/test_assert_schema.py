@@ -17,7 +17,6 @@ import pytest
 
 from package.common import assert_schema
 
-
 reference_schema = t.StructType(
     [
         t.StructField("foo", t.StringType(), False),
@@ -238,3 +237,19 @@ def test__when_more_actual_columns_should_be_accepted__does_not_raise() -> None:
         reference_schema,
         ignore_extra_actual_columns=True,
     )
+
+
+def test__when_more_actual_columns_should_be_rejected_without_ignore_extra_columns__raises_assertion_error() -> (
+    None
+):
+    """
+    Test name is leaving out the fact that column ordering is ignored as well.
+    Otherwise, the strict assertion will fail first.
+    """
+    with pytest.raises(AssertionError):
+        assert_schema(
+            schema_with_more_columns,
+            reference_schema,
+            ignore_column_order=True,
+            ignore_extra_actual_columns=False,
+        )

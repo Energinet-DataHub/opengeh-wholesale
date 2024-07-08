@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import SparkSession
+from dependency_injector.wiring import inject
 
 from package.calculation.basis_data.basis_data_results import write_basis_data
 from package.calculation.energy.calculated_grid_loss import (
@@ -35,31 +35,29 @@ from .energy import energy_calculation
 from .output.calculation_writer import write_calculation
 from .output.calculations_storage_model_factory import create_calculation
 from .output.energy_results import write_energy_results
+from .output.monthly_amounts_per_charge import write_monthly_amounts_per_charge
 from .output.total_monthly_amounts import write_total_monthly_amounts
 from .output.wholesale_results import write_wholesale_results
-from .output.monthly_amounts import write_monthly_amounts
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
 
 
 @logging_configuration.use_span("calculation")
-def execute(
-    args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
-    spark: SparkSession,
-) -> None:
-    results = _execute(args, prepared_data_reader, spark)
+def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    results = _execute(args, prepared_data_reader)
     _write_output(results)
 
 
+@inject
 def _execute(
-    args: CalculatorArgs, prepared_data_reader: PreparedDataReader, spark: SparkSession
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
 ) -> CalculationResultsContainer:
     results = CalculationResultsContainer()
 
     with logging_configuration.start_span("calculation.prepare"):
-        calculations = create_calculation(args, prepared_data_reader, spark)
+        calculations = create_calculation(args, prepared_data_reader)
 
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
@@ -169,7 +167,7 @@ def _write_output(
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
-        write_monthly_amounts(results.wholesale_results)
+        write_monthly_amounts_per_charge(results.wholesale_results)
         write_total_monthly_amounts(results.wholesale_results)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part

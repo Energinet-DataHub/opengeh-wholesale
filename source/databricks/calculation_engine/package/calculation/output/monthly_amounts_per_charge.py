@@ -11,16 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
+from package.container import Container
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import HiveOutputDatabase
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from package.infrastructure.paths import (
+    HiveOutputDatabase,
+    WholesaleResultsInternalDatabase,
+)
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
-def write_monthly_amounts(wholesale_results: WholesaleResultsContainer) -> None:
+def write_monthly_amounts_per_charge(
+    wholesale_results: WholesaleResultsContainer,
+) -> None:
     """Write each wholesale result to the output table."""
     _write(
         "monthly_tariff_from_hourly_per_ga_co_es",
@@ -40,8 +47,22 @@ def write_monthly_amounts(wholesale_results: WholesaleResultsContainer) -> None:
     )
 
 
-def _write(name: str, df: DataFrame) -> None:
+@inject
+def _write(
+    name: str,
+    df: DataFrame,
+    infrastructure_settings: InfrastructureSettings = Provide[
+        Container.infrastructure_settings
+    ],
+) -> None:
     with logging_configuration.start_span(name):
+        df.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(
+            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
+        )
+
+        # ToDo JMG: Remove when we are on Unity Catalog
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(

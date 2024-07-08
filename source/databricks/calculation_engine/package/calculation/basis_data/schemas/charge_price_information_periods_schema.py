@@ -20,7 +20,22 @@ from pyspark.sql.types import (
     StructType,
 )
 
-charge_price_information_periods_schema = StructType(
+charge_price_information_periods_schema_uc = StructType(
+    [
+        StructField("calculation_id", StringType(), False),
+        StructField("charge_key", StringType(), False),
+        StructField("charge_code", StringType(), False),
+        StructField("charge_type", StringType(), False),
+        StructField("charge_owner_id", StringType(), False),
+        StructField("resolution", StringType(), False),
+        StructField("is_tax", BooleanType(), False),
+        StructField("from_date", TimestampType(), False),
+        StructField("to_date", TimestampType(), False),
+    ]
+)
+
+# ToDo JMG: Remove when we are on Unity Catalog
+hive_charge_price_information_periods_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("charge_key", StringType(), False),

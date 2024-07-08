@@ -352,6 +352,7 @@ def any_calculator_args() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
+        is_simulation=False,
     )
 
 
@@ -367,6 +368,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
+        is_simulation=False,
     )
 
 
@@ -375,6 +377,7 @@ def infrastructure_settings(
     data_lake_path: str, calculation_input_path: str
 ) -> InfrastructureSettings:
     return InfrastructureSettings(
+        catalog_name="spark_catalog",
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,
@@ -387,13 +390,14 @@ def infrastructure_settings(
 
 @pytest.fixture(scope="session", autouse=True)
 def dependency_injection_container(
+    spark: SparkSession,
     infrastructure_settings: InfrastructureSettings,
 ) -> Container:
     """
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    return create_and_configure_container(infrastructure_settings)
+    return create_and_configure_container(spark, infrastructure_settings)
 
 
 @pytest.fixture(scope="session")

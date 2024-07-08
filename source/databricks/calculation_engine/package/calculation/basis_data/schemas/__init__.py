@@ -13,13 +13,20 @@
 # limitations under the License.
 
 from .calculations_schema import calculations_schema
-from .charge_link_periods_schema import charge_link_periods_schema
+from .charge_link_periods_schema import (
+    hive_charge_link_periods_schema,
+    charge_link_periods_schema_uc,
+)
 from .charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
+    hive_charge_price_information_periods_schema,
+    charge_price_information_periods_schema_uc,
 )
 from .charge_price_points_schema import charge_price_points_schema
 from .grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
-from .metering_point_period_schema import metering_point_period_schema
+from .metering_point_period_schema import (
+    hive_metering_point_period_schema,
+    metering_point_period_schema_uc,
+)
 from .time_series_point_schema import time_series_point_schema

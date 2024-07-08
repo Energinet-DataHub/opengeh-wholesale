@@ -9,4 +9,4 @@ SELECT calculation_id,
        metering_point_type,
        settlement_method,
        energy_supplier_id
-FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods
+FROM {HIVE_BASIS_DATA_DATABASE_NAME}.metering_point_periods

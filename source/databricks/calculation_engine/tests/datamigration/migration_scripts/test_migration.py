@@ -16,6 +16,7 @@ from unittest.mock import Mock
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField
 import package.datamigration_hive.schema_config as schema_config
+from package.infrastructure import paths
 
 
 def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
@@ -68,6 +69,14 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
     actual_schemas = spark.catalog.listDatabases()
     for db in actual_schemas:
         if db.name == "default" or db.name == "schema_migration":
+            continue
+
+        # Skip Unity Catalog databases
+        if db.name in [
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+        ]:
             continue
 
         schema = next((x for x in schemas if x.name == db.name), None)

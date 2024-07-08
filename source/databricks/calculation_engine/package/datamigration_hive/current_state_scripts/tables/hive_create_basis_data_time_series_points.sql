@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series_points
+CREATE TABLE IF NOT EXISTS {HIVE_BASIS_DATA_DATABASE_NAME}.time_series_points
 (
     calculation_id STRING NOT NULL,
     metering_point_id STRING NOT NULL,
