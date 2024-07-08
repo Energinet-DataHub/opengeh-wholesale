@@ -239,27 +239,27 @@ from package.calculation.preparation.transformations import (
             #   CLP |-----------------------------------|
             [
                 prepared_metering_point_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 2, 23, 0, 0),
-                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                    from_date=datetime(2023, 2, 1, 23, 0, 0),
+                    to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
                 prepared_metering_point_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 10, 23, 0, 0),
+                    from_date=datetime(2023, 2, 9, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 ),
             ],
             [
                 prepared_charge_link_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 2, 23, 0, 0),
+                    from_date=datetime(2023, 2, 1, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 )
             ],
             [
                 prepared_charge_link_metering_point_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 2, 23, 0, 0),
-                    to_date=datetime(2023, 2, 10, 23, 0, 0),
+                    from_date=datetime(2023, 2, 1, 23, 0, 0),
+                    to_date=datetime(2023, 2, 9, 23, 0, 0),
                 ),
                 prepared_charge_link_metering_point_periods_factory.create_row(
-                    from_date=datetime(2023, 2, 10, 23, 0, 0),
+                    from_date=datetime(2023, 2, 9, 23, 0, 0),
                     to_date=datetime(2023, 2, 17, 23, 0, 0),
                 ),
             ],
