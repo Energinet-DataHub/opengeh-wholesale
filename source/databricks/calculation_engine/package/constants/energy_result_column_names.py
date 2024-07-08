@@ -18,7 +18,6 @@ from .result_column_names import ResultColumnNames
 
 class EnergyResultColumnNames(ResultColumnNames):
     time_series_type = "time_series_type"
-    """Obsolete"""
     neighbor_grid_area_code = "neighbor_grid_area_code"
     """The delta table column name ought to be renamed to 'from_grid_area'.
     It is, however, rather complicated compared to the value unless using Delta Lake column mapping,
