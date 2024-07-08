@@ -20,7 +20,9 @@ import pytest
 from pyspark.sql import SparkSession
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.calculation_results import total_monthly_amounts_storage_model_factory as sut
+from package.calculation.output.calculation_results import (
+    total_monthly_amounts_storage_model_factory as sut,
+)
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
 from package.calculation.wholesale.data_structures.total_monthly_amount import (
     total_monthly_amount_schema,

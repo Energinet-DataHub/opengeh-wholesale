@@ -32,9 +32,13 @@ from .calculation_results import (
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from package.calculation.output import write_calculation
-from package.calculation.output.calculation_results.calculations_storage_model_factory import create_calculation
+from package.calculation.output.calculation_results.calculations_storage_model_factory import (
+    create_calculation,
+)
 from package.calculation.output import write_energy_results
-from package.calculation.output.calculation_results.monthly_amounts_per_charge import write_monthly_amounts_per_charge
+from package.calculation.output.calculation_results.monthly_amounts_per_charge import (
+    write_monthly_amounts_per_charge,
+)
 from package.calculation.output import write_total_monthly_amounts
 from package.calculation.output import write_wholesale_results
 from .preparation import PreparedDataReader

@@ -20,7 +20,9 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.calculation_results import monthly_amounts_per_charge_storage_model_factory as sut
+from package.calculation.output.calculation_results import (
+    monthly_amounts_per_charge_storage_model_factory as sut,
+)
 from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
 from package.calculation.wholesale.data_structures.monthly_amount_per_charge import (
     monthly_amount_per_charge_schema,
