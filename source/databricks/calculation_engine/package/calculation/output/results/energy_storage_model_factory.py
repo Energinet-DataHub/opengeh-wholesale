@@ -21,7 +21,7 @@ from package.calculation.energy.data_structures.energy_results import EnergyResu
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
-from package.calculation.output.calculation_results.add_meta_data import add_metadata
+from package.calculation.output.results.add_meta_data import add_metadata
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, EnergyResultColumnNames
 
