@@ -57,5 +57,8 @@ wholesale_results_v1 = t.StructType(
         #
         # EIC or GLN number
         t.StructField("charge_owner_id", t.StringType(), not nullable),
+        #
+        # Taxation
+        t.StructField("is_tax", t.BooleanType(), not nullable),
     ]
 )
