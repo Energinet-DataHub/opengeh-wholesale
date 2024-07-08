@@ -42,6 +42,7 @@ schema_config = [
             Table(
                 name=paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
                 schema=grid_loss_metering_point_time_series_schema_uc,
+            ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
                 schema=monthly_amounts_schema,
