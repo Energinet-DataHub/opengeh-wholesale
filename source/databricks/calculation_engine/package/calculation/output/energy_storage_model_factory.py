@@ -98,6 +98,12 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.observation_time).alias(EnergyResultColumnNames.time),
         f.col(EnergyResultColumnNames.aggregation_level),
         f.col(EnergyResultColumnNames.time_series_type),
+        f.col(Colname.metering_point_type).alias(
+            EnergyResultColumnNames.metering_point_type
+        ),
+        f.col(Colname.settlement_method).alias(
+            EnergyResultColumnNames.settlement_method
+        ),
         f.col(EnergyResultColumnNames.calculation_id),
         f.col(EnergyResultColumnNames.calculation_type),
         f.col(EnergyResultColumnNames.calculation_execution_time_start),
