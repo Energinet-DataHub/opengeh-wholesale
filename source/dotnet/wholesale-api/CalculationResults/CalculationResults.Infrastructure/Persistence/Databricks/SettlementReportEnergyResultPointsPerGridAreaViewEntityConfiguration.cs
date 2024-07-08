@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public sealed record SettlementReportEnergyResultPerEnergySupplierQueryFilter(
-    Guid CalculationId,
-    string GridAreaCode,
-    string EnergySupplier,
-    Instant PeriodStart,
-    Instant PeriodEnd);
+public sealed class SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportEnergyResultPointsPerGridAreaViewEntity>
+{
+    public void Configure(EntityTypeBuilder<SettlementReportEnergyResultPointsPerGridAreaViewEntity> builder)
+    {
+        builder.ToTable("energy_result_points_per_ga_v1");
+        builder.HasNoKey();
+    }
+}

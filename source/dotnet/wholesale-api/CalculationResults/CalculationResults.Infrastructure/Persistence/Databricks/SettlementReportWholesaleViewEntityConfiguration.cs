@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using NodaTime;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public sealed record SettlementReportWholesaleResultQueryFilter(
-    Guid CalculationId,
-    string GridAreaCode,
-    CalculationType CalculationType,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    string? EnergySupplier,
-    string? ChargeOwnerId,
-    MarketRole MarketRole);
+public sealed class SettlementReportWholesaleViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportWholesaleViewEntity>
+{
+    public void Configure(EntityTypeBuilder<SettlementReportWholesaleViewEntity> builder)
+    {
+        builder.ToTable("wholesale_results_v1");
+        builder.HasNoKey();
+    }
+}

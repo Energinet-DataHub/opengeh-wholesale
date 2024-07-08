@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .calculations_schema import calculations_schema
+from .calculations_schema import hive_calculations_schema
 from .charge_link_periods_schema import (
     hive_charge_link_periods_schema,
     charge_link_periods_schema_uc,

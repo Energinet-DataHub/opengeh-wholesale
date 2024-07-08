@@ -20,17 +20,19 @@ from pyspark.sql.types import (
     StructType,
 )
 
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+
 charge_link_periods_schema_uc = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("charge_key", StringType(), False),
-        StructField("charge_code", StringType(), False),
-        StructField("charge_type", StringType(), False),
-        StructField("charge_owner_id", StringType(), False),
-        StructField("metering_point_id", StringType(), False),
-        StructField("quantity", IntegerType(), False),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), False),
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.charge_key, StringType(), False),
+        StructField(OutputTableColumnNames.charge_code, StringType(), False),
+        StructField(OutputTableColumnNames.charge_type, StringType(), False),
+        StructField(OutputTableColumnNames.charge_owner_id, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
+        StructField(OutputTableColumnNames.quantity, IntegerType(), False),
+        StructField(OutputTableColumnNames.from_date, TimestampType(), False),
+        StructField(OutputTableColumnNames.to_date, TimestampType(), False),
     ]
 )
 
