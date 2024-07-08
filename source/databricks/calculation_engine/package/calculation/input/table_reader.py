@@ -24,7 +24,7 @@ from .schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
-from ..basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import calculations_schema
 from ...common.schemas import assert_contract
 
 

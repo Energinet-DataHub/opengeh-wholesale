@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from unittest.mock import Mock
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField
@@ -75,6 +74,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
         if db.name in [
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
             paths.WholesaleInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
         ]:
             continue
 

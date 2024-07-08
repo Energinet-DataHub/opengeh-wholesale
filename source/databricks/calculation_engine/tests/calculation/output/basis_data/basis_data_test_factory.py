@@ -16,22 +16,22 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
-import package.calculation.basis_data.basis_data_factory as basis_data_factory
+import package.calculation.output.basis_data.basis_data_factory as basis_data_factory
 import package.codelists as e
 import tests.calculation.charges_factory as charges_factory
-from calculation.output.calculations_storage_model_test_factory import (
+from calculation.output.results.calculations_storage_model_test_factory import (
     create_calculations,
 )
-from package.calculation.basis_data.schemas.charge_link_periods_schema import (
+from package.calculation.output.basis_data.schemas.charge_link_periods_schema import (
     hive_charge_link_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
+from package.calculation.output.basis_data.schemas.charge_price_information_periods_schema import (
     hive_charge_price_information_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_price_points_schema import (
+from package.calculation.output.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
-from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+from package.calculation.output.basis_data.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.calculation_results import BasisDataContainer
@@ -134,8 +134,6 @@ def create_charge_link_row(
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_type: ChargeType = DefaultValues.CHARGE_TYPE,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
-    charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = DefaultValues.CHARGE_PRICE,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     quantity: int = DefaultValues.CHARGE_QUANTITY,
     from_date: datetime = DefaultValues.FROM_DATE,

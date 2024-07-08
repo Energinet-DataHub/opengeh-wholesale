@@ -30,6 +30,7 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
         "wholesale_output",
         "wholesale_input",
         "basis_data",
+        "wholesale_basis_data_internal",
         "wholesale_results_internal",
         "wholesale_internal",
     }
