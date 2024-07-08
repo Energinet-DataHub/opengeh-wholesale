@@ -521,6 +521,61 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         });
     }
 
+    [Fact]
+    public async Task Given_BalanceResponsibleWithLatestCorrectionButNoCorrectionData_Then_NoDataReturned()
+    {
+        await ClearAndAddDatabricksDataAsync();
+        await RemoveDataForCorrections([]);
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 8, 23, 0));
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            TimeSeriesTypes: [TimeSeriesType.NonProfiledConsumption, TimeSeriesType.FlexConsumption, TimeSeriesType.Production],
+            GridAreaCodes: [],
+            EnergySupplierId: null,
+            BalanceResponsibleId: BalanceResponsibleOne,
+            CalculationType: null,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Given_EnergySupplierAndBalanceResponsibleWithLatestCorrectionButOnlyOneGridAreaWithCorrectionData_Then_DataReturnedForGridArea()
+    {
+        await ClearAndAddDatabricksDataAsync();
+        await RemoveDataForCorrections(["804", "543"]);
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 8, 23, 0));
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            TimeSeriesTypes: [TimeSeriesType.NonProfiledConsumption, TimeSeriesType.FlexConsumption, TimeSeriesType.Production],
+            GridAreaCodes: [],
+            EnergySupplierId: EnergySupplierTwo,
+            BalanceResponsibleId: BalanceResponsibleOne,
+            CalculationType: null,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.CalculationType, ats.Version))
+            .Should()
+            .BeEquivalentTo([
+                ("584", TimeSeriesType.FlexConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 3),
+                ("584", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 3),
+            ]);
+    }
+
     private async Task ClearAndAddDatabricksDataAsync()
     {
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
@@ -548,7 +603,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
 
     private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)
     {
-        var statement = new DeleteStatement(
+        var statement = new DeleteEnergySupplierStatement(
             _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
             energySupplierId,
             before,
@@ -557,7 +612,16 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
     }
 
-    private class DeleteStatement(
+    private async Task RemoveDataForCorrections(IReadOnlyCollection<string> gridAreasToRemoveFrom)
+    {
+        var statement = new DeleteCorrectionsStatement(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+            gridAreasToRemoveFrom);
+
+        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+    }
+
+    private class DeleteEnergySupplierStatement(
         DeltaTableOptions deltaTableOptions,
         string energySupplierId,
         Instant before,
@@ -575,6 +639,25 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
                     WHERE {EnergyResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
                     AND {EnergyResultColumnNames.Time} <= '{_before}'
                     {(_after is not null ? $"AND {EnergyResultColumnNames.Time} > '{_after}'" : string.Empty)}
+                    """;
+        }
+    }
+
+    private class DeleteCorrectionsStatement(
+        DeltaTableOptions deltaTableOptions,
+        IReadOnlyCollection<string> gridAreasToRemoveFrom) : DatabricksStatement
+    {
+        private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
+        private readonly IReadOnlyCollection<string> _gridAreasToRemoveFrom = gridAreasToRemoveFrom;
+
+        protected override string GetSqlStatement()
+        {
+            return $"""
+                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+                    WHERE ({EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
+                    OR {EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
+                    OR {EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
+                    {(_gridAreasToRemoveFrom.Any() ? $"AND {EnergyResultColumnNames.GridArea} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
                     """;
         }
     }

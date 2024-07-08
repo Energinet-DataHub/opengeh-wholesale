@@ -73,7 +73,9 @@ public class AggregatedTimeSeriesQueryStatement(
 
         if (_calculationTypePerGridAreas.IsNullOrEmpty())
         {
-            throw new ArgumentOutOfRangeException(nameof(_calculationTypePerGridAreas));
+            return """
+                   FALSE
+                   """;
         }
 
         var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
