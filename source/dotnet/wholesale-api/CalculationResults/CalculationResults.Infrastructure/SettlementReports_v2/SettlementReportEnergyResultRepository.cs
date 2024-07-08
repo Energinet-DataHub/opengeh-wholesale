@@ -203,7 +203,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         SettlementReportRequestFilterDto filter,
         long maximumCalculationVersion)
     {
-        var (gridAreaCode, _) = filter.GridAreas.Single();
+        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         source = source
             .Where(row => row.GridAreaCode == gridAreaCode)
@@ -211,6 +211,11 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             .Where(row => row.Time >= filter.PeriodStart.ToInstant())
             .Where(row => row.Time < filter.PeriodEnd.ToInstant())
             .Where(row => row.CalculationVersion <= maximumCalculationVersion);
+
+        if (filter.CalculationType != CalculationType.BalanceFixing)
+        {
+            source = source.Where(row => row.CalculationId == calculationId!.Id);
+        }
 
         return source;
     }
@@ -220,7 +225,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         SettlementReportRequestFilterDto filter,
         long maximumCalculationVersion)
     {
-        var (gridAreaCode, _) = filter.GridAreas.Single();
+        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         source = source
             .Where(row => row.GridAreaCode == gridAreaCode)
@@ -229,6 +234,11 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             .Where(row => row.Time < filter.PeriodEnd.ToInstant())
             .Where(row => row.CalculationVersion <= maximumCalculationVersion)
             .Where(row => row.EnergySupplierId == filter.EnergySupplier);
+
+        if (filter.CalculationType != CalculationType.BalanceFixing)
+        {
+            source = source.Where(row => row.CalculationId == calculationId!.Id);
+        }
 
         return source;
     }
