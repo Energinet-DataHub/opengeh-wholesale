@@ -19,6 +19,26 @@ from package.infrastructure import paths
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
             paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
         ),
+        (
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+        ),
     ],
 )
 def test__when_migrations_executed__created_table_is_managed(
