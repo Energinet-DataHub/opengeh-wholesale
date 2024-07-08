@@ -100,6 +100,42 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
         Assert.Equal(4, results[0].StartDateTime.ToDateTimeOffset().Hour);
     }
 
+    [Fact]
+    public async Task Get_NullableValues_ReturnsNull()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+            [
+                ["'f9af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'404'", "'8397670583196'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "NULL", "'kWh'", "'DKK'", "NULL", "NULL", "NULL", "'tariff'", "'40000'", "'6392825108998'", "0"],
+                ["'f9af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ea'", "'404'", "'8397670583196'", "'2024-01-02T03:00:00.000+00:00'", "'PT1H'", "'consumption'", "NULL", "'kWh'", "'DKK'", "NULL", "NULL", "NULL", "'tariff'", "'40000'", "'6392825108998'", "0"],
+                ["'f9af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'wholesale_fixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'404'", "'8397670583196'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "NULL", "'kWh'", "'DKK'", "NULL", "NULL", "NULL", "'tariff'", "'40000'", "'6392825108998'", "0"],
+            ]);
+
+        var results = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>()
+                {
+                    {
+                        "404", new CalculationId(Guid.Parse("f9af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
+            skip: 2,
+            take: 1).ToListAsync();
+
+        Assert.Single(results);
+        Assert.Equal(4, results[0].StartDateTime.ToDateTimeOffset().Hour);
+        Assert.Null(results[0].SettlementMethod);
+        Assert.Null(results[0].Amount);
+        Assert.Null(results[0].Price);
+        Assert.Null(results[0].Quantity);
+    }
+
     [Theory]
     [InlineData("8397670583199", 1)]
     [InlineData(null, 3)]
