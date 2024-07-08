@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession
 
 
