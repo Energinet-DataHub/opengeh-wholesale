@@ -20,7 +20,7 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.calculation.basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data import calculations_schema
 from package.calculation.input import TableReader
 from package.codelists import CalculationType
 from package.constants.basis_data_colname import CalculationsColumnName

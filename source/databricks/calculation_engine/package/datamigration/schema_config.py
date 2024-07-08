@@ -2,7 +2,7 @@ from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
 
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
+from package.calculation.output.calculation_results.schemas import (
     total_monthly_amounts_schema,
 )
 

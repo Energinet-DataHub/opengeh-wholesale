@@ -17,22 +17,22 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.calculation.basis_data.schemas.charge_link_periods_schema import (
+from package.calculation.output.basis_data.schemas.charge_link_periods_schema import (
     hive_charge_link_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
+from package.calculation.output.basis_data.schemas.charge_price_information_periods_schema import (
     hive_charge_price_information_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_price_points_schema import (
+from package.calculation.output.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
-from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+from package.calculation.output.basis_data import (
     grid_loss_metering_points_schema,
 )
-from package.calculation.basis_data.schemas.metering_point_period_schema import (
+from package.calculation.output.basis_data.schemas.metering_point_period_schema import (
     hive_metering_point_period_schema,
 )
-from package.calculation.basis_data.schemas.time_series_point_schema import (
+from package.calculation.output.basis_data.schemas.time_series_point_schema import (
     time_series_point_schema,
 )
 from package.codelists import (

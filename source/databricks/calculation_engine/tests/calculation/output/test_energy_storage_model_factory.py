@@ -28,7 +28,7 @@ from package.calculation.energy.data_structures.energy_results import (
     energy_results_schema,
     EnergyResults,
 )
-from package.calculation.output import energy_storage_model_factory as sut
+from package.calculation.output.calculation_results import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import HiveOutputDatabase
 

@@ -20,7 +20,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.calculation.output.schemas import wholesale_results_schema
+from package.calculation.output.calculation_results.schemas import wholesale_results_schema
 from package.codelists import (
     AmountType,
     ChargeQuality,
