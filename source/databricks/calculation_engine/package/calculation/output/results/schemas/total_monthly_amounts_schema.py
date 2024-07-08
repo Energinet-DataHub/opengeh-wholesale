@@ -23,10 +23,35 @@ from pyspark.sql.types import (
 from package.constants import TotalMonthlyAmountsColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
-total_monthly_amounts_schema = StructType(
+total_monthly_amounts_schema_uc = StructType(
     [
         StructField(TotalMonthlyAmountsColumnNames.calculation_id, StringType(), False),
         StructField(TotalMonthlyAmountsColumnNames.result_id, StringType(), False),
+        StructField(TotalMonthlyAmountsColumnNames.grid_area_code, StringType(), False),
+        StructField(
+            TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), True
+        ),
+        StructField(TotalMonthlyAmountsColumnNames.time, TimestampType(), False),
+        StructField(TotalMonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
+        StructField(TotalMonthlyAmountsColumnNames.charge_owner_id, StringType(), True),
+    ]
+)
+
+# ToDo JMG: Remove when we are on Unity Catalog
+hive_total_monthly_amounts_schema = StructType(
+    [
+        StructField(TotalMonthlyAmountsColumnNames.calculation_id, StringType(), False),
+        StructField(
+            TotalMonthlyAmountsColumnNames.calculation_type, StringType(), False
+        ),
+        StructField(
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+            TimestampType(),
+            False,
+        ),
+        StructField(
+            TotalMonthlyAmountsColumnNames.calculation_result_id, StringType(), False
+        ),
         StructField(TotalMonthlyAmountsColumnNames.grid_area_code, StringType(), False),
         StructField(
             TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), True
