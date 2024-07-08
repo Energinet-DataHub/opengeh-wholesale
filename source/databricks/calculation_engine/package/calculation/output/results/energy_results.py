@@ -81,11 +81,8 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
     # Write energy per energy supplier
     energy_per_es = _union(
-        energy_results.production_per_ga_and_es,
-        energy_results.flex_consumption_per_ga_and_es,
         energy_results.flex_consumption_per_ga_and_brp_and_es,
         energy_results.production_per_ga_and_brp_and_es,
-        energy_results.non_profiled_consumption_per_ga_and_es,
         energy_results.non_profiled_consumption_per_ga_and_brp_and_es,
     )
     _write(
@@ -156,13 +153,13 @@ def _write(
 
         # Adjust to match the schema
         df = (
-            df.withColumn(
+            df.withColumnRenamed(
+                EnergyResultColumnNames.balance_responsible_id,
                 EnergyResultColumnNames.balance_responsible_party_id,
-                f.col(EnergyResultColumnNames.balance_responsible_id),
             )
-            .withColumn(
+            .withColumnRenamed(
+                EnergyResultColumnNames.calculation_result_id,
                 EnergyResultColumnNames.result_id,
-                f.col(EnergyResultColumnNames.calculation_result_id),
             )
             .select(schema.fieldNames())
         )
