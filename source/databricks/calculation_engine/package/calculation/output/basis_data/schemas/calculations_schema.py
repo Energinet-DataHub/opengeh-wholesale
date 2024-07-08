@@ -20,14 +20,16 @@ from pyspark.sql.types import (
     LongType,
 )
 
+from package.calculation.output.storage_column_names import StorageColumnNames
+
 calculations_schema = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("calculation_type", StringType(), False),
-        StructField("period_start", TimestampType(), False),
-        StructField("period_end", TimestampType(), False),
-        StructField("execution_time_start", TimestampType(), False),
-        StructField("created_by_user_id", StringType(), False),
-        StructField("version", LongType(), False),
+        StructField(StorageColumnNames.calculation_id, StringType(), False),
+        StructField(StorageColumnNames.calculation_type, StringType(), False),
+        StructField(StorageColumnNames.period_start, TimestampType(), False),
+        StructField(StorageColumnNames.period_end, TimestampType(), False),
+        StructField(StorageColumnNames.execution_time_start, TimestampType(), False),
+        StructField(StorageColumnNames.created_by_user_id, StringType(), False),
+        StructField(StorageColumnNames.version, LongType(), False),
     ]
 )

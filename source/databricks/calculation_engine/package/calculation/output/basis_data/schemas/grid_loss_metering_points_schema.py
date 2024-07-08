@@ -18,9 +18,11 @@ from pyspark.sql.types import (
     StructType,
 )
 
+from package.calculation.output.storage_column_names import StorageColumnNames
+
 grid_loss_metering_points_schema = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("metering_point_id", StringType(), False),
+        StructField(StorageColumnNames.calculation_id, StringType(), False),
+        StructField(StorageColumnNames.metering_point_id, StringType(), False),
     ]
 )

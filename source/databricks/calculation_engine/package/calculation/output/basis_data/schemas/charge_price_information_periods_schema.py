@@ -20,17 +20,19 @@ from pyspark.sql.types import (
     StructType,
 )
 
+from package.calculation.output.storage_column_names import StorageColumnNames
+
 charge_price_information_periods_schema_uc = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("charge_key", StringType(), False),
-        StructField("charge_code", StringType(), False),
-        StructField("charge_type", StringType(), False),
-        StructField("charge_owner_id", StringType(), False),
-        StructField("resolution", StringType(), False),
-        StructField("is_tax", BooleanType(), False),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), False),
+        StructField(StorageColumnNames.calculation_id, StringType(), False),
+        StructField(StorageColumnNames.charge_key, StringType(), False),
+        StructField(StorageColumnNames.charge_code, StringType(), False),
+        StructField(StorageColumnNames.charge_type, StringType(), False),
+        StructField(StorageColumnNames.charge_owner_id, StringType(), False),
+        StructField(StorageColumnNames.resolution, StringType(), False),
+        StructField(StorageColumnNames.is_tax, BooleanType(), False),
+        StructField(StorageColumnNames.from_date, TimestampType(), False),
+        StructField(StorageColumnNames.to_date, TimestampType(), False),
     ]
 )
 

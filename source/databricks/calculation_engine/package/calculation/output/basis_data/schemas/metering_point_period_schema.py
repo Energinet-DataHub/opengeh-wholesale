@@ -19,21 +19,25 @@ from pyspark.sql.types import (
     StructType,
 )
 
+from package.calculation.output.storage_column_names import StorageColumnNames
+
 metering_point_period_schema_uc = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("metering_point_id", StringType(), False),
-        StructField("metering_point_type", StringType(), False),
-        StructField("settlement_method", StringType(), True),
-        StructField("grid_area_code", StringType(), False),
-        StructField("resolution", StringType(), False),
-        StructField("from_grid_area_code", StringType(), True),
-        StructField("to_grid_area_code", StringType(), True),
-        StructField("parent_metering_point_id", StringType(), True),
-        StructField("energy_supplier_id", StringType(), True),
-        StructField("balance_responsible_party_id", StringType(), True),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), False),
+        StructField(StorageColumnNames.calculation_id, StringType(), False),
+        StructField(StorageColumnNames.metering_point_id, StringType(), False),
+        StructField(StorageColumnNames.metering_point_type, StringType(), False),
+        StructField(StorageColumnNames.settlement_method, StringType(), True),
+        StructField(StorageColumnNames.grid_area_code, StringType(), False),
+        StructField(StorageColumnNames.resolution, StringType(), False),
+        StructField(StorageColumnNames.from_grid_area_code, StringType(), True),
+        StructField(StorageColumnNames.to_grid_area_code, StringType(), True),
+        StructField(StorageColumnNames.parent_metering_point_id, StringType(), True),
+        StructField(StorageColumnNames.energy_supplier_id, StringType(), True),
+        StructField(
+            StorageColumnNames.balance_responsible_party_id, StringType(), True
+        ),
+        StructField(StorageColumnNames.from_date, TimestampType(), False),
+        StructField(StorageColumnNames.to_date, TimestampType(), False),
     ]
 )
 
