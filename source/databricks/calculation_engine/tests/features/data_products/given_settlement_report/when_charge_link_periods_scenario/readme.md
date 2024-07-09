@@ -91,8 +91,7 @@ The purpose is to test that the settlement reports data product view charge_link
     EXPECTED    |----------------|
 
 
-10. Two metering point periods due to a change of energy supplier results.
-    TODO Why two expected periods?
+10. Two metering point periods due to a change of energy supplier results.    
             2023-02-02         2023-02-10	       2023-02-18
     MMP         |-------------------|----------------------|
     CLP         |------------------------------------------|
@@ -115,10 +114,10 @@ The purpose is to test that the settlement reports data product view charge_link
                 2023-02-04                  2023-02-10
     CLP             |---------------------------|
     CPIP    |----------------------------------------------|
-    EXPECTED~~~~        |--------|          |-------|
+    EXPECTED        |--------|          |-------|
 
 
-13. Charge link periods is divided in two.
+13. Two charge link periods.
             2023-02-02                      2023-02-10
     MMP         |--------------------------------|
                             2023-02-04
@@ -127,7 +126,7 @@ The purpose is to test that the settlement reports data product view charge_link
     EXPECTED    |--------------------------------|
 
 
-14. Metering point periods is divided in two.
+14. Charge link period between metering point periods.
         2023-02-02      2023-02-04    2023-02-08        2023-02-10
     MMP     |----------------|            |----------------|
     CLP                      |------------|
@@ -135,7 +134,7 @@ The purpose is to test that the settlement reports data product view charge_link
     EXPECTED NONE
 
 
-15. Multiple metering point periods due to for example changing energy supplier.
+15. Multiple metering point periods due to for example changing of energy supplier.
            2023-02-02      2023-02-04      2023-02-08       2023-02-12
     MMP         |----------------|--------------|----------------|
     CLP         |------------------------------------------------|
