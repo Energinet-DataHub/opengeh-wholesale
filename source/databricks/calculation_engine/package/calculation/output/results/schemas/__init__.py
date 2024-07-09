@@ -30,3 +30,4 @@ from .total_monthly_amounts_schema import (
     hive_total_monthly_amounts_schema,
     total_monthly_amounts_schema_uc,
 )
+from .hive_wholesale_results_schema import hive_wholesale_results_schema
