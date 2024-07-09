@@ -105,7 +105,7 @@ ENERGY_RESULT_TYPES = {
     ENERGY_RESULT_TYPES,
 )
 def test__energy_result__is_created(
-        hive_wholesale_fixing_energy_results_df: DataFrame,
+    hive_wholesale_fixing_energy_results_df: DataFrame,
     time_series_type: str,
     aggregation_level: str,
 ) -> None:
@@ -127,7 +127,7 @@ def test__energy_result__is_created(
 
 
 def test__energy_result__has_expected_number_of_types(
-        hive_wholesale_fixing_energy_results_df: DataFrame,
+    hive_wholesale_fixing_energy_results_df: DataFrame,
 ) -> None:
     # Arrange
     actual_result_type_count = (
@@ -167,7 +167,7 @@ WHOLESALE_RESULT_TYPES = [
     WHOLESALE_RESULT_TYPES,
 )
 def test__wholesale_result__amount_per_charge_is_created(
-        hive_wholesale_fixing_wholesale_results_df: DataFrame,
+    hive_wholesale_fixing_wholesale_results_df: DataFrame,
     charge_type: ChargeType,
     resolution: WholesaleResultResolution,
 ) -> None:
@@ -198,7 +198,7 @@ def test__wholesale_result__amount_per_charge_is_created(
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
-        hive_wholesale_fixing_wholesale_results_df: DataFrame,
+    hive_wholesale_fixing_wholesale_results_df: DataFrame,
     charge_code: str,
 ) -> None:
     # Arrange
@@ -224,7 +224,7 @@ def test__monthly_amount_for_tariffs__is_created(
 @pytest.mark.parametrize("charge_type", [ChargeType.SUBSCRIPTION, ChargeType.FEE])
 def test__monthly_amount_for_subscriptions_and_fees__is_created(
     spark: SparkSession,
-        hive_wholesale_fixing_wholesale_results_df: DataFrame,
+    hive_wholesale_fixing_wholesale_results_df: DataFrame,
     charge_type: ChargeType,
 ) -> None:
     # Arrange
