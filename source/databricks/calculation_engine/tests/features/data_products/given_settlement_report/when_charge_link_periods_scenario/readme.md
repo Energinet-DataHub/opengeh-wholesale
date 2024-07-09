@@ -12,7 +12,7 @@ The purpose is to test that the settlement reports data product view charge_link
 - Charge Link Period = CLP
 - Charge Price Information Period = CPIP
 
-```
+```text
  1. Missing metering point period.
       2023-02-02                     2023-02-10
    MMP      MISSING
@@ -56,7 +56,7 @@ The purpose is to test that the settlement reports data product view charge_link
 
 
 6. Metering point period and charge link period do not overlap.
-   	                       2023-02-02               2023-02-10
+                          2023-02-02               2023-02-10
     MMP                         |------------------------|
         2023-01-25    2023-01-28
     CLP     |--------------|
@@ -91,7 +91,7 @@ The purpose is to test that the settlement reports data product view charge_link
     EXPECTED    |----------------|
 
 
-10. Two metering point periods due to a change of energy supplier results.    
+10. Two metering point periods due to a change of energy supplier results.
             2023-02-02         2023-02-10	       2023-02-18
     MMP         |-------------------|----------------------|
     CLP         |------------------------------------------|
@@ -100,7 +100,7 @@ The purpose is to test that the settlement reports data product view charge_link
 
 
 11. Charge link periods have a gap.
-    2023-02-02         	       	       2023-02-18
+        2023-02-02         	       	              2023-02-18
     MMP     |------------------------------------------|
            2023-02-04  2023-02-06  2023-02-08 2023-02-10
     CLP          |-----------|        |-----------|
