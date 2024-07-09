@@ -96,7 +96,7 @@ def _write(
 def _write_to_hive(
     name: str,
     df: DataFrame,
-):
+) -> None:
     with logging_configuration.start_span(f"{name} hive"):
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
