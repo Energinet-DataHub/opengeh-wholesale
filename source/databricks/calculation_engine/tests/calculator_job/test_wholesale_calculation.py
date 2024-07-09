@@ -217,12 +217,12 @@ def test__monthly_amount_for_tariffs__is_created(
 @pytest.mark.parametrize("charge_type", [ChargeType.SUBSCRIPTION, ChargeType.FEE])
 def test__monthly_amount_for_subscriptions_and_fees__is_created(
     spark: SparkSession,
-    wholesale_fixing_monthly_amount_per_charge_df: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
     charge_type: ChargeType,
 ) -> None:
     # Arrange
 
-    result_df = wholesale_fixing_monthly_amount_per_charge_df.where(
+    result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
         f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
     ).where(
         f.col(WholesaleResultColumnNames.resolution)
