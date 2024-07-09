@@ -24,7 +24,8 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementReportChargePriceRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportCollectionFixture))]
+public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementReportChargePriceRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
