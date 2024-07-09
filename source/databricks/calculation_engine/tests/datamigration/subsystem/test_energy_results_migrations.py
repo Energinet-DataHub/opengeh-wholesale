@@ -21,7 +21,9 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 
 from helpers.data_frame_utils import set_column
-from package.calculation.output.schemas import hive_energy_results_schema
+from package.calculation.output.results.schemas import (
+    hive_energy_results_schema,
+)
 from package.codelists import (
     AggregationLevel,
     CalculationType,
@@ -259,8 +261,8 @@ def test__result_table__is_not_managed(
     [
         (None, TimeSeriesType.PRODUCTION.value),
         (None, TimeSeriesType.NON_PROFILED_CONSUMPTION.value),
-        (None, TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value),
-        (None, TimeSeriesType.NET_EXCHANGE_PER_GA.value),
+        (None, TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA.value),
+        (None, TimeSeriesType.EXCHANGE_PER_GA.value),
         (None, TimeSeriesType.FLEX_CONSUMPTION.value),
         (None, TimeSeriesType.GRID_LOSS.value),
         ("571313180480500149", TimeSeriesType.NEGATIVE_GRID_LOSS.value),
@@ -297,8 +299,8 @@ def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
     [
         ("571313180480500149", TimeSeriesType.PRODUCTION.value),
         ("571313180480500149", TimeSeriesType.NON_PROFILED_CONSUMPTION.value),
-        ("571313180480500149", TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value),
-        ("571313180480500149", TimeSeriesType.NET_EXCHANGE_PER_GA.value),
+        ("571313180480500149", TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA.value),
+        ("571313180480500149", TimeSeriesType.EXCHANGE_PER_GA.value),
         ("571313180480500149", TimeSeriesType.FLEX_CONSUMPTION.value),
         ("571313180480500149", TimeSeriesType.GRID_LOSS.value),
         (None, TimeSeriesType.NEGATIVE_GRID_LOSS.value),

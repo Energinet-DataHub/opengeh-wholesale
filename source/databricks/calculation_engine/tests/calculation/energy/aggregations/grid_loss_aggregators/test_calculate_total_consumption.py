@@ -40,7 +40,7 @@ class TestWhenValidInput:
             ),
         ],
     )
-    def test__returns_distinct_qualities_from_production_and_net_exchange_from_neighbor_ga(
+    def test__returns_distinct_qualities_from_production_and_exchange_from_neighbor_ga(
         self,
         spark: SparkSession,
         prod_qualities: list[QuantityQuality],
@@ -49,12 +49,12 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         production = energy_results.create_row(qualities=prod_qualities)
-        net_exchange = energy_results.create_row(qualities=exchange_qualities)
+        exchange = energy_results.create_row(qualities=exchange_qualities)
         production_per_ga = energy_results.create(spark, production)
-        net_exchange_per_ga = energy_results.create(spark, net_exchange)
+        exchange_per_ga = energy_results.create(spark, exchange)
 
         # Act
-        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
@@ -66,17 +66,17 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         production = energy_results.create_row(qualities=[QuantityQuality.MEASURED])
-        net_exchange_other_ga = [
+        exchange_other_ga = [
             energy_results.create_row(qualities=[QuantityQuality.ESTIMATED]),
             energy_results.create_row(
                 qualities=[QuantityQuality.CALCULATED], grid_area="some-other-grid-area"
             ),
         ]
         production_per_ga = energy_results.create(spark, production)
-        net_exchange_per_ga = energy_results.create(spark, net_exchange_other_ga)
+        exchange_per_ga = energy_results.create(spark, exchange_other_ga)
 
         # Act
-        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
@@ -92,17 +92,17 @@ class TestWhenValidInput:
             energy_results.create_row(quantity=1),
             energy_results.create_row(quantity=2),
         ]
-        net_exchange = [
+        exchange = [
             energy_results.create_row(quantity=4),
             energy_results.create_row(quantity=8, grid_area="some-other-grid-area"),
         ]
         production_per_ga = energy_results.create(spark, production)
-        net_exchange_per_ga = energy_results.create(spark, net_exchange)
+        exchange_per_ga = energy_results.create(spark, exchange)
         # The sum of production and exchange, but not including exchange for the other grid area
         expected_quantity = 7
 
         # Act
-        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
@@ -116,17 +116,17 @@ class TestWhenValidInput:
             energy_results.create_row(quantity=1),
             energy_results.create_row(quantity=2),
         ]
-        net_exchange_other_ga = [
+        exchange_other_ga = [
             energy_results.create_row(quantity=4),
             energy_results.create_row(quantity=8, grid_area="some-other-grid-area"),
         ]
         production_per_ga = energy_results.create(spark, production)
-        net_exchange_per_ga = energy_results.create(spark, net_exchange_other_ga)
+        exchange_per_ga = energy_results.create(spark, exchange_other_ga)
         # The sum of production and exchange, but not including exchange for the other grid area
         expected_quantity = 7
 
         # Act
-        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]

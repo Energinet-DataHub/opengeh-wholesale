@@ -11,6 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from .energy_results import write_energy_results
-from .wholesale_results import write_wholesale_results

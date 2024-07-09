@@ -24,7 +24,7 @@ from .schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
-from ..basis_data.schemas import calculations_schema
+from package.calculation.output.basis_data.schemas import hive_calculations_schema
 from ...common.schemas import assert_contract
 
 
@@ -87,7 +87,7 @@ class TableReader:
 
         # Though it's our own table, we still want to make sure it has the expected schema as
         # it might have been changed due to e.g. (failed) migrations or backup/restore.
-        assert_schema(df.schema, calculations_schema)
+        assert_schema(df.schema, hive_calculations_schema)
 
         return df
 

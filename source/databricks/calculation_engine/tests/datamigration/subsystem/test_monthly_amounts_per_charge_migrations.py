@@ -19,85 +19,78 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.calculation.output.schemas.monthly_amounts_schema import (
-    monthly_amounts_schema,
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.calculation.output.results.schemas import (
+    monthly_amounts_schema_uc,
 )
-from package.codelists import CalculationType, ChargeType
-from package.constants import MonthlyAmountsColumnNames
+from package.codelists import ChargeType
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 from tests.helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        MonthlyAmountsColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        MonthlyAmountsColumnNames.calculation_type: "wholesale_fixing",
-        MonthlyAmountsColumnNames.calculation_execution_time_start: datetime(
-            2020, 1, 1, 0, 0
-        ),
-        MonthlyAmountsColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        MonthlyAmountsColumnNames.grid_area_code: "543",
-        MonthlyAmountsColumnNames.energy_supplier_id: "1234567890123",
-        MonthlyAmountsColumnNames.quantity_unit: "kWh",
-        MonthlyAmountsColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        MonthlyAmountsColumnNames.amount: Decimal("1.123"),
-        MonthlyAmountsColumnNames.is_tax: True,
-        MonthlyAmountsColumnNames.charge_code: "charge_code",
-        MonthlyAmountsColumnNames.charge_type: ChargeType.SUBSCRIPTION.value,
-        MonthlyAmountsColumnNames.charge_owner_id: "1234567890123",
+        OutputTableColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        OutputTableColumnNames.result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        OutputTableColumnNames.grid_area_code: "543",
+        OutputTableColumnNames.energy_supplier_id: "1234567890123",
+        OutputTableColumnNames.quantity_unit: "kWh",
+        OutputTableColumnNames.time: datetime(2020, 1, 1, 0, 0),
+        OutputTableColumnNames.amount: Decimal("1.123"),
+        OutputTableColumnNames.is_tax: True,
+        OutputTableColumnNames.charge_code: "charge_code",
+        OutputTableColumnNames.charge_type: ChargeType.SUBSCRIPTION.value,
+        OutputTableColumnNames.charge_owner_id: "1234567890123",
     }
-    return spark.createDataFrame(data=[row], schema=monthly_amounts_schema)
+    return spark.createDataFrame(data=[row], schema=monthly_amounts_schema_uc)
 
 
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (MonthlyAmountsColumnNames.calculation_id, None),
-        (MonthlyAmountsColumnNames.calculation_id, "not-a-uuid"),
-        (MonthlyAmountsColumnNames.calculation_type, None),
-        (MonthlyAmountsColumnNames.calculation_type, "foo"),
-        (MonthlyAmountsColumnNames.calculation_execution_time_start, None),
-        (MonthlyAmountsColumnNames.calculation_result_id, None),
-        (MonthlyAmountsColumnNames.calculation_result_id, "not-a-uuid"),
-        (MonthlyAmountsColumnNames.grid_area_code, None),
-        (MonthlyAmountsColumnNames.grid_area_code, "12"),
-        (MonthlyAmountsColumnNames.grid_area_code, "1234"),
+        (OutputTableColumnNames.calculation_id, None),
+        (OutputTableColumnNames.calculation_id, "not-a-uuid"),
+        (OutputTableColumnNames.result_id, None),
+        (OutputTableColumnNames.result_id, "not-a-uuid"),
+        (OutputTableColumnNames.grid_area_code, None),
+        (OutputTableColumnNames.grid_area_code, "12"),
+        (OutputTableColumnNames.grid_area_code, "1234"),
         (
-            MonthlyAmountsColumnNames.energy_supplier_id,
+            OutputTableColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (MonthlyAmountsColumnNames.energy_supplier_id, None),
+        (OutputTableColumnNames.energy_supplier_id, None),
         (
-            MonthlyAmountsColumnNames.quantity_unit,
+            OutputTableColumnNames.quantity_unit,
             None,
         ),
         (
-            MonthlyAmountsColumnNames.quantity_unit,
+            OutputTableColumnNames.quantity_unit,
             "invalid",
         ),
-        (MonthlyAmountsColumnNames.time, None),
+        (OutputTableColumnNames.time, None),
         (
-            MonthlyAmountsColumnNames.is_tax,
+            OutputTableColumnNames.is_tax,
             None,
         ),
         (
-            MonthlyAmountsColumnNames.charge_code,
+            OutputTableColumnNames.charge_code,
             None,
         ),
         (
-            MonthlyAmountsColumnNames.charge_type,
+            OutputTableColumnNames.charge_type,
             "invalid",
         ),
         (
-            MonthlyAmountsColumnNames.charge_type,
+            OutputTableColumnNames.charge_type,
             None,
         ),
         (
-            MonthlyAmountsColumnNames.charge_owner_id,
+            OutputTableColumnNames.charge_owner_id,
             "neither-16-nor-13-digits-long",
         ),
         (
-            MonthlyAmountsColumnNames.charge_owner_id,
+            OutputTableColumnNames.charge_owner_id,
             None,
         ),
     ],
@@ -137,31 +130,30 @@ actor_eic = "1234567890123456"
     "column_name,column_value",
     [
         (
-            MonthlyAmountsColumnNames.calculation_id,
+            OutputTableColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (MonthlyAmountsColumnNames.calculation_type, "wholesale_fixing"),
         (
-            MonthlyAmountsColumnNames.calculation_result_id,
+            OutputTableColumnNames.result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (MonthlyAmountsColumnNames.grid_area_code, "123"),
-        (MonthlyAmountsColumnNames.grid_area_code, "007"),
-        (MonthlyAmountsColumnNames.energy_supplier_id, actor_gln),
-        (MonthlyAmountsColumnNames.energy_supplier_id, actor_eic),
-        (MonthlyAmountsColumnNames.quantity_unit, "kWh"),
-        (MonthlyAmountsColumnNames.quantity_unit, "pcs"),
-        (MonthlyAmountsColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (MonthlyAmountsColumnNames.amount, max_18_6_decimal),
-        (MonthlyAmountsColumnNames.amount, min_18_6_decimal),
-        (MonthlyAmountsColumnNames.is_tax, True),
-        (MonthlyAmountsColumnNames.is_tax, False),
-        (MonthlyAmountsColumnNames.charge_code, "valid-charge-code"),
-        (MonthlyAmountsColumnNames.charge_type, ChargeType.SUBSCRIPTION.value),
-        (MonthlyAmountsColumnNames.charge_type, ChargeType.FEE.value),
-        (MonthlyAmountsColumnNames.charge_type, ChargeType.TARIFF.value),
-        (MonthlyAmountsColumnNames.charge_owner_id, actor_gln),
-        (MonthlyAmountsColumnNames.charge_owner_id, actor_eic),
+        (OutputTableColumnNames.grid_area_code, "123"),
+        (OutputTableColumnNames.grid_area_code, "007"),
+        (OutputTableColumnNames.energy_supplier_id, actor_gln),
+        (OutputTableColumnNames.energy_supplier_id, actor_eic),
+        (OutputTableColumnNames.quantity_unit, "kWh"),
+        (OutputTableColumnNames.quantity_unit, "pcs"),
+        (OutputTableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (OutputTableColumnNames.amount, max_18_6_decimal),
+        (OutputTableColumnNames.amount, min_18_6_decimal),
+        (OutputTableColumnNames.is_tax, True),
+        (OutputTableColumnNames.is_tax, False),
+        (OutputTableColumnNames.charge_code, "valid-charge-code"),
+        (OutputTableColumnNames.charge_type, ChargeType.SUBSCRIPTION.value),
+        (OutputTableColumnNames.charge_type, ChargeType.FEE.value),
+        (OutputTableColumnNames.charge_type, ChargeType.TARIFF.value),
+        (OutputTableColumnNames.charge_owner_id, actor_gln),
+        (OutputTableColumnNames.charge_owner_id, actor_eic),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -170,38 +162,6 @@ def test__migrated_table_accepts_valid_data(
     column_value: str | list,
     migrations_executed: None,
 ) -> None:
-    # Arrange
-    result_df = _create_df(spark)
-    result_df = set_column(result_df, column_name, column_value)
-
-    # Act and assert: Expectation is that no exception is raised
-    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
-    )
-
-
-@pytest.mark.parametrize(
-    "column_name,column_value",
-    [
-        *[
-            (MonthlyAmountsColumnNames.calculation_type, x)
-            for x in [
-                CalculationType.WHOLESALE_FIXING.value,
-                CalculationType.FIRST_CORRECTION_SETTLEMENT.value,
-                CalculationType.SECOND_CORRECTION_SETTLEMENT.value,
-                CalculationType.THIRD_CORRECTION_SETTLEMENT.value,
-            ]
-        ],
-    ],
-)
-def test__migrated_table_accepts_enum_value(
-    spark: SparkSession,
-    column_name: str,
-    column_value: str,
-    migrations_executed: None,
-) -> None:
-    "Test that all enum values are accepted by the delta table"
-
     # Arrange
     result_df = _create_df(spark)
     result_df = set_column(result_df, column_name, column_value)
@@ -233,7 +193,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = result_df.withColumn("amount", lit(amount))
     calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
-        MonthlyAmountsColumnNames.calculation_id, lit(calculation_id)
+        OutputTableColumnNames.calculation_id, lit(calculation_id)
     )
 
     # Act
@@ -244,5 +204,5 @@ def test__migrated_table_does_not_round_valid_decimal(
     # Assert
     actual_df = spark.read.table(
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
-    ).where(col(MonthlyAmountsColumnNames.calculation_id) == calculation_id)
+    ).where(col(OutputTableColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].amount == amount

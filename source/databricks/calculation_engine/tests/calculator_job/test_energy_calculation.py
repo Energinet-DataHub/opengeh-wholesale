@@ -25,13 +25,14 @@ from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
+# TODO BJM: Remove when we only use Unity Catalog.
 ALL_ENERGY_RESULT_TYPES = {
     (
-        TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value,
+        TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA.value,
         AggregationLevel.GRID_AREA.value,
     ),
     (
-        TimeSeriesType.NET_EXCHANGE_PER_GA.value,
+        TimeSeriesType.EXCHANGE_PER_GA.value,
         AggregationLevel.GRID_AREA.value,
     ),
     (
