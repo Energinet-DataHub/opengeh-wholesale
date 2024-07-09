@@ -1,8 +1,11 @@
 DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_v1;
 GO
 
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_per_es_v1;
+GO
+
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_per_es_v1 as
-SELECT c.calculation_id,
+SELECT distinct c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
        m.metering_point_id,
