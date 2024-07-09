@@ -34,7 +34,10 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return ApplyFilter(_settlementReportDatabricksContext.ChargeLinkPeriodsView, filter, actorInfo).DatabricksSqlCountAsync();
+        return ApplyFilter(_settlementReportDatabricksContext.ChargeLinkPeriodsView, filter, actorInfo)
+            .Select(row => row.MeteringPointId)
+            .Distinct()
+            .DatabricksSqlCountAsync();
     }
 
     public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take)
