@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class WholesaleServicesQueryStatementWhereClauseProvider
 {
-    internal string GetWhereClauseToSqlExpression(WholesaleServicesQueryParameters queryParameters, string table = "wrv")
+    internal string GetWhereClauseSqlExpression(WholesaleServicesQueryParameters queryParameters, string table = "wrv")
     {
         var sql = $"""
                 {"\n"}WHERE {table}.{WholesaleResultColumnNames.AmountType} = '{AmountTypeMapper.ToDeltaTableValue(queryParameters.AmountType)}'
@@ -66,7 +66,7 @@ public class WholesaleServicesQueryStatementWhereClauseProvider
 
     internal string AddWhereClauseToSqlExpression(string sql, WholesaleServicesQueryParameters queryParameters)
     {
-        sql += GetWhereClauseToSqlExpression(queryParameters);
+        sql += GetWhereClauseSqlExpression(queryParameters);
 
         return sql;
     }
