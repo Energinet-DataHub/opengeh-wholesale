@@ -22,8 +22,8 @@ class TimeSeriesType(Enum):
 
     PRODUCTION = "production"
     NON_PROFILED_CONSUMPTION = "non_profiled_consumption"
-    EXCHANGE_PER_NEIGHBORING_GA = "net_exchange_per_neighboring_ga"
-    EXCHANGE_PER_GA = "net_exchange_per_ga"
+    EXCHANGE_PER_NEIGHBOR = "net_exchange_per_neighboring_ga"  # TODO BJM: Remove when no longer use Unity Catalog
+    EXCHANGE = "net_exchange_per_ga"  # Rename to "exchange"
     FLEX_CONSUMPTION = "flex_consumption"
     GRID_LOSS = "grid_loss"
     NEGATIVE_GRID_LOSS = "negative_grid_loss"

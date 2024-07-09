@@ -19,23 +19,23 @@ from pyspark.sql import DataFrame
 
 @dataclass
 class EnergyResultsContainer:
-    exchange_per_neighbor_ga: DataFrame | None = None
-    exchange_per_ga: DataFrame | None = None
-    temporary_production_per_ga: DataFrame | None = None
-    temporary_flex_consumption_per_ga: DataFrame | None = None
+    exchange_per_neighbor: DataFrame | None = None
+    exchange: DataFrame | None = None
+    temporary_production: DataFrame | None = None
+    temporary_flex_consumption: DataFrame | None = None
     grid_loss: DataFrame | None = None
     positive_grid_loss: DataFrame | None = None
     negative_grid_loss: DataFrame | None = None
     non_profiled_consumption_per_brp: DataFrame | None = None
     non_profiled_consumption_per_es: DataFrame | None = None
-    non_profiled_consumption_per_ga: DataFrame | None = None
+    non_profiled_consumption: DataFrame | None = None
     production_per_es: DataFrame | None = None
     production_per_brp: DataFrame | None = None
-    production_per_ga: DataFrame | None = None
-    flex_consumption_per_ga: DataFrame | None = None
+    production: DataFrame | None = None
+    flex_consumption: DataFrame | None = None
     flex_consumption_per_es: DataFrame | None = None
     flex_consumption_per_brp: DataFrame | None = None
-    total_consumption_per_ga: DataFrame | None = None
+    total_consumption: DataFrame | None = None
 
 
 @dataclass
