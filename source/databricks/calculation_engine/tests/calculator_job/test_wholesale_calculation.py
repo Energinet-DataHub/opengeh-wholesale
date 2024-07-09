@@ -198,13 +198,13 @@ def test__wholesale_result__amount_per_charge_is_created(
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
-        wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
     charge_code: str,
 ) -> None:
     # Arrange
 
     result_df = (
-        wholesale_fixing_monthly_amount_per_charge_df.where(
+        wholesale_fixing_monthly_amounts_per_charge_df.where(
             f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
         )
         .where(
@@ -245,7 +245,7 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
 
 def test__total_monthly_amounts__are_stored(
     spark: SparkSession,
-        wholesale_fixing_total_monthly_amounts_df: DataFrame,
+    wholesale_fixing_total_monthly_amounts_df: DataFrame,
 ) -> None:
     # Arrange
 
@@ -258,7 +258,7 @@ def test__total_monthly_amounts__are_stored(
 
 def test__monthly_amounts__are_stored(
     spark: SparkSession,
-        wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
 ) -> None:
     # Arrange
 
