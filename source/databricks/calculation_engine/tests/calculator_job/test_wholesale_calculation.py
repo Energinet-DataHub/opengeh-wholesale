@@ -167,13 +167,13 @@ WHOLESALE_RESULT_TYPES = [
     WHOLESALE_RESULT_TYPES,
 )
 def test__wholesale_result__amount_per_charge_is_created(
-    wholesale_fixing_wholesale_results_df: DataFrame,
+    wholesale_fixing_amounts_per_charge_df: DataFrame,
     charge_type: ChargeType,
     resolution: WholesaleResultResolution,
 ) -> None:
     # Arrange
     result_df = (
-        wholesale_fixing_wholesale_results_df.where(
+        wholesale_fixing_amounts_per_charge_df.where(
             f.col(WholesaleResultColumnNames.calculation_id)
             == c.executed_wholesale_calculation_id
         )
@@ -198,13 +198,13 @@ def test__wholesale_result__amount_per_charge_is_created(
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
-    wholesale_fixing_wholesale_results_df: DataFrame,
+    wholesale_fixing_monthly_amount_per_charge_df: DataFrame,
     charge_code: str,
 ) -> None:
     # Arrange
 
     result_df = (
-        wholesale_fixing_wholesale_results_df.where(
+        wholesale_fixing_monthly_amount_per_charge_df.where(
             f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
         )
         .where(
@@ -224,12 +224,12 @@ def test__monthly_amount_for_tariffs__is_created(
 @pytest.mark.parametrize("charge_type", [ChargeType.SUBSCRIPTION, ChargeType.FEE])
 def test__monthly_amount_for_subscriptions_and_fees__is_created(
     spark: SparkSession,
-    wholesale_fixing_wholesale_results_df: DataFrame,
+    wholesale_fixing_monthly_amount_per_charge_df: DataFrame,
     charge_type: ChargeType,
 ) -> None:
     # Arrange
 
-    result_df = wholesale_fixing_wholesale_results_df.where(
+    result_df = wholesale_fixing_monthly_amount_per_charge_df.where(
         f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
     ).where(
         f.col(WholesaleResultColumnNames.resolution)

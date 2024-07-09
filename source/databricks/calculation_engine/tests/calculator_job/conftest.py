@@ -20,14 +20,14 @@ from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
 from package.calculation.preparation import PreparedDataReader
 
 from package.calculation.input import TableReader
 from package.codelists.calculation_type import (
     CalculationType,
 )
-from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
-from package.constants.result_column_names import ResultColumnNames
+from package.constants import EnergyResultColumnNames
 from package.infrastructure import paths
 from . import configuration as C
 
@@ -133,15 +133,15 @@ def wholesale_fixing_energy_results_df(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_wholesale_results_df(
+def wholesale_fixing_amounts_per_charge_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(WholesaleResultColumnNames.calculation_id)
+        F.col(OutputTableColumnNames.calculation_id)
         == C.executed_wholesale_calculation_id
     )
 
@@ -155,7 +155,8 @@ def wholesale_fixing_total_monthly_amounts(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
+        F.col(OutputTableColumnNames.calculation_id)
+        == C.executed_wholesale_calculation_id
     )
 
 
@@ -168,6 +169,6 @@ def wholesale_fixing_monthly_amounts_per_charge(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(WholesaleResultColumnNames.calculation_id)
+        F.col(OutputTableColumnNames.calculation_id)
         == C.executed_wholesale_calculation_id
     )

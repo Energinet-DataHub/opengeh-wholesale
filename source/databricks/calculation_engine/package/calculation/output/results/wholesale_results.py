@@ -75,6 +75,7 @@ def _write(
             # ToDo JMG: Remove when we are on Unity Catalog
             WholesaleResultColumnNames.calculation_type,
             WholesaleResultColumnNames.calculation_execution_time_start,
+            WholesaleResultColumnNames.amount_type,
         ).withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog
             WholesaleResultColumnNames.calculation_result_id,
