@@ -14,6 +14,7 @@
 
 
 class OutputTableColumnNames:
+    amount = "amount"
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
     charge_key = "charge_key"
@@ -39,6 +40,7 @@ class OutputTableColumnNames:
     observation_time = "observation_time"
     parent_metering_point_id = "parent_metering_point_id"
     quantity = "quantity"
+    quantity_unit = "quantity_unit"
     quality = "quality"
     quantity_qualities = "quantity_qualities"
     resolution = "resolution"
