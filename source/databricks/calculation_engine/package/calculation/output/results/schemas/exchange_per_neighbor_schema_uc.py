@@ -4,7 +4,7 @@ from package.constants import EnergyResultColumnNames as cname
 
 nullable = True
 
-exchange_per_neighbor_ga_schema_uc = t.StructType(
+exchange_per_neighbor_schema_uc = t.StructType(
     [
         t.StructField(cname.calculation_id, t.StringType(), not nullable),
         t.StructField(cname.result_id, t.StringType(), not nullable),

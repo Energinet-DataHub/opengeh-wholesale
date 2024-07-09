@@ -42,28 +42,28 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
     # Write exchange per neighbor grid area
     _write(
-        "net_exchange_per_neighbor_ga",
-        energy_results.exchange_per_neighbor_ga,
-        WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_GA_TABLE_NAME,
-        schemas.exchange_per_neighbor_ga_schema_uc,
+        "exchange_per_neighbor",
+        energy_results.exchange_per_neighbor,
+        WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+        schemas.exchange_per_neighbor_schema_uc,
     )
 
     # Write energy per grid area
-    energy_per_ga = _union(
-        energy_results.total_consumption_per_ga,
-        energy_results.exchange_per_ga,
-        energy_results.production_per_ga,
-        energy_results.flex_consumption_per_ga,
-        energy_results.non_profiled_consumption_per_ga,
-        energy_results.temporary_production_per_ga,
-        energy_results.temporary_flex_consumption_per_ga,
+    energy = _union(
+        energy_results.total_consumption,
+        energy_results.exchange,
+        energy_results.production,
+        energy_results.flex_consumption,
+        energy_results.non_profiled_consumption,
+        energy_results.temporary_production,
+        energy_results.temporary_flex_consumption,
         energy_results.grid_loss,
     )
     _write(
-        "energy_per_ga",
-        energy_per_ga,
-        WholesaleResultsInternalDatabase.ENERGY_PER_GA_TABLE_NAME,
-        schemas.energy_per_ga_schema_uc,
+        "energy",
+        energy,
+        WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        schemas.energy_schema_uc,
     )
 
     # Write energy per balance responsible party

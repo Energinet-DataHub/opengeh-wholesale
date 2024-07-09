@@ -11,14 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.energy.metering_point_time_series_factories as factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
-    aggregate_exchange_per_ga,
-    aggregate_exchange_per_neighbor_ga,
+    aggregate_exchange_per_neighbor,
 )
 from package.codelists import QuantityQuality
 from package.constants import Colname
@@ -85,56 +83,15 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        exchange_per_neighbor_ga = aggregate_exchange_per_neighbor_ga(
+        actual = aggregate_exchange_per_neighbor(
             metering_point_time_series, [from_grid_area, to_grid_area]
         )
-        actual = aggregate_exchange_per_ga(exchange_per_neighbor_ga)
 
         # Assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 2
         assert sorted(actual_rows[0][Colname.qualities]) == expected_qualities
         assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities
-
-
-class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
-    def test_returns_result_with_only_to_and_from_grid_area(
-        self,
-        spark: SparkSession,
-    ) -> None:
-        # Arrange
-        other_grid_area = "123"  # this is the grid area of the metering point
-        exchange_grid_area_1 = "234"
-        exchange_grid_area_2 = "345"
-        all_grid_areas = [other_grid_area, exchange_grid_area_1, exchange_grid_area_2]
-        rows = [
-            *[
-                factories.create_exchange_row(
-                    grid_area=other_grid_area,
-                    from_grid_area=exchange_grid_area_2,
-                    to_grid_area=exchange_grid_area_1,
-                ),
-                factories.create_exchange_row(
-                    grid_area=other_grid_area,
-                    from_grid_area=exchange_grid_area_1,
-                    to_grid_area=exchange_grid_area_2,
-                ),
-            ],
-        ]
-        metering_point_time_series = factories.create(spark, rows)
-
-        # Act
-        exchange_per_neighbor_ga = aggregate_exchange_per_neighbor_ga(
-            metering_point_time_series, all_grid_areas
-        )
-        actual = aggregate_exchange_per_ga(exchange_per_neighbor_ga)
-
-        # Assert
-        actual_grid_areas = [row[Colname.grid_area_code] for row in actual.df.collect()]
-
-        assert sorted(actual_grid_areas) == sorted(
-            [exchange_grid_area_1, exchange_grid_area_2]
-        )
 
 
 class TestWhenInputHasDataNotBelongingToSelectedGridArea:
@@ -160,10 +117,9 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        exchange_per_neighbor_ga = aggregate_exchange_per_neighbor_ga(
+        actual = aggregate_exchange_per_neighbor(
             metering_point_time_series, [selected_grid_area]
         )
-        actual = aggregate_exchange_per_ga(exchange_per_neighbor_ga)
 
         # Assert
         actual_rows = actual.df.collect()
