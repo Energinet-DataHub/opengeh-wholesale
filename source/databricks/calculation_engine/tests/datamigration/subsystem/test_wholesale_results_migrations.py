@@ -22,9 +22,8 @@ from pyspark.sql.functions import col, lit
 
 from package.calculation.output.output_table_column_names import OutputTableColumnNames
 from package.calculation.output.results.schemas import (
-    hive_wholesale_results_schema,
+    amounts_per_charge_schema,
 )
-
 
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 from tests.helpers.data_frame_utils import set_column
@@ -56,7 +55,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         OutputTableColumnNames.charge_type: "fee",
         OutputTableColumnNames.charge_owner_id: "1234567890123",
     }
-    return spark.createDataFrame(data=[row], schema=hive_wholesale_results_schema)
+    return spark.createDataFrame(data=[row], schema=amounts_per_charge_schema)
 
 
 @pytest.mark.parametrize(
