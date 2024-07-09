@@ -20,7 +20,7 @@ from pyspark.sql import DataFrame
 class ExpectedOutput:
     """
     A single expected output of a calculation.
-    This can be a specific energy og wholesale result like total_production_per_ga, and some basis data.
+    This can be a specific energy og wholesale result like total_production, and some basis data.
     """
 
     name: str

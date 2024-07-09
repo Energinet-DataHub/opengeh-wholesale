@@ -28,11 +28,11 @@ from . import configuration as c
 # TODO BJM: Remove when we only use Unity Catalog.
 ALL_ENERGY_RESULT_TYPES = {
     (
-        TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA.value,
+        TimeSeriesType.EXCHANGE_PER_NEIGHBOR.value,
         AggregationLevel.GRID_AREA.value,
     ),
     (
-        TimeSeriesType.EXCHANGE_PER_GA.value,
+        TimeSeriesType.EXCHANGE.value,
         AggregationLevel.GRID_AREA.value,
     ),
     (

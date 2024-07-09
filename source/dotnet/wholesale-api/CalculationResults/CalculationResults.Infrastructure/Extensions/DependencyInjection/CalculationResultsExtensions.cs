@@ -81,6 +81,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
         services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
+        services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
 
         return services;
     }
@@ -159,6 +160,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
         services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
+        services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
 
         return services;
     }

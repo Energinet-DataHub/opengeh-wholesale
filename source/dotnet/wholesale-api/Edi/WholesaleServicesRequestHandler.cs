@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
@@ -98,6 +99,7 @@ public class WholesaleServicesRequestHandler(
         await SendRejectedMessageAsync(errors, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
+    [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:Parameter should not span multiple lines", Justification = "Readability")]
     private WholesaleServicesQueryParameters GetWholesaleResultQueryParameters(WholesaleServicesRequest request)
     {
         return new WholesaleServicesQueryParameters(
@@ -106,7 +108,9 @@ public class WholesaleServicesRequestHandler(
             request.EnergySupplierId,
             request.ChargeOwnerId,
             request.ChargeTypes.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
-            CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
+            request.RequestedCalculationType == RequestedCalculationType.LatestCorrection
+                ? null
+                : CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
             new Period(request.Period.Start, request.Period.End));
     }
 
