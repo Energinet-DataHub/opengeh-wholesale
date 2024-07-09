@@ -33,7 +33,7 @@ exchange_out_to_grid_area = "ExOut_ToGridArea"
 exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 
-def aggregate_exchange_per_neighbor_ga(
+def aggregate_exchange_per_neighbor(
     metering_point_time_series: MeteringPointTimeSeries,
     calculation_grid_areas: list[str],
 ) -> EnergyResults:
@@ -136,8 +136,8 @@ def aggregate_exchange_per_neighbor_ga(
     return EnergyResults(exchange)
 
 
-def aggregate_exchange_per_ga(
-    exchange_per_neighbor_ga: EnergyResults,
+def aggregate_exchange(
+    exchange_per_neighbor: EnergyResults,
 ) -> EnergyResults:
     """
     Function to aggregate net exchange per grid area.
@@ -145,7 +145,7 @@ def aggregate_exchange_per_ga(
     """
 
     result_df = T.aggregate_sum_quantity_and_qualities(
-        exchange_per_neighbor_ga.df, [Colname.grid_area_code, Colname.observation_time]
+        exchange_per_neighbor.df, [Colname.grid_area_code, Colname.observation_time]
     )
 
     return EnergyResults(result_df)
