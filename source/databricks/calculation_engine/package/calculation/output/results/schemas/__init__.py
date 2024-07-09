@@ -14,7 +14,6 @@
 
 
 from .energy_results_schema import hive_energy_results_schema
-from .hive_wholesale_results_schema import hive_wholesale_results_schema
 from .energy_per_ga_schema_uc import energy_per_ga_schema_uc
 from .energy_per_brp_schema_uc import energy_per_brp_schema_uc
 from .energy_per_es_schema_uc import energy_per_es_schema_uc
