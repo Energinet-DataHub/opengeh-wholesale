@@ -151,11 +151,7 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 
 
 @pytest.mark.parametrize(
-    "basis_data_table_name",
-    [
-        paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-    ],
+    "basis_data_table_name", paths.WholesaleBasisDataInternalDatabase.TABLE_NAMES
 )
 def test__when_energy_calculation__basis_data_is_stored(
     spark: SparkSession,
