@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using NodaTime;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public sealed record SettlementReportChargeLinkPeriodQueryFilter(
-    Guid CalculationId,
-    string GridAreaCode,
-    CalculationType CalculationType,
-    string? EnergySupplier,
-    string? ChargeOwnerId,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    MarketRole MarketRole);
+public sealed class SettlementReportLatestBalanceFixingCalculationVersionViewEntity
+{
+    [Column("calculation_version")]
+    public long CalculationVersion { get; set; }
+}
