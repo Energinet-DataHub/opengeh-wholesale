@@ -10,6 +10,9 @@ from package.calculation.output.results.schemas import (
 )
 
 import package.calculation.output.basis_data.schemas as basis_data_schemas
+from package.calculation.output.results.schemas.amounts_per_charge_schema import (
+    amounts_per_charge_schema,
+)
 from package.calculation.output.results.schemas.monthly_amounts_schema import (
     monthly_amounts_schema,
 )
@@ -40,6 +43,10 @@ schema_config = [
             Table(
                 name=paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
                 schema=grid_loss_metering_point_time_series_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+                schema=amounts_per_charge_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
