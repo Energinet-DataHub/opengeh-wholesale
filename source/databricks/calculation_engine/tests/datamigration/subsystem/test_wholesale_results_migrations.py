@@ -20,15 +20,13 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
 from package.calculation.output.results.schemas import (
     hive_wholesale_results_schema,
 )
 
-from package.constants import WholesaleResultColumnNames
-from package.infrastructure.paths import (
-    HiveOutputDatabase,
-    WholesaleResultsInternalDatabase,
-)
+
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 from tests.helpers.data_frame_utils import set_column
 
 TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
@@ -36,28 +34,27 @@ TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResult
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        WholesaleResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        WholesaleResultColumnNames.calculation_type: "wholesale_fixing",
-        WholesaleResultColumnNames.calculation_execution_time_start: datetime(
+        OutputTableColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        OutputTableColumnNames.calculation_type: "wholesale_fixing",
+        OutputTableColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),
-        WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        WholesaleResultColumnNames.grid_area_code: "543",
-        WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
-        WholesaleResultColumnNames.quantity: Decimal("1.123"),
-        WholesaleResultColumnNames.quantity_qualities: ["missing"],
-        WholesaleResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        WholesaleResultColumnNames.quantity_unit: "kWh",
-        WholesaleResultColumnNames.resolution: "P1D",
-        WholesaleResultColumnNames.metering_point_type: "production",
-        WholesaleResultColumnNames.settlement_method: "flex",
-        WholesaleResultColumnNames.price: Decimal("1.123"),
-        WholesaleResultColumnNames.amount: Decimal("1.123"),
-        WholesaleResultColumnNames.is_tax: True,
-        WholesaleResultColumnNames.charge_code: "charge_code",
-        WholesaleResultColumnNames.charge_type: "fee",
-        WholesaleResultColumnNames.charge_owner_id: "1234567890123",
-        WholesaleResultColumnNames.amount_type: "amount_per_charge",
+        OutputTableColumnNames.result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        OutputTableColumnNames.grid_area_code: "543",
+        OutputTableColumnNames.energy_supplier_id: "1234567890123",
+        OutputTableColumnNames.quantity: Decimal("1.123"),
+        OutputTableColumnNames.quantity_qualities: ["missing"],
+        OutputTableColumnNames.time: datetime(2020, 1, 1, 0, 0),
+        OutputTableColumnNames.quantity_unit: "kWh",
+        OutputTableColumnNames.resolution: "P1D",
+        OutputTableColumnNames.metering_point_type: "production",
+        OutputTableColumnNames.settlement_method: "flex",
+        OutputTableColumnNames.price: Decimal("1.123"),
+        OutputTableColumnNames.amount: Decimal("1.123"),
+        OutputTableColumnNames.is_tax: True,
+        OutputTableColumnNames.charge_code: "charge_code",
+        OutputTableColumnNames.charge_type: "fee",
+        OutputTableColumnNames.charge_owner_id: "1234567890123",
     }
     return spark.createDataFrame(data=[row], schema=hive_wholesale_results_schema)
 
@@ -65,30 +62,30 @@ def _create_df(spark: SparkSession) -> DataFrame:
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (WholesaleResultColumnNames.calculation_id, None),
-        (WholesaleResultColumnNames.calculation_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.calculation_result_id, None),
-        (WholesaleResultColumnNames.result_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.grid_area_code, None),
-        (WholesaleResultColumnNames.grid_area_code, "12"),
-        (WholesaleResultColumnNames.grid_area_code, "1234"),
-        (WholesaleResultColumnNames.energy_supplier_id, None),
+        (OutputTableColumnNames.calculation_id, None),
+        (OutputTableColumnNames.calculation_id, "not-a-uuid"),
+        (OutputTableColumnNames.result_id, None),
+        (OutputTableColumnNames.result_id, "not-a-uuid"),
+        (OutputTableColumnNames.grid_area_code, None),
+        (OutputTableColumnNames.grid_area_code, "12"),
+        (OutputTableColumnNames.grid_area_code, "1234"),
+        (OutputTableColumnNames.energy_supplier_id, None),
         (
-            WholesaleResultColumnNames.energy_supplier_id,
+            OutputTableColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (WholesaleResultColumnNames.quantity_unit, None),
-        (WholesaleResultColumnNames.quantity_unit, "foo"),
-        (WholesaleResultColumnNames.quantity_qualities, []),
-        (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
-        (WholesaleResultColumnNames.time, None),
-        (WholesaleResultColumnNames.resolution, None),
-        (WholesaleResultColumnNames.resolution, "foo"),
-        (WholesaleResultColumnNames.metering_point_type, None),
-        (WholesaleResultColumnNames.metering_point_type, "foo"),
-        (WholesaleResultColumnNames.settlement_method, "foo"),
-        (WholesaleResultColumnNames.charge_owner_id, "neither-16-nor-13-digits-long"),
-        (WholesaleResultColumnNames.is_tax, None),
+        (OutputTableColumnNames.quantity_unit, None),
+        (OutputTableColumnNames.quantity_unit, "foo"),
+        (OutputTableColumnNames.quantity_qualities, []),
+        (OutputTableColumnNames.quantity_qualities, ["foo"]),
+        (OutputTableColumnNames.time, None),
+        (OutputTableColumnNames.resolution, None),
+        (OutputTableColumnNames.resolution, "foo"),
+        (OutputTableColumnNames.metering_point_type, None),
+        (OutputTableColumnNames.metering_point_type, "foo"),
+        (OutputTableColumnNames.settlement_method, "foo"),
+        (OutputTableColumnNames.charge_owner_id, "neither-16-nor-13-digits-long"),
+        (OutputTableColumnNames.is_tax, None),
     ],
 )
 def test__migrated_table_rejects_invalid_data(
@@ -132,37 +129,37 @@ actor_eic = "1234567890123456"
     "column_name,column_value",
     [
         (
-            WholesaleResultColumnNames.calculation_id,
+            OutputTableColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.calculation_type, "wholesale_fixing"),
+        (OutputTableColumnNames.calculation_type, "wholesale_fixing"),
         (
-            WholesaleResultColumnNames.result_id,
+            OutputTableColumnNames.result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.grid_area_code, "123"),
-        (WholesaleResultColumnNames.grid_area_code, "007"),
-        (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
-        (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
-        (WholesaleResultColumnNames.quantity, max_18_3_decimal),
-        (WholesaleResultColumnNames.quantity, min_18_3_decimal),
-        (WholesaleResultColumnNames.quantity_unit, "kWh"),
-        (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
-        (WholesaleResultColumnNames.quantity_qualities, None),
-        (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (WholesaleResultColumnNames.resolution, "P1D"),
-        (WholesaleResultColumnNames.metering_point_type, "consumption"),
-        (WholesaleResultColumnNames.settlement_method, None),
-        (WholesaleResultColumnNames.settlement_method, "flex"),
-        (WholesaleResultColumnNames.price, None),
-        (WholesaleResultColumnNames.price, max_18_6_decimal),
-        (WholesaleResultColumnNames.price, min_18_6_decimal),
-        (WholesaleResultColumnNames.amount, max_18_6_decimal),
-        (WholesaleResultColumnNames.amount, min_18_6_decimal),
-        (WholesaleResultColumnNames.charge_code, "any-string"),
-        (WholesaleResultColumnNames.charge_type, "fee"),
-        (WholesaleResultColumnNames.charge_owner_id, actor_gln),
-        (WholesaleResultColumnNames.charge_owner_id, actor_eic),
+        (OutputTableColumnNames.grid_area_code, "123"),
+        (OutputTableColumnNames.grid_area_code, "007"),
+        (OutputTableColumnNames.energy_supplier_id, actor_gln),
+        (OutputTableColumnNames.energy_supplier_id, actor_eic),
+        (OutputTableColumnNames.quantity, max_18_3_decimal),
+        (OutputTableColumnNames.quantity, min_18_3_decimal),
+        (OutputTableColumnNames.quantity_unit, "kWh"),
+        (OutputTableColumnNames.quantity_qualities, ["missing", "estimated"]),
+        (OutputTableColumnNames.quantity_qualities, None),
+        (OutputTableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (OutputTableColumnNames.resolution, "P1D"),
+        (OutputTableColumnNames.metering_point_type, "consumption"),
+        (OutputTableColumnNames.settlement_method, None),
+        (OutputTableColumnNames.settlement_method, "flex"),
+        (OutputTableColumnNames.price, None),
+        (OutputTableColumnNames.price, max_18_6_decimal),
+        (OutputTableColumnNames.price, min_18_6_decimal),
+        (OutputTableColumnNames.amount, max_18_6_decimal),
+        (OutputTableColumnNames.amount, min_18_6_decimal),
+        (OutputTableColumnNames.charge_code, "any-string"),
+        (OutputTableColumnNames.charge_type, "fee"),
+        (OutputTableColumnNames.charge_owner_id, actor_gln),
+        (OutputTableColumnNames.charge_owner_id, actor_eic),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -202,7 +199,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = result_df.withColumn("quantity", lit(quantity))
     calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
-        WholesaleResultColumnNames.calculation_id, lit(calculation_id)
+        OutputTableColumnNames.calculation_id, lit(calculation_id)
     )
 
     # Act
@@ -212,6 +209,6 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(WholesaleResultColumnNames.calculation_id) == calculation_id
+        col(OutputTableColumnNames.calculation_id) == calculation_id
     )
     assert actual_df.collect()[0].quantity == quantity
