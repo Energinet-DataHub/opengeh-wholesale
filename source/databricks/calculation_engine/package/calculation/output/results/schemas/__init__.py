@@ -21,6 +21,11 @@ from .exchange_per_neighbor_ga_schema_uc import exchange_per_neighbor_ga_schema_
 from .grid_loss_metering_point_time_series_schema_uc import (
     grid_loss_metering_point_time_series_schema_uc,
 )
-from .hive_wholesale_results_schema import hive_wholesale_results_schema
-from .monthly_amounts_schema import monthly_amounts_schema
-from .total_monthly_amounts_schema import total_monthly_amounts_schema
+from .monthly_amounts_schema import (
+    hive_monthly_amounts_schema,
+    monthly_amounts_schema_uc,
+)
+from .total_monthly_amounts_schema import (
+    hive_total_monthly_amounts_schema,
+    total_monthly_amounts_schema_uc,
+)
