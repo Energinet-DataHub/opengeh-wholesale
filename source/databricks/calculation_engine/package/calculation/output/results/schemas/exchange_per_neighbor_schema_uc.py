@@ -1,6 +1,8 @@
 import pyspark.sql.types as t
 
-from package.constants import EnergyResultColumnNames as cname
+from package.calculation.output.output_table_column_names import (
+    OutputTableColumnNames as cname,
+)
 
 nullable = True
 

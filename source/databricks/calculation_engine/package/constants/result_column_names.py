@@ -18,8 +18,7 @@ class ResultColumnNames:
     calculation_execution_time_start = "calculation_execution_time_start"
     calculation_type = "calculation_type"
     calculation_result_id = "calculation_result_id"
-    """Obsolete"""
-
+    """Obsolete. Use result_id """
     result_id = "result_id"
 
     grid_area_code = "grid_area_code"
