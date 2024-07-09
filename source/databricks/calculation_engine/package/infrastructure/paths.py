@@ -34,13 +34,13 @@ class WholesaleInternalDatabase:
 
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
-    ENERGY_PER_GA_TABLE_NAME = "energy_per_ga"
+    ENERGY_TABLE_NAME = "energy"
     ENERGY_PER_ES_TABLE_NAME = "energy_per_es"
     ENERGY_PER_BRP_TABLE_NAME = "energy_per_brp"
     GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME = (
         "grid_loss_metering_point_time_series"
     )
-    EXCHANGE_PER_NEIGHBOR_GA_TABLE_NAME = "exchange_per_neighbor_ga"
+    EXCHANGE_PER_NEIGHBOR_TABLE_NAME = "exchange_per_neighbor_ga"
     AMOUNTS_PER_CHARGE_TABLE_NAME = "amounts_per_charge"
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"

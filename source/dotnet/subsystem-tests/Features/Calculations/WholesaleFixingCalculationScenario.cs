@@ -307,8 +307,8 @@ AppTraces
     {
         var query = $@"
 AppDependencies
-| where Target == ""net_exchange_per_ga""
-| where Name == ""net_exchange_per_ga""
+| where Target == ""exchange""
+| where Name == ""exchange""
 | where DependencyType == ""InProc""
 | where Success == true
 | where ResultCode == 0
