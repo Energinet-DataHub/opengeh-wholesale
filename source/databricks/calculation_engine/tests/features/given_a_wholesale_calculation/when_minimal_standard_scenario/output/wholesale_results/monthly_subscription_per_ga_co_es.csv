@@ -1,5 +1,0 @@
-calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area_code;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id;amount_type
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;;pcs;;2023-01-31 23:00:00;P1M;;;;1.817202;false;subscription-1;subscription;0000000000800;monthly_amount_per_charge
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;;pcs;;2023-01-31 23:00:00;P1M;;;;3;false;subscription-2;subscription;0000000000800;monthly_amount_per_charge
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;;pcs;;2023-01-31 23:00:00;P1M;;;;1;false;subscription-3;subscription;0000000000800;monthly_amount_per_charge
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;;pcs;;2023-01-31 23:00:00;P1M;;;;7;false;subscription-2;subscription;0000000000800;monthly_amount_per_charge

@@ -29,15 +29,15 @@ from package.constants import Colname
 production_sum_quantity = "production_sum_quantity"
 exchange_sum_quantity = "exchange_sum_quantity"
 aggregated_production_qualities = "aggregated_production_quality"
-aggregated_net_exchange_qualities = "aggregated_net_exchange_quality"
+aggregated_exchange_qualities = "aggregated_exchange_quality"
 hourly_result = "hourly_result"
 flex_result = "flex_result"
 prod_result = "prod_result"
-net_exchange_result = "net_exchange_result"
+exchange_result = "exchange_result"
 
 
 def calculate_grid_loss(
-    net_exchange_per_ga: EnergyResults,
+    exchange: EnergyResults,
     non_profiled_consumption: EnergyResults,
     flex_consumption: EnergyResults,
     production: EnergyResults,
@@ -59,7 +59,7 @@ def calculate_grid_loss(
     ).withColumnRenamed(Colname.quantity, prod_result)
 
     result = (
-        net_exchange_per_ga.df.withColumnRenamed(Colname.quantity, net_exchange_result)
+        exchange.df.withColumnRenamed(Colname.quantity, exchange_result)
         .join(
             agg_production_result,
             [Colname.grid_area_code, Colname.observation_time],
@@ -80,7 +80,7 @@ def calculate_grid_loss(
     # By having default values we ensure that the calculation below doesn't fail.
     # This can, however, hide errors that should have been handled earlier in the flow.
     result = (
-        result.na.fill({net_exchange_result: 0})
+        result.na.fill({exchange_result: 0})
         .na.fill({prod_result: 0})
         .na.fill({hourly_result: 0})
         .na.fill({flex_result: 0})
@@ -88,7 +88,7 @@ def calculate_grid_loss(
 
     result = result.withColumn(
         Colname.quantity,
-        result[net_exchange_result]
+        result[exchange_result]
         + result[prod_result]
         - (result[hourly_result] + result[flex_result]),
     )
@@ -165,29 +165,29 @@ def _calculate_negative_or_positive(
 
 
 def calculate_total_consumption(
-    production_per_ga: EnergyResults, net_exchange_per_ga: EnergyResults
+    production: EnergyResults, exchange: EnergyResults
 ) -> EnergyResults:
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
-            production_per_ga.df,
+            production.df,
             [Colname.grid_area_code, Colname.observation_time],
         )
         .withColumnRenamed(Colname.quantity, production_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_production_qualities)
     )
 
-    result_net_exchange = (
+    result_exchange = (
         t.aggregate_sum_quantity_and_qualities(
-            net_exchange_per_ga.df,
+            exchange.df,
             [Colname.grid_area_code, Colname.observation_time],
         )
         .withColumnRenamed(Colname.quantity, exchange_sum_quantity)
-        .withColumnRenamed(Colname.qualities, aggregated_net_exchange_qualities)
+        .withColumnRenamed(Colname.qualities, aggregated_exchange_qualities)
     )
 
     result = (
         result_production.join(
-            result_net_exchange,
+            result_exchange,
             [Colname.grid_area_code, Colname.observation_time],
             "inner",
         )
@@ -198,7 +198,7 @@ def calculate_total_consumption(
         .withColumn(
             Colname.qualities,
             f.array_union(
-                aggregated_production_qualities, aggregated_net_exchange_qualities
+                aggregated_production_qualities, aggregated_exchange_qualities
             ),
         )
     )

@@ -18,7 +18,7 @@ from pyspark.sql import SparkSession
 
 import tests.calculation.energy.energy_results_factories as factories
 from package.calculation.energy.aggregators.grouping_aggregators import (
-    aggregate_per_ga,
+    aggregate,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -35,7 +35,7 @@ class TestWhenValidInput:
         energy_results = factories.create(spark, [row, row])
 
         # Act
-        actual = aggregate_per_ga(energy_results)
+        actual = aggregate(energy_results)
 
         # assert
         actual_rows = actual.df.collect()
@@ -64,7 +64,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga(df)
+        actual = aggregate(df)
 
         # assert
         actual_rows = actual.df.collect()
@@ -82,7 +82,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga(df)
+        actual = aggregate(df)
 
         # assert
         actual_rows = actual.df.collect()
