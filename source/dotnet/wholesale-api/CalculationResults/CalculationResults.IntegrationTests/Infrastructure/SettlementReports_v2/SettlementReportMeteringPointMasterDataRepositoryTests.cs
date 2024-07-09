@@ -25,7 +25,8 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<SettlementReportMeteringPointMasterDataRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportCollectionFixture))]
+public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<SettlementReportMeteringPointMasterDataRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
