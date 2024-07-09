@@ -198,7 +198,7 @@ def test__wholesale_result__amount_per_charge_is_created(
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
-    wholesale_fixing_monthly_amount_per_charge_df: DataFrame,
+        wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
     charge_code: str,
 ) -> None:
     # Arrange
@@ -245,7 +245,7 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
 
 def test__total_monthly_amounts__are_stored(
     spark: SparkSession,
-    wholesale_fixing_total_monthly_amounts: DataFrame,
+        wholesale_fixing_total_monthly_amounts_df: DataFrame,
 ) -> None:
     # Arrange
 
@@ -253,12 +253,12 @@ def test__total_monthly_amounts__are_stored(
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert wholesale_fixing_total_monthly_amounts.count() > 0
+    assert wholesale_fixing_total_monthly_amounts_df.count() > 0
 
 
 def test__monthly_amounts__are_stored(
     spark: SparkSession,
-    wholesale_fixing_monthly_amounts_per_charge: DataFrame,
+        wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
 ) -> None:
     # Arrange
 
@@ -266,7 +266,7 @@ def test__monthly_amounts__are_stored(
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert wholesale_fixing_monthly_amounts_per_charge.count() > 0
+    assert wholesale_fixing_monthly_amounts_per_charge_df.count() > 0
 
 
 @pytest.mark.parametrize(

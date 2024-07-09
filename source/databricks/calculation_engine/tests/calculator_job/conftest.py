@@ -147,7 +147,7 @@ def wholesale_fixing_amounts_per_charge_df(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_total_monthly_amounts(
+def wholesale_fixing_total_monthly_amounts_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
@@ -161,7 +161,7 @@ def wholesale_fixing_total_monthly_amounts(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_monthly_amounts_per_charge(
+def wholesale_fixing_monthly_amounts_per_charge_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
