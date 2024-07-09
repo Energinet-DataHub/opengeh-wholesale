@@ -224,9 +224,6 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
 
     result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
         f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
-    ).where(
-        f.col(WholesaleResultColumnNames.resolution)
-        == WholesaleResultResolution.MONTH.value
     )
 
     # Act: Calculator job is executed just once per session.
