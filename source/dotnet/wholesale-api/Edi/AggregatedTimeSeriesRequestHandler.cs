@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -126,6 +127,7 @@ public class AggregatedTimeSeriesRequestHandler(
         return false;
     }
 
+    [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1118:Parameter should not span multiple lines", Justification = "Readability")]
     private AggregatedTimeSeriesQueryParameters CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(
         AggregatedTimeSeriesRequest request)
     {
@@ -134,6 +136,9 @@ public class AggregatedTimeSeriesRequestHandler(
             request.AggregationPerRoleAndGridArea.GridAreaCodes,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId,
+            request.RequestedCalculationType == RequestedCalculationType.LatestCorrection
+                ? null
+                : CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
             new Period(request.Period.Start, request.Period.End));
     }
 

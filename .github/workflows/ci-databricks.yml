@@ -247,7 +247,7 @@ jobs:
             paths: features/given_an_energy_calculation
           - name: Wholesale logic
             paths: features/given_a_wholesale_calculation
-          - name: Public data models
+          - name: Data products
             paths: features/data_products contracts
           - name: Unit tests
             paths: calculation codelists common infrastructure

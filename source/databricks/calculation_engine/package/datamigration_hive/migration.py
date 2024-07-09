@@ -30,7 +30,7 @@ from .substitutions import substitutions
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake(spark_config: SparkSqlMigrationsConfiguration = None) -> None:
     spark_config = spark_config or _create_spark_config()
-    print(f"Executing Unity Catalog migrations for catalog {spark_config.catalog_name}")
+    print(f"Executing Hive Catalog migrations for catalog {spark_config.catalog_name}")
 
     create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()

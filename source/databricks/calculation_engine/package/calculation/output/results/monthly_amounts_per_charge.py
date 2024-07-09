@@ -15,6 +15,9 @@ from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.constants import Colname, MonthlyAmountsColumnNames
+from package.constants.result_column_names import ResultColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -30,20 +33,20 @@ def write_monthly_amounts_per_charge(
 ) -> None:
     """Write each wholesale result to the output table."""
     _write(
-        "monthly_tariff_from_hourly_per_ga_co_es",
-        wholesale_results.monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount,
+        "monthly_tariff_from_hourly_per_co_es",
+        wholesale_results.monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
     )
     _write(
-        "monthly_tariff_from_daily_per_ga_co_es",
-        wholesale_results.monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount,
+        "monthly_tariff_from_daily_per_co_es",
+        wholesale_results.monthly_tariff_from_daily_per_co_es_as_monthly_amount,
     )
     _write(
-        "monthly_subscription_per_ga_co_es",
-        wholesale_results.monthly_subscription_per_ga_co_es_as_monthly_amount,
+        "monthly_subscription_per_co_es",
+        wholesale_results.monthly_subscription_per_co_es_as_monthly_amount,
     )
     _write(
-        "monthly_fee_per_ga_co_es",
-        wholesale_results.monthly_fee_per_ga_co_es_as_monthly_amount,
+        "monthly_fee_per_co_es",
+        wholesale_results.monthly_fee_per_co_es_as_monthly_amount,
     )
 
 
@@ -56,7 +59,19 @@ def _write(
     ],
 ) -> None:
     with logging_configuration.start_span(name):
-        df.write.format("delta").mode("append").option(
+        df.drop(
+            # ToDo JMG: Remove when we are on Unity Catalog
+            MonthlyAmountsColumnNames.calculation_type,
+            MonthlyAmountsColumnNames.calculation_execution_time_start,
+        ).withColumnRenamed(
+            # ToDo JMG: Remove when we are on Unity Catalog
+            MonthlyAmountsColumnNames.calculation_result_id,
+            OutputTableColumnNames.result_id,
+        ).write.format(
+            "delta"
+        ).mode(
+            "append"
+        ).option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"

@@ -22,7 +22,7 @@ from pyspark.sql import SparkSession
 
 import calculation.wholesale.factories.prepared_tariffs_factory as factory
 from package.calculation.wholesale.tariff_calculators import (
-    calculate_tariff_price_per_ga_co_es,
+    calculate_tariff_price_per_co_es,
 )
 from package.codelists import (
     ChargeQuality,
@@ -35,27 +35,27 @@ from package.codelists import (
 from package.constants import Colname
 
 
-def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is_empty(
+def test__calculate_tariff_price_per_co_es__returns_empty_df_when_input_df_is_empty(
     spark: SparkSession,
 ) -> None:
     # Arrange
     prepared_tariff = factory.create(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariff).df
 
     # Assert
     assert actual.count() == 0
 
 
-def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
+def test__calculate_tariff_price_per_co_es__returns_df_with_correct_columns(
     spark: SparkSession,
 ) -> None:
     # Arrange
     prepared_tariff = factory.create(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariff).df
 
     # Assert
     assert Colname.energy_supplier_id in actual.columns
@@ -75,7 +75,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.qualities in actual.columns
 
 
-def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
+def test__calculate_tariff_price_per_co_es__returns_df_with_expected_values(
     spark: SparkSession,
 ) -> None:
     # Arrange: 3 rows that should all be aggregated into a single row
@@ -89,7 +89,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 1
@@ -123,7 +123,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.qualities] == [ChargeQuality.CALCULATED.value]
 
 
-def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
+def test__calculate_tariff_price_per_co_es__returns_all_qualities(
     spark: SparkSession,
 ) -> None:
     # Arrange: A number of rows with different qualities. All rows should be aggregated into a single row containing all the qualities.
@@ -141,7 +141,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     actual_row = actual.collect()[0]
@@ -170,7 +170,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
         ),
     ],
 )
-def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_splitting_columns(
+def test__calculate_tariff_price_per_co_es__does_not_aggregate_across_group_splitting_columns(
     spark: SparkSession, column_name: str, value: Any, other_value: Any
 ) -> None:
     """
@@ -186,13 +186,13 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 2
 
 
-def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__returns_result(
+def test__calculate_tariff_price_per_co_es__when_settlement_method_is_null__returns_result(
     spark: SparkSession,
 ) -> None:
     """
@@ -210,7 +210,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 1
@@ -224,7 +224,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
         (Colname.charge_price, 6),
     ],
 )
-def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
+def test__calculate_tariff_price_per_co_es__returns_df_with_expected_scale(
     spark: SparkSession, column_name: str, expected_scale: int
 ) -> None:
     # Arrange
@@ -232,13 +232,13 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.schema[column_name].dataType.scale == expected_scale
 
 
-def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_expected_precision(
+def test__calculate_tariff_price_per_co_es__when_production__returns_df_with_expected_precision(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -246,7 +246,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.schema[Colname.total_amount].dataType.precision >= 18
@@ -261,7 +261,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_
         (Decimal("0.000500"), Decimal("0.001"), Decimal("0.000001")),
     ],
 )
-def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
+def test__calculate_tariff_price_per_co_es__rounds_total_amount_correctly(
     spark: SparkSession,
     charge_price: Decimal,
     quantity: Decimal,
@@ -272,14 +272,14 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     actual_amount = actual.collect()[0][Colname.total_amount]
     assert actual_amount == expected_total_amount
 
 
-def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__returns_total_amount_as_none(
+def test__calculate_tariff_price_per_co_es__when_charge_price_is_null__returns_total_amount_as_none(
     spark: SparkSession,
 ) -> None:
     """
@@ -294,7 +294,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__return
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
+    actual = calculate_tariff_price_per_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None

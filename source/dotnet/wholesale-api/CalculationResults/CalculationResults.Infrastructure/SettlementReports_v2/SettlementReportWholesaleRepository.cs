@@ -13,65 +13,106 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportWholesaleRepository : ISettlementReportWholesaleRepository
 {
-    private readonly ISettlementReportWholesaleResultQueries _settlementReportResultQueries;
+    private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
 
-    public SettlementReportWholesaleRepository(ISettlementReportWholesaleResultQueries settlementReportResultQueries)
+    public SettlementReportWholesaleRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
     {
-        _settlementReportResultQueries = settlementReportResultQueries;
+        _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
+        var view = ApplyFilter(_settlementReportDatabricksContext.WholesaleView, filter, actorInfo);
+        return view
+            .Select(row => row.ResultId)
+            .Distinct()
+            .DatabricksSqlCountAsync();
     }
 
     public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take)
     {
-        var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter, actorInfo), skip, take)
-            .ConfigureAwait(false);
+        var view = ApplyFilter(_settlementReportDatabricksContext.WholesaleView, filter, actorInfo);
 
-        await foreach (var row in rows.ConfigureAwait(false))
+        var chunkByCalculationResult = view
+            .Select(row => row.ResultId)
+            .Distinct()
+            .OrderBy(row => row)
+            .Skip(skip)
+            .Take(take);
+
+        var query = view.Join(
+            chunkByCalculationResult,
+            outer => outer.ResultId,
+            inner => inner,
+            (outer, inner) => outer);
+
+        await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
         {
             yield return new SettlementReportWholesaleResultRow(
-                row.CalculationType,
-                row.GridArea,
+                CalculationTypeMapper.FromDeltaTableValue(row.CalculationType),
+                row.GridAreaCode,
                 row.EnergySupplierId,
-                row.StartDateTime,
-                row.Resolution,
-                row.MeteringPointType,
-                row.SettlementMethod,
-                row.QuantityUnit,
-                row.Currency,
+                row.Time,
+                ResolutionMapper.FromDeltaTableValue(row.Resolution),
+                MeteringPointTypeMapper.FromDeltaTableValueNonNull(row.MeteringPointType),
+                SettlementMethodMapper.FromDeltaTableValue(row.SettlementMethod),
+                QuantityUnitMapper.FromDeltaTableValue(row.QuantityUnit),
+                Currency.DKK,
                 row.Quantity,
                 row.Price,
                 row.Amount,
-                row.ChargeType,
+                ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeCode,
                 row.ChargeOwnerId);
         }
     }
 
-    private static SettlementReportWholesaleResultQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
+    private static IQueryable<SettlementReportWholesaleViewEntity> ApplyFilter(
+        IQueryable<SettlementReportWholesaleViewEntity> source,
+        SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportWholesaleResultQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.CalculationType,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant(),
-            filter.EnergySupplier,
-            actorInfo.ChargeOwnerId,
-            actorInfo.MarketRole);
+        source = source
+            .Where(row => row.GridAreaCode == gridAreaCode)
+            .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
+            .Where(row => row.Time >= filter.PeriodStart.ToInstant())
+            .Where(row => row.Time < filter.PeriodEnd.ToInstant())
+            .Where(row => row.CalculationId == calculationId!.Id);
+
+        if (actorInfo.MarketRole == MarketRole.SystemOperator)
+        {
+            source = source.Where(wholesaleRow =>
+                wholesaleRow.IsTax == false &&
+                wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
+        }
+
+        if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
+        {
+            source = source.Where(wholesaleRow =>
+                wholesaleRow.IsTax == true &&
+                wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
+        {
+            source = source.Where(wholesaleRow => wholesaleRow.EnergySupplierId == filter.EnergySupplier);
+        }
+
+        return source;
     }
 }
