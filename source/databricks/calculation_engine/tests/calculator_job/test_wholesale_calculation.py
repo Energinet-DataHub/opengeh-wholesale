@@ -203,16 +203,9 @@ def test__monthly_amount_for_tariffs__is_created(
 ) -> None:
     # Arrange
 
-    result_df = (
-        wholesale_fixing_monthly_amounts_per_charge_df.where(
-            f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
-        )
-        .where(
-            f.col(WholesaleResultColumnNames.resolution)
-            == WholesaleResultResolution.MONTH.value
-        )
-        .where(f.col(WholesaleResultColumnNames.charge_code) == charge_code)
-    )
+    result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
+        f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
+    ).where(f.col(WholesaleResultColumnNames.charge_code) == charge_code)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
