@@ -31,6 +31,8 @@ from package.infrastructure.paths import (
 )
 from tests.helpers.data_frame_utils import set_column
 
+TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
+
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
@@ -103,7 +105,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}",
+            TABLE_NAME,
             overwrite=False,
         )
 
@@ -175,7 +177,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        TABLE_NAME
     )
 
 
@@ -205,11 +207,11 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        TABLE_NAME
     )
 
     # Assert
-    actual_df = spark.read.table(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
-    ).where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(WholesaleResultColumnNames.calculation_id) == calculation_id
+    )
     assert actual_df.collect()[0].quantity == quantity
