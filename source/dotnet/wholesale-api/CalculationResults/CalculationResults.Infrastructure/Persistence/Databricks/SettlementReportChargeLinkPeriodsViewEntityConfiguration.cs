@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public interface ILatestCalculationVersionQueries
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+
+public sealed class SettlementReportChargeLinkPeriodsViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportChargeLinkPeriodsViewEntity>
 {
-    Task<long> GetLatestCalculationVersionAsync();
+    public void Configure(EntityTypeBuilder<SettlementReportChargeLinkPeriodsViewEntity> builder)
+    {
+        builder.ToTable("charge_link_periods_v1");
+        builder.HasNoKey();
+    }
 }
