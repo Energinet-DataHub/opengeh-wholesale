@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public interface ISettlementReportChargePriceQueries
+public sealed class SettlementReportChargePriceViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportChargePriceResultViewEntity>
 {
-    Task<int> CountAsync(SettlementReportChargePriceQueryFilter filter);
-
-    IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportChargePriceQueryFilter filter, int skip, int take);
+    public void Configure(EntityTypeBuilder<SettlementReportChargePriceResultViewEntity> builder)
+    {
+        builder.ToTable("charge_prices_v1");
+        builder.HasNoKey();
+    }
 }

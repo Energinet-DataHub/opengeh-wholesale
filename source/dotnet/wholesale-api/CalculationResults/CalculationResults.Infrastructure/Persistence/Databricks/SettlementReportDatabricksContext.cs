@@ -38,11 +38,14 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     public IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> EnergyResultPointsPerEnergySupplierGridAreaView => Set<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity>();
 
+    public IQueryable<SettlementReportChargePriceResultViewEntity> ChargePriceView => Set<SettlementReportChargePriceResultViewEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(_deltaTableOptions.Value.SettlementReportSchemaName);
         modelBuilder.ApplyConfiguration(new SettlementReportWholesaleViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportChargePriceViewEntityConfiguration());
     }
 }
