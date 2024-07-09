@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+from .amounts_per_charge_schema import amounts_per_charge_schema
 from .energy_results_schema import hive_energy_results_schema
 from .energy_per_ga_schema_uc import energy_per_ga_schema_uc
 from .energy_per_brp_schema_uc import energy_per_brp_schema_uc

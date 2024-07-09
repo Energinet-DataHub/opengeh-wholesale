@@ -8,8 +8,8 @@ from package.calculation.output.results.schemas import (
     grid_loss_metering_point_time_series_schema_uc,
     exchange_per_neighbor_ga_schema_uc,
     amounts_per_charge_schema,
-    monthly_amounts_schema,
-    total_monthly_amounts_schema,
+    monthly_amounts_schema_uc,
+    total_monthly_amounts_schema_uc,
 )
 
 import package.calculation.output.basis_data.schemas as basis_data_schemas
