@@ -39,43 +39,43 @@ public class WholesaleServicesQueryStatement(
     {
         var selectTarget = _statementType switch
         {
-            StatementType.Select =>
-                $"{string.Join(", ", ColumnsToSelect.Select(cts => $"`wrv`.`{cts}`"))}, `wrv`.`{BasisDataCalculationsColumnNames.Version}`",
+            StatementType.Select => GetProjection("wrv"),
             StatementType.Exists => "1",
             _ => throw new ArgumentOutOfRangeException(nameof(_statementType), _statementType, "Unknown StatementType"),
         };
 
         var sql = $"""
                     SELECT {selectTarget}
-                    FROM (SELECT {string.Join(", ", ColumnsToSelect.Select(cts => $"`wr`.`{cts}`"))}, `cs`.`{BasisDataCalculationsColumnNames.Version}`
-                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
-                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                    ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                    WHERE {GenerateLatestOrFixedCalculationTypeWhereClause()}) wrv
-                    INNER JOIN (SELECT max({BasisDataCalculationsColumnNames.Version}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", ColumnsToGroupBy.Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
-                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
-                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                    ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                    {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
-                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
-                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
+                    FROM (SELECT {GetProjection("wr")}
+                    FROM {GetSource()} wr
+                    WHERE {GenerateLatestOrFixedCalculationTypeConstraint("wr")}) wrv
+                    INNER JOIN (SELECT max({AmountsPerChargeViewColumnNames.CalculationVersion}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", GetColumnsToGroupBy().Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
+                    FROM {GetSource()} wr
+                    {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeConstraint("wr")}
+                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", GetColumnsToGroupBy())}) maxver
+                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{AmountsPerChargeViewColumnNames.CalculationVersion} = maxver.max_version AND {string.Join(" AND ", GetColumnsToGroupBy().Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
                     """;
 
         // The order is important for combining the rows into packages, since the sql rows are streamed and
         // packages are created on-the-fly each time a new row is received.
         sql += $"""
-                {"\n"}ORDER BY {string.Join(", ", ColumnsToGroupBy)}, {WholesaleResultColumnNames.Time}
+                {"\n"}ORDER BY {string.Join(", ", GetColumnsToGroupBy())}, {WholesaleResultColumnNames.Time}
                 """;
 
         return sql;
     }
 
-    private string GenerateLatestOrFixedCalculationTypeWhereClause()
+    private string GetProjection(string prefix)
+    {
+        return $"{string.Join(", ", GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"))}";
+    }
+
+    private string GenerateLatestOrFixedCalculationTypeConstraint(string prefix)
     {
         if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    wr.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    {prefix}.{GetCalculationTypeColumnName()} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
@@ -88,48 +88,151 @@ public class WholesaleServicesQueryStatement(
 
         var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
             .Select(ctpga => $"""
-                              (wr.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND wr.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              ({prefix}.{GetGridAreaCodeColumnName()} = '{ctpga.GridArea}' AND {prefix}.{GetCalculationTypeColumnName()} = '{ctpga.CalculationType}')
                               """);
 
-        return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
+        return $"""
+                ({string.Join(" OR ", calculationTypePerGridAreaConstraints)})
+                """;
     }
 
-    /// <summary>
-    /// Since results are streamed and packages are created on-the-fly, the data need to be ordered so that
-    ///     all rows belonging to one package are ordered directly after one another.
-    /// </summary>
-    public static string[] ColumnsToGroupBy =>
+    private string GetCalculationTypeColumnName()
+    {
+        return _queryParameters.AmountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationType,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationType,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationType,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    private string GetGridAreaCodeColumnName()
+    {
+        return _queryParameters.AmountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.GridAreaCode,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.GridAreaCode,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    private string GetSource()
+    {
+        return _queryParameters.AmountType switch
+        {
+            AmountType.AmountPerCharge => $"{_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
+            AmountType.MonthlyAmountPerCharge => $"{_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.MONTHLY_AMOUNTS_V1_VIEW_NAME}",
+            AmountType.TotalMonthlyAmount => $"{_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    private string[] GetColumnsToProject()
+    {
+        return _queryParameters.AmountType switch
+        {
+            AmountType.AmountPerCharge => ColumnsToProjectForAmountsPerCharge,
+            AmountType.MonthlyAmountPerCharge => ColumnsToProjectForMonthlyAmountsPerCharge,
+            AmountType.TotalMonthlyAmount => ColumnsToProjectForTotalMonthlyAmounts,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    private string[] GetColumnsToGroupBy()
+    {
+        return _queryParameters.AmountType switch
+        {
+            AmountType.AmountPerCharge => ColumnsToGroupByForAmountsPerCharge,
+            AmountType.MonthlyAmountPerCharge => ColumnsToGroupByForMonthlyAmountsPerCharge,
+            AmountType.TotalMonthlyAmount => ColumnsToGroupByForTotalMonthlyAmounts,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    public static string[] ColumnsToGroupByForAmountsPerCharge =>
     [
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
-        WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.ChargeCode,
-        WholesaleResultColumnNames.AmountType,
-        WholesaleResultColumnNames.Resolution,
-        WholesaleResultColumnNames.MeteringPointType,
-        WholesaleResultColumnNames.SettlementMethod,
+        AmountsPerChargeViewColumnNames.GridAreaCode,
+        AmountsPerChargeViewColumnNames.EnergySupplierId,
+        AmountsPerChargeViewColumnNames.ChargeOwnerId,
+        AmountsPerChargeViewColumnNames.ChargeType,
+        AmountsPerChargeViewColumnNames.ChargeCode,
+        AmountsPerChargeViewColumnNames.Resolution,
+        AmountsPerChargeViewColumnNames.MeteringPointType,
+        AmountsPerChargeViewColumnNames.SettlementMethod,
     ];
 
-    private static string[] ColumnsToSelect { get; } =
+    public static string[] ColumnsToGroupByForMonthlyAmountsPerCharge =>
     [
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
-        WholesaleResultColumnNames.AmountType,
-        WholesaleResultColumnNames.MeteringPointType,
-        WholesaleResultColumnNames.SettlementMethod,
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.ChargeCode,
-        WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.Resolution,
-        WholesaleResultColumnNames.QuantityUnit,
-        WholesaleResultColumnNames.Time,
-        WholesaleResultColumnNames.Quantity,
-        WholesaleResultColumnNames.QuantityQualities,
-        WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.Amount,
-        WholesaleResultColumnNames.CalculationId,
-        WholesaleResultColumnNames.CalculationType,
+        MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
+        MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
+        MonthlyAmountsPerChargeViewColumnNames.ChargeOwnerId,
+        MonthlyAmountsPerChargeViewColumnNames.ChargeType,
+        MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
+    ];
+
+    public static string[] ColumnsToGroupByForTotalMonthlyAmounts =>
+    [
+        TotalMonthlyAmountsViewColumnNames.GridAreaCode,
+        TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
+        TotalMonthlyAmountsViewColumnNames.ChargeOwnerId,
+    ];
+
+    private static string[] ColumnsToProjectForAmountsPerCharge =>
+    [
+        AmountsPerChargeViewColumnNames.CalculationId,
+        AmountsPerChargeViewColumnNames.CalculationType,
+        AmountsPerChargeViewColumnNames.CalculationVersion,
+        AmountsPerChargeViewColumnNames.CalculationResultId,
+        AmountsPerChargeViewColumnNames.GridAreaCode,
+        AmountsPerChargeViewColumnNames.EnergySupplierId,
+        AmountsPerChargeViewColumnNames.ChargeCode,
+        AmountsPerChargeViewColumnNames.ChargeType,
+        AmountsPerChargeViewColumnNames.ChargeOwnerId,
+        AmountsPerChargeViewColumnNames.Resolution,
+        AmountsPerChargeViewColumnNames.QuantityUnit,
+        AmountsPerChargeViewColumnNames.MeteringPointType,
+        AmountsPerChargeViewColumnNames.SettlementMethod,
+        AmountsPerChargeViewColumnNames.IsTax,
+        AmountsPerChargeViewColumnNames.Currency,
+        AmountsPerChargeViewColumnNames.Time,
+        AmountsPerChargeViewColumnNames.Quantity,
+        AmountsPerChargeViewColumnNames.QuantityQualities,
+        AmountsPerChargeViewColumnNames.Price,
+        AmountsPerChargeViewColumnNames.Amount,
+    ];
+
+    private static string[] ColumnsToProjectForMonthlyAmountsPerCharge =>
+    [
+        MonthlyAmountsPerChargeViewColumnNames.CalculationId,
+        MonthlyAmountsPerChargeViewColumnNames.CalculationType,
+        MonthlyAmountsPerChargeViewColumnNames.CalculationVersion,
+        MonthlyAmountsPerChargeViewColumnNames.CalculationResultId,
+        MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
+        MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
+        MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
+        MonthlyAmountsPerChargeViewColumnNames.ChargeType,
+        MonthlyAmountsPerChargeViewColumnNames.ChargeOwnerId,
+        MonthlyAmountsPerChargeViewColumnNames.QuantityUnit,
+        MonthlyAmountsPerChargeViewColumnNames.IsTax,
+        MonthlyAmountsPerChargeViewColumnNames.Currency,
+        MonthlyAmountsPerChargeViewColumnNames.Time,
+        MonthlyAmountsPerChargeViewColumnNames.Amount,
+    ];
+
+    private static string[] ColumnsToProjectForTotalMonthlyAmounts =>
+    [
+        TotalMonthlyAmountsViewColumnNames.CalculationId,
+        TotalMonthlyAmountsViewColumnNames.CalculationType,
+        TotalMonthlyAmountsViewColumnNames.CalculationVersion,
+        TotalMonthlyAmountsViewColumnNames.CalculationResultId,
+        TotalMonthlyAmountsViewColumnNames.GridAreaCode,
+        TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
+        TotalMonthlyAmountsViewColumnNames.ChargeOwnerId,
+        TotalMonthlyAmountsViewColumnNames.Currency,
+        TotalMonthlyAmountsViewColumnNames.Time,
+        TotalMonthlyAmountsViewColumnNames.Amount,
     ];
 
     public enum StatementType
