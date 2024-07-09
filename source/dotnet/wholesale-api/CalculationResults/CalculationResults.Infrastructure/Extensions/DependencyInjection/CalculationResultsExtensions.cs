@@ -118,13 +118,11 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultRepository, SettlementReportMeteringPointTimeSeriesResultRepository>();
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultQueries, SettlementReportMeteringPointTimeSeriesResultQueries>();
         services.AddScoped<ISettlementReportChargeLinkPeriodsRepository, SettlementReportChargeLinkPeriodsRepository>();
-        services.AddScoped<ISettlementReportChargeLinkPeriodsQueries, SettlementReportChargeLinkPeriodsQueries>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataRepository, SettlementReportMeteringPointMasterDataRepository>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataQueries, SettlementReportMeteringPointMasterDataQueries>();
         services.AddScoped<ISettlementReportMonthlyAmountRepository, SettlementReportMonthlyAmountRepository>();
         services.AddScoped<ISettlementReportMonthlyAmountQueries, SettlementReportMonthlyAmountQueries>();
         services.AddScoped<ILatestCalculationVersionRepository, LatestCalculationVersionRepository>();
-        services.AddScoped<ILatestCalculationVersionQueries, LatestCalculationVersionQueries>();
         services.AddScoped<ISettlementReportChargePriceRepository, SettlementReportChargePriceRepository>();
         services.AddScoped<ISettlementReportChargePriceQueries, SettlementReportChargePriceQueries>();
         services.AddScoped<ISettlementReportMonthlyAmountTotalRepository, SettlementReportMonthlyAmountTotalRepository>();
