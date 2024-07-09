@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using NodaTime;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public sealed record SettlementReportMeteringPointMasterDataRow(
-    string MeteringPointId,
-    MeteringPointType? MeteringPointType,
-    string GridAreaId,
-    string? GridAreaFromId,
-    string? GridAreaToId,
-    SettlementMethod? SettlementMethod,
-    string? EnergySupplierId,
-    Instant PeriodStart,
-    Instant? PeriodEnd);
+public sealed class SettlementReportMeteringPointMasterDataViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportMeteringPointMasterDataViewEntity>
+{
+    public void Configure(EntityTypeBuilder<SettlementReportMeteringPointMasterDataViewEntity> builder)
+    {
+        builder.ToTable("metering_point_periods_v1");
+        builder.HasNoKey();
+    }
+}

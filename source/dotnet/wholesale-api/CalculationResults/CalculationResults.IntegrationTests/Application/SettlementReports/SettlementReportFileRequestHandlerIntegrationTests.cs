@@ -71,7 +71,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportMeteringPointMasterDataQueries(
+        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
