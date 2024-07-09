@@ -13,21 +13,27 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class LatestCalculationVersionRepository : ILatestCalculationVersionRepository
 {
-    private readonly ILatestCalculationVersionQueries _latestCalculationVersionQueries;
+    private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
 
-    public LatestCalculationVersionRepository(ILatestCalculationVersionQueries latestCalculationVersionQueries)
+    public LatestCalculationVersionRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
     {
-        _latestCalculationVersionQueries = latestCalculationVersionQueries;
+        _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
-    public Task<long> GetLatestCalculationVersionAsync()
+    public async Task<long> GetLatestCalculationVersionAsync()
     {
-        return _latestCalculationVersionQueries.GetLatestCalculationVersionAsync();
+        var latestVersion = await _settlementReportDatabricksContext
+            .LatestBalanceFixingCalculationVersionView
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return latestVersion.Single().CalculationVersion;
     }
 }
