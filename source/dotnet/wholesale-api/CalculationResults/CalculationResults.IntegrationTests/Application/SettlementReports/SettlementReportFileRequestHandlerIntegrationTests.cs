@@ -55,21 +55,13 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         });
 
         Fixture.Inject(mockedOptions);
+
         var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
+        var databricksContext = new SettlementReportDatabricksContext(mockedOptions.Object, sqlWarehouseQueryExecutor);
 
-        var settlementReportDataRepository = new SettlementReportEnergyResultRepository(
-            new SettlementReportDatabricksContext(
-                mockedOptions.Object,
-                sqlWarehouseQueryExecutor));
-
-        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(
-            new SettlementReportDatabricksContext(
-                mockedOptions.Object,
-                sqlWarehouseQueryExecutor));
-
-        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
-            mockedOptions.Object,
-            sqlWarehouseQueryExecutor));
+        var settlementReportDataRepository = new SettlementReportEnergyResultRepository(databricksContext);
+        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(databricksContext);
+        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(databricksContext);
 
         var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportMeteringPointMasterDataQueries(
             mockedOptions.Object,
