@@ -34,10 +34,6 @@ TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResult
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         OutputTableColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        OutputTableColumnNames.calculation_type: "wholesale_fixing",
-        OutputTableColumnNames.calculation_execution_time_start: datetime(
-            2020, 1, 1, 0, 0
-        ),
         OutputTableColumnNames.result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         OutputTableColumnNames.grid_area_code: "543",
         OutputTableColumnNames.energy_supplier_id: "1234567890123",
@@ -131,7 +127,6 @@ actor_eic = "1234567890123456"
             OutputTableColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (OutputTableColumnNames.calculation_type, "wholesale_fixing"),
         (
             OutputTableColumnNames.result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
