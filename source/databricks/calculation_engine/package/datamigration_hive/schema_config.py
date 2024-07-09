@@ -24,10 +24,10 @@ from package.calculation.output.results.schemas import (
     hive_energy_results_schema,
 )
 from package.calculation.output.results.schemas import (
-    total_monthly_amounts_schema,
+    hive_total_monthly_amounts_schema,
 )
 from package.calculation.output.results.schemas import (
-    monthly_amounts_schema,
+    hive_monthly_amounts_schema,
 )
 
 # calculation_output
@@ -49,11 +49,11 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=monthly_amounts_schema,
+                schema=hive_monthly_amounts_schema,
             ),
             Table(
                 name=paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=total_monthly_amounts_schema,
+                schema=hive_total_monthly_amounts_schema,
             ),
         ],
         views=[

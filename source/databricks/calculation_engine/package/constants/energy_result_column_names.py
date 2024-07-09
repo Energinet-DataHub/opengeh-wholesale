@@ -23,7 +23,10 @@ class EnergyResultColumnNames(ResultColumnNames):
     It is, however, rather complicated compared to the value unless using Delta Lake column mapping,
     which comes with its own set of problems/limitations."""
     balance_responsible_id = "balance_responsible_id"
+    """Obsolete"""
     aggregation_level = "aggregation_level"
+    """Obsolete"""
+    metering_point_type = "metering_point_type"
     metering_point_id = "metering_point_id"
     quantity = "quantity"
     quantity_qualities = "quantity_qualities"

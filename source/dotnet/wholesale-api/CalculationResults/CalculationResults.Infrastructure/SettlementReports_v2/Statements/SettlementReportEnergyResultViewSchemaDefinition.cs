@@ -24,9 +24,9 @@ public class SettlementReportEnergyResultViewSchemaDefinition
         { SettlementReportEnergyResultViewColumns.ResultId, ("string", false) },
         { SettlementReportEnergyResultViewColumns.GridArea, ("string", false) },
         { SettlementReportEnergyResultViewColumns.MeteringPointType, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.SettlementMethod, ("string", false) },
+        { SettlementReportEnergyResultViewColumns.SettlementMethod, ("string", true) },
         { SettlementReportEnergyResultViewColumns.Resolution, ("string", false) },
         { SettlementReportEnergyResultViewColumns.Time, ("timestamp", false) },
-        { SettlementReportEnergyResultViewColumns.Quantity, ("decimal(18,3)", true) },
+        { SettlementReportEnergyResultViewColumns.Quantity, ("decimal(18,3)", false) },
     };
 }

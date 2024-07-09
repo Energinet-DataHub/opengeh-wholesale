@@ -17,6 +17,8 @@ from pyspark.sql import DataFrame
 from package.calculation.calculation_results import (
     WholesaleResultsContainer,
 )
+from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.constants import TotalMonthlyAmountsColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -31,12 +33,12 @@ def write_total_monthly_amounts(
     total_monthly_amounts: WholesaleResultsContainer,
 ) -> None:
     _write(
-        "total_monthly_amounts_per_ga_co_es",
-        total_monthly_amounts.total_monthly_amounts_per_ga_co_es,
+        "total_monthly_amounts_per_co_es",
+        total_monthly_amounts.total_monthly_amounts_per_co_es,
     )
     _write(
-        "total_monthly_amounts_per_ga_es",
-        total_monthly_amounts.total_monthly_amounts_per_ga_es,
+        "total_monthly_amounts_per_es",
+        total_monthly_amounts.total_monthly_amounts_per_es,
     )
 
 
@@ -49,7 +51,19 @@ def _write(
     ],
 ) -> None:
     with logging_configuration.start_span(name):
-        df.write.format("delta").mode("append").option(
+        df.drop(
+            # ToDo JMG: Remove when we are on Unity Catalog
+            TotalMonthlyAmountsColumnNames.calculation_type,
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+        ).withColumnRenamed(
+            # ToDo JMG: Remove when we are on Unity Catalog
+            TotalMonthlyAmountsColumnNames.calculation_result_id,
+            OutputTableColumnNames.result_id,
+        ).write.format(
+            "delta"
+        ).mode(
+            "append"
+        ).option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
