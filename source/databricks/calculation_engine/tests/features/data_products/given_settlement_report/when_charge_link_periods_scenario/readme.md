@@ -92,7 +92,7 @@ The purpose is to test that the settlement reports data product view charge_link
 
 
 10. Two metering point periods due to a change of energy supplier results.
-            2023-02-02         2023-02-10	       2023-02-18
+           023-02-02           2023-02-10            2023-02-18
     MMP         |-------------------|----------------------|
     CLP         |------------------------------------------|
     CPIP        |------------------------------------------|
@@ -100,7 +100,7 @@ The purpose is to test that the settlement reports data product view charge_link
 
 
 11. Charge link periods have a gap.
-        2023-02-02         	       	              2023-02-18
+       2023-02-02                                 2023-02-18
     MMP     |------------------------------------------|
            2023-02-04  2023-02-06  2023-02-08 2023-02-10
     CLP          |-----------|        |-----------|
