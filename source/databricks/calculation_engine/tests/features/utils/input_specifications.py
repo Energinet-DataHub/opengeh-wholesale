@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation import TableReader
-from package.calculation.output.basis_data.schemas import hive_calculations_schema
-from package.calculation.input.schemas import (
+
+from package.databases.basis_data.schemas import hive_calculations_schema
+from package.databases.input import TableReader
+from package.databases.input.schemas import (
     metering_point_period_schema,
     time_series_point_schema,
     grid_loss_metering_points_schema,

@@ -20,10 +20,10 @@ from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.databases.output_table_column_names import OutputTableColumnNames
 from package.calculation.preparation import PreparedDataReader
 
-from package.calculation.input import TableReader
+from package.databases.input import TableReader
 from package.codelists.calculation_type import (
     CalculationType,
 )

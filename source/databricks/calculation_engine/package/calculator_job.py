@@ -22,7 +22,7 @@ from pyspark.sql import SparkSession
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
-from package.calculation import input
+from package.databases import input
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job_args import (
     parse_job_arguments,
