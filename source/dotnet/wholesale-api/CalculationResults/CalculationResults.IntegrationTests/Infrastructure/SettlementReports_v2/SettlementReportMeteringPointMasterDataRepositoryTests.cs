@@ -163,19 +163,19 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ee'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2019-01-02T02:00:00.000+00:00'", "'2019-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'7297670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2019-01-02T02:00:00.000+00:00'", "'2019-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'7497670583197'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2019-01-02T02:00:00.000+00:00'", "'2019-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'7497670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2019-01-02T02:00:00.000+00:00'", "'2019-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'7497670583196'"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ee'", "'2019-01-02T02:00:00.000+00:00'", "'2019-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'7497670583196'"],
             ]);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
-                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2019-01-10T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2019-01-11T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2019-01-11T03:15:00.000+00:00'", "26.634"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -186,8 +186,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
-                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2019-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2019-01-15T02:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
@@ -248,17 +248,17 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ed'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2020-01-02T02:00:00.000+00:00'", "'2020-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2020-01-02T02:00:00.000+00:00'", "'2020-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ed'", "'2020-01-02T02:00:00.000+00:00'", "'2020-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
             ]);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T05:15:00.000+00:00'", "26.634"],
-                [$"'{calculationId3}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T04:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2020-01-10T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2020-01-10T05:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2020-01-11T04:15:00.000+00:00'", "26.634"],
             ]);
 
         var actual = await Sut.GetAsync(
@@ -269,8 +269,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
-                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2020-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2020-01-15T02:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
@@ -292,19 +292,19 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
-                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
             ]);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
             [
-                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
-                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634"],
-                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2023-01-10T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId1}'", "'balance_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2023-01-11T03:15:00.000+00:00'", "26.634"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'2'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'405'", "'consumption'", "'non_profiled'", "'PT15M'", "'2023-01-11T03:15:00.000+00:00'", "26.634"],
             ]);
 
         var count = await Sut.CountAsync(
@@ -315,8 +315,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
-                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2023-01-15T02:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
@@ -330,8 +330,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
-                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2023-01-15T02:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
@@ -347,8 +347,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                         "405", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d2"))
                     },
                 },
-                DateTimeOffset.Parse("2022-01-01T02:00:00.000+00:00"),
-                DateTimeOffset.Parse("2022-01-15T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2023-01-15T02:00:00.000+00:00"),
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
