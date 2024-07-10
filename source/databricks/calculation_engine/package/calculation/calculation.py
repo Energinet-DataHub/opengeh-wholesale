@@ -13,7 +13,8 @@
 # limitations under the License.
 from dependency_injector.wiring import inject
 
-from package.databases.basis_data import write_basis_data, basis_data_factory
+from package.databases.basis_data import basis_data_factory
+from package.databases.basis_data.basis_data_results import write_basis_data
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
