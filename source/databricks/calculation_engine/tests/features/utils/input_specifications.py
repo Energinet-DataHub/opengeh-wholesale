@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation import TableReader
+
 from package.databases.basis_data import hive_calculations_schema
 from package.databases.input import (
     metering_point_period_schema,
@@ -20,6 +20,7 @@ from package.databases.input import (
     charge_price_information_periods_schema,
     charge_link_periods_schema,
     charge_price_points_schema,
+    TableReader,
 )
 
 
