@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.databases.wholesale_basis_data_internal.schemas import hive_calculations_schema
+from package.databases.wholesale_basis_data_internal.schemas import (
+    hive_calculations_schema,
+)
 from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
     metering_point_period_schema,

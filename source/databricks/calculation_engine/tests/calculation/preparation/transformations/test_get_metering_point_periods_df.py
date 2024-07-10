@@ -19,7 +19,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import when, col
 
-import databases.input.table_reader.input_metering_point_periods_factory as factory
+import databases.migrations_wholesale.table_reader.input_metering_point_periods_factory as factory
 from package.databases import migrations_wholesale
 from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.transformations import (

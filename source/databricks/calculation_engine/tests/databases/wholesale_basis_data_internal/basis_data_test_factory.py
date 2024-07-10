@@ -19,7 +19,7 @@ from pyspark.sql import Row, SparkSession, DataFrame
 import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import package.codelists as e
 import tests.calculation.charges_factory as charges_factory
-from databases.results.calculations_storage_model_test_factory import (
+from databases.wholesale_results_internal.calculations_storage_model_test_factory import (
     create_calculations,
 )
 from package.databases.wholesale_basis_data_internal.schemas import (

@@ -14,7 +14,9 @@
 from dependency_injector.wiring import inject
 
 from package.databases.wholesale_basis_data_internal import basis_data_factory
-from package.databases.wholesale_basis_data_internal.basis_data_results import write_basis_data
+from package.databases.wholesale_basis_data_internal.basis_data_results import (
+    write_basis_data,
+)
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
