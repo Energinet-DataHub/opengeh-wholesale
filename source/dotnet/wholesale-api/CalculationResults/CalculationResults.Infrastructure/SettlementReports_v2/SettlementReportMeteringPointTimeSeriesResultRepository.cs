@@ -122,6 +122,6 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
 
         public Instant StartOfDay { get; set; }
 
-        public IEnumerable<DatabricksSqlQueryableExtensions.AggregatedStruct> Quantities { get; set; } = null!;
+        public IEnumerable<DatabricksSqlQueryableExtensions.TimeQuantityStruct> Quantities { get; set; } = null!;
     }
 }

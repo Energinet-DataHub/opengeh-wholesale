@@ -146,12 +146,12 @@ public abstract class DatabricksContextBase : IDisposable
                                 projections,
                                 false,
                                 [false, false],
-                                typeof(IEnumerable<DatabricksSqlQueryableExtensions.AggregatedStruct>),
+                                typeof(IEnumerable<DatabricksSqlQueryableExtensions.TimeQuantityStruct>),
                                 new ByteArrayTypeMapping("varbinary")),
                         ],
                         false,
                         [false],
-                        typeof(IEnumerable<DatabricksSqlQueryableExtensions.AggregatedStruct>),
+                        typeof(IEnumerable<DatabricksSqlQueryableExtensions.TimeQuantityStruct>),
                         new ByteArrayTypeMapping("varbinary"));
                 })
                 .Metadata.TypeMapping = new ByteArrayTypeMapping("varbinary");

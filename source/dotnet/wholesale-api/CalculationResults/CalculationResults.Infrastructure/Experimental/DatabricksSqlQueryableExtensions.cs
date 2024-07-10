@@ -39,11 +39,11 @@ public static class DatabricksSqlQueryableExtensions
         public static Instant ToUtcFromTimeZoned(Instant source, string timeZone)
             => throw new NotSupportedException("Do not call the user-defined EF Core function.");
 
-        public static IEnumerable<AggregatedStruct> AggregateFields(Instant timeProjection, decimal quantityProjection)
+        public static IEnumerable<TimeQuantityStruct> AggregateFields(Instant timeProjection, decimal quantityProjection)
             => throw new NotSupportedException("Do not call the user-defined EF Core function.");
     }
 
-    public sealed class AggregatedStruct
+    public sealed class TimeQuantityStruct
     {
         [JsonPropertyName("observation_time")]
         public Instant Time { get; set; }
