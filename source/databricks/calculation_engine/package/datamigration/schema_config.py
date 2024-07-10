@@ -1,7 +1,7 @@
 from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
-from package.calculation.output.results.schemas import (
+from package.databases.results.schemas import (
     energy_schema_uc,
     energy_per_brp_schema_uc,
     energy_per_es_schema_uc,
@@ -12,7 +12,7 @@ from package.calculation.output.results.schemas import (
     total_monthly_amounts_schema_uc,
 )
 
-import package.calculation.output.basis_data.schemas as basis_data_schemas
+import package.databases.basis_data.schemas as basis_data_schemas
 
 schema_config = [
     Schema(
