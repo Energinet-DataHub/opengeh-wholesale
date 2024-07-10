@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public interface ISettlementReportDatabricksContext
+public sealed class SettlementReportMeteringPointTimeSeriesEntityConfiguration : IEntityTypeConfiguration<SettlementReportMeteringPointTimeSeriesEntity>
 {
-    IQueryable<SettlementReportWholesaleViewEntity> WholesaleView { get; }
-
-    IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> EnergyResultPointsPerGridAreaView { get; }
-
-    IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> EnergyResultPointsPerEnergySupplierGridAreaView { get; }
-
-    IQueryable<SettlementReportMeteringPointTimeSeriesEntity> MeteringPointTimeSeriesView { get; }
+    public void Configure(EntityTypeBuilder<SettlementReportMeteringPointTimeSeriesEntity> builder)
+    {
+        builder.ToTable("metering_point_time_series_v1");
+        builder.HasNoKey();
+    }
 }

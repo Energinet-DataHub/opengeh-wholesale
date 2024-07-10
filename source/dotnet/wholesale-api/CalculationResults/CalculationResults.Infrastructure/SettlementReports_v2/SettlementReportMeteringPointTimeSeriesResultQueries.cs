@@ -54,7 +54,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultQueries : ISett
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportMeteringPointTimeSeriesResultRowFactory.Create(new DatabricksSqlRow(nextRow));
+            yield break;
         }
     }
 }

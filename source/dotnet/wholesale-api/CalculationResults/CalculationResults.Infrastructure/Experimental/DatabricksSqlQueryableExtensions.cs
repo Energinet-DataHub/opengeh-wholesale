@@ -34,5 +34,11 @@ public static class DatabricksSqlQueryableExtensions
     {
         public static Instant ToStartOfDayInTimeZone(Instant source, string timeZone)
             => throw new NotSupportedException("Do not call the user-defined EF Core function.");
+
+        public static Instant ToUtcFromTimeZoned(Instant source, string timeZone)
+            => throw new NotSupportedException("Do not call the user-defined EF Core function.");
+
+        public static IEnumerable<(Instant Time, decimal Quantity)> AggregateArray(Instant timeProjection, decimal quantityProjection)
+            => throw new NotSupportedException("Do not call the user-defined EF Core function.");
     }
 }
