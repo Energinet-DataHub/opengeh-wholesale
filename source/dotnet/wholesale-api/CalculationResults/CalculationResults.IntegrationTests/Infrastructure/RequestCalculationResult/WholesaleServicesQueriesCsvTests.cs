@@ -425,21 +425,29 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
         await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
 
-        const string wholesaleOutputWholesaleResultsCsv = "wholesale_output.wholesale_results.csv";
-        var wholesaleTestFile = Path.Combine("TestData", wholesaleOutputWholesaleResultsCsv);
+        const string view1 = "wholesale_calculation_results.amounts_per_charge_v1.csv";
+        var view1File = Path.Combine("TestData", view1);
 
-        const string basisDataCalculationsCsv = "basis_data.calculations.csv";
-        var basisDataTestFile = Path.Combine("TestData", basisDataCalculationsCsv);
+        const string view2 = "wholesale_calculation_results.monthly_amounts_per_charge_v1.csv";
+        var view2File = Path.Combine("TestData", view2);
 
-        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.CALCULATIONS_TABLE_NAME,
-            BasisDataCalculationsTableSchemaDefinition.SchemaDefinition,
-            basisDataTestFile);
+        const string view3 = "wholesale_calculation_results.total_monthly_amounts_v1.csv";
+        var view3File = Path.Combine("TestData", view3);
 
         await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            WholesaleResultsTableSchemaDefinition.SchemaDefinition,
-            wholesaleTestFile);
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            AmountsPerChargeViewSchemaDefinition.SchemaDefinition,
+            view1File);
+
+        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            MonthlyAmountsPerChargeViewSchemaDefinition.SchemaDefinition,
+            view2File);
+
+        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            TotalMonthlyAmountsViewSchemaDefinition.SchemaDefinition,
+            view3File);
     }
 
     private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)

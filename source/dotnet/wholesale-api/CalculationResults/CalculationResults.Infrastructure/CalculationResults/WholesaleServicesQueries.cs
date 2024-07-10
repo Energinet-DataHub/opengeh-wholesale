@@ -74,7 +74,10 @@ public class WholesaleServicesQueries(
 
     protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
-        return WholesaleServicesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column])
+        var relationalAlgebraHelper = new WholesaleServicesRelationalAlgebraHelper();
+        return relationalAlgebraHelper
+                   .GetColumnsToAggregateBy(AmountType.AmountPerCharge)
+                   .Any(column => current[column] != previous[column])
                || current[WholesaleResultColumnNames.CalculationId] != previous[WholesaleResultColumnNames.CalculationId];
     }
 
