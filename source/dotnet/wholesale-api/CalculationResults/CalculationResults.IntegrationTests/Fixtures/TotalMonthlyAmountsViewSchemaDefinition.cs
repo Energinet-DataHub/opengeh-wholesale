@@ -29,7 +29,7 @@ public class TotalMonthlyAmountsViewSchemaDefinition
         { TotalMonthlyAmountsViewColumnNames.CalculationResultId, ("string", false) },
         { TotalMonthlyAmountsViewColumnNames.GridAreaCode, ("string", false) },
         { TotalMonthlyAmountsViewColumnNames.EnergySupplierId, ("string", false) },
-        { TotalMonthlyAmountsViewColumnNames.ChargeOwnerId, ("string", false) },
+        { TotalMonthlyAmountsViewColumnNames.ChargeOwnerId, ("string", true) },
         { TotalMonthlyAmountsViewColumnNames.Currency, ("string", false) },
         { TotalMonthlyAmountsViewColumnNames.Time, ("timestamp", false) },
         { TotalMonthlyAmountsViewColumnNames.Amount, ("decimal(18,6)", false) },

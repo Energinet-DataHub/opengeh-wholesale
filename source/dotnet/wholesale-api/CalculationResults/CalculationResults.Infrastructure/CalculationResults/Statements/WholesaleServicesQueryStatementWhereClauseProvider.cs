@@ -23,9 +23,9 @@ public class WholesaleServicesQueryStatementWhereClauseProvider
     internal string GetWhereClauseSqlExpression(WholesaleServicesQueryParameters queryParameters, string table = "wrv")
     {
         var sql = $"""
-                {"\n"}WHERE {table}.{WholesaleResultColumnNames.AmountType} = '{AmountTypeMapper.ToDeltaTableValue(queryParameters.AmountType)}'
-                AND ({table}.{WholesaleResultColumnNames.Time} >= '{queryParameters.Period.Start}'
-                     AND {table}.{WholesaleResultColumnNames.Time} < '{queryParameters.Period.End}')
+                {"\n"}
+                WHERE ({table}.{WholesaleResultColumnNames.Time} >= '{queryParameters.Period.Start}'
+                       AND {table}.{WholesaleResultColumnNames.Time} < '{queryParameters.Period.End}')
                 """;
 
         if (queryParameters.GridAreaCodes.Count != 0)
@@ -35,18 +35,43 @@ public class WholesaleServicesQueryStatementWhereClauseProvider
                     """;
         }
 
-        if (queryParameters.EnergySupplierId is not null)
+        if (queryParameters.AmountType != AmountType.TotalMonthlyAmount)
         {
-            sql += $"""
-                    AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
-                    """;
-        }
+            if (queryParameters.EnergySupplierId is not null)
+            {
+                sql += $"""
+                        AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
+                        """;
+            }
 
-        if (queryParameters.ChargeOwnerId is not null)
+            if (queryParameters.ChargeOwnerId is not null)
+            {
+                sql += $"""
+                        AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
+                        """;
+            }
+        }
+        else
         {
-            sql += $"""
-                    AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
-                    """;
+            if (queryParameters.EnergySupplierId is not null)
+            {
+                sql += $"""
+                        AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
+                        """;
+            }
+
+            if (queryParameters.ChargeOwnerId is not null)
+            {
+                sql += $"""
+                        AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
+                        """;
+            }
+            else
+            {
+                sql += $"""
+                        AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} is null
+                        """;
+            }
         }
 
         if (queryParameters.ChargeTypes.Count != 0)
