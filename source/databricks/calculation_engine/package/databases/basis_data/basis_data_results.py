@@ -19,6 +19,7 @@ from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
+    WholesaleInternalDatabase,
     HiveBasisDataDatabase,
     WholesaleBasisDataInternalDatabase,
 )
@@ -76,7 +77,7 @@ def _write_basis_data(
         basis_data.grid_loss_metering_points.write.format("delta").mode(
             "append"
         ).option("mergeSchema", "false").insertInto(
-            f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+            f"{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
         )
 
     if basis_data.charge_price_information_periods:
