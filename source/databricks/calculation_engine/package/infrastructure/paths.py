@@ -30,6 +30,7 @@ class InputDatabase:
 class WholesaleInternalDatabase:
     DATABASE_NAME = "wholesale_internal"  # Defined in dh3infrastructure
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
+    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 
 class WholesaleResultsInternalDatabase:
