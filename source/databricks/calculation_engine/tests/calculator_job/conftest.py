@@ -105,7 +105,7 @@ def executed_wholesale_fixing(
 
 
 @pytest.fixture(scope="session")
-def balance_fixing_results_df(
+def hive_balance_fixing_results_df(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> DataFrame:
@@ -119,7 +119,7 @@ def balance_fixing_results_df(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_energy_results_df(
+def hive_wholesale_fixing_energy_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
@@ -133,7 +133,7 @@ def wholesale_fixing_energy_results_df(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_wholesale_results_df(
+def hive_wholesale_fixing_wholesale_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:

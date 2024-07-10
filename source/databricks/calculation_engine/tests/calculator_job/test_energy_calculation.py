@@ -102,14 +102,14 @@ ALL_ENERGY_RESULT_TYPES = {
     "time_series_type, aggregation_level",
     ALL_ENERGY_RESULT_TYPES,
 )
-def test__balance_fixing_result__is_created(
-    balance_fixing_results_df: DataFrame,
+def test__balance_fixing_result__is_created_in_hive(
+    hive_balance_fixing_results_df: DataFrame,
     time_series_type: str,
     aggregation_level: str,
 ) -> None:
     # Arrange
     result_df = (
-        balance_fixing_results_df.where(
+        hive_balance_fixing_results_df.where(
             f.col(EnergyResultColumnNames.calculation_id)
             == c.executed_balance_fixing_calculation_id
         )
@@ -124,11 +124,11 @@ def test__balance_fixing_result__is_created(
 
 
 def test__balance_fixing_result__has_expected_number_of_result_types(
-    balance_fixing_results_df: DataFrame,
+    hive_balance_fixing_results_df: DataFrame,
 ) -> None:
     # Arrange
     actual_result_type_count = (
-        balance_fixing_results_df.where(
+        hive_balance_fixing_results_df.where(
             f.col(EnergyResultColumnNames.calculation_id)
             == c.executed_balance_fixing_calculation_id
         )
