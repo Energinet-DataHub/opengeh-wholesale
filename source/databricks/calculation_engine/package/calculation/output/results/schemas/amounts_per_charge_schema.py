@@ -22,7 +22,7 @@ amounts_per_charge_schema = t.StructType(
         t.StructField(OutputTableColumnNames.result_id, t.StringType(), False),
         t.StructField(OutputTableColumnNames.grid_area_code, t.StringType(), False),
         t.StructField(OutputTableColumnNames.energy_supplier_id, t.StringType(), False),
-        t.StructField(OutputTableColumnNames.quantity, t.DecimalType(18, 3), True),
+        t.StructField(OutputTableColumnNames.quantity, t.DecimalType(18, 3), False),
         t.StructField(OutputTableColumnNames.quantity_unit, t.StringType(), False),
         t.StructField(
             OutputTableColumnNames.quantity_qualities,

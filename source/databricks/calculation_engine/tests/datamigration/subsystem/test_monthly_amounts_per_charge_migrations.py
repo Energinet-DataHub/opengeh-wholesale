@@ -61,6 +61,10 @@ def _create_df(spark: SparkSession) -> DataFrame:
         ),
         (OutputTableColumnNames.energy_supplier_id, None),
         (
+            OutputTableColumnNames.quantity,
+            None,
+        ),
+        (
             OutputTableColumnNames.quantity_unit,
             None,
         ),
