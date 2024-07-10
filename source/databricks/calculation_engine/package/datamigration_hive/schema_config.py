@@ -69,15 +69,6 @@ schema_config = [
         views=[],
     ),
     Schema(
-        name=paths.WholesaleInternalDatabase.DATABASE_NAME,
-        tables=[
-            Table(
-                name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.grid_loss_metering_points_schema,
-            )
-        ],
-    ),
-    Schema(
         name=paths.HiveBasisDataDatabase.DATABASE_NAME,
         tables=[
             Table(
@@ -99,6 +90,10 @@ schema_config = [
             Table(
                 name=paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_points_schema,
+            ),
+            Table(
+                name=paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.grid_loss_metering_points_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
