@@ -25,7 +25,7 @@ from pyspark.sql.types import (
 from package.constants import WholesaleResultColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
-wholesale_results_schema = StructType(
+hive_wholesale_results_schema = StructType(
     [
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
         StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),

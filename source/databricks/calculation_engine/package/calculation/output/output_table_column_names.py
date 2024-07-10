@@ -38,6 +38,7 @@ class OutputTableColumnNames:
     metering_point_type = "metering_point_type"
     neighbor_grid_area_code = "neighbor_grid_area_code"
     observation_time = "observation_time"
+    price = "price"
     parent_metering_point_id = "parent_metering_point_id"
     quantity = "quantity"
     quantity_unit = "quantity_unit"
