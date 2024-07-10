@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public interface ISettlementReportChargeLinkPeriodsQueries
+public sealed class SettlementReportLatestBalanceFixingCalculationVersionViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportLatestBalanceFixingCalculationVersionViewEntity>
 {
-    Task<int> CountAsync(SettlementReportChargeLinkPeriodQueryFilter filter);
-
-    IAsyncEnumerable<SettlementReportChargeLinkPeriodsRow> GetAsync(SettlementReportChargeLinkPeriodQueryFilter filter, int skip, int take);
+    public void Configure(EntityTypeBuilder<SettlementReportLatestBalanceFixingCalculationVersionViewEntity> builder)
+    {
+        builder.ToTable("current_balance_fixing_calculation_version_v1");
+        builder.HasNoKey();
+    }
 }

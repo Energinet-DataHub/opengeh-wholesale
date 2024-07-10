@@ -16,9 +16,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persiste
 
 public interface ISettlementReportDatabricksContext
 {
+    IQueryable<SettlementReportLatestBalanceFixingCalculationVersionViewEntity> LatestBalanceFixingCalculationVersionView { get; }
+
     IQueryable<SettlementReportWholesaleViewEntity> WholesaleView { get; }
 
     IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> EnergyResultPointsPerGridAreaView { get; }
 
     IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> EnergyResultPointsPerEnergySupplierGridAreaView { get; }
+
+    IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ChargeLinkPeriodsView { get; }
 }
