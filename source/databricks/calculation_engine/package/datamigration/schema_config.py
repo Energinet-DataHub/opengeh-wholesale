@@ -2,25 +2,25 @@ from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
 from package.calculation.output.results.schemas import (
-    energy_per_ga_schema_uc,
+    energy_schema_uc,
     energy_per_brp_schema_uc,
     energy_per_es_schema_uc,
     grid_loss_metering_point_time_series_schema_uc,
-    exchange_per_neighbor_ga_schema_uc,
+    exchange_per_neighbor_schema_uc,
+    amounts_per_charge_schema,
     monthly_amounts_schema_uc,
     total_monthly_amounts_schema_uc,
 )
 
 import package.calculation.output.basis_data.schemas as basis_data_schemas
 
-
 schema_config = [
     Schema(
         name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_GA_TABLE_NAME,
-                schema=energy_per_ga_schema_uc,
+                name=paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+                schema=energy_schema_uc,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
@@ -31,12 +31,16 @@ schema_config = [
                 schema=energy_per_es_schema_uc,
             ),
             Table(
-                name=paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_GA_TABLE_NAME,
-                schema=exchange_per_neighbor_ga_schema_uc,
+                name=paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+                schema=exchange_per_neighbor_schema_uc,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
                 schema=grid_loss_metering_point_time_series_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+                schema=amounts_per_charge_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
