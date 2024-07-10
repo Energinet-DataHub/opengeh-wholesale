@@ -25,7 +25,7 @@ from package.databases.basis_data.schemas import (
     hive_metering_point_period_schema,
     time_series_point_schema,
 )
-from calculation.output.basis_data.basis_data_test_factory import (
+from databases.basis_data.basis_data_test_factory import (
     create_basis_data_factory,
 )
 
