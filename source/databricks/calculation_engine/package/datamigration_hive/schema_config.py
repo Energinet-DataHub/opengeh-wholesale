@@ -24,10 +24,10 @@ from package.calculation.output.results.schemas import (
     hive_energy_results_schema,
 )
 from package.calculation.output.results.schemas import (
-    hive_total_monthly_amounts_schema,
+    hive_monthly_amounts_schema,
 )
 from package.calculation.output.results.schemas import (
-    hive_monthly_amounts_schema,
+    hive_total_monthly_amounts_schema,
 )
 
 # calculation_output
