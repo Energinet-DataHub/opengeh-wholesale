@@ -348,6 +348,7 @@ jobs:
           codelists/
           common/
           contracts/
+          databases/
           infrastructure/
           entry_points/
           datamigration/all_hive_scripts
