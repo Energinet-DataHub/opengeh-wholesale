@@ -18,11 +18,11 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import StructType
 
-import package.calculation.output.results.schemas as schemas
+import package.databases.results.schemas as schemas
 from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
-from package.calculation.output.results.schemas import hive_energy_results_schema
+from package.databases.results.schemas import hive_energy_results_schema
 from package.codelists import MeteringPointType
 from package.constants import EnergyResultColumnNames
 from package.container import Container

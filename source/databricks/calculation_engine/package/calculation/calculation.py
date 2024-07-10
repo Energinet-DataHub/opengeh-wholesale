@@ -31,14 +31,14 @@ from .calculation_results import (
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
-from package.calculation.output.results import (
+from package.databases.results import (
     write_calculation,
     write_monthly_amounts_per_charge,
     write_total_monthly_amounts,
     write_wholesale_results,
     write_energy_results,
 )
-from package.calculation.output.results.calculations_storage_model_factory import (
+from package.databases.results.calculations_storage_model_factory import (
     create_calculation,
 )
 from .preparation import PreparedDataReader

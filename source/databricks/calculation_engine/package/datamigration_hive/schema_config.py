@@ -20,18 +20,18 @@ import package.infrastructure.paths as paths
 from package.databases.input.schemas import (
     grid_loss_metering_points_schema,
 )
-from package.calculation.output.results.schemas import (
+from package.databases.results.schemas import (
     hive_energy_results_schema,
 )
-from package.calculation.output.results.schemas import (
+from package.databases.results.schemas import (
     hive_total_monthly_amounts_schema,
 )
-from package.calculation.output.results.schemas import (
+from package.databases.results.schemas import (
     hive_monthly_amounts_schema,
 )
 
 # calculation_output
-from package.calculation.output.results.schemas.hive_wholesale_results_schema import (
+from package.databases.results.schemas.hive_wholesale_results_schema import (
     hive_wholesale_results_schema,
 )
 

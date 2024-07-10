@@ -18,7 +18,7 @@ from pyspark.sql import Row
 
 from package.databases.basis_data import hive_calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.results.calculations_storage_model_factory import (
+from package.databases.results.calculations_storage_model_factory import (
     create_calculation,
 )
 from package.calculation.preparation import PreparedDataReader

@@ -1,7 +1,7 @@
 from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
-from package.calculation.output.results.schemas import (
+from package.databases.results.schemas import (
     energy_schema_uc,
     energy_per_brp_schema_uc,
     energy_per_es_schema_uc,
