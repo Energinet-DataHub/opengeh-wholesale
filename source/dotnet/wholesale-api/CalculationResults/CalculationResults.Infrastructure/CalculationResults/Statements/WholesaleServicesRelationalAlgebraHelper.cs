@@ -52,7 +52,7 @@ public class WholesaleServicesRelationalAlgebraHelper
         return amountType switch
         {
             AmountType.AmountPerCharge => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            AmountType.MonthlyAmountPerCharge => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.MONTHLY_AMOUNTS_V1_VIEW_NAME}",
+            AmountType.MonthlyAmountPerCharge => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
             AmountType.TotalMonthlyAmount => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
             _ => throw new ArgumentOutOfRangeException(),
         };

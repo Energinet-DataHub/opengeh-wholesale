@@ -76,7 +76,7 @@ public class WholesaleServicesQueries(
     {
         var relationalAlgebraHelper = new WholesaleServicesRelationalAlgebraHelper();
         return relationalAlgebraHelper
-                   .GetColumnsToAggregateBy(AmountType.AmountPerCharge)
+                   .GetColumnsToAggregateBy(AmountType.AmountPerCharge) // TODO (MWO): FIX!
                    .Any(column => current[column] != previous[column])
                || current[WholesaleResultColumnNames.CalculationId] != previous[WholesaleResultColumnNames.CalculationId];
     }
@@ -85,7 +85,12 @@ public class WholesaleServicesQueries(
         DatabricksSqlRow rowData,
         List<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        return WholesaleServicesFactory.Create(rowData, timeSeriesPoints);
+        // TODO (MWO): FIX!
+        var amountType = rowData.HasColumn(WholesaleResultColumnNames.Resolution)
+            ? AmountType.AmountPerCharge
+            : AmountType.MonthlyAmountPerCharge;
+
+        return WholesaleServicesFactory.Create(rowData, amountType, timeSeriesPoints);
     }
 
     protected override WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
@@ -153,22 +158,20 @@ public class WholesaleServicesQueries(
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly WholesaleServicesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
         private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
+        private readonly WholesaleServicesRelationalAlgebraHelper _relationalAlgebraHelper = new WholesaleServicesRelationalAlgebraHelper();
 
         protected override string GetSqlStatement()
         {
             var sql = $"""
-                       SELECT {WholesaleResultColumnNames.GridArea}, {WholesaleResultColumnNames.CalculationType}
-                       FROM (SELECT wr.*
-                             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
-                             INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                             ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}) wrv
+                       SELECT {_relationalAlgebraHelper.GetGridAreaCodeColumnName(_queryParameters.AmountType)}, {_relationalAlgebraHelper.GetCalculationTypeColumnName(_queryParameters.AmountType)}
+                       FROM {_relationalAlgebraHelper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wrv
                        """;
 
             sql = _whereClauseProvider.AddWhereClauseToSqlExpression(sql, _queryParameters);
 
             sql += $"""
                     {"\n"}
-                    GROUP BY {WholesaleResultColumnNames.GridArea}, {WholesaleResultColumnNames.CalculationType}
+                    GROUP BY {_relationalAlgebraHelper.GetGridAreaCodeColumnName(_queryParameters.AmountType)}, {_relationalAlgebraHelper.GetCalculationTypeColumnName(_queryParameters.AmountType)}
                     """;
 
             return sql;

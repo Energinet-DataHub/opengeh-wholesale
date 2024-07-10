@@ -25,18 +25,27 @@ public static class WholesaleServicesFactory
 {
     public static WholesaleServices Create(
         DatabricksSqlRow databricksSqlRow,
+        AmountType amountType,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!);
-        var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
+        var resolution = amountType switch
+        {
+            AmountType.AmountPerCharge => ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!),
+            AmountType.MonthlyAmountPerCharge => Resolution.Month,
+            AmountType.TotalMonthlyAmount => Resolution.Month,
+            _ => throw new ArgumentOutOfRangeException(nameof(amountType), amountType, null),
+        };
+
+        var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
+
         return new WholesaleServices(
-            new Period(period.Start, period.End),
+            new Period(periodStart, periodEnd),
             databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
             databricksSqlRow[WholesaleResultColumnNames.EnergySupplierId]!,
             databricksSqlRow[WholesaleResultColumnNames.ChargeCode]!,
             ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.ChargeType]!),
-            databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId]!,
-            AmountTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.AmountType]!),
+            databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId],
+            amountType,
             resolution,
             QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.QuantityUnit]!),
             MeteringPointTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]),
@@ -44,6 +53,6 @@ public static class WholesaleServicesFactory
             Currency.DKK,
             CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.CalculationType]!),
             timeSeriesPoints,
-            SqlResultValueConverters.ToInt(databricksSqlRow[BasisDataCalculationsColumnNames.Version]!)!.Value);
+            SqlResultValueConverters.ToInt(databricksSqlRow[AmountsPerChargeViewColumnNames.CalculationVersion]!)!.Value);
     }
 }

@@ -46,6 +46,7 @@ public class MigrationsFreeDatabricksSchemaManager
         {
             SCHEMA_NAME = $"{schemaPrefix}_view_{postfix}",
             BasisDataSchemaName = $"{schemaPrefix}_view_{postfix}",
+            WholesaleCalculationResultsSchemaName = $"{schemaPrefix}_view_{postfix}",
         });
     }
 

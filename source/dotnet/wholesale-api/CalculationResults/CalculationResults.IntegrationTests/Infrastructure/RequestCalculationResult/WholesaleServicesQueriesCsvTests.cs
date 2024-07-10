@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -65,6 +66,8 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
         actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
                 ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
                 ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
@@ -118,8 +121,64 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
                 ("543", "5790000701278", "5790000610976", ChargeType.Tariff, "NT1008", AmountType.AmountPerCharge, Resolution.Day, MeteringPointType.OwnProduction, null, CalculationType.WholesaleFixing, 24, 31),
                 ("543", "5790000701278", "5790000432752", ChargeType.Tariff, "42030", AmountType.AmountPerCharge, Resolution.Day, MeteringPointType.OwnProduction, null, CalculationType.WholesaleFixing, 24, 31),
             ]);
+    }
+
+    [Fact]
+    public async Task Given_EnergySupplierAndChargeOwnerWithTotalMonthlyAmountAndSecondCorrection_Then_CorrespondingDataReturned()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.TotalMonthlyAmount,
+            GridAreaCodes: [],
+            EnergySupplierId: "5790000701278",
+            ChargeOwnerId: "5790000610976",
+            ChargeTypes: [],
+            CalculationType: CalculationType.SecondCorrectionSettlement,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
+                ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
+            .Should()
+            .BeEmpty();
+    }
+
+    [Fact]
+    public async Task Given_EnergySupplierWithTotalMonthlyAmountAndSecondCorrection_Then_CorrespondingDataReturned()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.TotalMonthlyAmount,
+            GridAreaCodes: [],
+            EnergySupplierId: "5790000701278",
+            ChargeOwnerId: null,
+            ChargeTypes: [],
+            CalculationType: CalculationType.SecondCorrectionSettlement,
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
+                ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
+            .Should()
+            .BeEmpty();
     }
 
     [Fact]
@@ -452,39 +511,51 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
 
     private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)
     {
-        var statement = new DeleteEnergySupplierStatement(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
-            energySupplierId,
-            before,
-            after);
+        foreach (var amountType in Enum.GetValues<AmountType>())
+        {
+            var statement = new DeleteEnergySupplierStatement(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+                energySupplierId,
+                before,
+                after,
+                amountType);
 
-        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+        }
     }
 
     private async Task RemoveDataForCorrections(IReadOnlyCollection<string> gridAreasToRemoveFrom)
     {
-        var statement = new DeleteCorrectionsStatement(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
-            gridAreasToRemoveFrom);
+        foreach (var amountType in Enum.GetValues<AmountType>())
+        {
+            var statement = new DeleteCorrectionsStatement(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+                gridAreasToRemoveFrom,
+                amountType);
 
-        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+        }
     }
 
     private class DeleteEnergySupplierStatement(
         DeltaTableOptions deltaTableOptions,
         string energySupplierId,
         Instant before,
-        Instant? after) : DatabricksStatement
+        Instant? after,
+        AmountType amountType) : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly string _energySupplierId = energySupplierId;
         private readonly Instant _before = before;
         private readonly Instant? _after = after;
 
+        private readonly WholesaleServicesRelationalAlgebraHelper _relationalAlgebraHelper =
+            new WholesaleServicesRelationalAlgebraHelper();
+
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
+                    DELETE FROM {_relationalAlgebraHelper.GetSource(amountType, _deltaTableOptions)}
                     WHERE {WholesaleResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
                     AND {WholesaleResultColumnNames.Time} <= '{_before}'
                     {(_after is not null ? $"AND {WholesaleResultColumnNames.Time} > '{_after}'" : string.Empty)}
@@ -494,15 +565,18 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
 
     private class DeleteCorrectionsStatement(
         DeltaTableOptions deltaTableOptions,
-        IReadOnlyCollection<string> gridAreasToRemoveFrom) : DatabricksStatement
+        IReadOnlyCollection<string> gridAreasToRemoveFrom,
+        AmountType amountType) : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly IReadOnlyCollection<string> _gridAreasToRemoveFrom = gridAreasToRemoveFrom;
+        private readonly WholesaleServicesRelationalAlgebraHelper _relationalAlgebraHelper =
+            new WholesaleServicesRelationalAlgebraHelper();
 
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
+                    DELETE FROM {_relationalAlgebraHelper.GetSource(amountType, _deltaTableOptions)}
                     WHERE ({WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
                     OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
                     OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
