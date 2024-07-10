@@ -43,24 +43,6 @@ def write_wholesale_results(wholesale_results: WholesaleResultsContainer) -> Non
         wholesale_results.fee_per_co_es,
     )
 
-    # TODO JVM: Remove when monthly amounts is fully implemented
-    _write_to_hive(
-        "monthly_tariff_from_hourly_per_co_es",
-        wholesale_results.monthly_tariff_from_hourly_per_co_es,
-    )
-    _write_to_hive(
-        "monthly_tariff_from_daily_per_co_es",
-        wholesale_results.monthly_tariff_from_daily_per_co_es,
-    )
-    _write_to_hive(
-        "monthly_subscription_per_co_es",
-        wholesale_results.monthly_subscription_per_co_es,
-    )
-    _write_to_hive(
-        "monthly_fee_per_co_es",
-        wholesale_results.monthly_fee_per_co_es,
-    )
-
 
 @inject
 def _write(
