@@ -24,7 +24,9 @@ from package.calculation.preparation.transformations import (
     read_charge_prices,
     read_charge_price_information,
 )
-from package.calculation.databases.input.schemas import charge_price_information_periods_schema
+from package.calculation.databases.input.schemas import (
+    charge_price_information_periods_schema,
+)
 
 from package.calculation.databases import input
 from package.calculation.databases.input import TableReader

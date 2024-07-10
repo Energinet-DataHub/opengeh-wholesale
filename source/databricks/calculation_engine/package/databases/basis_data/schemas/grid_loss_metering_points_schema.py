@@ -18,7 +18,9 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.calculation.databases.output_table_column_names import OutputTableColumnNames
+from package.calculation.databases.output_table_column_names import (
+    OutputTableColumnNames,
+)
 
 grid_loss_metering_points_schema = StructType(
     [

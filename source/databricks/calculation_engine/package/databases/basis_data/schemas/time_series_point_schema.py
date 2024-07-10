@@ -20,7 +20,9 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.calculation.databases.output_table_column_names import OutputTableColumnNames
+from package.calculation.databases.output_table_column_names import (
+    OutputTableColumnNames,
+)
 
 time_series_point_schema = StructType(
     [

@@ -21,7 +21,9 @@ from pyspark.sql.types import (
     BooleanType,
 )
 
-from package.calculation.databases.output_table_column_names import OutputTableColumnNames
+from package.calculation.databases.output_table_column_names import (
+    OutputTableColumnNames,
+)
 from package.constants import MonthlyAmountsColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
