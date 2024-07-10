@@ -71,7 +71,7 @@ public sealed class DatabricksSqlRowHydrator
                 }
                 else
                 {
-                    throw new InvalidOperationException("Could not convert value");
+                    throw new InvalidOperationException($"Could not convert value: '{property.Value}' to type: '{prop.Property.PropertyType}'");
                 }
             }
         }
