@@ -16,7 +16,7 @@ from pyspark.sql import SparkSession
 from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
-from package.databases.basis_data import time_series_point_schema
+from package.databases.basis_data.schemas import time_series_point_schema
 from package.databases.basis_data import get_time_series_points_basis_data
 from package.common import assert_schema
 

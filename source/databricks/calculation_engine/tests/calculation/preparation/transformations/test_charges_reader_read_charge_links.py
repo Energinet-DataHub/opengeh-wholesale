@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession
 
 from package.databases import input
 from package.databases.input import TableReader
-from package.databases.input import charge_link_periods_schema
+from package.databases.input.schemas import charge_link_periods_schema
 from package.calculation.preparation.transformations import read_charge_links
 from package.codelists import ChargeType
 from package.constants import Colname

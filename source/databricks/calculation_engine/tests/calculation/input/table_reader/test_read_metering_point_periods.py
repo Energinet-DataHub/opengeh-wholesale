@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 from package.databases.input import TableReader
-from package.databases.input import metering_point_period_schema
+from package.databases.input.schemas import metering_point_period_schema
 import calculation.input.table_reader.input_metering_point_periods_factory as factory
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table

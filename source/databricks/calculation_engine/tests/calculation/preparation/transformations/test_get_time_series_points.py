@@ -22,7 +22,7 @@ from pyspark.sql.functions import lit
 
 from package.databases import input
 from package.databases.input import TableReader
-from package.databases.input import (
+from package.databases.input.schemas import (
     time_series_point_schema,
 )
 from package.calculation.preparation.transformations import get_time_series_points

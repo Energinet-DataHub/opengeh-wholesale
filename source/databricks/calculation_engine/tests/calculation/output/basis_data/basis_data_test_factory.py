@@ -22,16 +22,10 @@ import tests.calculation.charges_factory as charges_factory
 from calculation.output.results.calculations_storage_model_test_factory import (
     create_calculations,
 )
-from package.databases.basis_data.schemas.charge_link_periods_schema import (
+from package.databases.basis_data.schemas import (
     hive_charge_link_periods_schema,
-)
-from package.databases.basis_data.schemas.charge_price_information_periods_schema import (
     hive_charge_price_information_periods_schema,
-)
-from package.databases.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
-)
-from package.databases.basis_data import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.calculation_results import BasisDataContainer
