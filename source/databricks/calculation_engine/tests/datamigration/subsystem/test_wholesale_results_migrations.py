@@ -20,82 +20,71 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.calculation.output.results.schemas import (
-    wholesale_results_schema,
+from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.results.schemas import (
+    amounts_per_charge_schema,
 )
-from package.codelists import (
-    AmountType,
-    ChargeQuality,
-    ChargeType,
-    ChargeUnit,
-    MeteringPointType,
-    CalculationType,
-    SettlementMethod,
-    WholesaleResultResolution,
-)
-from package.constants import WholesaleResultColumnNames
-from package.infrastructure.paths import HiveOutputDatabase
+
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 from tests.helpers.data_frame_utils import set_column
+
+TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        WholesaleResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        WholesaleResultColumnNames.calculation_type: "wholesale_fixing",
-        WholesaleResultColumnNames.calculation_execution_time_start: datetime(
-            2020, 1, 1, 0, 0
-        ),
-        WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        WholesaleResultColumnNames.grid_area_code: "543",
-        WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
-        WholesaleResultColumnNames.quantity: Decimal("1.123"),
-        WholesaleResultColumnNames.quantity_qualities: ["missing"],
-        WholesaleResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        WholesaleResultColumnNames.quantity_unit: "kWh",
-        WholesaleResultColumnNames.resolution: "P1D",
-        WholesaleResultColumnNames.metering_point_type: "production",
-        WholesaleResultColumnNames.settlement_method: "flex",
-        WholesaleResultColumnNames.price: Decimal("1.123"),
-        WholesaleResultColumnNames.amount: Decimal("1.123"),
-        WholesaleResultColumnNames.is_tax: True,
-        WholesaleResultColumnNames.charge_code: "charge_code",
-        WholesaleResultColumnNames.charge_type: "fee",
-        WholesaleResultColumnNames.charge_owner_id: "1234567890123",
-        WholesaleResultColumnNames.amount_type: "amount_per_charge",
+        OutputTableColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        OutputTableColumnNames.result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        OutputTableColumnNames.grid_area_code: "543",
+        OutputTableColumnNames.energy_supplier_id: "1234567890123",
+        OutputTableColumnNames.quantity: Decimal("1.123"),
+        OutputTableColumnNames.quantity_qualities: ["missing"],
+        OutputTableColumnNames.time: datetime(2020, 1, 1, 0, 0),
+        OutputTableColumnNames.quantity_unit: "kWh",
+        OutputTableColumnNames.resolution: "P1D",
+        OutputTableColumnNames.metering_point_type: "production",
+        OutputTableColumnNames.settlement_method: "flex",
+        OutputTableColumnNames.price: Decimal("1.123"),
+        OutputTableColumnNames.amount: Decimal("1.123"),
+        OutputTableColumnNames.is_tax: True,
+        OutputTableColumnNames.charge_code: "charge_code",
+        OutputTableColumnNames.charge_type: "fee",
+        OutputTableColumnNames.charge_owner_id: "1234567890123",
     }
-    return spark.createDataFrame(data=[row], schema=wholesale_results_schema)
+    return spark.createDataFrame(data=[row], schema=amounts_per_charge_schema)
 
 
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (WholesaleResultColumnNames.calculation_id, None),
-        (WholesaleResultColumnNames.calculation_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.calculation_type, None),
-        (WholesaleResultColumnNames.calculation_type, "foo"),
-        (WholesaleResultColumnNames.calculation_execution_time_start, None),
-        (WholesaleResultColumnNames.calculation_result_id, None),
-        (WholesaleResultColumnNames.calculation_result_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.amount_type, None),
-        (WholesaleResultColumnNames.amount_type, "foo"),
-        (WholesaleResultColumnNames.grid_area_code, None),
-        (WholesaleResultColumnNames.grid_area_code, "12"),
-        (WholesaleResultColumnNames.grid_area_code, "1234"),
-        (WholesaleResultColumnNames.energy_supplier_id, None),
+        (OutputTableColumnNames.calculation_id, None),
+        (OutputTableColumnNames.calculation_id, "not-a-uuid"),
+        (OutputTableColumnNames.result_id, None),
+        (OutputTableColumnNames.result_id, "not-a-uuid"),
+        (OutputTableColumnNames.grid_area_code, None),
+        (OutputTableColumnNames.grid_area_code, "12"),
+        (OutputTableColumnNames.grid_area_code, "1234"),
+        (OutputTableColumnNames.energy_supplier_id, None),
         (
-            WholesaleResultColumnNames.energy_supplier_id,
+            OutputTableColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (WholesaleResultColumnNames.quantity_unit, None),
-        (WholesaleResultColumnNames.quantity_unit, "foo"),
-        (WholesaleResultColumnNames.quantity_qualities, []),
-        (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
-        (WholesaleResultColumnNames.time, None),
-        (WholesaleResultColumnNames.resolution, None),
-        (WholesaleResultColumnNames.resolution, "foo"),
-        (WholesaleResultColumnNames.metering_point_type, "foo"),
-        (WholesaleResultColumnNames.settlement_method, "foo"),
-        (WholesaleResultColumnNames.charge_owner_id, "neither-16-nor-13-digits-long"),
+        (
+            OutputTableColumnNames.quantity,
+            None,
+        ),
+        (OutputTableColumnNames.quantity_unit, None),
+        (OutputTableColumnNames.quantity_unit, "foo"),
+        (OutputTableColumnNames.quantity_qualities, []),
+        (OutputTableColumnNames.quantity_qualities, ["foo"]),
+        (OutputTableColumnNames.time, None),
+        (OutputTableColumnNames.resolution, None),
+        (OutputTableColumnNames.resolution, "foo"),
+        (OutputTableColumnNames.metering_point_type, None),
+        (OutputTableColumnNames.metering_point_type, "foo"),
+        (OutputTableColumnNames.settlement_method, "foo"),
+        (OutputTableColumnNames.charge_owner_id, "neither-16-nor-13-digits-long"),
+        (OutputTableColumnNames.is_tax, None),
     ],
 )
 def test__migrated_table_rejects_invalid_data(
@@ -112,7 +101,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}",
+            TABLE_NAME,
             overwrite=False,
         )
 
@@ -139,40 +128,36 @@ actor_eic = "1234567890123456"
     "column_name,column_value",
     [
         (
-            WholesaleResultColumnNames.calculation_id,
+            OutputTableColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.calculation_type, "wholesale_fixing"),
         (
-            WholesaleResultColumnNames.calculation_result_id,
+            OutputTableColumnNames.result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.amount_type, "amount_per_charge"),
-        (WholesaleResultColumnNames.grid_area_code, "123"),
-        (WholesaleResultColumnNames.grid_area_code, "007"),
-        (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
-        (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
-        (WholesaleResultColumnNames.quantity, max_18_3_decimal),
-        (WholesaleResultColumnNames.quantity, min_18_3_decimal),
-        (WholesaleResultColumnNames.quantity_unit, "kWh"),
-        (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
-        (WholesaleResultColumnNames.quantity_qualities, None),
-        (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (WholesaleResultColumnNames.resolution, "P1D"),
-        (WholesaleResultColumnNames.metering_point_type, None),
-        (WholesaleResultColumnNames.metering_point_type, "consumption"),
-        (WholesaleResultColumnNames.settlement_method, None),
-        (WholesaleResultColumnNames.settlement_method, "flex"),
-        (WholesaleResultColumnNames.price, None),
-        (WholesaleResultColumnNames.price, max_18_6_decimal),
-        (WholesaleResultColumnNames.price, min_18_6_decimal),
-        (WholesaleResultColumnNames.amount, max_18_6_decimal),
-        (WholesaleResultColumnNames.amount, min_18_6_decimal),
-        (WholesaleResultColumnNames.is_tax, None),
-        (WholesaleResultColumnNames.charge_code, "any-string"),
-        (WholesaleResultColumnNames.charge_type, "fee"),
-        (WholesaleResultColumnNames.charge_owner_id, actor_gln),
-        (WholesaleResultColumnNames.charge_owner_id, actor_eic),
+        (OutputTableColumnNames.grid_area_code, "123"),
+        (OutputTableColumnNames.grid_area_code, "007"),
+        (OutputTableColumnNames.energy_supplier_id, actor_gln),
+        (OutputTableColumnNames.energy_supplier_id, actor_eic),
+        (OutputTableColumnNames.quantity, max_18_3_decimal),
+        (OutputTableColumnNames.quantity, min_18_3_decimal),
+        (OutputTableColumnNames.quantity_unit, "kWh"),
+        (OutputTableColumnNames.quantity_qualities, ["missing", "estimated"]),
+        (OutputTableColumnNames.quantity_qualities, None),
+        (OutputTableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (OutputTableColumnNames.resolution, "P1D"),
+        (OutputTableColumnNames.metering_point_type, "consumption"),
+        (OutputTableColumnNames.settlement_method, None),
+        (OutputTableColumnNames.settlement_method, "flex"),
+        (OutputTableColumnNames.price, None),
+        (OutputTableColumnNames.price, max_18_6_decimal),
+        (OutputTableColumnNames.price, min_18_6_decimal),
+        (OutputTableColumnNames.amount, max_18_6_decimal),
+        (OutputTableColumnNames.amount, min_18_6_decimal),
+        (OutputTableColumnNames.charge_code, "any-string"),
+        (OutputTableColumnNames.charge_type, "fee"),
+        (OutputTableColumnNames.charge_owner_id, actor_gln),
+        (OutputTableColumnNames.charge_owner_id, actor_eic),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -187,58 +172,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
-    )
-
-
-@pytest.mark.parametrize(
-    "column_name,column_value",
-    [
-        *[
-            (WholesaleResultColumnNames.calculation_type, x)
-            for x in [
-                CalculationType.WHOLESALE_FIXING.value,
-                CalculationType.FIRST_CORRECTION_SETTLEMENT.value,
-                CalculationType.SECOND_CORRECTION_SETTLEMENT.value,
-                CalculationType.THIRD_CORRECTION_SETTLEMENT.value,
-            ]
-        ],
-        *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
-        *[
-            (WholesaleResultColumnNames.quantity_qualities, [x.value])
-            for x in ChargeQuality
-        ],
-        *[
-            (WholesaleResultColumnNames.resolution, x.value)
-            for x in WholesaleResultResolution
-        ],
-        *[
-            (WholesaleResultColumnNames.metering_point_type, x.value)
-            for x in MeteringPointType
-        ],
-        *[
-            (WholesaleResultColumnNames.settlement_method, x.value)
-            for x in SettlementMethod
-        ],
-        *[(WholesaleResultColumnNames.charge_type, x.value) for x in ChargeType],
-        *[(WholesaleResultColumnNames.amount_type, x.value) for x in AmountType],
-    ],
-)
-def test__migrated_table_accepts_enum_value(
-    spark: SparkSession,
-    column_name: str,
-    column_value: str,
-    migrations_executed: None,
-) -> None:
-    "Test that all enum values are accepted by the delta table"
-
-    # Arrange
-    result_df = _create_df(spark)
-    result_df = set_column(result_df, column_name, column_value)
-
-    # Act and assert: Expectation is that no exception is raised
-    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        TABLE_NAME
     )
 
 
@@ -263,41 +197,16 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = result_df.withColumn("quantity", lit(quantity))
     calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
-        WholesaleResultColumnNames.calculation_id, lit(calculation_id)
+        OutputTableColumnNames.calculation_id, lit(calculation_id)
     )
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        TABLE_NAME
     )
 
     # Assert
-    actual_df = spark.read.table(
-        f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
-    ).where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(OutputTableColumnNames.calculation_id) == calculation_id
+    )
     assert actual_df.collect()[0].quantity == quantity
-
-
-# ToDo JMG: Remove when on Unity Catalog
-def test__wholesale_results_table__is_not_managed(
-    spark: SparkSession, migrations_executed: None
-) -> None:
-    """
-    It is desired that the table is unmanaged to provide for greater flexibility.
-    According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
-    "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
-    """
-    database_details = spark.sql(
-        f"DESCRIBE DATABASE {HiveOutputDatabase.DATABASE_NAME}"
-    )
-    table_details = spark.sql(
-        f"DESCRIBE DETAIL {HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
-    )
-
-    database_location = database_details.where(
-        col("info_name") == "Location"
-    ).collect()[0]["info_value"]
-    table_location = table_details.collect()[0]["location"]
-
-    assert not table_location.startswith(database_location)

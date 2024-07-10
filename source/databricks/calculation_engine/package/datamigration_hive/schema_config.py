@@ -13,26 +13,22 @@
 # limitations under the License.
 from spark_sql_migrations import Schema, Table, View
 
-import package.calculation.output.basis_data.schemas as basis_data_schemas
+import package.databases.basis_data.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
-from package.calculation.input.schemas.grid_loss_metering_points_schema import (
+from package.databases.input.schemas import (
     grid_loss_metering_points_schema,
 )
-from package.calculation.output.results.schemas import (
+from package.databases.results.schemas import (
     hive_energy_results_schema,
-)
-from package.calculation.output.results.schemas import (
     hive_total_monthly_amounts_schema,
-)
-from package.calculation.output.results.schemas import (
     hive_monthly_amounts_schema,
 )
 
 # calculation_output
-from package.calculation.output.results.schemas.wholesale_results_schema import (
-    wholesale_results_schema,
+from package.databases.results.schemas.hive_wholesale_results_schema import (
+    hive_wholesale_results_schema,
 )
 
 schema_config = [
@@ -41,7 +37,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
-                schema=wholesale_results_schema,
+                schema=hive_wholesale_results_schema,
             ),
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,

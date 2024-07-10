@@ -17,22 +17,15 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.calculation.output.basis_data.schemas import (
+from package.databases.basis_data.schemas import (
     charge_price_information_periods_schema_uc,
     charge_link_periods_schema_uc,
-)
-from package.calculation.output.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
-)
-from package.calculation.output.basis_data.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
-)
-from package.calculation.output.basis_data.schemas.metering_point_period_schema import (
     metering_point_period_schema_uc,
-)
-from package.calculation.output.basis_data.schemas.time_series_point_schema import (
     time_series_point_schema,
 )
+
 from package.codelists import (
     AggregationLevel,
     ChargeType,
@@ -167,13 +160,13 @@ WHOLESALE_RESULT_TYPES = [
     WHOLESALE_RESULT_TYPES,
 )
 def test__wholesale_result__amount_per_charge_is_created(
-    wholesale_fixing_wholesale_results_df: DataFrame,
+    wholesale_fixing_amounts_per_charge_df: DataFrame,
     charge_type: ChargeType,
     resolution: WholesaleResultResolution,
 ) -> None:
     # Arrange
     result_df = (
-        wholesale_fixing_wholesale_results_df.where(
+        wholesale_fixing_amounts_per_charge_df.where(
             f.col(WholesaleResultColumnNames.calculation_id)
             == c.executed_wholesale_calculation_id
         )
@@ -198,12 +191,12 @@ def test__wholesale_result__amount_per_charge_is_created(
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
-    wholesale_fixing_monthly_amounts: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
     charge_code: str,
 ) -> None:
     # Arrange
 
-    result_df = wholesale_fixing_monthly_amounts.where(
+    result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
         f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
     ).where(f.col(WholesaleResultColumnNames.charge_code) == charge_code)
 
@@ -217,12 +210,12 @@ def test__monthly_amount_for_tariffs__is_created(
 @pytest.mark.parametrize("charge_type", [ChargeType.SUBSCRIPTION, ChargeType.FEE])
 def test__monthly_amount_for_subscriptions_and_fees__is_created(
     spark: SparkSession,
-    wholesale_fixing_monthly_amounts: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
     charge_type: ChargeType,
 ) -> None:
     # Arrange
 
-    result_df = wholesale_fixing_monthly_amounts.where(
+    result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
         f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
     )
 
@@ -235,7 +228,7 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
 
 def test__total_monthly_amounts__are_stored(
     spark: SparkSession,
-    wholesale_fixing_total_monthly_amounts: DataFrame,
+    wholesale_fixing_total_monthly_amounts_df: DataFrame,
 ) -> None:
     # Arrange
 
@@ -243,12 +236,12 @@ def test__total_monthly_amounts__are_stored(
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert wholesale_fixing_total_monthly_amounts.count() > 0
+    assert wholesale_fixing_total_monthly_amounts_df.count() > 0
 
 
 def test__monthly_amounts__are_stored(
     spark: SparkSession,
-    wholesale_fixing_monthly_amounts_per_charge: DataFrame,
+    wholesale_fixing_monthly_amounts_per_charge_df: DataFrame,
 ) -> None:
     # Arrange
 
@@ -256,7 +249,7 @@ def test__monthly_amounts__are_stored(
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert wholesale_fixing_monthly_amounts_per_charge.count() > 0
+    assert wholesale_fixing_monthly_amounts_per_charge_df.count() > 0
 
 
 @pytest.mark.parametrize(
