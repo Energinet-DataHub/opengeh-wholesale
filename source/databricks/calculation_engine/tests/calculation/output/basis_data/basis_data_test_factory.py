@@ -16,22 +16,22 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
-import package.calculation.output.basis_data.basis_data_factory as basis_data_factory
+import package.databases.basis_data.basis_data_factory as basis_data_factory
 import package.codelists as e
 import tests.calculation.charges_factory as charges_factory
 from calculation.output.results.calculations_storage_model_test_factory import (
     create_calculations,
 )
-from package.calculation.output.basis_data.schemas.charge_link_periods_schema import (
+from package.databases.basis_data.schemas.charge_link_periods_schema import (
     hive_charge_link_periods_schema,
 )
-from package.calculation.output.basis_data.schemas.charge_price_information_periods_schema import (
+from package.databases.basis_data.schemas.charge_price_information_periods_schema import (
     hive_charge_price_information_periods_schema,
 )
-from package.calculation.output.basis_data.schemas.charge_price_points_schema import (
+from package.databases.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
-from package.calculation.output.basis_data.schemas import (
+from package.databases.basis_data import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.calculation_results import BasisDataContainer

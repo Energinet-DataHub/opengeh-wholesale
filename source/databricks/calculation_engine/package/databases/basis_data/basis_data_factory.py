@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from package.calculation.output.basis_data import basis_data
+from package.databases.basis_data import basis_data
 from package.calculation.calculation_results import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer

@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     LongType,
 )
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.databases.output_table_column_names import OutputTableColumnNames
 
 calculations_schema = StructType(
     [

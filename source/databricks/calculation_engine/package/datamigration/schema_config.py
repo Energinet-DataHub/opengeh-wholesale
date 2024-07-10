@@ -12,7 +12,7 @@ from package.calculation.output.results.schemas import (
     total_monthly_amounts_schema_uc,
 )
 
-import package.calculation.output.basis_data.schemas as basis_data_schemas
+import package.databases.basis_data.schemas as basis_data_schemas
 
 schema_config = [
     Schema(

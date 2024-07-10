@@ -14,7 +14,7 @@
 
 import pyspark.sql.types as t
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.databases.output_table_column_names import OutputTableColumnNames
 
 amounts_per_charge_schema = t.StructType(
     [

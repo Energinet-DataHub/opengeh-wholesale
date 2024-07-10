@@ -20,9 +20,9 @@ import pytest
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import lit
 
-from package.calculation import input
-from package.calculation.input import TableReader
-from package.calculation.input.schemas import (
+from package.databases import input
+from package.databases.input import TableReader
+from package.databases.input import (
     time_series_point_schema,
 )
 from package.calculation.preparation.transformations import get_time_series_points

@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.databases.output_table_column_names import OutputTableColumnNames
 
 charge_price_points_schema = StructType(
     [

@@ -19,7 +19,7 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.databases.output_table_column_names import OutputTableColumnNames
 
 metering_point_period_schema_uc = StructType(
     [

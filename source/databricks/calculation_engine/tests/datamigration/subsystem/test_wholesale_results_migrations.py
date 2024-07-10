@@ -20,7 +20,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.databases.output_table_column_names import OutputTableColumnNames
 from package.calculation.output.results.schemas import (
     amounts_per_charge_schema,
 )

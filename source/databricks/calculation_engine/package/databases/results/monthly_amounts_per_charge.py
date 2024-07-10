@@ -14,11 +14,9 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import (
-    WholesaleResultsContainer,
-)
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
-from package.constants import TotalMonthlyAmountsColumnNames
+from package.calculation.calculation_results import WholesaleResultsContainer
+from package.databases.output_table_column_names import OutputTableColumnNames
+from package.constants import MonthlyAmountsColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -29,16 +27,25 @@ from package.infrastructure.paths import (
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
-def write_total_monthly_amounts(
-    total_monthly_amounts: WholesaleResultsContainer,
+def write_monthly_amounts_per_charge(
+    wholesale_results: WholesaleResultsContainer,
 ) -> None:
+    """Write each wholesale result to the output table."""
     _write(
-        "total_monthly_amounts_per_co_es",
-        total_monthly_amounts.total_monthly_amounts_per_co_es,
+        "monthly_tariff_from_hourly_per_co_es",
+        wholesale_results.monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
     )
     _write(
-        "total_monthly_amounts_per_es",
-        total_monthly_amounts.total_monthly_amounts_per_es,
+        "monthly_tariff_from_daily_per_co_es",
+        wholesale_results.monthly_tariff_from_daily_per_co_es_as_monthly_amount,
+    )
+    _write(
+        "monthly_subscription_per_co_es",
+        wholesale_results.monthly_subscription_per_co_es_as_monthly_amount,
+    )
+    _write(
+        "monthly_fee_per_co_es",
+        wholesale_results.monthly_fee_per_co_es_as_monthly_amount,
     )
 
 
@@ -53,11 +60,11 @@ def _write(
     with logging_configuration.start_span(name):
         df.drop(
             # ToDo JMG: Remove when we are on Unity Catalog
-            TotalMonthlyAmountsColumnNames.calculation_type,
-            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+            MonthlyAmountsColumnNames.calculation_type,
+            MonthlyAmountsColumnNames.calculation_execution_time_start,
         ).withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog
-            TotalMonthlyAmountsColumnNames.calculation_result_id,
+            MonthlyAmountsColumnNames.calculation_result_id,
             OutputTableColumnNames.result_id,
         ).write.format(
             "delta"
@@ -66,12 +73,12 @@ def _write(
         ).option(
             "mergeSchema", "false"
         ).insertInto(
-            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
         )
 
         # ToDo JMG: Remove when we are on Unity Catalog
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
-            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME}"
         )
