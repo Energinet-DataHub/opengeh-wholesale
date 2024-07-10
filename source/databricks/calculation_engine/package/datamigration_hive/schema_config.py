@@ -22,11 +22,7 @@ from package.databases.input.schemas import (
 )
 from package.databases.results.schemas import (
     hive_energy_results_schema,
-)
-from package.databases.results.schemas import (
     hive_total_monthly_amounts_schema,
-)
-from package.databases.results.schemas import (
     hive_monthly_amounts_schema,
 )
 
