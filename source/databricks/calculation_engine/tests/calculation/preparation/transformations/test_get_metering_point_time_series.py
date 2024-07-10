@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 
-from package.calculation.input.schemas import (
+from package.databases.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
