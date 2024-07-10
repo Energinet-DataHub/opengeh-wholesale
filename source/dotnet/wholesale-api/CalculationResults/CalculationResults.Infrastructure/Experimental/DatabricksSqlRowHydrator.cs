@@ -34,6 +34,7 @@ public sealed class DatabricksSqlRowHydrator
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow,
     }.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
     public async IAsyncEnumerable<TElement> HydrateAsync<TElement>(IAsyncEnumerable<dynamic> rows, [EnumeratorCancellation] CancellationToken cancellationToken = default)
