@@ -42,6 +42,7 @@ class WholesaleResultsInternalDatabase:
         "grid_loss_metering_point_time_series"
     )
     EXCHANGE_PER_NEIGHBOR_TABLE_NAME = "exchange_per_neighbor_ga"
+    AMOUNTS_PER_CHARGE_TABLE_NAME = "amounts_per_charge"
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
 
