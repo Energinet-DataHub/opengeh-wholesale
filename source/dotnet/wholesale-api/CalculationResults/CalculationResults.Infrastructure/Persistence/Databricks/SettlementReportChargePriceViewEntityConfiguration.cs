@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
 public sealed class SettlementReportChargePriceViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportChargePriceResultViewEntity>
 {
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     public void Configure(EntityTypeBuilder<SettlementReportChargePriceResultViewEntity> builder)
     {
         builder.ToTable("charge_prices_v1");
         builder.HasNoKey();
+        builder.Property(x => x.PricePoints)
+            .HasConversion(
+                new ValueConverter<SettlementReportChargePriceResultViewPricePointEntity[], string>(
+                    v => JsonSerializer.Serialize(v, _jsonSerializerOptions),
+                    v => JsonSerializer.Deserialize<SettlementReportChargePriceResultViewPricePointEntity[]>(v, _jsonSerializerOptions)!));
     }
 }

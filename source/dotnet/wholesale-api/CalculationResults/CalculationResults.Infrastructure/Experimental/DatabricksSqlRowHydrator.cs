@@ -19,12 +19,29 @@ using System.Dynamic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using NodaTime;
+using NodaTime.Serialization.SystemTextJson;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
 public sealed class DatabricksSqlRowHydrator
 {
     private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)>> _typeInfoCache = new();
+
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    public DatabricksSqlRowHydrator()
+    {
+        _jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        };
+
+        _jsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    }
 
     public async IAsyncEnumerable<TElement> HydrateAsync<TElement>(IAsyncEnumerable<dynamic> rows, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -36,18 +53,25 @@ public sealed class DatabricksSqlRowHydrator
         }
     }
 
-    private static TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
+    private TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
     {
         var instance = Activator.CreateInstance<TElement>();
 
         foreach (var property in expandoObject)
         {
-            if (propertyMap.TryGetValue(property.Key, out var prop))
+            if (propertyMap.TryGetValue(property.Key, out var prop) && property.Value != null)
             {
-                if (property.Value != null)
+                if (prop.Converter.CanConvertFrom(property.Value.GetType()))
                 {
-                    var convertedValue = prop.Converter.ConvertFrom(null, CultureInfo.InvariantCulture, property.Value);
-                    prop.Property.SetValue(instance, convertedValue);
+                    prop.Property.SetValue(instance, prop.Converter.ConvertFrom(null, CultureInfo.InvariantCulture, property.Value));
+                }
+                else if (property.Value is string str)
+                {
+                    prop.Property.SetValue(instance, JsonSerializer.Deserialize(str, prop.Property.PropertyType, _jsonSerializerOptions));
+                }
+                else
+                {
+                    throw new InvalidOperationException("Could not convert value");
                 }
             }
         }

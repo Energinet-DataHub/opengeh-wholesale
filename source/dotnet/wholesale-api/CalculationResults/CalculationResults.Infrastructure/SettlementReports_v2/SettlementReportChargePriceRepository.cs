@@ -62,8 +62,7 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
                 ResolutionMapper.FromDeltaTableValue(row.Resolution),
                 row.Taxation,
                 row.StartTime,
-                // todo mjm - chargePrices when array support is added
-                []);
+                row.PricePoints.OrderBy(x => x.Time).Select(x => x.Price).ToList());
         }
     }
 

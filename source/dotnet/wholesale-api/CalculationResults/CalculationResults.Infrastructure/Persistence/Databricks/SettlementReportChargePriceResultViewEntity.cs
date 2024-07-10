@@ -19,8 +19,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persiste
 
 public sealed class SettlementReportChargePriceResultViewEntity
 {
-    public const string EnergyPrices = "price_points";
-
     [Column("calculation_id")]
     public Guid CalculationId { get; set; }
 
@@ -53,4 +51,7 @@ public sealed class SettlementReportChargePriceResultViewEntity
 
     [Column("is_tax")]
     public bool Taxation { get; set; }
+
+    [Column("price_points")]
+    public SettlementReportChargePriceResultViewPricePointEntity[] PricePoints { get; set; } = [];
 }
