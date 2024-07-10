@@ -33,7 +33,7 @@ TBLPROPERTIES (
     delta.columnMapping.mode = "name",
     delta.constraints.calculation_id_chk = "LENGTH ( calculation_id ) = 36",
     delta.constraints.result_id_chk = "LENGTH ( result_id ) = 36",
-    delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3"
+    delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
     delta.constraints.energy_supplier_id_chk = "LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
     delta.constraints.quantity_unit_chk = "quantity_unit IN ( 'kWh' , 'pcs' )",
     delta.constraints.quantity_qualities_chk = "( quantity_qualities IS NULL ) OR ( array_size ( array_except ( quantity_qualities , array ( 'missing' , 'calculated' , 'measured' , 'estimated' ) ) ) = 0 AND array_size ( quantity_qualities ) > 0 )",
@@ -41,5 +41,5 @@ TBLPROPERTIES (
     delta.constraints.metering_point_type_chk = "metering_point_type IN ( 'production' , 'consumption' , 've_production' , 'net_production' , 'supply_to_grid' , 'consumption_from_grid' , 'wholesale_services_information' , 'own_production' , 'net_from_grid' , 'net_to_grid' , 'total_consumption' , 'electrical_heating' , 'net_consumption' , 'effect_settlement' )",
     delta.constraints.settlement_method_chk = "settlement_method IS NULL OR settlement_method IN ( 'non_profiled' , 'flex' )",
     delta.constraints.charge_type_chk = "charge_type IN ( 'subscription' , 'fee' , 'tariff' )",
-    delta.constraints.charge_owner_id_chk = "LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16",
+    delta.constraints.charge_owner_id_chk = "LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16"
 )
