@@ -114,7 +114,7 @@ class SettlementReportPublicDataModel:
     DATABASE_NAME = "settlement_report"
     METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
     METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
-    CHARGE_LINK_PERIODS_PER_ES_VIEW_NAME_V1 = "charge_link_periods_per_es_v1"
+    CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
     CHARGE_PRICES_VIEW_NAME_V1 = "charge_prices_v1"
     ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1 = "energy_result_points_per_ga_v1"
     ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1 = (

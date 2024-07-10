@@ -410,7 +410,7 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_PER_ES_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
             True,
         ),
         (
