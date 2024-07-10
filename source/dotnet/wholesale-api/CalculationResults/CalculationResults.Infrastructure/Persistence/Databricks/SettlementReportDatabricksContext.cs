@@ -32,6 +32,8 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
         _deltaTableOptions = deltaTableOptions;
     }
 
+    public IQueryable<SettlementReportLatestBalanceFixingCalculationVersionViewEntity> LatestBalanceFixingCalculationVersionView => Set<SettlementReportLatestBalanceFixingCalculationVersionViewEntity>();
+
     public IQueryable<SettlementReportWholesaleViewEntity> WholesaleView => Set<SettlementReportWholesaleViewEntity>();
 
     public IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> EnergyResultPointsPerGridAreaView => Set<SettlementReportEnergyResultPointsPerGridAreaViewEntity>();
@@ -40,12 +42,16 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     public IQueryable<SettlementReportMeteringPointTimeSeriesEntity> MeteringPointTimeSeriesView => Set<SettlementReportMeteringPointTimeSeriesEntity>();
 
+    public IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ChargeLinkPeriodsView => Set<SettlementReportChargeLinkPeriodsViewEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(_deltaTableOptions.Value.SettlementReportSchemaName);
+        modelBuilder.ApplyConfiguration(new SettlementReportLatestBalanceFixingCalculationVersionViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportWholesaleViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportMeteringPointTimeSeriesEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportChargeLinkPeriodsViewEntityConfiguration());
     }
 }
