@@ -131,7 +131,7 @@ public abstract class DatabricksContextBase : IDisposable
             // NOTE: Currently, EF Core does not support aggregations or generics in UDFs.
             // For now, we simply hard-code the struct combinations required (i.e. ValueTuple<Instant, decimal>).
             modelBuilder
-                .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.AggregateArray))!)
+                .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.AggregateFields))!)
                 .HasTranslation(args =>
                 {
                     var projections = args
@@ -147,12 +147,12 @@ public abstract class DatabricksContextBase : IDisposable
                                 projections,
                                 false,
                                 [false, false],
-                                typeof(IEnumerable<(Instant Time, decimal Quantity)>),
+                                typeof(IEnumerable<DatabricksSqlQueryableExtensions.AggregatedStruct>),
                                 new ByteArrayTypeMapping("varbinary")),
                         ],
                         false,
                         [false],
-                        typeof(IEnumerable<(Instant Time, decimal Quantity)>),
+                        typeof(IEnumerable<DatabricksSqlQueryableExtensions.AggregatedStruct>),
                         new ByteArrayTypeMapping("varbinary"));
                 })
                 .Metadata.TypeMapping = new ByteArrayTypeMapping("varbinary");

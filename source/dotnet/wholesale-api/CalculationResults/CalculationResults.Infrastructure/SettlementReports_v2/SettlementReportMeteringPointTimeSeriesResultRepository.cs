@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.InteropServices.Marshalling;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
@@ -71,7 +69,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
                 MeteringPointId = meteringPointGroup.Key.MeteringPointId,
                 MeteringPointType = meteringPointGroup.Key.MeteringPointType,
                 StartOfDay = meteringPointGroup.Key.start_of_day,
-                Quantities = DbFunctions.AggregateArray(meteringPointGroup.First().Time, meteringPointGroup.First().Quantity),
+                Quantities = DbFunctions.AggregateFields(meteringPointGroup.First().Time, meteringPointGroup.First().Quantity),
             };
 
         await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
@@ -124,6 +122,6 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
 
         public Instant StartOfDay { get; set; }
 
-        public IEnumerable<(Instant Time, decimal Quantity)> Quantities { get; set; } = null!;
+        public IEnumerable<DatabricksSqlQueryableExtensions.AggregatedStruct> Quantities { get; set; } = null!;
     }
 }

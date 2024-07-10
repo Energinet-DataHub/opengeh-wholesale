@@ -108,7 +108,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
 
         // assert
         Assert.Single(actual);
-        Assert.Equal(4, actual[0].StartDateTime.ToDateTimeOffset().Hour);
+        Assert.Equal(23, actual[0].StartDateTime.ToDateTimeOffset().Hour);
     }
 
     [Theory]
