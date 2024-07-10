@@ -30,18 +30,11 @@ public sealed class DatabricksSqlRowHydrator
 {
     private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)>> _typeInfoCache = new();
 
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-    public DatabricksSqlRowHydrator()
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
     {
-        _jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        };
-
-        _jsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    }.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
     public async IAsyncEnumerable<TElement> HydrateAsync<TElement>(IAsyncEnumerable<dynamic> rows, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -53,7 +46,7 @@ public sealed class DatabricksSqlRowHydrator
         }
     }
 
-    private TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
+    private static TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
     {
         var instance = Activator.CreateInstance<TElement>();
 

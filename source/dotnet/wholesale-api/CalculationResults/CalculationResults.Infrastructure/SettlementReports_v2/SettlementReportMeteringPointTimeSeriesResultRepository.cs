@@ -61,14 +61,14 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
             {
                 row.MeteringPointId,
                 row.MeteringPointType,
-                start_of_day = DbFunctions.ToUtcFromTimeZoned(DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"), "Europe/Copenhagen"),
+                start_of_day = DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"),
             }
             into meteringPointGroup
-            select new GroupedResult
+            select new AggregatedByDay
             {
                 MeteringPointId = meteringPointGroup.Key.MeteringPointId,
                 MeteringPointType = meteringPointGroup.Key.MeteringPointType,
-                StartOfDay = meteringPointGroup.Key.start_of_day,
+                StartOfDay = DbFunctions.ToUtcFromTimeZoned(meteringPointGroup.Key.start_of_day, "Europe/Copenhagen"),
                 Quantities = DbFunctions.AggregateFields(meteringPointGroup.First().Time, meteringPointGroup.First().Quantity),
             };
 
@@ -114,7 +114,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
         return source;
     }
 
-    private sealed class GroupedResult
+    private sealed class AggregatedByDay
     {
         public string MeteringPointId { get; set; } = null!;
 

@@ -128,7 +128,7 @@ public abstract class DatabricksContextBase : IDisposable
 
             // Emits custom function: ARRAY_AGG(struct(@param1, @param2))
             // NOTE: Currently, EF Core does not support aggregations or generics in UDFs.
-            // For now, we simply hard-code the struct combinations required (i.e. ValueTuple<Instant, decimal>).
+            // For now, we simply hard-code the struct combinations required (i.e. AggregatedStruct/(Instant, decimal)).
             modelBuilder
                 .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.AggregateFields))!)
                 .HasTranslation(args =>
