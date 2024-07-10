@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from .hive_energy_results_schema import hive_energy_results_schema
 from .wholesale_results_schema import wholesale_results_schema
 from .energy_schema_uc import energy_schema_uc

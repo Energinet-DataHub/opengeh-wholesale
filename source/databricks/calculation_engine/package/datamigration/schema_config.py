@@ -2,6 +2,7 @@ from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
 from package.calculation.output.results.schemas import (
+    calculations_schema,
     energy_schema_uc,
     energy_per_brp_schema_uc,
     energy_per_es_schema_uc,
@@ -15,6 +16,16 @@ import package.calculation.output.basis_data.schemas as basis_data_schemas
 
 
 schema_config = [
+    Schema(
+        name=paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+        tables=[
+            Table(
+                name=paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
+                schema=basis_data_schemas.calculations_schema,
+            ),
+        ],
+        views=[],
+    ),
     Schema(
         name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
         tables=[
