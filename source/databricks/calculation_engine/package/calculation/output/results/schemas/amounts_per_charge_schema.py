@@ -12,40 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.types import (
-    ArrayType,
-    BooleanType,
-    DecimalType,
-    StringType,
-    StructField,
-    StructType,
-    TimestampType,
-)
+import pyspark.sql.types as t
 
 from package.calculation.output.output_table_column_names import OutputTableColumnNames
 
-amounts_per_charge_schema = StructType(
+amounts_per_charge_schema = t.StructType(
     [
-        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
-        StructField(OutputTableColumnNames.result_id, StringType(), False),
-        StructField(OutputTableColumnNames.grid_area_code, StringType(), False),
-        StructField(OutputTableColumnNames.energy_supplier_id, StringType(), False),
-        StructField(OutputTableColumnNames.quantity, DecimalType(18, 3), True),
-        StructField(OutputTableColumnNames.quantity_unit, StringType(), False),
-        StructField(
+        t.StructField(OutputTableColumnNames.calculation_id, t.StringType(), False),
+        t.StructField(OutputTableColumnNames.result_id, t.StringType(), False),
+        t.StructField(OutputTableColumnNames.grid_area_code, t.StringType(), False),
+        t.StructField(OutputTableColumnNames.energy_supplier_id, t.StringType(), False),
+        t.StructField(OutputTableColumnNames.quantity, t.DecimalType(18, 3), True),
+        t.StructField(OutputTableColumnNames.quantity_unit, t.StringType(), False),
+        t.StructField(
             OutputTableColumnNames.quantity_qualities,
-            ArrayType(StringType()),
+            t.ArrayType(t.StringType()),
             True,
         ),
-        StructField(OutputTableColumnNames.time, TimestampType(), False),
-        StructField(OutputTableColumnNames.resolution, StringType(), False),
-        StructField(OutputTableColumnNames.metering_point_type, StringType(), False),
-        StructField(OutputTableColumnNames.settlement_method, StringType(), True),
-        StructField(OutputTableColumnNames.price, DecimalType(18, 6), True),
-        StructField(OutputTableColumnNames.amount, DecimalType(18, 6), True),
-        StructField(OutputTableColumnNames.is_tax, BooleanType(), False),
-        StructField(OutputTableColumnNames.charge_code, StringType(), False),
-        StructField(OutputTableColumnNames.charge_type, StringType(), False),
-        StructField(OutputTableColumnNames.charge_owner_id, StringType(), False),
+        t.StructField(OutputTableColumnNames.time, t.TimestampType(), False),
+        t.StructField(OutputTableColumnNames.resolution, t.StringType(), False),
+        t.StructField(
+            OutputTableColumnNames.metering_point_type, t.StringType(), False
+        ),
+        t.StructField(OutputTableColumnNames.settlement_method, t.StringType(), True),
+        t.StructField(OutputTableColumnNames.price, t.DecimalType(18, 6), True),
+        t.StructField(OutputTableColumnNames.amount, t.DecimalType(18, 6), True),
+        t.StructField(OutputTableColumnNames.is_tax, t.BooleanType(), False),
+        t.StructField(OutputTableColumnNames.charge_code, t.StringType(), False),
+        t.StructField(OutputTableColumnNames.charge_type, t.StringType(), False),
+        t.StructField(OutputTableColumnNames.charge_owner_id, t.StringType(), False),
     ]
 )
