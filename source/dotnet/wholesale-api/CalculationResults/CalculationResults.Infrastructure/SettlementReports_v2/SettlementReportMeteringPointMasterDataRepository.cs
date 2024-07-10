@@ -79,13 +79,9 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> viewForLatest)
     {
         var latestJoin = viewForLatest
-            .GroupBy(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
-            .Select(group => new
-            {
-                day = group.Key,
-                max_calc_version = group.Max(row => row.CalculationVersion),
-            })
-            .OrderBy(row => row.day);
+            .GroupBy(row =>
+                DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+            .Select(group => new { day = group.Key, max_calc_version = group.Max(row => row.CalculationVersion), });
 
         var latestCalcIdForMetering = viewForLatest
             .Join(
@@ -120,13 +116,9 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> viewForLatest)
     {
         var latestJoin = viewForLatest
-            .GroupBy(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
-            .Select(group => new
-            {
-                day = group.Key,
-                max_calc_version = group.Max(row => row.CalculationVersion),
-            })
-            .OrderBy(row => row.day);
+            .GroupBy(row =>
+                DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+            .Select(group => new { day = group.Key, max_calc_version = group.Max(row => row.CalculationVersion), });
 
         var latestCalcIdForMetering = viewForLatest
             .Join(
@@ -183,13 +175,9 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> viewForLatest)
     {
         var latestJoin = viewForLatest
-            .GroupBy(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
-            .Select(group => new
-            {
-                day = group.Key,
-                max_calc_version = group.Max(row => row.CalculationVersion),
-            })
-            .OrderBy(row => row.day);
+            .GroupBy(row =>
+                DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+            .Select(group => new { day = group.Key, max_calc_version = group.Max(row => row.CalculationVersion), });
 
         var latestCalcIdForMetering = viewForLatest
             .Join(
@@ -226,13 +214,9 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> viewForLatest)
     {
         var latestJoin = viewForLatest
-            .GroupBy(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
-            .Select(group => new
-            {
-                day = group.Key,
-                max_calc_version = group.Max(row => row.CalculationVersion),
-            })
-            .OrderBy(row => row.day);
+            .GroupBy(row =>
+                DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+            .Select(group => new { day = group.Key, max_calc_version = group.Max(row => row.CalculationVersion), });
 
         var latestCalcIdForMetering = viewForLatest
             .Join(
