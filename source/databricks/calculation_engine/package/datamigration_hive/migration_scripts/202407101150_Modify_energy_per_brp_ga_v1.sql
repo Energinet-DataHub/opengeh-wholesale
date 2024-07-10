@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_es_brp_ga_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_brp_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
@@ -19,3 +22,4 @@ WHERE
     calculation_type in ('balance_fixing', 'aggregation')
     AND aggregation_level = 'balance_responsible_party'
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
+GO
