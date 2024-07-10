@@ -10,8 +10,9 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_N
     energy_supplier_id STRING NOT NULL,
     -- This represents either a) the sum of energy quantities or b) the sum of charge quantities (which is then an integer represented as a Decimal)
     -- Example: 1234.534
-    quantity DECIMAL(18, 3),
+    quantity DECIMAL(18, 3) NOT NULL,
     quantity_unit STRING NOT NULL,
+    -- Only used for tariffs. NULL for subscriptions and fees.
     quantity_qualities ARRAY<STRING>,
     -- The time and the resolution defines the period that the 'amount' is calculated for.
     time TIMESTAMP NOT NULL,
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_N
     -- Null when metering point type is not consumption
     settlement_method STRING,
     price DECIMAL(18, 6),
-    -- Null when no price data.
+    -- Null when no price or quantity data.
     amount DECIMAL(18, 6),
     is_tax BOOLEAN NOT NULL,
     charge_code STRING NOT NULL,
