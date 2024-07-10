@@ -69,6 +69,10 @@ def _create_df(spark: SparkSession) -> DataFrame:
             OutputTableColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
+        (
+            OutputTableColumnNames.quantity,
+            None,
+        ),
         (OutputTableColumnNames.quantity_unit, None),
         (OutputTableColumnNames.quantity_unit, "foo"),
         (OutputTableColumnNames.quantity_qualities, []),
