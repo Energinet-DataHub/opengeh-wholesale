@@ -14,6 +14,11 @@
 
 
 class TableColumnNames:
+    """
+    Class containing all the names of the columns in the Delta tables that are owned my the Wholesale subsystem.
+    Different tables should use the same names to ensure consistency across the subsystem.
+    """
+
     amount = "amount"
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
