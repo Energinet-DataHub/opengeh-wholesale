@@ -19,4 +19,4 @@ from enum import Enum
 class AggregationLevel(Enum):
     GRID_AREA = "grid_area"
     BALANCE_RESPONSIBLE_PARTY = "balance_responsible_party"
-    ENERGY_SUPPLIER = "es_brp_ga"  # rename to "energy_supplier"
+    ENERGY_SUPPLIER = "energy_supplier"
