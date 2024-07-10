@@ -18,6 +18,6 @@ public static class DeltaTableAggregationLevel
 {
     public const string GridArea = "grid_area";
     public const string EnergySupplierAndGridArea = "es_brp_ga";
-    public const string BalanceResponsibleAndGridArea = "brp_ga";
+    public const string BalanceResponsibleAndGridArea = "balance_responsible_party";
     public const string EnergySupplierAndBalanceResponsibleAndGridArea = "es_brp_ga";
 }
