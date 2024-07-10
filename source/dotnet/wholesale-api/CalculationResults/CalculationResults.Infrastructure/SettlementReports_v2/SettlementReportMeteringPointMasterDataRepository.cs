@@ -96,7 +96,6 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 },
                 inner => inner,
                 (outer, inner) => new { outer.CalculationId })
-            .Select(row => row)
             .Distinct();
 
         var query = view.Join(
@@ -105,7 +104,7 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 inner => inner.CalculationId,
                 (outer, inner) => outer)
             .OrderBy(row => row.MeteringPointId)
-            .Select(row => new { row.MeteringPointId, row.CalculationId, })
+            .Select(row => row.MeteringPointId)
             .Distinct()
             .DatabricksSqlCountAsync();
         return query;
@@ -133,7 +132,6 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 },
                 inner => inner,
                 (outer, inner) => new { outer.CalculationId })
-            .Select(row => row)
             .Distinct();
 
         var query = view.Join(
@@ -142,7 +140,7 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 inner => inner.CalculationId,
                 (outer, inner) => outer)
             .OrderBy(row => row.MeteringPointId)
-            .Select(row => new { row.MeteringPointId, row.CalculationId, })
+            .Select(row => row.MeteringPointId)
             .Distinct()
             .DatabricksSqlCountAsync();
         return query;
@@ -192,17 +190,26 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 },
                 inner => inner,
                 (outer, inner) => new { outer.CalculationId })
-            .Select(row => row)
             .Distinct();
 
-        var query = view.Join(
-            latestCalcIdForMetering,
-            outer => outer.CalculationId,
-            inner => inner.CalculationId,
-            (outer, inner) => outer)
-            .OrderBy(row => row.MeteringPointId)
+        var meteringPointIds = view.Join(
+                latestCalcIdForMetering,
+                outer => outer.CalculationId,
+                inner => inner.CalculationId,
+                (outer, inner) => outer)
+            .Select(row => row.MeteringPointId)
+            .Distinct()
+            .OrderBy(row => row)
             .Skip(skip)
             .Take(take);
+
+        var query = view.Join(
+            meteringPointIds,
+            outer => outer.MeteringPointId,
+            inner => inner,
+            (outer, inner) => outer)
+        .Distinct()
+        .OrderBy(row => row.MeteringPointId);
 
         return query;
     }
@@ -231,17 +238,26 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
                 },
                 inner => inner,
                 (outer, inner) => new { outer.CalculationId })
-            .Select(row => row)
             .Distinct();
 
-        var query = view.Join(
+        var meteringPointIds = view.Join(
                 latestCalcIdForMetering,
                 outer => outer.CalculationId,
                 inner => inner.CalculationId,
                 (outer, inner) => outer)
-            .OrderBy(row => row.MeteringPointId)
+            .Select(row => row.MeteringPointId)
+            .Distinct()
+            .OrderBy(row => row)
             .Skip(skip)
             .Take(take);
+
+        var query = view.Join(
+                meteringPointIds,
+                outer => outer.MeteringPointId,
+                inner => inner,
+                (outer, inner) => outer)
+            .Distinct()
+            .OrderBy(row => row.MeteringPointId);
 
         return query;
     }

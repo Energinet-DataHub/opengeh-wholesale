@@ -193,7 +193,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 "da-DK"),
             int.MaxValue);
 
-        Assert.Equal(3, actual);
+        Assert.Equal(2, actual);
     }
 
     [Fact]
@@ -295,6 +295,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ee'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
                 [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2023-01-02T02:00:00.000+00:00'", "'2023-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583196'"],
             ]);
@@ -359,8 +360,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
         Assert.Equal(3, count);
         Assert.Single(actual);
         Assert.Single(actual2);
-        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829eb", actual.First().MeteringPointId);
-        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual2.First().MeteringPointId);
+        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual.First().MeteringPointId);
+        Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ee", actual2.First().MeteringPointId);
     }
 
     [Fact]
@@ -376,6 +377,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
                 [$"'{calculationId1}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583198'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8497670583197'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ec'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
+                [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ee'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
                 [$"'{calculationId2}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829ef'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'410'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
                 [$"'{calculationId3}'", "'balance_fixing'", "'15cba911-b91e-4782-bed4-f0d2841829eb'", "'2022-01-02T02:00:00.000+00:00'", "'2022-01-13T02:00:00.000+00:00'", "'405'", "'406'", "'407'", "'consumption'", "'flex'", "'8297670583196'"],
             ]);
@@ -438,8 +440,8 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
             1,
             int.MaxValue).ToListAsync();
 
-        Assert.Equal(2, count);
-        Assert.Single(actual);
+        Assert.Equal(3, count);
+        Assert.Equal(2, actual.Count);
         Assert.Single(actual2);
         Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829eb", actual.First().MeteringPointId);
         Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual2.First().MeteringPointId);
