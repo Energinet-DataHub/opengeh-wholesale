@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.calculation.databases.output_table_column_names import OutputTableColumnNames
 from package.constants import TotalMonthlyAmountsColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table

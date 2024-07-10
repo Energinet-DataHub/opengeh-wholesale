@@ -15,9 +15,8 @@ from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
-from package.constants import Colname, MonthlyAmountsColumnNames
-from package.constants.result_column_names import ResultColumnNames
+from package.calculation.databases.output_table_column_names import OutputTableColumnNames
+from package.constants import MonthlyAmountsColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings

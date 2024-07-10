@@ -11,3 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    StructType,
+)
+
+from package.calculation.databases.output_table_column_names import OutputTableColumnNames
+
+grid_loss_metering_points_schema = StructType(
+    [
+        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
+        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
+    ]
+)

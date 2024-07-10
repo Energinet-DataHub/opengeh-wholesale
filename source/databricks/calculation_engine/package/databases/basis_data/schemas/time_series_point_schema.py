@@ -13,16 +13,21 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
+    DecimalType,
     StructField,
     StringType,
+    TimestampType,
     StructType,
 )
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.calculation.databases.output_table_column_names import OutputTableColumnNames
 
-grid_loss_metering_points_schema = StructType(
+time_series_point_schema = StructType(
     [
         StructField(OutputTableColumnNames.calculation_id, StringType(), False),
         StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
+        StructField(OutputTableColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(OutputTableColumnNames.quality, StringType(), False),
+        StructField(OutputTableColumnNames.observation_time, TimestampType(), False),
     ]
 )

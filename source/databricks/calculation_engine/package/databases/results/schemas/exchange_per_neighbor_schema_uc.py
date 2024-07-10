@@ -1,6 +1,6 @@
 import pyspark.sql.types as t
 
-from package.calculation.output.output_table_column_names import (
+from package.calculation.databases.output_table_column_names import (
     OutputTableColumnNames as cname,
 )
 

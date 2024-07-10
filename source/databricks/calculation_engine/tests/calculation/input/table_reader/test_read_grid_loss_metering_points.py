@@ -18,8 +18,8 @@ import pytest
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.calculation.input import TableReader
-from package.calculation.input.schemas import (
+from package.calculation.databases.input import TableReader
+from package.calculation.databases.input.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.constants import Colname

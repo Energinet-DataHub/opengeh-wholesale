@@ -13,11 +13,11 @@
 # limitations under the License.
 from spark_sql_migrations import Schema, Table, View
 
-import package.calculation.output.basis_data.schemas as basis_data_schemas
+import package.databases.basis_data.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
-from package.calculation.input.schemas.grid_loss_metering_points_schema import (
+from package.calculation.databases.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.output.results.schemas import (
@@ -31,7 +31,7 @@ from package.calculation.output.results.schemas import (
 )
 
 # calculation_output
-from package.calculation.output.results.schemas.wholesale_results_schema import (
+from package.databases.results.schemas.wholesale_results_schema import (
     wholesale_results_schema,
 )
 

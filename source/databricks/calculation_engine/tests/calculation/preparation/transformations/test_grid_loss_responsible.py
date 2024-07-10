@@ -17,13 +17,13 @@ import pytest
 from pyspark.sql import SparkSession
 from unittest.mock import patch
 
-from package.calculation import input
+from package.calculation.databases import input
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     get_grid_loss_responsible,
 )
 import metering_point_periods_factory as factory
-from package.calculation.input import TableReader
-from package.calculation.input.schemas import (
+from package.calculation.databases.input import TableReader
+from package.calculation.databases.input.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.codelists import MeteringPointType

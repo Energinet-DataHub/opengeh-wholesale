@@ -33,7 +33,7 @@ from pyspark.sql.types import StructType
 
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.input.schemas import (
+from package.calculation.databases.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     grid_loss_metering_points_schema,

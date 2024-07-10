@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
-from package.calculation.input import TableReader
+from package.calculation.databases.input import TableReader
 from package.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )

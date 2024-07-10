@@ -24,8 +24,8 @@ from .schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
-from package.calculation.output.basis_data.schemas import hive_calculations_schema
-from ...common.schemas import assert_contract
+from package.databases.basis_data import hive_calculations_schema
+from package.common.schemas import assert_contract
 
 
 class TableReader:

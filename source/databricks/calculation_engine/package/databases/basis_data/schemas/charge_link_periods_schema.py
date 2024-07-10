@@ -13,39 +13,39 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    BooleanType,
+    IntegerType,
     StructField,
     StringType,
     TimestampType,
     StructType,
 )
 
-from package.calculation.output.output_table_column_names import OutputTableColumnNames
+from package.calculation.databases.output_table_column_names import OutputTableColumnNames
 
-charge_price_information_periods_schema_uc = StructType(
+charge_link_periods_schema_uc = StructType(
     [
         StructField(OutputTableColumnNames.calculation_id, StringType(), False),
         StructField(OutputTableColumnNames.charge_key, StringType(), False),
         StructField(OutputTableColumnNames.charge_code, StringType(), False),
         StructField(OutputTableColumnNames.charge_type, StringType(), False),
         StructField(OutputTableColumnNames.charge_owner_id, StringType(), False),
-        StructField(OutputTableColumnNames.resolution, StringType(), False),
-        StructField(OutputTableColumnNames.is_tax, BooleanType(), False),
+        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
+        StructField(OutputTableColumnNames.quantity, IntegerType(), False),
         StructField(OutputTableColumnNames.from_date, TimestampType(), False),
         StructField(OutputTableColumnNames.to_date, TimestampType(), False),
     ]
 )
 
 # ToDo JMG: Remove when we are on Unity Catalog
-hive_charge_price_information_periods_schema = StructType(
+hive_charge_link_periods_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("charge_key", StringType(), False),
         StructField("charge_code", StringType(), False),
         StructField("charge_type", StringType(), False),
         StructField("charge_owner_id", StringType(), False),
-        StructField("resolution", StringType(), False),
-        StructField("is_tax", BooleanType(), False),
+        StructField("metering_point_id", StringType(), False),
+        StructField("quantity", IntegerType(), False),
         StructField("from_date", TimestampType(), False),
         StructField("to_date", TimestampType(), True),
     ]

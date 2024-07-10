@@ -19,8 +19,8 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.calculation.input import TableReader
-from package.calculation.input.schemas import charge_price_information_periods_schema
+from package.calculation.databases.input import TableReader
+from package.calculation.databases.input.schemas import charge_price_information_periods_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal

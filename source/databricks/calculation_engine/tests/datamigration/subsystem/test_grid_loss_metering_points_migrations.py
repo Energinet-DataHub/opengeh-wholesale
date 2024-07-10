@@ -18,7 +18,7 @@ import pytest
 
 from helpers.data_frame_utils import set_column
 
-from package.calculation.input.schemas import grid_loss_metering_points_schema
+from package.calculation.databases.input.schemas import grid_loss_metering_points_schema
 from package.infrastructure import paths
 
 

@@ -18,7 +18,7 @@ import metering_point_periods_factory as factory
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
-from package.calculation.input.schemas.grid_loss_metering_points_schema import (
+from package.calculation.databases.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
 from package.calculation.preparation.transformations.grid_loss_metering_points import (

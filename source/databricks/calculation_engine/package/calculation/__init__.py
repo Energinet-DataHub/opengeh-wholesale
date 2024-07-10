@@ -14,4 +14,4 @@
 
 from .preparation import PreparedDataReader
 from .calculation import execute
-from .input import TableReader
+from package.calculation.databases.input import TableReader
