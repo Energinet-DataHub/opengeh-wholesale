@@ -17,7 +17,7 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.databases.basis_data.schemas import (
+from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema_uc,
     charge_link_periods_schema_uc,
     charge_price_points_schema,
