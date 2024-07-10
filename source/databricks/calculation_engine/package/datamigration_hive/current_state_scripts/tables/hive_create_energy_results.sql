@@ -25,7 +25,7 @@ TBLPROPERTIES (
     delta.constraints.calculation_type_chk = "calculation_type IN ( 'balance_fixing' , 'aggregation' , 'wholesale_fixing' , 'first_correction_settlement' , 'second_correction_settlement' , 'third_correction_settlement' )",
     delta.constraints.time_series_type_chk = "time_series_type IN ( 'production' , 'non_profiled_consumption' , 'net_exchange_per_neighboring_ga' , 'net_exchange_per_ga' , 'flex_consumption' , 'grid_loss' , 'negative_grid_loss' , 'positive_grid_loss' , 'total_consumption' , 'temp_flex_consumption' , 'temp_production' )",
     delta.constraints.quantity_qualities_chk = "array_size ( array_except ( quantity_qualities , array ( 'missing' , 'calculated' , 'measured' , 'estimated' ) ) ) = 0 AND array_size ( quantity_qualities ) > 0",
-    delta.constraints.aggregation_level_chk = "aggregation_level IN ( 'grid_area', 'balance_responsible_party', 'energy_supplier' )",
+    delta.constraints.aggregation_level_chk = "aggregation_level IN ( 'grid_area' , 'balance_responsible_party' , 'energy_supplier' )",
     delta.constraints.energy_supplier_id_chk = "energy_supplier_id IS NULL OR LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
     delta.constraints.balance_responsible_id_chk = "balance_responsible_id IS NULL OR LENGTH ( balance_responsible_id ) = 13 OR LENGTH ( balance_responsible_id ) = 16",
     delta.constraints.calculation_id_chk = "LENGTH ( calculation_id ) = 36",
