@@ -17,7 +17,7 @@ from pyspark.sql import DataFrame
 from package.calculation.calculation_results import (
     WholesaleResultsContainer,
 )
-from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.table_column_names import TableColumnNames
 from package.constants import TotalMonthlyAmountsColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
@@ -58,7 +58,7 @@ def _write(
         ).withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog
             TotalMonthlyAmountsColumnNames.calculation_result_id,
-            OutputTableColumnNames.result_id,
+            TableColumnNames.result_id,
         ).write.format(
             "delta"
         ).mode(

@@ -19,7 +19,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
-from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.schemas import (
     monthly_amounts_schema_uc,
 )
@@ -30,17 +30,17 @@ from tests.helpers.data_frame_utils import set_column
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        OutputTableColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        OutputTableColumnNames.result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        OutputTableColumnNames.grid_area_code: "543",
-        OutputTableColumnNames.energy_supplier_id: "1234567890123",
-        OutputTableColumnNames.quantity_unit: "kWh",
-        OutputTableColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        OutputTableColumnNames.amount: Decimal("1.123"),
-        OutputTableColumnNames.is_tax: True,
-        OutputTableColumnNames.charge_code: "charge_code",
-        OutputTableColumnNames.charge_type: ChargeType.SUBSCRIPTION.value,
-        OutputTableColumnNames.charge_owner_id: "1234567890123",
+        TableColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        TableColumnNames.result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        TableColumnNames.grid_area_code: "543",
+        TableColumnNames.energy_supplier_id: "1234567890123",
+        TableColumnNames.quantity_unit: "kWh",
+        TableColumnNames.time: datetime(2020, 1, 1, 0, 0),
+        TableColumnNames.amount: Decimal("1.123"),
+        TableColumnNames.is_tax: True,
+        TableColumnNames.charge_code: "charge_code",
+        TableColumnNames.charge_type: ChargeType.SUBSCRIPTION.value,
+        TableColumnNames.charge_owner_id: "1234567890123",
     }
     return spark.createDataFrame(data=[row], schema=monthly_amounts_schema_uc)
 
@@ -48,49 +48,49 @@ def _create_df(spark: SparkSession) -> DataFrame:
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (OutputTableColumnNames.calculation_id, None),
-        (OutputTableColumnNames.calculation_id, "not-a-uuid"),
-        (OutputTableColumnNames.result_id, None),
-        (OutputTableColumnNames.result_id, "not-a-uuid"),
-        (OutputTableColumnNames.grid_area_code, None),
-        (OutputTableColumnNames.grid_area_code, "12"),
-        (OutputTableColumnNames.grid_area_code, "1234"),
+        (TableColumnNames.calculation_id, None),
+        (TableColumnNames.calculation_id, "not-a-uuid"),
+        (TableColumnNames.result_id, None),
+        (TableColumnNames.result_id, "not-a-uuid"),
+        (TableColumnNames.grid_area_code, None),
+        (TableColumnNames.grid_area_code, "12"),
+        (TableColumnNames.grid_area_code, "1234"),
         (
-            OutputTableColumnNames.energy_supplier_id,
+            TableColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (OutputTableColumnNames.energy_supplier_id, None),
+        (TableColumnNames.energy_supplier_id, None),
         (
-            OutputTableColumnNames.quantity_unit,
+            TableColumnNames.quantity_unit,
             None,
         ),
         (
-            OutputTableColumnNames.quantity_unit,
+            TableColumnNames.quantity_unit,
             "invalid",
         ),
-        (OutputTableColumnNames.time, None),
+        (TableColumnNames.time, None),
         (
-            OutputTableColumnNames.is_tax,
+            TableColumnNames.is_tax,
             None,
         ),
         (
-            OutputTableColumnNames.charge_code,
+            TableColumnNames.charge_code,
             None,
         ),
         (
-            OutputTableColumnNames.charge_type,
+            TableColumnNames.charge_type,
             "invalid",
         ),
         (
-            OutputTableColumnNames.charge_type,
+            TableColumnNames.charge_type,
             None,
         ),
         (
-            OutputTableColumnNames.charge_owner_id,
+            TableColumnNames.charge_owner_id,
             "neither-16-nor-13-digits-long",
         ),
         (
-            OutputTableColumnNames.charge_owner_id,
+            TableColumnNames.charge_owner_id,
             None,
         ),
     ],
@@ -130,30 +130,30 @@ actor_eic = "1234567890123456"
     "column_name,column_value",
     [
         (
-            OutputTableColumnNames.calculation_id,
+            TableColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
         (
-            OutputTableColumnNames.result_id,
+            TableColumnNames.result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (OutputTableColumnNames.grid_area_code, "123"),
-        (OutputTableColumnNames.grid_area_code, "007"),
-        (OutputTableColumnNames.energy_supplier_id, actor_gln),
-        (OutputTableColumnNames.energy_supplier_id, actor_eic),
-        (OutputTableColumnNames.quantity_unit, "kWh"),
-        (OutputTableColumnNames.quantity_unit, "pcs"),
-        (OutputTableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (OutputTableColumnNames.amount, max_18_6_decimal),
-        (OutputTableColumnNames.amount, min_18_6_decimal),
-        (OutputTableColumnNames.is_tax, True),
-        (OutputTableColumnNames.is_tax, False),
-        (OutputTableColumnNames.charge_code, "valid-charge-code"),
-        (OutputTableColumnNames.charge_type, ChargeType.SUBSCRIPTION.value),
-        (OutputTableColumnNames.charge_type, ChargeType.FEE.value),
-        (OutputTableColumnNames.charge_type, ChargeType.TARIFF.value),
-        (OutputTableColumnNames.charge_owner_id, actor_gln),
-        (OutputTableColumnNames.charge_owner_id, actor_eic),
+        (TableColumnNames.grid_area_code, "123"),
+        (TableColumnNames.grid_area_code, "007"),
+        (TableColumnNames.energy_supplier_id, actor_gln),
+        (TableColumnNames.energy_supplier_id, actor_eic),
+        (TableColumnNames.quantity_unit, "kWh"),
+        (TableColumnNames.quantity_unit, "pcs"),
+        (TableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (TableColumnNames.amount, max_18_6_decimal),
+        (TableColumnNames.amount, min_18_6_decimal),
+        (TableColumnNames.is_tax, True),
+        (TableColumnNames.is_tax, False),
+        (TableColumnNames.charge_code, "valid-charge-code"),
+        (TableColumnNames.charge_type, ChargeType.SUBSCRIPTION.value),
+        (TableColumnNames.charge_type, ChargeType.FEE.value),
+        (TableColumnNames.charge_type, ChargeType.TARIFF.value),
+        (TableColumnNames.charge_owner_id, actor_gln),
+        (TableColumnNames.charge_owner_id, actor_eic),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -193,7 +193,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = result_df.withColumn("amount", lit(amount))
     calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
-        OutputTableColumnNames.calculation_id, lit(calculation_id)
+        TableColumnNames.calculation_id, lit(calculation_id)
     )
 
     # Act
@@ -204,5 +204,5 @@ def test__migrated_table_does_not_round_valid_decimal(
     # Assert
     actual_df = spark.read.table(
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
-    ).where(col(OutputTableColumnNames.calculation_id) == calculation_id)
+    ).where(col(TableColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].amount == amount

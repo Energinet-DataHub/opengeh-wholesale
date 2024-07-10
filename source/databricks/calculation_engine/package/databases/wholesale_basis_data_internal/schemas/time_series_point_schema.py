@@ -20,14 +20,14 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.table_column_names import TableColumnNames
 
 time_series_point_schema = StructType(
     [
-        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
-        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
-        StructField(OutputTableColumnNames.quantity, DecimalType(18, 3), False),
-        StructField(OutputTableColumnNames.quality, StringType(), False),
-        StructField(OutputTableColumnNames.observation_time, TimestampType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_id, StringType(), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(TableColumnNames.quality, StringType(), False),
+        StructField(TableColumnNames.observation_time, TimestampType(), False),
     ]
 )

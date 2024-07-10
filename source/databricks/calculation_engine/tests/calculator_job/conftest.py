@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.table_column_names import TableColumnNames
 from package.calculation.preparation import PreparedDataReader
 
 from package.databases.migrations_wholesale import TableReader
@@ -141,8 +141,7 @@ def wholesale_fixing_amounts_per_charge_df(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(OutputTableColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 
@@ -155,8 +154,7 @@ def wholesale_fixing_total_monthly_amounts_df(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(OutputTableColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 
@@ -169,6 +167,5 @@ def wholesale_fixing_monthly_amounts_per_charge_df(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(OutputTableColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )

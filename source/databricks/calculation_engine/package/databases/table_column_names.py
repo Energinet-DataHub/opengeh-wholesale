@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class OutputTableColumnNames:
+class TableColumnNames:
     amount = "amount"
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"

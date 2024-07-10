@@ -1,7 +1,7 @@
 import pyspark.sql.types as t
 
-from package.databases.output_table_column_names import (
-    OutputTableColumnNames as cname,
+from package.databases.table_column_names import (
+    TableColumnNames as cname,
 )
 
 nullable = True

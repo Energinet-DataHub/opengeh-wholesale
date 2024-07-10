@@ -19,27 +19,23 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.table_column_names import TableColumnNames
 
 metering_point_period_schema_uc = StructType(
     [
-        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
-        StructField(OutputTableColumnNames.metering_point_id, StringType(), False),
-        StructField(OutputTableColumnNames.metering_point_type, StringType(), False),
-        StructField(OutputTableColumnNames.settlement_method, StringType(), True),
-        StructField(OutputTableColumnNames.grid_area_code, StringType(), False),
-        StructField(OutputTableColumnNames.resolution, StringType(), False),
-        StructField(OutputTableColumnNames.from_grid_area_code, StringType(), True),
-        StructField(OutputTableColumnNames.to_grid_area_code, StringType(), True),
-        StructField(
-            OutputTableColumnNames.parent_metering_point_id, StringType(), True
-        ),
-        StructField(OutputTableColumnNames.energy_supplier_id, StringType(), True),
-        StructField(
-            OutputTableColumnNames.balance_responsible_party_id, StringType(), True
-        ),
-        StructField(OutputTableColumnNames.from_date, TimestampType(), False),
-        StructField(OutputTableColumnNames.to_date, TimestampType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_type, StringType(), False),
+        StructField(TableColumnNames.settlement_method, StringType(), True),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.resolution, StringType(), False),
+        StructField(TableColumnNames.from_grid_area_code, StringType(), True),
+        StructField(TableColumnNames.to_grid_area_code, StringType(), True),
+        StructField(TableColumnNames.parent_metering_point_id, StringType(), True),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), True),
+        StructField(TableColumnNames.balance_responsible_party_id, StringType(), True),
+        StructField(TableColumnNames.from_date, TimestampType(), False),
+        StructField(TableColumnNames.to_date, TimestampType(), False),
     ]
 )
 

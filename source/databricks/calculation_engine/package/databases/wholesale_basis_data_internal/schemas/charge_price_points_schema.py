@@ -20,16 +20,16 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.databases.output_table_column_names import OutputTableColumnNames
+from package.databases.table_column_names import TableColumnNames
 
 charge_price_points_schema = StructType(
     [
-        StructField(OutputTableColumnNames.calculation_id, StringType(), False),
-        StructField(OutputTableColumnNames.charge_key, StringType(), False),
-        StructField(OutputTableColumnNames.charge_code, StringType(), False),
-        StructField(OutputTableColumnNames.charge_type, StringType(), False),
-        StructField(OutputTableColumnNames.charge_owner_id, StringType(), False),
-        StructField(OutputTableColumnNames.charge_price, DecimalType(18, 6), False),
-        StructField(OutputTableColumnNames.charge_time, TimestampType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.charge_key, StringType(), False),
+        StructField(TableColumnNames.charge_code, StringType(), False),
+        StructField(TableColumnNames.charge_type, StringType(), False),
+        StructField(TableColumnNames.charge_owner_id, StringType(), False),
+        StructField(TableColumnNames.charge_price, DecimalType(18, 6), False),
+        StructField(TableColumnNames.charge_time, TimestampType(), False),
     ]
 )
