@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_ga_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
@@ -19,3 +22,4 @@ WHERE
     time_series_type in ('production', 'non_profiled_consumption', 'net_exchange_per_ga', 'flex_consumption', 'total_consumption')
     -- Only include results that are aggregated per grid area
     AND aggregation_level = 'grid_area'
+GO
