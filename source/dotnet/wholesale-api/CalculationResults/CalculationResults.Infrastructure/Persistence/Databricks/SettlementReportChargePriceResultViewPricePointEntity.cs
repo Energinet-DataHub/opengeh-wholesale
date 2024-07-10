@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
@@ -20,9 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persiste
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 public sealed class SettlementReportChargePriceResultViewPricePointEntity
 {
-    [Column("time")]
     public Instant Time { get; set; }
 
-    [Column("price")]
     public decimal Price { get; set; }
 }

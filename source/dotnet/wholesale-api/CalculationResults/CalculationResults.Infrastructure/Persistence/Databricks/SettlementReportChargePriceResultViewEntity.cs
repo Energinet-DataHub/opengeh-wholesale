@@ -17,6 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 public sealed class SettlementReportChargePriceResultViewEntity
 {
     [Column("calculation_id")]
@@ -38,7 +39,7 @@ public sealed class SettlementReportChargePriceResultViewEntity
     public string Resolution { get; set; } = null!;
 
     [Column("energy_supplier_id")]
-    public string EnergySupplierId { get; set; } = null!;
+    public string? EnergySupplierId { get; set; }
 
     [Column("charge_type")]
     public string ChargeType { get; set; } = null!;
