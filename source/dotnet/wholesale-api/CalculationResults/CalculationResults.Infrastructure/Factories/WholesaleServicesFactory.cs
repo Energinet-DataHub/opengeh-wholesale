@@ -28,31 +28,85 @@ public static class WholesaleServicesFactory
         AmountType amountType,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        var resolution = amountType switch
+        return amountType switch
         {
-            AmountType.AmountPerCharge => ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!),
-            AmountType.MonthlyAmountPerCharge => Resolution.Month,
-            AmountType.TotalMonthlyAmount => Resolution.Month,
+            AmountType.AmountPerCharge => GetWholesaleServicesForAmountsPerCharge(databricksSqlRow, timeSeriesPoints),
+            AmountType.MonthlyAmountPerCharge => GetWholesaleServicesForMonthlyAmountsPerCharge(databricksSqlRow, timeSeriesPoints),
+            AmountType.TotalMonthlyAmount => GetWholesaleServicesForTotalMonthlyAmount(databricksSqlRow, timeSeriesPoints),
             _ => throw new ArgumentOutOfRangeException(nameof(amountType), amountType, null),
         };
+    }
 
+    private static WholesaleServices GetWholesaleServicesForAmountsPerCharge(
+        DatabricksSqlRow databricksSqlRow,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    {
+        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!);
         var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
 
         return new WholesaleServices(
             new Period(periodStart, periodEnd),
-            databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
-            databricksSqlRow[WholesaleResultColumnNames.EnergySupplierId]!,
-            databricksSqlRow[WholesaleResultColumnNames.ChargeCode]!,
-            ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.ChargeType]!),
-            databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId],
-            amountType,
+            databricksSqlRow[AmountsPerChargeViewColumnNames.GridAreaCode]!,
+            databricksSqlRow[AmountsPerChargeViewColumnNames.EnergySupplierId]!,
+            databricksSqlRow[AmountsPerChargeViewColumnNames.ChargeCode]!,
+            ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[AmountsPerChargeViewColumnNames.ChargeType]!),
+            databricksSqlRow[AmountsPerChargeViewColumnNames.ChargeOwnerId]!,
+            AmountType.AmountPerCharge,
             resolution,
-            QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.QuantityUnit]!),
-            MeteringPointTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]),
-            SettlementMethodMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.SettlementMethod]),
+            QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[AmountsPerChargeViewColumnNames.QuantityUnit]!),
+            MeteringPointTypeMapper.FromDeltaTableValue(databricksSqlRow[AmountsPerChargeViewColumnNames.MeteringPointType]),
+            SettlementMethodMapper.FromDeltaTableValue(databricksSqlRow[AmountsPerChargeViewColumnNames.SettlementMethod]),
             Currency.DKK,
-            CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.CalculationType]!),
+            CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[AmountsPerChargeViewColumnNames.CalculationType]!),
             timeSeriesPoints,
             SqlResultValueConverters.ToInt(databricksSqlRow[AmountsPerChargeViewColumnNames.CalculationVersion]!)!.Value);
+    }
+
+    private static WholesaleServices GetWholesaleServicesForMonthlyAmountsPerCharge(
+        DatabricksSqlRow databricksSqlRow,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    {
+        var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, Resolution.Month);
+
+        return new WholesaleServices(
+            new Period(periodStart, periodEnd),
+            databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.GridAreaCode]!,
+            databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId]!,
+            databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.ChargeCode]!,
+            ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.ChargeType]!),
+            databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.ChargeOwnerId]!,
+            AmountType.MonthlyAmountPerCharge,
+            Resolution.Month,
+            QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.QuantityUnit]!),
+            null,
+            null,
+            Currency.DKK,
+            CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.CalculationType]!),
+            timeSeriesPoints,
+            SqlResultValueConverters.ToInt(databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.CalculationVersion]!)!.Value);
+    }
+
+    private static WholesaleServices GetWholesaleServicesForTotalMonthlyAmount(
+        DatabricksSqlRow databricksSqlRow,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    {
+        var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, Resolution.Month);
+
+        return new WholesaleServices(
+            new Period(periodStart, periodEnd),
+            databricksSqlRow[TotalMonthlyAmountsViewColumnNames.GridAreaCode]!,
+            databricksSqlRow[TotalMonthlyAmountsViewColumnNames.EnergySupplierId]!,
+            null,
+            null,
+            databricksSqlRow[TotalMonthlyAmountsViewColumnNames.ChargeOwnerId],
+            AmountType.TotalMonthlyAmount,
+            Resolution.Month,
+            null,
+            null,
+            null,
+            Currency.DKK,
+            CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[TotalMonthlyAmountsViewColumnNames.CalculationType]!),
+            timeSeriesPoints,
+            SqlResultValueConverters.ToInt(databricksSqlRow[TotalMonthlyAmountsViewColumnNames.CalculationVersion]!)!.Value);
     }
 }
