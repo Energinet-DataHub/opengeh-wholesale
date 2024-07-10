@@ -23,7 +23,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.databases.output_table_column_names import OutputTableColumnNames
 from package.calculation.preparation import PreparedDataReader
 
-from package.databases.input import TableReader
+from package.databases.migrations_wholesale import TableReader
 from package.codelists.calculation_type import (
     CalculationType,
 )

@@ -16,9 +16,9 @@ from unittest.mock import patch
 
 from pyspark.sql import Row
 
-from package.databases.basis_data.schemas import hive_calculations_schema
+from package.databases.wholesale_basis_data_internal.schemas import hive_calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.results.calculations_storage_model_factory import (
+from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
     create_calculation,
 )
 from package.calculation.preparation import PreparedDataReader

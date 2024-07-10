@@ -15,10 +15,10 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
-from package.databases.basis_data.schemas.charge_link_periods_schema import (
+from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
     hive_charge_link_periods_schema,
 )
-from package.databases.basis_data.schemas import (
+from package.databases.wholesale_basis_data_internal.schemas import (
     hive_charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_points_schema,

@@ -20,8 +20,8 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.databases.basis_data.schemas import hive_calculations_schema
-from package.databases.input import TableReader
+from package.databases.wholesale_basis_data_internal.schemas import hive_calculations_schema
+from package.databases.migrations_wholesale import TableReader
 from package.codelists import CalculationType
 from package.constants.basis_data_colname import CalculationsColumnName
 from package.infrastructure.paths import HiveBasisDataDatabase

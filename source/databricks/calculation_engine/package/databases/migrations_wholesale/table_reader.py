@@ -24,7 +24,7 @@ from .schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
-from package.databases.basis_data.schemas import hive_calculations_schema
+from package.databases.wholesale_basis_data_internal.schemas import hive_calculations_schema
 from package.common.schemas import assert_contract
 
 

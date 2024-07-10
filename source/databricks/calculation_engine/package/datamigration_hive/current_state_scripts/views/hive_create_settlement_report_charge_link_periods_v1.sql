@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_v1 as
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_v1 as
 SELECT distinct c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,

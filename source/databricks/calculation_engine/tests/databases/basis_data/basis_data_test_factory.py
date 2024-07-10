@@ -16,13 +16,13 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
-import package.databases.basis_data.basis_data_factory as basis_data_factory
+import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import package.codelists as e
 import tests.calculation.charges_factory as charges_factory
 from databases.results.calculations_storage_model_test_factory import (
     create_calculations,
 )
-from package.databases.basis_data.schemas import (
+from package.databases.wholesale_basis_data_internal.schemas import (
     hive_charge_link_periods_schema,
     hive_charge_price_information_periods_schema,
     charge_price_points_schema,

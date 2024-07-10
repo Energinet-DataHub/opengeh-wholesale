@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
 
 from package.databases.output_table_column_names import OutputTableColumnNames
-from package.databases.results.schemas import (
+from package.databases.wholesale_results_internal.schemas import (
     monthly_amounts_schema_uc,
 )
 from package.codelists import ChargeType

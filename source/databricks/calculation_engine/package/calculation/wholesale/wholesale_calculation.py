@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import package.databases.results.wholesale_storage_model_factory as wholesale_results_factory
-import package.databases.results.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
-import package.databases.results.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
+import package.databases.wholesale_results_internal.wholesale_storage_model_factory as wholesale_results_factory
+import package.databases.wholesale_results_internal.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
+import package.databases.wholesale_results_internal.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
 
 import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
