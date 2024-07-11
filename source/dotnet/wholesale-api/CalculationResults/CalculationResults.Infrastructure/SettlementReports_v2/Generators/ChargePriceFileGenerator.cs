@@ -24,8 +24,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 1_750; // Up to 582 rows in each chunk for a month, 1.018.500 rows per chunk in total.
-
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
@@ -35,10 +33,9 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
     public string FileExtension => ".csv";
 
-    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
-        return (int)Math.Ceiling(count / (double)ChunkSize);
+        return _dataSource.CountAsync(filter);
     }
 
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
@@ -58,7 +55,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 await WriteHeaderAsync(csvHelper).ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset, 1).ConfigureAwait(false))
             {
                 await WriteRecordAsync(csvHelper, record).ConfigureAwait(false);
             }
