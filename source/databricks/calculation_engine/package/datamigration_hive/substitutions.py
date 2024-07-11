@@ -29,7 +29,7 @@ def substitutions(
         "{BASIS_DATA_FOLDER}": paths.HiveBasisDataDatabase.FOLDER_NAME,
         "{HIVE_BASIS_DATA_DATABASE_NAME}": paths.HiveBasisDataDatabase.DATABASE_NAME,
         "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
-        "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SettlementReportPublicDataModel.DATABASE_NAME,
+        "{HIVE_SETTLEMENT_REPORT_DATABASE_NAME}": paths.HiveSettlementReportPublicDataModel.DATABASE_NAME,
         "{CATALOG_NAME}": catalog_name,
         "{WHOLESALE_INTERNAL_DATABASE_NAME}": paths.WholesaleInternalDatabase.DATABASE_NAME,
     }

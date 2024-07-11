@@ -117,7 +117,6 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportWholesaleRepository, SettlementReportWholesaleRepository>();
         services.AddScoped<ISettlementReportEnergyResultRepository, SettlementReportEnergyResultRepository>();
         services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultRepository, SettlementReportMeteringPointTimeSeriesResultRepository>();
-        services.AddScoped<ISettlementReportMeteringPointTimeSeriesResultQueries, SettlementReportMeteringPointTimeSeriesResultQueries>();
         services.AddScoped<ISettlementReportChargeLinkPeriodsRepository, SettlementReportChargeLinkPeriodsRepository>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataRepository, SettlementReportMeteringPointMasterDataRepository>();
         services.AddScoped<ISettlementReportMeteringPointMasterDataQueries, SettlementReportMeteringPointMasterDataQueries>();
@@ -125,7 +124,6 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportMonthlyAmountQueries, SettlementReportMonthlyAmountQueries>();
         services.AddScoped<ILatestCalculationVersionRepository, LatestCalculationVersionRepository>();
         services.AddScoped<ISettlementReportChargePriceRepository, SettlementReportChargePriceRepository>();
-        services.AddScoped<ISettlementReportChargePriceQueries, SettlementReportChargePriceQueries>();
         services.AddScoped<ISettlementReportMonthlyAmountTotalRepository, SettlementReportMonthlyAmountTotalRepository>();
         services.AddScoped<ISettlementReportMonthlyAmountTotalQueries, SettlementReportMonthlyAmountTotalQueries>();
         services.AddSettlementReportBlobStorage();

@@ -1,16 +1,16 @@
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.current_balance_fixing_calculation_version_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.current_balance_fixing_calculation_version_v1
 GO
 
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.current_balance_fixing_calculation_version_v1 as
+CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.current_balance_fixing_calculation_version_v1 as
 SELECT MAX(version) as calculation_version
 FROM {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
 WHERE calculation_type = 'balance_fixing'
 GO
 
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1
 GO
 
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1 as
+CREATE VIEW {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_version,
@@ -27,10 +27,10 @@ AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction
 AND aggregation_level = 'total_ga'
 GO
 
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1
 GO
 
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1 as
+CREATE VIEW {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_version,
@@ -100,10 +100,10 @@ WHERE
     AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
 GO
 
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1
 GO
 
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
+CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
@@ -121,10 +121,10 @@ INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id
 WHERE c.calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
 GO
 
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1
 GO
 
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
+CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
        FIRST(c.calculation_type) as calculation_type,
        FIRST(c.version) as calculation_version,
