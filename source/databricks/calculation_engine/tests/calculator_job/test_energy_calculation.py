@@ -138,6 +138,8 @@ def test__balance_fixing_output__is_created(
                     TimeSeriesType.TOTAL_CONSUMPTION,
                 ]
             ),
+        ),
+        (
             paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
             len(
                 [
@@ -151,6 +153,8 @@ def test__balance_fixing_output__is_created(
                     TimeSeriesType.TOTAL_CONSUMPTION,
                 ]
             ),
+        ),
+        (
             paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
             len(
                 [
@@ -164,6 +168,8 @@ def test__balance_fixing_output__is_created(
                     TimeSeriesType.TOTAL_CONSUMPTION,
                 ]
             ),
+        ),
+        (
             paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
             len(
                 [
@@ -171,6 +177,8 @@ def test__balance_fixing_output__is_created(
                     TimeSeriesType.POSITIVE_GRID_LOSS,
                 ]
             ),
+        ),
+        (
             paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
             len(
                 [
