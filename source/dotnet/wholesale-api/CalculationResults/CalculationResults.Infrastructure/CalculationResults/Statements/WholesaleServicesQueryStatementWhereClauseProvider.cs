@@ -35,50 +35,15 @@ public class WholesaleServicesQueryStatementWhereClauseProvider
                     """;
         }
 
-        if (queryParameters.AmountType != AmountType.TotalMonthlyAmount)
-        {
-            if (queryParameters.EnergySupplierId is not null)
-            {
-                sql += $"""
-                        AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
-                        """;
-            }
-
-            if (queryParameters.ChargeOwnerId is not null)
-            {
-                sql += $"""
-                        AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
-                        """;
-            }
-        }
-        else
-        {
-            if (queryParameters.EnergySupplierId is not null)
-            {
-                sql += $"""
-                        AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
-                        """;
-            }
-
-            if (queryParameters.ChargeOwnerId is not null)
-            {
-                sql += $"""
-                        AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
-                        """;
-            }
-            else
-            {
-                sql += $"""
-                        AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} is null
-                        """;
-            }
-        }
+        sql = queryParameters.AmountType != AmountType.TotalMonthlyAmount
+            ? GenerateConstraintForActorsForNonTotalAmounts(queryParameters, table, sql)
+            : GenerateConstraintForActorsForTotalAmounts(queryParameters, table, sql);
 
         if (queryParameters.ChargeTypes.Count != 0)
         {
             var chargeTypesSql = queryParameters.ChargeTypes
                 .Select<(string? ChargeCode, ChargeType? ChargeType), string>(c =>
-                    CreateChargeTypeSqlStatement(c.ChargeCode, c.ChargeType, table))
+                    GenerateConstraintForChargeType(c.ChargeCode, c.ChargeType, table))
                 .ToList();
 
             sql += $"""
@@ -96,7 +61,57 @@ public class WholesaleServicesQueryStatementWhereClauseProvider
         return sql;
     }
 
-    private string CreateChargeTypeSqlStatement(string? chargeCode, ChargeType? chargeType, string table)
+    private static string GenerateConstraintForActorsForTotalAmounts(
+        WholesaleServicesQueryParameters queryParameters,
+        string table,
+        string sql)
+    {
+        if (queryParameters.EnergySupplierId is not null)
+        {
+            sql += $"""
+                    AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
+                    """;
+        }
+
+        if (queryParameters.ChargeOwnerId is not null)
+        {
+            sql += $"""
+                    AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
+                    """;
+        }
+        else
+        {
+            sql += $"""
+                    AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} is null
+                    """;
+        }
+
+        return sql;
+    }
+
+    private static string GenerateConstraintForActorsForNonTotalAmounts(
+        WholesaleServicesQueryParameters queryParameters,
+        string table,
+        string sql)
+    {
+        if (queryParameters.EnergySupplierId is not null)
+        {
+            sql += $"""
+                    AND {table}.{WholesaleResultColumnNames.EnergySupplierId} = '{queryParameters.EnergySupplierId}'
+                    """;
+        }
+
+        if (queryParameters.ChargeOwnerId is not null)
+        {
+            sql += $"""
+                    AND {table}.{WholesaleResultColumnNames.ChargeOwnerId} = '{queryParameters.ChargeOwnerId}'
+                    """;
+        }
+
+        return sql;
+    }
+
+    private static string GenerateConstraintForChargeType(string? chargeCode, ChargeType? chargeType, string table)
     {
         if (chargeCode == null && chargeType == null)
             throw new ArgumentException("Both chargeCode and chargeType cannot be null");
