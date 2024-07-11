@@ -22,8 +22,8 @@ resource "databricks_job" "migrations_job" {
         "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
         "spark.databricks.delta.preview.enabled" : true
-        # Set Unity Catalog as the default catalog
-        "spark.databricks.sql.initial.catalog.name" : data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+        # TODO JMG: Set Unity Catalog as the default catalog (data.azurerm_key_vault_secret.shared_unity_catalog_name.value) when hive migration scripts are removed from the wholesale repo
+        "spark.databricks.sql.initial.catalog.name" : "hive_metastore"
       }
       spark_env_vars = {
         "TENANT_ID"                     = var.tenant_id,
@@ -31,7 +31,7 @@ resource "databricks_job" "migrations_job" {
         "SPN_APP_SECRET"                = databricks_secret.spn_app_secret.config_reference
         "DATA_STORAGE_ACCOUNT_NAME"     = data.azurerm_key_vault_secret.st_data_lake_name.value
         "TIME_ZONE"                     = local.TIME_ZONE
-        "CATALOG_NAME"                  = "hive_metastore" # This a temp. solution. The default catalog name is set to 'hive_metastore' so hive migration scripts will work. Old value: data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+        "CATALOG_NAME"                  = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "CALCULATION_INPUT_FOLDER_NAME" = var.calculation_input_folder
       }
     }
