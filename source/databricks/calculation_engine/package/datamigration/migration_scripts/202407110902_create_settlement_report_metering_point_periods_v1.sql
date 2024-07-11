@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.metering_point_periods_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
@@ -12,6 +12,6 @@ SELECT c.calculation_id,
        m.settlement_method,
        m.energy_supplier_id
 FROM {HIVE_BASIS_DATA_DATABASE_NAME}.metering_point_periods as m
-INNER JOIN {HIVE_BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
 WHERE c.calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
 
