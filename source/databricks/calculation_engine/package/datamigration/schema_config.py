@@ -16,7 +16,7 @@ import package.databases.wholesale_basis_data_internal.schemas as basis_data_sch
 
 schema_config = [
     Schema(
-        name=paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+        name=paths.WholesaleInternalDatabase.DATABASE_NAME,
         tables=[
             Table(
                 name=paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
