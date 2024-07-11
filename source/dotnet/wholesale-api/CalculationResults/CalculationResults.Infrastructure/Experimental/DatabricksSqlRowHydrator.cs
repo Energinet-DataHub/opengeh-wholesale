@@ -47,7 +47,7 @@ public sealed class DatabricksSqlRowHydrator
         }
     }
 
-    private static TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
+    private TElement Hydrate<TElement>(ExpandoObject expandoObject, IReadOnlyDictionary<string, (PropertyInfo Property, TypeConverter Converter)> propertyMap)
     {
         var instance = Activator.CreateInstance<TElement>();
 

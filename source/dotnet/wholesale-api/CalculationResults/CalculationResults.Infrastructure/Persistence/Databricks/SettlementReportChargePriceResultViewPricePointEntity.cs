@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public interface ISettlementReportChargePriceQueries
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+public sealed class SettlementReportChargePriceResultViewPricePointEntity
 {
-    Task<int> CountAsync(SettlementReportChargePriceQueryFilter filter);
+    public Instant Time { get; set; }
 
-    IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportChargePriceQueryFilter filter, int skip, int take);
+    public decimal Price { get; set; }
 }
