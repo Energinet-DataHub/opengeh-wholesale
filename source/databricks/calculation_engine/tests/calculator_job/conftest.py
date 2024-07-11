@@ -20,14 +20,14 @@ from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
+from package.databases.table_column_names import TableColumnNames
 from package.calculation.preparation import PreparedDataReader
 
-from package.calculation.input import TableReader
+from package.databases.migrations_wholesale import TableReader
 from package.codelists.calculation_type import (
     CalculationType,
 )
-from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
-from package.constants.result_column_names import ResultColumnNames
+from package.constants import EnergyResultColumnNames
 from package.infrastructure import paths
 from . import configuration as C
 
@@ -105,20 +105,6 @@ def executed_wholesale_fixing(
 
 
 @pytest.fixture(scope="session")
-def balance_fixing_results_df(
-    spark: SparkSession,
-    executed_balance_fixing: None,
-) -> DataFrame:
-    results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
-    )
-    return results_df.where(
-        F.col(EnergyResultColumnNames.calculation_id)
-        == C.executed_balance_fixing_calculation_id
-    )
-
-
-@pytest.fixture(scope="session")
 def wholesale_fixing_energy_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
@@ -133,21 +119,20 @@ def wholesale_fixing_energy_results_df(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_wholesale_results_df(
+def wholesale_fixing_amounts_per_charge_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(WholesaleResultColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_total_monthly_amounts(
+def wholesale_fixing_total_monthly_amounts_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
@@ -155,12 +140,12 @@ def wholesale_fixing_total_monthly_amounts(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_monthly_amounts_per_charge(
+def wholesale_fixing_monthly_amounts_per_charge_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
@@ -168,6 +153,5 @@ def wholesale_fixing_monthly_amounts_per_charge(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(WholesaleResultColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )

@@ -15,10 +15,10 @@
 from pyspark.sql import SparkSession, Row
 
 from calculation.preparation.transformations import metering_point_periods_factory
-from package.calculation.output.basis_data import (
+from package.databases.wholesale_basis_data_internal import (
     get_metering_point_periods_basis_data,
 )
-from package.calculation.output.basis_data.schemas import (
+from package.databases.wholesale_basis_data_internal.schemas import (
     hive_metering_point_period_schema,
 )
 from package.codelists import (

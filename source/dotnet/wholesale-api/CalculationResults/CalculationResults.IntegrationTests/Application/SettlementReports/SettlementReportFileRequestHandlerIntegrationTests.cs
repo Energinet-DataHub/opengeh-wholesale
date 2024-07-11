@@ -55,27 +55,19 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         });
 
         Fixture.Inject(mockedOptions);
+
         var sqlWarehouseQueryExecutor = _databricksSqlStatementApiFixture.GetDatabricksExecutor();
+        var databricksContext = new SettlementReportDatabricksContext(mockedOptions.Object, sqlWarehouseQueryExecutor);
 
-        var settlementReportDataRepository = new SettlementReportEnergyResultRepository(
-            new SettlementReportDatabricksContext(
-                mockedOptions.Object,
-                sqlWarehouseQueryExecutor));
-
-        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(
-            new SettlementReportDatabricksContext(
-                mockedOptions.Object,
-                sqlWarehouseQueryExecutor));
-
-        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
-            mockedOptions.Object,
-            sqlWarehouseQueryExecutor));
+        var settlementReportDataRepository = new SettlementReportEnergyResultRepository(databricksContext);
+        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(databricksContext);
+        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(databricksContext);
 
         var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportMeteringPointMasterDataQueries(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMeteringPointTimeSeriesResultRepository = new SettlementReportMeteringPointTimeSeriesResultRepository(new SettlementReportMeteringPointTimeSeriesResultQueries(
+        var settlementReportMeteringPointTimeSeriesResultRepository = new SettlementReportMeteringPointTimeSeriesResultRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -83,7 +75,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportChargePriceRepository = new SettlementReportChargePriceRepository(new SettlementReportChargePriceQueries(
+        var settlementReportChargePriceRepository = new SettlementReportChargePriceRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -220,14 +212,13 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             fileLines[2]);
     }
 
-    [Theory(Skip = "Perf Test")]
-    [InlineData(SettlementReportFileContent.Pt15M, "400000000000000004,Exchange,2022-01-02T02:00:00Z,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")]
-    [InlineData(SettlementReportFileContent.Pt1H, "400000000000000004,Exchange,2022-01-02T02:00:00Z,679.900,,,,,,,,,,,,,,,,,,,,,,,,")]
-    public async Task RequestFileAsync_ForWholesaleFixingMeteringPointTimeSeries_ReturnsExpectedCsv(SettlementReportFileContent content, string expected)
+    [Theory]
+    [InlineData("444", SettlementReportFileContent.Pt15M, "\"400000000000000004\",E20,2022-01-01T23:00:00Z,678.900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")]
+    [InlineData("454", SettlementReportFileContent.Pt1H, "\"400000000000000004\",E20,2022-01-01T23:00:00Z,679.900,,,,,,,,,,,,,,,,,,,,,,,,")]
+    public async Task RequestFileAsync_ForWholesaleFixingMeteringPointTimeSeries_ReturnsExpectedCsv(string gridAreaCode, SettlementReportFileContent content, string expected)
     {
         // Arrange
         var calculationId = Guid.Parse("891b7070-b80f-4731-8714-76221e27c366");
-        var gridAreaCode = "404";
         var filter = new SettlementReportRequestFilterDto(
             new Dictionary<string, CalculationId?>
             {
@@ -253,8 +244,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:00:00' AS observation_time, 678.90 AS quantity))"],
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'400000000000000004'", "'exchange'", "'PT1H'", "'404'", "'8442359392712'", "'2022-01-02T02:00:00.000+00:00'", "ARRAY(STRUCT('2022-01-02 12:15:00' AS observation_time, 679.90 AS quantity))"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", $"'{gridAreaCode}'", "'8442359392712'", "'2022-01-02 12:00:00'", "678.90"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT1H'", $"'{gridAreaCode}'", "'8442359392712'", "'2022-01-02 12:15:00'", "679.90"],
             ]);
 
         // Act

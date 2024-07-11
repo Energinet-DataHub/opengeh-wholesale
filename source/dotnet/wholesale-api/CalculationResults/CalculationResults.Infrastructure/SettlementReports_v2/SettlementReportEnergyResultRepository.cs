@@ -22,6 +22,8 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
 
+using DbFunctions = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental.DatabricksSqlQueryableExtensions.Functions;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportEnergyResultRepository : ISettlementReportEnergyResultRepository
@@ -40,7 +42,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             if (filter.CalculationType == CalculationType.BalanceFixing)
             {
                 return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
-                    .Select(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                    .Select(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
                     .Distinct()
                     .DatabricksSqlCountAsync();
             }
@@ -54,7 +56,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
             return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
-                .Select(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                .Select(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
                 .Distinct()
                 .DatabricksSqlCountAsync();
         }
@@ -81,7 +83,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
             var chunkByDate = filteredView
-                .GroupBy(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                .GroupBy(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
                 .Select(group => new
                 {
                     max_calc_version = group.Max(row => row.CalculationVersion),
@@ -97,7 +99,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
                     outer => new
                     {
                         max_calc_version = outer.CalculationVersion,
-                        start_of_day = DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
+                        start_of_day = DbFunctions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
                     },
                     inner => inner,
                     (outer, inner) => outer)
@@ -144,7 +146,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
             var chunkByDate = filteredView
-                .GroupBy(row => DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                .GroupBy(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
                 .Select(group => new
                 {
                     max_calc_version = group.Max(row => row.CalculationVersion),
@@ -160,7 +162,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
                     outer => new
                     {
                         max_calc_version = outer.CalculationVersion,
-                        start_of_day = DatabricksSqlQueryableExtensions.Functions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
+                        start_of_day = DbFunctions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
                     },
                     inner => inner,
                     (outer, inner) => outer)

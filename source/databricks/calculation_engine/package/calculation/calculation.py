@@ -13,7 +13,10 @@
 # limitations under the License.
 from dependency_injector.wiring import inject
 
-from package.calculation.output.basis_data import write_basis_data, basis_data_factory
+from package.databases.wholesale_basis_data_internal import basis_data_factory
+from package.databases.wholesale_basis_data_internal.basis_data_results import (
+    write_basis_data,
+)
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
@@ -31,14 +34,14 @@ from .calculation_results import (
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
-from package.calculation.output.results import (
+from package.databases.wholesale_results_internal import (
     write_calculation,
     write_monthly_amounts_per_charge,
     write_total_monthly_amounts,
     write_wholesale_results,
     write_energy_results,
 )
-from package.calculation.output.results.calculations_storage_model_factory import (
+from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
     create_calculation,
 )
 from .preparation import PreparedDataReader

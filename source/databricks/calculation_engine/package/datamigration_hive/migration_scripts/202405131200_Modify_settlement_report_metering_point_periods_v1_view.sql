@@ -1,7 +1,7 @@
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1
 GO
 
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
+CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
        m.metering_point_id,
