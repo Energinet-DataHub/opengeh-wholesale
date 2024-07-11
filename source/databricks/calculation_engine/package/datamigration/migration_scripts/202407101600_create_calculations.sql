@@ -15,4 +15,6 @@ TBLPROPERTIES (
     delta.constraints.calculation_id_chk = "LENGTH ( calculation_id ) = 36",
     delta.constraints.calculation_type_chk = "calculation_type IN ( 'balance_fixing' , 'aggregation' , 'wholesale_fixing' , 'first_correction_settlement' , 'second_correction_settlement' , 'third_correction_settlement' )",
     delta.constraints.created_by_user_id_chk = "LENGTH ( created_by_user_id ) = 36"
+    delta.constraints.calculation_version_chk = "calculation_version > 0",
+    delta.constraints.calculation_period_chk = "calculation_period_end > calculation_period_start"
 )
