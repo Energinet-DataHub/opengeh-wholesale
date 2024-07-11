@@ -61,10 +61,10 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                 GridArea = series.GridArea,
                 EnergySupplierId = series.EnergySupplierId,
                 ChargeCode = series.ChargeCode,
-                ChargeType = MapChargeType(series.ChargeType),
+                ChargeType = MapChargeType(series.ChargeType ?? ChargeType.Tariff), // TODO (MWO): SHould be nullable!
                 ChargeOwnerId = series.ChargeOwnerId,
                 Resolution = MapResolution(series.Resolution),
-                QuantityUnit = MapQuantityUnit(series.QuantityUnit),
+                QuantityUnit = MapQuantityUnit(series.QuantityUnit ?? QuantityUnit.Kwh), // TODO (MWO): Should be nullable!
                 Currency = WholesaleServicesRequestSeries.Types.Currency.Dkk,
                 TimeSeriesPoints = { points },
                 CalculationResultVersion = series.Version,

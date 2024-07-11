@@ -86,9 +86,11 @@ public class WholesaleServicesQueries(
         List<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
         // TODO (MWO): FIX!
-        var amountType = rowData.HasColumn(WholesaleResultColumnNames.Resolution)
+        var amountType = rowData.HasColumn(AmountsPerChargeViewColumnNames.Resolution)
             ? AmountType.AmountPerCharge
-            : AmountType.MonthlyAmountPerCharge;
+            : rowData.HasColumn(MonthlyAmountsPerChargeViewColumnNames.ChargeCode)
+                ? AmountType.MonthlyAmountPerCharge
+                : AmountType.TotalMonthlyAmount;
 
         return WholesaleServicesFactory.Create(rowData, amountType, timeSeriesPoints);
     }
