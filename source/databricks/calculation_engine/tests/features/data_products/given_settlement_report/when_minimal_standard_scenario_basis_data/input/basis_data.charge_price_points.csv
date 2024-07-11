@@ -15,3 +15,4 @@ calculation_id;charge_key;charge_code;charge_type;charge_owner_id;charge_price;c
 0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-2-0000000000800-tariff;tariff-daily-2;tariff;0000000000800;1;2023-01-31 23:00:00.000000
 0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-3-co_is_tax-6660000000666-tariff;tariff-daily-3-co_is_tax;tariff;6660000000666;666.666666;2023-02-02 23:00:00.000000
 0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-4-co_is_not_tax-6660000000666-tariff;tariff-daily-4-co_is_not_tax;tariff;6660000000666;10;2023-01-31 23:00:00.000000
+0b15a420-9fc8-409a-a169-000000000000;should-not-be-included-6666666666666-tariff;should-not-be-included;tariff;6666666666666;1000000;2023-01-31 23:00:00.000000
