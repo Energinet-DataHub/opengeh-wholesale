@@ -32,7 +32,7 @@ public class WholesaleServicesRelationalAlgebraHelper
 
     public string GetProjection(string prefix, AmountType amountType)
     {
-        return $"{string.Join(", ", Enumerable.Select<string, string>(GetColumnsToProject(amountType), cts => $"`{prefix}`.`{cts}`"))}";
+        return $"{string.Join(", ", GetColumnsToProject(amountType).Select<string, string>(cts => $"`{prefix}`.`{cts}`"))}";
     }
 
     public string GetCalculationTypeColumnName(AmountType amountType)
