@@ -80,7 +80,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesQueryStatementHelper>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
 
         return services;
@@ -160,7 +160,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<ITotalMonthlyAmountResultQueries, TotalMonthlyAmountResultQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesQueryStatementHelper>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
 
         return services;
