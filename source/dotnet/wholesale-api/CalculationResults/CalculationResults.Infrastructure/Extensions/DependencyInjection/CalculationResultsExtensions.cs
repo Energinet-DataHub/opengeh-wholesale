@@ -51,7 +51,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesQueryStatementHelper>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
 
         return services;
@@ -115,7 +115,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesQueryStatementHelper>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
 
         return services;

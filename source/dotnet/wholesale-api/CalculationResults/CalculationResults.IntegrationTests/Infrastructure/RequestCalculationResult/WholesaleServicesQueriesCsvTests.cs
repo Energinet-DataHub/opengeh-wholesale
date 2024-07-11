@@ -555,14 +555,12 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         private readonly string _energySupplierId = energySupplierId;
         private readonly Instant _before = before;
         private readonly Instant? _after = after;
-
-        private readonly WholesaleServicesRelationalAlgebraHelper _relationalAlgebraHelper =
-            new WholesaleServicesRelationalAlgebraHelper();
+        private readonly WholesaleServicesQueryStatementHelper _helper = new WholesaleServicesQueryStatementHelper();
 
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_relationalAlgebraHelper.GetSource(amountType, _deltaTableOptions)}
+                    DELETE FROM {_helper.GetSource(amountType, _deltaTableOptions)}
                     WHERE {WholesaleResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
                     AND {WholesaleResultColumnNames.Time} <= '{_before}'
                     {(_after is not null ? $"AND {WholesaleResultColumnNames.Time} > '{_after}'" : string.Empty)}
@@ -577,13 +575,12 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly IReadOnlyCollection<string> _gridAreasToRemoveFrom = gridAreasToRemoveFrom;
-        private readonly WholesaleServicesRelationalAlgebraHelper _relationalAlgebraHelper =
-            new WholesaleServicesRelationalAlgebraHelper();
+        private readonly WholesaleServicesQueryStatementHelper _helper = new WholesaleServicesQueryStatementHelper();
 
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_relationalAlgebraHelper.GetSource(amountType, _deltaTableOptions)}
+                    DELETE FROM {_helper.GetSource(amountType, _deltaTableOptions)}
                     WHERE ({WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
                     OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
                     OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')

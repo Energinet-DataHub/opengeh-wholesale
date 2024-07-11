@@ -25,7 +25,7 @@ public class WholesaleServicesQueryStatement(
     WholesaleServicesQueryStatement.StatementType statementType,
     WholesaleServicesQueryParameters queryParameters,
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
-    WholesaleServicesQueryStatementWhereClauseProvider whereClauseProvider,
+    WholesaleServicesQueryStatementHelper helper,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
@@ -33,34 +33,33 @@ public class WholesaleServicesQueryStatement(
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
     private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-    private readonly WholesaleServicesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
-    private readonly WholesaleServicesRelationalAlgebraHelper _wholesaleServicesRelationalAlgebraHelper = new WholesaleServicesRelationalAlgebraHelper();
+    private readonly WholesaleServicesQueryStatementHelper _helper = helper;
 
     protected override string GetSqlStatement()
     {
         var selectTarget = _statementType switch
         {
-            StatementType.Select => _wholesaleServicesRelationalAlgebraHelper.GetProjection("wrv", _queryParameters.AmountType),
+            StatementType.Select => _helper.GetProjection("wrv", _queryParameters.AmountType),
             StatementType.Exists => "1",
             _ => throw new ArgumentOutOfRangeException(nameof(_statementType), _statementType, "Unknown StatementType"),
         };
 
         var sql = $"""
                     SELECT {selectTarget}
-                    FROM (SELECT {_wholesaleServicesRelationalAlgebraHelper.GetProjection("wr", _queryParameters.AmountType)}
-                    FROM {_wholesaleServicesRelationalAlgebraHelper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wr
+                    FROM (SELECT {_helper.GetProjection("wr", _queryParameters.AmountType)}
+                    FROM {_helper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wr
                     WHERE {GenerateLatestOrFixedCalculationTypeConstraint("wr")}) wrv
-                    INNER JOIN (SELECT max({AmountsPerChargeViewColumnNames.CalculationVersion}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", _wholesaleServicesRelationalAlgebraHelper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
-                    FROM {_wholesaleServicesRelationalAlgebraHelper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wr
-                    {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeConstraint("wr")}
-                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", _wholesaleServicesRelationalAlgebraHelper.GetColumnsToAggregateBy(_queryParameters.AmountType))}) maxver
-                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{AmountsPerChargeViewColumnNames.CalculationVersion} = maxver.max_version AND {string.Join(" AND ", _wholesaleServicesRelationalAlgebraHelper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
+                    INNER JOIN (SELECT max({AmountsPerChargeViewColumnNames.CalculationVersion}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
+                    FROM {_helper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wr
+                    {_helper.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeConstraint("wr")}
+                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType))}) maxver
+                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{AmountsPerChargeViewColumnNames.CalculationVersion} = maxver.max_version AND {string.Join(" AND ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
                     """;
 
         // The order is important for combining the rows into packages, since the sql rows are streamed and
         // packages are created on-the-fly each time a new row is received.
         sql += $"""
-                {"\n"}ORDER BY {string.Join(", ", _wholesaleServicesRelationalAlgebraHelper.GetColumnsToAggregateBy(_queryParameters.AmountType))}, {WholesaleResultColumnNames.Time}
+                {"\n"}ORDER BY {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType))}, {WholesaleResultColumnNames.Time}
                 """;
 
         return sql;
@@ -71,7 +70,7 @@ public class WholesaleServicesQueryStatement(
         if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    {prefix}.{_wholesaleServicesRelationalAlgebraHelper.GetCalculationTypeColumnName(_queryParameters.AmountType)} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    {prefix}.{_helper.GetCalculationTypeColumnName(_queryParameters.AmountType)} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
@@ -84,7 +83,7 @@ public class WholesaleServicesQueryStatement(
 
         var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
             .Select(ctpga => $"""
-                              ({prefix}.{_wholesaleServicesRelationalAlgebraHelper.GetGridAreaCodeColumnName(_queryParameters.AmountType)} = '{ctpga.GridArea}' AND {prefix}.{_wholesaleServicesRelationalAlgebraHelper.GetCalculationTypeColumnName(_queryParameters.AmountType)} = '{ctpga.CalculationType}')
+                              ({prefix}.{_helper.GetGridAreaCodeColumnName(_queryParameters.AmountType)} = '{ctpga.GridArea}' AND {prefix}.{_helper.GetCalculationTypeColumnName(_queryParameters.AmountType)} = '{ctpga.CalculationType}')
                               """);
 
         return $"""
