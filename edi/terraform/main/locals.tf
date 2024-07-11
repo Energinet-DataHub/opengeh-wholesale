@@ -21,4 +21,6 @@ locals {
     "BusinessServiceName"   = "Datahub",
     "BusinessServiceNumber" = "BSN10136"
   }
+
+  OrchestrationsTaskHubName = "Edi01"
 }
