@@ -16,6 +16,7 @@
 from enum import Enum
 
 
+# TODO BJM: Remove when only using Unity Catalog
 class AggregationLevel(Enum):
     GRID_AREA = "total_ga"  # rename to "grid_area"
     BALANCE_RESPONSIBLE_PARTY = "brp_ga"  # rename to "balance_responsible_party"
