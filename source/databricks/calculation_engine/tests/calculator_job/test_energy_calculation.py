@@ -18,89 +18,120 @@ from pyspark.sql import SparkSession
 
 from package.codelists import (
     TimeSeriesType,
+    MeteringPointType,
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
-ALL_ENERGY_RESULT_TYPES = {
-    (
-        TimeSeriesType.EXCHANGE_PER_NEIGHBOR.value,
-        paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.EXCHANGE.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.GRID_LOSS.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.TOTAL_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-    (
-        TimeSeriesType.TEMP_PRODUCTION.value,
-        paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-    ),
-}
+
+def test__balance_fixing_exchange_per_neighbor_result_type__is_created(
+    spark: SparkSession,
+    executed_balance_fixing: None,  # Fixture executing the balance fixing calculation
+) -> None:
+    actual = spark.read.table(
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME}"
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
+
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
+
+
+@pytest.mark.parametrize(
+    "metering_point_type",
+    [
+        MeteringPointType.CONSUMPTION.value,
+        MeteringPointType.PRODUCTION.value,
+    ],
+)
+def test__balance_fixing_grid_loss_time_series_result_type__is_created(
+    spark: SparkSession,
+    executed_balance_fixing: None,  # Fixture executing the balance fixing calculation
+    metering_point_type: str,
+) -> None:
+    actual = (
+        spark.read.table(
+            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME}"
+        )
+        .where(
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
+        )
+        .where(
+            f.col(EnergyResultColumnNames.metering_point_type) == metering_point_type
+        )
+    )
+
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
 
 
 @pytest.mark.parametrize(
     "time_series_type, table_name",
-    ALL_ENERGY_RESULT_TYPES,
+    [
+        (
+            TimeSeriesType.EXCHANGE.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.GRID_LOSS.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TOTAL_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+    ],
 )
-def test__balance_fixing_output__is_created(
+def test__balance_fixing_energy_result_type__is_created(
     spark: SparkSession,
     executed_balance_fixing: None,  # Fixture executing the balance fixing calculation
     time_series_type: str,
@@ -119,98 +150,6 @@ def test__balance_fixing_output__is_created(
 
     # Assert: Result(s) are created if there are rows
     assert actual.count() > 0
-
-
-@pytest.mark.parametrize(
-    "table_name, expected_result_types_count",
-    [
-        (
-            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-            len(
-                [
-                    TimeSeriesType.EXCHANGE,
-                    TimeSeriesType.FLEX_CONSUMPTION,
-                    TimeSeriesType.GRID_LOSS,
-                    TimeSeriesType.NON_PROFILED_CONSUMPTION,
-                    TimeSeriesType.PRODUCTION,
-                    TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-                    TimeSeriesType.TEMP_PRODUCTION,
-                    TimeSeriesType.TOTAL_CONSUMPTION,
-                ]
-            ),
-        ),
-        (
-            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-            len(
-                [
-                    TimeSeriesType.EXCHANGE,
-                    TimeSeriesType.FLEX_CONSUMPTION,
-                    TimeSeriesType.GRID_LOSS,
-                    TimeSeriesType.NON_PROFILED_CONSUMPTION,
-                    TimeSeriesType.PRODUCTION,
-                    TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-                    TimeSeriesType.TEMP_PRODUCTION,
-                    TimeSeriesType.TOTAL_CONSUMPTION,
-                ]
-            ),
-        ),
-        (
-            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-            len(
-                [
-                    TimeSeriesType.EXCHANGE,
-                    TimeSeriesType.FLEX_CONSUMPTION,
-                    TimeSeriesType.GRID_LOSS,
-                    TimeSeriesType.NON_PROFILED_CONSUMPTION,
-                    TimeSeriesType.PRODUCTION,
-                    TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-                    TimeSeriesType.TEMP_PRODUCTION,
-                    TimeSeriesType.TOTAL_CONSUMPTION,
-                ]
-            ),
-        ),
-        (
-            paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
-            len(
-                [
-                    TimeSeriesType.NEGATIVE_GRID_LOSS,
-                    TimeSeriesType.POSITIVE_GRID_LOSS,
-                ]
-            ),
-        ),
-        (
-            paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
-            len(
-                [
-                    TimeSeriesType.EXCHANGE_PER_NEIGHBOR,
-                ]
-            ),
-        ),
-    ],
-)
-def test__balance_fixing_result__has_expected_number_of_result_types(
-    spark: SparkSession,
-    executed_balance_fixing: None,
-    table_name: str,
-    expected_result_types_count: int,
-) -> None:
-    # Arrange
-    actual = (
-        spark.read.table(
-            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
-        )
-        .where(  # Be resilient to other tests writing to same table
-            f.col(EnergyResultColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
-        )
-        .select(
-            EnergyResultColumnNames.time_series_type,
-        )
-        .distinct()
-    )
-
-    # Assert
-    assert actual.count() == expected_result_types_count
 
 
 @pytest.mark.parametrize(
