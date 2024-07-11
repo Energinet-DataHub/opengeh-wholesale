@@ -14,12 +14,12 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public sealed record SettlementReportMeteringPointTimeSeriesResultQueryFilter(
-    Guid CalculationId,
-    string GridAreaCode,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    string Resolution,
-    string? EnergySupplier);
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+public sealed class SettlementReportChargePriceResultViewPricePointEntity
+{
+    public Instant Time { get; set; }
+
+    public decimal Price { get; set; }
+}
