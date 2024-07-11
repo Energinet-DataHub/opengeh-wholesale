@@ -110,7 +110,7 @@ public class WholesaleServicesQueries(
                 var databricksSqlRow = new DatabricksSqlRow(d);
                 return new CalculationTypeForGridArea(
                     databricksSqlRow[_helper.GetGridAreaCodeColumnName(queryParameters.AmountType)]!,
-                    databricksSqlRow[_helper.GetChargeTypeColumnName(queryParameters.AmountType)]!);
+                    databricksSqlRow[_helper.GetCalculationTypeColumnName(queryParameters.AmountType)]!);
             })
             .ToListAsync()
             .ConfigureAwait(false);
