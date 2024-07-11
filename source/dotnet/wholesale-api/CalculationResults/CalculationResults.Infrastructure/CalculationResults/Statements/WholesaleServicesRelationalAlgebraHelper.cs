@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -20,6 +21,15 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class WholesaleServicesRelationalAlgebraHelper
 {
+    public AmountType GuessAmountTypeFromRow(DatabricksSqlRow databricksSqlRow)
+    {
+        return databricksSqlRow.HasColumn(AmountsPerChargeViewColumnNames.Resolution)
+            ? AmountType.AmountPerCharge
+            : databricksSqlRow.HasColumn(MonthlyAmountsPerChargeViewColumnNames.ChargeCode)
+                ? AmountType.MonthlyAmountPerCharge
+                : AmountType.TotalMonthlyAmount;
+    }
+
     public string GetProjection(string prefix, AmountType amountType)
     {
         return $"{string.Join(", ", Enumerable.Select<string, string>(GetColumnsToProject(amountType), cts => $"`{prefix}`.`{cts}`"))}";
