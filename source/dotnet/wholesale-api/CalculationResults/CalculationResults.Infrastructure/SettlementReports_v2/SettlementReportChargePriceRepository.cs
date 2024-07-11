@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -51,7 +52,28 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
             .Skip(skip)
             .Take(take);
 
-        var query = view.Join(chunkByStartTime, outer => outer.StartTime, inner => inner, (outer, inner) => outer);
+        var query = view
+            .Join(chunkByStartTime, outer => outer.StartTime, inner => inner, (outer, inner) => outer)
+            .Select(x => new
+            {
+                x.ChargeType,
+                x.ChargeCode,
+                x.ChargeOwnerId,
+                x.Resolution,
+                x.Taxation,
+                x.StartTime,
+                x.PricePoints,
+            }).Distinct()
+            .Select(x => new ChargePriceProjection
+            {
+                ChargeType = x.ChargeType,
+                ChargeCode = x.ChargeCode,
+                ChargeOwnerId = x.ChargeOwnerId,
+                Resolution = x.Resolution,
+                Taxation = x.Taxation,
+                StartTime = x.StartTime,
+                PricePoints = x.PricePoints,
+            });
 
         await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
         {
@@ -82,5 +104,22 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         }
 
         return source;
+    }
+
+    private sealed class ChargePriceProjection
+    {
+        public string ChargeType { get; set; } = null!;
+
+        public string ChargeCode { get; set; } = null!;
+
+        public string ChargeOwnerId { get; set; } = null!;
+
+        public string Resolution { get; set; } = null!;
+
+        public bool Taxation { get; set; }
+
+        public Instant StartTime { get; set; }
+
+        public SettlementReportChargePriceResultViewPricePointEntity[] PricePoints { get; set; } = [];
     }
 }
