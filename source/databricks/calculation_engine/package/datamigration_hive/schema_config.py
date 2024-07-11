@@ -13,21 +13,21 @@
 # limitations under the License.
 from spark_sql_migrations import Schema, Table, View
 
-import package.databases.basis_data.schemas as basis_data_schemas
+import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
-from package.databases.input.schemas import (
+from package.databases.migrations_wholesale.schemas import (
     grid_loss_metering_points_schema,
 )
-from package.databases.results.schemas import (
+from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
     hive_total_monthly_amounts_schema,
     hive_monthly_amounts_schema,
 )
 
 # calculation_output
-from package.databases.results.schemas.hive_wholesale_results_schema import (
+from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
     hive_wholesale_results_schema,
 )
 

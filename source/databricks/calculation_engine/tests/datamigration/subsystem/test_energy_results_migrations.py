@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 
 from helpers.data_frame_utils import set_column
-from package.databases.results.schemas import (
+from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
 )
 from package.codelists import (
