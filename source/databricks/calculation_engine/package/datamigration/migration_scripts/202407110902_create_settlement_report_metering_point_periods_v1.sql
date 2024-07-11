@@ -11,7 +11,7 @@ SELECT c.calculation_id,
        m.metering_point_type,
        m.settlement_method,
        m.energy_supplier_id
-FROM {HIVE_BASIS_DATA_DATABASE_NAME}.metering_point_periods as m
+FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods as m
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
 WHERE c.calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
 
