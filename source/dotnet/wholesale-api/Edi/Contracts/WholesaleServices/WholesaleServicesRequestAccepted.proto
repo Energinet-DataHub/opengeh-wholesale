@@ -38,13 +38,13 @@ message WholesaleServicesRequestSeries {
 
   string charge_code = 4;
 
-  ChargeType charge_type = 5;
+  optional ChargeType charge_type = 5;
 
   string charge_owner_id = 6;
 
   Resolution resolution = 7;
 
-  QuantityUnit quantity_unit = 8;
+  optional QuantityUnit quantity_unit = 8;
 
   optional MeteringPointType metering_point_type = 9;
 
