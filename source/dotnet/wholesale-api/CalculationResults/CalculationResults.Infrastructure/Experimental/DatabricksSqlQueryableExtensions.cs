@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
@@ -34,5 +35,20 @@ public static class DatabricksSqlQueryableExtensions
     {
         public static Instant ToStartOfDayInTimeZone(Instant source, string timeZone)
             => throw new NotSupportedException("Do not call the user-defined EF Core function.");
+
+        public static Instant ToUtcFromTimeZoned(Instant source, string timeZone)
+            => throw new NotSupportedException("Do not call the user-defined EF Core function.");
+
+        public static IEnumerable<TimeQuantityStruct> AggregateFields(Instant timeProjection, decimal quantityProjection)
+            => throw new NotSupportedException("Do not call the user-defined EF Core function.");
+    }
+
+    public sealed class TimeQuantityStruct
+    {
+        [JsonPropertyName("observation_time")]
+        public Instant Time { get; set; }
+
+        [JsonPropertyName("quantity")]
+        public decimal Quantity { get; set; }
     }
 }

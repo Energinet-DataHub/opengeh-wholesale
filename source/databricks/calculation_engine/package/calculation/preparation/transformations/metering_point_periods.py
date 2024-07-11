@@ -21,7 +21,7 @@ from pyspark.sql.functions import (
     lit,
 )
 
-from package.calculation.input import TableReader
+from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.codelists import (
     InputMeteringPointType,

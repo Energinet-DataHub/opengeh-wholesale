@@ -13,26 +13,22 @@
 # limitations under the License.
 from spark_sql_migrations import Schema, Table, View
 
-import package.calculation.output.basis_data.schemas as basis_data_schemas
+import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
-from package.calculation.input.schemas.grid_loss_metering_points_schema import (
+from package.databases.migrations_wholesale.schemas import (
     grid_loss_metering_points_schema,
 )
-from package.calculation.output.results.schemas import (
+from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
-)
-from package.calculation.output.results.schemas import (
     hive_total_monthly_amounts_schema,
-)
-from package.calculation.output.results.schemas import (
     hive_monthly_amounts_schema,
 )
 
 # calculation_output
-from package.calculation.output.results.schemas.wholesale_results_schema import (
-    wholesale_results_schema,
+from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
+    hive_wholesale_results_schema,
 )
 
 schema_config = [
@@ -41,7 +37,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
-                schema=wholesale_results_schema,
+                schema=hive_wholesale_results_schema,
             ),
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
@@ -107,33 +103,35 @@ schema_config = [
         views=[],
     ),
     Schema(
-        name=paths.SettlementReportPublicDataModel.DATABASE_NAME,
+        name=paths.HiveSettlementReportPublicDataModel.DATABASE_NAME,
         tables=[],
         views=[
             View(
-                name=paths.SettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
-            ),
-            View(name=paths.SettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1),
-            View(
-                name=paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.WHOLESALE_RESULTS_VIEW_NAME_V1
+                name=paths.HiveSettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.HiveSettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.HiveSettlementReportPublicDataModel.WHOLESALE_RESULTS_VIEW_NAME_V1
             ),
         ],
     ),

@@ -37,7 +37,7 @@ exchange_result = "exchange_result"
 
 
 def calculate_grid_loss(
-    exchange_per_ga: EnergyResults,
+    exchange: EnergyResults,
     non_profiled_consumption: EnergyResults,
     flex_consumption: EnergyResults,
     production: EnergyResults,
@@ -59,7 +59,7 @@ def calculate_grid_loss(
     ).withColumnRenamed(Colname.quantity, prod_result)
 
     result = (
-        exchange_per_ga.df.withColumnRenamed(Colname.quantity, exchange_result)
+        exchange.df.withColumnRenamed(Colname.quantity, exchange_result)
         .join(
             agg_production_result,
             [Colname.grid_area_code, Colname.observation_time],
@@ -165,11 +165,11 @@ def _calculate_negative_or_positive(
 
 
 def calculate_total_consumption(
-    production_per_ga: EnergyResults, exchange_per_ga: EnergyResults
+    production: EnergyResults, exchange: EnergyResults
 ) -> EnergyResults:
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
-            production_per_ga.df,
+            production.df,
             [Colname.grid_area_code, Colname.observation_time],
         )
         .withColumnRenamed(Colname.quantity, production_sum_quantity)
@@ -178,7 +178,7 @@ def calculate_total_consumption(
 
     result_exchange = (
         t.aggregate_sum_quantity_and_qualities(
-            exchange_per_ga.df,
+            exchange.df,
             [Colname.grid_area_code, Colname.observation_time],
         )
         .withColumnRenamed(Colname.quantity, exchange_sum_quantity)

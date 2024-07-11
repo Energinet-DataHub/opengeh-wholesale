@@ -17,7 +17,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.input import TableReader
+from package.databases.migrations_wholesale import TableReader
 from package.constants import Colname
 
 

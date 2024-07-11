@@ -14,140 +14,142 @@
 
 import pyspark.sql.functions as f
 import pytest
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 
 from package.codelists import (
-    AggregationLevel,
     TimeSeriesType,
+    MeteringPointType,
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
-# TODO BJM: Remove when we only use Unity Catalog.
-ALL_ENERGY_RESULT_TYPES = {
-    (
-        TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.EXCHANGE_PER_GA.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ENERGY_SUPPLIER.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.BALANCE_RESPONSIBLE_PARTY.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ENERGY_SUPPLIER.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.BALANCE_RESPONSIBLE_PARTY.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ENERGY_SUPPLIER.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.BALANCE_RESPONSIBLE_PARTY.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-}
+
+def test__balance_fixing_exchange_per_neighbor_result_type__is_created(
+    spark: SparkSession,
+    executed_balance_fixing: None,  # Fixture executing the balance fixing calculation
+) -> None:
+    actual = spark.read.table(
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME}"
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
+
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
 
 
 @pytest.mark.parametrize(
-    "time_series_type, aggregation_level",
-    ALL_ENERGY_RESULT_TYPES,
+    "metering_point_type",
+    [
+        MeteringPointType.CONSUMPTION.value,
+        MeteringPointType.PRODUCTION.value,
+    ],
 )
-def test__balance_fixing_result__is_created(
-    balance_fixing_results_df: DataFrame,
-    time_series_type: str,
-    aggregation_level: str,
+def test__balance_fixing_grid_loss_time_series_result_type__is_created(
+    spark: SparkSession,
+    executed_balance_fixing: None,  # Fixture executing the balance fixing calculation
+    metering_point_type: str,
 ) -> None:
-    # Arrange
-    result_df = (
-        balance_fixing_results_df.where(
-            f.col(EnergyResultColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
-        )
-        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
-        .where(f.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixtures `balance_fixing_results_df` and `executed_balance_fixing`
-
-    # Assert: The result is created if there are rows
-    assert result_df.count() > 0
-
-
-def test__balance_fixing_result__has_expected_number_of_result_types(
-    balance_fixing_results_df: DataFrame,
-) -> None:
-    # Arrange
-    actual_result_type_count = (
-        balance_fixing_results_df.where(
-            f.col(EnergyResultColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
+    actual = (
+        spark.read.table(
+            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME}"
         )
         .where(
             f.col(EnergyResultColumnNames.calculation_id)
             == c.executed_balance_fixing_calculation_id
         )
-        .select(
-            EnergyResultColumnNames.time_series_type,
-            EnergyResultColumnNames.aggregation_level,
+        .where(
+            f.col(EnergyResultColumnNames.metering_point_type) == metering_point_type
         )
-        .distinct()
-        .count()
     )
 
-    # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
 
-    # Assert: The result is created if there are rows
-    assert actual_result_type_count == len(ALL_ENERGY_RESULT_TYPES)
+
+@pytest.mark.parametrize(
+    "time_series_type, table_name",
+    [
+        (
+            TimeSeriesType.EXCHANGE.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.GRID_LOSS.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TOTAL_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+    ],
+)
+def test__balance_fixing_energy_result_type__is_created(
+    spark: SparkSession,
+    executed_balance_fixing: None,  # Fixture executing the balance fixing calculation
+    time_series_type: str,
+    table_name: str,
+) -> None:
+    actual = (
+        spark.read.table(
+            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
+        )
+        .where(
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
+        )
+        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
+    )
+
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
 
 
 @pytest.mark.parametrize(
@@ -181,7 +183,7 @@ def test__when_energy_calculation__calculation_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+        f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
     ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -207,23 +209,23 @@ def test__when_energy_calculation__calculation_is_stored(
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
+            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
+            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1}",
+            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
+            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
             True,
         ),
     ],

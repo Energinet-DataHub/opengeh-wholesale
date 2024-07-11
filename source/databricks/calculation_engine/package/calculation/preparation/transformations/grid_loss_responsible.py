@@ -19,7 +19,7 @@ defined in the geh_stream directory in our tests.
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.input import TableReader
+from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )

@@ -52,7 +52,7 @@ public sealed class SettlementReportMeteringPointMasterDataQueries : ISettlement
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var rawValue = new DatabricksSqlRow(nextRow)[SettlementReportChargeLinkPeriodsCountQueryStatement.Columns.Count];
+            var rawValue = new DatabricksSqlRow(nextRow)[SettlementReportMeteringPointMasterDataCountQueryStatement.Columns.Count];
             return SqlResultValueConverters.ToInt(rawValue)!.Value;
         }
 
