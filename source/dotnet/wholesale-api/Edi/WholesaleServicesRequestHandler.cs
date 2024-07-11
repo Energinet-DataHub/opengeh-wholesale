@@ -70,7 +70,7 @@ public class WholesaleServicesRequestHandler(
         var requests = _wholesaleServicesRequestMapper.Map(incomingRequest);
 
         if (!requests.Any())
-            throw new InvalidOperationException("No mapped WholesaleServices requests returned - this shouldn't happen");
+            throw new InvalidOperationException("No mapped WholesaleServices requests found, there should always be atleast one");
 
         List<WholesaleServices> calculationResults = [];
 
