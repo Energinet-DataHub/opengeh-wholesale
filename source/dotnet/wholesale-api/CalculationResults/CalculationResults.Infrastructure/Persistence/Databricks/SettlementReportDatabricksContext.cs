@@ -46,6 +46,8 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     public IQueryable<SettlementReportChargePriceResultViewEntity> ChargePriceView => Set<SettlementReportChargePriceResultViewEntity>();
 
+    public IQueryable<SettlementReportMonthlyAmountsViewEntity> MonthlyAmountsView => Set<SettlementReportMonthlyAmountsViewEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(_deltaTableOptions.Value.SettlementReportSchemaName);
@@ -56,5 +58,6 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
         modelBuilder.ApplyConfiguration(new SettlementReportMeteringPointMasterDataViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportChargeLinkPeriodsViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportChargePriceViewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportMonthlyAmountsViewEntityConfiguration());
     }
 }

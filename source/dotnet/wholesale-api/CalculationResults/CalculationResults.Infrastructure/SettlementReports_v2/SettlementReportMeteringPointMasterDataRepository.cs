@@ -200,14 +200,20 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
             .Skip(skip)
             .Take(take);
 
-        var query = view.Join(
-            meteringPointIds,
-            outer => outer.MeteringPointId,
-            inner => inner,
-            (outer, inner) => outer)
-        .Distinct()
-        .OrderBy(row => row.MeteringPointId);
+        var query = (from m in view
+                   join l in latestCalcIdForMetering on m.CalculationId equals l.CalculationId
+                   join mp in meteringPointIds on m.MeteringPointId equals mp
+                   select m)
+            .Distinct()
+            .OrderBy(row => row.MeteringPointId);
 
+        // var query = view.Join(
+        //     meteringPointIds,
+        //     outer => outer.MeteringPointId,
+        //     inner => inner,
+        //     (outer, inner) => outer)
+        // .Distinct()
+        // .OrderBy(row => row.MeteringPointId);
         return query;
     }
 
@@ -247,11 +253,10 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
             .Skip(skip)
             .Take(take);
 
-        var query = view.Join(
-                meteringPointIds,
-                outer => outer.MeteringPointId,
-                inner => inner,
-                (outer, inner) => outer)
+        var query = (from m in view
+                join l in latestCalcIdForMetering on m.CalculationId equals l.CalculationId
+                join mp in meteringPointIds on m.MeteringPointId equals mp
+                select m)
             .Distinct()
             .OrderBy(row => row.MeteringPointId);
 
@@ -288,7 +293,7 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         SettlementReportRequestFilterDto filter,
         long maximumCalculationVersion)
     {
-        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
+        var (gridAreaCode, _) = filter.GridAreas.Single();
 
         source = source
             .Where(row => row.GridAreaCode == gridAreaCode)
@@ -305,7 +310,7 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
         SettlementReportRequestFilterDto filter,
         long maximumCalculationVersion)
     {
-        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
+        var (gridAreaCode, _) = filter.GridAreas.Single();
 
         source = source
             .Where(row => row.GridAreaCode == gridAreaCode)

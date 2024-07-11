@@ -29,4 +29,6 @@ public interface ISettlementReportDatabricksContext
     IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ChargeLinkPeriodsView { get; }
 
     IQueryable<SettlementReportChargePriceResultViewEntity> ChargePriceView { get; }
+
+    IQueryable<SettlementReportMonthlyAmountsViewEntity> MonthlyAmountsView { get; }
 }

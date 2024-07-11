@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using NodaTime;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public sealed record SettlementReportMonthlyAmountQueryFilter(
-    Guid CalculationId,
-    string GridAreaCode,
-    CalculationType CalculationType,
-    string? EnergySupplier,
-    string? ChargeOwnerId,
-    Instant PeriodStart,
-    Instant PeriodEnd,
-    MarketRole MarketRole);
+public sealed class SettlementReportMonthlyAmountsViewEntityConfiguration : IEntityTypeConfiguration<SettlementReportMonthlyAmountsViewEntity>
+{
+    public void Configure(EntityTypeBuilder<SettlementReportMonthlyAmountsViewEntity> builder)
+    {
+        builder.ToTable("monthly_amounts_v1");
+        builder.HasNoKey();
+    }
+}
