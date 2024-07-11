@@ -22,7 +22,7 @@ public record WholesaleServices(
     string EnergySupplierId,
     string? ChargeCode,
     ChargeType? ChargeType,
-    string ChargeOwnerId,
+    string? ChargeOwnerId,
     AmountType AmountType,
     Resolution Resolution,
     QuantityUnit? QuantityUnit,

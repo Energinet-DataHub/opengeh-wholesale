@@ -149,7 +149,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
                 ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
                 ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
             .Should()
-            .BeEmpty();
+            .BeEquivalentTo([
+                ("543", "5790000701278", "5790000610976", (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 4, 1)
+            ]);
     }
 
     [Fact]
@@ -178,7 +180,12 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
                 ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
                 ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
             .Should()
-            .BeEmpty();
+            .BeEquivalentTo([
+                ("533", "5790000701278", (string?)null, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("543", "5790000701278", null, null, null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
+                ("584", "5790000701278", null, null, null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("804", "5790000701278", null, null, null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+            ]);
     }
 
     [Fact]
@@ -301,13 +308,13 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
                 ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
             .Should()
             .BeEquivalentTo([
-                ("543", "5790000701278", "5790000610976", ChargeType.Subscription, "AB1025", AmountType.MonthlyAmountPerCharge, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("543", "5790000701278", "5790000610976", ChargeType.Subscription, "AB1025", AmountType.MonthlyAmountPerCharge, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 4, 1),
 
                 ("533", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
                 ("533", "5790001095390", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
-                ("543", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
-                ("543", "5790001095390", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
-                ("543", "5790001687137", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("543", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
+                ("543", "5790001095390", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
+                ("543", "5790001687137", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
                 ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
             ]);
     }
