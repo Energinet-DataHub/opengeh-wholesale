@@ -26,6 +26,8 @@ public interface ISettlementReportDatabricksContext
 
     IQueryable<SettlementReportMeteringPointMasterDataViewEntity> SettlementReportMeteringPointMasterDataView { get; }
 
+    IQueryable<SettlementReportMeteringPointTimeSeriesEntity> MeteringPointTimeSeriesView { get; }
+
     IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ChargeLinkPeriodsView { get; }
 
     IQueryable<SettlementReportChargePriceResultViewEntity> ChargePriceView { get; }
