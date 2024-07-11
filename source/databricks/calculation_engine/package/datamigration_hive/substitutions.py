@@ -28,6 +28,4 @@ def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
         "{HIVE_BASIS_DATA_DATABASE_NAME}": paths.HiveBasisDataDatabase.DATABASE_NAME,
         "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
         "{HIVE_SETTLEMENT_REPORT_DATABASE_NAME}": paths.HiveSettlementReportPublicDataModel.DATABASE_NAME,
-        "{CATALOG_NAME}": catalog_name,
-        "{WHOLESALE_INTERNAL_DATABASE_NAME}": paths.WholesaleInternalDatabase.DATABASE_NAME,
     }
