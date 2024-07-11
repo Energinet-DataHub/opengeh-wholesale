@@ -16,9 +16,7 @@ import package.infrastructure.paths as paths
 from .migration_script_args import MigrationScriptArgs
 
 
-def substitutions(
-    migration_args: MigrationScriptArgs, catalog_name: str
-) -> dict[str, str]:
+def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
     return {
         "{CONTAINER_PATH}": migration_args.storage_container_path,
         "{HIVE_OUTPUT_DATABASE_NAME}": paths.HiveOutputDatabase.DATABASE_NAME,

@@ -28,19 +28,15 @@ from .substitutions import substitutions
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def migrate_data_lake(
-    catalog_name: str | None = None,
-    spark_config: SparkSqlMigrationsConfiguration = None,
-) -> None:
-    catalog_name = catalog_name or env_vars.get_catalog_name()
-    spark_config = spark_config or _create_spark_config(catalog_name)
+def migrate_data_lake(spark_config: SparkSqlMigrationsConfiguration = None) -> None:
+    spark_config = spark_config or _create_spark_config()
     print(f"Executing Hive Catalog migrations for catalog {spark_config.catalog_name}")
 
     create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()
 
 
-def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
+def _create_spark_config() -> SparkSqlMigrationsConfiguration:
     storage_account_name = env_vars.get_storage_account_name()
     calculation_input_folder = env_vars.get_calculation_input_folder_name()
 
@@ -72,6 +68,6 @@ def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
-        substitution_variables=substitutions(migration_args, catalog_name),
+        substitution_variables=substitutions(migration_args),
         catalog_name="spark_catalog",
     )
