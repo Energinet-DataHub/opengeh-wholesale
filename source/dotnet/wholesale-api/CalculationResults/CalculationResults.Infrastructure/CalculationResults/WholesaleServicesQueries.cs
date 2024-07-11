@@ -75,11 +75,12 @@ public class WholesaleServicesQueries(
     protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
         var amountType = _helper.GuessAmountTypeFromRow(current);
+        var calculationIdColumn = _helper.GetCalculationIdColumnName(amountType);
 
         return _helper
                    .GetColumnsToAggregateBy(amountType)
                    .Any(column => current[column] != previous[column])
-               || current[WholesaleResultColumnNames.CalculationId] != previous[WholesaleResultColumnNames.CalculationId];
+               || current[calculationIdColumn] != previous[calculationIdColumn];
     }
 
     protected override WholesaleServices CreatePackageFromRowData(
@@ -108,8 +109,8 @@ public class WholesaleServicesQueries(
             {
                 var databricksSqlRow = new DatabricksSqlRow(d);
                 return new CalculationTypeForGridArea(
-                    databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
-                    databricksSqlRow[WholesaleResultColumnNames.CalculationType]!);
+                    databricksSqlRow[_helper.GetGridAreaCodeColumnName(queryParameters.AmountType)]!,
+                    databricksSqlRow[_helper.GetChargeTypeColumnName(queryParameters.AmountType)]!);
             })
             .ToListAsync()
             .ConfigureAwait(false);

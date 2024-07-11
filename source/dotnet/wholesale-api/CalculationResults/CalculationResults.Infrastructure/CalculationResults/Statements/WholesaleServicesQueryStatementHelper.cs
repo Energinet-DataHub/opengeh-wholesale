@@ -125,6 +125,28 @@ public class WholesaleServicesQueryStatementHelper
         };
     }
 
+    internal string GetCalculationVersionColumnName(AmountType amountType)
+    {
+        return amountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationVersion,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationVersion,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationVersion,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    internal string GetCalculationIdColumnName(AmountType amountType)
+    {
+        return amountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationId,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationId,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationId,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
     internal string[] GetColumnsToProject(AmountType amountType)
     {
         return amountType switch
