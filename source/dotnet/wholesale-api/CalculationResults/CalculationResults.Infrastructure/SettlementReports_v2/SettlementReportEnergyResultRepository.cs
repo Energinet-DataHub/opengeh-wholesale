@@ -13,110 +13,235 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
+
+using DbFunctions = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental.DatabricksSqlQueryableExtensions.Functions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportEnergyResultRepository : ISettlementReportEnergyResultRepository
 {
-    private readonly ISettlementReportEnergyResultQueries _settlementReportResultQueries;
+    private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
 
-    public SettlementReportEnergyResultRepository(ISettlementReportEnergyResultQueries settlementReportResultQueries)
+    public SettlementReportEnergyResultRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
     {
-        _settlementReportResultQueries = settlementReportResultQueries;
+        _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
     {
-        if (filter.CalculationType == CalculationType.BalanceFixing)
+        if (filter.EnergySupplier is not null)
         {
-            return filter.EnergySupplier is not null
-                ? _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilterWithEnergySupplier(filter, maximumCalculationVersion))
-                : _settlementReportResultQueries.CountAsync(ParseLatestEnergyFilter(filter, maximumCalculationVersion));
+            if (filter.CalculationType == CalculationType.BalanceFixing)
+            {
+                return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
+                    .Select(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                    .Distinct()
+                    .DatabricksSqlCountAsync();
+            }
+
+            return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
+                .Select(row => row.ResultId)
+                .Distinct()
+                .DatabricksSqlCountAsync();
         }
 
-        return filter.EnergySupplier is not null
-            ? _settlementReportResultQueries.CountAsync(ParseEnergyFilterWithEnergySupplier(filter))
-            : _settlementReportResultQueries.CountAsync(ParseEnergyFilter(filter));
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
+                .Select(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                .Distinct()
+                .DatabricksSqlCountAsync();
+        }
+
+        return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
+            .Select(row => row.ResultId)
+            .Distinct()
+            .DatabricksSqlCountAsync();
     }
 
-    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
+    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
     {
-        IAsyncEnumerable<Interfaces.SettlementReports.Model.SettlementReportEnergyResultRow> rows;
+        return filter.EnergySupplier is not null
+            ? GetWithEnergySupplierAsync(filter, maximumCalculationVersion, skip, take)
+            : GetWithoutEnergySupplierAsync(filter, maximumCalculationVersion, skip, take);
+    }
+
+    private async IAsyncEnumerable<SettlementReportEnergyResultRow> GetWithoutEnergySupplierAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
+    {
+        IAsyncEnumerable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> rows;
+
+        var filteredView = ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion);
 
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
-            rows = filter.EnergySupplier is not null
-                ? _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilterWithEnergySupplier(filter, maximumCalculationVersion), skip, take)
-                : _settlementReportResultQueries.GetAsync(ParseLatestEnergyFilter(filter, maximumCalculationVersion), skip, take);
+            var chunkByDate = filteredView
+                .GroupBy(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                .Select(group => new
+                {
+                    max_calc_version = group.Max(row => row.CalculationVersion),
+                    start_of_day = group.Key,
+                })
+                .OrderBy(row => row.start_of_day)
+                .Skip(skip)
+                .Take(take);
+
+            rows = filteredView
+                .Join(
+                    chunkByDate,
+                    outer => new
+                    {
+                        max_calc_version = outer.CalculationVersion,
+                        start_of_day = DbFunctions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
+                    },
+                    inner => inner,
+                    (outer, inner) => outer)
+                .AsAsyncEnumerable();
         }
         else
         {
-            rows = filter.EnergySupplier is not null
-                ? _settlementReportResultQueries.GetAsync(ParseEnergyFilterWithEnergySupplier(filter), skip, take)
-                : _settlementReportResultQueries.GetAsync(ParseEnergyFilter(filter), skip, take);
+            var chunkByResultId = filteredView
+                .Select(row => row.ResultId)
+                .Distinct()
+                .OrderBy(resultId => resultId)
+                .Skip(skip)
+                .Take(take);
+
+            rows = filteredView
+                .Join(
+                    chunkByResultId,
+                    outer => outer.ResultId,
+                    inner => inner,
+                    (outer, inner) => outer)
+                .AsAsyncEnumerable();
         }
 
         await foreach (var row in rows.ConfigureAwait(false))
         {
             yield return new SettlementReportEnergyResultRow(
-                row.StartDateTime,
+                row.Time,
                 row.Quantity,
-                row.GridArea,
-                row.Resolution,
-                row.CalculationType,
-                row.MeteringPointType,
-                row.SettlementMethod,
+                row.GridAreaCode,
+                ResolutionMapper.FromDeltaTableValue(row.Resolution),
+                CalculationTypeMapper.FromDeltaTableValue(row.CalculationType),
+                MeteringPointTypeMapper.FromDeltaTableValueNonNull(row.MeteringPointType),
+                SettlementMethodMapper.FromDeltaTableValue(row.SettlementMethod),
+                null);
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportEnergyResultRow> GetWithEnergySupplierAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
+    {
+        IAsyncEnumerable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> rows;
+
+        var filteredView = ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion);
+
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            var chunkByDate = filteredView
+                .GroupBy(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+                .Select(group => new
+                {
+                    max_calc_version = group.Max(row => row.CalculationVersion),
+                    start_of_day = group.Key,
+                })
+                .OrderBy(row => row.start_of_day)
+                .Skip(skip)
+                .Take(take);
+
+            rows = filteredView
+                .Join(
+                    chunkByDate,
+                    outer => new
+                    {
+                        max_calc_version = outer.CalculationVersion,
+                        start_of_day = DbFunctions.ToStartOfDayInTimeZone(outer.Time, "Europe/Copenhagen"),
+                    },
+                    inner => inner,
+                    (outer, inner) => outer)
+                .AsAsyncEnumerable();
+        }
+        else
+        {
+            var chunkByResultId = filteredView
+                .Select(row => row.ResultId)
+                .Distinct()
+                .OrderBy(resultId => resultId)
+                .Skip(skip)
+                .Take(take);
+
+            rows = filteredView
+                .Join(
+                    chunkByResultId,
+                    outer => outer.ResultId,
+                    inner => inner,
+                    (outer, inner) => outer)
+                .AsAsyncEnumerable();
+        }
+
+        await foreach (var row in rows.ConfigureAwait(false))
+        {
+            yield return new SettlementReportEnergyResultRow(
+                row.Time,
+                row.Quantity,
+                row.GridAreaCode,
+                ResolutionMapper.FromDeltaTableValue(row.Resolution),
+                CalculationTypeMapper.FromDeltaTableValue(row.CalculationType),
+                MeteringPointTypeMapper.FromDeltaTableValueNonNull(row.MeteringPointType),
+                SettlementMethodMapper.FromDeltaTableValue(row.SettlementMethod),
                 row.EnergySupplierId);
         }
     }
 
-    private static SettlementReportEnergyResultQueryFilter ParseEnergyFilter(SettlementReportRequestFilterDto filter)
+    private static IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> ApplyFilter(
+        IQueryable<SettlementReportEnergyResultPointsPerGridAreaViewEntity> source,
+        SettlementReportRequestFilterDto filter,
+        long maximumCalculationVersion)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportEnergyResultQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
+        source = source
+            .Where(row => row.GridAreaCode == gridAreaCode)
+            .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
+            .Where(row => row.Time >= filter.PeriodStart.ToInstant())
+            .Where(row => row.Time < filter.PeriodEnd.ToInstant())
+            .Where(row => row.CalculationVersion <= maximumCalculationVersion);
+
+        if (filter.CalculationType != CalculationType.BalanceFixing)
+        {
+            source = source.Where(row => row.CalculationId == calculationId!.Id);
+        }
+
+        return source;
     }
 
-    private static SettlementReportLatestEnergyResultQueryFilter ParseLatestEnergyFilter(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
-    {
-        var (gridAreaCode, _) = filter.GridAreas.Single();
-
-        return new SettlementReportLatestEnergyResultQueryFilter(
-            gridAreaCode,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant(),
-            maximumCalculationVersion);
-    }
-
-    private static SettlementReportEnergyResultPerEnergySupplierQueryFilter ParseEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter)
+    private static IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> ApplyFilter(
+        IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> source,
+        SettlementReportRequestFilterDto filter,
+        long maximumCalculationVersion)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportEnergyResultPerEnergySupplierQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.EnergySupplier!,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant());
-    }
+        source = source
+            .Where(row => row.GridAreaCode == gridAreaCode)
+            .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
+            .Where(row => row.Time >= filter.PeriodStart.ToInstant())
+            .Where(row => row.Time < filter.PeriodEnd.ToInstant())
+            .Where(row => row.CalculationVersion <= maximumCalculationVersion)
+            .Where(row => row.EnergySupplierId == filter.EnergySupplier);
 
-    private static SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter ParseLatestEnergyFilterWithEnergySupplier(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
-    {
-        var (gridAreaCode, _) = filter.GridAreas.Single();
+        if (filter.CalculationType != CalculationType.BalanceFixing)
+        {
+            source = source.Where(row => row.CalculationId == calculationId!.Id);
+        }
 
-        return new SettlementReportLatestEnergyResultPerEnergySupplierQueryFilter(
-            gridAreaCode,
-            filter.EnergySupplier!,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant(),
-            maximumCalculationVersion);
+        return source;
     }
 }

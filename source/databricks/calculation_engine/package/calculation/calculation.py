@@ -13,7 +13,10 @@
 # limitations under the License.
 from dependency_injector.wiring import inject
 
-from package.calculation.basis_data.basis_data_results import write_basis_data
+from package.databases.wholesale_basis_data_internal import basis_data_factory
+from package.databases.wholesale_basis_data_internal.basis_data_results import (
+    write_basis_data,
+)
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
@@ -26,18 +29,21 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     get_metering_point_periods_for_wholesale_calculation,
 )
 from package.infrastructure import logging_configuration
-from .basis_data import basis_data_factory
 from .calculation_results import (
     CalculationResultsContainer,
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
-from .output.calculation_writer import write_calculation
-from .output.calculations_storage_model_factory import create_calculation
-from .output.energy_results import write_energy_results
-from .output.monthly_amounts_per_charge import write_monthly_amounts_per_charge
-from .output.total_monthly_amounts import write_total_monthly_amounts
-from .output.wholesale_results import write_wholesale_results
+from package.databases.wholesale_results_internal import (
+    write_calculation,
+    write_monthly_amounts_per_charge,
+    write_total_monthly_amounts,
+    write_wholesale_results,
+    write_energy_results,
+)
+from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
+    create_calculation,
+)
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type

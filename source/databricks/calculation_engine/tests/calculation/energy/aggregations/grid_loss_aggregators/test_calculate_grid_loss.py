@@ -26,7 +26,7 @@ from package.constants import Colname
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "net_exchange_per_ga_qualities, non_profiled_consumption_qualities, flex_consumption_qualities, production_qualities",
+        "exchange_qualities, non_profiled_consumption_qualities, flex_consumption_qualities, production_qualities",
         [
             # Quality from all aggregated time series are included in the result
             (
@@ -61,7 +61,7 @@ class TestWhenValidInput:
     def test_returns_quality_calculated(
         self,
         spark: SparkSession,
-        net_exchange_per_ga_qualities: list[QuantityQuality],
+        exchange_qualities: list[QuantityQuality],
         non_profiled_consumption_qualities: list[QuantityQuality],
         flex_consumption_qualities: list[QuantityQuality],
         production_qualities: list[QuantityQuality],
@@ -72,7 +72,7 @@ class TestWhenValidInput:
         """
 
         # Arrange
-        exchange = self._create_energy_results(spark, net_exchange_per_ga_qualities)
+        exchange = self._create_energy_results(spark, exchange_qualities)
         non_profiled = self._create_energy_results(
             spark, non_profiled_consumption_qualities
         )
@@ -99,7 +99,7 @@ class TestWhenValidInput:
 
 class TestWhenEnergyResultsIsEmpty:
     @pytest.mark.parametrize(
-        "net_exchange_per_ga, non_profiled_consumption, flex_consumption, production, expected_quantity",
+        "exchange, non_profiled_consumption, flex_consumption, production, expected_quantity",
         [
             (  # Empty non profiled
                 factories.create_row(quantity=400),
@@ -176,14 +176,14 @@ class TestWhenEnergyResultsIsEmpty:
     def test_returns_correct_quantity(
         self,
         spark: SparkSession,
-        net_exchange_per_ga: factories.Row,
+        exchange: factories.Row,
         non_profiled_consumption: factories.Row,
         flex_consumption: factories.Row,
         production: factories.Row,
         expected_quantity: decimal,
     ) -> None:
         # Arrange
-        exchange = factories.create(spark, net_exchange_per_ga)
+        exchange = factories.create(spark, exchange)
         non_profiled = factories.create(spark, non_profiled_consumption)
         flex = factories.create(spark, flex_consumption)
         production = factories.create(spark, production)

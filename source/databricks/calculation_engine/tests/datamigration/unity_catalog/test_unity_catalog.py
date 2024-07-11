@@ -13,6 +13,10 @@ from package.infrastructure import paths
     [
         (
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
             paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
         ),
         (

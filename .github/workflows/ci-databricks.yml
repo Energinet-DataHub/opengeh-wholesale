@@ -247,10 +247,10 @@ jobs:
             paths: features/given_an_energy_calculation
           - name: Wholesale logic
             paths: features/given_a_wholesale_calculation
-          - name: Public data models
+          - name: Data products
             paths: features/data_products contracts
           - name: Unit tests
-            paths: calculation codelists common infrastructure
+            paths: calculation codelists common databases infrastructure
           - name: Entry point tests
             paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
@@ -348,6 +348,7 @@ jobs:
           codelists/
           common/
           contracts/
+          databases/
           infrastructure/
           entry_points/
           datamigration/all_hive_scripts

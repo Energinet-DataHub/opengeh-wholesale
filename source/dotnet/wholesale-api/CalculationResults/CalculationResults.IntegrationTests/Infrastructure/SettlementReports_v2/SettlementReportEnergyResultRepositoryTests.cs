@@ -14,20 +14,18 @@
 
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementReportEnergyResultRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportCollectionFixture))]
+public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementReportEnergyResultRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
@@ -35,17 +33,11 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
-        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
-        {
-            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-        });
+        _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName =
+            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME;
 
-        Fixture.Inject(mockedOptions);
-        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
-        Fixture.Inject<ISettlementReportEnergyResultQueries>(new SettlementReportEnergyResultQueries(
-            mockedOptions.Object,
+        Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
@@ -220,7 +212,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
                 ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634"],
                 ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634"],
-                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "NULL", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
             ]);
 
         var actual = await Sut.GetAsync(
@@ -242,6 +234,40 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
 
         Assert.Single(actual);
         Assert.Equal(4, actual[0].Time.ToDateTimeOffset().Hour);
+    }
+
+    [Fact]
+    public async Task Get_NullableValues_ReturnsNull()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            [
+                ["'52d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'019'", "'consumption'", "NULL", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "26.634"],
+                ["'52d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035306'", "'019'", "'consumption'", "NULL", "'PT15M'", "'2022-01-10T03:30:00.000+00:00'", "26.634"],
+                ["'52d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035307'", "'019'", "'consumption'", "NULL", "'PT15M'", "'2022-01-10T03:45:00.000+00:00'", "26.634"],
+                ["'52d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'wholesale_fixing'", "'1'", "'47433af6-03c1-46bd-ab9b-dd0497035308'", "'019'", "'consumption'", "NULL", "'PT15M'", "'2022-01-10T04:00:00.000+00:00'", "26.634"],
+            ]);
+
+        var actual = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "019", new CalculationId(Guid.Parse("52d60f89-bbc5-4f7a-be98-6139aab1c1b2"))
+                    },
+                },
+                DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2022-01-10T04:15:00.000+00:00"),
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            1,
+            skip: 3,
+            take: 1).ToListAsync();
+
+        Assert.Single(actual);
+        Assert.Equal(4, actual[0].Time.ToDateTimeOffset().Hour);
+        Assert.Null(actual[0].SettlementMethod);
     }
 
     [Fact]

@@ -17,24 +17,26 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public class SettlementReportMeteringPointTimeSeriesViewColumns
 {
     public const string CalculationId = "calculation_id";
+    public const string CalculationType = "calculation_type";
     public const string MeteringPointId = "metering_point_id";
     public const string MeteringPointType = "metering_point_type";
     public const string Resolution = "resolution";
     public const string GridArea = "grid_area_code";
     public const string EnergySupplier = "energy_supplier_id";
-    public const string StartDateTime = "start_date_time";
-    public const string Quantities = "quantities";
+    public const string ObservationTime = "observation_time";
+    public const string Quantity = "quantity";
 
     public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
     {
         { CalculationId, ("string", false) },
+        { CalculationType, ("string", false) },
         { MeteringPointId, ("string", false) },
         { MeteringPointType, ("string", false) },
         { Resolution, ("string", false) },
         { GridArea, ("string", false) },
         { EnergySupplier, ("string", false) },
-        { StartDateTime, ("timestamp", false) },
-        { Quantities, ("array<struct<observation_time timestamp, quantity decimal(18,3)>>", false) },
+        { ObservationTime, ("timestamp", false) },
+        { Quantity, ("decimal(18,3)", false) },
     };
 
     public static string[] AllNames { get; } = [.. SchemaDefinition.Keys];

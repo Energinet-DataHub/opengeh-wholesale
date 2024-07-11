@@ -17,12 +17,9 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
-from package.calculation.input import TableReader
+from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
-)
-from package.calculation.preparation.data_structures.grid_loss_metering_points import (
-    GridLossMeteringPoints,
 )
 from package.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,

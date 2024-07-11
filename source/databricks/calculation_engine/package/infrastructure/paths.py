@@ -28,12 +28,21 @@ class InputDatabase:
 
 
 class WholesaleInternalDatabase:
-    DATABASE_NAME = "wholesale_internal"
+    DATABASE_NAME = "wholesale_internal"  # Defined in dh3infrastructure
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
+    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
+    ENERGY_TABLE_NAME = "energy"
+    ENERGY_PER_ES_TABLE_NAME = "energy_per_es"
+    ENERGY_PER_BRP_TABLE_NAME = "energy_per_brp"
+    GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME = (
+        "grid_loss_metering_point_time_series"
+    )
+    EXCHANGE_PER_NEIGHBOR_TABLE_NAME = "exchange_per_neighbor_ga"
+    AMOUNTS_PER_CHARGE_TABLE_NAME = "amounts_per_charge"
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
 
@@ -103,7 +112,7 @@ class CalculationResultsPublicDataModel:
     TOTAL_MONTHLY_AMOUNTS_VIEW_NAME = "total_monthly_amounts_v1"
 
 
-class SettlementReportPublicDataModel:
+class HiveSettlementReportPublicDataModel:
     DATABASE_NAME = "settlement_report"
     METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
     METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"

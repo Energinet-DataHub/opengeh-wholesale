@@ -11,4 +11,5 @@ def get_substitutions(catalog_name: str) -> dict[str, str]:
         "{CATALOG_NAME}": catalog_name,
         "{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}": paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
         "{WHOLESALE_BASIS_DATA_DATABASE_NAME}": paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
+        "{WHOLESALE_INTERNAL_DATABASE_NAME}": paths.WholesaleInternalDatabase.DATABASE_NAME,
     }

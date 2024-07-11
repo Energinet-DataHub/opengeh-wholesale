@@ -16,7 +16,7 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
-from package.calculation.input.schemas import (
+from package.databases.migrations_wholesale.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )

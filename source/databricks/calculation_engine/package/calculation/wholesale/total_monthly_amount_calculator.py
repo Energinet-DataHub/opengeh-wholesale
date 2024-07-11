@@ -23,7 +23,7 @@ from package.calculation.wholesale.data_structures import (
 from package.constants import Colname
 
 
-def calculate_per_ga_co_es(
+def calculate_per_co_es(
     monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
     """
@@ -81,17 +81,17 @@ def calculate_per_ga_co_es(
     return TotalMonthlyAmount(total_monthly_amount)
 
 
-def calculate_per_ga_es(
+def calculate_per_es(
     monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
-    total_monthly_amount_per_ga_es = (
+    total_monthly_amount_per_es = (
         monthly_amounts_per_charge.df.groupBy(
             Colname.grid_area_code, Colname.energy_supplier_id, Colname.charge_time
         )
         .agg(f.sum(Colname.total_amount).alias(Colname.total_amount))
         .withColumn(Colname.charge_owner, f.lit(None).cast(StringType()))
     )
-    return TotalMonthlyAmount(total_monthly_amount_per_ga_es)
+    return TotalMonthlyAmount(total_monthly_amount_per_es)
 
 
 def _calculate_total_amount_for_charge_tax_value(
