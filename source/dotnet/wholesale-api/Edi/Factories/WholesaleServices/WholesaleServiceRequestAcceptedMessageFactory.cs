@@ -61,15 +61,20 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                 GridArea = series.GridArea,
                 EnergySupplierId = series.EnergySupplierId,
                 ChargeCode = series.ChargeCode,
-                ChargeType = MapChargeType(series.ChargeType ?? ChargeType.Tariff), // TODO (MWO): SHould be nullable!
                 ChargeOwnerId = series.ChargeOwnerId,
                 Resolution = MapResolution(series.Resolution),
-                QuantityUnit = MapQuantityUnit(series.QuantityUnit ?? QuantityUnit.Kwh), // TODO (MWO): Should be nullable!
                 Currency = WholesaleServicesRequestSeries.Types.Currency.Dkk,
                 TimeSeriesPoints = { points },
                 CalculationResultVersion = series.Version,
                 CalculationType = MapCalculationType(series.CalculationType),
             };
+
+            if (series.ChargeType is not null)
+                wholesaleSeries.ChargeType = MapChargeType(series.ChargeType.Value);
+
+            if (series.QuantityUnit is not null)
+                wholesaleSeries.QuantityUnit = MapQuantityUnit(series.QuantityUnit.Value);
+
             if (series.MeteringPointType is not null)
                 wholesaleSeries.MeteringPointType = MeteringPointTypeMapper.Map(series.MeteringPointType.Value);
 
