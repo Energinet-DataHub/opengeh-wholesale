@@ -11,18 +11,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import inject
+from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
+from package.container import Container
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import HiveBasisDataDatabase
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from package.infrastructure.paths import (
+    HiveBasisDataDatabase,
+    WholesaleInternalDatabase,
+)
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
 @inject
-def write_calculation(calculations: DataFrame) -> None:
+def write_calculation(
+    calculations: DataFrame,
+    infrastructure_settings: InfrastructureSettings = Provide[
+        Container.infrastructure_settings
+    ],
+) -> None:
     """Writes the succeeded calculation to the calculations table."""
+    calculations.write.format("delta").mode("append").option(
+        "mergeSchema", "false"
+    ).insertInto(
+        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+    )
 
+    # ToDo JMG: Remove when we are on Unity Catalog
     calculations.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(
