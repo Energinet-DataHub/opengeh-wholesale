@@ -1,7 +1,7 @@
 CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.charge_link_periods_v1 as
 SELECT distinct c.calculation_id,
        c.calculation_type,
-       c.version as calculation_version,
+       c.calculation_version,
        m.metering_point_id,
        m.metering_point_type,
        l.charge_type,

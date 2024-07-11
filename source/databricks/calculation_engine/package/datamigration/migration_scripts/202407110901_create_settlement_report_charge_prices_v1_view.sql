@@ -2,7 +2,7 @@ CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_
 SELECT
   c.calculation_id,
   FIRST_VALUE(c.calculation_type) as calculation_type,
-  FIRST_VALUE(c.version) as calculation_version,
+  FIRST_VALUE(c.calculation_version) as calculation_version,
   FIRST_VALUE(cm.charge_type) as charge_type,
   FIRST_VALUE(cm.charge_code) as charge_code,
   FIRST_VALUE(cm.charge_owner_id) as charge_owner_id,
