@@ -106,6 +106,56 @@ public abstract class DatabricksContextBase : IDisposable
                         paramDate.TypeMapping);
                 });
 
+            // Emits custom function: TO_UTC_TIMESTAMP(@param1, @param2)
+            modelBuilder
+                .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.ToUtcFromTimeZoned))!)
+                .HasTranslation(args =>
+                {
+                    var paramDate = args[0];
+                    var paramTimeZone = args[1];
+
+                    return new SqlFunctionExpression(
+                        "TO_UTC_TIMESTAMP",
+                        [
+                            paramDate,
+                            paramTimeZone
+                        ],
+                        false,
+                        [false, false],
+                        paramDate.Type,
+                        paramDate.TypeMapping);
+                });
+
+            // Emits custom function: ARRAY_AGG(struct(@param1, @param2))
+            // NOTE: Currently, EF Core does not support aggregations or generics in UDFs.
+            // For now, we simply hard-code the struct combinations required (i.e. AggregatedStruct/(Instant, decimal)).
+            modelBuilder
+                .HasDbFunction(typeof(DatabricksSqlQueryableExtensions.Functions).GetMethod(nameof(DatabricksSqlQueryableExtensions.Functions.AggregateFields))!)
+                .HasTranslation(args =>
+                {
+                    var projections = args
+                        .Cast<ScalarSubqueryExpression>()
+                        .SelectMany(arg => arg.Subquery.Projection)
+                        .Select(proj => proj.Expression);
+
+                    return new SqlFunctionExpression(
+                        "ARRAY_AGG",
+                        [
+                            new SqlFunctionExpression(
+                                "struct",
+                                projections,
+                                false,
+                                [false, false],
+                                typeof(IEnumerable<DatabricksSqlQueryableExtensions.TimeQuantityStruct>),
+                                new ByteArrayTypeMapping("varbinary")),
+                        ],
+                        false,
+                        [false],
+                        typeof(IEnumerable<DatabricksSqlQueryableExtensions.TimeQuantityStruct>),
+                        new ByteArrayTypeMapping("varbinary"));
+                })
+                .Metadata.TypeMapping = new ByteArrayTypeMapping("varbinary");
+
             _createModel(modelBuilder);
         }
     }
