@@ -49,17 +49,17 @@ public class WholesaleServicesQueryStatement(
                     FROM (SELECT {_helper.GetProjection("wr", _queryParameters.AmountType)}
                     FROM {_helper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wr
                     WHERE {GenerateLatestOrFixedCalculationTypeConstraint("wr")}) wrv
-                    INNER JOIN (SELECT max({AmountsPerChargeViewColumnNames.CalculationVersion}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
+                    INNER JOIN (SELECT max({_helper.GetCalculationVersionColumnName(_queryParameters.AmountType)}) AS max_version, {_helper.GetTimeColumnName(_queryParameters.AmountType)} AS max_time, {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
                     FROM {_helper.GetSource(_queryParameters.AmountType, _deltaTableOptions)} wr
                     {_helper.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeConstraint("wr")}
-                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType))}) maxver
-                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{AmountsPerChargeViewColumnNames.CalculationVersion} = maxver.max_version AND {string.Join(" AND ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
+                    GROUP BY {_helper.GetTimeColumnName(_queryParameters.AmountType)}, {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType))}) maxver
+                    ON wrv.{_helper.GetTimeColumnName(_queryParameters.AmountType)} = maxver.max_time AND wrv.{_helper.GetCalculationVersionColumnName(_queryParameters.AmountType)} = maxver.max_version AND {string.Join(" AND ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType).Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
                     """;
 
         // The order is important for combining the rows into packages, since the sql rows are streamed and
         // packages are created on-the-fly each time a new row is received.
         sql += $"""
-                {"\n"}ORDER BY {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType))}, {WholesaleResultColumnNames.Time}
+                {"\n"}ORDER BY {string.Join(", ", _helper.GetColumnsToAggregateBy(_queryParameters.AmountType))}, {_helper.GetTimeColumnName(_queryParameters.AmountType)}
                 """;
 
         return sql;
