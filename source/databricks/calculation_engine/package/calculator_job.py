@@ -22,7 +22,7 @@ from pyspark.sql import SparkSession
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
-from package.calculation import input
+from package.databases import migrations_wholesale
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job_args import (
     parse_job_arguments,
@@ -115,7 +115,7 @@ def create_prepared_data_reader(
     spark: SparkSession,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
-    delta_table_reader = input.TableReader(
+    delta_table_reader = migrations_wholesale.TableReader(
         spark,
         settings.calculation_input_path,
         settings.time_series_points_table_name,

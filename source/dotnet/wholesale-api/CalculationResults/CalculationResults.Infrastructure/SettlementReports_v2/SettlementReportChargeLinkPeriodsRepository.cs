@@ -13,58 +13,97 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementReportChargeLinkPeriodsRepository
 {
-    private readonly ISettlementReportChargeLinkPeriodsQueries _settlementReportResultQueries;
+    private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
 
-    public SettlementReportChargeLinkPeriodsRepository(ISettlementReportChargeLinkPeriodsQueries settlementReportResultQueries)
+    public SettlementReportChargeLinkPeriodsRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
     {
-        _settlementReportResultQueries = settlementReportResultQueries;
+        _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
+        return ApplyFilter(_settlementReportDatabricksContext.ChargeLinkPeriodsView, filter, actorInfo)
+            .Select(row => row.MeteringPointId)
+            .Distinct()
+            .DatabricksSqlCountAsync();
     }
 
-    public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo,  int skip, int take)
+    public async IAsyncEnumerable<SettlementReportChargeLinkPeriodsResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take)
     {
-        var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter, actorInfo), skip, take)
-            .ConfigureAwait(false);
+        var view = ApplyFilter(_settlementReportDatabricksContext.ChargeLinkPeriodsView, filter, actorInfo);
 
-        await foreach (var row in rows.ConfigureAwait(false))
+        var chunkByMeteringPointId = view
+            .Select(row => row.MeteringPointId)
+            .Distinct()
+            .OrderBy(row => row)
+            .Skip(skip)
+            .Take(take);
+
+        var query = view.Join(
+            chunkByMeteringPointId,
+            outer => outer.MeteringPointId,
+            inner => inner,
+            (outer, inner) => outer);
+
+        await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
         {
             yield return new SettlementReportChargeLinkPeriodsResultRow(
                 row.MeteringPointId,
-                row.MeteringPointType,
-                row.ChargeType,
+                MeteringPointTypeMapper.FromDeltaTableValueNonNull(row.MeteringPointType),
+                ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeOwnerId,
                 row.ChargeCode,
                 row.Quantity,
-                row.PeriodStart,
-                row.PeriodEnd);
+                row.FromDate,
+                row.ToDate);
         }
     }
 
-    private static SettlementReportChargeLinkPeriodQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
+    private static IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ApplyFilter(
+        IQueryable<SettlementReportChargeLinkPeriodsViewEntity> source,
+        SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportChargeLinkPeriodQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.CalculationType,
-            filter.EnergySupplier,
-            actorInfo.ChargeOwnerId,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant(),
-            actorInfo.MarketRole);
+        source = source
+            .Where(row => row.GridAreaCode == gridAreaCode)
+            .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
+            .Where(row => row.FromDate <= filter.PeriodEnd.ToInstant())
+            .Where(row => row.ToDate >= filter.PeriodStart.ToInstant())
+            .Where(row => row.CalculationId == calculationId!.Id);
+
+        if (actorInfo.MarketRole == MarketRole.SystemOperator)
+        {
+            source = source.Where(row =>
+                row.IsTax == false &&
+                row.ChargeOwnerId == actorInfo.ChargeOwnerId);
+        }
+
+        if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
+        {
+            source = source.Where(row =>
+                row.IsTax == true &&
+                row.ChargeOwnerId == actorInfo.ChargeOwnerId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
+        {
+            source = source.Where(row => row.EnergySupplierId == filter.EnergySupplier);
+        }
+
+        return source;
     }
 }

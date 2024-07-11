@@ -1,5 +1,5 @@
 -- This view represents the current state of the wholesale_results table with filter by "amount_per_charge".
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1 as
+CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
