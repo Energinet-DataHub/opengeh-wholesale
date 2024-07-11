@@ -34,7 +34,7 @@ def migrate_data_lake(
     # Execute the hive migrations until they are finally removed
     # IMPORTANT: Do this _after_ the UC migrations as the hive migrations changes the
     #            dependency injection container registrations
-    hive_migration.migrate_data_lake(spark_config_hive)
+    hive_migration.migrate_data_lake(catalog_name, spark_config_hive)
 
 
 def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
