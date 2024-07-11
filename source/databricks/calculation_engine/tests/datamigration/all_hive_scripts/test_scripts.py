@@ -87,7 +87,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
-    sut.migrate_data_lake(spark_config)
+    catalog = "spark_catalog"
+    sut.migrate_data_lake(catalog, spark_config)
 
     # Act current state scripts
     current_state_prefix = "current_state"

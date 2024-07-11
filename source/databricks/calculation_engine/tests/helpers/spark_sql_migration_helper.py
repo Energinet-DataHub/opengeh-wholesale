@@ -179,7 +179,7 @@ def update_substitutions(
     migration_args: MigrationScriptArgs, replacements: dict[str, str] | None = None
 ) -> dict[str, str]:
     replacements = replacements or {}
-    _substitutions = substitutions(migration_args)
+    _substitutions = substitutions(migration_args, catalog_name)
 
     for key, value in replacements.items():
         _substitutions[key] = value
