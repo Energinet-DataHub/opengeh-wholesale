@@ -69,6 +69,16 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
         action  = "Log"
       }
     }
+
+    override {
+      rule_group_name = "SQLI"
+      # Inbound Anomaly Score Exceeded, blocks inviteUser call made through GraphQL
+      rule {
+        rule_id = "942190"
+        enabled = true
+        action  = "Log"
+      }
+    }
   }
 
   managed_rule {
