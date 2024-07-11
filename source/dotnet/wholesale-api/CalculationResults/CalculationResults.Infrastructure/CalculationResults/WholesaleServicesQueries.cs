@@ -75,8 +75,10 @@ public class WholesaleServicesQueries(
     protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
         var relationalAlgebraHelper = new WholesaleServicesRelationalAlgebraHelper();
+        var amountType = relationalAlgebraHelper.GuessAmountTypeFromRow(current);
+
         return relationalAlgebraHelper
-                   .GetColumnsToAggregateBy(AmountType.AmountPerCharge) // TODO (MWO): FIX!
+                   .GetColumnsToAggregateBy(amountType)
                    .Any(column => current[column] != previous[column])
                || current[WholesaleResultColumnNames.CalculationId] != previous[WholesaleResultColumnNames.CalculationId];
     }
@@ -85,12 +87,8 @@ public class WholesaleServicesQueries(
         DatabricksSqlRow rowData,
         List<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        // TODO (MWO): FIX!
-        var amountType = rowData.HasColumn(AmountsPerChargeViewColumnNames.Resolution)
-            ? AmountType.AmountPerCharge
-            : rowData.HasColumn(MonthlyAmountsPerChargeViewColumnNames.ChargeCode)
-                ? AmountType.MonthlyAmountPerCharge
-                : AmountType.TotalMonthlyAmount;
+        var relationalAlgebraHelper = new WholesaleServicesRelationalAlgebraHelper();
+        var amountType = relationalAlgebraHelper.GuessAmountTypeFromRow(rowData);
 
         return WholesaleServicesFactory.Create(rowData, amountType, timeSeriesPoints);
     }
