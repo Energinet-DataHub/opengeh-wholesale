@@ -381,19 +381,19 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.CHARGE_PRICES_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
             True,
         ),
         (

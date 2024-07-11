@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.metering_point_time_series_v1 AS
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
        c.calculation_type as calculation_type,
        c.version as calculation_version,
