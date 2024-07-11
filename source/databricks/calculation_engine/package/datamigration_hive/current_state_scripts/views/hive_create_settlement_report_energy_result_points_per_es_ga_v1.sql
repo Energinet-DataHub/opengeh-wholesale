@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1 as
+CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_version,

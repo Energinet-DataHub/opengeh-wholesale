@@ -13,54 +13,74 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportChargePriceRepository : ISettlementReportChargePriceRepository
 {
-    private readonly ISettlementReportChargePriceQueries _settlementReportResultQueries;
+    private readonly ISettlementReportDatabricksContext _context;
 
-    public SettlementReportChargePriceRepository(ISettlementReportChargePriceQueries settlementReportResultQueries)
+    public SettlementReportChargePriceRepository(ISettlementReportDatabricksContext context)
     {
-        _settlementReportResultQueries = settlementReportResultQueries;
+        _context = context;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter));
+        return ApplyFilter(_context.ChargePriceView, filter)
+            .Select(row => row.StartTime)
+            .Distinct()
+            .DatabricksSqlCountAsync();
     }
 
     public async IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
-        var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter), skip, take)
-            .ConfigureAwait(false);
+        var view = ApplyFilter(_context.ChargePriceView, filter);
 
-        await foreach (var row in rows.ConfigureAwait(false))
+        var chunkByStartTime = view
+            .Select(row => row.StartTime)
+            .Distinct()
+            .OrderBy(row => row)
+            .Skip(skip)
+            .Take(take);
+
+        var query = view.Join(chunkByStartTime, outer => outer.StartTime, inner => inner, (outer, inner) => outer);
+
+        await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
         {
             yield return new SettlementReportChargePriceRow(
-                row.ChargeType,
+                ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeCode,
                 row.ChargeOwnerId,
-                row.Resolution,
-                row.TaxIndicator,
-                row.StartDateTime,
-                row.EnergyPrices);
+                ResolutionMapper.FromDeltaTableValue(row.Resolution),
+                row.Taxation,
+                row.StartTime,
+                row.PricePoints.OrderBy(x => x.Time).Select(x => x.Price).ToList());
         }
     }
 
-    private static SettlementReportChargePriceQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
+    private static IQueryable<SettlementReportChargePriceResultViewEntity> ApplyFilter(IQueryable<SettlementReportChargePriceResultViewEntity> source, SettlementReportRequestFilterDto filter)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportChargePriceQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.CalculationType,
-            filter.PeriodStart.ToInstant(),
-            filter.EnergySupplier);
+        source = source
+            .Where(row => row.GridAreaCode == gridAreaCode)
+            .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
+            .Where(row => row.StartTime >= filter.PeriodStart.ToInstant())
+            .Where(row => row.CalculationId == calculationId!.Id);
+
+        if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
+        {
+            source = source.Where(wholesaleRow => wholesaleRow.EnergySupplierId == filter.EnergySupplier);
+        }
+
+        return source;
     }
 }

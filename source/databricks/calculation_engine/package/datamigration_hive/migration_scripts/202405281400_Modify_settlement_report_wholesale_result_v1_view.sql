@@ -1,8 +1,8 @@
-DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1
+DROP VIEW IF EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1
 GO
 
 -- This view represents the current state of the wholesale_results table with filter by "amount_per_charge".
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1 as
+CREATE VIEW {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1 as
 SELECT wr.calculation_id,
        wr.calculation_type,
        wr.grid_area_code,

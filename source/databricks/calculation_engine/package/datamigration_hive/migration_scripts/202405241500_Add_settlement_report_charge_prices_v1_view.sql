@@ -1,4 +1,4 @@
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1 as
+CREATE VIEW {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1 as
 SELECT
   c.calculation_id,
   FIRST_VALUE(c.calculation_type) as calculation_type,

@@ -112,7 +112,7 @@ class CalculationResultsPublicDataModel:
     TOTAL_MONTHLY_AMOUNTS_VIEW_NAME = "total_monthly_amounts_v1"
 
 
-class SettlementReportPublicDataModel:
+class HiveSettlementReportPublicDataModel:
     DATABASE_NAME = "settlement_report"
     METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
     METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"

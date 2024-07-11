@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-public interface ISettlementReportMeteringPointTimeSeriesResultQueries
+public sealed class SettlementReportMeteringPointTimeSeriesEntityConfiguration : IEntityTypeConfiguration<SettlementReportMeteringPointTimeSeriesEntity>
 {
-    Task<int> CountAsync(SettlementReportMeteringPointTimeSeriesResultQueryFilter filter);
-
-    IAsyncEnumerable<SettlementReportMeterinPointTimeSeriesResultRow> GetAsync(SettlementReportMeteringPointTimeSeriesResultQueryFilter filter, int skip, int take);
+    public void Configure(EntityTypeBuilder<SettlementReportMeteringPointTimeSeriesEntity> builder)
+    {
+        builder.ToTable("metering_point_time_series_v1");
+        builder.HasNoKey();
+    }
 }
