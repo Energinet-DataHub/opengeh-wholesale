@@ -94,7 +94,13 @@ schema_config = [
         tables=[],
         views=[
             View(
-                name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+                name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
             ),
         ],
     ),

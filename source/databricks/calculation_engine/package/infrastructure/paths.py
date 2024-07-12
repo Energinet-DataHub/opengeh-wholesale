@@ -50,7 +50,9 @@ class WholesaleResultsInternalDatabase:
 
 class WholesaleResultsDatabase:
     DATABASE_NAME = "wholesale_results"  # Defined in dh3infrastructure
-    AMOUNTS_PER_CHARGE_TABLE_NAME = "amounts_per_charge"
+    AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
+    MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
+    TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
 
 
 class WholesaleSettlementReportsDatabase:
