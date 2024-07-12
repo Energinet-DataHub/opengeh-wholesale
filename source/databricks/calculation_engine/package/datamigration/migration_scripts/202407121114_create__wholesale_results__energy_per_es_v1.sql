@@ -23,7 +23,7 @@ SELECT c.calculation_id,
        quantity,
        'kWh' as quantity_unit,
        quantity_qualities
-FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_brp AS e
+FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es AS e
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id
 WHERE
     -- Only include results that must be sent to the balance responsible parties
