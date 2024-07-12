@@ -1,4 +1,4 @@
-from spark_sql_migrations import Schema, Table
+from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
 from package.databases.wholesale_results_internal.schemas import (
@@ -88,5 +88,23 @@ schema_config = [
             ),
         ],
         views=[],
+    ),
+    Schema(
+        name=paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
+        tables=[],
+        views=[
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.CHARGE_PRICES_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+            ),
+        ],
     ),
 ]
