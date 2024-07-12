@@ -9,5 +9,5 @@ SELECT calculation_id,
        "P1M" as resolution,
        currency,
        amount,
-       charge_owner_id,
+       charge_owner_id
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.total_monthly_amounts_v1
