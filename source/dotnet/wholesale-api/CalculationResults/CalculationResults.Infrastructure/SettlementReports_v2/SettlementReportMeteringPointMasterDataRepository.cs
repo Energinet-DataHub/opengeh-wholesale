@@ -207,13 +207,6 @@ public sealed class SettlementReportMeteringPointMasterDataRepository : ISettlem
             .Distinct()
             .OrderBy(row => row.MeteringPointId);
 
-        // var query = view.Join(
-        //     meteringPointIds,
-        //     outer => outer.MeteringPointId,
-        //     inner => inner,
-        //     (outer, inner) => outer)
-        // .Distinct()
-        // .OrderBy(row => row.MeteringPointId);
         return query;
     }
 
