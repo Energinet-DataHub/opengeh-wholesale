@@ -36,6 +36,11 @@ public class DatabricksSqlQueryable : IOrderedQueryable
 
     public IQueryProvider Provider => DatabricksQueryProvider;
 
+    public override string ToString()
+    {
+        return DatabricksQueryProvider.DatabricksSqlQueryExecutor.BuildDebugString(this);
+    }
+
     protected DatabricksQueryProvider DatabricksQueryProvider { get; }
 
     IEnumerator IEnumerable.GetEnumerator()
