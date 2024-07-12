@@ -33,6 +33,7 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
         "wholesale_basis_data_internal",
         "wholesale_results_internal",
         "wholesale_internal",
+        "wholesale_settlement_reports",
     }
     databases = [
         db for db in spark.catalog.listDatabases() if db.name not in negative_databases
