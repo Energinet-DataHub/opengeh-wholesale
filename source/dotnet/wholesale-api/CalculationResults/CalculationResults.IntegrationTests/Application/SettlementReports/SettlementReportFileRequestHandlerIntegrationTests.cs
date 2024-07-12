@@ -63,7 +63,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(databricksContext);
         var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(databricksContext);
 
-        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportMeteringPointMasterDataQueries(
+        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -71,7 +71,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportMonthlyAmountQueries(
+        var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -79,7 +79,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMonthlyAmountTotalRepository = new SettlementReportMonthlyAmountTotalRepository(new SettlementReportMonthlyAmountTotalQueries(
+        var settlementReportMonthlyAmountTotalRepository = new SettlementReportMonthlyAmountTotalRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
