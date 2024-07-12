@@ -88,8 +88,7 @@ public class WholesaleServicesQueryStatementHelper
 
     internal string GetProjection(string prefix, AmountType amountType)
     {
-        return
-            $"{string.Join(", ", GetColumnsToProject(amountType).Select<string, string>(cts => $"`{prefix}`.`{cts}`"))}";
+        return string.Join(", ", GetColumnsToProject(amountType).Select(cts => $"`{prefix}`.`{cts}`"));
     }
 
     internal string GetChargeOwnerIdColumnName(AmountType amountType)
