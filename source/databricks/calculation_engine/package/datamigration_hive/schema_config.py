@@ -57,18 +57,6 @@ schema_config = [
         ],
     ),
     Schema(
-        # Tables in this schema are externals and schemas are not defined in the SQL scripts.
-        # This will be changed to Views in the future.
-        name=paths.InputDatabase.DATABASE_NAME,
-        tables=[
-            Table(
-                name=paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-                schema=grid_loss_metering_points_schema,
-            )
-        ],
-        views=[],
-    ),
-    Schema(
         name=paths.HiveBasisDataDatabase.DATABASE_NAME,
         tables=[
             Table(
