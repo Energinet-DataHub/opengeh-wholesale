@@ -90,6 +90,16 @@ schema_config = [
         views=[],
     ),
     Schema(
+        name=paths.WholesaleResultsDatabase.DATABASE_NAME,
+        tables=[
+            Table(
+                name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+                schema=amounts_per_charge_schema,
+            ),
+        ],
+        views=[],
+    ),
+    Schema(
         name=paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
         tables=[],
         views=[
