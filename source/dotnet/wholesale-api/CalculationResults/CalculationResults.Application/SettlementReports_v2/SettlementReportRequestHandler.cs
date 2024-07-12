@@ -104,7 +104,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             var fileRequest = new SettlementReportFileRequestDto(
                 requestId,
                 file.Content,
-                new SettlementReportPartialFileInfo(file.Name, true),
+                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles),
                 reportRequest.Filter,
                 maxCalculationVersion);
 
@@ -113,7 +113,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 fileRequest = new SettlementReportFileRequestDto(
                 requestId,
                 file.Content,
-                new SettlementReportPartialFileInfo(file.Name, true) { FileOffset = int.MaxValue },
+                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles) { FileOffset = int.MaxValue },
                 reportRequest.Filter,
                 maxCalculationVersion);
             }
