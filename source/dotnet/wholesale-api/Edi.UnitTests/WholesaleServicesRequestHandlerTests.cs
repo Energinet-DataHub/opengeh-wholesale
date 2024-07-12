@@ -61,12 +61,17 @@ public class WholesaleServicesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(new WholesaleServicesRequestBuilder().Build().ToByteArray()));
 
-        var wholesaleServices = CreateWholesaleServices();
-        queries.Setup(q => q.GetAsync(It.IsAny<WholesaleServicesQueryParameters>()))
-            .Returns(new List<WholesaleServices>
-            {
-                wholesaleServices,
-            }.ToAsyncEnumerable());
+        List<WholesaleServices> wholesaleServices =
+        [
+            CreateWholesaleServices(),
+            CreateWholesaleServices(),
+            CreateWholesaleServices(),
+        ];
+        var expectedSeriesCount = wholesaleServices.Count;
+
+        queries
+            .Setup(q => q.GetAsync(It.IsAny<WholesaleServicesQueryParameters>()))
+            .Returns(wholesaleServices.ToAsyncEnumerable);
 
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
@@ -85,11 +90,98 @@ public class WholesaleServicesRequestHandlerTests
         ediClient.Verify(
             client => client.SendAsync(
                 It.Is<ServiceBusMessage>(message =>
-                    message.Subject.Equals(expectedAcceptedSubject)
-                    && message.ApplicationProperties.ContainsKey("ReferenceId")
-                    && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                    message.Subject.Equals(expectedAcceptedSubject) &&
+                    WholesaleServicesRequestAccepted.Parser.ParseFrom(message.Body).Series.Count == expectedSeriesCount &&
+                    message.ApplicationProperties.ContainsKey("ReferenceId") &&
+                    message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
                 It.IsAny<CancellationToken>()),
             Times.Once);
+
+        // Verify wholesale query was executed once for AmountPerCharge
+        queries.Verify(
+            q =>
+                q.GetAsync(It.Is<WholesaleServicesQueryParameters>(queryParameters =>
+                    queryParameters.AmountType == AmountType.AmountPerCharge)),
+            Times.Once);
+
+        // Verify that only the query above was executed
+        queries.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WithMonthlyResolution_QueriesBothTotalAndMonthlyCalculationResults(
+        [Frozen] Mock<IEdiClient> ediClient,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
+        [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
+        [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
+    {
+        // Arrange
+        const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(new WholesaleServicesRequestBuilder()
+                .WithResolution(DataHubNames.Resolution.Monthly)
+                .Build()
+                .ToByteArray()));
+
+        List<WholesaleServices> wholesaleServices =
+        [
+            CreateWholesaleServices(),
+            CreateWholesaleServices(),
+            CreateWholesaleServices(),
+        ];
+
+        // Query is executed twice (for both MonthlyAmountPerCharge and TotalMonthlyAmount) which gives double results
+        var expectedSeriesCount = wholesaleServices.Count * 2;
+
+        queries
+            .Setup(q => q.GetAsync(It.IsAny<WholesaleServicesQueryParameters>()))
+            .Returns(wholesaleServices.ToAsyncEnumerable());
+
+        var sut = new WholesaleServicesRequestHandler(
+            ediClient.Object,
+            validator.Object,
+            queries.Object,
+            mapper.Object,
+            logger.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+
+        // Verify accepted response message
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedAcceptedSubject) &&
+                    WholesaleServicesRequestAccepted.Parser.ParseFrom(message.Body).Series.Count == expectedSeriesCount),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        // Verify wholesale query was executed once for MonthlyAmountPerCharge
+        queries.Verify(
+            q =>
+                q.GetAsync(It.Is<WholesaleServicesQueryParameters>(queryParameters =>
+                    queryParameters.AmountType == AmountType.MonthlyAmountPerCharge)),
+            Times.Once);
+
+        // Verify wholesale query was executed once for TotalMonthlyAmount
+        queries.Verify(
+            q =>
+                q.GetAsync(It.Is<WholesaleServicesQueryParameters>(queryParameters =>
+                    queryParameters.AmountType == AmountType.TotalMonthlyAmount)),
+            Times.Once);
+
+        // Verify that only the two queries above was executed
+        queries.VerifyNoOtherCalls();
     }
 
     [Theory]
