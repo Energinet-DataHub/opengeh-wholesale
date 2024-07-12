@@ -109,6 +109,15 @@ schema_config = [
             View(
                 name=paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
             ),
+            View(
+                name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            ),
         ],
     ),
     Schema(
