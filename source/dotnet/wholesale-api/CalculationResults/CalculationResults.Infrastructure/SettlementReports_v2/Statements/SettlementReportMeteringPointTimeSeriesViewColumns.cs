@@ -18,6 +18,7 @@ public class SettlementReportMeteringPointTimeSeriesViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
+    public const string CalculationVersion = "calculation_version";
     public const string MeteringPointId = "metering_point_id";
     public const string MeteringPointType = "metering_point_type";
     public const string Resolution = "resolution";
@@ -30,14 +31,13 @@ public class SettlementReportMeteringPointTimeSeriesViewColumns
     {
         { CalculationId, ("string", false) },
         { CalculationType, ("string", false) },
+        { CalculationVersion, ("string", false) },
         { MeteringPointId, ("string", false) },
         { MeteringPointType, ("string", false) },
         { Resolution, ("string", false) },
         { GridArea, ("string", false) },
-        { EnergySupplier, ("string", false) },
+        { EnergySupplier, ("string", true) },
         { ObservationTime, ("timestamp", false) },
         { Quantity, ("decimal(18,3)", false) },
     };
-
-    public static string[] AllNames { get; } = [.. SchemaDefinition.Keys];
 }
