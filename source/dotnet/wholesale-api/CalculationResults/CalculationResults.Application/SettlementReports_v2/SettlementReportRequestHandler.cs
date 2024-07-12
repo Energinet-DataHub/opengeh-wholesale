@@ -70,7 +70,9 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                     },
                     CalculationType.BalanceFixing =>
                     [
-                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true }
+                        new { Content = SettlementReportFileContent.MeteringPointMasterData, Name = "MDMP", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt15M, Name = "TSSD15", SplitReportPerGridArea = true },
+                        new { Content = SettlementReportFileContent.Pt1H, Name = "TSSD60", SplitReportPerGridArea = true },
                     ],
                     _ => throw new InvalidOperationException($"Cannot generate basis data for calculation type {reportRequest.Filter.CalculationType}."),
                 }
@@ -102,18 +104,18 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             var fileRequest = new SettlementReportFileRequestDto(
                 requestId,
                 file.Content,
-                new SettlementReportPartialFileInfo(file.Name, true),
+                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles),
                 reportRequest.Filter,
                 maxCalculationVersion);
 
             if (file.Content == SettlementReportFileContent.MonthlyAmountTotal)
             {
-                    fileRequest = new SettlementReportFileRequestDto(
-                    requestId,
-                    file.Content,
-                    new SettlementReportPartialFileInfo(file.Name, true) { FileOffset = int.MaxValue },
-                    reportRequest.Filter,
-                    maxCalculationVersion);
+                fileRequest = new SettlementReportFileRequestDto(
+                requestId,
+                file.Content,
+                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles) { FileOffset = int.MaxValue },
+                reportRequest.Filter,
+                maxCalculationVersion);
             }
 
             await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, file.SplitReportPerGridArea).ConfigureAwait(false))
