@@ -48,6 +48,14 @@ class WholesaleResultsInternalDatabase:
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
 
 
+class WholesaleSettlementReportsDatabase:
+    DATABASE_NAME = "wholesale_settlement_reports"  # Defined in dh3infrastructure
+    METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
+    METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
+    CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
+    CHARGE_PRICES_VIEW_NAME_V1 = "charge_prices_v1"
+
+
 class HiveOutputDatabase:
     FOLDER_NAME = "calculation-output"
     """The folder in the storage account container"""
