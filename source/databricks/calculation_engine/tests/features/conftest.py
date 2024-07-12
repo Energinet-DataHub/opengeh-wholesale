@@ -56,4 +56,5 @@ def actual_and_expected_views(
 
     scenario_path = str(Path(request.module.__file__).parent)
     executor = ViewScenarioExecutor(spark)
+    spark.catalog.listTables()
     return executor.execute(scenario_path)
