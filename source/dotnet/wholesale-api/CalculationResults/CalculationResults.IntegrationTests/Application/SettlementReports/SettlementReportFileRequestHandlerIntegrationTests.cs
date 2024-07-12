@@ -63,7 +63,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(databricksContext);
         var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(databricksContext);
 
-        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportMeteringPointMasterDataQueries(
+        var settlementReportMeteringPointMasterDataRepository = new SettlementReportMeteringPointMasterDataRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -71,7 +71,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportMonthlyAmountQueries(
+        var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -79,7 +79,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMonthlyAmountTotalRepository = new SettlementReportMonthlyAmountTotalRepository(new SettlementReportMonthlyAmountTotalQueries(
+        var settlementReportMonthlyAmountTotalRepository = new SettlementReportMonthlyAmountTotalRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
@@ -244,8 +244,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", $"'{gridAreaCode}'", "'8442359392712'", "'2022-01-02 12:00:00'", "678.90"],
-                ["'891b7070-b80f-4731-8714-76221e27c366'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT1H'", $"'{gridAreaCode}'", "'8442359392712'", "'2022-01-02 12:15:00'", "679.90"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'wholesale_fixing'", "'1'", "'400000000000000004'", "'exchange'", "'PT15M'", $"'{gridAreaCode}'", "'8442359392712'", "'2022-01-02 12:00:00'", "678.90"],
+                ["'891b7070-b80f-4731-8714-76221e27c366'", "'wholesale_fixing'", "'1'", "'400000000000000004'", "'exchange'", "'PT1H'", $"'{gridAreaCode}'", "'8442359392712'", "'2022-01-02 12:15:00'", "679.90"],
             ]);
 
         // Act

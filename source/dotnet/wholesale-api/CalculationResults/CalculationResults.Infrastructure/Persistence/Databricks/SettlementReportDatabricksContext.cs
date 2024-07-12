@@ -40,11 +40,15 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     public IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> EnergyResultPointsPerEnergySupplierGridAreaView => Set<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity>();
 
+    public IQueryable<SettlementReportMeteringPointMasterDataViewEntity> SettlementReportMeteringPointMasterDataView => Set<SettlementReportMeteringPointMasterDataViewEntity>();
+
     public IQueryable<SettlementReportMeteringPointTimeSeriesEntity> MeteringPointTimeSeriesView => Set<SettlementReportMeteringPointTimeSeriesEntity>();
 
     public IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ChargeLinkPeriodsView => Set<SettlementReportChargeLinkPeriodsViewEntity>();
 
     public IQueryable<SettlementReportChargePriceResultViewEntity> ChargePriceView => Set<SettlementReportChargePriceResultViewEntity>();
+
+    public IQueryable<SettlementReportMonthlyAmountsViewEntity> MonthlyAmountsView => Set<SettlementReportMonthlyAmountsViewEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -53,8 +57,10 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
         modelBuilder.ApplyConfiguration(new SettlementReportWholesaleViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportMeteringPointMasterDataViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportMeteringPointTimeSeriesEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportChargeLinkPeriodsViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportChargePriceViewEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportMonthlyAmountsViewEntityConfiguration());
     }
 }

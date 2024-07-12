@@ -38,7 +38,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
         var dataSourceMock = new Mock<ISettlementReportMeteringPointTimeSeriesResultRepository>();
 
         dataSourceMock
-            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), resolution, It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1, resolution, It.IsAny<int>(), It.IsAny<int>()))
             .Returns(
                 new List<SettlementReportMeteringPointTimeSeriesResultRow>
                 {
@@ -97,7 +97,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
         var dataSourceMock = new Mock<ISettlementReportMeteringPointTimeSeriesResultRepository>();
 
         dataSourceMock
-            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), Resolution.Hour, It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), 1, Resolution.Hour, It.IsAny<int>(), It.IsAny<int>()))
             .Returns(
                 new List<SettlementReportMeteringPointTimeSeriesResultRow>
                 {
