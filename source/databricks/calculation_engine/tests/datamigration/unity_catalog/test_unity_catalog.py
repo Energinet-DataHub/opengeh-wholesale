@@ -43,6 +43,10 @@ from package.infrastructure import paths
             paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
             paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         ),
+        (
+            paths.WholesaleInternalDatabase.DATABASE_NAME,
+            paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        ),
     ],
 )
 def test__when_migrations_executed__created_table_is_managed(

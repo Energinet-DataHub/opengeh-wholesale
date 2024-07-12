@@ -15,7 +15,11 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 from package.common import assert_schema
-from package.infrastructure.paths import InputDatabase, HiveBasisDataDatabase
+from package.infrastructure.paths import (
+    InputDatabase,
+    HiveBasisDataDatabase,
+    WholesaleInternalDatabase,
+)
 from .schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
@@ -50,7 +54,7 @@ class TableReader:
         )
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
-            or InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
+            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
         )
 
     def read_metering_point_periods(
