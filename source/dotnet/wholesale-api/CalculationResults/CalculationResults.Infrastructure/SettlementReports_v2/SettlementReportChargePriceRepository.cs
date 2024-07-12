@@ -33,17 +33,21 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         _context = context;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return ApplyFilter(_context.ChargePriceView, filter)
+        return ApplyFilter(_context.ChargePriceView, filter, actorInfo)
             .Select(row => row.StartTime)
             .Distinct()
             .DatabricksSqlCountAsync();
     }
 
-    public async IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportChargePriceRow> GetAsync(
+        SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo,
+        int skip,
+        int take)
     {
-        var view = ApplyFilter(_context.ChargePriceView, filter);
+        var view = ApplyFilter(_context.ChargePriceView, filter, actorInfo);
 
         var chunkByStartTime = view
             .Select(row => row.StartTime)
@@ -88,7 +92,10 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         }
     }
 
-    private static IQueryable<SettlementReportChargePriceResultViewEntity> ApplyFilter(IQueryable<SettlementReportChargePriceResultViewEntity> source, SettlementReportRequestFilterDto filter)
+    private static IQueryable<SettlementReportChargePriceResultViewEntity> ApplyFilter(
+        IQueryable<SettlementReportChargePriceResultViewEntity> source,
+        SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
@@ -101,6 +108,20 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
         {
             source = source.Where(wholesaleRow => wholesaleRow.EnergySupplierId == filter.EnergySupplier);
+        }
+
+        if (actorInfo.MarketRole == MarketRole.SystemOperator)
+        {
+            source = source.Where(wholesaleRow =>
+                wholesaleRow.Taxation == false &&
+                wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
+        }
+
+        if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
+        {
+            source = source.Where(wholesaleRow =>
+                wholesaleRow.Taxation == true &&
+                wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 
         return source;
