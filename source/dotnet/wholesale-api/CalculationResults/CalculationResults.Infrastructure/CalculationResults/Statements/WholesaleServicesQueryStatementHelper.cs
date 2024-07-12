@@ -33,6 +33,50 @@ public class WholesaleServicesQueryStatementHelper
         };
     }
 
+    public string GetCalculationTypeColumnName(AmountType amountType)
+    {
+        return amountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationType,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationType,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationType,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    public string GetGridAreaCodeColumnName(AmountType amountType)
+    {
+        return amountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.GridAreaCode,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.GridAreaCode,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    public string GetTimeColumnName(AmountType amountType)
+    {
+        return amountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.Time,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.Time,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.Time,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
+    public string GetEnergySupplierIdColumnName(AmountType amountType)
+    {
+        return amountType switch
+        {
+            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.EnergySupplierId,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+    }
+
     internal AmountType GuessAmountTypeFromRow(DatabricksSqlRow databricksSqlRow)
     {
         return databricksSqlRow.HasColumn(AmountsPerChargeViewColumnNames.Resolution)
@@ -44,52 +88,7 @@ public class WholesaleServicesQueryStatementHelper
 
     internal string GetProjection(string prefix, AmountType amountType)
     {
-        return
-            $"{string.Join(", ", GetColumnsToProject(amountType).Select<string, string>(cts => $"`{prefix}`.`{cts}`"))}";
-    }
-
-    internal string GetCalculationTypeColumnName(AmountType amountType)
-    {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationType,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationType,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationType,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-    }
-
-    internal string GetGridAreaCodeColumnName(AmountType amountType)
-    {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.GridAreaCode,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.GridAreaCode,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-    }
-
-    internal string GetTimeColumnName(AmountType amountType)
-    {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.Time,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.Time,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.Time,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-    }
-
-    internal string GetEnergySupplierIdColumnName(AmountType amountType)
-    {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.EnergySupplierId,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return string.Join(", ", GetColumnsToProject(amountType).Select(cts => $"`{prefix}`.`{cts}`"));
     }
 
     internal string GetChargeOwnerIdColumnName(AmountType amountType)
@@ -109,7 +108,7 @@ public class WholesaleServicesQueryStatementHelper
         {
             AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeCode,
             AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
-            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Och nay, no charge code for total monthly amounts"),
+            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Oh dear, there is no charge code for total monthly amounts"),
             _ => throw new ArgumentOutOfRangeException(),
         };
     }
@@ -120,7 +119,7 @@ public class WholesaleServicesQueryStatementHelper
         {
             AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeType,
             AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeType,
-            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Och nay, no charge type for total monthly amounts"),
+            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Oh dear, there is no charge type for total monthly amounts"),
             _ => throw new ArgumentOutOfRangeException(),
         };
     }

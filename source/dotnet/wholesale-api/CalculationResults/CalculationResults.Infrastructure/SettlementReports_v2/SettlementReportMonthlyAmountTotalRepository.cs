@@ -13,61 +13,101 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Microsoft.EntityFrameworkCore;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementReportMonthlyAmountTotalRepository
 {
-    private readonly ISettlementReportMonthlyAmountTotalQueries _settlementReportResultQueries;
+    private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
 
-    public SettlementReportMonthlyAmountTotalRepository(ISettlementReportMonthlyAmountTotalQueries settlementReportResultQueries)
+    public SettlementReportMonthlyAmountTotalRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
     {
-        _settlementReportResultQueries = settlementReportResultQueries;
+        _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        return _settlementReportResultQueries.CountAsync(ParseFilter(filter, actorInfo));
+        return ApplyFilter(_settlementReportDatabricksContext.MonthlyAmountsView, filter, actorInfo)
+            .Select(x => x.ResultId)
+            .Distinct()
+            .DatabricksSqlCountAsync();
     }
 
     public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take)
     {
-        var rows = _settlementReportResultQueries
-            .GetAsync(ParseFilter(filter, actorInfo), skip, take)
-            .ConfigureAwait(false);
+        var view = ApplyFilter(_settlementReportDatabricksContext.MonthlyAmountsView, filter, actorInfo);
 
-        await foreach (var row in rows.ConfigureAwait(false))
+        var chunkByCalculationResult = view
+            .Select(row => row.ResultId)
+            .Distinct()
+            .OrderBy(row => row)
+            .Skip(skip)
+            .Take(take);
+
+        var query = view.Join(
+            chunkByCalculationResult,
+            outer => outer.ResultId,
+            inner => inner,
+            (outer, inner) => outer);
+
+        await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
         {
             yield return new SettlementReportMonthlyAmountRow(
-                row.CalculationType,
-                row.GridArea,
+                CalculationTypeMapper.FromDeltaTableValue(row.CalculationType),
+                row.GridAreaCode,
                 row.EnergySupplierId,
-                row.StartDateTime,
-                row.Resolution,
-                row.QuantityUnit,
-                row.Currency,
+                row.Time,
+                ResolutionMapper.FromDeltaTableValue(row.Resolution),
+                QuantityUnitMapper.FromDeltaTableValue(row.QuantityUnit),
+                Currency.DKK,
                 row.Amount,
-                row.ChargeType,
+                row.ChargeType is null ? null : ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeCode,
                 row.ChargeOwnerId);
         }
     }
 
-    private static SettlementReportMonthlyAmountQueryFilter ParseFilter(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
+    private static IQueryable<SettlementReportMonthlyAmountsViewEntity> ApplyFilter(
+        IQueryable<SettlementReportMonthlyAmountsViewEntity> source,
+        SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo)
     {
         var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
-        return new SettlementReportMonthlyAmountQueryFilter(
-            calculationId!.Id,
-            gridAreaCode,
-            filter.CalculationType,
-            filter.EnergySupplier,
-            actorInfo.ChargeOwnerId,
-            filter.PeriodStart.ToInstant(),
-            filter.PeriodEnd.ToInstant(),
-            actorInfo.MarketRole);
+        source = source
+            .Where(row => row.GridAreaCode == gridAreaCode)
+            .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
+            .Where(row => row.Time >= filter.PeriodStart.ToInstant())
+            .Where(row => row.Time < filter.PeriodEnd.ToInstant())
+            .Where(row => row.ChargeCode == null)
+            .Where(row => row.ChargeType == null)
+            .Where(row => row.IsTax == null)
+            .Where(row => row.CalculationId == calculationId!.Id);
+
+        switch (actorInfo.MarketRole)
+        {
+            case MarketRole.SystemOperator:
+            case MarketRole.GridAccessProvider:
+                source = source.Where(row =>
+                    row.ChargeOwnerId == actorInfo.ChargeOwnerId);
+                break;
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
+        {
+            source = source
+                .Where(row => row.EnergySupplierId == filter.EnergySupplier)
+                .Where(row => row.ChargeOwnerId == null);
+        }
+
+        return source;
     }
 }

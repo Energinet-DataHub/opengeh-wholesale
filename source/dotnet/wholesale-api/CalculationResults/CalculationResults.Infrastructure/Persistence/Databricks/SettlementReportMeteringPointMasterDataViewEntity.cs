@@ -17,8 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-public sealed class SettlementReportChargePriceResultViewEntity
+public sealed class SettlementReportMeteringPointMasterDataViewEntity
 {
     [Column("calculation_id")]
     public Guid CalculationId { get; set; }
@@ -26,33 +25,30 @@ public sealed class SettlementReportChargePriceResultViewEntity
     [Column("calculation_type")]
     public string CalculationType { get; set; } = null!;
 
-    [Column("calculation_version")]
-    public long CalculationVersion { get; set; }
-
     [Column("grid_area_code")]
     public string GridAreaCode { get; set; } = null!;
 
-    [Column("start_date_time")]
-    public Instant StartTime { get; set; }
+    [Column("from_grid_area_code")]
+    public string? GridAreaFromCode { get; set; }
 
-    [Column("resolution")]
-    public string Resolution { get; set; } = null!;
+    [Column("to_grid_area_code")]
+    public string? GridAreaToCode { get; set; }
+
+    [Column("from_date")]
+    public Instant FromDate { get; set; }
+
+    [Column("to_date")]
+    public Instant? ToDate { get; set; }
+
+    [Column("metering_point_id")]
+    public string MeteringPointId { get; set; } = null!;
+
+    [Column("metering_point_type")]
+    public string MeteringPointType { get; set; } = null!;
+
+    [Column("settlement_method")]
+    public string? SettlementMethod { get; set; }
 
     [Column("energy_supplier_id")]
     public string? EnergySupplierId { get; set; }
-
-    [Column("charge_type")]
-    public string ChargeType { get; set; } = null!;
-
-    [Column("charge_code")]
-    public string ChargeCode { get; set; } = null!;
-
-    [Column("charge_owner_id")]
-    public string ChargeOwnerId { get; set; } = null!;
-
-    [Column("is_tax", TypeName = "int")]
-    public bool Taxation { get; set; }
-
-    [Column("price_points")]
-    public SettlementReportChargePriceResultViewPricePointEntity[] PricePoints { get; set; } = [];
 }

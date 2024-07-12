@@ -17,8 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-public sealed class SettlementReportChargePriceResultViewEntity
+public sealed class SettlementReportMonthlyAmountsViewEntity
 {
     [Column("calculation_id")]
     public Guid CalculationId { get; set; }
@@ -26,33 +25,39 @@ public sealed class SettlementReportChargePriceResultViewEntity
     [Column("calculation_type")]
     public string CalculationType { get; set; } = null!;
 
-    [Column("calculation_version")]
-    public long CalculationVersion { get; set; }
+    [Column("result_id")]
+    public string ResultId { get; set; } = null!;
 
     [Column("grid_area_code")]
     public string GridAreaCode { get; set; } = null!;
 
-    [Column("start_date_time")]
-    public Instant StartTime { get; set; }
+    [Column("energy_supplier_id")]
+    public string EnergySupplierId { get; set; } = null!;
+
+    [Column("time")]
+    public Instant Time { get; set; }
 
     [Column("resolution")]
     public string Resolution { get; set; } = null!;
 
-    [Column("energy_supplier_id")]
-    public string? EnergySupplierId { get; set; }
+    [Column("quantity_unit")]
+    public string QuantityUnit { get; set; } = null!;
+
+    [Column("currency")]
+    public string Currency { get; set; } = null!;
+
+    [Column("amount", TypeName = "decimal(18,6)")]
+    public decimal? Amount { get; set; }
 
     [Column("charge_type")]
-    public string ChargeType { get; set; } = null!;
+    public string? ChargeType { get; set; }
 
     [Column("charge_code")]
-    public string ChargeCode { get; set; } = null!;
+    public string? ChargeCode { get; set; }
 
     [Column("charge_owner_id")]
-    public string ChargeOwnerId { get; set; } = null!;
+    public string? ChargeOwnerId { get; set; }
 
     [Column("is_tax", TypeName = "int")]
-    public bool Taxation { get; set; }
-
-    [Column("price_points")]
-    public SettlementReportChargePriceResultViewPricePointEntity[] PricePoints { get; set; } = [];
+    public bool? IsTax { get; set; }
 }

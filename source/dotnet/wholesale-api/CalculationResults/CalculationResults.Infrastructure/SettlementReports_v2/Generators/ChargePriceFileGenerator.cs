@@ -35,7 +35,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
     public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        return _dataSource.CountAsync(filter);
+        return _dataSource.CountAsync(filter, actorInfo);
     }
 
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
@@ -55,7 +55,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 await WriteHeaderAsync(csvHelper).ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, fileInfo.ChunkOffset, 1).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, actorInfo, fileInfo.ChunkOffset, 1).ConfigureAwait(false))
             {
                 await WriteRecordAsync(csvHelper, record).ConfigureAwait(false);
             }
