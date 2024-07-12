@@ -20,7 +20,7 @@ import package.infrastructure.environment_variables as env_vars
 class UnityCatalogDatabaseNames:
     """Unity Catalog database names are defined in the dh3infrastructure repository"""
 
-    WHOLESALE_CALCULATION_RESULTS = "wholesale_calculation_results"
+    WHOLESALE_RESULTS = "wholesale_results"
     WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
     WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
@@ -143,7 +143,7 @@ class CalculationResultsPublicDataModel:
 
 
 class WholesaleResultsDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_CALCULATION_RESULTS
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
     ENERGY_V1_VIEW_NAME = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
