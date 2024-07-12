@@ -48,6 +48,11 @@ class WholesaleResultsInternalDatabase:
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
 
 
+class WholesaleResultsDatabase:
+    DATABASE_NAME = "wholesale_results"  # Defined in dh3infrastructure
+    AMOUNTS_PER_CHARGE_TABLE_NAME = "amounts_per_charge"
+
+
 class WholesaleSettlementReportsDatabase:
     DATABASE_NAME = "wholesale_settlement_reports"  # Defined in dh3infrastructure
     METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
