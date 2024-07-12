@@ -561,9 +561,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         {
             return $"""
                     DELETE FROM {_helper.GetSource(amountType, _deltaTableOptions)}
-                    WHERE {WholesaleResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
-                    AND {WholesaleResultColumnNames.Time} <= '{_before}'
-                    {(_after is not null ? $"AND {WholesaleResultColumnNames.Time} > '{_after}'" : string.Empty)}
+                    WHERE {_helper.GetEnergySupplierIdColumnName(amountType)} = '{_energySupplierId}'
+                    AND {_helper.GetTimeColumnName(amountType)} <= '{_before}'
+                    {(_after is not null ? $"AND {_helper.GetTimeColumnName(amountType)} > '{_after}'" : string.Empty)}
                     """;
         }
     }
@@ -581,10 +581,10 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         {
             return $"""
                     DELETE FROM {_helper.GetSource(amountType, _deltaTableOptions)}
-                    WHERE ({WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
-                    OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
-                    OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
-                    {(_gridAreasToRemoveFrom.Any() ? $"AND {WholesaleResultColumnNames.GridArea} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
+                    WHERE ({_helper.GetCalculationTypeColumnName(amountType)} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
+                    OR {_helper.GetCalculationTypeColumnName(amountType)} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
+                    OR {_helper.GetCalculationTypeColumnName(amountType)} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
+                    {(_gridAreasToRemoveFrom.Any() ? $"AND {_helper.GetGridAreaCodeColumnName(amountType)} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
                     """;
         }
     }
