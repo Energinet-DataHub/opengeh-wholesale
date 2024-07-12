@@ -1,0 +1,1 @@
+DROP TABLE {INPUT_DATABASE_NAME}.grid_loss_metering_points
