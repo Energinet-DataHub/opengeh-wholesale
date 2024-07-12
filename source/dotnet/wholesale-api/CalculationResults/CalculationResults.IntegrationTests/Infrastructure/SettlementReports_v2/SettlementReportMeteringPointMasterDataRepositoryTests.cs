@@ -441,7 +441,7 @@ public class SettlementReportMeteringPointMasterDataRepositoryTests : TestBase<S
             int.MaxValue).ToListAsync();
 
         Assert.Equal(3, count);
-        Assert.Equal(2, actual.Count);
+        Assert.Single(actual);
         Assert.Single(actual2);
         Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829eb", actual.First().MeteringPointId);
         Assert.Equal("15cba911-b91e-4782-bed4-f0d2841829ec", actual2.First().MeteringPointId);
