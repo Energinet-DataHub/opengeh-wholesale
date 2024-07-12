@@ -14,23 +14,18 @@
 
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using FluentAssertions;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<SettlementReportMonthlyAmountTotalRepository>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+[Collection(nameof(SettlementReportCollectionFixture))]
+public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<SettlementReportMonthlyAmountTotalRepository>
 {
     private readonly MigrationsFreeDatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
@@ -38,17 +33,11 @@ public class SettlementReportMonthlyAmountTotalRepositoryTests : TestBase<Settle
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
-        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
-        {
-            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
-        });
+        _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SettlementReportSchemaName =
+            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME;
 
-        Fixture.Inject(mockedOptions);
-        Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
-        Fixture.Inject<ISettlementReportMonthlyAmountTotalQueries>(new SettlementReportMonthlyAmountTotalQueries(
-            mockedOptions.Object,
+        Fixture.Inject<ISettlementReportDatabricksContext>(new SettlementReportDatabricksContext(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor()));
     }
 
