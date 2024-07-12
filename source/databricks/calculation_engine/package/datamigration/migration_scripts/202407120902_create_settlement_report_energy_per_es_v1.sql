@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {HIVE_SETTLEMENT_REPORT_DATABASE_NAME}.energy_per_es_v1 as
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.energy_per_es_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_version,
@@ -10,7 +10,7 @@ SELECT calculation_id,
        time,
        quantity,
        energy_supplier_id
-FROM {HIVE_OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
+FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption')
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
 AND aggregation_level = 'es_brp_ga'

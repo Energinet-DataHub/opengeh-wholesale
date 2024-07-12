@@ -50,10 +50,15 @@ class WholesaleResultsInternalDatabase:
 
 class WholesaleSettlementReportsDatabase:
     DATABASE_NAME = "wholesale_settlement_reports"  # Defined in dh3infrastructure
+    CURRENT_BALANCE_FIXING_CALCULATION_VERSION = (
+        "current_balance_fixing_calculation_version_v1"
+    )
     METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
     METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
     CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
     CHARGE_PRICES_VIEW_NAME_V1 = "charge_prices_v1"
+    ENERGY_VIEW_NAME = "energy_v1"
+    ENERGY_PER_ES_VIEW_NAME = "energy_per_es_v1"
 
 
 class HiveOutputDatabase:
