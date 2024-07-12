@@ -91,13 +91,12 @@ schema_config = [
     ),
     Schema(
         name=paths.WholesaleResultsDatabase.DATABASE_NAME,
-        tables=[
-            Table(
+        tables=[],
+        views=[
+            View(
                 name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
-                schema=amounts_per_charge_schema,
             ),
         ],
-        views=[],
     ),
     Schema(
         name=paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
