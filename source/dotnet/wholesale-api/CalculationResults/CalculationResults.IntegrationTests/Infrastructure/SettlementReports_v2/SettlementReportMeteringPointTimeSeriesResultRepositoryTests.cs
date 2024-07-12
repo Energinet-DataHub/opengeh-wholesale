@@ -49,8 +49,8 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392711'", "'2022-01-10T03:15:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392711'", "'2022-01-10T03:15:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392711'", "'2022-01-10T03:15:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'404'", "'8442359392711'", "'2022-01-10T03:15:00.000+00:00'", "678.90"],
             ]);
 
         // act
@@ -67,10 +67,99 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            1,
             Resolution.Quarter);
 
         // assert
         Assert.Equal(1, actual);
+    }
+
+    [Fact]
+    public async Task CountLatest_ValidFilter_ReturnsCount()
+    {
+        // arrange
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
+            [
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-03T02:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-04T03:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-05T03:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-06T04:00:00.000+00:00'", "123.45"],
+                ["'e50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000007'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-06T04:00:00.000+00:00'", "123.45"],
+                ["'d50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "0", "'400000000000000008'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-07T04:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000008'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-07T04:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000008'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-07T05:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000008'", "'exchange'", "'PT15M'", "'400'", "'8442359392711'", "'2024-01-07T06:00:00.000+00:00'", "678.90"],
+            ]);
+
+        // act
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "400", null
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-01T03:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-02-01T04:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"),
+            1,
+            Resolution.Quarter);
+
+        // assert
+        Assert.Equal(7, actual);
+    }
+
+    [Fact]
+    public async Task GetLatest_SkipTake_ReturnsExpectedRows()
+    {
+        // arrange
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
+            [
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-03T02:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-04T03:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-05T03:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-06T04:00:00.000+00:00'", "123.45"],
+                ["'e50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000007'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-06T04:00:00.000+00:00'", "123.45"],
+                ["'d50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "0", "'400000000000000008'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-07T04:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'balance_fixing'", "1", "'400000000000000008'", "'exchange'", "'PT15M'", "'401'", "'8442359392711'", "'2024-01-07T04:00:00.000+00:00'", "678.90"],
+            ]);
+
+        // act
+        var actual = await Sut.GetAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "401", null
+                    },
+                },
+                DateTimeOffset.Parse("2024-01-01T00:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-02-01T00:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
+                null,
+                "da-DK"),
+            1,
+            Resolution.Quarter,
+            skip: 2,
+            take: 100).ToListAsync();
+
+        // assert
+        var sortedActual = actual
+            .OrderBy(x => x.StartDateTime)
+            .ToList();
+
+        Assert.Equal(3, sortedActual[0].StartDateTime.ToDateTimeOffset().Day);
+        Assert.Equal(4, sortedActual[1].StartDateTime.ToDateTimeOffset().Day);
+        Assert.Equal(5, sortedActual[2].StartDateTime.ToDateTimeOffset().Day);
+        Assert.Equal(5, sortedActual[3].StartDateTime.ToDateTimeOffset().Day);
+        Assert.Equal(6, sortedActual[4].StartDateTime.ToDateTimeOffset().Day);
     }
 
     [Fact]
@@ -80,12 +169,12 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T02:00:00.000+00:00'", "678.90"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000005'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T03:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000005'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T03:00:00.000+00:00'", "678.90"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000006'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000006'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T02:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T03:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T03:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'405'", "'8442359392711'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
             ]);
 
         // act
@@ -102,6 +191,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            1,
             Resolution.Quarter,
             skip: 2,
             take: 1).ToListAsync();
@@ -120,12 +210,12 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'406'", "'8442359392714'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'406'", "'8442359392714'", "'2024-01-02T02:00:00.000+00:00'", "678.90"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000005'", "'exchange'", "'PT15M'", "'406'", "'8442359392715'", "'2024-01-02T03:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000005'", "'exchange'", "'PT15M'", "'406'", "'8442359392715'", "'2024-01-02T03:00:00.000+00:00'", "678.90"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000006'", "'exchange'", "'PT15M'", "'406'", "'8442359392716'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000006'", "'exchange'", "'PT15M'", "'406'", "'8442359392716'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'406'", "'8442359392714'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'406'", "'8442359392714'", "'2024-01-02T02:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'406'", "'8442359392715'", "'2024-01-02T03:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'406'", "'8442359392715'", "'2024-01-02T03:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'406'", "'8442359392716'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'406'", "'8442359392716'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
             ]);
 
         if (energySupplier is not null)
@@ -133,8 +223,8 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
             await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
                 _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
                 [
-                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000007'", "'exchange'", "'PT15M'", "'406'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
-                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000007'", "'exchange'", "'PT15M'", "'406'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
+                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000007'", "'exchange'", "'PT15M'", "'406'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
+                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000007'", "'exchange'", "'PT15M'", "'406'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
                 ]);
         }
 
@@ -152,6 +242,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
+            1,
             Resolution.Quarter,
             skip: 0,
             take: int.MaxValue).ToListAsync();
@@ -169,12 +260,12 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
             [
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'407'", "'8442359392718'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000004'", "'exchange'", "'PT15M'", "'407'", "'8442359392718'", "'2024-01-02T02:00:00.000+00:00'", "678.90"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000005'", "'exchange'", "'PT15M'", "'407'", "'8442359392719'", "'2024-01-02T03:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000005'", "'exchange'", "'PT15M'", "'407'", "'8442359392719'", "'2024-01-02T03:00:00.000+00:00'", "678.90"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000006'", "'exchange'", "'PT15M'", "'407'", "'8442359392720'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
-                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000006'", "'exchange'", "'PT15M'", "'407'", "'8442359392720'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'407'", "'8442359392718'", "'2024-01-02T02:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000004'", "'exchange'", "'PT15M'", "'407'", "'8442359392718'", "'2024-01-02T02:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'407'", "'8442359392719'", "'2024-01-02T03:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000005'", "'exchange'", "'PT15M'", "'407'", "'8442359392719'", "'2024-01-02T03:00:00.000+00:00'", "678.90"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'407'", "'8442359392720'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
+                ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000006'", "'exchange'", "'PT15M'", "'407'", "'8442359392720'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
             ]);
 
         if (energySupplier is not null)
@@ -182,8 +273,8 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
             await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointTimeSeriesViewColumns>(
                 _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME,
                 [
-                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000007'", "'exchange'", "'PT15M'", "'407'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
-                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "'400000000000000007'", "'exchange'", "'PT15M'", "'407'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
+                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000007'", "'exchange'", "'PT15M'", "'407'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "123.45"],
+                    ["'c50f82a9-8d90-4b44-9387-a51cc059a17a'", "'wholesale_fixing'", "1", "'400000000000000007'", "'exchange'", "'PT15M'", "'407'", $"'{energySupplier}'", "'2024-01-02T04:00:00.000+00:00'", "678.90"],
                 ]);
         }
 
@@ -201,6 +292,7 @@ public class SettlementReportMeteringPointTimeSeriesResultRepositoryTests : Test
                 CalculationType.WholesaleFixing,
                 energySupplier,
                 "da-DK"),
+            1,
             Resolution.Quarter);
 
         // assert

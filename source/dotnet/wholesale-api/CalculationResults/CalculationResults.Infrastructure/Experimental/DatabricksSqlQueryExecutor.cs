@@ -35,7 +35,7 @@ public sealed class DatabricksSqlQueryExecutor
     public async Task<int> CountAsync(DatabricksSqlQueryable query, CancellationToken cancellationToken = default)
     {
         var countStatement = _sqlQueryBuilder.Build(query, sqlQuery => $"SELECT COUNT(*) AS count FROM ({sqlQuery})");
-        var rows = ExecuteStatementAsync<CountResult>(countStatement, cancellationToken);
+        var rows = ExecuteCoreAsync<CountResult>(countStatement, cancellationToken);
 
         await foreach (var row in rows.ConfigureAwait(false))
             return row.Count;
@@ -46,10 +46,15 @@ public sealed class DatabricksSqlQueryExecutor
     public IAsyncEnumerable<TElement> ExecuteAsync<TElement>(DatabricksSqlQueryable query, CancellationToken cancellationToken = default)
     {
         var databricksStatement = _sqlQueryBuilder.Build(query);
-        return ExecuteStatementAsync<TElement>(databricksStatement, cancellationToken);
+        return ExecuteCoreAsync<TElement>(databricksStatement, cancellationToken);
     }
 
-    private IAsyncEnumerable<TElement> ExecuteStatementAsync<TElement>(DatabricksStatement databricksStatement, CancellationToken cancellationToken = default)
+    internal string BuildDebugString(DatabricksSqlQueryable query)
+    {
+        return _sqlQueryBuilder.BuildDebugString(query);
+    }
+
+    private IAsyncEnumerable<TElement> ExecuteCoreAsync<TElement>(DatabricksStatement databricksStatement, CancellationToken cancellationToken = default)
     {
         var rows = _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(databricksStatement, Format.JsonArray, cancellationToken);
         return _sqlRowHydrator.HydrateAsync<TElement>(rows, cancellationToken);

@@ -50,6 +50,18 @@ public sealed class DatabricksSqlQueryBuilder
         return databricksStatement.Build();
     }
 
+    public string BuildDebugString(DatabricksSqlQueryable query)
+    {
+        try
+        {
+            return PrepareSqlStatement(query, q => q, out _);
+        }
+        catch (NotSupportedException ex)
+        {
+            return $"Query does not support translation: {ex.Message}";
+        }
+    }
+
     private string PrepareSqlStatement(DatabricksSqlQueryable query, Func<string, string> extendRawQuery, out IEnumerable<KeyValuePair<string, string>> sqlParameters)
     {
         using var dbCommand = query.CreateDbCommand();

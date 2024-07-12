@@ -60,7 +60,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             Guid.NewGuid(),
             false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, false, requestFilterDto));
+            new SettlementReportRequestDto(false, false, false, false, requestFilterDto));
 
         // act
         await target.AddOrUpdateAsync(settlementReportRequest);
@@ -108,7 +108,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             Guid.NewGuid(),
             false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, false, requestFilterDto));
+            new SettlementReportRequestDto(false, false, false, false, requestFilterDto));
 
         await using var writeContext = _databaseManager.CreateDbContext();
         var arrangeRepository = new SettlementReportRepository(writeContext);
@@ -197,7 +197,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             Guid.NewGuid(),
             true,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, false, requestFilterDto)));
+            new SettlementReportRequestDto(false, false, false, false, requestFilterDto)));
 
         await using var context = _databaseManager.CreateDbContext();
         var repository = new SettlementReportRepository(context);
@@ -235,7 +235,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             Guid.NewGuid(),
             false,
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
-            new SettlementReportRequestDto(false, false, false, requestFilterDto));
+            new SettlementReportRequestDto(false, false, false, false, requestFilterDto));
 
         if (createReport != null)
         {

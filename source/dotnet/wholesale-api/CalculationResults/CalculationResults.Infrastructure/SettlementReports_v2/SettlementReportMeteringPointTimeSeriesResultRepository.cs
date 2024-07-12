@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using NodaTime.Extensions;
@@ -35,28 +36,147 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
         _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, Resolution resolution)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution)
     {
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            return CountLatestAsync(filter, maximumCalculationVersion, resolution);
+        }
+
+        var (_, calculationId) = filter.GridAreas.Single();
+
         return ApplyFilter(_settlementReportDatabricksContext.MeteringPointTimeSeriesView, filter, resolution)
+            .Where(row => row.CalculationId == calculationId!.Id)
             .Select(row => row.MeteringPointId)
             .Distinct()
             .DatabricksSqlCountAsync();
     }
 
-    public async IAsyncEnumerable<SettlementReportMeteringPointTimeSeriesResultRow> GetAsync(SettlementReportRequestFilterDto filter, Resolution resolution, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportMeteringPointTimeSeriesResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution, int skip, int take)
+    {
+        IAsyncEnumerable<AggregatedByDay> rows;
+
+        if (filter.CalculationType == CalculationType.BalanceFixing)
+        {
+            rows = GetLatestAsync(filter, maximumCalculationVersion, resolution, skip, take);
+        }
+        else
+        {
+            var view = ApplyFilter(_settlementReportDatabricksContext.MeteringPointTimeSeriesView, filter, resolution);
+
+            var (_, calculationId) = filter.GridAreas.Single();
+            view = view.Where(row => row.CalculationId == calculationId!.Id);
+
+            var chunkByMeteringPointId = view
+                .Select(row => row.MeteringPointId)
+                .Distinct()
+                .OrderBy(row => row)
+                .Skip(skip)
+                .Take(take);
+
+            var query =
+                from row in view
+                join meteringPointId in chunkByMeteringPointId on row.MeteringPointId equals meteringPointId
+                group row by new
+                {
+                    row.MeteringPointId,
+                    row.MeteringPointType,
+                    start_of_day = DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"),
+                }
+                into meteringPointGroup
+                select new AggregatedByDay
+                {
+                    MeteringPointId = meteringPointGroup.Key.MeteringPointId,
+                    MeteringPointType = meteringPointGroup.Key.MeteringPointType,
+                    StartOfDay = DbFunctions.ToUtcFromTimeZoned(meteringPointGroup.Key.start_of_day, "Europe/Copenhagen"),
+                    Quantities = DbFunctions.AggregateFields(meteringPointGroup.First().Time, meteringPointGroup.First().Quantity),
+                };
+
+            rows = query.AsAsyncEnumerable();
+        }
+
+        await foreach (var row in rows.ConfigureAwait(false))
+        {
+            yield return new SettlementReportMeteringPointTimeSeriesResultRow(
+                row.MeteringPointId,
+                MeteringPointTypeMapper.FromDeltaTableValueNonNull(row.MeteringPointType),
+                row.StartOfDay,
+                row.Quantities
+                    .Select(quant => new SettlementReportMeteringPointTimeSeriesResultQuantity(quant.Time, quant.Quantity))
+                    .ToList());
+        }
+    }
+
+    private Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution)
     {
         var view = ApplyFilter(_settlementReportDatabricksContext.MeteringPointTimeSeriesView, filter, resolution);
 
-        var chunkByMeteringPointId = view
-            .Select(row => row.MeteringPointId)
+        var dailyCalculationVersion = view
+            .Where(row => row.CalculationVersion <= maximumCalculationVersion)
+            .GroupBy(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+            .Select(group => new
+            {
+                start_of_day = group.Key,
+                max_calc_version = group.Max(row => row.CalculationVersion),
+            });
+
+        var dailyMeteringPoints =
+            from row in view
+            join calculationVersion in dailyCalculationVersion on
+                new { start_of_day = DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"), max_calc_version = row.CalculationVersion }
+                equals
+                new { calculationVersion.start_of_day, calculationVersion.max_calc_version }
+            select new
+            {
+                calculationVersion.start_of_day,
+                row.CalculationId,
+                row.MeteringPointId,
+            };
+
+        return dailyMeteringPoints
             .Distinct()
-            .OrderBy(row => row)
+            .DatabricksSqlCountAsync();
+    }
+
+    private IAsyncEnumerable<AggregatedByDay> GetLatestAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution, int skip, int take)
+    {
+        var view = ApplyFilter(_settlementReportDatabricksContext.MeteringPointTimeSeriesView, filter, resolution);
+
+        var dailyCalculationVersion = view
+            .Where(row => row.CalculationVersion <= maximumCalculationVersion)
+            .GroupBy(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
+            .Select(group => new
+            {
+                start_of_day = group.Key,
+                max_calc_version = group.Max(row => row.CalculationVersion),
+            });
+
+        var dailyMeteringPoints =
+            from row in view
+            join calculationVersion in dailyCalculationVersion on
+                new { start_of_day = DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"), max_calc_version = row.CalculationVersion }
+                equals
+                new { calculationVersion.start_of_day, calculationVersion.max_calc_version }
+            select new
+            {
+                calculationVersion.start_of_day,
+                row.CalculationId,
+                row.MeteringPointId,
+            };
+
+        var chunkByDailyMeteringPoints = dailyMeteringPoints
+            .Distinct()
+            .OrderBy(row => row.start_of_day)
+            .ThenBy(row => row.CalculationId)
+            .ThenBy(row => row.MeteringPointId)
             .Skip(skip)
             .Take(take);
 
         var query =
             from row in view
-            join meteringPointId in chunkByMeteringPointId on row.MeteringPointId equals meteringPointId
+            join dailyMeteringPointIds in chunkByDailyMeteringPoints on
+                new { start_of_day = DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"), row.CalculationId, row.MeteringPointId }
+                equals dailyMeteringPointIds
             group row by new
             {
                 row.MeteringPointId,
@@ -72,16 +192,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
                 Quantities = DbFunctions.AggregateFields(meteringPointGroup.First().Time, meteringPointGroup.First().Quantity),
             };
 
-        await foreach (var row in query.AsAsyncEnumerable().ConfigureAwait(false))
-        {
-            yield return new SettlementReportMeteringPointTimeSeriesResultRow(
-                row.MeteringPointId,
-                MeteringPointTypeMapper.FromDeltaTableValueNonNull(row.MeteringPointType),
-                row.StartOfDay,
-                row.Quantities
-                    .Select(quant => new SettlementReportMeteringPointTimeSeriesResultQuantity(quant.Time, quant.Quantity))
-                    .ToList());
-        }
+        return query.AsAsyncEnumerable();
     }
 
     private static IQueryable<SettlementReportMeteringPointTimeSeriesEntity> ApplyFilter(
@@ -96,15 +207,14 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
             _ => throw new ArgumentOutOfRangeException(nameof(resolution)),
         };
 
-        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
+        var (gridAreaCode, _) = filter.GridAreas.Single();
 
         source = source
             .Where(row => row.GridAreaCode == gridAreaCode)
             .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
             .Where(row => row.Time >= filter.PeriodStart.ToInstant())
             .Where(row => row.Time < filter.PeriodEnd.ToInstant())
-            .Where(row => row.Resolution == viewResolution)
-            .Where(row => row.CalculationId == calculationId!.Id);
+            .Where(row => row.Resolution == viewResolution);
 
         if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
         {

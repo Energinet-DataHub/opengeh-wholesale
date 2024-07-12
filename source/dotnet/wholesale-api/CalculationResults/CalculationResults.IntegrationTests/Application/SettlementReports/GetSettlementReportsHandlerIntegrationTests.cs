@@ -41,6 +41,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         false,
         false,
         false,
+        false,
         new SettlementReportRequestFilterDto(
             new Dictionary<string, CalculationId?>(),
             DateTimeOffset.UtcNow,
