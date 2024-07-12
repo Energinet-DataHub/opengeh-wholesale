@@ -55,6 +55,25 @@ resource "databricks_schema" "results_internal" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
 
+resource "databricks_external_location" "results" {
+  provider        = databricks.dbw
+  name            = "${azurerm_storage_container.results.name}_${module.st_data_wholesale.name}"
+  url             = "abfss://${azurerm_storage_container.results.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+}
+
+resource "databricks_schema" "results" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "wholesale_results"
+  comment      = "wholesale_results Schema"
+  storage_root = databricks_external_location.results.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+}
+
 resource "databricks_external_location" "basis_data_internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.basis_data_internal.name}_${module.st_data_wholesale.name}"
