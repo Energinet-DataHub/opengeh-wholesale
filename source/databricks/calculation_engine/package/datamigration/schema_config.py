@@ -1,6 +1,9 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
+from package.databases.migrations_wholesale.schemas import (
+    grid_loss_metering_points_schema,
+)
 from package.databases.wholesale_results_internal.schemas import (
     energy_schema_uc,
     energy_per_brp_schema_uc,
@@ -21,6 +24,10 @@ schema_config = [
             Table(
                 name=paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
                 schema=basis_data_schemas.calculations_schema,
+            ),
+            Table(
+                name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=grid_loss_metering_points_schema,
             ),
         ],
         views=[],
