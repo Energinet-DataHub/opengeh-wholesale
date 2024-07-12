@@ -415,14 +415,9 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
-            True,
-        ),
-        (
             f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
             True,
         ),
-        # TODO: Only delete cases above when moved to Unity Catalog
         (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
@@ -450,6 +445,6 @@ def test__when_wholesale_fixing__view_has_data_if_expected(
 ) -> None:
     actual = spark.sql(f"SELECT * FROM {view_name}").where(
         f.col(EnergyResultColumnNames.calculation_id)
-        == c.executed_balance_fixing_calculation_id
+        == c.executed_wholesale_calculation_id
     )
     assert actual.count() > 0 if has_data else actual.count() == 0
