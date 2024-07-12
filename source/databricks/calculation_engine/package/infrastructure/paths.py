@@ -69,7 +69,14 @@ class WholesaleResultsInternalDatabase:
 
 
 class WholesaleResultsDatabase:
-    DATABASE_NAME = "wholesale_results"  # Defined in dh3infrastructure
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
+    ENERGY_V1_VIEW_NAME = "energy_v1"
+    ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
+    ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
+    GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME = (
+        "grid_loss_metering_point_time_series_v1"
+    )
+    EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME = "exchange_per_neighbor_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
@@ -147,17 +154,6 @@ class CalculationResultsPublicDataModel:
     AMOUNTS_PER_CHARGE_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_VIEW_NAME = "total_monthly_amounts_v1"
-
-
-class WholesaleResultsDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
-    ENERGY_V1_VIEW_NAME = "energy_v1"
-    ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
-    ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
-    GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME = (
-        "grid_loss_metering_point_time_series_v1"
-    )
-    EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME = "exchange_per_neighbor_v1"
 
 
 class HiveSettlementReportPublicDataModel:
