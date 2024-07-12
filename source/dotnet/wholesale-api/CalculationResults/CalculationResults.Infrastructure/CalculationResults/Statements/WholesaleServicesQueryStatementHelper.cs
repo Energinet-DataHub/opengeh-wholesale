@@ -109,7 +109,7 @@ public class WholesaleServicesQueryStatementHelper
         {
             AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeCode,
             AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
-            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Och nay, no charge code for total monthly amounts"),
+            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Oh dear, there is no charge code for total monthly amounts"),
             _ => throw new ArgumentOutOfRangeException(),
         };
     }
@@ -120,7 +120,7 @@ public class WholesaleServicesQueryStatementHelper
         {
             AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeType,
             AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeType,
-            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Och nay, no charge type for total monthly amounts"),
+            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Oh dear, there is no charge type for total monthly amounts"),
             _ => throw new ArgumentOutOfRangeException(),
         };
     }
