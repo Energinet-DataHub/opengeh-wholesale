@@ -17,6 +17,7 @@
 import package.infrastructure.environment_variables as env_vars
 
 
+# Hive
 class InputDatabase:
     DATABASE_NAME = "wholesale_input"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
@@ -69,7 +70,7 @@ class HiveOutputDatabase:
 
 
 class WholesaleBasisDataInternalDatabase:
-    DATABASE_NAME = "wholesale_basis_data_internal"
+    DATABASE_NAME = "wholesale_basis_data_internal"  # Defined in dh3infrastructure
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
@@ -108,6 +109,7 @@ class HiveBasisDataDatabase:
     ]
 
 
+# Hive
 class CalculationResultsPublicDataModel:
     DATABASE_NAME = "wholesale_calculation_results"
     ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_per_ga_v1"
@@ -119,6 +121,17 @@ class CalculationResultsPublicDataModel:
     AMOUNTS_PER_CHARGE_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_VIEW_NAME = "total_monthly_amounts_v1"
+
+
+class WholesaleResultsDatabase:
+    DATABASE_NAME = "wholesale_calculation_results"  # Defined in dh3infrastructure
+    ENERGY_V1_VIEW_NAME = "energy_v1"
+    ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
+    ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
+    GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME = (
+        "grid_loss_metering_point_time_series_v1"
+    )
+    EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME = "exchange_per_neighbor_v1"
 
 
 class HiveSettlementReportPublicDataModel:

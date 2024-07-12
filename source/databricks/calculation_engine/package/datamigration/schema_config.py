@@ -1,4 +1,4 @@
-from spark_sql_migrations import Schema, Table, View
+from spark_sql_migrations import Schema, Table
 
 import package.infrastructure.paths as paths
 from package.databases.wholesale_results_internal.schemas import (
@@ -90,21 +90,29 @@ schema_config = [
         views=[],
     ),
     Schema(
-        name=paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
-        tables=[],
-        views=[
-            View(
-                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1
+        name=paths.WholesaleResultsDatabase.DATABASE_NAME,
+        tables=[
+            Table(
+                name=paths.WholesaleResultsDatabase.ENERGY_RESULT_POINTS_V1_VIEW_NAME,
+                schema=basis_data_schemas.metering_point_period_schema_uc,
             ),
-            View(
-                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
+            Table(
+                name=paths.WholesaleResultsDatabase.ENERGY_RESULT_POINTS_PER_BRP_V1_VIEW_NAME,
+                schema=basis_data_schemas.time_series_point_schema,
             ),
-            View(
-                name=paths.WholesaleSettlementReportsDatabase.CHARGE_PRICES_VIEW_NAME_V1
+            Table(
+                name=paths.WholesaleResultsDatabase.ENERGY_RESULT_POINTS_PER_ES_V1_VIEW_NAME,
+                schema=basis_data_schemas.charge_link_periods_schema_uc,
             ),
-            View(
-                name=paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+            Table(
+                name=paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+                schema=basis_data_schemas.charge_price_information_periods_schema_uc,
+            ),
+            Table(
+                name=paths.WholesaleResultsDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_points_schema,
             ),
         ],
+        views=[],
     ),
 ]

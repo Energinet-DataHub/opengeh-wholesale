@@ -228,6 +228,27 @@ def test__when_energy_calculation__calculation_is_stored(
             f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
             True,
         ),
+        # TODO: Only delete cases above when moved to Unity Catalog
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
+            True,
+        ),
     ],
 )
 def test__when_balance_fixing__view_has_data_if_expected(

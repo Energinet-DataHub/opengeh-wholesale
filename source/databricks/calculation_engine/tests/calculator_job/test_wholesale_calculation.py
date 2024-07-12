@@ -416,6 +416,27 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
             True,
         ),
+        # TODO: Only delete cases above when moved to Unity Catalog
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
+            False,
+        ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(
