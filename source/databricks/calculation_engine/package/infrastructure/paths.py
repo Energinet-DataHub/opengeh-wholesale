@@ -27,7 +27,7 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_INTERNAL = "wholesale_internal"
 
     @classmethod
-    def get_names(cls):
+    def get_names(cls) -> list[str]:
         values = []
         for attr in dir(cls):
             value = getattr(cls, attr)
