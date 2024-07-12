@@ -35,7 +35,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
         ["'08d5d29f-ceac-4ab5-a1d4-98db8479fa6c'", "'wholesale_fixing'", "'66'", "'tariff'", "'40000'", "'5790001330552'", "'PT1H'", "'false'", "'2023-02-01T23:00:00.000'", "ARRAY(STRUCT('2023-02-01T23:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T00:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T01:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T02:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T03:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T04:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T05:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T06:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T07:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T08:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T09:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T10:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T11:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T12:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T13:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T14:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T15:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T16:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T17:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T18:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T19:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T20:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T21:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-02T22:00:00.000Z' AS time,0.756998 AS price))", "'804'", "'5790001662233'"],
         ["'08d5d29f-ceac-4ab5-a1d4-98db8479fa6c'", "'wholesale_fixing'", "'66'", "'tariff'", "'40000'", "'5790001330552'", "'PT1H'", "'false'", "'2023-02-02T23:00:00.000'", "ARRAY(STRUCT('2023-02-02T23:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T00:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T01:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T02:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T03:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T04:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T05:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T06:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T07:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T08:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T09:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T10:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T11:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T12:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T13:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T14:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T15:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T16:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T17:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T18:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T19:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T20:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T21:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-03T22:00:00.000Z' AS time,0.756998 AS price))", "'805'", "'5790001662233'"],
         ["'08d5d29f-ceac-4ab5-a1d4-98db8479fa6c'", "'wholesale_fixing'", "'66'", "'tariff'", "'40000'", "'5790001330552'", "'PT1H'", "'false'", "'2023-02-03T23:00:00.000'", "ARRAY(STRUCT('2023-02-03T23:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T00:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T01:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T02:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T03:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T04:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T05:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T06:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T07:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T08:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T09:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T10:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T11:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T12:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T13:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T14:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T15:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T16:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T17:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T18:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T19:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T20:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T21:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T22:00:00.000Z' AS time,0.756998 AS price))", "'805'", "'5790001662233'"],
-        ["'08d5d29f-ceac-4ab5-a1d4-98db8479fa6c'", "'wholesale_fixing'", "'66'", "'tariff'", "'40000'", "'5790001330552'", "'PT1H'", "'false'", "'2023-02-05T23:00:00.000'", "ARRAY(STRUCT('2023-02-03T23:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T00:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T01:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T02:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T03:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T04:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T05:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T06:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T07:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T08:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T09:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T10:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T11:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T12:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T13:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T14:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T15:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T16:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T17:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T18:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T19:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T20:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T21:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T22:00:00.000Z' AS time,0.756998 AS price))", "'805'", "'5790001662233'"],
+        ["'08d5d29f-ceac-4ab5-a1d4-98db8479fa6c'", "'wholesale_fixing'", "'66'", "'tariff'", "'40000'", "'5790001330552'", "'PT1H'", "'true'", "'2023-02-05T23:00:00.000'", "ARRAY(STRUCT('2023-02-03T23:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T00:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T01:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T02:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T03:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T04:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T05:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T06:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T07:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T08:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T09:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T10:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T11:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T12:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T13:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T14:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T15:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T16:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T17:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T18:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T19:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T20:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T21:00:00.000Z' AS time,0.756998 AS price),STRUCT('2023-02-04T22:00:00.000Z' AS time,0.756998 AS price))", "'805'", "'5790001662233'"],
     ];
 
     public SettlementReportChargePricesRepositoryTests(MigrationsFreeDatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
@@ -75,7 +75,8 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 null,
-                "da-DK"));
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(0, actual);
     }
@@ -102,9 +103,38 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
                 CalculationType.WholesaleFixing,
                 "5790001662233",
-                "da-DK"));
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null));
 
         Assert.Equal(2, actual);
+    }
+
+    [Fact]
+    public async Task Count_ValidFilterGridAreaWithTax_ReturnsCount()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager
+            .EmptyAsync(_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME);
+
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargePriceViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_PRICES_V1_VIEW_NAME,
+            _chargePriceRows);
+
+        var actual = await Sut.CountAsync(
+            new SettlementReportRequestFilterDto(
+                new Dictionary<string, CalculationId?>
+                {
+                    {
+                        "805", new CalculationId(Guid.Parse("08d5d29f-ceac-4ab5-a1d4-98db8479fa6c"))
+                    },
+                },
+                DateTimeOffset.Parse("2023-01-01T02:00:00.000+00:00"),
+                DateTimeOffset.Parse("2024-01-04T02:00:00.000+00:00"),
+                CalculationType.WholesaleFixing,
+                null,
+                "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "5790001330552"));
+
+        Assert.Equal(1, actual);
     }
 
     [Fact]
@@ -130,6 +160,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null),
             skip: 1,
             take: 2).ToListAsync();
 
@@ -159,6 +190,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.EnergySupplier, null),
             skip: 1,
             take: 2).ToListAsync();
 
