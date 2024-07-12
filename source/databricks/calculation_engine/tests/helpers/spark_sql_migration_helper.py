@@ -23,10 +23,10 @@ from spark_sql_migrations.utility import delta_table_helper
 
 import package.datamigration_hive.constants as c
 from package.datamigration.migration import migrate_data_lake
+from package.datamigration.schema_config import schema_config
 from package.datamigration_hive.migration_script_args import MigrationScriptArgs
 from package.datamigration_hive.schema_config import schema_config as schema_config_hive
 from package.datamigration_hive.substitutions import substitutions
-from package.datamigration.schema_config import schema_config
 
 catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
