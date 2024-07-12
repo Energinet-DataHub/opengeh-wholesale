@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.grid_loss_metering_point_time_series_v1 AS
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.grid_loss_metering_point_time_series_v1 AS
 SELECT c.calculation_id,
        calculation_type,
        calculation_period_start,

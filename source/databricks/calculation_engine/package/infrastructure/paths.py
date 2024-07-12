@@ -26,6 +26,15 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
 
+    @classmethod
+    def get_names(cls):
+        values = []
+        for attr in dir(cls):
+            value = getattr(cls, attr)
+            if not attr.startswith("__") and isinstance(value, str):
+                values.append(value)
+        return values
+
 
 # Hive
 class InputDatabase:

@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_es_v1 AS
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.energy_per_es_v1 AS
 SELECT c.calculation_id,
        calculation_type,
        calculation_period_start,
