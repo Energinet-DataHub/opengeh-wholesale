@@ -24,9 +24,13 @@ public interface ISettlementReportDatabricksContext
 
     IQueryable<SettlementReportEnergyResultPointsPerEnergySupplierGridAreaViewEntity> EnergyResultPointsPerEnergySupplierGridAreaView { get; }
 
+    IQueryable<SettlementReportMeteringPointMasterDataViewEntity> SettlementReportMeteringPointMasterDataView { get; }
+
     IQueryable<SettlementReportMeteringPointTimeSeriesEntity> MeteringPointTimeSeriesView { get; }
 
     IQueryable<SettlementReportChargeLinkPeriodsViewEntity> ChargeLinkPeriodsView { get; }
 
     IQueryable<SettlementReportChargePriceResultViewEntity> ChargePriceView { get; }
+
+    IQueryable<SettlementReportMonthlyAmountsViewEntity> MonthlyAmountsView { get; }
 }
