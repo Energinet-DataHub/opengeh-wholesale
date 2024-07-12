@@ -264,7 +264,10 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
-    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_wholesale_calculation_id
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -280,7 +283,10 @@ def test__when_wholesale_calculation__calculation_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_wholesale_calculation_id
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -442,5 +448,8 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
 def test__when_wholesale_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_wholesale_fixing: None, view_name: str, has_data: bool
 ) -> None:
-    actual = spark.sql(f"SELECT * FROM {view_name}")
+    actual = spark.sql(f"SELECT * FROM {view_name}").where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
     assert actual.count() > 0 if has_data else actual.count() == 0
