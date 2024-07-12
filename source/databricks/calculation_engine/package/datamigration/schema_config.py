@@ -14,6 +14,7 @@ from package.databases.wholesale_results_internal.schemas import (
 
 import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 
+# TODO BJM: Remove when we only use Unity Catalog
 schema_config = [
     Schema(
         name=paths.WholesaleInternalDatabase.DATABASE_NAME,
