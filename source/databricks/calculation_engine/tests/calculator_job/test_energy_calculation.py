@@ -237,7 +237,7 @@ def test__when_energy_calculation__calculation_is_stored(
         ),
         (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
-            False,
+            True,
         ),
         (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
