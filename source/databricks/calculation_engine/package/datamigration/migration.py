@@ -7,6 +7,7 @@ from spark_sql_migrations import (
 import package.datamigration_hive.migration as hive_migration
 import package.infrastructure.environment_variables as env_vars
 from package.infrastructure import paths
+from .schema_config import schema_config
 from .substitutions import get_substitutions
 
 MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
@@ -46,7 +47,7 @@ def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
         current_state_schemas_folder_path=None,
         current_state_tables_folder_path=None,
         current_state_views_folder_path=None,
-        schema_config=[],
+        schema_config=schema_config,
         substitution_variables=get_substitutions(catalog_name),
         catalog_name=catalog_name,
     )
