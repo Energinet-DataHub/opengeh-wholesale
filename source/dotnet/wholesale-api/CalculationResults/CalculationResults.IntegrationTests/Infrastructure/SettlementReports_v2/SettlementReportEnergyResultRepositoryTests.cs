@@ -63,6 +63,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             1);
 
         Assert.Equal(1, actual);
@@ -90,6 +91,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             1);
 
         Assert.Equal(1, actual);
@@ -117,6 +119,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             1);
 
         Assert.Equal(0, actual);
@@ -144,6 +147,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 "8236015961810",
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             1);
 
         Assert.Equal(1, actual);
@@ -171,6 +175,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             1);
 
         Assert.Equal(1, actual);
@@ -198,6 +203,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             1);
 
         Assert.Equal(0, actual);
@@ -228,6 +234,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             1,
             skip: 3,
             take: 1).ToListAsync();
@@ -261,6 +268,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             1,
             skip: 3,
             take: 1).ToListAsync();
@@ -302,6 +310,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 null,
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null),
             10,
             skip: 3,
             take: 1).ToListAsync();
@@ -339,6 +348,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.WholesaleFixing,
                 "8236015961811",
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             1,
             skip: 3,
             take: 1).ToListAsync();
@@ -379,6 +389,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 CalculationType.BalanceFixing,
                 "8236015961811",
                 "da-DK"),
+            new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null),
             10,
             skip: 3,
             take: 1).ToListAsync();
