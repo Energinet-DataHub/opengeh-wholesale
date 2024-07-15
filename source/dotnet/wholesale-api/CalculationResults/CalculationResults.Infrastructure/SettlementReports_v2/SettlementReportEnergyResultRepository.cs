@@ -35,19 +35,19 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         _settlementReportDatabricksContext = settlementReportDatabricksContext;
     }
 
-    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion)
+    public Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        if (filter.EnergySupplier is not null)
+        if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             if (filter.CalculationType == CalculationType.BalanceFixing)
             {
-                return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
+                return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
                     .Select(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
                     .Distinct()
                     .DatabricksSqlCountAsync();
             }
 
-            return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
+            return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
                 .Select(row => row.ResultId)
                 .Distinct()
                 .DatabricksSqlCountAsync();
@@ -55,23 +55,23 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
 
         if (filter.CalculationType == CalculationType.BalanceFixing)
         {
-            return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
+            return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
                 .Select(row => DbFunctions.ToStartOfDayInTimeZone(row.Time, "Europe/Copenhagen"))
                 .Distinct()
                 .DatabricksSqlCountAsync();
         }
 
-        return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerGridAreaView, filter, maximumCalculationVersion)
+        return ApplyFilter(_settlementReportDatabricksContext.EnergyResultPointsPerEnergySupplierGridAreaView, filter, maximumCalculationVersion)
             .Select(row => row.ResultId)
             .Distinct()
             .DatabricksSqlCountAsync();
     }
 
-    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
+    public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion, int skip, int take)
     {
-        return filter.EnergySupplier is not null
-            ? GetWithEnergySupplierAsync(filter, maximumCalculationVersion, skip, take)
-            : GetWithoutEnergySupplierAsync(filter, maximumCalculationVersion, skip, take);
+        return actorInfo.MarketRole == MarketRole.GridAccessProvider
+            ? GetWithoutEnergySupplierAsync(filter, maximumCalculationVersion, skip, take)
+            : GetWithEnergySupplierAsync(filter, maximumCalculationVersion, skip, take);
     }
 
     private async IAsyncEnumerable<SettlementReportEnergyResultRow> GetWithoutEnergySupplierAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, int skip, int take)
