@@ -93,19 +93,10 @@ public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementRe
             .Where(row => row.ChargeOwnerId == null)
             .Where(row => row.CalculationId == calculationId!.Id);
 
-        switch (actorInfo.MarketRole)
-        {
-            case MarketRole.SystemOperator:
-            case MarketRole.GridAccessProvider:
-                source = source.Where(row => row.ChargeOwnerId == actorInfo.ChargeOwnerId);
-                break;
-        }
-
         if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
         {
             source = source
-                .Where(row => row.EnergySupplierId == filter.EnergySupplier)
-                .Where(row => row.ChargeOwnerId == null);
+                .Where(row => row.EnergySupplierId == filter.EnergySupplier);
         }
 
         return source;
