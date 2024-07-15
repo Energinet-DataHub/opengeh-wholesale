@@ -90,14 +90,14 @@ public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementRe
             .Where(row => row.ChargeCode == null)
             .Where(row => row.ChargeType == null)
             .Where(row => row.IsTax == null)
+            .Where(row => row.ChargeOwnerId == null)
             .Where(row => row.CalculationId == calculationId!.Id);
 
         switch (actorInfo.MarketRole)
         {
             case MarketRole.SystemOperator:
             case MarketRole.GridAccessProvider:
-                source = source.Where(row =>
-                    row.ChargeOwnerId == actorInfo.ChargeOwnerId);
+                source = source.Where(row => row.ChargeOwnerId == actorInfo.ChargeOwnerId);
                 break;
         }
 
