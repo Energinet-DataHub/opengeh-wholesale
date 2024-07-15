@@ -64,7 +64,7 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
                 x.ChargeCode,
                 x.ChargeOwnerId,
                 x.Resolution,
-                x.Taxation,
+                Taxation = x.IsTax,
                 x.StartTime,
                 x.PricePoints,
             }).Distinct()
@@ -113,14 +113,14 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         if (actorInfo.MarketRole == MarketRole.SystemOperator)
         {
             source = source.Where(wholesaleRow =>
-                wholesaleRow.Taxation == false &&
+                wholesaleRow.IsTax == false &&
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 
         if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             source = source.Where(wholesaleRow =>
-                wholesaleRow.Taxation == true &&
+                wholesaleRow.IsTax == true ||
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 

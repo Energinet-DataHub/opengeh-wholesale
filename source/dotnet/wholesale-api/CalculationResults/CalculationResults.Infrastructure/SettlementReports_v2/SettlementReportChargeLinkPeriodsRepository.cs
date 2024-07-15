@@ -95,7 +95,7 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
         if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             source = source.Where(row =>
-                row.IsTax == true &&
+                row.IsTax == true ||
                 row.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 
