@@ -18,10 +18,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public interface ISettlementReportEnergyResultRepository
 {
-    Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion);
+    Task<int> CountAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion);
 
     IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(
         SettlementReportRequestFilterDto filter,
+        SettlementReportRequestedByActor actorInfo,
         long maximumCalculationVersion,
         int skip,
         int take);

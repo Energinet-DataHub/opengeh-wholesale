@@ -37,7 +37,7 @@ public sealed class EnergyResultFileGeneratorTests
         var energySupplierId = "2787902748213";
 
         dataSourceMock
-            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<int>()))
             .Returns(
                 new List<SettlementReportEnergyResultRow>
                 {
