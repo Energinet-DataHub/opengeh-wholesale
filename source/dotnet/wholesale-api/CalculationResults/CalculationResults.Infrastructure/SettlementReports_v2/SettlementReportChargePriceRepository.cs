@@ -64,7 +64,7 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
                 x.ChargeCode,
                 x.ChargeOwnerId,
                 x.Resolution,
-                x.Taxation,
+                x.IsTax,
                 x.StartTime,
                 x.PricePoints,
             }).Distinct()
@@ -74,7 +74,7 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
                 ChargeCode = x.ChargeCode,
                 ChargeOwnerId = x.ChargeOwnerId,
                 Resolution = x.Resolution,
-                Taxation = x.Taxation,
+                IsTax = x.IsTax,
                 StartTime = x.StartTime,
                 PricePoints = x.PricePoints,
             });
@@ -86,7 +86,7 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
                 row.ChargeCode,
                 row.ChargeOwnerId,
                 ResolutionMapper.FromDeltaTableValue(row.Resolution),
-                row.Taxation,
+                row.IsTax,
                 row.StartTime,
                 row.PricePoints.OrderBy(x => x.Time).Select(x => x.Price).ToList());
         }
@@ -113,14 +113,14 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
         if (actorInfo.MarketRole == MarketRole.SystemOperator)
         {
             source = source.Where(wholesaleRow =>
-                wholesaleRow.Taxation == false &&
+                wholesaleRow.IsTax == false &&
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 
         if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             source = source.Where(wholesaleRow =>
-                wholesaleRow.Taxation == true &&
+                wholesaleRow.IsTax == true ||
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 
@@ -137,7 +137,7 @@ public sealed class SettlementReportChargePriceRepository : ISettlementReportCha
 
         public string Resolution { get; set; } = null!;
 
-        public bool Taxation { get; set; }
+        public bool IsTax { get; set; }
 
         public Instant StartTime { get; set; }
 

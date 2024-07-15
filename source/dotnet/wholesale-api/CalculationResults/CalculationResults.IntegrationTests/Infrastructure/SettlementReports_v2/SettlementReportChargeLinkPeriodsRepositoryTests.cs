@@ -125,7 +125,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
                 "da-DK"),
             new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "8397670583191"));
 
-        Assert.Equal(2, actual);
+        Assert.Equal(3, actual);
     }
 
     [Fact]

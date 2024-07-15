@@ -104,7 +104,7 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
         if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             source = source.Where(wholesaleRow =>
-                wholesaleRow.IsTax == true &&
+                wholesaleRow.IsTax == true ||
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 
