@@ -82,3 +82,23 @@ data "azurerm_key_vault_secret" "relay_name" {
   name         = "relay-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "bvault_policy_id" {
+  name         = "bvault-policy-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "bvault_vault_id" {
+  name         = "bvault-vault-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "bvault_vault_location" {
+  name         = "bvault-vault-location"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "bvault_vault_principal_id" {
+  name         = "bvault-vault-principal-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
