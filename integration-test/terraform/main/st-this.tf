@@ -48,3 +48,15 @@ resource "azurerm_storage_container" "subsystem_test_meteringpoints_testdata" {
   storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"
 }
+
+resource "azurerm_storage_container" "subsystem_test_charges_testdata" {
+  name                  = "charges-testdata"
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "subsystem_test_charge_links_testdata" {
+  name                  = "charge-links-testdata"
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
+}
