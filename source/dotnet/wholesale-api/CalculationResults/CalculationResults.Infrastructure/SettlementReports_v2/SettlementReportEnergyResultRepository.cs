@@ -234,8 +234,12 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             .Where(row => row.CalculationType == CalculationTypeMapper.ToDeltaTableValue(filter.CalculationType))
             .Where(row => row.Time >= filter.PeriodStart.ToInstant())
             .Where(row => row.Time < filter.PeriodEnd.ToInstant())
-            .Where(row => row.CalculationVersion <= maximumCalculationVersion)
-            .Where(row => row.EnergySupplierId == filter.EnergySupplier);
+            .Where(row => row.CalculationVersion <= maximumCalculationVersion);
+
+        if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
+        {
+            source = source.Where(row => row.EnergySupplierId == filter.EnergySupplier);
+        }
 
         if (filter.CalculationType != CalculationType.BalanceFixing)
         {
