@@ -39,6 +39,8 @@ resource "azurerm_cdn_frontdoor_endpoint" "this" {
   count                    = length(local.environments)
   name                     = local.environments[count.index]
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.this.id
+
+  tags = local.tags
 }
 
 # Create Front Door custom domains

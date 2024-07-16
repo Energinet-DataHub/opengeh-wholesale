@@ -33,6 +33,8 @@ resource "azurerm_route_filter" "this" {
   lifecycle {
     prevent_destroy = true
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_express_route_circuit_peering" "this" {
