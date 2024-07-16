@@ -134,3 +134,17 @@ resource "azuread_invitation" "juj" {
   user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
   redirect_url       = "https://portal.azure.com"
 }
+
+#AIU
+resource "azuread_invitation" "aiu" {
+  count              = 1
+  user_email_address = "aiu@energinet.dk"
+  user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
+  redirect_url       = "https://portal.azure.com"
+}
+
+resource "azuread_directory_role_assignment" "aiu" {
+  count               = 1
+  role_id             = azuread_directory_role.global_reader.template_id
+  principal_object_id = azuread_invitation.aiu[0].user_id
+}
