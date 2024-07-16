@@ -45,7 +45,7 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
 
     protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
     {
-        csvHelper.Context.RegisterClassMap(new SettlementReportEnergyResultRowMap(actorInfo));
+        csvHelper.Context.RegisterClassMap(new SettlementReportMeteringPointMasterDataRowMap(actorInfo));
     }
 
     public sealed class SettlementReportMeteringPointMasterDataRowMap : ClassMap<SettlementReportMeteringPointMasterDataRow>
