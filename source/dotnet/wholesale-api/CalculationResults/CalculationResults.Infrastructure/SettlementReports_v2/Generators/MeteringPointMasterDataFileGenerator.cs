@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using static Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators.EnergyResultFileGenerator;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
@@ -41,9 +43,14 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
         return _dataSource.GetAsync(filter, skipChunks, takeChunks, maximumCalculationVersion);
     }
 
+    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
+    {
+        csvHelper.Context.RegisterClassMap(new SettlementReportMeteringPointMasterDataRowMap(actorInfo));
+    }
+
     public sealed class SettlementReportMeteringPointMasterDataRowMap : ClassMap<SettlementReportMeteringPointMasterDataRow>
     {
-        public SettlementReportMeteringPointMasterDataRowMap()
+        public SettlementReportMeteringPointMasterDataRowMap(SettlementReportRequestedByActor actorInfo)
         {
             Map(r => r.MeteringPointId)
                 .Name("METERINGPOINTID")
@@ -107,9 +114,12 @@ public sealed class MeteringPointMasterDataFileGenerator : CsvFileGeneratorBase<
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.SettlementMethod)),
                 });
 
-            Map(r => r.EnergySupplierId)
-                .Name("ENERGYSUPPLIERID")
-                .Index(8);
+            if (actorInfo.MarketRole is MarketRole.DataHubAdministrator)
+            {
+                Map(r => r.EnergySupplierId)
+                    .Name("ENERGYSUPPLIERID")
+                    .Index(8);
+            }
         }
     }
 }
