@@ -229,6 +229,7 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "fs.azure.account.oauth.provider.type.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
     "fs.azure.account.oauth2.client.id.${azurerm_storage_account.this.name}.dfs.core.windows.net" : databricks_secret.spn_app_id_integration_test.config_reference
     "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.this.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret_integration_test.config_reference
+    "spark.databricks.sql.initial.catalog.name" : local.databricks_unity_catalog_name
     "spark.databricks.delta.preview.enabled" : true
     "spark.databricks.io.cache.enabled" : true
     "spark.master" : "local[*, 4]"
@@ -238,6 +239,7 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.this.name
     "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
+    "CATALOG_NAME"                    = local.databricks_unity_catalog_name
   }
 
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
