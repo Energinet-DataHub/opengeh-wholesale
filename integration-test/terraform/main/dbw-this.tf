@@ -223,6 +223,7 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
   num_workers      = 1
   instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
   spark_version    = local.databricks_runtime_version
+  data_security_mode = "USER_ISOLATION"
   spark_conf = {
     "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
     "fs.azure.account.auth.type.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "OAuth"
