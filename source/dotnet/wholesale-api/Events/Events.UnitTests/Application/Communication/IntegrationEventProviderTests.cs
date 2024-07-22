@@ -164,107 +164,6 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndCalculationWithMultipleWholesaleResultEvents_ReturnsOneEventPerResult(
-        IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        IntegrationEventProvider sut)
-    {
-        // Arrange
-        var fixture = new Fixture();
-        var completedCalculation = fixture
-            .Build<CompletedCalculation>()
-            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
-            .Create();
-
-        completedCalculationRepositoryMock
-            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedCalculation)
-            .ReturnsAsync((CompletedCalculation)null!);
-
-        // Act
-        var actualEvents = await sut.GetAsync().ToListAsync();
-
-        // Assert
-        actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishFailed(
-        IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        IntegrationEventProvider sut)
-    {
-        // Arrange
-        var fixture = new Fixture();
-        var completedCalculation = fixture
-            .Build<CompletedCalculation>()
-            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
-            .Create();
-
-        completedCalculationRepositoryMock
-            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedCalculation)
-            .ReturnsAsync((CompletedCalculation)null!);
-
-        // Act
-        var actualEvents = await sut.GetAsync().ToListAsync();
-
-        // Assert
-        using var assertionAcope = new AssertionScope();
-        completedCalculation.PublishFailed.Should().BeTrue();
-        actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenTwoCalculationsWithMultipleEventsCombined_ReturnsOneEventPerResult(
-        IntegrationEvent[] eventsFromEnergyResultsInAggregationCalculation,
-        IntegrationEvent[] eventsFromEnergyResultsInWholesaleFixingCalculation,
-        IntegrationEvent[] eventsFromWholesaleResultsInWholesaleFixingCalculation,
-        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
-        IntegrationEventProvider sut)
-    {
-        // Arrange
-        var expectedEventCount =
-            eventsFromEnergyResultsInAggregationCalculation.Length +
-            eventsFromEnergyResultsInWholesaleFixingCalculation.Length +
-            eventsFromWholesaleResultsInWholesaleFixingCalculation.Length;
-
-        var fixture = new Fixture();
-        var aggregationCalculation = fixture
-            .Build<CompletedCalculation>()
-            .With(p => p.CalculationType, CalculationType.Aggregation)
-            .Create();
-        var wholesaleFixingCalculation = fixture
-            .Build<CompletedCalculation>()
-            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
-            .Create();
-
-        completedCalculationRepositoryMock
-            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(aggregationCalculation)
-            .ReturnsAsync(wholesaleFixingCalculation)
-            .ReturnsAsync((CompletedCalculation)null!);
-
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(aggregationCalculation))
-            .Returns(eventsFromEnergyResultsInAggregationCalculation.ToAsyncEnumerable());
-
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(wholesaleFixingCalculation))
-            .Returns(eventsFromEnergyResultsInWholesaleFixingCalculation.ToAsyncEnumerable());
-
-        // Act
-        var actualEvents = await sut.GetAsync().ToListAsync();
-
-        // Assert
-        actualEvents.Should().HaveCount(expectedEventCount);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_LogsExpectedMessage(
         CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
@@ -283,28 +182,6 @@ public class IntegrationEventProviderTests
         energyResultEventProviderMock
             .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
-
-        // Act
-        await sut.GetAsync().ToListAsync();
-
-        // Assert
-        loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRetrievalOfWholesaleResultEventsFails_LogsExpectedMessage(
-        CompletedCalculation completedCalculation,
-        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
-        IntegrationEventProvider sut)
-    {
-        // Arrange
-        const string expectedLogMessage = $"Failed wholesale result event publishing for completed calculation {LoggingConstants.CalculationId}. Handled '{LoggingConstants.WholesaleResultCount}' wholesale results before failing.";
-        completedCalculationRepositoryMock
-            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedCalculation)
-            .ReturnsAsync((CompletedCalculation)null!);
 
         // Act
         await sut.GetAsync().ToListAsync();
@@ -335,31 +212,6 @@ public class IntegrationEventProviderTests
         energyResultEventProviderMock
             .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(anyIntegrationEvents.ToAsyncEnumerable());
-
-        // Act
-        await sut.GetAsync().ToListAsync();
-
-        // Assert
-        unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Once);
-        loggerMock.ShouldBeCalledWith(LogLevel.Information, expectedLogMessage);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenWholesaleResultsEventsAreHandled_LogsExpectedMessages(
-        CompletedCalculation completedCalculation,
-        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        IntegrationEventProvider sut)
-    {
-        // Arrange
-        const string expectedLogMessage =
-            $"Published results for succeeded wholesale calculation {LoggingConstants.CalculationId} to the service bus ({LoggingConstants.WholesaleResultCount} integration events).";
-        completedCalculationRepositoryMock
-            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedCalculation)
-            .ReturnsAsync((CompletedCalculation)null!);
 
         // Act
         await sut.GetAsync().ToListAsync();
