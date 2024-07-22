@@ -1,5 +1,13 @@
 # Wholesale Contracts Release notes
 
+## Version 10.0.0
+
+- Removed the following contracts:
+  - AmountPerChargeResultProducedV1
+  - EnergyResultProducedV2
+  - MonthlyAmountPerChargeResultProducedV1
+  - TotalMonthlyAmountResultProducedV1
+
 ## Version 9.3.2
 
 Added `CalculationCompletedV1.cs` integration event.
