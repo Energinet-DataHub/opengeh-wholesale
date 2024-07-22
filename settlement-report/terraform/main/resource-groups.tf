@@ -49,6 +49,8 @@ module "pim_contributor_security_group_permissions" {
     data.azurerm_role_definition.apim_groups_contributor_access.name,
     data.azurerm_role_definition.locks_contributor_access.name,
   ]
+
+  depends_on = [azurerm_resource_group.this]
 }
 
 module "pim_reader_security_group_permissions" {
@@ -62,4 +64,6 @@ module "pim_reader_security_group_permissions" {
   custom_roles_reader = [
     data.azurerm_role_definition.app_config_settings_read_access.name
   ]
+
+  depends_on = [azurerm_resource_group.this]
 }
