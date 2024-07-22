@@ -77,7 +77,22 @@ module "dbw" {
       resource_name = module.st_dh2dropzone.name
       dns_zone      = "privatelink.dfs.core.windows.net"
       ip_record     = module.st_dh2dropzone.dfs_private_ip_address
-    }
+    },
+    {
+      resource_name = module.st_dh2timeseries_audit.name
+      dns_zone      = "privatelink.blob.core.windows.net"
+      ip_record     = module.st_dh2timeseries_audit.blob_private_ip_address
+    },
+    {
+      resource_name = module.st_dh2timeseries_audit.name
+      dns_zone      = "privatelink.dfs.core.windows.net"
+      ip_record     = module.st_dh2timeseries_audit.dfs_private_ip_address
+    },
+    {
+      resource_name = module.st_dh2timeseries_audit.name
+      dns_zone      = "privatelink.queue.core.windows.net"
+      ip_record     = module.st_dh2timeseries_audit.queue_private_ip_address
+    },
   ]
 }
 

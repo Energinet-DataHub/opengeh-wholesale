@@ -177,6 +177,7 @@ resource "databricks_job" "migration_workflow" {
         "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.this.name
         "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
         "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
+        "AUDIT_STORAGE_ACCOUNT"           = azurerm_storage_account.this.name
         "CATALOG_NAME"                    = local.databricks_unity_catalog_name
       }
     }
@@ -240,6 +241,7 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.this.name
     "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
+    "AUDIT_STORAGE_ACCOUNT"           = azurerm_storage_account.this.name
     "CATALOG_NAME"                    = local.databricks_unity_catalog_name
   }
 

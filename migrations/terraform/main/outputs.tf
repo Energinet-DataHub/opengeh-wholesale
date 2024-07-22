@@ -39,3 +39,9 @@ output dbw_catalog_name {
   value       = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
   sensitive   = true
 }
+
+output "st_audit_storage_account" {
+  description = "Audit storage account data lake name."
+  value       = module.st_dh2timeseries_audit.name
+  sensitive   = true
+}

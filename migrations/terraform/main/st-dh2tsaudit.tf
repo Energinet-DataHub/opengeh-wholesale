@@ -12,6 +12,49 @@ module "st_dh2timeseries_audit" {
   ip_rules                   = local.ip_restrictions_as_string
 }
 
+#---- System Topic for all storage account events
+
+resource "azurerm_eventgrid_system_topic" "st_dh2timeseries_audit" {
+  name                   = "egst-${module.st_dh2timeseries_audit.name}-${local.resources_suffix}"
+  resource_group_name    = azurerm_resource_group.this.name
+  location               = azurerm_resource_group.this.location
+  source_arm_resource_id = module.st_dh2timeseries_audit.id
+  topic_type             = "Microsoft.Storage.StorageAccounts"
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = local.tags
+}
+
+#---- System topic event subscriptions
+
+resource "azurerm_eventgrid_system_topic_event_subscription" "dh2timeseries_audit" {
+  name                 = "egsts-${azurerm_storage_queue.timeseries_audit.name}-${local.resources_suffix}"
+  system_topic         = azurerm_eventgrid_system_topic.st_dh2timeseries_audit.name
+  resource_group_name  = azurerm_resource_group.this.name
+  included_event_types = ["Microsoft.Storage.BlobCreated"]
+
+  subject_filter {
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.timeseriesaudit.name}/"
+  }
+
+  storage_queue_endpoint {
+    storage_account_id = module.st_dh2timeseries_audit.id
+    queue_name         = azurerm_storage_queue.timeseries_audit.name
+  }
+  delivery_identity {
+    type = "SystemAssigned"
+  }
+}
+
+#---- Queues
+
+resource "azurerm_storage_queue" "timeseries_audit" {
+  name                 = azurerm_storage_container.timeseriesaudit.name
+  storage_account_name = module.st_dh2timeseries_audit.name
+}
+
 #---- Role assignments
 
 resource "azurerm_role_assignment" "ra_dh2timeseriesaudit_contributor" {
@@ -20,6 +63,25 @@ resource "azurerm_role_assignment" "ra_dh2timeseriesaudit_contributor" {
   principal_id         = azuread_service_principal.spn_databricks.id
 }
 
+resource "azurerm_role_assignment" "ra_dh2timeseries_queue_data_contributor" {
+  scope                = module.st_dh2timeseries_audit.id
+  role_definition_name = "Storage Queue Data Contributor"
+  principal_id         = azuread_service_principal.spn_databricks.id
+}
+
+resource "azurerm_role_assignment" "ra_dh2timeseries_queue_data_reader" {
+  scope                = module.st_dh2timeseries_audit.id
+  role_definition_name = "Storage Queue Data Reader"
+  principal_id         = azuread_service_principal.spn_databricks.id
+}
+
+resource "azurerm_role_assignment" "st_dh2timeseries_audit_queue_data_sender" {
+  scope                = module.st_dh2timeseries_audit.id
+  role_definition_name = "Storage Queue Data Message Sender"
+  principal_id         = azurerm_eventgrid_system_topic.st_dh2timeseries_audit.identity[0].principal_id
+}
+
+
 #---- Containers
 
 resource "azurerm_storage_container" "timeseriesaudit" {
@@ -27,3 +89,4 @@ resource "azurerm_storage_container" "timeseriesaudit" {
   storage_account_name  = module.st_dh2timeseries_audit.name
   container_access_type = "private"
 }
+
