@@ -3,10 +3,10 @@
 ## Version 10.0.0
 
 - Removed the following contracts:
-  - AmountPerChargeResultProducedV1
-  - EnergyResultProducedV2
-  - MonthlyAmountPerChargeResultProducedV1
-  - TotalMonthlyAmountResultProducedV1
+    - AmountPerChargeResultProducedV1
+    - EnergyResultProducedV2
+    - MonthlyAmountPerChargeResultProducedV1
+    - TotalMonthlyAmountResultProducedV1
 
 ## Version 9.3.2
 
