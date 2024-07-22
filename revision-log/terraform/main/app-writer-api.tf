@@ -8,7 +8,7 @@ module "app_writer_api" {
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
   app_service_plan_id                    = module.webapp_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/monitor/ready"

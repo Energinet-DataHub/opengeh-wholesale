@@ -12,6 +12,8 @@ on:
         value: ${{ jobs.changes.outputs.edi_ci }}
       market_participant_ci:
         value: ${{ jobs.changes.outputs.market_participant_ci }}
+      settlement_report_ci:
+        value: ${{ jobs.changes.outputs.settlement_report_ci }}
       revision_log_ci:
         value: ${{ jobs.changes.outputs.revision_log_ci }}
       dh2_bridge_ci:
@@ -50,6 +52,7 @@ jobs:
     outputs:
       edi_ci: ${{ steps.filter.outputs.edi_ci }}
       market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
+      settlement_report_ci: ${{ steps.filter.outputs.settlement_report_ci }}
       revision_log_ci: ${{ steps.filter.outputs.revision_log_ci }}
       dh2_bridge_ci: ${{ steps.filter.outputs.dh2_bridge_ci }}
       grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
@@ -84,6 +87,12 @@ jobs:
             market_participant_ci:
               - market-participant/**
               - .github/workflows/market-participant-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            settlement_report_ci:
+              - settlement-report/**
+              - .github/workflows/settlement-report-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
