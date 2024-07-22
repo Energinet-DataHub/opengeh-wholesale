@@ -25,7 +25,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationCompletedEventProvider _calculationCompletedEventProvider;
     private readonly IEnergyResultEventProvider _energyResultEventProvider;
-    private readonly IWholesaleResultEventProvider _wholesaleResultEventProvider;
     private readonly ICompletedCalculationRepository _completedCalculationRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -34,7 +33,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     public IntegrationEventProvider(
         ICalculationCompletedEventProvider calculationCompletedEventProvider,
         IEnergyResultEventProvider energyResultEventProvider,
-        IWholesaleResultEventProvider wholesaleResultEventProvider,
         ICompletedCalculationRepository completedCalculationRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
@@ -42,7 +40,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         _calculationCompletedEventProvider = calculationCompletedEventProvider;
         _energyResultEventProvider = energyResultEventProvider;
-        _wholesaleResultEventProvider = wholesaleResultEventProvider;
         _completedCalculationRepository = completedCalculationRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -94,43 +91,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 }
             }
 
-            // Publish integration events for wholesale results
-            var wholesaleResultCount = 0;
-            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedCalculation))
-            {
-                var wholesaleResultEventProviderEnumerator = _wholesaleResultEventProvider.GetAsync(unpublishedCalculation).GetAsyncEnumerator();
-                try
-                {
-                    var hasResult = true;
-                    while (hasResult)
-                    {
-                        try
-                        {
-                            hasResult = await wholesaleResultEventProviderEnumerator.MoveNextAsync().ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            hasResult = false;
-                            hasFailed = true;
-                            _logger.LogError(ex, "Failed wholesale result event publishing for completed calculation {calculation_id}. Handled '{wholesale_result_count}' wholesale results before failing.", unpublishedCalculation.Id, wholesaleResultCount);
-                        }
-
-                        if (hasResult)
-                        {
-                            wholesaleResultCount++;
-                            yield return wholesaleResultEventProviderEnumerator.Current;
-                        }
-                    }
-                }
-                finally
-                {
-                    if (wholesaleResultEventProviderEnumerator != null)
-                    {
-                        await wholesaleResultEventProviderEnumerator.DisposeAsync().ConfigureAwait(false);
-                    }
-                }
-            }
-
             // Publish integration events for calculation completed
             IntegrationEvent? calculationCompletedEvent = default;
             try
@@ -160,10 +120,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
             _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus ({energy_result_count} integration events).", unpublishedCalculation.Id, energyResultCount);
-            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedCalculation))
-            {
-                _logger.LogInformation("Published results for succeeded wholesale calculation {calculation_id} to the service bus ({wholesale_result_count} integration events).", unpublishedCalculation.Id, wholesaleResultCount);
-            }
         }
         while (true);
     }

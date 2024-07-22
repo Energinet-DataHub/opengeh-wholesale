@@ -167,7 +167,6 @@ public class IntegrationEventProviderTests
     public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndCalculationWithMultipleWholesaleResultEvents_ReturnsOneEventPerResult(
         IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
@@ -181,13 +180,6 @@ public class IntegrationEventProviderTests
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
             .ReturnsAsync((CompletedCalculation)null!);
-
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
-            .Returns(true);
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedCalculation))
-            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
 
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
@@ -201,7 +193,6 @@ public class IntegrationEventProviderTests
     public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishFailed(
         IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
@@ -215,13 +206,6 @@ public class IntegrationEventProviderTests
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
             .ReturnsAsync((CompletedCalculation)null!);
-
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
-            .Returns(true);
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedCalculation))
-            .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
 
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
@@ -240,7 +224,6 @@ public class IntegrationEventProviderTests
         IntegrationEvent[] eventsFromWholesaleResultsInWholesaleFixingCalculation,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
-        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
@@ -272,12 +255,6 @@ public class IntegrationEventProviderTests
         energyResultEventProviderMock
             .Setup(mock => mock.GetAsync(wholesaleFixingCalculation))
             .Returns(eventsFromEnergyResultsInWholesaleFixingCalculation.ToAsyncEnumerable());
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(wholesaleFixingCalculation))
-            .Returns(true);
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(wholesaleFixingCalculation))
-            .Returns(eventsFromWholesaleResultsInWholesaleFixingCalculation.ToAsyncEnumerable());
 
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
@@ -318,9 +295,7 @@ public class IntegrationEventProviderTests
     [InlineAutoMoqData]
     public async Task GetAsync_WhenRetrievalOfWholesaleResultEventsFails_LogsExpectedMessage(
         CompletedCalculation completedCalculation,
-        IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
         IntegrationEventProvider sut)
     {
@@ -330,14 +305,6 @@ public class IntegrationEventProviderTests
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
             .ReturnsAsync((CompletedCalculation)null!);
-
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
-            .Returns(true);
-
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedCalculation))
-            .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
 
         // Act
         await sut.GetAsync().ToListAsync();
@@ -381,9 +348,7 @@ public class IntegrationEventProviderTests
     [InlineAutoMoqData]
     public async Task GetAsync_WhenWholesaleResultsEventsAreHandled_LogsExpectedMessages(
         CompletedCalculation completedCalculation,
-        IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
@@ -395,14 +360,6 @@ public class IntegrationEventProviderTests
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
             .ReturnsAsync((CompletedCalculation)null!);
-
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedCalculation))
-            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
-
-        wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
-            .Returns(true);
 
         // Act
         await sut.GetAsync().ToListAsync();

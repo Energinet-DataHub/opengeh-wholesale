@@ -113,10 +113,6 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
                 actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
             Fixture.ScenarioState.ReceivedGridLossProducedV1 =
                 actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
-            Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
-                .OfType<AmountPerChargeResultProducedV1>().ToList();
-            Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
-                .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
                 .OfType<CalculationCompletedV1>().ToList();
         }
@@ -127,9 +123,6 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
-        // => Empty
-        Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
-        Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
     }
 
     [ScenarioStep(6)]
