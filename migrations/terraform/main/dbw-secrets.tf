@@ -31,6 +31,13 @@ resource "databricks_secret" "st_dh2data_storage_account" {
   scope        = databricks_secret_scope.migration_scope.id
 }
 
+resource "databricks_secret" "st_audit_storage_account" {
+  provider     = databricks.dbw
+  key          = "st_audit_storage_account"
+  string_value = module.st_dh2timeseries_audit.name
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
 resource "databricks_secret" "st_shared_datalake_account" {
   provider     = databricks.dbw
   key          = "st_shared_datalake_account"
