@@ -71,7 +71,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Function Apps" "Mandalorian"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "Publish calculation results" "integration event/amqp"
+        this -> dh3.sharedServiceBus "Publish calculation completed and grid loss" "integration event/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
@@ -80,7 +80,7 @@ wholesaleSubsystem = group "Wholesale" {
         this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
 
         # Subsystem-to-Subsystem relationships
-        this -> edi "Publish calculation results" "integration event/amqp" {
+        this -> edi "Publish calculation completed" "integration event/amqp" {
             tags "Simple View"
         }
     }
