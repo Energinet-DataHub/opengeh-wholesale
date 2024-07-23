@@ -46,6 +46,8 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2timeseries_audi
   delivery_identity {
     type = "SystemAssigned"
   }
+
+  depends_on = [azurerm_role_assignment.st_dh2timeseries_audit_queue_data_sender]
 }
 
 #---- Queues
