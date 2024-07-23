@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
@@ -23,7 +22,6 @@ using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
@@ -84,7 +82,6 @@ public static class EventsExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         services
-            .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<ICalculationCompletedFactory, CalculationCompletedV1Factory>();
 

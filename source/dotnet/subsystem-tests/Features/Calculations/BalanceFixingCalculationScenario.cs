@@ -49,7 +49,6 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void AndGiven_SubscribedIntegrationEvents()
     {
-        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationCompletedV1.EventName);
     }
@@ -109,8 +108,6 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
                 Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
                 waitTimeLimit: TimeSpan.FromMinutes(8));
 
-            Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
-                actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
             Fixture.ScenarioState.ReceivedGridLossProducedV1 =
                 actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
@@ -120,101 +117,22 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // Assert
         using var assertionScope = new AssertionScope();
         // => Not empty
-        Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
     }
 
     [ScenarioStep(6)]
     [SubsystemFact]
-    public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
+    public void AndThen_ReceivedGridLossProducedEventsCountIsEqualToExpected()
     {
-        var expected = 100;
+        var expected = 2;
 
         // Assert
         using var assertionScope = new AssertionScope();
-        Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
-        Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(2);
+        Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(expected);
     }
 
     [ScenarioStep(7)]
-    [SubsystemFact]
-    public void AndThen_ReceivedEnergyResultProducedEventsContainAllTimeSeriesTypes()
-    {
-        List<string> expected =
-        [
-            "Production",
-            "FlexConsumption",
-            "TotalConsumption",
-            "NonProfiledConsumption",
-            "NetExchangePerGa",
-            "NetExchangePerNeighboringGa"
-        ];
-
-        var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-            .Select(x => Enum.GetName(x.TimeSeriesType))
-            .Distinct()
-            .ToList();
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        foreach (var timeSeriesType in expected)
-        {
-            actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
-        }
-    }
-
-    [ScenarioStep(8)]
-    [SubsystemFact]
-    public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
-    {
-        IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
-            new List<(string, string)>
-            {
-                ("NonProfiledConsumption", "AggregationPerGridarea"),
-                ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                ("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
-                ("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
-                ("Production", "AggregationPerGridarea"),
-                ("Production", "AggregationPerEnergysupplierPerGridarea"),
-                ("Production", "AggregationPerBalanceresponsiblepartyPerGridarea"),
-                ("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
-                ("FlexConsumption", "AggregationPerGridarea"),
-                ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                ("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
-                ("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
-                ("NetExchangePerGa", "AggregationPerGridarea"),
-                ("NetExchangePerNeighboringGa", "AggregationPerGridarea"),
-                ("TotalConsumption", "AggregationPerGridarea"),
-            };
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        foreach (var tuple in expected)
-        {
-            Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-                .Should()
-                .Contain(item =>
-                    Enum.GetName(item.TimeSeriesType) == tuple.TimeSeriesType
-                    && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
-        }
-    }
-
-    [ScenarioStep(9)]
-    [SubsystemFact]
-    public void AndThen_OneSpecificEnergyResultProducedEventContainsVersion()
-    {
-        // Assert
-        var actualVersion = Fixture.ScenarioState.ReceivedEnergyResultProducedV2.First().CalculationResultVersion;
-
-        using var assertionScope = new AssertionScope();
-        actualVersion.Should().BeGreaterThan(0);
-
-        // Convert version (ticks) to datetime and assert that it is not older than 3 hours
-        new DateTime(actualVersion).Subtract(DateTime.Now).Hours.Should().BeLessThan(3);
-    }
-
-    [ScenarioStep(10)]
     [SubsystemFact]
     public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
     {
@@ -228,26 +146,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
     }
 
-    [ScenarioStep(11)]
-    [SubsystemFact]
-    public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoints()
-    {
-        // Arrange
-        var expectedTimeSeriesPoints = await Fixture.ParseEnergyResultTimeSeriesPointsFromCsvAsync("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
-
-        var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-            .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
-            .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
-            .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId == "5790001102357")
-            .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "543")
-            .ToList();
-
-        // Assert
-        Assert.Single(energyResults);
-        energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
-    }
-
-    [ScenarioStep(12)]
+    [ScenarioStep(8)]
     [SubsystemFact]
     public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
     {
@@ -264,7 +163,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
     }
 
-    [ScenarioStep(13)]
+    [ScenarioStep(9)]
     [SubsystemFact]
     public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
     {
@@ -276,7 +175,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 
-    [ScenarioStep(14)]
+    [ScenarioStep(10)]
     [SubsystemFact]
     public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
     {
@@ -305,7 +204,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             "because calculation should be in ActorMessagesEnqueuing state or later");
     }
 
-    [ScenarioStep(15)]
+    [ScenarioStep(11)]
     [SubsystemFact]
     public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
     {
@@ -316,7 +215,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             Fixture.ScenarioState.OrchestrationInstanceId);
     }
 
-    [ScenarioStep(16)]
+    [ScenarioStep(12)]
     [SubsystemFact]
     public async Task AndThen_CalculationOrchestrationIsCompleted()
     {

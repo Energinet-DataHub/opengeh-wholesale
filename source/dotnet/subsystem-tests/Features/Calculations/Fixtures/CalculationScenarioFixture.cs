@@ -253,17 +253,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     }
 
     /// <summary>
-    /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
-    /// </summary>
-    public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseEnergyResultTimeSeriesPointsFromCsvAsync(string testFileName)
-    {
-        return await ParseCsvAsync(
-            testFileName,
-            "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,neighbor_grid_area_code,calculation_result_id,resolution",
-            ParseEnergyResultProducedV2TimeSeriesPoint);
-    }
-
-    /// <summary>
     /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
     /// </summary>
     public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
@@ -372,17 +361,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return result;
     }
 
-    private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)
-    {
-        var result = new EnergyResultProducedV2.Types.TimeSeriesPoint
-        {
-            Time = ParseTimestamp(columns[5]),
-            Quantity = ParseDecimalValue(columns[3]),
-        };
-        result.QuantityQualities.AddRange(ParseEnumValueTo(columns[4]));
-        return result;
-    }
-
     private async Task CreateTopicSubscriptionAsync()
     {
         if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName))
@@ -413,15 +391,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
 
             switch (message.Subject)
             {
-                case EnergyResultProducedV2.EventName:
-                    var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
-                    if (energyResultProduced.CalculationId == calculationId.ToString())
-                    {
-                        eventMessage = energyResultProduced;
-                        shouldCollect = true;
-                    }
-
-                    break;
                 case GridLossResultProducedV1.EventName:
                     var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
                     if (gridLossResultProduced.CalculationId == calculationId.ToString())
@@ -461,29 +430,5 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
     {
         return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
-    }
-
-    private static List<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
-    {
-        value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
-        var splits = value.Split(':');
-        var result = new List<EnergyResultProducedV2.Types.QuantityQuality>();
-        foreach (var split in splits)
-        {
-            switch (split)
-            {
-                case "measured":
-                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
-                    break;
-                case "calculated":
-                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
-                    break;
-                case "missing":
-                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Missing);
-                    break;
-            }
-        }
-
-        return result;
     }
 }

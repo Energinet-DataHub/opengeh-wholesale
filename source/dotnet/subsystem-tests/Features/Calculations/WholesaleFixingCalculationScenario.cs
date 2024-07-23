@@ -51,7 +51,6 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public void AndGiven_SubscribedIntegrationEvents()
     {
-        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationCompletedV1.EventName);
     }
@@ -107,8 +106,6 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
             Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
             waitTimeLimit: TimeSpan.FromMinutes(8));
 
-        Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
-            actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
         Fixture.ScenarioState.ReceivedGridLossProducedV1 = actualReceivedIntegrationEvents
             .OfType<GridLossResultProducedV1>().ToList();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
@@ -116,78 +113,11 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
 
         // Assert
         using var assertionScope = new AssertionScope();
-        Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
     }
 
     [ScenarioStep(6)]
-    [SubsystemFact]
-    public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
-    {
-        var expected = 227; // 5 (total_ga) + 111 (es_brp_ga) + 111 (es_ga)(copy of es_brp_ga)
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
-    }
-
-    [ScenarioStep(7)]
-    [SubsystemFact]
-    public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTimeSeriesTypes()
-    {
-        List<string> expected =
-        [
-            "Production",
-            "FlexConsumption",
-            "TotalConsumption",
-            "NonProfiledConsumption",
-            "NetExchangePerGa"
-        ];
-
-        var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-            .Select(x => Enum.GetName(x.TimeSeriesType))
-            .Distinct()
-            .ToList();
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        foreach (var timeSeriesType in expected)
-        {
-            actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
-        }
-    }
-
-    [ScenarioStep(8)]
-    [SubsystemFact]
-    public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
-    {
-        IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
-            new List<(string, string)>
-            {
-                ("NonProfiledConsumption", "AggregationPerGridarea"),
-                ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                ("Production", "AggregationPerGridarea"),
-                ("Production", "AggregationPerEnergysupplierPerGridarea"),
-                ("FlexConsumption", "AggregationPerGridarea"),
-                ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                ("NetExchangePerGa", "AggregationPerGridarea"),
-                ("TotalConsumption", "AggregationPerGridarea"),
-            };
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        foreach (var tuple in expected)
-        {
-            Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-                .Should()
-                .Contain(item =>
-                    Enum.GetName(item.TimeSeriesType) == tuple.TimeSeriesType
-                    && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
-        }
-    }
-
-    [ScenarioStep(9)]
     [SubsystemFact]
     public async Task AndThen_ACalculationTelemetryLogIsCreated()
     {
@@ -209,7 +139,7 @@ AppTraces
         actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
     }
 
-    [ScenarioStep(10)]
+    [ScenarioStep(7)]
     [SubsystemFact]
     public async Task AndThen_ACalculationTelemetryTraceWithASpanIsCreated()
     {
@@ -232,26 +162,7 @@ AppDependencies
         actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
     }
 
-    [ScenarioStep(11)]
-    [SubsystemFact]
-    public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoint()
-    {
-        // Arrange
-        var expectedTimeSeriesPoints = await Fixture.ParseEnergyResultTimeSeriesPointsFromCsvAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
-
-        var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-            .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
-            .Where(x => x.AggregationPerEnergysupplierPerGridarea != null)
-            .Where(x => x.AggregationPerEnergysupplierPerGridarea.EnergySupplierId == "5790001687137")
-            .Where(x => x.AggregationPerEnergysupplierPerGridarea.GridAreaCode == "804")
-            .ToList();
-
-        // Assert
-        Assert.Single(energyResults);
-        energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
-    }
-
-    [ScenarioStep(12)]
+    [ScenarioStep(8)]
     [SubsystemFact]
     public async Task AndThen_ReceivedGridLossResultProducedV1EventContainsExpectedTimeSeriesPoints()
     {
@@ -268,7 +179,7 @@ AppDependencies
         energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
     }
 
-    [ScenarioStep(13)]
+    [ScenarioStep(9)]
     [SubsystemFact]
     public async Task AndThen_OneViewOrTableInEachPublicDataModelMustExistsAndContainData()
     {
@@ -290,7 +201,7 @@ AppDependencies
         }
     }
 
-    [ScenarioStep(14)]
+    [ScenarioStep(10)]
     [SubsystemFact]
     public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
     {
@@ -302,7 +213,7 @@ AppDependencies
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 
-    [ScenarioStep(15)]
+    [ScenarioStep(11)]
     [SubsystemFact]
     public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
     {
@@ -330,7 +241,7 @@ AppDependencies
             "because calculation should be in ActorMessagesEnqueuing state or later");
     }
 
-    [ScenarioStep(16)]
+    [ScenarioStep(12)]
     [SubsystemFact]
     public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
     {
@@ -341,7 +252,7 @@ AppDependencies
             Fixture.ScenarioState.OrchestrationInstanceId);
     }
 
-    [ScenarioStep(17)]
+    [ScenarioStep(13)]
     [SubsystemFact]
     public async Task AndThen_CalculationOrchestrationIsCompleted()
     {

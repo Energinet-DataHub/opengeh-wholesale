@@ -31,9 +31,6 @@ public class CalculationScenarioState
 
     public CalculationDto? Calculation { get; set; }
 
-    public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
-        = [];
-
     public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
         = [];
 
