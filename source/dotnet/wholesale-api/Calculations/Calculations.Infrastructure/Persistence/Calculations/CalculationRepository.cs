@@ -51,16 +51,6 @@ public class CalculationRepository : ICalculationRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime)
-    {
-        return await _context
-            .Calculations
-            .Where(b => b.ExecutionState == CalculationExecutionState.Completed)
-            .Where(b => completedTime == null || b.ExecutionTimeEnd > completedTime)
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
     public async Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,

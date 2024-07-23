@@ -118,8 +118,7 @@ public static class EventsExtensions
     public static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
     {
         services
-            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
-            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>(); // This depends on services within Calculations sub-area
+            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>();
 
         return services;
     }
