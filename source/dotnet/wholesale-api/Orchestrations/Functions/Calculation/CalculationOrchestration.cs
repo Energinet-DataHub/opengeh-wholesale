@@ -111,8 +111,6 @@ internal class CalculationOrchestration
                 new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId),
                 defaultRetryOptions);
 
-            //// TODO XDAST: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
-
             // TODO XDAST: Add retry policy when we have removed the old integration events
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
