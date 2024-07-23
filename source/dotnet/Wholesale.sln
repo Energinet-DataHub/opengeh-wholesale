@@ -84,11 +84,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestrations", "wholesale
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestrations.IntegrationTests", "wholesale-api\Orchestrations.IntegrationTests\Orchestrations.IntegrationTests.csproj", "{02BB457A-6176-40C6-A216-C5EC9332E9B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Interfaces", "wholesale-api\Events\Events.Interfaces\Events.Interfaces.csproj", "{23EEA7E9-43C1-43C0-B1CC-3F6A07D78AB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Events.Interfaces", "wholesale-api\Events\Events.Interfaces\Events.Interfaces.csproj", "{23EEA7E9-43C1-43C0-B1CC-3F6A07D78AB9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wholesale-api", "wholesale-api", "{D43618FC-E649-4866-80D9-6964785707B2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchestration.SettlementReports", "wholesale-api\Orchestration.SettlementReports\Orchestration.SettlementReports.csproj", "{78DC232F-E3D9-4685-A86A-9CA2EB7E1A98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestration.SettlementReports", "wholesale-api\Orchestration.SettlementReports\Orchestration.SettlementReports.csproj", "{78DC232F-E3D9-4685-A86A-9CA2EB7E1A98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
