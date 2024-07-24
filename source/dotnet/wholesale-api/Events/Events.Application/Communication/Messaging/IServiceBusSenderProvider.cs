@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Azure.Messaging.ServiceBus;
 
-public interface IRegisterCompletedCalculationsHandler
+namespace Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
+
+//// TODO - XDAST: Currently refactoring, so this is a step on the way. Code was copied from the Messaging package.
+public interface IServiceBusSenderProvider
 {
-    Task RegisterCompletedCalculationsAsync();
+    ServiceBusSender Instance { get; }
 }

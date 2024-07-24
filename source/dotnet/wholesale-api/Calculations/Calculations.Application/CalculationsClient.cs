@@ -33,12 +33,6 @@ public class CalculationsClient : ICalculationsClient
         _calculationDtoMapper = calculationDtoMapper;
     }
 
-    public async Task<IEnumerable<CalculationDto>> GetCompletedAfterAsync(Instant? completedTime)
-    {
-        var calculations = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
-        return calculations.Select(_calculationDtoMapper.Map);
-    }
-
     public async Task<CalculationDto> GetAsync(Guid calculationId)
     {
         var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);

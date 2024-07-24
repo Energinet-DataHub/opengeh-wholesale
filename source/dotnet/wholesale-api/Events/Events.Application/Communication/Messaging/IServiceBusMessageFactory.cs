@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
+namespace Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 
-public abstract class ResultEventProvider
+//// TODO - XDAST: Currently refactoring, so this is a step on the way. Code was copied from the Messaging package.
+
+/// <summary>
+/// Creates a <see cref="ServiceBusMessage"/> instance from an <see cref="IntegrationEvent"/>
+/// </summary>
+public interface IServiceBusMessageFactory
 {
-    protected static IntegrationEvent CreateIntegrationEvent(IEventMessage eventMessage)
-    {
-        return new IntegrationEvent(
-            Guid.NewGuid(),
-            eventMessage.EventName,
-            eventMessage.EventMinorVersion,
-            eventMessage);
-    }
+    ServiceBusMessage Create(IntegrationEvent @event);
 }

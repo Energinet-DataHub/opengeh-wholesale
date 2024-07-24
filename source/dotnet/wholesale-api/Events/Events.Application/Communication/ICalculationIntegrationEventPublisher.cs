@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
-public interface ICompletedCalculationRepository
+namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
+
+/// <summary>
+/// Responsible for publishing integration events for a completed calculation, using Service Bus.
+/// </summary>
+public interface ICalculationIntegrationEventPublisher
 {
-    Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations);
-
-    Task<CompletedCalculation> GetAsync(Guid calculationId);
-
-    Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync();
+    /// <summary>
+    /// Publish integration events for a completed calculation, using Service Bus.
+    /// </summary>
+    Task PublishAsync(CompletedCalculation completedCalculation, CancellationToken cancellationToken);
 }
