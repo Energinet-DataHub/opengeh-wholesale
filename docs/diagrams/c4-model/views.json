@@ -2,7 +2,7 @@
   "id" : 1,
   "name" : "DataHub",
   "description" : "Description",
-  "lastModifiedDate" : "2024-07-24T12:10:28Z",
+  "lastModifiedDate" : "2024-07-24T12:13:39Z",
   "lastModifiedAgent" : "structurizr-javascript",
   "properties" : {
     "structurizr.dsl" : "IyBUaGUgJ3ZpZXdzLmRzbCcgZmlsZSBpcyBpbnRlbmRlZCBhcyBhIG1lYW4gZm9yIHZpZXdpbmcgYW5kIHZhbGlkYXRpbmcgdGhlIG1vZGVsCiMgaW4gdGhlIHN1YnN5c3RlbSByZXBvc2l0b3J5LiBJdCBzaG91bGQKIyAgICogRXh0ZW5kIHRoZSBiYXNlIG1vZGVsIGFuZCBvdmVycmlkZSB0aGUgJ2RoMycgc29mdHdhcmUgc3lzdGVtCiMgICAqIEluY2x1ZGUgb2YgdGhlIGBtb2RlbC5kc2xgIGZpbGVzIGZyb20gZWFjaCBzdWJzeXN0ZW0gcmVwb3NpdG9yeSB1c2luZyBhbiBVUkwKIwojIFRoZSBgbW9kZWwuZHNsYCBmaWxlIG11c3QgY29udGFpbiB0aGUgYWN0dWFsIG1vZGVsLCBhbmQgaXMgdGhlIHBpZWNlIHRoYXQgbXVzdAojIGJlIHJldXNhYmxlIGFuZCBpbmNsdWRlZCBpbiBvdGhlciBTdHJ1Y3R1cml6ciBmaWxlcyBsaWtlIGB2aWV3cy5kc2xgIGFuZAojIGRlcGxveW1lbnQgZGlhZ3JhbSBmaWxlcy4KCndvcmtzcGFjZSBleHRlbmRzIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9FbmVyZ2luZXQtRGF0YUh1Yi9vcGVuZ2VoLWFyY2gtZGlhZ3JhbXMvbWFpbi9kb2NzL2RpYWdyYW1zL2M0LW1vZGVsL2RoLWJhc2UtbW9kZWwuZHNsIHsKCiAgICBtb2RlbCB7CiAgICAgICAgIwogICAgICAgICMgRGF0YUh1YiAzLjAgKGV4dGVuZHMpCiAgICAgICAgIwogICAgICAgICFyZWYgZGgzIHsKCiAgICAgICAgICAgICMgSU1QT1JUQU5UOgogICAgICAgICAgICAjIFRoZSBvcmRlciBieSB3aGljaCBtb2RlbHMgYXJlIGluY2x1ZGVkIGlzIGltcG9ydGFudCBmb3IgaG93IHRoZSBzdWJzeXN0ZW0tdG8tc3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMgYXJlIHNwZWNpZmllZC4KICAgICAgICAgICAgIyBBIHN1YnN5c3RlbS10by1zdWJzeXN0ZW0gcmVsYXRpb25zaGlwIHNob3VsZCBiZSBzcGVjaWZpZWQgaW4gdGhlICJjbGllbnQiIG9mIGEgImNsaWVudC0+c2VydmVyIiBkZXBlbmRlbmN5LCBhbmQKICAgICAgICAgICAgIyBoZW5jZSBzdWJzeXN0ZW1zIHRoYXQgZG9lc24ndCBkZXBlbmQgb24gb3RoZXJzLCBzaG91bGQgYmUgbGlzdGVkIGZpcnN0LgoKICAgICAgICAgICAgIyBJbmNsdWRlIE1hcmtldCBQYXJ0aWNpcGFudCBtb2RlbAogICAgICAgICAgICAjIFJlYWQgZGVzY3JpcHRpb24gaW4gdGhlICd2aWV3cy5kc2wnIGZpbGUuCiAgICAgICAgICAgIAogICAgICAgICAgICBtYXJrcGFydERvbWFpbiA9IGdyb3VwICJNYXJrZXQgUGFydGljaXBhbnQiIHsKICAgICAgICAgICAgICAgICMKICAgICAgICAgICAgICAgICMgQ29tbW9uIChtYW5hZ2VkIGJ5IE1hcmtldCBQYXJ0aWNpcGFudCkKICAgICAgICAgICAgICAgICMKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAjCiAgICAgICAgICAgICAgICAjIERvbWFpbgogICAgICAgICAgICAgICAgIwogICAgICAgICAgICAgICAgbWFya3BhcnREYiA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IERhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlN0b3JlcyBkYXRhIHJlZ2FyZGluZyBhY3RvcnMsIHVzZXJzIGFuZCBwZXJtaXNzaW9ucy4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiU1FMIERhdGFiYXNlIFNjaGVtYSIKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhIFN0b3JhZ2UiICJNaWNyb3NvZnQgQXp1cmUgLSBTUUwgRGF0YWJhc2UiICJUaXRhbnMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgbWFya3BhcnRLZXlWYXVsdCA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IEludGVybmFsIEtleSBWYXVsdCIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJTdG9yZXMga2V5IHVzZWQgZm9yIHNpZ25pbmcgdG9rZW5zLiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBLZXkgVmF1bHQiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gS2V5IFZhdWx0cyIgIlRpdGFucyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBtYXJrcGFydENlcnRLZXlWYXVsdCA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IENlcnRpZmljYXRlIEtleSBWYXVsdCIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJTdG9yZXMgcHVibGljIERIMiBjZXJ0aWZpY2F0ZXMgdXNlZCBmb3IgQjJCIGF1dGhlbnRpY2F0aW9uLiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBLZXkgVmF1bHQiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gS2V5IFZhdWx0cyIgIlRpdGFucyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBtYXJrcGFydEFwaSA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IEFQSSIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJNdWx0aS10ZW5hbnQgQVBJIGZvciBtYW5hZ2luZyBhY3RvcnMsIHVzZXJzIGFuZCBwZXJtaXNzaW9ucy4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXNwLk5ldCBDb3JlIFdlYiBBUEkiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gQXBwIFNlcnZpY2VzIiAiVGl0YW5zIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIENvbW1vbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkQjJDICJDcmVhdGVzIGFuZCBtYW5hZ2VzIEIyQyB1c2VycyIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBEb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnREYiAiUmVhZHMgYW5kIHdyaXRlcyBhY3Rvci91c2VyIGRhdGEuIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0S2V5VmF1bHQgIlNpZ25zLCBhbmQgcmVhZHMgcHVibGljIGtleSBmb3IsIHRva2Vucy4iICJNaWNyb3NvZnQuR3JhcGgvaHR0cHMiCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydENlcnRLZXlWYXVsdCAiTWFuYWdlcyBhY3RpdmUgREgyIGNlcnRpZmljYXRlcyB1c2VkIGZvciBCMkIgYXV0aGVudGljYXRpb24uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk1hcmtwYXJ0QXBpID0gY29tcG9uZW50ICJVc2VySWRlbnRpdHlSZXBvc2l0b3J5IiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJNYW5hZ2VzIGFjY2VzcyB0byBCMkMgdXNlciBkYXRhIHRocm91Z2ggR3JhcGhBUEkuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBDb21tb24gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRCMkMgIkFjY2Vzc2VzIHVzZXIgaW5mb3JtYXRpb24iICJNaWNyb3NvZnQuR3JhcGgvaHR0cHMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFVzZXJDb250cm9sbGVyID0gY29tcG9uZW50ICJVc2VyQ29udHJvbGxlciIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQVBJIGZvciBtYW5hZ2luZyB1c2Vycy4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIERvbWFpbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnREYiAiV3JpdGVzL3JlYWRzIGZyb20iICJFRiBDb3JlIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBDb21tb24gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0VXNlcklkZW50aXR5UmVwb3NpdG9yeUluTWFya3BhcnRBcGkgIkFjY2Vzc2VzIHVzZXIgaW5mb3JtYXRpb24iICJNaWNyb3NvZnQuR3JhcGgvaHR0cHMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFBlcm1pc3Npb25Db250cm9sbGVyID0gY29tcG9uZW50ICJQZXJtaXNzaW9uQ29udHJvbGxlciIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQVBJIGZvciBtYW5hZ2luZyBzeXN0ZW0gcGVybWlzc2lvbnMuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBEb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgIldyaXRlcy9yZWFkcyBmcm9tIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0VXNlclJvbGVDb250cm9sbGVyID0gY29tcG9uZW50ICJVc2VyUm9sZUNvbnRyb2xsZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFQSSBmb3IgbWFuYWdpbmcgdXNlciByb2xlcyBhbmQgdW5kZXJseWluZyBzeXN0ZW0gcGVybWlzc2lvbnMuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBEb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgIldyaXRlcy9yZWFkcyBmcm9tIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0VXNlclJvbGVBc3NpZ25tZW50Q29udHJvbGxlciA9IGNvbXBvbmVudCAiVXNlclJvbGVBc3NpZ25tZW50Q29udHJvbGxlciIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQVBJIGZvciBtYW5hZ2luZyB1c2VycyBhbmQgdGhlaXIgYXNzaWduZWQgdXNlciByb2xlcy4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIERvbWFpbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnREYiAiV3JpdGVzL3JlYWRzIGZyb20iICJFRiBDb3JlIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBDb21tb24gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0VXNlcklkZW50aXR5UmVwb3NpdG9yeUluTWFya3BhcnRBcGkgIkFjY2Vzc2VzIHVzZXIgaW5mb3JtYXRpb24iICJNaWNyb3NvZnQuR3JhcGgvaHR0cHMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFVzZXJPdmVydmlld0NvbnRyb2xsZXIgPSBjb21wb25lbnQgIlVzZXJPdmVydmlld0NvbnRyb2xsZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlJlYWQtb25seSBBUEkgZm9yIGZpbHRlcmVkIGxpc3Rpbmcgb2YgdXNlcnMgZm9yIGZyb250ZW5kIHByZXNlbnRhdGlvbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgRG9tYWluIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJSZWFkcyBmcm9tIiAiRUYgQ29yZSIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgQ29tbW9uIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk1hcmtwYXJ0QXBpICJBY2Nlc3NlcyB1c2VyIGluZm9ybWF0aW9uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRJbnZpdGF0aW9uQ29udHJvbGxlciA9IGNvbXBvbmVudCAiSW52aXRhdGlvbkNvbnRyb2xsZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFQSSBmb3IgbmV3IHVzZXIgaW52aXRhdGlvbnMgYXMgd2VsbCBhcyBhZGRpdGlvbmFsIGFjdG9yIGludml0YXRpb25zIGZvciBleGlzdGluZyB1c2Vycy4gSW52aXRhdGlvbnMgYXJlIG9ubHkgcHJlcGFyZWQgZm9yIGRpc3BhdGNoIGhlcmUuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBEb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgIldyaXRlcy9yZWFkcyBmcm9tIiAiRUYgQ29yZSIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgQ29tbW9uIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk1hcmtwYXJ0QXBpICJBY2Nlc3NlcyB1c2VyIGluZm9ybWF0aW9uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBtYXJrcGFydENlcnRpZmljYXRlU3luY2hyb25pemF0aW9uID0gY29udGFpbmVyICJNYXJrZXQgUGFydGljaXBhbnQgPENlcnRpZmljYXRlIFN5bmNocm9uaXphdGlvbj4iIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiU3luY2hyb25pemVzIGFjdGl2ZSBESDIgYXV0aGVudGljYXRpb24gY2VydGlmaWNhdGVzIHdpdGggQVBJTS4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgZnVuY3Rpb24sIEMjIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEZ1bmN0aW9uIEFwcHMiICJUaXRhbnMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQ29tbW9uIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRBcGlNYW5hZ2VtZW50ICJMaW5rcyBhbmQgdW5saW5rcyBESDIgYWN0aXZlIGF1dGhlbnRpY2F0aW9uIGNlcnRpZmljYXRlcy4iICJSRVNUL2h0dHBzIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIERvbWFpbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydENlcnRLZXlWYXVsdCAiR2V0cyBjZXJ0aWZpY2F0ZXMgdGhhdCBzaG91bGQgYmUgYWN0aXZlIGluIEFQSU0uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgIG1hcmtwYXJ0T3JnYW5pemF0aW9uTWFuYWdlciA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IDxPcmdhbml6YXRpb24gTWFuYWdlcj4iIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiU3luY2hyb25pemVzIEF6dXJlIEIyQyB1c2VyIGFuZCBhY3RvciBzdGF0ZSB3aXRoIHRoZSBkb21haW4uIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIGZ1bmN0aW9uLCBDIyIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBGdW5jdGlvbiBBcHBzIiAiVGl0YW5zIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk9yZ2FuaXphdGlvbk1hbmFnZXIgPSBjb21wb25lbnQgIlVzZXJJZGVudGl0eVJlcG9zaXRvcnkiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIk1hbmFnZXMgYWNjZXNzIHRvIEIyQyB1c2VyIGRhdGEgdGhyb3VnaCBHcmFwaEFQSS4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIENvbW1vbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZEIyQyAiQWNjZXNzZXMgdXNlciBpbmZvcm1hdGlvbiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0RXZlbnRBY3RvclN5bmNocm9uaXplciA9IGNvbXBvbmVudCAiQWN0b3IgU3luY2hyb25pemVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJDcmVhdGVzIEIyQyBhcHBsaWNhdGlvbiByZWdpc3RyYXRpb24gZm9yIG5ld2x5IGNyZWF0ZWQgYWN0b3JzLiIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiVGltZXIgVHJpZ2dlciIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gRnVuY3Rpb24gQXBwcyIgIlRpdGFucyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgQ29tbW9uIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkQjJDICJDcmVhdGVzIEIyQyBBcHAgUmVnaXN0cmF0aW9uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRTZXJ2aWNlQnVzICJTZW5kcyBtYXJrZXQgcGFydGljaXBhbnQgZXZlbnRzIiAiaW50ZWdyYXRpb24gZXZlbnQvYW1xcCIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgRG9tYWluIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJVcGRhdGVzIGFjdG9ycyB3aXRoIGV4dGVybmFsIEIyQyBpZC4iICJFRiBDb3JlIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRNYWlsRGlzcGF0Y2hlciA9IGNvbXBvbmVudCAiTWFpbCBEaXNwYXRjaGVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJSZXNwb25zaWJsZSBmb3Igc2VuZGluZyB1c2VyIGludml0YXRpb25zLiIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiVGltZXIgVHJpZ2dlciIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gRnVuY3Rpb24gQXBwcyIgIlRpdGFucyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgQ29tbW9uIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkRXh0ZXJuYWxTZW5kR3JpZCAiU2VuZHMgaW52aXRhdGlvbiBtYWlsIiAiU2VuZEdyaWQvaHR0cHMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIERvbWFpbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnREYiAiUmVhZHMgZGF0YSByZWdhcmRpbmcgbmV3bHkgaW52aXRlZCB1c2Vycy4iICJFRiBDb3JlIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRJbnRlZ3JhdGlvbkV2ZW50cyA9IGNvbXBvbmVudCAiSW50ZWdyYXRpb24gRXZlbnQgUmVjZWl2ZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlJlY2VpdmVyIGZvciBkb21haW4gZXZlbnQgc2VudCB0byBzaGFyZWQgc2VydmljZWJ1cy4iCiAgICAgICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNlcnZpY2VCdXMiCiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEZ1bmN0aW9uIEFwcHMiICJUaXRhbnMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIENvbW1vbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIGRoMy5zaGFyZWRTZXJ2aWNlQnVzIC0+IHRoaXMgIlJlY2VpdmVzIGludGVncmF0aW9uIGV2ZW50cyIgImludGVncmF0aW9uIGV2ZW50L2FtcXAiCiAgICAgICAgICAgICAgICAgICAgICAgIG1hcmtQYXJ0SUVTZW5kR3JpZCA9IHRoaXMgLT4gZGgzLnNoYXJlZEV4dGVybmFsU2VuZEdyaWQgIlNlbmRzIGNoYW5nZSBub3RpZmljYXRpb24iICJTZW5kR3JpZC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0VXNlckludml0YXRpb25FeHBpcmVkVGltZXJUcmlnZ2VyID0gY29tcG9uZW50ICJVc2VySW52aXRhdGlvbkV4cGlyZWRUaW1lclRyaWdnZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlRpbWVyIFRyaWdnZXIgY2hlY2tpbmcgZm9yIHVzZXJzIHdpdGggZXhwaXJlZCBpbnZpdGF0aW9ucy4gVXNlcnMgd2l0aCBleHBpcmVkIGludml0YXRpb25zIGFyZSBkaXNhYmxlIGluIEIyQy4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIERvbWFpbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnREYiAiUmVhZHMgZnJvbSIgIkVGIENvcmUiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIENvbW1vbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnRVc2VySWRlbnRpdHlSZXBvc2l0b3J5SW5Pcmdhbml6YXRpb25NYW5hZ2VyICJBY2Nlc3NlcyB1c2VyIGluZm9ybWF0aW9uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgIyBJbmNsdWRlIEVESSBtb2RlbAogICAgICAgICAgICAjIFJlYWQgZGVzY3JpcHRpb24gaW4gdGhlICd2aWV3cy5kc2wnIGZpbGUuCiAgICAgICAgICAgIAogICAgICAgICAgICBlZGlEb21haW4gPSBncm91cCAiRURJIiB7CiAgICAgICAgICAgICAgICBlZGlEYiA9IGNvbnRhaW5lciAiRURJIERhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlN0b3JlcyBpbmZvcm1hdGlvbiByZWxhdGVkIHRvIEVESSBvcGVyYXRpb25zIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTCBTZXJ2ZXIiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YSBTdG9yYWdlLCBNaWNyb3NvZnQgQXp1cmUgLSBTUUwgRGF0YWJhc2UiICJNb3NhaWMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBlZGlTdG9yYWdlQWNjb3VudCA9IGNvbnRhaW5lciAiRURJIFN0b3JhZ2UgQWNjb3VudCIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJVc2VkIGJ5IEVESSBhenVyZSBmdW5jdGlvbnMgdG8gc3RvcmUgc3RhdGUiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgQmxvYiBTdG9yYWdlIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGEgU3RvcmFnZSwgTWljcm9zb2Z0IEF6dXJlIC0gU3RvcmFnZSBBY2NvdW50cyIgIk1vc2FpYyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGVkaSA9IGNvbnRhaW5lciAiRURJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkJhY2tlbmQgc2VydmVyIHByb3ZpZGluZyBBUEkgZm9yIEVESSBvcGVyYXRpb25zIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIGZ1bmN0aW9uLCBDIyIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBGdW5jdGlvbiBBcHBzIiAiTW9zYWljIgogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgRG9tYWluIHJlbGF0aW9uc2hpcHMgICAgICAgIAogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZWRpRGIgIlVzZWQgYnkgRURJIGF6dXJlIGZ1bmN0aW9ucyB0byBzdG9yZSBzdGF0ZSIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRTZXJ2aWNlQnVzICJTdWJzY3JpYmVzIHRvIGludGVncmF0aW9uIGV2ZW50cyIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGVkaVN0b3JhZ2VBY2NvdW50ICJTdG9yZXMgc3RhdGUiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQmFzZSBtb2RlbCByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgYWN0b3JCMkJTeXN0ZW0gLT4gdGhpcyAiUmVxdWVzdHMiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiU2ltcGxlIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZWRpQXBpID0gY29udGFpbmVyICJFREkgQVBJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFQSSBHYXRld2F5IHBvbGljaWVzIGZvciBFREkgV2ViIEFQSSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBBUEkgTWFuYWdlbWVudCBTZXJ2aWNlIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkludGVybWVkaWF0ZSBUZWNobm9sb2d5IiAiTWljcm9zb2Z0IEF6dXJlIC0gQVBJIE1hbmFnZW1lbnQgU2VydmljZXMiICJNb3NhaWMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQmFzZSBtb2RlbCByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgYWN0b3JCMkJTeXN0ZW0gLT4gdGhpcyAiUmVxdWVzdHMgZWcuIFBlZWsgYW5kIERlcXVldWUiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgRG9tYWluIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGVkaSAiRm9yd2FyZHMgcmVxdWVzdCB0byBiYWNrZW5kIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIERvbWFpbi10by1kb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZEIyQyAiVmFsaWRhdGUgY3JlZGVudGlhbHMiICJodHRwcyIgewogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGVkaUIyY1dlYkFwaSA9IGNvbnRhaW5lciAiRURJIEIyQyBXRUIgQVBJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFuIFdlYiBBUEkgZm9yIEVESSBCMkMgb3BlcmF0aW9ucyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBc3AuTmV0IENvcmUgV2ViIEFQSSIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBcHAgU2VydmljZXMiICJNb3NhaWMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQmFzZSBtb2RlbCByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgZGgzVXNlciAtPiB0aGlzICJSZXF1ZXN0cyBlZy4gQWdncmVnYXRlZCBNZWFzdXJlIGRhdGEiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgRG9tYWluIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGVkaSAiRm9yd2FyZHMgcmVxdWVzdCB0byBiYWNrZW5kIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICAjIEluY2x1ZGUgV2hvbGVzYWxlIG1vZGVsCiAgICAgICAgICAgICMgUmVhZCBkZXNjcmlwdGlvbiBpbiB0aGUgJ3ZpZXdzLmRzbCcgZmlsZS4KICAgICAgICAgICAgCiAgICAgICAgICAgIHdob2xlc2FsZVN1YnN5c3RlbSA9IGdyb3VwICJXaG9sZXNhbGUiIHsKICAgICAgICAgICAgICAgIHdob2xlc2FsZURhdGFMYWtlID0gY29udGFpbmVyICJXaG9sZXNhbGUgRGF0YUxha2UiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQ2FsY3VsYXRpb24gaW5wdXRzIGFuZCByZXN1bHRzIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIERhdGEgTGFrZSBHZW4gMiIKICAgICAgICAgICAgICAgICAgICB0YWdzICJEYXRhIFN0b3JhZ2UiICJNaWNyb3NvZnQgQXp1cmUgLSBEYXRhIExha2UgU3RvcmUgR2VuMSIgIk1hbmRhbG9yaWFuIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2hvbGVzYWxlQmxvYlN0b3JhZ2UgPSBjb250YWluZXIgIlNldHRsZW1lbnQgUmVwb3J0IEJsb2IgU3RvcmFnZSIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJDb250YWlucyAoZHJhZnRzIG9mKSBzZXR0bGVtZW50IHJlcG9ydHMiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgQmxvYiBTdG9yYWdlIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGEgU3RvcmFnZSIgIlJhY2Nvb25zIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2hvbGVzYWxlQ2FsY3VsYXRvciA9IGNvbnRhaW5lciAiQ2FsY3VsYXRpb24gRW5naW5lIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkV4ZWN1dGVzIGNhbGN1bGF0aW9uIGpvYiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhYnJpY2tzIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEF6dXJlIERhdGFicmlja3MiICJNYW5kYWxvcmlhbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBTdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlRGF0YUxha2UgIlJlYWQgaW5wdXRzIC8gd3JpdGUgcmVzdWx0cyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHdob2xlc2FsZURlcGxveW1lbnRXYXJlaG91c2UgPSBjb250YWluZXIgIkRlcGxveW1lbnQgV2FyZWhvdXNlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkV4ZWN1dGVzIGRlbHRhIFNRTCBtaWdyYXRpb25zIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIERhdGFicmlja3MgU1FMIFdhcmVob3VzZSIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBenVyZSBEYXRhYnJpY2tzIiAiTWFuZGFsb3JpYW4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURhdGFMYWtlICJSZWFkIGV4ZWN1dGVkIG1pZ3JhdGlvbnMgLyBleGVjdXRlIG5ldyBtaWdyYXRpb25zIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2hvbGVzYWxlUnVudGltZVdhcmVob3VzZSA9IGNvbnRhaW5lciAiUnVudGltZSBXYXJlaG91c2UiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiRXhlY3V0ZXMgZGVsdGEgU1FMIHF1ZXJpZXMiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgRGF0YWJyaWNrcyBTUUwgV2FyZWhvdXNlIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEF6dXJlIERhdGFicmlja3MiICJNYW5kYWxvcmlhbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBTdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlRGF0YUxha2UgIlJlYWQgYmFzaXMgZGF0YSBhbmQgcmVzdWx0cyIKICAgICAgICAgICAgICAgICAgICBlZGkgLT4gdGhpcyAiUmVhZCBjYWxjdWxhdGlvbiByZXN1bHRzIGFuZCBhY3RpdmUgZGF0YSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHdob2xlc2FsZURiID0gY29udGFpbmVyICJXaG9sZXNhbGUgRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiTWV0YSBkYXRhIG9mIGNhbGN1bGF0aW9ucyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJTUUwgRGF0YWJhc2UgU2NoZW1hIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGEgU3RvcmFnZSIgIk1pY3Jvc29mdCBBenVyZSAtIFNRTCBEYXRhYmFzZSIgIk1hbmRhbG9yaWFuIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2hvbGVzYWxlQXBpID0gY29udGFpbmVyICJXaG9sZXNhbGUgQVBJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkJhY2tlbmQgc2VydmVyIHByb3ZpZGluZyBleHRlcm5hbCB3ZWIgQVBJIGZvciBXaG9sZXNhbGUgc3Vic3lzdGVtIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkFzcC5OZXQgQ29yZSBXZWIgQVBJIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEFwcCBTZXJ2aWNlcyIgIk1hbmRhbG9yaWFuIiAiTWFya2V0UGFydGljaXBhbnQgU3Vic2NyaWJlciIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBCYXNlIG1vZGVsIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICBkaDMuc2hhcmVkU2VydmljZUJ1cyAtPiB0aGlzICJMaXN0ZW5zIG9uIFdob2xlc2FsZSBJbmJveCArIEludGVncmF0aW9uIEV2ZW50cyIgIm1lc3NhZ2UvYW1xcCIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRTZXJ2aWNlQnVzICJTZW5kcyB0byBFREkgSW5ib3giICJtZXNzYWdlL2FtcXAiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURiICJVc2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZVJ1bnRpbWVXYXJlaG91c2UgIlJldHJpZXZlcyByZXN1bHRzIGZyb20iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtLXRvLVN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgZWRpIC0+IHRoaXMgIlNlbmRzIHRvIFdob2xlc2FsZSBJbmJveCIgIm1lc3NhZ2UvYW1xcCIgewogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJTaW1wbGUgVmlldyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRPcmdhbml6YXRpb25NYW5hZ2VyIC0+IHRoaXMgIlB1Ymxpc2ggR3JpZCBBcmVhIE93bmVyc2hpcCBBc3NpZ25lZCIgImludGVncmF0aW9uIGV2ZW50L2FtcXAiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiU2ltcGxlIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZWRpICJTZW5kcyB0byBFREkgSW5ib3giICJtZXNzYWdlL2FtcXAiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiU2ltcGxlIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2hvbGVzYWxlT3JjaGVzdHJhdGlvbnMgPSBjb250YWluZXIgIldob2xlc2FsZSBPcmNoZXN0cmF0aW9ucyIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJPcmNoZXN0cmF0ZSBjYWxjdWxhdGlvbiB3b3JrZmxvdywgZ2VuZXJhdGUgc2V0dGxlbWVudCByZXBvcnRzIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIGZ1bmN0aW9uLCBDIyIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBGdW5jdGlvbiBBcHBzIiAiTWFuZGFsb3JpYW4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQmFzZSBtb2RlbCByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkU2VydmljZUJ1cyAiUHVibGlzaCBjYWxjdWxhdGlvbiBjb21wbGV0ZWQgYW5kIGdyaWQgbG9zcyIgImludGVncmF0aW9uIGV2ZW50L2FtcXAiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURiICJVc2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZUNhbGN1bGF0b3IgIlNlbmRzIHJlcXVlc3RzIHRvIgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlUnVudGltZVdhcmVob3VzZSAiUmV0cmlldmVzIHJlc3VsdHMgZnJvbSIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZUJsb2JTdG9yYWdlICJSZWFkcyBmcm9tIGFuZCB3cml0ZXMgc2V0dGxlbWVudCByZXBvcnRzIHRvIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbS10by1TdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZWRpICJQdWJsaXNoIGNhbGN1bGF0aW9uIGNvbXBsZXRlZCIgImludGVncmF0aW9uIGV2ZW50L2FtcXAiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiU2ltcGxlIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICAjIEluY2x1ZGUgRnJvbnRlbmQgbW9kZWwKICAgICAgICAgICAgIyBSZWFkIGRlc2NyaXB0aW9uIGluIHRoZSAndmlld3MuZHNsJyBmaWxlLgogICAgICAgICAgICAKICAgICAgICAgICAgZnJvbnRlbmREb21haW4gPSBncm91cCAiRnJvbnRlbmQiIHsKICAgICAgICAgICAgICAgIGJmZkFwcCA9IGNvbnRhaW5lciAiQkZGIFdlYiBBUEkiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQmFja2VuZCBmb3IgZnJvbnRlbmQgKEJGRikgY29tYmluZXMgZGF0YSBmb3IgcHJlc2VudGF0aW9uIG9uIERhdGFIdWIgMyBVSSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBc3AuTmV0IENvcmUgV2ViIEFQSSIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBcHAgU2VydmljZXMiICJNYW5kYWxvcmlhbiIgIlRpdGFucyIgIlVJL1VYIEd1aWxkIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIERvbWFpbi10by1kb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlQXBpICJVc2VzIiAianNvbi9odHRwcyIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0QXBpICJVc2VzIiAianNvbi9odHRwcyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGJmZkFwaSA9IGNvbnRhaW5lciAiQkZGIEFQSSIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJBUEkgR2F0ZXdheSB0byBCRkYgV2ViIEFQSSIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBBUEkgTWFuYWdlbWVudCBTZXJ2aWNlIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkludGVybWVkaWF0ZSBUZWNobm9sb2d5IiAiTWljcm9zb2Z0IEF6dXJlIC0gQVBJIE1hbmFnZW1lbnQgU2VydmljZXMiICJNYW5kYWxvcmlhbiIgIlRpdGFucyIgIlVJL1VYIEd1aWxkIiAiT3V0bGF3cyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBEb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gYmZmQXBwICJVc2VzIiAianNvbi9odHRwcyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBEb21haW4tdG8tZG9tYWluIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRCMkMgIlZhbGlkYXRlIE9BdXRoIHRva2VuIiAiaHR0cHMiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiT0F1dGgiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZnJvbnRlbmRTaW5nbGVQYWdlQXBwbGljYXRpb24gPSBjb250YWluZXIgIlVJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlByb3ZpZGVzIERIMyBmdW5jdGlvbmFsaXR5IHRvIHVzZXJzIHZpYSB0aGVpciB3ZWIgYnJvd3Nlci4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQW5ndWxhciIKICAgICAgICAgICAgICAgICAgICB0YWdzICJXZWIgQnJvd3NlciIgIk1hbmRhbG9yaWFuIiAiVGl0YW5zIiAiVUkvVVggR3VpbGQiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQmFzZSBtb2RlbCByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgZGgzVXNlciAtPiB0aGlzICJVc2VzIgogICAgICAgICAgICAgICAgICAgIGRoU3lzdGVtQWRtaW4gLT4gdGhpcyAiVmlld3MgYW5kIG1hbmFnZXMgZGF0YSBhY3Jvc3MgYWxsIGFjdG9ycyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBEb21haW4gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gYmZmQXBpICJVc2VzIEdyYXBoUUwgYW5kIFJFU1RmdWwgc2VydmljZXMiICJqc29uL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gYmZmQXBwICJVc2VzIiAianNvbi9odHRwcyIgewogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJTaW1wbGUgVmlldyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgRG9tYWluLXRvLWRvbWFpbiByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkQjJDICJSZXF1ZXN0IE9BdXRoIHRva2VuIiAiaHR0cHMiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiT0F1dGgiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZnJvbnRlbmRTdGF0aWNXZWJBcHAgPSBjb250YWluZXIgIlN0YXRpYyBXZWIgQXBwIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkRlbGl2ZXJzIHRoZSBzdGF0aWMgY29udGVudCBhbmQgdGhlIFVJIHNpbmdsZSBwYWdlIGFwcGxpY2F0aW9uIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlN0YXRpYyBXZWIgQXBwIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkludGVybWVkaWF0ZSBUZWNobm9sb2d5IiAiTWljcm9zb2Z0IEF6dXJlIC0gU3RhdGljIEFwcHMiICJNYW5kYWxvcmlhbiIgIlRpdGFucyIgIlVJL1VYIEd1aWxkIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIEJhc2UgbW9kZWwgcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIGRoM1VzZXIgLT4gdGhpcyAiVmlzaXRzIERIMyB1cmwiICJodHRwcyIKICAgICAgICAgICAgICAgICAgICBkaFN5c3RlbUFkbWluIC0+IHRoaXMgIlZpc2l0cyBESDMgdXJsIiAiaHR0cHMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgRG9tYWluIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGZyb250ZW5kU2luZ2xlUGFnZUFwcGxpY2F0aW9uICJEZWxpdmVycyB0byB1c2VycyB3ZWIgYnJvd3NlciIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgIyBJbmNsdWRlIE1pZ3JhdGlvbiBtb2RlbCAtIHBsYWNlaG9sZGVycwogICAgICAgICAgICBtaWdyYXRpb25TdWJzeXN0ZW0gPSBncm91cCAiTWlncmF0aW9uIiB7CiAgICAgICAgICAgICAgICBtaWdyYXRpb25EYXRhYnJpY2tzID0gY29udGFpbmVyICJEYXRhIE1pZ3JhdGlvbiIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJFeHRyYWN0IG1pZ3JhdGVkIEpTT04gZmlsZXMuIExvYWQgYW5kIHRyYW5zZm9ybSBkYXRhIHVzaW5nIE5vdGVib29rcyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhYnJpY2tzIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEF6dXJlIERhdGFicmlja3MiCgogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtLXRvLXN1YnN5c3RlbSByZWxhdGlvbnNoaXBzLgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlRGF0YUxha2UgIkRlbGl2ZXIgY2FsY3VsYXRpb24gaW5wdXRzIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBjb250YWluZXIgZGgzICJXaG9sZXNhbGUiIHsKICAgICAgICAgICAgdGl0bGUgIltDb250YWluZXJdIERhdGFIdWIgMy4wIC0gV2hvbGVzYWxlIChTaW1wbGlmaWVkKSIKICAgICAgICAgICAgaW5jbHVkZSAtPndob2xlc2FsZVN1YnN5c3RlbS0+CiAgICAgICAgICAgIGV4Y2x1ZGUgInJlbGF0aW9uc2hpcC50YWc9PU9BdXRoIgogICAgICAgICAgICBleGNsdWRlICJlbGVtZW50LnRhZz09SW50ZXJtZWRpYXRlIFRlY2hub2xvZ3kiCiAgICAgICAgfQoKICAgICAgICBjb250YWluZXIgZGgzICJXaG9sZXNhbGVEZXRhaWxlZCIgewogICAgICAgICAgICB0aXRsZSAiW0NvbnRhaW5lcl0gRGF0YUh1YiAzLjAgLSBXaG9sZXNhbGUgKERldGFpbGVkIHdpdGggT0F1dGgpIgogICAgICAgICAgICBpbmNsdWRlIC0+d2hvbGVzYWxlU3Vic3lzdGVtLT4KICAgICAgICAgICAgZXhjbHVkZSAicmVsYXRpb25zaGlwLnRhZz09U2ltcGxlIFZpZXciCiAgICAgICAgfQogICAgfQp9Cg=="
@@ -10,27 +10,6 @@
   "configuration" : { },
   "model" : {
     "people" : [ {
-      "id" : "3",
-      "tags" : "Element,Person",
-      "properties" : {
-        "structurizr.dsl.identifier" : "eloverblikuser"
-      },
-      "name" : "ElOverblik user",
-      "description" : "Person who interacts with ElOverblik. Both private and business users.",
-      "relationships" : [ {
-        "id" : "47",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "7af88199-f090-42f5-91f7-dcebddb994c2"
-        },
-        "sourceId" : "3",
-        "destinationId" : "19",
-        "description" : "Requests <data>",
-        "technology" : "browser"
-      } ],
-      "group" : "Business or private person",
-      "location" : "Unspecified"
-    }, {
       "id" : "17",
       "tags" : "Element,Person",
       "properties" : {
@@ -49,55 +28,6 @@
         "description" : "manages"
       } ],
       "group" : "Energinet Organization/DataHub Organization",
-      "location" : "Unspecified"
-    }, {
-      "id" : "1",
-      "tags" : "Element,Person",
-      "properties" : {
-        "structurizr.dsl.identifier" : "dh3user"
-      },
-      "name" : "DH3 User",
-      "description" : "Person who interacts with DataHub.",
-      "relationships" : [ {
-        "id" : "164",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "f6c16a67-df4b-4d77-8173-408097b8828a"
-        },
-        "sourceId" : "1",
-        "destinationId" : "163",
-        "description" : "Uses"
-      }, {
-        "id" : "130",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "1bc25d9a-6be1-4039-bf29-1c3a6eb73518"
-        },
-        "sourceId" : "1",
-        "destinationId" : "129",
-        "description" : "Requests eg. Aggregated Measure data"
-      }, {
-        "id" : "170",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "4803393a-1526-4117-a441-88ba116e691f"
-        },
-        "sourceId" : "1",
-        "destinationId" : "169",
-        "description" : "Visits DH3 url",
-        "technology" : "https"
-      }, {
-        "id" : "43",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "d198c4b7-e991-4a75-94c7-3457caaacf7a"
-        },
-        "sourceId" : "1",
-        "destinationId" : "22",
-        "description" : "Uses",
-        "technology" : "browser"
-      } ],
-      "group" : "Electricity Supplier or Grid Company",
       "location" : "Unspecified"
     }, {
       "id" : "6",
@@ -129,16 +59,6 @@
       "name" : "DataHub System Admin",
       "description" : "Person who works within Energinet DataHub.",
       "relationships" : [ {
-        "id" : "39",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "1b803efb-e0da-4c9d-b3ac-355ca6a20f18"
-        },
-        "sourceId" : "18",
-        "destinationId" : "21",
-        "description" : "Monitors",
-        "technology" : "browser"
-      }, {
         "id" : "42",
         "tags" : "Relationship",
         "properties" : {
@@ -167,97 +87,239 @@
         "destinationId" : "169",
         "description" : "Visits DH3 url",
         "technology" : "https"
+      }, {
+        "id" : "39",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "1b803efb-e0da-4c9d-b3ac-355ca6a20f18"
+        },
+        "sourceId" : "18",
+        "destinationId" : "21",
+        "description" : "Monitors",
+        "technology" : "browser"
       } ],
       "group" : "Energinet Organization/DataHub Organization",
       "location" : "Unspecified"
-    } ],
-    "softwareSystems" : [ {
-      "id" : "2",
-      "tags" : "Element,Software System,Actor",
+    }, {
+      "id" : "3",
+      "tags" : "Element,Person",
       "properties" : {
-        "structurizr.dsl.identifier" : "actorb2bsystem"
+        "structurizr.dsl.identifier" : "eloverblikuser"
       },
-      "name" : "Actor B2B System",
-      "description" : "External business transaction system. System-to-system communication (B2B).",
+      "name" : "ElOverblik user",
+      "description" : "Person who interacts with ElOverblik. Both private and business users.",
       "relationships" : [ {
-        "id" : "44",
+        "id" : "47",
         "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "00f4febb-7231-4e1a-940f-9d5cb4d6d639"
+          "structurizr.dsl.identifier" : "7af88199-f090-42f5-91f7-dcebddb994c2"
         },
-        "sourceId" : "2",
-        "destinationId" : "22",
-        "description" : "Requests calculations",
-        "technology" : "peek+dequeue/https"
+        "sourceId" : "3",
+        "destinationId" : "19",
+        "description" : "Requests <data>",
+        "technology" : "browser"
+      } ],
+      "group" : "Business or private person",
+      "location" : "Unspecified"
+    }, {
+      "id" : "1",
+      "tags" : "Element,Person",
+      "properties" : {
+        "structurizr.dsl.identifier" : "dh3user"
+      },
+      "name" : "DH3 User",
+      "description" : "Person who interacts with DataHub.",
+      "relationships" : [ {
+        "id" : "170",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "4803393a-1526-4117-a441-88ba116e691f"
+        },
+        "sourceId" : "1",
+        "destinationId" : "169",
+        "description" : "Visits DH3 url",
+        "technology" : "https"
       }, {
-        "id" : "32",
-        "sourceId" : "2",
+        "id" : "130",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "1bc25d9a-6be1-4039-bf29-1c3a6eb73518"
+        },
+        "sourceId" : "1",
+        "destinationId" : "129",
+        "description" : "Requests eg. Aggregated Measure data"
+      }, {
+        "id" : "43",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "d198c4b7-e991-4a75-94c7-3457caaacf7a"
+        },
+        "sourceId" : "1",
+        "destinationId" : "22",
+        "description" : "Uses",
+        "technology" : "browser"
+      }, {
+        "id" : "164",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "f6c16a67-df4b-4d77-8173-408097b8828a"
+        },
+        "sourceId" : "1",
+        "destinationId" : "163",
+        "description" : "Uses"
+      } ],
+      "group" : "Electricity Supplier or Grid Company",
+      "location" : "Unspecified"
+    } ],
+    "softwareSystems" : [ {
+      "id" : "19",
+      "tags" : "Element,Software System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "eloverblik"
+      },
+      "name" : "Eloverblik",
+      "description" : "The platform provides data on electricity consumption and production, allowing customers to have a comprehensive overview across grid areas and energy suppliers.",
+      "relationships" : [ {
+        "id" : "50",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "c613ad1e-9a54-43b8-8c78-0dd25bd4e92e"
+        },
+        "sourceId" : "19",
+        "destinationId" : "9",
+        "description" : "Authenticate users",
+        "technology" : "https"
+      }, {
+        "id" : "34",
+        "sourceId" : "19",
         "destinationId" : "22",
         "description" : "Request OAuth token",
         "technology" : "https",
-        "linkedRelationshipId" : "31"
+        "linkedRelationshipId" : "33"
       }, {
-        "id" : "124",
-        "tags" : "Relationship,Simple View",
+        "id" : "49",
+        "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "0f98fd1b-2590-4406-af18-1c34821d8f09"
+          "structurizr.dsl.identifier" : "bf8c0e66-39b5-4b99-a159-f6fc66725978"
         },
-        "sourceId" : "2",
-        "destinationId" : "120",
-        "description" : "Requests"
+        "sourceId" : "19",
+        "destinationId" : "13",
+        "description" : "Requests emission and residual mix data",
+        "technology" : "https"
       }, {
-        "id" : "31",
+        "id" : "51",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "593b86b7-b81f-4161-8b45-3b7763b1c6c6"
+        },
+        "sourceId" : "19",
+        "destinationId" : "10",
+        "description" : "Reads CVR data",
+        "technology" : "https"
+      }, {
+        "id" : "41",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "6352b9b2-b718-40ee-bd28-56abb8158879"
+        },
+        "sourceId" : "19",
+        "destinationId" : "7",
+        "description" : "Requests <data>",
+        "technology" : "https"
+      }, {
+        "id" : "53",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cf8881d4-9704-4d07-b251-a8801b766c53"
+        },
+        "sourceId" : "19",
+        "destinationId" : "22",
+        "description" : "Data",
+        "technology" : "https"
+      }, {
+        "id" : "33",
         "tags" : "Relationship,OAuth",
         "properties" : {
-          "structurizr.dsl.identifier" : "e78d8be5-b2bc-4894-b89c-8f0ed5dafc9e"
+          "structurizr.dsl.identifier" : "715e1473-a163-4332-9358-de0f8e98ff19"
         },
-        "sourceId" : "2",
+        "sourceId" : "19",
         "destinationId" : "30",
         "description" : "Request OAuth token",
         "technology" : "https"
-      }, {
-        "id" : "126",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "0fea9176-d8dd-4fdb-a6bd-be273ee0ce4b"
-        },
-        "sourceId" : "2",
-        "destinationId" : "125",
-        "description" : "Requests eg. Peek and Dequeue"
       } ],
-      "group" : "Electricity Supplier or Grid Company",
+      "group" : "Energinet Organization/DataHub Organization",
       "location" : "Unspecified",
       "documentation" : { }
     }, {
-      "id" : "11",
-      "tags" : "Element,Software System,Out of focus",
+      "id" : "20",
+      "tags" : "Element,Software System",
       "properties" : {
-        "structurizr.dsl.identifier" : "github"
+        "structurizr.dsl.identifier" : "energyorigin"
       },
-      "name" : "GitHub",
-      "description" : "GitHub is a code hosting platform for version control, collaboration and running deployment pipelines.",
+      "name" : "Energy Origin",
+      "description" : "Provides a way to issue and claim granular certificates.",
       "relationships" : [ {
-        "id" : "52",
+        "id" : "54",
         "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "6704b9a7-d57f-4693-9718-621a7ae3652a"
+          "structurizr.dsl.identifier" : "f52cbdad-b95a-4ea6-8e3a-0286b704cf45"
         },
-        "sourceId" : "11",
-        "destinationId" : "19",
-        "description" : "Pushes artifacts and data",
+        "sourceId" : "20",
+        "destinationId" : "7",
+        "description" : "Requests measurements",
         "technology" : "https"
       }, {
-        "id" : "46",
+        "id" : "58",
         "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "8b320974-f7aa-4219-9915-a60fdd92a360"
+          "structurizr.dsl.identifier" : "37e20abf-3dce-41f7-8c1e-38fd47a77630"
         },
-        "sourceId" : "11",
-        "destinationId" : "22",
-        "description" : "Pushes artifacts and data",
+        "sourceId" : "20",
+        "destinationId" : "9",
+        "description" : "Authenticate users",
+        "technology" : "https"
+      }, {
+        "id" : "57",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "f7573370-1e57-4f61-aa91-08224c790e05"
+        },
+        "sourceId" : "20",
+        "destinationId" : "13",
+        "description" : "Requests emission and residual mix data",
+        "technology" : "https"
+      }, {
+        "id" : "61",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cd41a167-523c-42c9-98d2-7be4556e2106"
+        },
+        "sourceId" : "20",
+        "destinationId" : "10",
+        "description" : "Reads CVR data",
+        "technology" : "https"
+      }, {
+        "id" : "55",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "9d9c94ba-37b8-4da7-9ce2-4e98b6725037"
+        },
+        "sourceId" : "20",
+        "destinationId" : "14",
+        "description" : "Links to guarantees of origin",
+        "technology" : "https"
+      }, {
+        "id" : "56",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ce29f1fd-c7bd-4a41-9609-261c0b03984c"
+        },
+        "sourceId" : "20",
+        "destinationId" : "15",
+        "description" : "Places certificates in",
         "technology" : "https"
       } ],
-      "group" : "GitHub Organization",
+      "group" : "Energinet Organization/DataHub Organization",
       "location" : "Unspecified",
       "documentation" : { }
     }, {
@@ -272,14 +334,69 @@
       "location" : "Unspecified",
       "documentation" : { }
     }, {
-      "id" : "14",
+      "id" : "4",
+      "tags" : "Element,Software System,Actor",
+      "properties" : {
+        "structurizr.dsl.identifier" : "eloverblikthirdpartyuser"
+      },
+      "name" : "Eloverblik Third Party",
+      "description" : "System that interacts with ElOverblik on behalf of a user.",
+      "relationships" : [ {
+        "id" : "48",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "523995af-abcf-44bb-8ede-38ea7a2fada7"
+        },
+        "sourceId" : "4",
+        "destinationId" : "19",
+        "description" : "Requests <data>",
+        "technology" : "https"
+      } ],
+      "group" : "Business or private person",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "5",
+      "tags" : "Element,Software System,Actor",
+      "properties" : {
+        "structurizr.dsl.identifier" : "energyoriginthirdpartysystem"
+      },
+      "name" : "Energy Origin Third Party",
+      "description" : "Third party system that interacts with Energy Origin APIs.",
+      "relationships" : [ {
+        "id" : "60",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "e64ab798-aaea-4e75-bb3c-56fd490e6ac6"
+        },
+        "sourceId" : "5",
+        "destinationId" : "20",
+        "description" : "Integrates with platform on behalf of users",
+        "technology" : "https"
+      } ],
+      "group" : "Business or private person",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "7",
       "tags" : "Element,Software System,Out of focus",
       "properties" : {
-        "structurizr.dsl.identifier" : "poregistry"
+        "structurizr.dsl.identifier" : "dh2"
       },
-      "name" : "Project Origin Registry",
-      "description" : "Public permissioned distributed ledger where everyone can validate the granular certificates for their electricity.",
-      "group" : "Energinet Organization",
+      "name" : "DataHub 2.0",
+      "description" : "Existing DataHub system. Provides uniform communication and standardized processes for actors operating on the Danish electricity market.",
+      "relationships" : [ {
+        "id" : "45",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "b6ba7c07-30cf-4b24-aa80-1d6c5607904a"
+        },
+        "sourceId" : "7",
+        "destinationId" : "22",
+        "description" : "Transfers <data>",
+        "technology" : "AzCopy/https"
+      } ],
+      "group" : "CGI Organization",
       "location" : "Unspecified",
       "documentation" : { }
     }, {
@@ -315,80 +432,35 @@
       "location" : "Unspecified",
       "documentation" : { }
     }, {
-      "id" : "7",
+      "id" : "11",
       "tags" : "Element,Software System,Out of focus",
       "properties" : {
-        "structurizr.dsl.identifier" : "dh2"
+        "structurizr.dsl.identifier" : "github"
       },
-      "name" : "DataHub 2.0",
-      "description" : "Existing DataHub system. Provides uniform communication and standardized processes for actors operating on the Danish electricity market.",
+      "name" : "GitHub",
+      "description" : "GitHub is a code hosting platform for version control, collaboration and running deployment pipelines.",
       "relationships" : [ {
-        "id" : "45",
+        "id" : "46",
         "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "b6ba7c07-30cf-4b24-aa80-1d6c5607904a"
+          "structurizr.dsl.identifier" : "8b320974-f7aa-4219-9915-a60fdd92a360"
         },
-        "sourceId" : "7",
+        "sourceId" : "11",
         "destinationId" : "22",
-        "description" : "Transfers <data>",
-        "technology" : "AzCopy/https"
-      } ],
-      "group" : "CGI Organization",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "12",
-      "tags" : "Element,Software System,Out of focus",
-      "properties" : {
-        "structurizr.dsl.identifier" : "btesett"
-      },
-      "name" : "BizTalk eSett",
-      "description" : "Handles communication and network between Energinet and eSett.",
-      "relationships" : [ {
-        "id" : "38",
+        "description" : "Pushes artifacts and data",
+        "technology" : "https"
+      }, {
+        "id" : "52",
         "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "edd864f9-71af-470b-b45e-69c104f6e44a"
+          "structurizr.dsl.identifier" : "6704b9a7-d57f-4693-9718-621a7ae3652a"
         },
-        "sourceId" : "12",
-        "destinationId" : "8",
-        "description" : "Sends calculations",
-        "technology" : "<add technology>"
-      } ],
-      "group" : "Energinet Organization",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "5",
-      "tags" : "Element,Software System,Actor",
-      "properties" : {
-        "structurizr.dsl.identifier" : "energyoriginthirdpartysystem"
-      },
-      "name" : "Energy Origin Third Party",
-      "description" : "Third party system that interacts with Energy Origin APIs.",
-      "relationships" : [ {
-        "id" : "60",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "e64ab798-aaea-4e75-bb3c-56fd490e6ac6"
-        },
-        "sourceId" : "5",
-        "destinationId" : "20",
-        "description" : "Integrates with platform on behalf of users",
+        "sourceId" : "11",
+        "destinationId" : "19",
+        "description" : "Pushes artifacts and data",
         "technology" : "https"
       } ],
-      "group" : "Business or private person",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "13",
-      "tags" : "Element,Software System,Out of focus",
-      "properties" : {
-        "structurizr.dsl.identifier" : "eds"
-      },
-      "name" : "Energi Data Service",
-      "description" : "Data and services about the Danish energy system such as CO2 emissions and consumption and production data.",
-      "group" : "Energinet Organization",
+      "group" : "GitHub Organization",
       "location" : "Unspecified",
       "documentation" : { }
     }, {
@@ -414,6 +486,60 @@
       "location" : "Unspecified",
       "documentation" : { }
     }, {
+      "id" : "36",
+      "tags" : "Element,Software System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "dh3platform"
+      },
+      "name" : "DH3 Platform",
+      "description" : "Azure-based platform, yet to be given a name",
+      "relationships" : [ {
+        "id" : "67",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "302058e9-d087-4d9f-9367-16483b38a574"
+        },
+        "sourceId" : "36",
+        "destinationId" : "22",
+        "description" : "Supports/hosts"
+      } ],
+      "group" : "Energinet Organization/DataHub Organization",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "12",
+      "tags" : "Element,Software System,Out of focus",
+      "properties" : {
+        "structurizr.dsl.identifier" : "btesett"
+      },
+      "name" : "BizTalk eSett",
+      "description" : "Handles communication and network between Energinet and eSett.",
+      "relationships" : [ {
+        "id" : "38",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "edd864f9-71af-470b-b45e-69c104f6e44a"
+        },
+        "sourceId" : "12",
+        "destinationId" : "8",
+        "description" : "Sends calculations",
+        "technology" : "<add technology>"
+      } ],
+      "group" : "Energinet Organization",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "9",
+      "tags" : "Element,Software System,Out of focus",
+      "properties" : {
+        "structurizr.dsl.identifier" : "mitid"
+      },
+      "name" : "MitID",
+      "description" : "MitID is a common login solution for the public sector in Denmark.",
+      "group" : "Signaturgruppen Organization",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
       "id" : "22",
       "tags" : "Element,Software System",
       "properties" : {
@@ -431,239 +557,153 @@
       "group" : "Energinet Organization/DataHub Organization",
       "location" : "Unspecified",
       "containers" : [ {
-        "id" : "133",
-        "tags" : "Element,Container,Data Storage,Raccoons",
+        "id" : "118",
+        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Mosaic",
         "properties" : {
-          "structurizr.dsl.identifier" : "wholesaleblobstorage"
+          "structurizr.dsl.identifier" : "edidb"
         },
-        "name" : "Settlement Report Blob Storage",
-        "description" : "Contains (drafts of) settlement reports",
-        "group" : "Wholesale",
-        "technology" : "Azure Blob Storage",
-        "documentation" : { }
-      }, {
-        "id" : "141",
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Mandalorian",
-        "properties" : {
-          "structurizr.dsl.identifier" : "wholesaledb"
-        },
-        "name" : "Wholesale Database",
-        "description" : "Meta data of calculations",
-        "group" : "Wholesale",
-        "technology" : "SQL Database Schema",
-        "documentation" : { }
-      }, {
-        "id" : "136",
-        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
-        "properties" : {
-          "structurizr.dsl.identifier" : "wholesaledeploymentwarehouse"
-        },
-        "name" : "Deployment Warehouse",
-        "description" : "Executes delta SQL migrations",
-        "relationships" : [ {
-          "id" : "137",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "6be9e563-9db9-4801-864b-564caa5aefa6"
-          },
-          "sourceId" : "136",
-          "destinationId" : "132",
-          "description" : "Read executed migrations / execute new migrations"
-        } ],
-        "group" : "Wholesale",
-        "technology" : "Azure Databricks SQL Warehouse",
-        "documentation" : { }
-      }, {
-        "id" : "23",
-        "tags" : "Element,Container,Microsoft Azure - Key Vaults",
-        "properties" : {
-          "structurizr.dsl.identifier" : "dh3.sharedkeyvault"
-        },
-        "name" : "Key Vault",
-        "description" : "Store for secrets and signing keys",
-        "technology" : "Azure Key Vault",
-        "documentation" : { }
-      }, {
-        "id" : "68",
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Titans",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartdb"
-        },
-        "name" : "Market Participant Database",
-        "description" : "Stores data regarding actors, users and permissions.",
-        "group" : "Market Participant",
-        "technology" : "SQL Database Schema",
-        "documentation" : { }
-      }, {
-        "id" : "142",
-        "tags" : "Element,Container,Microsoft Azure - App Services,Mandalorian,MarketParticipant Subscriber",
-        "properties" : {
-          "structurizr.dsl.identifier" : "wholesaleapi"
-        },
-        "name" : "Wholesale API",
-        "description" : "Backend server providing external web API for Wholesale subsystem",
-        "relationships" : [ {
-          "id" : "146",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "723063ed-e897-4c5f-b609-3acee7de301c"
-          },
-          "sourceId" : "142",
-          "destinationId" : "138",
-          "description" : "Retrieves results from"
-        }, {
-          "id" : "145",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "80c62df0-d0ba-4fda-affd-593097d49ec8"
-          },
-          "sourceId" : "142",
-          "destinationId" : "141",
-          "description" : "Uses",
-          "technology" : "EF Core"
-        }, {
-          "id" : "149",
-          "tags" : "Relationship,Simple View",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ac1ec296-61df-49c9-8387-291e83c31a41"
-          },
-          "sourceId" : "142",
-          "destinationId" : "120",
-          "description" : "Sends to EDI Inbox",
-          "technology" : "message/amqp"
-        }, {
-          "id" : "144",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "d4357883-69b6-4e49-98ad-f0b9e20e078a"
-          },
-          "sourceId" : "142",
-          "destinationId" : "25",
-          "description" : "Sends to EDI Inbox",
-          "technology" : "message/amqp"
-        } ],
-        "group" : "Wholesale",
-        "technology" : "Asp.Net Core Web API",
-        "documentation" : { }
-      }, {
-        "id" : "26",
-        "tags" : "Element,Container,Intermediate Technology,SaaS,Microsoft Azure - SendGrid Accounts",
-        "properties" : {
-          "structurizr.dsl.identifier" : "dh3.sharedinternalsendgrid"
-        },
-        "name" : "SendGrid (internal)",
-        "description" : "EMail dispatcher for internal use",
-        "technology" : "Twilio SendGrid",
-        "documentation" : { }
-      }, {
-        "id" : "169",
-        "tags" : "Element,Container,Intermediate Technology,Microsoft Azure - Static Apps,Mandalorian,Titans,UI/UX Guild",
-        "properties" : {
-          "structurizr.dsl.identifier" : "frontendstaticwebapp"
-        },
-        "name" : "Static Web App",
-        "description" : "Delivers the static content and the UI single page application",
-        "relationships" : [ {
-          "id" : "172",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "de223b48-8f92-42db-997a-3c7ca10419e7"
-          },
-          "sourceId" : "169",
-          "destinationId" : "163",
-          "description" : "Delivers to users web browser"
-        } ],
-        "group" : "Frontend",
-        "technology" : "Static Web App",
-        "documentation" : { }
-      }, {
-        "id" : "24",
-        "tags" : "Element,Container,Microsoft Azure - API Management Services",
-        "properties" : {
-          "structurizr.dsl.identifier" : "dh3.sharedapimanagement"
-        },
-        "name" : "API Management",
-        "description" : "Expose URL endpoints to the public",
-        "technology" : "Azure - API Management",
-        "documentation" : { }
-      }, {
-        "id" : "120",
-        "tags" : "Element,Container,Microsoft Azure - Function Apps,Mosaic",
-        "properties" : {
-          "structurizr.dsl.identifier" : "edi"
-        },
-        "name" : "EDI",
-        "description" : "Backend server providing API for EDI operations",
-        "relationships" : [ {
-          "id" : "140",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "3212c2c6-33c3-4580-9782-91434cbf9a90"
-          },
-          "sourceId" : "120",
-          "destinationId" : "138",
-          "description" : "Read calculation results and active data"
-        }, {
-          "id" : "147",
-          "tags" : "Relationship,Simple View",
-          "properties" : {
-            "structurizr.dsl.identifier" : "ef4f2d04-986e-4f5f-9849-ae248153754c"
-          },
-          "sourceId" : "120",
-          "destinationId" : "142",
-          "description" : "Sends to Wholesale Inbox",
-          "technology" : "message/amqp"
-        }, {
-          "id" : "123",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "5dd506be-e78b-478d-b448-1c478f73ea51"
-          },
-          "sourceId" : "120",
-          "destinationId" : "119",
-          "description" : "Stores state"
-        }, {
-          "id" : "122",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "91d7f258-e4f1-4648-8e1e-f20990a321ba"
-          },
-          "sourceId" : "120",
-          "destinationId" : "25",
-          "description" : "Subscribes to integration events"
-        }, {
-          "id" : "121",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "f99e868e-c34d-4b5a-82e3-2546dedf4ecd"
-          },
-          "sourceId" : "120",
-          "destinationId" : "118",
-          "description" : "Used by EDI azure functions to store state"
-        } ],
+        "name" : "EDI Database",
+        "description" : "Stores information related to EDI operations",
         "group" : "EDI",
+        "technology" : "SQL Server",
+        "documentation" : { }
+      }, {
+        "id" : "94",
+        "tags" : "Element,Container,Microsoft Azure - Function Apps,Titans",
+        "properties" : {
+          "structurizr.dsl.identifier" : "markpartcertificatesynchronization"
+        },
+        "name" : "Market Participant <Certificate Synchronization>",
+        "description" : "Synchronizes active DH2 authentication certificates with APIM.",
+        "relationships" : [ {
+          "id" : "96",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "df902444-8ec8-4085-a84d-d27eb11e3bff"
+          },
+          "sourceId" : "94",
+          "destinationId" : "70",
+          "description" : "Gets certificates that should be active in APIM.",
+          "technology" : "Microsoft.Graph/https"
+        }, {
+          "id" : "95",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bbe9ad71-5770-4d9d-b38b-4a795448e7eb"
+          },
+          "sourceId" : "94",
+          "destinationId" : "24",
+          "description" : "Links and unlinks DH2 active authentication certificates.",
+          "technology" : "REST/https"
+        } ],
+        "group" : "Market Participant",
         "technology" : "Azure function, C#",
         "documentation" : { }
       }, {
-        "id" : "134",
-        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
+        "id" : "129",
+        "tags" : "Element,Container,Microsoft Azure - App Services,Mosaic",
         "properties" : {
-          "structurizr.dsl.identifier" : "wholesalecalculator"
+          "structurizr.dsl.identifier" : "edib2cwebapi"
         },
-        "name" : "Calculation Engine",
-        "description" : "Executes calculation job",
+        "name" : "EDI B2C WEB API",
+        "description" : "An Web API for EDI B2C operations",
         "relationships" : [ {
-          "id" : "135",
+          "id" : "131",
           "tags" : "Relationship",
           "properties" : {
-            "structurizr.dsl.identifier" : "487a831d-902d-4400-ac4b-7f1db3156fdf"
+            "structurizr.dsl.identifier" : "09742c94-11a1-4ecd-82dd-d3a727689e1f"
           },
-          "sourceId" : "134",
-          "destinationId" : "132",
-          "description" : "Read inputs / write results"
+          "sourceId" : "129",
+          "destinationId" : "120",
+          "description" : "Forwards request to backend"
         } ],
+        "group" : "EDI",
+        "technology" : "Asp.Net Core Web API",
+        "documentation" : { }
+      }, {
+        "id" : "125",
+        "tags" : "Element,Container,Intermediate Technology,Microsoft Azure - API Management Services,Mosaic",
+        "properties" : {
+          "structurizr.dsl.identifier" : "ediapi"
+        },
+        "name" : "EDI API",
+        "description" : "API Gateway policies for EDI Web API",
+        "relationships" : [ {
+          "id" : "128",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "434b6441-7bad-452a-85fa-167719d11ad5"
+          },
+          "sourceId" : "125",
+          "destinationId" : "30",
+          "description" : "Validate credentials",
+          "technology" : "https"
+        }, {
+          "id" : "127",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "8723cd31-e323-4410-996b-92ef7b34c8d1"
+          },
+          "sourceId" : "125",
+          "destinationId" : "120",
+          "description" : "Forwards request to backend"
+        } ],
+        "group" : "EDI",
+        "technology" : "Azure API Management Service",
+        "documentation" : { }
+      }, {
+        "id" : "160",
+        "tags" : "Element,Container,Intermediate Technology,Microsoft Azure - API Management Services,Mandalorian,Titans,UI/UX Guild,Outlaws",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bffapi"
+        },
+        "name" : "BFF API",
+        "description" : "API Gateway to BFF Web API",
+        "relationships" : [ {
+          "id" : "161",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "fbdd29de-5a66-4af5-ab52-ad3c2e7f0591"
+          },
+          "sourceId" : "160",
+          "destinationId" : "157",
+          "description" : "Uses",
+          "technology" : "json/https"
+        }, {
+          "id" : "162",
+          "tags" : "Relationship,OAuth",
+          "properties" : {
+            "structurizr.dsl.identifier" : "6c309878-1063-4d25-a8f8-7fe500811e01"
+          },
+          "sourceId" : "160",
+          "destinationId" : "30",
+          "description" : "Validate OAuth token",
+          "technology" : "https"
+        } ],
+        "group" : "Frontend",
+        "technology" : "Azure API Management Service",
+        "documentation" : { }
+      }, {
+        "id" : "69",
+        "tags" : "Element,Container,Microsoft Azure - Key Vaults,Titans",
+        "properties" : {
+          "structurizr.dsl.identifier" : "markpartkeyvault"
+        },
+        "name" : "Market Participant Internal Key Vault",
+        "description" : "Stores key used for signing tokens.",
+        "group" : "Market Participant",
+        "technology" : "Azure Key Vault",
+        "documentation" : { }
+      }, {
+        "id" : "132",
+        "tags" : "Element,Container,Data Storage,Microsoft Azure - Data Lake Store Gen1,Mandalorian",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaledatalake"
+        },
+        "name" : "Wholesale DataLake",
+        "description" : "Calculation inputs and results",
         "group" : "Wholesale",
-        "technology" : "Azure Databricks",
+        "technology" : "Azure Data Lake Gen 2",
         "documentation" : { }
       }, {
         "id" : "173",
@@ -687,104 +727,142 @@
         "technology" : "Azure Databricks",
         "documentation" : { }
       }, {
-        "id" : "138",
-        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
+        "id" : "133",
+        "tags" : "Element,Container,Data Storage,Raccoons",
         "properties" : {
-          "structurizr.dsl.identifier" : "wholesaleruntimewarehouse"
+          "structurizr.dsl.identifier" : "wholesaleblobstorage"
         },
-        "name" : "Runtime Warehouse",
-        "description" : "Executes delta SQL queries",
-        "relationships" : [ {
-          "id" : "139",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "424dc619-f9d0-4a76-be4f-da1d03a73e76"
-          },
-          "sourceId" : "138",
-          "destinationId" : "132",
-          "description" : "Read basis data and results"
-        } ],
+        "name" : "Settlement Report Blob Storage",
+        "description" : "Contains (drafts of) settlement reports",
         "group" : "Wholesale",
-        "technology" : "Azure Databricks SQL Warehouse",
+        "technology" : "Azure Blob Storage",
         "documentation" : { }
       }, {
-        "id" : "70",
-        "tags" : "Element,Container,Microsoft Azure - Key Vaults,Titans",
+        "id" : "157",
+        "tags" : "Element,Container,Microsoft Azure - App Services,Mandalorian,Titans,UI/UX Guild",
         "properties" : {
-          "structurizr.dsl.identifier" : "markpartcertkeyvault"
+          "structurizr.dsl.identifier" : "bffapp"
         },
-        "name" : "Market Participant Certificate Key Vault",
-        "description" : "Stores public DH2 certificates used for B2B authentication.",
-        "group" : "Market Participant",
-        "technology" : "Azure Key Vault",
-        "documentation" : { }
-      }, {
-        "id" : "150",
-        "tags" : "Element,Container,Microsoft Azure - Function Apps,Mandalorian",
-        "properties" : {
-          "structurizr.dsl.identifier" : "wholesaleorchestrations"
-        },
-        "name" : "Wholesale Orchestrations",
-        "description" : "Orchestrate calculation workflow, generate settlement reports",
+        "name" : "BFF Web API",
+        "description" : "Backend for frontend (BFF) combines data for presentation on DataHub 3 UI",
         "relationships" : [ {
-          "id" : "152",
+          "id" : "159",
           "tags" : "Relationship",
           "properties" : {
-            "structurizr.dsl.identifier" : "00802921-18d6-4f8d-906c-5d9ee13d8f6b"
+            "structurizr.dsl.identifier" : "3bea22c2-082a-4dd5-9df8-4aab40015198"
           },
-          "sourceId" : "150",
-          "destinationId" : "141",
+          "sourceId" : "157",
+          "destinationId" : "71",
           "description" : "Uses",
-          "technology" : "EF Core"
+          "technology" : "json/https"
         }, {
-          "id" : "155",
+          "id" : "158",
           "tags" : "Relationship",
           "properties" : {
-            "structurizr.dsl.identifier" : "62e440a8-828d-4f00-a009-79ea797c00ed"
+            "structurizr.dsl.identifier" : "5cf17900-f604-4ede-911d-9a2975ef5e73"
           },
-          "sourceId" : "150",
-          "destinationId" : "133",
-          "description" : "Reads from and writes settlement reports to"
-        }, {
-          "id" : "153",
+          "sourceId" : "157",
+          "destinationId" : "142",
+          "description" : "Uses",
+          "technology" : "json/https"
+        } ],
+        "group" : "Frontend",
+        "technology" : "Asp.Net Core Web API",
+        "documentation" : { }
+      }, {
+        "id" : "25",
+        "tags" : "Element,Container,Intermediate Technology,PaaS,Microsoft Azure - Azure Service Bus",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dh3.sharedservicebus"
+        },
+        "name" : "Message broker",
+        "description" : "Message broker with message queues and publish-subscribe topics",
+        "relationships" : [ {
+          "id" : "112",
           "tags" : "Relationship",
           "properties" : {
-            "structurizr.dsl.identifier" : "f2ce0a36-7a66-403e-93be-c9bf36200337"
+            "structurizr.dsl.identifier" : "b0a83ebe-3d9a-44ff-a745-0643d63f1551"
           },
-          "sourceId" : "150",
-          "destinationId" : "134",
-          "description" : "Sends requests to"
-        }, {
-          "id" : "154",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "73814ae0-b154-4e44-97dc-ba9f15299dbd"
-          },
-          "sourceId" : "150",
-          "destinationId" : "138",
-          "description" : "Retrieves results from"
-        }, {
-          "id" : "151",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "8ffe2fa6-5e37-4588-964d-ebc716b8af47"
-          },
-          "sourceId" : "150",
-          "destinationId" : "25",
-          "description" : "Publish calculation completed and grid loss",
+          "sourceId" : "25",
+          "destinationId" : "111",
+          "description" : "Receives integration events",
           "technology" : "integration event/amqp"
         }, {
-          "id" : "156",
+          "id" : "113",
+          "sourceId" : "25",
+          "destinationId" : "97",
+          "description" : "Receives integration events",
+          "technology" : "integration event/amqp",
+          "linkedRelationshipId" : "112"
+        }, {
+          "id" : "143",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "68288f74-d81e-4518-9fd4-b09382c7fff9"
+          },
+          "sourceId" : "25",
+          "destinationId" : "142",
+          "description" : "Listens on Wholesale Inbox + Integration Events",
+          "technology" : "message/amqp"
+        } ],
+        "technology" : "Azure Service Bus",
+        "documentation" : { }
+      }, {
+        "id" : "120",
+        "tags" : "Element,Container,Microsoft Azure - Function Apps,Mosaic",
+        "properties" : {
+          "structurizr.dsl.identifier" : "edi"
+        },
+        "name" : "EDI",
+        "description" : "Backend server providing API for EDI operations",
+        "relationships" : [ {
+          "id" : "122",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "91d7f258-e4f1-4648-8e1e-f20990a321ba"
+          },
+          "sourceId" : "120",
+          "destinationId" : "25",
+          "description" : "Subscribes to integration events"
+        }, {
+          "id" : "123",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "5dd506be-e78b-478d-b448-1c478f73ea51"
+          },
+          "sourceId" : "120",
+          "destinationId" : "119",
+          "description" : "Stores state"
+        }, {
+          "id" : "121",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "f99e868e-c34d-4b5a-82e3-2546dedf4ecd"
+          },
+          "sourceId" : "120",
+          "destinationId" : "118",
+          "description" : "Used by EDI azure functions to store state"
+        }, {
+          "id" : "147",
           "tags" : "Relationship,Simple View",
           "properties" : {
-            "structurizr.dsl.identifier" : "6369f778-cfba-40ca-b2bc-1649762be212"
+            "structurizr.dsl.identifier" : "ef4f2d04-986e-4f5f-9849-ae248153754c"
           },
-          "sourceId" : "150",
-          "destinationId" : "120",
-          "description" : "Publish calculation completed",
-          "technology" : "integration event/amqp"
+          "sourceId" : "120",
+          "destinationId" : "142",
+          "description" : "Sends to Wholesale Inbox",
+          "technology" : "message/amqp"
+        }, {
+          "id" : "140",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "3212c2c6-33c3-4580-9782-91434cbf9a90"
+          },
+          "sourceId" : "120",
+          "destinationId" : "138",
+          "description" : "Read calculation results and active data"
         } ],
-        "group" : "Wholesale",
+        "group" : "EDI",
         "technology" : "Azure function, C#",
         "documentation" : { }
       }, {
@@ -808,6 +886,336 @@
         "technology" : "Twilio SendGrid",
         "documentation" : { }
       }, {
+        "id" : "138",
+        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaleruntimewarehouse"
+        },
+        "name" : "Runtime Warehouse",
+        "description" : "Executes delta SQL queries",
+        "relationships" : [ {
+          "id" : "139",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "424dc619-f9d0-4a76-be4f-da1d03a73e76"
+          },
+          "sourceId" : "138",
+          "destinationId" : "132",
+          "description" : "Read basis data and results"
+        } ],
+        "group" : "Wholesale",
+        "technology" : "Azure Databricks SQL Warehouse",
+        "documentation" : { }
+      }, {
+        "id" : "23",
+        "tags" : "Element,Container,Microsoft Azure - Key Vaults",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dh3.sharedkeyvault"
+        },
+        "name" : "Key Vault",
+        "description" : "Store for secrets and signing keys",
+        "technology" : "Azure Key Vault",
+        "documentation" : { }
+      }, {
+        "id" : "142",
+        "tags" : "Element,Container,Microsoft Azure - App Services,Mandalorian,MarketParticipant Subscriber",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaleapi"
+        },
+        "name" : "Wholesale API",
+        "description" : "Backend server providing external web API for Wholesale subsystem",
+        "relationships" : [ {
+          "id" : "146",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "723063ed-e897-4c5f-b609-3acee7de301c"
+          },
+          "sourceId" : "142",
+          "destinationId" : "138",
+          "description" : "Retrieves results from"
+        }, {
+          "id" : "149",
+          "tags" : "Relationship,Simple View",
+          "properties" : {
+            "structurizr.dsl.identifier" : "ac1ec296-61df-49c9-8387-291e83c31a41"
+          },
+          "sourceId" : "142",
+          "destinationId" : "120",
+          "description" : "Sends to EDI Inbox",
+          "technology" : "message/amqp"
+        }, {
+          "id" : "144",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "d4357883-69b6-4e49-98ad-f0b9e20e078a"
+          },
+          "sourceId" : "142",
+          "destinationId" : "25",
+          "description" : "Sends to EDI Inbox",
+          "technology" : "message/amqp"
+        }, {
+          "id" : "145",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "80c62df0-d0ba-4fda-affd-593097d49ec8"
+          },
+          "sourceId" : "142",
+          "destinationId" : "141",
+          "description" : "Uses",
+          "technology" : "EF Core"
+        } ],
+        "group" : "Wholesale",
+        "technology" : "Asp.Net Core Web API",
+        "documentation" : { }
+      }, {
+        "id" : "119",
+        "tags" : "Element,Container,Data Storage,Microsoft Azure - Storage Accounts,Mosaic",
+        "properties" : {
+          "structurizr.dsl.identifier" : "edistorageaccount"
+        },
+        "name" : "EDI Storage Account",
+        "description" : "Used by EDI azure functions to store state",
+        "group" : "EDI",
+        "technology" : "Azure Blob Storage",
+        "documentation" : { }
+      }, {
+        "id" : "163",
+        "tags" : "Element,Container,Web Browser,Mandalorian,Titans,UI/UX Guild",
+        "properties" : {
+          "structurizr.dsl.identifier" : "frontendsinglepageapplication"
+        },
+        "name" : "UI",
+        "description" : "Provides DH3 functionality to users via their web browser.",
+        "relationships" : [ {
+          "id" : "168",
+          "tags" : "Relationship,OAuth",
+          "properties" : {
+            "structurizr.dsl.identifier" : "d2bc1a4a-8cf9-4787-a935-f557099576d2"
+          },
+          "sourceId" : "163",
+          "destinationId" : "30",
+          "description" : "Request OAuth token",
+          "technology" : "https"
+        }, {
+          "id" : "167",
+          "tags" : "Relationship,Simple View",
+          "properties" : {
+            "structurizr.dsl.identifier" : "2f278600-3f6a-4122-86ec-60d598f28bb0"
+          },
+          "sourceId" : "163",
+          "destinationId" : "157",
+          "description" : "Uses",
+          "technology" : "json/https"
+        }, {
+          "id" : "166",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "1d83cb57-f20d-4e41-a5e0-60100b698436"
+          },
+          "sourceId" : "163",
+          "destinationId" : "160",
+          "description" : "Uses GraphQL and RESTful services",
+          "technology" : "json/https"
+        } ],
+        "group" : "Frontend",
+        "technology" : "Angular",
+        "documentation" : { }
+      }, {
+        "id" : "141",
+        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Mandalorian",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaledb"
+        },
+        "name" : "Wholesale Database",
+        "description" : "Meta data of calculations",
+        "group" : "Wholesale",
+        "technology" : "SQL Database Schema",
+        "documentation" : { }
+      }, {
+        "id" : "134",
+        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesalecalculator"
+        },
+        "name" : "Calculation Engine",
+        "description" : "Executes calculation job",
+        "relationships" : [ {
+          "id" : "135",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "487a831d-902d-4400-ac4b-7f1db3156fdf"
+          },
+          "sourceId" : "134",
+          "destinationId" : "132",
+          "description" : "Read inputs / write results"
+        } ],
+        "group" : "Wholesale",
+        "technology" : "Azure Databricks",
+        "documentation" : { }
+      }, {
+        "id" : "26",
+        "tags" : "Element,Container,Intermediate Technology,SaaS,Microsoft Azure - SendGrid Accounts",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dh3.sharedinternalsendgrid"
+        },
+        "name" : "SendGrid (internal)",
+        "description" : "EMail dispatcher for internal use",
+        "technology" : "Twilio SendGrid",
+        "documentation" : { }
+      }, {
+        "id" : "150",
+        "tags" : "Element,Container,Microsoft Azure - Function Apps,Mandalorian",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaleorchestrations"
+        },
+        "name" : "Wholesale Orchestrations",
+        "description" : "Orchestrate calculation workflow, generate settlement reports",
+        "relationships" : [ {
+          "id" : "153",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "f2ce0a36-7a66-403e-93be-c9bf36200337"
+          },
+          "sourceId" : "150",
+          "destinationId" : "134",
+          "description" : "Sends requests to"
+        }, {
+          "id" : "156",
+          "tags" : "Relationship,Simple View",
+          "properties" : {
+            "structurizr.dsl.identifier" : "6369f778-cfba-40ca-b2bc-1649762be212"
+          },
+          "sourceId" : "150",
+          "destinationId" : "120",
+          "description" : "Publish calculation completed",
+          "technology" : "integration event/amqp"
+        }, {
+          "id" : "151",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "8ffe2fa6-5e37-4588-964d-ebc716b8af47"
+          },
+          "sourceId" : "150",
+          "destinationId" : "25",
+          "description" : "Publish calculation completed and grid loss",
+          "technology" : "integration event/amqp"
+        }, {
+          "id" : "152",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "00802921-18d6-4f8d-906c-5d9ee13d8f6b"
+          },
+          "sourceId" : "150",
+          "destinationId" : "141",
+          "description" : "Uses",
+          "technology" : "EF Core"
+        }, {
+          "id" : "155",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "62e440a8-828d-4f00-a009-79ea797c00ed"
+          },
+          "sourceId" : "150",
+          "destinationId" : "133",
+          "description" : "Reads from and writes settlement reports to"
+        }, {
+          "id" : "154",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "73814ae0-b154-4e44-97dc-ba9f15299dbd"
+          },
+          "sourceId" : "150",
+          "destinationId" : "138",
+          "description" : "Retrieves results from"
+        } ],
+        "group" : "Wholesale",
+        "technology" : "Azure function, C#",
+        "documentation" : { }
+      }, {
+        "id" : "136",
+        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaledeploymentwarehouse"
+        },
+        "name" : "Deployment Warehouse",
+        "description" : "Executes delta SQL migrations",
+        "relationships" : [ {
+          "id" : "137",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "6be9e563-9db9-4801-864b-564caa5aefa6"
+          },
+          "sourceId" : "136",
+          "destinationId" : "132",
+          "description" : "Read executed migrations / execute new migrations"
+        } ],
+        "group" : "Wholesale",
+        "technology" : "Azure Databricks SQL Warehouse",
+        "documentation" : { }
+      }, {
+        "id" : "68",
+        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Titans",
+        "properties" : {
+          "structurizr.dsl.identifier" : "markpartdb"
+        },
+        "name" : "Market Participant Database",
+        "description" : "Stores data regarding actors, users and permissions.",
+        "group" : "Market Participant",
+        "technology" : "SQL Database Schema",
+        "documentation" : { }
+      }, {
+        "id" : "24",
+        "tags" : "Element,Container,Microsoft Azure - API Management Services",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dh3.sharedapimanagement"
+        },
+        "name" : "API Management",
+        "description" : "Expose URL endpoints to the public",
+        "technology" : "Azure - API Management",
+        "documentation" : { }
+      }, {
+        "id" : "169",
+        "tags" : "Element,Container,Intermediate Technology,Microsoft Azure - Static Apps,Mandalorian,Titans,UI/UX Guild",
+        "properties" : {
+          "structurizr.dsl.identifier" : "frontendstaticwebapp"
+        },
+        "name" : "Static Web App",
+        "description" : "Delivers the static content and the UI single page application",
+        "relationships" : [ {
+          "id" : "172",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "de223b48-8f92-42db-997a-3c7ca10419e7"
+          },
+          "sourceId" : "169",
+          "destinationId" : "163",
+          "description" : "Delivers to users web browser"
+        } ],
+        "group" : "Frontend",
+        "technology" : "Static Web App",
+        "documentation" : { }
+      }, {
+        "id" : "30",
+        "tags" : "Element,Container,Microsoft Azure - Azure AD B2C",
+        "properties" : {
+          "structurizr.dsl.identifier" : "dh3.sharedb2c"
+        },
+        "name" : "App Registrations (shared)",
+        "description" : "Cloud identity directory",
+        "technology" : "Azure AD B2C",
+        "documentation" : { }
+      }, {
+        "id" : "70",
+        "tags" : "Element,Container,Microsoft Azure - Key Vaults,Titans",
+        "properties" : {
+          "structurizr.dsl.identifier" : "markpartcertkeyvault"
+        },
+        "name" : "Market Participant Certificate Key Vault",
+        "description" : "Stores public DH2 certificates used for B2B authentication.",
+        "group" : "Market Participant",
+        "technology" : "Azure Key Vault",
+        "documentation" : { }
+      }, {
         "id" : "97",
         "tags" : "Element,Container,Microsoft Azure - Function Apps,Titans",
         "properties" : {
@@ -816,6 +1224,20 @@
         "name" : "Market Participant <Organization Manager>",
         "description" : "Synchronizes Azure B2C user and actor state with the domain.",
         "relationships" : [ {
+          "id" : "104",
+          "sourceId" : "97",
+          "destinationId" : "25",
+          "description" : "Sends market participant events",
+          "technology" : "integration event/amqp",
+          "linkedRelationshipId" : "103"
+        }, {
+          "id" : "106",
+          "sourceId" : "97",
+          "destinationId" : "68",
+          "description" : "Updates actors with external B2C id.",
+          "technology" : "EF Core",
+          "linkedRelationshipId" : "105"
+        }, {
           "id" : "148",
           "tags" : "Relationship,Simple View",
           "properties" : {
@@ -825,13 +1247,6 @@
           "destinationId" : "142",
           "description" : "Publish Grid Area Ownership Assigned",
           "technology" : "integration event/amqp"
-        }, {
-          "id" : "106",
-          "sourceId" : "97",
-          "destinationId" : "68",
-          "description" : "Updates actors with external B2C id.",
-          "technology" : "EF Core",
-          "linkedRelationshipId" : "105"
         }, {
           "id" : "109",
           "sourceId" : "97",
@@ -846,17 +1261,51 @@
           "description" : "Accesses user information",
           "technology" : "Microsoft.Graph/https",
           "linkedRelationshipId" : "99"
-        }, {
-          "id" : "104",
-          "sourceId" : "97",
-          "destinationId" : "25",
-          "description" : "Sends market participant events",
-          "technology" : "integration event/amqp",
-          "linkedRelationshipId" : "103"
         } ],
         "group" : "Market Participant",
         "technology" : "Azure function, C#",
         "components" : [ {
+          "id" : "101",
+          "tags" : "Element,Component,Microsoft Azure - Function Apps,Titans",
+          "properties" : {
+            "structurizr.dsl.identifier" : "markparteventactorsynchronizer"
+          },
+          "name" : "Actor Synchronizer",
+          "description" : "Creates B2C application registration for newly created actors.",
+          "relationships" : [ {
+            "id" : "102",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "82fb3daa-7ca7-44e4-b7ae-5fa145d799ff"
+            },
+            "sourceId" : "101",
+            "destinationId" : "30",
+            "description" : "Creates B2C App Registration",
+            "technology" : "Microsoft.Graph/https"
+          }, {
+            "id" : "103",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "ca8a9729-39b8-41d2-a9c5-af094caa42cd"
+            },
+            "sourceId" : "101",
+            "destinationId" : "25",
+            "description" : "Sends market participant events",
+            "technology" : "integration event/amqp"
+          }, {
+            "id" : "105",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "51c6c820-748f-4be1-a9a2-6f8fed334497"
+            },
+            "sourceId" : "101",
+            "destinationId" : "68",
+            "description" : "Updates actors with external B2C id.",
+            "technology" : "EF Core"
+          } ],
+          "technology" : "Timer Trigger",
+          "documentation" : { }
+        }, {
           "id" : "107",
           "tags" : "Element,Component,Microsoft Azure - Function Apps,Titans",
           "properties" : {
@@ -937,16 +1386,6 @@
           "name" : "UserInvitationExpiredTimerTrigger",
           "description" : "Timer Trigger checking for users with expired invitations. Users with expired invitations are disable in B2C.",
           "relationships" : [ {
-            "id" : "116",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "76f05486-6af2-4fcc-8820-e0722ebcffe9"
-            },
-            "sourceId" : "115",
-            "destinationId" : "68",
-            "description" : "Reads from",
-            "technology" : "EF Core"
-          }, {
             "id" : "117",
             "tags" : "Relationship",
             "properties" : {
@@ -956,247 +1395,19 @@
             "destinationId" : "98",
             "description" : "Accesses user information",
             "technology" : "Microsoft.Graph/https"
-          } ],
-          "documentation" : { }
-        }, {
-          "id" : "101",
-          "tags" : "Element,Component,Microsoft Azure - Function Apps,Titans",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markparteventactorsynchronizer"
-          },
-          "name" : "Actor Synchronizer",
-          "description" : "Creates B2C application registration for newly created actors.",
-          "relationships" : [ {
-            "id" : "103",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "ca8a9729-39b8-41d2-a9c5-af094caa42cd"
-            },
-            "sourceId" : "101",
-            "destinationId" : "25",
-            "description" : "Sends market participant events",
-            "technology" : "integration event/amqp"
           }, {
-            "id" : "102",
+            "id" : "116",
             "tags" : "Relationship",
             "properties" : {
-              "structurizr.dsl.identifier" : "82fb3daa-7ca7-44e4-b7ae-5fa145d799ff"
+              "structurizr.dsl.identifier" : "76f05486-6af2-4fcc-8820-e0722ebcffe9"
             },
-            "sourceId" : "101",
-            "destinationId" : "30",
-            "description" : "Creates B2C App Registration",
-            "technology" : "Microsoft.Graph/https"
-          }, {
-            "id" : "105",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "51c6c820-748f-4be1-a9a2-6f8fed334497"
-            },
-            "sourceId" : "101",
+            "sourceId" : "115",
             "destinationId" : "68",
-            "description" : "Updates actors with external B2C id.",
+            "description" : "Reads from",
             "technology" : "EF Core"
           } ],
-          "technology" : "Timer Trigger",
           "documentation" : { }
         } ],
-        "documentation" : { }
-      }, {
-        "id" : "118",
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Mosaic",
-        "properties" : {
-          "structurizr.dsl.identifier" : "edidb"
-        },
-        "name" : "EDI Database",
-        "description" : "Stores information related to EDI operations",
-        "group" : "EDI",
-        "technology" : "SQL Server",
-        "documentation" : { }
-      }, {
-        "id" : "94",
-        "tags" : "Element,Container,Microsoft Azure - Function Apps,Titans",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartcertificatesynchronization"
-        },
-        "name" : "Market Participant <Certificate Synchronization>",
-        "description" : "Synchronizes active DH2 authentication certificates with APIM.",
-        "relationships" : [ {
-          "id" : "95",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "bbe9ad71-5770-4d9d-b38b-4a795448e7eb"
-          },
-          "sourceId" : "94",
-          "destinationId" : "24",
-          "description" : "Links and unlinks DH2 active authentication certificates.",
-          "technology" : "REST/https"
-        }, {
-          "id" : "96",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "df902444-8ec8-4085-a84d-d27eb11e3bff"
-          },
-          "sourceId" : "94",
-          "destinationId" : "70",
-          "description" : "Gets certificates that should be active in APIM.",
-          "technology" : "Microsoft.Graph/https"
-        } ],
-        "group" : "Market Participant",
-        "technology" : "Azure function, C#",
-        "documentation" : { }
-      }, {
-        "id" : "125",
-        "tags" : "Element,Container,Intermediate Technology,Microsoft Azure - API Management Services,Mosaic",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ediapi"
-        },
-        "name" : "EDI API",
-        "description" : "API Gateway policies for EDI Web API",
-        "relationships" : [ {
-          "id" : "127",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "8723cd31-e323-4410-996b-92ef7b34c8d1"
-          },
-          "sourceId" : "125",
-          "destinationId" : "120",
-          "description" : "Forwards request to backend"
-        }, {
-          "id" : "128",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "434b6441-7bad-452a-85fa-167719d11ad5"
-          },
-          "sourceId" : "125",
-          "destinationId" : "30",
-          "description" : "Validate credentials",
-          "technology" : "https"
-        } ],
-        "group" : "EDI",
-        "technology" : "Azure API Management Service",
-        "documentation" : { }
-      }, {
-        "id" : "132",
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - Data Lake Store Gen1,Mandalorian",
-        "properties" : {
-          "structurizr.dsl.identifier" : "wholesaledatalake"
-        },
-        "name" : "Wholesale DataLake",
-        "description" : "Calculation inputs and results",
-        "group" : "Wholesale",
-        "technology" : "Azure Data Lake Gen 2",
-        "documentation" : { }
-      }, {
-        "id" : "25",
-        "tags" : "Element,Container,Intermediate Technology,PaaS,Microsoft Azure - Azure Service Bus",
-        "properties" : {
-          "structurizr.dsl.identifier" : "dh3.sharedservicebus"
-        },
-        "name" : "Message broker",
-        "description" : "Message broker with message queues and publish-subscribe topics",
-        "relationships" : [ {
-          "id" : "113",
-          "sourceId" : "25",
-          "destinationId" : "97",
-          "description" : "Receives integration events",
-          "technology" : "integration event/amqp",
-          "linkedRelationshipId" : "112"
-        }, {
-          "id" : "112",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "b0a83ebe-3d9a-44ff-a745-0643d63f1551"
-          },
-          "sourceId" : "25",
-          "destinationId" : "111",
-          "description" : "Receives integration events",
-          "technology" : "integration event/amqp"
-        }, {
-          "id" : "143",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "68288f74-d81e-4518-9fd4-b09382c7fff9"
-          },
-          "sourceId" : "25",
-          "destinationId" : "142",
-          "description" : "Listens on Wholesale Inbox + Integration Events",
-          "technology" : "message/amqp"
-        } ],
-        "technology" : "Azure Service Bus",
-        "documentation" : { }
-      }, {
-        "id" : "163",
-        "tags" : "Element,Container,Web Browser,Mandalorian,Titans,UI/UX Guild",
-        "properties" : {
-          "structurizr.dsl.identifier" : "frontendsinglepageapplication"
-        },
-        "name" : "UI",
-        "description" : "Provides DH3 functionality to users via their web browser.",
-        "relationships" : [ {
-          "id" : "167",
-          "tags" : "Relationship,Simple View",
-          "properties" : {
-            "structurizr.dsl.identifier" : "2f278600-3f6a-4122-86ec-60d598f28bb0"
-          },
-          "sourceId" : "163",
-          "destinationId" : "157",
-          "description" : "Uses",
-          "technology" : "json/https"
-        }, {
-          "id" : "166",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "1d83cb57-f20d-4e41-a5e0-60100b698436"
-          },
-          "sourceId" : "163",
-          "destinationId" : "160",
-          "description" : "Uses GraphQL and RESTful services",
-          "technology" : "json/https"
-        }, {
-          "id" : "168",
-          "tags" : "Relationship,OAuth",
-          "properties" : {
-            "structurizr.dsl.identifier" : "d2bc1a4a-8cf9-4787-a935-f557099576d2"
-          },
-          "sourceId" : "163",
-          "destinationId" : "30",
-          "description" : "Request OAuth token",
-          "technology" : "https"
-        } ],
-        "group" : "Frontend",
-        "technology" : "Angular",
-        "documentation" : { }
-      }, {
-        "id" : "129",
-        "tags" : "Element,Container,Microsoft Azure - App Services,Mosaic",
-        "properties" : {
-          "structurizr.dsl.identifier" : "edib2cwebapi"
-        },
-        "name" : "EDI B2C WEB API",
-        "description" : "An Web API for EDI B2C operations",
-        "relationships" : [ {
-          "id" : "131",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "09742c94-11a1-4ecd-82dd-d3a727689e1f"
-          },
-          "sourceId" : "129",
-          "destinationId" : "120",
-          "description" : "Forwards request to backend"
-        } ],
-        "group" : "EDI",
-        "technology" : "Asp.Net Core Web API",
-        "documentation" : { }
-      }, {
-        "id" : "119",
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - Storage Accounts,Mosaic",
-        "properties" : {
-          "structurizr.dsl.identifier" : "edistorageaccount"
-        },
-        "name" : "EDI Storage Account",
-        "description" : "Used by EDI azure functions to store state",
-        "group" : "EDI",
-        "technology" : "Azure Blob Storage",
         "documentation" : { }
       }, {
         "id" : "71",
@@ -1207,16 +1418,6 @@
         "name" : "Market Participant API",
         "description" : "Multi-tenant API for managing actors, users and permissions.",
         "relationships" : [ {
-          "id" : "73",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "cfb0bd1f-0ae1-486d-bd55-350911aa94b6"
-          },
-          "sourceId" : "71",
-          "destinationId" : "68",
-          "description" : "Reads and writes actor/user data.",
-          "technology" : "EF Core"
-        }, {
           "id" : "72",
           "tags" : "Relationship",
           "properties" : {
@@ -1226,6 +1427,16 @@
           "destinationId" : "30",
           "description" : "Creates and manages B2C users",
           "technology" : "Microsoft.Graph/https"
+        }, {
+          "id" : "73",
+          "tags" : "Relationship",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cfb0bd1f-0ae1-486d-bd55-350911aa94b6"
+          },
+          "sourceId" : "71",
+          "destinationId" : "68",
+          "description" : "Reads and writes actor/user data.",
+          "technology" : "EF Core"
         }, {
           "id" : "75",
           "tags" : "Relationship",
@@ -1258,6 +1469,16 @@
           "name" : "UserController",
           "description" : "API for managing users.",
           "relationships" : [ {
+            "id" : "80",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "b690e874-6ba6-418e-9912-be2535c60da7"
+            },
+            "sourceId" : "78",
+            "destinationId" : "76",
+            "description" : "Accesses user information",
+            "technology" : "Microsoft.Graph/https"
+          }, {
             "id" : "79",
             "tags" : "Relationship",
             "properties" : {
@@ -1267,14 +1488,94 @@
             "destinationId" : "68",
             "description" : "Writes/reads from",
             "technology" : "EF Core"
-          }, {
-            "id" : "80",
+          } ],
+          "documentation" : { }
+        }, {
+          "id" : "88",
+          "tags" : "Element,Component",
+          "properties" : {
+            "structurizr.dsl.identifier" : "markpartuseroverviewcontroller"
+          },
+          "name" : "UserOverviewController",
+          "description" : "Read-only API for filtered listing of users for frontend presentation",
+          "relationships" : [ {
+            "id" : "90",
             "tags" : "Relationship",
             "properties" : {
-              "structurizr.dsl.identifier" : "b690e874-6ba6-418e-9912-be2535c60da7"
+              "structurizr.dsl.identifier" : "53ce16b2-54c8-49c9-87ae-b9697c631663"
             },
-            "sourceId" : "78",
+            "sourceId" : "88",
             "destinationId" : "76",
+            "description" : "Accesses user information",
+            "technology" : "Microsoft.Graph/https"
+          }, {
+            "id" : "89",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "783eddc1-cc19-424f-af5d-9795139ddb15"
+            },
+            "sourceId" : "88",
+            "destinationId" : "68",
+            "description" : "Reads from",
+            "technology" : "EF Core"
+          } ],
+          "documentation" : { }
+        }, {
+          "id" : "81",
+          "tags" : "Element,Component",
+          "properties" : {
+            "structurizr.dsl.identifier" : "markpartpermissioncontroller"
+          },
+          "name" : "PermissionController",
+          "description" : "API for managing system permissions.",
+          "relationships" : [ {
+            "id" : "82",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "d7a1cf85-1d03-4e0e-b48a-9e51875812db"
+            },
+            "sourceId" : "81",
+            "destinationId" : "68",
+            "description" : "Writes/reads from",
+            "technology" : "EF Core"
+          } ],
+          "documentation" : { }
+        }, {
+          "id" : "83",
+          "tags" : "Element,Component",
+          "properties" : {
+            "structurizr.dsl.identifier" : "markpartuserrolecontroller"
+          },
+          "name" : "UserRoleController",
+          "description" : "API for managing user roles and underlying system permissions.",
+          "relationships" : [ {
+            "id" : "84",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "cdb9d0f0-8a81-4d44-bc99-7a0fc5c9baf1"
+            },
+            "sourceId" : "83",
+            "destinationId" : "68",
+            "description" : "Writes/reads from",
+            "technology" : "EF Core"
+          } ],
+          "documentation" : { }
+        }, {
+          "id" : "76",
+          "tags" : "Element,Component",
+          "properties" : {
+            "structurizr.dsl.identifier" : "markpartuseridentityrepositoryinmarkpartapi"
+          },
+          "name" : "UserIdentityRepository",
+          "description" : "Manages access to B2C user data through GraphAPI.",
+          "relationships" : [ {
+            "id" : "77",
+            "tags" : "Relationship",
+            "properties" : {
+              "structurizr.dsl.identifier" : "7ba5c2b6-5c0c-4c8c-a6b8-066d9c22563e"
+            },
+            "sourceId" : "76",
+            "destinationId" : "30",
             "description" : "Accesses user information",
             "technology" : "Microsoft.Graph/https"
           } ],
@@ -1310,76 +1611,6 @@
           } ],
           "documentation" : { }
         }, {
-          "id" : "83",
-          "tags" : "Element,Component",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuserrolecontroller"
-          },
-          "name" : "UserRoleController",
-          "description" : "API for managing user roles and underlying system permissions.",
-          "relationships" : [ {
-            "id" : "84",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "cdb9d0f0-8a81-4d44-bc99-7a0fc5c9baf1"
-            },
-            "sourceId" : "83",
-            "destinationId" : "68",
-            "description" : "Writes/reads from",
-            "technology" : "EF Core"
-          } ],
-          "documentation" : { }
-        }, {
-          "id" : "88",
-          "tags" : "Element,Component",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuseroverviewcontroller"
-          },
-          "name" : "UserOverviewController",
-          "description" : "Read-only API for filtered listing of users for frontend presentation",
-          "relationships" : [ {
-            "id" : "89",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "783eddc1-cc19-424f-af5d-9795139ddb15"
-            },
-            "sourceId" : "88",
-            "destinationId" : "68",
-            "description" : "Reads from",
-            "technology" : "EF Core"
-          }, {
-            "id" : "90",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "53ce16b2-54c8-49c9-87ae-b9697c631663"
-            },
-            "sourceId" : "88",
-            "destinationId" : "76",
-            "description" : "Accesses user information",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "documentation" : { }
-        }, {
-          "id" : "76",
-          "tags" : "Element,Component",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuseridentityrepositoryinmarkpartapi"
-          },
-          "name" : "UserIdentityRepository",
-          "description" : "Manages access to B2C user data through GraphAPI.",
-          "relationships" : [ {
-            "id" : "77",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "7ba5c2b6-5c0c-4c8c-a6b8-066d9c22563e"
-            },
-            "sourceId" : "76",
-            "destinationId" : "30",
-            "description" : "Accesses user information",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "documentation" : { }
-        }, {
           "id" : "85",
           "tags" : "Element,Component",
           "properties" : {
@@ -1388,16 +1619,6 @@
           "name" : "UserRoleAssignmentController",
           "description" : "API for managing users and their assigned user roles.",
           "relationships" : [ {
-            "id" : "86",
-            "tags" : "Relationship",
-            "properties" : {
-              "structurizr.dsl.identifier" : "abdb29a6-a512-45f0-b5c2-be10574bbbf9"
-            },
-            "sourceId" : "85",
-            "destinationId" : "68",
-            "description" : "Writes/reads from",
-            "technology" : "EF Core"
-          }, {
             "id" : "87",
             "tags" : "Relationship",
             "properties" : {
@@ -1407,23 +1628,13 @@
             "destinationId" : "76",
             "description" : "Accesses user information",
             "technology" : "Microsoft.Graph/https"
-          } ],
-          "documentation" : { }
-        }, {
-          "id" : "81",
-          "tags" : "Element,Component",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartpermissioncontroller"
-          },
-          "name" : "PermissionController",
-          "description" : "API for managing system permissions.",
-          "relationships" : [ {
-            "id" : "82",
+          }, {
+            "id" : "86",
             "tags" : "Relationship",
             "properties" : {
-              "structurizr.dsl.identifier" : "d7a1cf85-1d03-4e0e-b48a-9e51875812db"
+              "structurizr.dsl.identifier" : "abdb29a6-a512-45f0-b5c2-be10574bbbf9"
             },
-            "sourceId" : "81",
+            "sourceId" : "85",
             "destinationId" : "68",
             "description" : "Writes/reads from",
             "technology" : "EF Core"
@@ -1431,344 +1642,63 @@
           "documentation" : { }
         } ],
         "documentation" : { }
-      }, {
-        "id" : "160",
-        "tags" : "Element,Container,Intermediate Technology,Microsoft Azure - API Management Services,Mandalorian,Titans,UI/UX Guild,Outlaws",
-        "properties" : {
-          "structurizr.dsl.identifier" : "bffapi"
-        },
-        "name" : "BFF API",
-        "description" : "API Gateway to BFF Web API",
-        "relationships" : [ {
-          "id" : "161",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "fbdd29de-5a66-4af5-ab52-ad3c2e7f0591"
-          },
-          "sourceId" : "160",
-          "destinationId" : "157",
-          "description" : "Uses",
-          "technology" : "json/https"
-        }, {
-          "id" : "162",
-          "tags" : "Relationship,OAuth",
-          "properties" : {
-            "structurizr.dsl.identifier" : "6c309878-1063-4d25-a8f8-7fe500811e01"
-          },
-          "sourceId" : "160",
-          "destinationId" : "30",
-          "description" : "Validate OAuth token",
-          "technology" : "https"
-        } ],
-        "group" : "Frontend",
-        "technology" : "Azure API Management Service",
-        "documentation" : { }
-      }, {
-        "id" : "69",
-        "tags" : "Element,Container,Microsoft Azure - Key Vaults,Titans",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartkeyvault"
-        },
-        "name" : "Market Participant Internal Key Vault",
-        "description" : "Stores key used for signing tokens.",
-        "group" : "Market Participant",
-        "technology" : "Azure Key Vault",
-        "documentation" : { }
-      }, {
-        "id" : "157",
-        "tags" : "Element,Container,Microsoft Azure - App Services,Mandalorian,Titans,UI/UX Guild",
-        "properties" : {
-          "structurizr.dsl.identifier" : "bffapp"
-        },
-        "name" : "BFF Web API",
-        "description" : "Backend for frontend (BFF) combines data for presentation on DataHub 3 UI",
-        "relationships" : [ {
-          "id" : "158",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "5cf17900-f604-4ede-911d-9a2975ef5e73"
-          },
-          "sourceId" : "157",
-          "destinationId" : "142",
-          "description" : "Uses",
-          "technology" : "json/https"
-        }, {
-          "id" : "159",
-          "tags" : "Relationship",
-          "properties" : {
-            "structurizr.dsl.identifier" : "3bea22c2-082a-4dd5-9df8-4aab40015198"
-          },
-          "sourceId" : "157",
-          "destinationId" : "71",
-          "description" : "Uses",
-          "technology" : "json/https"
-        } ],
-        "group" : "Frontend",
-        "technology" : "Asp.Net Core Web API",
-        "documentation" : { }
-      }, {
-        "id" : "30",
-        "tags" : "Element,Container,Microsoft Azure - Azure AD B2C",
-        "properties" : {
-          "structurizr.dsl.identifier" : "dh3.sharedb2c"
-        },
-        "name" : "App Registrations (shared)",
-        "description" : "Cloud identity directory",
-        "technology" : "Azure AD B2C",
-        "documentation" : { }
       } ],
       "documentation" : { }
     }, {
-      "id" : "20",
-      "tags" : "Element,Software System",
-      "properties" : {
-        "structurizr.dsl.identifier" : "energyorigin"
-      },
-      "name" : "Energy Origin",
-      "description" : "Provides a way to issue and claim granular certificates.",
-      "relationships" : [ {
-        "id" : "58",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "37e20abf-3dce-41f7-8c1e-38fd47a77630"
-        },
-        "sourceId" : "20",
-        "destinationId" : "9",
-        "description" : "Authenticate users",
-        "technology" : "https"
-      }, {
-        "id" : "57",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "f7573370-1e57-4f61-aa91-08224c790e05"
-        },
-        "sourceId" : "20",
-        "destinationId" : "13",
-        "description" : "Requests emission and residual mix data",
-        "technology" : "https"
-      }, {
-        "id" : "55",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "9d9c94ba-37b8-4da7-9ce2-4e98b6725037"
-        },
-        "sourceId" : "20",
-        "destinationId" : "14",
-        "description" : "Links to guarantees of origin",
-        "technology" : "https"
-      }, {
-        "id" : "61",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "cd41a167-523c-42c9-98d2-7be4556e2106"
-        },
-        "sourceId" : "20",
-        "destinationId" : "10",
-        "description" : "Reads CVR data",
-        "technology" : "https"
-      }, {
-        "id" : "54",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "f52cbdad-b95a-4ea6-8e3a-0286b704cf45"
-        },
-        "sourceId" : "20",
-        "destinationId" : "7",
-        "description" : "Requests measurements",
-        "technology" : "https"
-      }, {
-        "id" : "56",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "ce29f1fd-c7bd-4a41-9609-261c0b03984c"
-        },
-        "sourceId" : "20",
-        "destinationId" : "15",
-        "description" : "Places certificates in",
-        "technology" : "https"
-      } ],
-      "group" : "Energinet Organization/DataHub Organization",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "9",
-      "tags" : "Element,Software System,Out of focus",
-      "properties" : {
-        "structurizr.dsl.identifier" : "mitid"
-      },
-      "name" : "MitID",
-      "description" : "MitID is a common login solution for the public sector in Denmark.",
-      "group" : "Signaturgruppen Organization",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "36",
-      "tags" : "Element,Software System",
-      "properties" : {
-        "structurizr.dsl.identifier" : "dh3platform"
-      },
-      "name" : "DH3 Platform",
-      "description" : "Azure-based platform, yet to be given a name",
-      "relationships" : [ {
-        "id" : "67",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "302058e9-d087-4d9f-9367-16483b38a574"
-        },
-        "sourceId" : "36",
-        "destinationId" : "22",
-        "description" : "Supports/hosts"
-      } ],
-      "group" : "Energinet Organization/DataHub Organization",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "4",
+      "id" : "2",
       "tags" : "Element,Software System,Actor",
       "properties" : {
-        "structurizr.dsl.identifier" : "eloverblikthirdpartyuser"
+        "structurizr.dsl.identifier" : "actorb2bsystem"
       },
-      "name" : "Eloverblik Third Party",
-      "description" : "System that interacts with ElOverblik on behalf of a user.",
+      "name" : "Actor B2B System",
+      "description" : "External business transaction system. System-to-system communication (B2B).",
       "relationships" : [ {
-        "id" : "48",
+        "id" : "124",
+        "tags" : "Relationship,Simple View",
+        "properties" : {
+          "structurizr.dsl.identifier" : "0f98fd1b-2590-4406-af18-1c34821d8f09"
+        },
+        "sourceId" : "2",
+        "destinationId" : "120",
+        "description" : "Requests"
+      }, {
+        "id" : "44",
         "tags" : "Relationship",
         "properties" : {
-          "structurizr.dsl.identifier" : "523995af-abcf-44bb-8ede-38ea7a2fada7"
+          "structurizr.dsl.identifier" : "00f4febb-7231-4e1a-940f-9d5cb4d6d639"
         },
-        "sourceId" : "4",
-        "destinationId" : "19",
-        "description" : "Requests <data>",
-        "technology" : "https"
-      } ],
-      "group" : "Business or private person",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "19",
-      "tags" : "Element,Software System",
-      "properties" : {
-        "structurizr.dsl.identifier" : "eloverblik"
-      },
-      "name" : "Eloverblik",
-      "description" : "The platform provides data on electricity consumption and production, allowing customers to have a comprehensive overview across grid areas and energy suppliers.",
-      "relationships" : [ {
-        "id" : "34",
-        "sourceId" : "19",
+        "sourceId" : "2",
+        "destinationId" : "22",
+        "description" : "Requests calculations",
+        "technology" : "peek+dequeue/https"
+      }, {
+        "id" : "126",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "0fea9176-d8dd-4fdb-a6bd-be273ee0ce4b"
+        },
+        "sourceId" : "2",
+        "destinationId" : "125",
+        "description" : "Requests eg. Peek and Dequeue"
+      }, {
+        "id" : "32",
+        "sourceId" : "2",
         "destinationId" : "22",
         "description" : "Request OAuth token",
         "technology" : "https",
-        "linkedRelationshipId" : "33"
+        "linkedRelationshipId" : "31"
       }, {
-        "id" : "53",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "cf8881d4-9704-4d07-b251-a8801b766c53"
-        },
-        "sourceId" : "19",
-        "destinationId" : "22",
-        "description" : "Data",
-        "technology" : "https"
-      }, {
-        "id" : "33",
+        "id" : "31",
         "tags" : "Relationship,OAuth",
         "properties" : {
-          "structurizr.dsl.identifier" : "715e1473-a163-4332-9358-de0f8e98ff19"
+          "structurizr.dsl.identifier" : "e78d8be5-b2bc-4894-b89c-8f0ed5dafc9e"
         },
-        "sourceId" : "19",
+        "sourceId" : "2",
         "destinationId" : "30",
         "description" : "Request OAuth token",
         "technology" : "https"
-      }, {
-        "id" : "50",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "c613ad1e-9a54-43b8-8c78-0dd25bd4e92e"
-        },
-        "sourceId" : "19",
-        "destinationId" : "9",
-        "description" : "Authenticate users",
-        "technology" : "https"
-      }, {
-        "id" : "51",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "593b86b7-b81f-4161-8b45-3b7763b1c6c6"
-        },
-        "sourceId" : "19",
-        "destinationId" : "10",
-        "description" : "Reads CVR data",
-        "technology" : "https"
-      }, {
-        "id" : "41",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "6352b9b2-b718-40ee-bd28-56abb8158879"
-        },
-        "sourceId" : "19",
-        "destinationId" : "7",
-        "description" : "Requests <data>",
-        "technology" : "https"
-      }, {
-        "id" : "49",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "bf8c0e66-39b5-4b99-a159-f6fc66725978"
-        },
-        "sourceId" : "19",
-        "destinationId" : "13",
-        "description" : "Requests emission and residual mix data",
-        "technology" : "https"
       } ],
-      "group" : "Energinet Organization/DataHub Organization",
-      "location" : "Unspecified",
-      "documentation" : { }
-    }, {
-      "id" : "35",
-      "tags" : "Element,Software System",
-      "properties" : {
-        "structurizr.dsl.identifier" : "acorn"
-      },
-      "name" : "Acorn",
-      "description" : "PaaS running on Kubernetes orchestrated by infrastructure as code principles for hosting product applications.",
-      "relationships" : [ {
-        "id" : "65",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "57e2c9da-c002-4a04-84ef-3cee41eb7cd7"
-        },
-        "sourceId" : "35",
-        "destinationId" : "14",
-        "description" : "hosts"
-      }, {
-        "id" : "66",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "f06d06ae-9219-4a49-96fe-415b699f661f"
-        },
-        "sourceId" : "35",
-        "destinationId" : "15",
-        "description" : "hosts"
-      }, {
-        "id" : "64",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "cfcb465f-317b-4508-8ef6-6fcf15c9e809"
-        },
-        "sourceId" : "35",
-        "destinationId" : "19",
-        "description" : "Supports/hosts"
-      }, {
-        "id" : "63",
-        "tags" : "Relationship",
-        "properties" : {
-          "structurizr.dsl.identifier" : "3e5646fb-363a-4311-afdc-32585b427b06"
-        },
-        "sourceId" : "35",
-        "destinationId" : "20",
-        "description" : "Supports/hosts"
-      } ],
-      "group" : "Energinet Organization/DataHub Organization",
+      "group" : "Electricity Supplier or Grid Company",
       "location" : "Unspecified",
       "documentation" : { }
     }, {
@@ -1780,6 +1710,76 @@
       "name" : "CVR",
       "description" : "CVR is a state owned company register in Denmark.",
       "group" : "Erhvervsstyrelsen",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "14",
+      "tags" : "Element,Software System,Out of focus",
+      "properties" : {
+        "structurizr.dsl.identifier" : "poregistry"
+      },
+      "name" : "Project Origin Registry",
+      "description" : "Public permissioned distributed ledger where everyone can validate the granular certificates for their electricity.",
+      "group" : "Energinet Organization",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "13",
+      "tags" : "Element,Software System,Out of focus",
+      "properties" : {
+        "structurizr.dsl.identifier" : "eds"
+      },
+      "name" : "Energi Data Service",
+      "description" : "Data and services about the Danish energy system such as CO2 emissions and consumption and production data.",
+      "group" : "Energinet Organization",
+      "location" : "Unspecified",
+      "documentation" : { }
+    }, {
+      "id" : "35",
+      "tags" : "Element,Software System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "acorn"
+      },
+      "name" : "Acorn",
+      "description" : "PaaS running on Kubernetes orchestrated by infrastructure as code principles for hosting product applications.",
+      "relationships" : [ {
+        "id" : "66",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "f06d06ae-9219-4a49-96fe-415b699f661f"
+        },
+        "sourceId" : "35",
+        "destinationId" : "15",
+        "description" : "hosts"
+      }, {
+        "id" : "63",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "3e5646fb-363a-4311-afdc-32585b427b06"
+        },
+        "sourceId" : "35",
+        "destinationId" : "20",
+        "description" : "Supports/hosts"
+      }, {
+        "id" : "64",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cfcb465f-317b-4508-8ef6-6fcf15c9e809"
+        },
+        "sourceId" : "35",
+        "destinationId" : "19",
+        "description" : "Supports/hosts"
+      }, {
+        "id" : "65",
+        "tags" : "Relationship",
+        "properties" : {
+          "structurizr.dsl.identifier" : "57e2c9da-c002-4a04-84ef-3cee41eb7cd7"
+        },
+        "sourceId" : "35",
+        "destinationId" : "14",
+        "description" : "hosts"
+      } ],
+      "group" : "Energinet Organization/DataHub Organization",
       "location" : "Unspecified",
       "documentation" : { }
     } ],
@@ -1914,7 +1914,7 @@
       }, {
         "id" : "142",
         "x" : 1800,
-        "y" : 783
+        "y" : 778
       }, {
         "id" : "120",
         "x" : 3125,
