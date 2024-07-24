@@ -57,11 +57,4 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\databricks\calculation_engine\package\datamigration\migration_scripts\*.sql">
-      <Link>migration_sql_scripts\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
 </Project>

@@ -55,23 +55,33 @@ jobs:
         tests_filter_expression:
           - name: Orchestrations
             paths: \source\dotnet\wholesale-api\Orchestrations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.dll
+            filter: empty # Means skip
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
           - name: Web API
             paths: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
+            filter: empty # Means skip
             use_azure_functions_tools: true
             contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
             contentroot_variable_value: \source\dotnet\wholesale-api\WebApi
           - name: Calculations
             paths: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
+            filter: empty # Means skip
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
-          - name: Calculation Results
+          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTests
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: DisplayName~AggregatedTimeSeriesQueriesCsvTests
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: DisplayName!~AggregatedTimeSeriesQueriesCsvTests
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
           - name: Events
             paths: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
+            filter: empty # Means skip
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
@@ -86,6 +96,7 @@ jobs:
       # Matrix parameters
       job_name: Integration Tests ${{ matrix.tests_filter_expression.name }}
       tests_dll_file_path: ${{ matrix.tests_filter_expression.paths }}
+      tests_filter_expression: ${{ matrix.tests_filter_expression.filter }}
       use_azure_functions_tools: ${{ matrix.tests_filter_expression.use_azure_functions_tools }}
       aspnetcore_test_contentroot_variable_name: ${{ matrix.tests_filter_expression.contentroot_variable_name }}
       aspnetcore_test_contentroot_variable_value: ${{ matrix.tests_filter_expression.contentroot_variable_value }}
