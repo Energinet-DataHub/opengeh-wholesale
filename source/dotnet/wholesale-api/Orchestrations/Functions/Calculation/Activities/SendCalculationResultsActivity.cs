@@ -44,6 +44,7 @@ internal class SendCalculationResultsActivity(
         ////  - Read calculation by id from database
         ////  - Publish integration events by calculation id (currently this is done in a loop, which we don't want to)
         ////  - Do not update database with "published" state; if publishing fails, the activity should be retried instead.
+        ////    For this to work we must ensure any event sent multiple times uses the same event id (for consumers to be idempotent).
 
         await _integrationEventsPublisher.PublishAsync(CancellationToken.None).ConfigureAwait(false);
 
