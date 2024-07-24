@@ -127,7 +127,9 @@ internal sealed class SettlementReportRequestTrigger
                 return false;
             }
 
-            var actorsGridAreas = await _gridAreaOwnershipClient.GetOwnedByAsync(_userContext.CurrentUser.Actor.ActorNumber).ConfigureAwait(false);
+            var actorsGridAreas = await _gridAreaOwnershipClient
+                .GetOwnedByAsync(_userContext.CurrentUser.Actor.ActorNumber)
+                .ConfigureAwait(false);
 
             return req.Filter.GridAreas.All(x => actorsGridAreas.Contains(x.Key));
         }
@@ -137,7 +139,9 @@ internal sealed class SettlementReportRequestTrigger
             return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
         }
 
-        if (marketRole == FrontendActorMarketRole.SystemOperator)
+        if (marketRole == FrontendActorMarketRole.SystemOperator &&
+            req.Filter.CalculationType != CalculationType.BalanceFixing &&
+            req.Filter.CalculationType != CalculationType.Aggregation)
         {
             return true;
         }
