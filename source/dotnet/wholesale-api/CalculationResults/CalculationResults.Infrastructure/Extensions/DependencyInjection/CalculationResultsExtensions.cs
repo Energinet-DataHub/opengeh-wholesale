@@ -17,8 +17,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementRepor
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
@@ -50,9 +48,7 @@ public static class CalculationResultsExtensions
 
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
         services.AddDbContext<SettlementReportDatabaseContext>(
@@ -76,7 +72,6 @@ public static class CalculationResultsExtensions
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
-        services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
@@ -95,9 +90,7 @@ public static class CalculationResultsExtensions
 
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
         // Settlement Reports
         services.AddScoped<ISettlementReportRequestHandler, SettlementReportRequestHandler>();
@@ -148,9 +141,7 @@ public static class CalculationResultsExtensions
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
-        services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
-        services.AddScoped<ITotalMonthlyAmountResultQueries, TotalMonthlyAmountResultQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
         services.AddScoped<WholesaleServicesQueryStatementWhereClauseProvider>();
