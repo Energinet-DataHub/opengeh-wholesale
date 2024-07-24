@@ -8,6 +8,11 @@ locals {
       "ConsumeServiceBusSettings:EsettExchangeSubscription"   = module.sbtsub_esett_exchange_event_listener.name
       "BlobStorageSettings:AccountUri"                        = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
       "BlobStorageSettings:ContainerName"                     = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
+
+      # Databricks
+      "DatabricksOptions:WorkspaceToken"                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-token;SecretVersion=${data.azurerm_key_vault_secret.dbw_wholesale_workspace_token.version})"
+      "DatabricksOptions:WorkspaceUrl"                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-url)"
+      "DatabricksOptions:WarehouseId"                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-warehouse-id)"
     }
   }
 }
