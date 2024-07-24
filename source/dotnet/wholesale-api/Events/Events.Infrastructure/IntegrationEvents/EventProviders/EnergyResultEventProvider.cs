@@ -23,14 +23,23 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
 public class EnergyResultEventProvider(
     IEnergyResultQueries energyResultQueries,
     IGridLossResultProducedV1Factory gridLossResultProducedV2Factory)
-    : ResultEventProvider, IEnergyResultEventProvider
+    : IEnergyResultEventProvider
 {
     public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
     {
         await foreach (var energyResult in energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
         {
             if (gridLossResultProducedV2Factory.CanCreate(energyResult))
-                yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
+                yield return CreateIntegrationEvent(eventId: energyResult.Id, gridLossResultProducedV2Factory.Create(energyResult));
         }
+    }
+
+    private static IntegrationEvent CreateIntegrationEvent(Guid eventId, IEventMessage eventMessage)
+    {
+        return new IntegrationEvent(
+            eventId,
+            eventMessage.EventName,
+            eventMessage.EventMinorVersion,
+            eventMessage);
     }
 }
