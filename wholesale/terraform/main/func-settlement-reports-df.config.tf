@@ -23,7 +23,7 @@ locals {
       "SettlementReportStorage__StorageContainerName" = local.BLOB_CONTAINER_SETTLEMENTREPORTS_NAME
 
       # Databricks
-      WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token;SecretVersion=${module.kvs_databricks_dbw_workspace_token.version})"
+      WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
       WorkspaceUrl   = "https://${module.dbw.workspace_url}"
       WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
 

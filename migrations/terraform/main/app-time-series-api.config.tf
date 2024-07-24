@@ -1,6 +1,6 @@
 
 locals {
-  app_time_series_api ={
+  app_time_series_api = {
     app_settings = {
       "TimeZone" = "Europe/Copenhagen"
 
@@ -11,14 +11,14 @@ locals {
       "AzureAd__ResourceId" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-timeseriesapi-app-id)"
 
       # Databricks
-      "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token;SecretVersion=${module.kvs_databricks_dbw_workspace_token.version})"
+      "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
       "DatabricksOptions__WarehouseId"          = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
       "DatabricksOptions__WorkspaceUrl"         = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-url)"
       "DatabricksOptions__HealthCheckStartHour" = 5
       "DatabricksOptions__HealthCheckEndHour"   = 16
 
       # Unity Catalog
-      "CatalogOptions__CatalogName"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
+      "CatalogOptions__CatalogName" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
 
       # Logging
       "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_DEFAULT
