@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementRepor
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.Databricks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
@@ -49,7 +48,6 @@ public static class CalculationResultsExtensions
 
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
@@ -92,7 +90,6 @@ public static class CalculationResultsExtensions
 
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
 
         // Settlement Reports
