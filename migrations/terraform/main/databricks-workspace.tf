@@ -96,6 +96,16 @@ module "dbw" {
   ]
 }
 
+resource "databricks_default_namespace_setting" "this" {
+  provider = databricks.dbw
+
+  namespace {
+    value = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  }
+
+  depends_on = [module.dbw]
+}
+
 resource "databricks_git_credential" "ado" {
   provider              = databricks.dbw
   git_username          = var.github_username
