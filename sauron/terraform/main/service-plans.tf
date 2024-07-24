@@ -9,10 +9,10 @@ module "webapp_service_plan" {
   location             = azurerm_resource_group.this.location
   sku_name             = "P0v3"
 
-  monitor_alerts_action_group_id = length(module.monitor_action_group_sauron) != 1 ? null : module.monitor_action_group_sauron[0].id
+  monitor_alerts_action_group_id = module.monitor_action_group_sauron.id
 
   cpu_alert_information = {
-    alerts_enabled = length(module.monitor_action_group_sauron) != 1 ? false : true
+    alerts_enabled = true
     frequency      = "PT1M"
     window_size    = "PT5M"
     threshold      = 80
@@ -20,7 +20,7 @@ module "webapp_service_plan" {
   }
 
   memory_alert_information = {
-    alerts_enabled = length(module.monitor_action_group_sauron) != 1 ? false : true
+    alerts_enabled = true
     frequency      = "PT1M"
     window_size    = "PT5M"
     threshold      = 80
