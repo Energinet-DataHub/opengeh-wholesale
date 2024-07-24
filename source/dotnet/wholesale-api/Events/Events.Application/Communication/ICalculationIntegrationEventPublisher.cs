@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 /// <summary>
-/// Used to query wholesale data for a single calculation result
+/// Responsible for publishing integration events for a completed calculation, using Service Bus.
 /// </summary>
-public interface IWholesaleResultQueries
+public interface ICalculationIntegrationEventPublisher
 {
     /// <summary>
-    /// Get all wholesale results for a given calculation.
+    /// Publish integration events for a completed calculation, using Service Bus.
     /// </summary>
-    IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
+    Task PublishAsync(CompletedCalculation completedCalculation, CancellationToken cancellationToken);
 }

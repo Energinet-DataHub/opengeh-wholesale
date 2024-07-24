@@ -32,46 +32,6 @@ public class CompletedCalculationRepositoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetLastCompletedOrNullAsync_WhenNone_ReturnsNull(
-        Mock<EventsDatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
-            .ReturnsDbSet(new List<CompletedCalculation>());
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
-
-        // Act
-        var actual = await sut.GetLastCompletedOrNullAsync();
-
-        // Assert
-        actual.Should().BeNull();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetLastCompletedOrNullAsync_WhenMore_ReturnsLastByCompletedTime(
-        CompletedCalculation calculationCompletedFirst,
-        CompletedCalculation calculationCompletedLast,
-        [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
-
-        databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
-            .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
-
-        // Act
-        var actual = await sut.GetLastCompletedOrNullAsync();
-
-        // Assert
-        actual.Should().Be(calculationCompletedLast);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public async Task GetNextUnpublishedOrNullAsync_WhenNone_ReturnsNull(
         Mock<EventsDatabaseContext> databaseContextMock)
     {

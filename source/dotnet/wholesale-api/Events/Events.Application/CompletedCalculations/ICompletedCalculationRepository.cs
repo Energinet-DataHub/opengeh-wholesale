@@ -20,7 +20,5 @@ public interface ICompletedCalculationRepository
 
     Task<CompletedCalculation> GetAsync(Guid calculationId);
 
-    Task<CompletedCalculation?> GetLastCompletedOrNullAsync();
-
     Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync();
 }

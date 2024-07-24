@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
+using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
@@ -87,7 +88,8 @@ public static class EventsExtensions
 
         services
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
-            .AddScoped<ICalculationCompletedEventProvider, CalculationCompletedEventProvider>();
+            .AddScoped<ICalculationCompletedEventProvider, CalculationCompletedEventProvider>()
+            .AddScoped<ICalculationIntegrationEventPublisher, CalculationIntegrationEventPublisher>();
 
         var serviceBusNamespaceOptions = configuration
             .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
@@ -101,7 +103,9 @@ public static class EventsExtensions
             options.ServiceBusConnectionString = serviceBusNamespaceOptions!.ConnectionString;
             options.TopicName = integrationEventsOptions!.TopicName;
         });
-        services.AddPublisher<IntegrationEventProvider>();
+        //// TODO - XDAST: Currently refactoring, so this is a step on the way. Registration code was copied from the Messaging package.
+        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>();
+        services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         // Health checks
         services.AddHealthChecks()
@@ -118,8 +122,7 @@ public static class EventsExtensions
     public static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
     {
         services
-            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
-            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>(); // This depends on services within Calculations sub-area
+            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>();
 
         return services;
     }

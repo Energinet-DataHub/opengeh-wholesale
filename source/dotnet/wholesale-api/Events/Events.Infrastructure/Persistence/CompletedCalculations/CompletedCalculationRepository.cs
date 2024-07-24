@@ -37,14 +37,6 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
             .SingleAsync(c => c.Id == calculationId);
     }
 
-    public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
-    {
-        return await _context.CompletedCalculations
-            .OrderByDescending(x => x.CompletedTime)
-            .FirstOrDefaultAsync()
-            .ConfigureAwait(false);
-    }
-
     public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
         return await _context.CompletedCalculations
