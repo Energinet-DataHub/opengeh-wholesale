@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.Azure.Functions.Worker;
 using NodaTime;
@@ -21,13 +22,13 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 internal class SendCalculationResultsActivity(
-    IPublisher integrationEventsPublisher,
+    ICalculationIntegrationEventPublisher integrationEventsPublisher,
     ICalculationRepository calculationRepository,
     ICompletedCalculationRepository completedCalculationRepository,
     IClock clock,
     IUnitOfWork calculationUnitOfWork)
 {
-    private readonly IPublisher _integrationEventsPublisher = integrationEventsPublisher;
+    private readonly ICalculationIntegrationEventPublisher _integrationEventsPublisher = integrationEventsPublisher;
     private readonly ICompletedCalculationRepository _completedCalculationRepository = completedCalculationRepository;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
     private readonly IClock _clock = clock;
@@ -40,21 +41,8 @@ internal class SendCalculationResultsActivity(
     public async Task Run(
         [ActivityTrigger] Guid calculationId)
     {
-        //// TODO - XDAST refactoring:
-        ////  - Read calculation by id from database
-        ////  - Publish integration events by calculation id (currently this is done in a loop, which we don't want to)
-        ////  - Do not update database with "published" state; if publishing fails, the activity should be retried instead.
-        ////    For this to work we must ensure any event sent multiple times uses the same event id (for consumers to be idempotent).
-
-        await _integrationEventsPublisher.PublishAsync(CancellationToken.None).ConfigureAwait(false);
-
         var completedCalculation = await _completedCalculationRepository.GetAsync(calculationId).ConfigureAwait(false);
-
-        if (completedCalculation.PublishFailed)
-            throw new Exception($"Publish failed for completed calculation (id: {calculationId})");
-
-        if (!completedCalculation.IsPublished)
-            throw new Exception($"Completed calculation (id: {calculationId}) was not published");
+        await _integrationEventsPublisher.PublishAsync(completedCalculation, CancellationToken.None).ConfigureAwait(false);
 
         var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
         calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());

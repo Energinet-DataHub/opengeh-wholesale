@@ -111,11 +111,11 @@ internal class CalculationOrchestration
                 new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId),
                 defaultRetryOptions);
 
-            // TODO XDAST: Add retry policy when we have removed the old integration events
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
                 nameof(SendCalculationResultsActivity),
-                calculationMetadata.Id);
+                calculationMetadata.Id,
+                defaultRetryOptions);
             calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
             context.SetCustomStatus(calculationMetadata);
