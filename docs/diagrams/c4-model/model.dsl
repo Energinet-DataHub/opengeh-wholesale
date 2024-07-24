@@ -76,7 +76,7 @@ wholesaleSubsystem = group "Wholesale" {
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleCalculator "Sends requests to"
-        this -> wholesaleDataLake "Retrieves results from"
+        this -> wholesaleRuntimeWarehouse "Retrieves results from"
         this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
 
         # Subsystem-to-Subsystem relationships
