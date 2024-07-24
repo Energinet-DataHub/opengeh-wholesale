@@ -40,6 +40,11 @@ internal class SendCalculationResultsActivity(
     public async Task Run(
         [ActivityTrigger] Guid calculationId)
     {
+        //// TODO - XDAST refactoring:
+        ////  - Read calculation by id from database
+        ////  - Publish integration events by calculation id (currently this is done in a loop, which we don't want to)
+        ////  - Do not update database with "published" state; if publishing fails, the activity should be retried instead.
+
         await _integrationEventsPublisher.PublishAsync(CancellationToken.None).ConfigureAwait(false);
 
         var completedCalculation = await _completedCalculationRepository.GetAsync(calculationId).ConfigureAwait(false);
