@@ -139,7 +139,9 @@ internal sealed class SettlementReportRequestTrigger
             return req.Filter.EnergySupplier == _userContext.CurrentUser.Actor.ActorNumber;
         }
 
-        if (marketRole == FrontendActorMarketRole.SystemOperator && req.Filter.CalculationType != CalculationType.BalanceFixing)
+        if (marketRole == FrontendActorMarketRole.SystemOperator &&
+            req.Filter.CalculationType != CalculationType.BalanceFixing &&
+            req.Filter.CalculationType != CalculationType.Aggregation)
         {
             return true;
         }
