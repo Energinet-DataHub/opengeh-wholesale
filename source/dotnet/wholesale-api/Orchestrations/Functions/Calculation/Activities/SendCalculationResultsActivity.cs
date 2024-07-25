@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using NodaTime;
@@ -27,14 +25,12 @@ internal class SendCalculationResultsActivity(
     ICalculationIntegrationEventPublisher integrationEventsPublisher,
     ICalculationRepository calculationRepository,
     ICalculationDtoMapper calculationDtoMapper,
-    ICompletedCalculationFactory completedCalculationFactory,
     IClock clock,
     IUnitOfWork calculationUnitOfWork)
 {
     private readonly ICalculationIntegrationEventPublisher _integrationEventsPublisher = integrationEventsPublisher;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
     private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
-    private readonly ICompletedCalculationFactory _completedCalculationFactory = completedCalculationFactory;
     private readonly IClock _clock = clock;
     private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
 
@@ -48,8 +44,7 @@ internal class SendCalculationResultsActivity(
         var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
         var calculationDto = _calculationDtoMapper.Map(calculation);
 
-        var completedCalculation = _completedCalculationFactory.CreateFromCalculation(calculationDto, input.OrchestrationInstanceId);
-        await _integrationEventsPublisher.PublishAsync(completedCalculation, CancellationToken.None).ConfigureAwait(false);
+        await _integrationEventsPublisher.PublishAsync(calculationDto, input.OrchestrationInstanceId, CancellationToken.None).ConfigureAwait(false);
 
         calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);

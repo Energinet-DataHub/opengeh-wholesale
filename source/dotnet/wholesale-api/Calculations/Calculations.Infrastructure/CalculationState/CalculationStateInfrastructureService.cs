@@ -45,7 +45,6 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
     /// <returns>Calculations that have been completed</returns>
     public async Task UpdateStateAsync()
     {
-        var completedCalculations = new List<Calculation>();
         var states = new List<CalculationExecutionState>
         {
             CalculationExecutionState.Submitted, CalculationExecutionState.Pending, CalculationExecutionState.Executing,
