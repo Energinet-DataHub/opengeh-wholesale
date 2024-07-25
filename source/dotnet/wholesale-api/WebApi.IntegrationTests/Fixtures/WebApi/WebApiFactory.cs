@@ -34,13 +34,6 @@ public class WebApiFactory : WebApplicationFactory<Program>
 {
     private bool _authenticationEnabled;
 
-    /// <summary>
-    ///     Allow configuring the behaviour of the <see cref="ISettlementReportClient" /> by providing a custom
-    ///     <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
-    ///     NOTE: This will only work as expected as long as no tests are executed in parallel.
-    /// </summary>
-    public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
-
     public Mock<ICalculationsClient>? CalculationsClientMock { get; set; }
 
     public Mock<IUserContext<FrontendUser>>? UserContextMock { get; }
@@ -68,9 +61,6 @@ public class WebApiFactory : WebApplicationFactory<Program>
                 services.AddSingleton<IAuthorizationHandler>(new AllowAnonymous());
             }
 
-            services.AddScoped(_ =>
-                SettlementReportApplicationServiceMock?.Object ??
-                new Mock<ISettlementReportClient>().Object);
             services.AddScoped(_ => CalculationsClientMock?.Object ?? new Mock<ICalculationsClient>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();

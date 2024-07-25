@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
@@ -45,10 +44,6 @@ public static class CalculationResultsExtensions
 
         services.AddDatabricksSqlStatementForApplication(configuration);
         services.AddDataLakeClientForApplication();
-
-        services.AddScoped<ISettlementReportClient, SettlementReportClient>();
-        services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        services.AddScoped<IStreamZipper, StreamZipper>();
 
         services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
         services.AddDbContext<SettlementReportDatabaseContext>(
@@ -87,10 +82,6 @@ public static class CalculationResultsExtensions
 
         services.AddDatabricksSqlStatementForApplication(configuration);
         services.AddDataLakeClientForApplication();
-
-        services.AddScoped<ISettlementReportClient, SettlementReportClient>();
-        services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        services.AddScoped<IStreamZipper, StreamZipper>();
 
         // Settlement Reports
         services.AddScoped<ISettlementReportRequestHandler, SettlementReportRequestHandler>();
