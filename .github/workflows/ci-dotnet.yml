@@ -69,14 +69,19 @@ jobs:
             filter: empty # Means skip
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTests.Given_EnergySupplier
+          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTests split 1
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: DisplayName~AggregatedTimeSeriesQueriesCsvTests.Given_EnergySupplier
+            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName~BalanceResponsible)
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests.Given_EnergySupplier
+          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTests split 2
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: DisplayName!~AggregatedTimeSeriesQueriesCsvTests.Given_EnergySupplier
+            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName!~BalanceResponsible)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: DisplayName!~AggregatedTimeSeriesQueriesCsvTests
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
           - name: Events
