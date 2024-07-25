@@ -16,4 +16,6 @@ module "monitor_action_group_mig" {
   custom_dimension_subsystem_name = "migration"
 
   application_insights_id = data.azurerm_key_vault_secret.appi_id.value
+
+  query_alerts_list = []
 }
