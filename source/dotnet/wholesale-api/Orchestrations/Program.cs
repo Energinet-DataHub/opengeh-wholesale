@@ -57,7 +57,6 @@ var host = new HostBuilder()
 
         // => Sub-modules of Events
         services.AddIntegrationEventsPublishing(context.Configuration);
-        services.AddCompletedCalculationsHandling();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

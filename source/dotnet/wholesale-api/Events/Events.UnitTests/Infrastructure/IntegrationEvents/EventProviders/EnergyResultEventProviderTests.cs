@@ -18,7 +18,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using FluentAssertions;
@@ -40,16 +39,10 @@ public class EnergyResultEventProviderTests
     private readonly string? _fromGridArea = null;
     private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
     private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
-    private readonly CompletedCalculation _completedCalculation;
     private readonly Resolution _resolution = Resolution.Quarter;
 
     public EnergyResultEventProviderTests()
     {
-        var fixture = new Fixture();
-        _completedCalculation = fixture
-            .Build<CompletedCalculation>()
-            .With(p => p.Id, _calculationId)
-            .Create();
     }
 
     [Theory]
@@ -69,11 +62,11 @@ public class EnergyResultEventProviderTests
             gridLossResultProducedV1Factory);
 
         energyResultQueriesMock
-            .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+            .Setup(mock => mock.GetAsync(_calculationId))
             .Returns(energyResults.ToAsyncEnumerable());
 
         // Act
-        var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+        var actualIntegrationEvents = await sut.GetAsync(_calculationId).ToListAsync();
 
         // Assert
         actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
@@ -99,11 +92,11 @@ public class EnergyResultEventProviderTests
                 gridLossResultProducedV1Factory);
 
             energyResultQueriesMock
-                .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+                .Setup(mock => mock.GetAsync(_calculationId))
                 .Returns(energyResults.ToAsyncEnumerable());
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(_calculationId).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Where(e => e.EventName == gridLossEventName).Should().BeEmpty();

@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
@@ -77,14 +76,6 @@ public static class EventsExtensions
                 integrationEventsOptions!.TopicName,
                 integrationEventsOptions.SubscriptionName,
                 name: HealthCheckNames.IntegrationEventsTopicSubscription);
-
-        return services;
-    }
-
-    public static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
-    {
-        services
-            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>();
 
         return services;
     }

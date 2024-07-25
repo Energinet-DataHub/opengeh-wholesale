@@ -15,8 +15,8 @@
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
@@ -44,14 +44,14 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         _logger = logger;
     }
 
-    public async Task PublishAsync(CompletedCalculation completedCalculation, CancellationToken cancellationToken)
+    public async Task PublishAsync(CalculationDto completedCalculation, string orchestrationInstanceId, CancellationToken cancellationToken)
     {
         // TODO - XDAST: Currently refactoring. This code was copied from the Messaging package.
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
         var messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
-        await foreach (var @event in GetAsync(completedCalculation).WithCancellation(cancellationToken).ConfigureAwait(false))
+        await foreach (var @event in GetAsync(completedCalculation, orchestrationInstanceId).WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -84,13 +84,13 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         }
     }
 
-    private async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation completedCalculation)
+    private async IAsyncEnumerable<IntegrationEvent> GetAsync(CalculationDto completedCalculation, string orchestrationInstanceId)
     {
         var hasFailed = false;
 
         // Publish integration events for energy results
         var energyResultCount = 0;
-        var energyResultEventProviderEnumerator = _energyResultEventProvider.GetAsync(completedCalculation).GetAsyncEnumerator();
+        var energyResultEventProviderEnumerator = _energyResultEventProvider.GetAsync(completedCalculation.CalculationId).GetAsyncEnumerator();
         try
         {
             var hasResult = true;
@@ -104,7 +104,7 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
                 {
                     hasResult = false;
                     hasFailed = true;
-                    _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{energy_result_count}' energy results before failing.", completedCalculation.Id, energyResultCount);
+                    _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{energy_result_count}' energy results before failing.", completedCalculation.CalculationId, energyResultCount);
                 }
 
                 if (hasResult)
@@ -126,12 +126,12 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         IntegrationEvent? calculationCompletedEvent = default;
         try
         {
-            calculationCompletedEvent = _calculationCompletedEventProvider.Get(completedCalculation);
+            calculationCompletedEvent = _calculationCompletedEventProvider.Get(completedCalculation, orchestrationInstanceId);
         }
         catch (Exception ex)
         {
             hasFailed = true;
-            _logger.LogError(ex, "Failed calculation completed event publishing for completed calculation {calculation_id}.", completedCalculation.Id);
+            _logger.LogError(ex, "Failed calculation completed event publishing for completed calculation {calculation_id}.", completedCalculation.CalculationId);
         }
 
         if (calculationCompletedEvent != null)
@@ -141,10 +141,10 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
         if (hasFailed)
         {
-            throw new Exception($"Publish failed for completed calculation (id: {completedCalculation.Id})");
+            throw new Exception($"Publish failed for completed calculation (id: {completedCalculation.CalculationId})");
         }
 
-        _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus ({energy_result_count} integration events).", completedCalculation.Id, energyResultCount);
+        _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus ({energy_result_count} integration events).", completedCalculation.CalculationId, energyResultCount);
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
