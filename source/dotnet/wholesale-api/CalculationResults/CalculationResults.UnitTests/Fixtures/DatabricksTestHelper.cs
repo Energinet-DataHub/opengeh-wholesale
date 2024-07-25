@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Fixtures;
 
 public static class DatabricksTestHelper
 {
