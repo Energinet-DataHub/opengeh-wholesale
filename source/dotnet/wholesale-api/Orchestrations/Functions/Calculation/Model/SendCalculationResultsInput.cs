@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
+
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
 /// <summary>
-/// An immutable input to start the calculation completed activity.
+/// An immutable input to start the <see cref="SendCalculationResultsActivity"/>.
 /// </summary>
-public sealed record CreateCompletedCalculationInput(
+public sealed record SendCalculationResultsInput(
     Guid CalculationId,
     string OrchestrationInstanceId);
