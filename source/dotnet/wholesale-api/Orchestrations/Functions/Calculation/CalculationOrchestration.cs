@@ -105,16 +105,10 @@ internal class CalculationOrchestration
             calculationMetadata.OrchestrationProgress = "CalculationJobCompleted";
             context.SetCustomStatus(calculationMetadata);
 
-            // OBSOLETE: Create calculation completed (SQL - Event database)
-            await context.CallActivityAsync(
-                nameof(CreateCompletedCalculationActivity),
-                new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId),
-                defaultRetryOptions);
-
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
                 nameof(SendCalculationResultsActivity),
-                calculationMetadata.Id,
+                new SendCalculationResultsInput(calculationMetadata.Id, context.InstanceId),
                 defaultRetryOptions);
             calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
