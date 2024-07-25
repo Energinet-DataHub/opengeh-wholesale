@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -23,24 +24,24 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationSta
 public class CalculationStateInfrastructureService : ICalculationStateInfrastructureService
 {
     private readonly ICalculationRepository _calculationRepository;
-    private readonly ICalculationInfrastructureService _calculationInfrastructureService;
+    private readonly ICalculationEngineClient _calculationEngineClient;
     private readonly IClock _clock;
     private readonly ILogger _logger;
 
     public CalculationStateInfrastructureService(
         ICalculationRepository calculationRepository,
-        ICalculationInfrastructureService calculationInfrastructureService,
+        ICalculationEngineClient calculationEngineClient,
         ILogger<CalculationStateInfrastructureService> logger,
         IClock clock)
     {
         _calculationRepository = calculationRepository;
-        _calculationInfrastructureService = calculationInfrastructureService;
+        _calculationEngineClient = calculationEngineClient;
         _logger = logger;
         _clock = clock;
     }
 
     /// <summary>
-    /// Update the states in the calculation repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
+    /// Update the states in the calculation repository by mapping the job states from the runs <see cref="ICalculationEngineClient"/>
     /// </summary>
     /// <returns>Calculations that have been completed</returns>
     public async Task UpdateStateAsync()
@@ -54,7 +55,7 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
         {
             try
             {
-                var jobState = await _calculationInfrastructureService
+                var jobState = await _calculationEngineClient
                     .GetStatusAsync(calculation.CalculationJobId!)
                     .ConfigureAwait(false);
 

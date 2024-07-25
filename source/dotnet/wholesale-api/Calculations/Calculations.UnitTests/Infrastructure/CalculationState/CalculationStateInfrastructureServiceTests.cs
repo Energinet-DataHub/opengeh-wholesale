@@ -16,6 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 using Energinet.DataHub.Wholesale.Test.Core;
@@ -33,7 +34,7 @@ public class CalculationStateInfrastructureServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateCalculationToExecuting(
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange
@@ -55,7 +56,7 @@ public class CalculationStateInfrastructureServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsCompleted_UpdateCalculationToCompleted(
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange
@@ -82,7 +83,7 @@ public class CalculationStateInfrastructureServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateCalculationToCreated(
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange
@@ -104,7 +105,7 @@ public class CalculationStateInfrastructureServiceTests
     public async Task UpdateExecutionState_ToCompleted(
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange
@@ -134,7 +135,7 @@ public class CalculationStateInfrastructureServiceTests
     public async Task UpdateExecutionState_WhenCompleting_CompletedCalculation(
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange
@@ -160,7 +161,7 @@ public class CalculationStateInfrastructureServiceTests
     public async Task UpdateExecutionState_When_JobRunnerThrowsException_Then_SkipCalculation(
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange
@@ -194,7 +195,7 @@ public class CalculationStateInfrastructureServiceTests
         [Frozen] Mock<ILogger<CalculationStateInfrastructureService>> loggerMock,
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        [Frozen] Mock<ICalculationEngineClient> calculatorJobRunnerMock,
         CalculationStateInfrastructureService sut)
     {
         // Arrange

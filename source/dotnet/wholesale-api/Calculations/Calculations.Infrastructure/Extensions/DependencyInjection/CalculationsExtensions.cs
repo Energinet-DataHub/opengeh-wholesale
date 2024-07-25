@@ -42,7 +42,6 @@ public static class CalculationsExtensions
 
         services.AddScoped<ICalculationsClient, CalculationsClient>();
         services.AddScoped<ICalculationStateInfrastructureService, CalculationStateInfrastructureService>();
-        services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         services.AddScoped<ICalculationFactory, CalculationFactory>();
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
