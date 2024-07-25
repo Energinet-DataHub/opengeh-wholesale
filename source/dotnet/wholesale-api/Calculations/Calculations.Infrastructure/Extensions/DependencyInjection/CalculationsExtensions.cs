@@ -79,7 +79,6 @@ public static class CalculationsExtensions
 
         services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
         services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        services.AddScoped<IUpdateCalculationStateHandler, UpdateCalculationStateHandler>();
 
         return services;
     }
