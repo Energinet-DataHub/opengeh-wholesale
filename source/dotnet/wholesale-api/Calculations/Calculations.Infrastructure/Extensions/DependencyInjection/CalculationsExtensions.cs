@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
@@ -41,8 +40,6 @@ public static class CalculationsExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         services.AddScoped<ICalculationsClient, CalculationsClient>();
-        services.AddScoped<ICalculationStateInfrastructureService, CalculationStateInfrastructureService>();
-        services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         services.AddScoped<ICalculationFactory, CalculationFactory>();
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
@@ -76,10 +73,6 @@ public static class CalculationsExtensions
         services.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
         services.AddScoped<IGridAreaOwnershipClient, GridAreaOwnershipClient>();
-
-        services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
-        services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        services.AddScoped<IUpdateCalculationStateHandler, UpdateCalculationStateHandler>();
 
         return services;
     }
