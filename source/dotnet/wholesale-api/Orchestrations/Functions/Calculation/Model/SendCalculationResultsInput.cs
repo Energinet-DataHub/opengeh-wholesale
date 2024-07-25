@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-public interface IUnitOfWork
-{
-    Task CommitAsync();
-}
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+
+/// <summary>
+/// An immutable input to start the <see cref="SendCalculationResultsActivity"/>.
+/// </summary>
+public sealed record SendCalculationResultsInput(
+    Guid CalculationId,
+    string OrchestrationInstanceId);

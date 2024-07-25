@@ -14,8 +14,10 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using NodaTime;
 
@@ -24,13 +26,15 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activ
 internal class SendCalculationResultsActivity(
     ICalculationIntegrationEventPublisher integrationEventsPublisher,
     ICalculationRepository calculationRepository,
-    ICompletedCalculationRepository completedCalculationRepository,
+    ICalculationDtoMapper calculationDtoMapper,
+    ICompletedCalculationFactory completedCalculationFactory,
     IClock clock,
     IUnitOfWork calculationUnitOfWork)
 {
     private readonly ICalculationIntegrationEventPublisher _integrationEventsPublisher = integrationEventsPublisher;
-    private readonly ICompletedCalculationRepository _completedCalculationRepository = completedCalculationRepository;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
+    private readonly ICompletedCalculationFactory _completedCalculationFactory = completedCalculationFactory;
     private readonly IClock _clock = clock;
     private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
 
@@ -39,14 +43,15 @@ internal class SendCalculationResultsActivity(
     /// </summary>
     [Function(nameof(SendCalculationResultsActivity))]
     public async Task Run(
-        [ActivityTrigger] Guid calculationId)
+        [ActivityTrigger] SendCalculationResultsInput input)
     {
-        var completedCalculation = await _completedCalculationRepository.GetAsync(calculationId).ConfigureAwait(false);
+        var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
+        var calculationDto = _calculationDtoMapper.Map(calculation);
+
+        var completedCalculation = _completedCalculationFactory.CreateFromCalculation(calculationDto, input.OrchestrationInstanceId);
         await _integrationEventsPublisher.PublishAsync(completedCalculation, CancellationToken.None).ConfigureAwait(false);
 
-        var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
         calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
-
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }
