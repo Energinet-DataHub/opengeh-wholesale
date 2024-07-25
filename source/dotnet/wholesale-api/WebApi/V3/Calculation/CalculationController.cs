@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
-using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,35 +26,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 public class CalculationController : V3ControllerBase
 {
     private readonly ICalculationsClient _calculationsClient;
-    private readonly ICreateCalculationHandler _createCalculationHandler;
-    private readonly IUserContext<FrontendUser> _userContext;
 
     public CalculationController(
-        ICalculationsClient calculationsClient,
-        ICreateCalculationHandler createCalculationHandler,
-        IUserContext<FrontendUser> userContext)
+        ICalculationsClient calculationsClient)
     {
         _calculationsClient = calculationsClient;
-        _createCalculationHandler = createCalculationHandler;
-        _userContext = userContext;
-    }
-
-    /// <summary>
-    /// Create a calculation.
-    /// </summary>
-    /// <returns>200 Ok with The calculation id, or a 400 with an errormessage</returns>
-    [HttpPost(Name = "CreateCalculation")]
-    [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(Guid))]
-    [Authorize(Roles = Permissions.CalculationsManage)]
-    public async Task<Guid> CreateAsync([FromBody][Required] CalculationRequestDto calculationRequestDto)
-    {
-        return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            CalculationTypeMapper.Map(calculationRequestDto.CalculationType),
-            calculationRequestDto.GridAreaCodes,
-            calculationRequestDto.StartDate,
-            calculationRequestDto.EndDate,
-            _userContext.CurrentUser.UserId)).ConfigureAwait(false);
     }
 
     /// <summary>

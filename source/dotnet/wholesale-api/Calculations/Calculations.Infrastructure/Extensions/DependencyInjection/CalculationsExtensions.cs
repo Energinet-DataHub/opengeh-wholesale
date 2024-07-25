@@ -77,8 +77,6 @@ public static class CalculationsExtensions
 
         services.AddScoped<IGridAreaOwnershipClient, GridAreaOwnershipClient>();
 
-        services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
-
         return services;
     }
 }
