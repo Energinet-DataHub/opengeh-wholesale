@@ -42,11 +42,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Create a calculation.
+        /// Returns a calculation matching calculationId.
         /// </summary>
+        /// <param name="calculationId">CalculationId</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Guid> CreateCalculationAsync(CalculationRequestDto body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<CalculationDto> GetCalculationAsync(System.Guid calculationId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -58,12 +59,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Returns a calculation matching calculationId.
+        /// Returns a subset of calculations that are valid for use with settlement reports.
+        /// <br/>Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
         /// </summary>
-        /// <param name="calculationId">CalculationId</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<CalculationDto> GetCalculationAsync(System.Guid calculationId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SettlementReportApplicableCalculationDto>> GetApplicableCalculationsAsync(CalculationType? calculationType = null, System.Collections.Generic.IEnumerable<string> gridAreaCodes = null, System.DateTimeOffset? periodStart = null, System.DateTimeOffset? periodEnd = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -126,14 +127,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Create a calculation.
+        /// Returns a calculation matching calculationId.
         /// </summary>
+        /// <param name="calculationId">CalculationId</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Guid> CreateCalculationAsync(CalculationRequestDto body, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<CalculationDto> GetCalculationAsync(System.Guid calculationId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (body == null)
-                throw new System.ArgumentNullException("body");
+            if (calculationId == null)
+                throw new System.ArgumentNullException("calculationId");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -141,17 +143,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "v3/calculations"
-                    urlBuilder_.Append("v3/calculations");
+                    // Operation Path: "v3/calculations/{calculationId}"
+                    urlBuilder_.Append("v3/calculations/");
+                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(calculationId, System.Globalization.CultureInfo.InvariantCulture)));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -178,7 +177,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Guid>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<CalculationDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -307,16 +306,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Returns a calculation matching calculationId.
+        /// Returns a subset of calculations that are valid for use with settlement reports.
+        /// <br/>Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
         /// </summary>
-        /// <param name="calculationId">CalculationId</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<CalculationDto> GetCalculationAsync(System.Guid calculationId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SettlementReportApplicableCalculationDto>> GetApplicableCalculationsAsync(CalculationType? calculationType = null, System.Collections.Generic.IEnumerable<string> gridAreaCodes = null, System.DateTimeOffset? periodStart = null, System.DateTimeOffset? periodEnd = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (calculationId == null)
-                throw new System.ArgumentNullException("calculationId");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
@@ -328,9 +324,26 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "v3/calculations/{calculationId}"
-                    urlBuilder_.Append("v3/calculations/");
-                    urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(calculationId, System.Globalization.CultureInfo.InvariantCulture)));
+                    // Operation Path: "v3/SettlementReport"
+                    urlBuilder_.Append("v3/SettlementReport");
+                    urlBuilder_.Append('?');
+                    if (calculationType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("calculationType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(calculationType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (gridAreaCodes != null)
+                    {
+                        foreach (var item_ in gridAreaCodes) { urlBuilder_.Append(System.Uri.EscapeDataString("gridAreaCodes")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
+                    }
+                    if (periodStart != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("periodStart")).Append('=').Append(System.Uri.EscapeDataString(periodStart.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (periodEnd != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("periodEnd")).Append('=').Append(System.Uri.EscapeDataString(periodEnd.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -357,7 +370,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<CalculationDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<SettlementReportApplicableCalculationDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -685,30 +698,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
     }
 
-    /// <summary>
-    /// An immutable request to create a calculation.
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.7.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class CalculationRequestDto
-    {
-        /// <summary>
-        /// Defines the wholesale calculation type
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("calculationType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public CalculationType CalculationType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("gridAreaCodes", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> GridAreaCodes { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset StartDate { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset EndDate { get; set; }
-
-    }
-
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.7.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public enum CalculationState
     {
@@ -751,6 +740,26 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         [System.Runtime.Serialization.EnumMember(Value = @"ThirdCorrectionSettlement")]
         ThirdCorrectionSettlement = 5,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.0.7.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class SettlementReportApplicableCalculationDto
+    {
+        [Newtonsoft.Json.JsonProperty("calculationId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid CalculationId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("calculationTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset CalculationTime { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("periodStart", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset PeriodStart { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("periodEnd", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset PeriodEnd { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("gridAreaCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string GridAreaCode { get; set; }
 
     }
 
