@@ -36,31 +36,15 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensio
 /// </summary>
 public static class CalculationResultsExtensions
 {
+    /// <summary>
+    /// Dependencies for retrieving calculation results; excluding dependencies used for Settlement Reports.
+    /// </summary>
     public static IServiceCollection AddCalculationResultsModule(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
         services.AddDatabricksSqlStatementForApplication(configuration);
         services.AddDataLakeClientForApplication();
-
-        services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
-        services.AddDbContext<SettlementReportDatabaseContext>(
-            options => options.UseSqlServer(
-                configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
-                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.EnableRetryOnFailure();
-                }));
-        // Database Health check
-        services.TryAddHealthChecks(
-            registrationKey: HealthCheckNames.WholesaleDatabase,
-            (key, builder) =>
-            {
-                builder.AddDbContextCheck<SettlementReportDatabaseContext>(name: key);
-            });
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
