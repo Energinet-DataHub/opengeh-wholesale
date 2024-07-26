@@ -16,28 +16,31 @@ using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
-// TODO - XDAST: Currently refactoring, so this is a step on the way. Some code was copied from the Messaging package.
-public class CalculationIntegrationEventPublisher : ICalculationIntegrationEventPublisher
+// TODO - XDAST: Currently refactoring, so this is a step on the way. Some code was copied from the Messaging package and later refactored.
+public class CalculationIntegrationEventPublisher : ICalculationIntegrationEventPublisher, IAsyncDisposable
 {
-    private readonly IServiceBusSenderProvider _senderProvider;
+    private readonly ServiceBusSender _sender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ICalculationCompletedEventProvider _calculationCompletedEventProvider;
     private readonly IEnergyResultEventProvider _energyResultEventProvider;
     private readonly ILogger _logger;
 
     public CalculationIntegrationEventPublisher(
-        IServiceBusSenderProvider senderProvider,
+        IOptions<IntegrationEventsOptions> integrationEventsOptions,
+        ServiceBusClient serviceBusClient,
         IServiceBusMessageFactory serviceBusMessageFactory,
         ICalculationCompletedEventProvider calculationCompletedEventProvider,
         IEnergyResultEventProvider energyResultEventProvider,
         ILogger<CalculationIntegrationEventPublisher> logger)
     {
-        _senderProvider = senderProvider;
+        _sender = serviceBusClient.CreateSender(integrationEventsOptions.Value.TopicName);
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _calculationCompletedEventProvider = calculationCompletedEventProvider;
         _energyResultEventProvider = energyResultEventProvider;
@@ -49,7 +52,7 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         // TODO - XDAST: Currently refactoring. This code was copied from the Messaging package.
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
-        var messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
+        var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
         await foreach (var @event in GetAsync(completedCalculation, orchestrationInstanceId).WithCancellation(cancellationToken).ConfigureAwait(false))
         {
@@ -60,7 +63,7 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
             if (!messageBatch.TryAddMessage(serviceBusMessage))
             {
                 await SendBatchAsync(messageBatch).ConfigureAwait(false);
-                messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
+                messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
                 if (!messageBatch.TryAddMessage(serviceBusMessage))
                 {
@@ -71,7 +74,7 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
         try
         {
-            await _senderProvider.Instance.SendMessagesAsync(messageBatch, cancellationToken).ConfigureAwait(false);
+            await _sender.SendMessagesAsync(messageBatch, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -82,6 +85,12 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         {
             _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _sender.DisposeAsync().ConfigureAwait(false);
+        GC.SuppressFinalize(this);
     }
 
     private async IAsyncEnumerable<IntegrationEvent> GetAsync(CalculationDto completedCalculation, string orchestrationInstanceId)
@@ -149,11 +158,11 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
     {
-        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
+        await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
     }
 
     private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
     {
-        await _senderProvider.Instance.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
+        await _sender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
     }
 }
