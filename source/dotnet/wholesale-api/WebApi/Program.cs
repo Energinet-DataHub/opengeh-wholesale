@@ -38,14 +38,13 @@ builder.Services.AddHealthChecksForWebApp();
 
 // Shared by modules
 builder.Services.AddNodaTimeForApplication();
-builder.Services.AddDatabricksJobsForApplication(builder.Configuration);
 builder.Services.AddServiceBusClientForApplication(builder.Configuration);
 
 // Modules
 builder.Services.AddCalculationsModule(builder.Configuration);
 builder.Services.AddCalculationResultsModule(builder.Configuration);
 
-// ServieBus channels
+// ServiceBus channels
 builder.Services.AddIntegrationEventsSubscription();
 
 // Http channels
