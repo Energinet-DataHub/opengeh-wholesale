@@ -43,10 +43,8 @@ public static class EventsExtensions
         return services;
     }
 
-    public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
-
         services
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<ICalculationCompletedFactory, CalculationCompletedV1Factory>();

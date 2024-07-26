@@ -24,10 +24,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInject
 
 public static class WholesaleInboxExtensions
 {
-    public static IServiceCollection AddInboxSubscription(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInboxSubscription(this IServiceCollection services)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
-
         services.AddWholesaleInboxHandler();
 
         services

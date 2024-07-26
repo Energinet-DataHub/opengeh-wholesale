@@ -50,9 +50,9 @@ var host = new HostBuilder()
             .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
 
         // ServiceBus channels
-        services.AddIntegrationEventsPublishing(context.Configuration);
+        services.AddIntegrationEventsPublishing();
         services
-            .AddInboxSubscription(context.Configuration)
+            .AddInboxSubscription()
             .AddCalculationOrchestrationInboxRequestHandler();
 
         // Modules
