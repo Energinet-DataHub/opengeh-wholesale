@@ -2,7 +2,7 @@ resource "azurerm_monitor_metric_alert" "dropzoneunzipper_mp_metric_alert" {
   name                = "alert-dropzoneunzipper-not-received-mp-metric-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
   scopes              = [azurerm_eventgrid_system_topic.st_dh2data.id]
-  description         = "Check every 1 hour if there has been any MP data received within the last 24 hours, alert if not"
+  description         = "Triggers if there has been no MP data received within the last 24 hours"
   severity            = 1
   enabled             = true
 
@@ -31,7 +31,7 @@ resource "azurerm_monitor_metric_alert" "dropzoneunzipper_ch_metric_alert" {
   name                = "alert-dropzoneunzipper-not-received-ch-metric-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
   scopes              = [azurerm_eventgrid_system_topic.st_dh2data.id]
-  description         = "Check every 1 hour if there has been any CH data received within the last 24 hours, alert if not"
+  description         = "Triggers if there has been no CH data received within the last 24 hours"
   severity            = 1
   enabled             = true
 
@@ -60,7 +60,7 @@ resource "azurerm_monitor_metric_alert" "timeseriessynchronization_ts_metric_ale
   name                = "alert-timeseriessynchronization-ts-sync-not-received-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
   scopes              = [azurerm_eventgrid_system_topic.st_dh2data.id]
-  description         = "Check every 30 minutes if there has been any sync ts data received within the last 30 minutes, alert if not"
+  description         = "Triggers if there has been no sync ts data received within the last 30 minutes"
   severity            = 1
   enabled             = true
 
@@ -89,7 +89,7 @@ resource "azurerm_monitor_metric_alert" "timeseriessynchronization_deadletter_qu
   name                = "alert-timeseriessynchronization-deadletter-queue-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
   scopes              = [data.azurerm_key_vault_secret.sb_domain_relay_namespace_id.value]
-  description         = "Check deadletter queue, ensure it is empty every hour ensure it is empty"
+  description         = "Triggers if there has been any deadlettered messages in the past hour in the time-series-sync-processing system topic"
   severity            = 1
   enabled             = true
 
