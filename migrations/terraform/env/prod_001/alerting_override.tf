@@ -43,6 +43,7 @@ module "monitor_action_group_mig" {
       query       = <<QUERY
         exceptions
         | where cloud_RoleName in ("${module.func_timeseriessynchronization.name}")
+        | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException")
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
