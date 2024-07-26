@@ -92,28 +92,4 @@ public class SettlementReportController : V3ControllerBase
 
         return Ok(calculationsForSettlementReports.ToList());
     }
-
-    /// <summary>
-    /// Downloads a compressed settlement report for the specified parameters.
-    /// </summary>
-    /// <param name="gridAreaCodes">A list of grid areas to create the settlement report for.</param>
-    /// <param name="calculationType">Currently expects BalanceFixing only.</param>
-    /// <param name="periodStart">The start date and time of the period covered by the settlement report.</param>
-    /// <param name="periodEnd">The end date and time of the period covered by the settlement report.</param>
-    /// <param name="energySupplier">Optional GLN/EIC identifier for an energy supplier.</param>
-    /// <param name="csvFormatLocale">Optional locale used to format the CSV file, e.g. da-DK. Defaults to en-US.</param>
-    [HttpGet("Download")]
-    [MapToApiVersion(Version)]
-    [BinaryContent]
-    [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public Task DownloadSettlementReportAsync(
-        [Required, FromQuery] string[] gridAreaCodes,
-        [Required, FromQuery] CalculationType calculationType,
-        [Required, FromQuery] DateTimeOffset periodStart,
-        [Required, FromQuery] DateTimeOffset periodEnd,
-        [FromQuery] string? energySupplier,
-        [FromQuery] string? csvFormatLocale)
-    {
-        return Task.CompletedTask;
-    }
 }

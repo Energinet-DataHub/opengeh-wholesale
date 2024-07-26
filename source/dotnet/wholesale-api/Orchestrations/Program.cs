@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
@@ -43,7 +42,6 @@ var host = new HostBuilder()
 
         // Shared by modules
         services.AddNodaTimeForApplication();
-        services.AddDatabricksJobsForApplication(context.Configuration);
         services
             .AddOptions<CalculationOrchestrationMonitorOptions>()
             .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
@@ -53,6 +51,7 @@ var host = new HostBuilder()
 
         // Modules
         services.AddCalculationsModule(context.Configuration);
+        services.AddCalculationsOrchestrationModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);
 
         // => Sub-modules of Events
