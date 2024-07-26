@@ -47,7 +47,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - App Services" "Mandalorian" "MarketParticipant Subscriber"
 
         # Base model relationships
-        dh3.sharedServiceBus -> this "Listens on Wholesale Inbox + Integration Events" "message/amqp"
+        dh3.sharedServiceBus -> this "Subscribes to Integration Events" "integration event/amqp"
         this -> dh3.sharedServiceBus "Sends to EDI Inbox" "message/amqp"
 
         # Subsystem relationships
@@ -55,13 +55,7 @@ wholesaleSubsystem = group "Wholesale" {
         this -> wholesaleRuntimeWarehouse "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
-        edi -> this "Sends to Wholesale Inbox" "message/amqp" {
-            tags "Simple View"
-        }
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
-            tags "Simple View"
-        }
-        this -> edi "Sends to EDI Inbox" "message/amqp" {
             tags "Simple View"
         }
     }
@@ -80,7 +74,10 @@ wholesaleSubsystem = group "Wholesale" {
         this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
 
         # Subsystem-to-Subsystem relationships
-        this -> edi "Publish calculation completed" "integration event/amqp" {
+        edi -> this "Sends to Wholesale Inbox" "message/amqp" {
+            tags "Simple View"
+        }
+        this -> edi "Publish calculation completed and sends to EDI Inbox" "message/amqp" {
             tags "Simple View"
         }
     }
