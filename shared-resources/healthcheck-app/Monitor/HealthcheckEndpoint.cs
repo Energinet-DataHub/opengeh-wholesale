@@ -3,6 +3,8 @@ using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
+namespace Energinet.DataHub.HealthCheckApp.Monitor;
+
 public class HealthCheckEndpoint
 {
     public HealthCheckEndpoint(IHealthCheckEndpointHandler healthCheckEndpointHandler)
