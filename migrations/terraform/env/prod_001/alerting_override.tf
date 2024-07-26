@@ -60,7 +60,7 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_timeseriessynchronization.name}")
         | where severityLevel == 3
-        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed")
+        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "DurableTask.Core.Exceptions.OrchestrationFailureException")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
