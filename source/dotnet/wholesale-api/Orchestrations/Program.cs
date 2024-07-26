@@ -17,8 +17,10 @@ using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
@@ -42,20 +44,22 @@ var host = new HostBuilder()
 
         // Shared by modules
         services.AddNodaTimeForApplication();
+        services.AddServiceBusClientForApplication(context.Configuration);
         services
             .AddOptions<CalculationOrchestrationMonitorOptions>()
             .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
 
-        // Handle Wholesale inbox messages
-        services.AddWholesaleInboxHandling(context.Configuration);
+        // ServiceBus channels
+        services.AddIntegrationEventsPublishing(context.Configuration);
+        services
+            .AddInboxSubscription(context.Configuration)
+            .AddCalculationOrchestrationInboxRequestHandler();
 
         // Modules
+        services.AddEdiModule(); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
         services.AddCalculationsModule(context.Configuration);
         services.AddCalculationsOrchestrationModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);
-
-        // => Sub-modules of Events
-        services.AddIntegrationEventsPublishing(context.Configuration);
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

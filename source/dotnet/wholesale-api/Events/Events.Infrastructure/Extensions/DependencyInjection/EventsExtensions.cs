@@ -21,8 +21,10 @@ using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
+using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 
@@ -31,9 +33,11 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.Dependenc
 /// </summary>
 public static class EventsExtensions
 {
+    /// <summary>
+    /// Register handler that handles inbox requests using handlers implementing <see cref="IWholesaleInboxRequestHandler"/>.
+    /// </summary>
     public static IServiceCollection AddWholesaleInboxHandler(this IServiceCollection services)
     {
-        // Wholesale inbox events handler
         services.AddScoped<WholesaleInboxHandler>();
 
         return services;
@@ -50,31 +54,21 @@ public static class EventsExtensions
         services
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<ICalculationCompletedEventProvider, CalculationCompletedEventProvider>()
+            .AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>()
             .AddScoped<ICalculationIntegrationEventPublisher, CalculationIntegrationEventPublisher>();
 
-        var serviceBusNamespaceOptions = configuration
-            .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
-            .Get<ServiceBusNamespaceOptions>();
-        var integrationEventsOptions = configuration
-            .GetRequiredSection(IntegrationEventsOptions.SectionName)
-            .Get<IntegrationEventsOptions>();
-
-        services.Configure<PublisherOptions>(options =>
-        {
-            options.ServiceBusConnectionString = serviceBusNamespaceOptions!.ConnectionString;
-            options.TopicName = integrationEventsOptions!.TopicName;
-        });
-        //// TODO - XDAST: Currently refactoring, so this is a step on the way. Registration code was copied from the Messaging package.
-        services.AddSingleton<IServiceBusSenderProvider, ServiceBusSenderProvider>();
-        services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+        services
+            .AddOptions<IntegrationEventsOptions>()
+            .BindConfiguration(IntegrationEventsOptions.SectionName)
+            .ValidateDataAnnotations();
 
         // Health checks
         services.AddHealthChecks()
             // Must use a listener connection string
             .AddAzureServiceBusSubscription(
-                serviceBusNamespaceOptions!.ConnectionString,
-                integrationEventsOptions!.TopicName,
-                integrationEventsOptions.SubscriptionName,
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
+                sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
                 name: HealthCheckNames.IntegrationEventsTopicSubscription);
 
         return services;
