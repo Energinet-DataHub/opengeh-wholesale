@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calcul
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,24 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.Dep
 /// </summary>
 public static class CalculationsExtensions
 {
+    /// <summary>
+    /// Dependencies solely needed for the orchestration of calculations.
+    /// </summary>
+    public static IServiceCollection AddCalculationsOrchestrationModule(this IServiceCollection services, IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddDatabricksJobsForApplication(configuration);
+
+        services.AddSingleton(new CalculationStateMapper());
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+
+        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
+        services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+
+        return services;
+    }
+
     public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
@@ -43,12 +62,6 @@ public static class CalculationsExtensions
         services.AddScoped<ICalculationFactory, CalculationFactory>();
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
-        services.AddSingleton(new CalculationStateMapper());
-
-        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-
-        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddDbContext<DatabaseContext>(
