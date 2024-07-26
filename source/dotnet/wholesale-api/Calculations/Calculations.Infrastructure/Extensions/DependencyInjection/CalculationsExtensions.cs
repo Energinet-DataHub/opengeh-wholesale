@@ -54,6 +54,9 @@ public static class CalculationsExtensions
         return services;
     }
 
+    /// <summary>
+    /// Dependencies needed for retrieving and updating information about calculations.
+    /// </summary>
     public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
