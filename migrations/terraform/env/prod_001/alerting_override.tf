@@ -1,7 +1,7 @@
 module "monitor_action_group_mig" {
   query_alerts_list = [
     {
-      name        = "alert-dropzoneunzipper-exception-${local.resources_suffix}"
+      name        = "dropzoneunzipper-exception"
       description = "Triggers if there has been exceptions in the past hour in the dropzoneunzipper function"
       severity    = 1
       frequency   = 60
@@ -16,7 +16,7 @@ module "monitor_action_group_mig" {
         QUERY
     },
     {
-      name        = "alert-dropzoneunzipper-error-trace-severity-${local.resources_suffix}"
+      name        = "dropzoneunzipper-error-trace-severity"
       description = "Triggers if there has been any traces with error severity in the past hour in the dropzoneunzipper function"
       severity    = 1
       frequency   = 60
@@ -33,7 +33,7 @@ module "monitor_action_group_mig" {
         QUERY
     },
     {
-      name        = "alert-timeseriessynchronization-exception-${local.resources_suffix}"
+      name        = "timeseriessynchronization-exception"
       description = "Triggers if there has been exceptions in the past hour in the timeseriessynchronization function"
       severity    = 1
       frequency   = 60
@@ -48,7 +48,7 @@ module "monitor_action_group_mig" {
         QUERY
     },
     {
-      name        = "alert-timeseriessynchronization-error-trace-severity-${local.resources_suffix}"
+      name        = "timeseriessynchronization-error-trace-severity"
       description = "Triggers if there has been any traces with error severity in the past hour in the timeseriessynchronization function"
       severity    = 1
       frequency   = 60
