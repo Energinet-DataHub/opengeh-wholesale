@@ -71,7 +71,7 @@ public class MigrationsFreeDatabricksSchemaManager
 
     public async Task DropSchemaAsync()
     {
-        var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
+        var sqlStatement = @$"DROP SCHEMA IF EXISTS {SchemaName} CASCADE";
         await ExecuteSqlAsync(sqlStatement);
     }
 
