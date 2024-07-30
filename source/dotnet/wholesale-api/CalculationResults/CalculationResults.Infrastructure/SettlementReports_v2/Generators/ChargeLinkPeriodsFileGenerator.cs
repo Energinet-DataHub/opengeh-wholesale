@@ -28,7 +28,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
     public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
         : base(
             40_000, // About 25 rows per metering point, about 1.000.000 rows per chunk in total.
-            quotedColumns: [0, 3])
+            quotedColumns: [0, 3, 8])
     {
         _dataSource = dataSource;
     }
@@ -45,7 +45,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
 
     public sealed class SettlementReportChargeLinkPeriodsResultRowMap : ClassMap<SettlementReportChargeLinkPeriodsResultRow>
     {
-        public SettlementReportChargeLinkPeriodsResultRowMap()
+        public SettlementReportChargeLinkPeriodsResultRowMap(SettlementReportRequestedByActor actorInfo)
         {
             Map(r => r.MeteringPointId)
                 .Name("METERINGPOINTID")
@@ -104,6 +104,13 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
             Map(r => r.PeriodEnd)
                 .Name("PERIODEND")
                 .Index(7);
+
+            if (actorInfo.MarketRole is MarketRole.DataHubAdministrator or MarketRole.SystemOperator)
+            {
+                Map(r => r.EnergySupplierId)
+                    .Name("ENERGYSUPPLIERID")
+                    .Index(8);
+            }
         }
     }
 }
