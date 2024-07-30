@@ -67,7 +67,8 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
                 row.ChargeCode,
                 row.Quantity,
                 row.FromDate,
-                row.ToDate);
+                row.ToDate,
+                row.EnergySupplierId);
         }
     }
 
