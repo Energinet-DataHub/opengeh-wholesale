@@ -42,10 +42,10 @@ public static class WholesaleServicesFactory
         IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
         var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!);
-        var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
+        var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
 
         return new WholesaleServices(
-            new Period(periodStart, periodEnd),
+            period,
             databricksSqlRow[AmountsPerChargeViewColumnNames.GridAreaCode]!,
             databricksSqlRow[AmountsPerChargeViewColumnNames.EnergySupplierId]!,
             databricksSqlRow[AmountsPerChargeViewColumnNames.ChargeCode]!,
@@ -66,10 +66,10 @@ public static class WholesaleServicesFactory
         DatabricksSqlRow databricksSqlRow,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, Resolution.Month);
+        var period = PeriodHelper.GetPeriod(timeSeriesPoints, Resolution.Month);
 
         return new WholesaleServices(
-            new Period(periodStart, periodEnd),
+            period,
             databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.GridAreaCode]!,
             databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId]!,
             databricksSqlRow[MonthlyAmountsPerChargeViewColumnNames.ChargeCode]!,
@@ -90,10 +90,10 @@ public static class WholesaleServicesFactory
         DatabricksSqlRow databricksSqlRow,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, Resolution.Month);
+        var period = PeriodHelper.GetPeriod(timeSeriesPoints, Resolution.Month);
 
         return new WholesaleServices(
-            new Period(periodStart, periodEnd),
+            period,
             databricksSqlRow[TotalMonthlyAmountsViewColumnNames.GridAreaCode]!,
             databricksSqlRow[TotalMonthlyAmountsViewColumnNames.EnergySupplierId]!,
             null,

@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using NodaTime;
 using NodaTime.Extensions;
 using EnergyResultsResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.Resolution;
+using InternalPeriod = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 using WholesaleResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
@@ -32,13 +33,13 @@ public static class PeriodHelper
         return (start.ToInstant(), endWithResolutionOffset.ToInstant());
     }
 
-    public static (Instant Start, Instant End) GetPeriod(IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, Interfaces.CalculationResults.Model.WholesaleResults.Resolution resolution)
+    public static InternalPeriod GetPeriod(IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, Interfaces.CalculationResults.Model.WholesaleResults.Resolution resolution)
     {
         var start = timeSeriesPoints.Min(x => x.Time);
         var end = timeSeriesPoints.Max(x => x.Time);
         // The end date is the start of the next period.
         var endWithResolutionOffset = GetDateTimeWithResolutionOffset(resolution, end);
-        return (start.ToInstant(), endWithResolutionOffset.ToInstant());
+        return new InternalPeriod(start.ToInstant(), endWithResolutionOffset.ToInstant());
     }
 
     private static DateTimeOffset GetDateTimeWithResolutionOffset(EnergyResultsResolution resolution, DateTimeOffset dateTime) => resolution switch
