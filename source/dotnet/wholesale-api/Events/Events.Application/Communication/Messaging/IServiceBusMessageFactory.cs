@@ -17,10 +17,10 @@ using Energinet.DataHub.Core.Messaging.Communication;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 
-//// TODO - XDAST: Currently refactoring, so this is a step on the way. Code was copied from the Messaging package.
-
 /// <summary>
-/// Creates a <see cref="ServiceBusMessage"/> instance from an <see cref="IntegrationEvent"/>
+/// Creates a <see cref="ServiceBusMessage"/> instance from an <see cref="IntegrationEvent"/>.
+///
+/// Copied from the Messaging package because the scope of the type in the package is "internal".
 /// </summary>
 public interface IServiceBusMessageFactory
 {

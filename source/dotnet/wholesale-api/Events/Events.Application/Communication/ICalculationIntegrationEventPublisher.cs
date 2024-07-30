@@ -18,6 +18,9 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 /// <summary>
 /// Responsible for publishing integration events for a completed calculation, using Service Bus.
+///
+/// Copied from the Messaging package and refactored to allow us to send events immediately
+/// and for a certain calculation only.
 /// </summary>
 public interface ICalculationIntegrationEventPublisher
 {

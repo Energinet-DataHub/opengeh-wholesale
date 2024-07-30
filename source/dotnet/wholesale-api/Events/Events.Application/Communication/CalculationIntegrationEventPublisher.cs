@@ -23,7 +23,10 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
-// TODO - XDAST: Currently refactoring, so this is a step on the way. Some code was copied from the Messaging package and later refactored.
+/// <summary>
+/// Copied from the Messaging package and refactored to allow us to send events immediately
+/// and for a certain calculation only.
+/// </summary>
 public class CalculationIntegrationEventPublisher : ICalculationIntegrationEventPublisher, IAsyncDisposable
 {
     private readonly ServiceBusSender _sender;
@@ -49,7 +52,6 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
     public async Task PublishAsync(CalculationDto completedCalculation, string orchestrationInstanceId, CancellationToken cancellationToken)
     {
-        // TODO - XDAST: Currently refactoring. This code was copied from the Messaging package.
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
         var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
