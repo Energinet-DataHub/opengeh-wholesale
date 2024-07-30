@@ -44,6 +44,7 @@ module "monitor_action_group_mig" {
         exceptions
         | where cloud_RoleName in ("${module.func_timeseriessynchronization.name}")
         | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException")
+        | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
