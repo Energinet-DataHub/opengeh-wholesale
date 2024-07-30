@@ -19,6 +19,6 @@ from pathlib import Path
 def get_output_names() -> list[str]:
     filename = inspect.stack()[1].filename
     folder = os.path.dirname(filename)
-    output_folder_path = Path(folder + "/then/")
+    output_folder_path = Path(folder + "/output/")
     csv_files = list(output_folder_path.rglob("*.csv"))
     return [Path(file).stem for file in csv_files]
