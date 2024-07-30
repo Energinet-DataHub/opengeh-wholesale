@@ -18,7 +18,9 @@ using Google.Protobuf;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 
-//// TODO - XDAST: Currently refactoring, so this is a step on the way. Code was copied from the Messaging package.
+/// <summary>
+/// Copied from the Messaging package because the scope of the type in the package is "internal".
+/// </summary>
 public sealed class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     public ServiceBusMessage Create(IntegrationEvent @event)
