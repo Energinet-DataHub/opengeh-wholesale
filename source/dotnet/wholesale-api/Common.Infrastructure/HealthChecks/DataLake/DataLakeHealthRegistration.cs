@@ -22,26 +22,18 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.DataLak
 public class DataLakeHealthRegistration : IHealthCheck
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
-    private readonly IClock _clock;
     private readonly DataLakeOptions _options;
 
     public DataLakeHealthRegistration(DataLakeFileSystemClient dataLakeFileSystemClient, IClock clock, DataLakeOptions options)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
-        _clock = clock;
         _options = options;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DATALAKE_HEALTH_CHECK_START.Hour <= currentHour && currentHour <= _options.DATALAKE_HEALTH_CHECK_END.Hour)
-        {
-            return await _dataLakeFileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
-                ? HealthCheckResult.Healthy()
-                : HealthCheckResult.Unhealthy();
-        }
-
-        return HealthCheckResult.Healthy();
+        return await _dataLakeFileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
+            ? HealthCheckResult.Healthy()
+            : HealthCheckResult.Unhealthy();
     }
 }
