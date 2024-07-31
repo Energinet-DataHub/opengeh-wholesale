@@ -74,7 +74,7 @@ public class WholesaleServicesQueries(
 
     protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
-        var amountType = _helper.GuessAmountTypeFromRow(current);
+        var amountType = _helper.GetAmountTypeFromRow(current);
         var calculationIdColumn = _helper.GetCalculationIdColumnName(amountType);
 
         return _helper
@@ -87,7 +87,7 @@ public class WholesaleServicesQueries(
         DatabricksSqlRow rowData,
         List<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        var amountType = _helper.GuessAmountTypeFromRow(rowData);
+        var amountType = _helper.GetAmountTypeFromRow(rowData);
 
         return WholesaleServicesFactory.Create(rowData, amountType, timeSeriesPoints);
     }

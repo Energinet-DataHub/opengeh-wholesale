@@ -77,7 +77,20 @@ public class WholesaleServicesQueryStatementHelper
         };
     }
 
-    internal AmountType GuessAmountTypeFromRow(DatabricksSqlRow databricksSqlRow)
+    /// <summary>
+    /// Get (or more precisely, guess) the amount type from the row.
+    /// The amount type is inferred based on the potential absence of columns.
+    /// If the columns in the view changes, this method must be updated too.
+    /// The rules are as follows:
+    /// <list type="number">
+    /// <item><description>If the column "Resolution" is present,
+    /// the amount type is "AmountPerCharge"</description></item>
+    /// <item><description>If the column "ChargeCode" is present,
+    /// the amount type is "MonthlyAmountPerCharge"</description></item>
+    /// <item><description>Otherwise, the amount type is "TotalMonthlyAmount"</description></item>
+    /// </list>
+    /// </summary>
+    internal AmountType GetAmountTypeFromRow(DatabricksSqlRow databricksSqlRow)
     {
         return databricksSqlRow.HasColumn(AmountsPerChargeViewColumnNames.Resolution)
             ? AmountType.AmountPerCharge
