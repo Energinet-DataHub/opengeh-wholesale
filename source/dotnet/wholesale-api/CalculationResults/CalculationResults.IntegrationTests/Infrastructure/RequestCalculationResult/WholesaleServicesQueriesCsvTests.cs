@@ -220,6 +220,77 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     }
 
     [Fact]
+    public async Task Given_SomeArbitraryQueryParameters_Then_AmountAndMonthlyAndTotalHaveCorrectPeriods()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        // Amount per charge
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.AmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: "5790001687137",
+            ChargeOwnerId: "5790000432752",
+            ChargeTypes: [("EA-003", ChargeType.Tariff)],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.Period.Start, ats.Period.End))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo([
+                (Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0))
+            ]);
+
+        // Monthly amount
+        parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.MonthlyAmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: "5790001687137",
+            ChargeOwnerId: "5790000432752",
+            ChargeTypes: [("EA-003", ChargeType.Tariff)],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod);
+
+        // Act
+        actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        actual.Select(ats => (ats.Period.Start, ats.Period.End))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo([
+                (Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0))
+            ]);
+
+        // Total monthly amount
+        parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.AmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: "5790001687137",
+            ChargeOwnerId: "5790000432752",
+            ChargeTypes: [],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod);
+
+        // Act
+        actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        actual.Select(ats => (ats.Period.Start, ats.Period.End))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo([
+                (Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0))
+            ]);
+    }
+
+    [Fact]
     public async Task Given_ChargeOwnerForSpecificGridAreaAndLatestCorrection_Then_LatestCorrectionReturned()
     {
         await ClearAndAddDatabricksDataAsync();
