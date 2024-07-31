@@ -123,6 +123,42 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
             p.QuantityQualities.Count == 2 && p.QuantityQualities.SequenceEqual(new[] { QuantityQuality.Calculated, QuantityQuality.Estimated }));
     }
 
+    [Fact]
+    public void Create_TotalMonthlyAmount_CanBeCreated()
+    {
+        var point = new WholesaleTimeSeriesPoint(
+            Instant.FromUtc(2021, 12, 31, 23, 0).ToDateTimeOffset(),
+            null,
+            null,
+            null,
+            9857.916610M);
+
+        var wholesaleServices = new CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices(
+            new Period(Instant.FromUtc(2021, 12, 31, 23, 00), Instant.FromUtc(2022, 1, 31, 23, 0)),
+            "543",
+            "5790000701278",
+            null,
+            null,
+            null,
+            AmountType.TotalMonthlyAmount,
+            Resolution.Month,
+            null,
+            null,
+            null,
+            Currency.DKK,
+            CalculationType.SecondCorrectionSettlement,
+            [point],
+            4);
+
+        var actual = WholesaleServiceRequestAcceptedMessageFactory.Create([wholesaleServices], "foobar");
+
+        // Assert
+        actual.Should().NotBeNull();
+        var responseBody = WholesaleServicesRequestAccepted.Parser.ParseFrom(actual.Body);
+        responseBody.Should().NotBeNull();
+        responseBody.Series.Should().NotBeNull().And.ContainSingle();
+    }
+
     [Theory]
     [MemberData(nameof(QuantityQualitySets))]
     public void Create_DifferentSetsOfQualities_CreatesCorrectAcceptedEdiMessage(WholesaleQuantity[] quantityQualities)
