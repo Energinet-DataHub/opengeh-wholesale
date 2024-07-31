@@ -1,12 +1,11 @@
 terraform {
   required_providers {
     # It is recommended to pin to a given version of the Azure provider
-    azurerm = "3.97.1"
+    azurerm = "3.105.0"
   }
 }
 
 provider "azurerm" {
-  use_oidc            = true
-  storage_use_azuread = true
+  use_oidc = true
   features {}
 }
