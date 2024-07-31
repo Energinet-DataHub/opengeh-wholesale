@@ -148,15 +148,6 @@ jobs:
   #   uses: ./.github/workflows/integration-test-terraform-ci.yml
   #   secrets: inherit
 
-  health_checks_ui_ci:
-    needs: changes
-    if: ${{ needs.changes.outputs.health_checks_ui_ci == 'true' }}
-    uses: ./.github/workflows/infrastructure-build-prerelease.yml
-    with:
-      release_name_prefix: health_checks_ui_infrastructure
-      infrastructure_path: ./health-checks-ui/terraform
-    secrets: inherit
-
   esett_deprecated_ci:
     needs: changes
     if: ${{ needs.changes.outputs.esett_deprecated_ci == 'true' }}
@@ -231,7 +222,6 @@ jobs:
         ui_ci,
         wholesale_ci,
         integration_test_ci,
-        health_checks_ui_ci,
         sauron_ci,
         render_c4model_deployment,
         render_c4model_ownership_views,
