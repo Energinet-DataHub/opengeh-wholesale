@@ -37,5 +37,5 @@ public class CalculationOrchestrationMonitorOptions
     /// <summary>
     /// Expiry time of the actor messages enqueuing monitor.
     /// </summary>
-    public int MessagesEnqueuingExpiryTimeInSeconds { get; set; } = 3600 * 12; // 1 hour * 12
+    public int MessagesEnqueuingExpiryTimeInSeconds { get; set; } = 3600 * 24 * 14; // 1 hour * 24 * 14 = 14 days
 }
