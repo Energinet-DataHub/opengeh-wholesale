@@ -42,10 +42,10 @@ locals {
     {
       name = var.pim_reader_group_name
     },
-    # {
-    #   name                 = var.pim_contributor_data_plane_group_name
-    #   enable_db_datawriter = true
-    # }
+    {
+      name                 = var.pim_contributor_data_plane_group_name
+      enable_db_datawriter = true
+    }
   ]
   developer_security_group_rules_001_dev_test = [
     {
