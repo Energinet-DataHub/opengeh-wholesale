@@ -43,6 +43,8 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
+        Fixture.Inject(new WholesaleServicesDatabricksContractInformationProvider([new AmountsPerChargeWholesaleServicesDatabricksContract(), new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(), new TotalMonthlyAmountWholesaleServicesDatabricksContract()]));
+        Fixture.Inject(new WholesaleServicesQueryStatementHelperFactory([new AmountsPerChargeWholesaleServicesDatabricksContract(), new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(), new TotalMonthlyAmountWholesaleServicesDatabricksContract()]));
         _fixture = fixture;
     }
 
@@ -626,15 +628,22 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         private readonly string _energySupplierId = energySupplierId;
         private readonly Instant _before = before;
         private readonly Instant? _after = after;
-        private readonly WholesaleServicesQueryStatementHelper _helper = new WholesaleServicesQueryStatementHelper();
+
+        private readonly IWholesaleServicesDatabricksContract _helper = amountType switch
+        {
+            AmountType.AmountPerCharge => new AmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.MonthlyAmountPerCharge => new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.TotalMonthlyAmount => new TotalMonthlyAmountWholesaleServicesDatabricksContract(),
+            _ => throw new ArgumentOutOfRangeException(nameof(amountType), amountType, null),
+        };
 
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_helper.GetSource(amountType, _deltaTableOptions)}
-                    WHERE {_helper.GetEnergySupplierIdColumnName(amountType)} = '{_energySupplierId}'
-                    AND {_helper.GetTimeColumnName(amountType)} <= '{_before}'
-                    {(_after is not null ? $"AND {_helper.GetTimeColumnName(amountType)} > '{_after}'" : string.Empty)}
+                    DELETE FROM {_helper.GetSource(_deltaTableOptions)}
+                    WHERE {_helper.GetEnergySupplierIdColumnName()} = '{_energySupplierId}'
+                    AND {_helper.GetTimeColumnName()} <= '{_before}'
+                    {(_after is not null ? $"AND {_helper.GetTimeColumnName()} > '{_after}'" : string.Empty)}
                     """;
         }
     }
@@ -646,16 +655,23 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly IReadOnlyCollection<string> _gridAreasToRemoveFrom = gridAreasToRemoveFrom;
-        private readonly WholesaleServicesQueryStatementHelper _helper = new WholesaleServicesQueryStatementHelper();
+
+        private readonly IWholesaleServicesDatabricksContract _helper = amountType switch
+        {
+            AmountType.AmountPerCharge => new AmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.MonthlyAmountPerCharge => new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.TotalMonthlyAmount => new TotalMonthlyAmountWholesaleServicesDatabricksContract(),
+            _ => throw new ArgumentOutOfRangeException(nameof(amountType), amountType, null),
+        };
 
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_helper.GetSource(amountType, _deltaTableOptions)}
-                    WHERE ({_helper.GetCalculationTypeColumnName(amountType)} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
-                    OR {_helper.GetCalculationTypeColumnName(amountType)} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
-                    OR {_helper.GetCalculationTypeColumnName(amountType)} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
-                    {(_gridAreasToRemoveFrom.Any() ? $"AND {_helper.GetGridAreaCodeColumnName(amountType)} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
+                    DELETE FROM {_helper.GetSource(_deltaTableOptions)}
+                    WHERE ({_helper.GetCalculationTypeColumnName()} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
+                    OR {_helper.GetCalculationTypeColumnName()} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
+                    OR {_helper.GetCalculationTypeColumnName()} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
+                    {(_gridAreasToRemoveFrom.Any() ? $"AND {_helper.GetGridAreaCodeColumnName()} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
                     """;
         }
     }

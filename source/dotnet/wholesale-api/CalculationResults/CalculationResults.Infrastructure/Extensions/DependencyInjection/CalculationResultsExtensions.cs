@@ -51,8 +51,18 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementHelper>();
+        services.AddScoped<WholesaleServicesQueryStatementHelperFactory>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesDatabricksContractInformationProvider>();
+        services
+            .AddScoped<IWholesaleServicesDatabricksContract,
+                AmountsPerChargeWholesaleServicesDatabricksContract>();
+        services
+            .AddScoped<IWholesaleServicesDatabricksContract,
+                MonthlyAmountsPerChargeWholesaleServicesDatabricksContract>();
+        services
+            .AddScoped<IWholesaleServicesDatabricksContract,
+                TotalMonthlyAmountWholesaleServicesDatabricksContract>();
 
         return services;
     }
@@ -115,8 +125,18 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementHelper>();
+        services.AddScoped<WholesaleServicesQueryStatementHelperFactory>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesDatabricksContractInformationProvider>();
+        services
+            .AddScoped<IWholesaleServicesDatabricksContract,
+                AmountsPerChargeWholesaleServicesDatabricksContract>();
+        services
+            .AddScoped<IWholesaleServicesDatabricksContract,
+                MonthlyAmountsPerChargeWholesaleServicesDatabricksContract>();
+        services
+            .AddScoped<IWholesaleServicesDatabricksContract,
+                TotalMonthlyAmountWholesaleServicesDatabricksContract>();
 
         return services;
     }

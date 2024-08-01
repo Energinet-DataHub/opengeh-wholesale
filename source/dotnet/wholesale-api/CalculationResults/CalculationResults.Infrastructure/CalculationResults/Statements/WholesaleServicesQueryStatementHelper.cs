@@ -12,199 +12,109 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class WholesaleServicesQueryStatementHelper
+public class WholesaleServicesQueryStatementHelper(
+    IWholesaleServicesDatabricksContract databricksContract,
+    WholesaleServicesQueryParameters queryParameters)
 {
-    public string GetSource(AmountType amountType, DeltaTableOptions tableOptions)
+    private readonly IWholesaleServicesDatabricksContract _databricksContract = databricksContract;
+    private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
+
+    public string GetSource(DeltaTableOptions tableOptions)
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            AmountType.MonthlyAmountPerCharge => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            AmountType.TotalMonthlyAmount => $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetSource(tableOptions);
     }
 
-    public string GetCalculationTypeColumnName(AmountType amountType)
+    public string GetCalculationTypeColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationType,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationType,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationType,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetCalculationTypeColumnName();
     }
 
-    public string GetGridAreaCodeColumnName(AmountType amountType)
+    public string GetGridAreaCodeColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.GridAreaCode,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.GridAreaCode,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetGridAreaCodeColumnName();
     }
 
-    public string GetTimeColumnName(AmountType amountType)
+    public string GetTimeColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.Time,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.Time,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.Time,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetTimeColumnName();
     }
 
-    public string GetEnergySupplierIdColumnName(AmountType amountType)
+    public string GetEnergySupplierIdColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.EnergySupplierId,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetEnergySupplierIdColumnName();
     }
 
-    /// <summary>
-    /// Get (or more precisely, guess) the amount type from the row.
-    /// The amount type is inferred based on the potential absence of columns.
-    /// If the columns in the view changes, this method must be updated too.
-    /// The rules are as follows:
-    /// <list type="number">
-    /// <item><description>If the column "Resolution" is present,
-    /// the amount type is "AmountPerCharge"</description></item>
-    /// <item><description>If the column "ChargeCode" is present,
-    /// the amount type is "MonthlyAmountPerCharge"</description></item>
-    /// <item><description>Otherwise, the amount type is "TotalMonthlyAmount"</description></item>
-    /// </list>
-    /// </summary>
-    internal AmountType GetAmountTypeFromRow(DatabricksSqlRow databricksSqlRow)
+    public string GetChargeOwnerIdColumnName()
     {
-        return databricksSqlRow.HasColumn(AmountsPerChargeViewColumnNames.Resolution)
-            ? AmountType.AmountPerCharge
-            : databricksSqlRow.HasColumn(MonthlyAmountsPerChargeViewColumnNames.ChargeCode)
-                ? AmountType.MonthlyAmountPerCharge
-                : AmountType.TotalMonthlyAmount;
+        return _databricksContract.GetChargeOwnerIdColumnName();
     }
 
-    internal string GetProjection(string prefix, AmountType amountType)
+    public string GetChargeCodeColumnName()
     {
-        return string.Join(", ", GetColumnsToProject(amountType).Select(cts => $"`{prefix}`.`{cts}`"));
+        return _databricksContract.GetChargeCodeColumnName();
     }
 
-    internal string GetChargeOwnerIdColumnName(AmountType amountType)
+    public string GetChargeTypeColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeOwnerId,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeOwnerId,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.ChargeOwnerId,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetChargeTypeColumnName();
     }
 
-    internal string GetChargeCodeColumnName(AmountType amountType)
+    public string GetCalculationVersionColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeCode,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
-            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Oh dear, there is no charge code for total monthly amounts"),
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetCalculationVersionColumnName();
     }
 
-    internal string GetChargeTypeColumnName(AmountType amountType)
+    public string GetCalculationIdColumnName()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.ChargeType,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.ChargeType,
-            AmountType.TotalMonthlyAmount => throw new InvalidOperationException("Oh dear, there is no charge type for total monthly amounts"),
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetCalculationIdColumnName();
     }
 
-    internal string GetCalculationVersionColumnName(AmountType amountType)
+    public string[] GetColumnsToProject()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationVersion,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationVersion,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationVersion,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetColumnsToProject();
     }
 
-    internal string GetCalculationIdColumnName(AmountType amountType)
+    public string[] GetColumnsToAggregateBy()
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => AmountsPerChargeViewColumnNames.CalculationId,
-            AmountType.MonthlyAmountPerCharge => MonthlyAmountsPerChargeViewColumnNames.CalculationId,
-            AmountType.TotalMonthlyAmount => TotalMonthlyAmountsViewColumnNames.CalculationId,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return _databricksContract.GetColumnsToAggregateBy();
     }
 
-    internal string[] GetColumnsToProject(AmountType amountType)
+    internal string GetProjection(string prefix)
     {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => ColumnsToProjectForAmountsPerCharge,
-            AmountType.MonthlyAmountPerCharge => ColumnsToProjectForMonthlyAmountsPerCharge,
-            AmountType.TotalMonthlyAmount => ColumnsToProjectForTotalMonthlyAmounts,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
+        return string.Join(", ", GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"));
     }
 
-    internal string[] GetColumnsToAggregateBy(AmountType amountType)
-    {
-        return amountType switch
-        {
-            AmountType.AmountPerCharge => ColumnsToAggregateByForAmountsPerCharge,
-            AmountType.MonthlyAmountPerCharge => ColumnsToAggregateByForMonthlyAmountsPerCharge,
-            AmountType.TotalMonthlyAmount => ColumnsToAggregateByForTotalMonthlyAmounts,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-    }
-
-    internal string GetWhereClauseSqlExpression(WholesaleServicesQueryParameters queryParameters, string table = "wrv")
+    internal string GetSelection(string table = "wrv")
     {
         var sql = $"""
-                   {"\n"}
-                   WHERE ({table}.{GetTimeColumnName(queryParameters.AmountType)} >= '{queryParameters.Period.Start}'
-                          AND {table}.{GetTimeColumnName(queryParameters.AmountType)} < '{queryParameters.Period.End}')
+                   ({table}.{GetTimeColumnName()} >= '{_queryParameters.Period.Start}'
+                     AND {table}.{GetTimeColumnName()} < '{_queryParameters.Period.End}')
                    """;
 
-        if (queryParameters.GridAreaCodes.Count != 0)
+        if (_queryParameters.GridAreaCodes.Count != 0)
         {
             sql += $"""
-                    AND {table}.{GetGridAreaCodeColumnName(queryParameters.AmountType)} in ({string.Join(',', queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})
+                    AND {table}.{GetGridAreaCodeColumnName()} in ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})
                     """;
         }
 
-        sql = queryParameters.AmountType != AmountType.TotalMonthlyAmount
-            ? GenerateConstraintForActorsForNonTotalAmounts(queryParameters, table, sql)
-            : GenerateConstraintForActorsForTotalAmounts(queryParameters, table, sql);
+        sql = _queryParameters.AmountType != AmountType.TotalMonthlyAmount
+            ? GenerateConstraintForActorsForNonTotalAmounts(table, sql)
+            : GenerateConstraintForActorsForTotalAmounts(table, sql);
 
-        if (queryParameters.ChargeTypes.Count != 0)
+        if (_queryParameters.ChargeTypes.Count != 0)
         {
-            var chargeTypesSql = queryParameters.ChargeTypes
+            var chargeTypesSql = _queryParameters.ChargeTypes
                 .Select<(string? ChargeCode, ChargeType? ChargeType), string>(c =>
-                    GenerateConstraintForChargeType(c.ChargeCode, c.ChargeType, table, queryParameters.AmountType))
+                    GenerateConstraintForChargeType(c.ChargeCode, c.ChargeType, table))
                 .ToList();
 
             sql += $"""
@@ -215,57 +125,72 @@ public class WholesaleServicesQueryStatementHelper
         return sql;
     }
 
-    internal string AddWhereClauseToSqlExpression(string sql, WholesaleServicesQueryParameters queryParameters)
+    internal string GetLatestOrFixedCalculationTypeSelection(
+        string prefix,
+        IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas)
     {
-        sql += GetWhereClauseSqlExpression(queryParameters);
-
-        return sql;
-    }
-
-    private string GenerateConstraintForActorsForTotalAmounts(
-        WholesaleServicesQueryParameters queryParameters,
-        string table,
-        string sql)
-    {
-        if (queryParameters.EnergySupplierId is not null)
+        if (_queryParameters.CalculationType is not null)
         {
-            sql += $"""
-                    AND {table}.{GetEnergySupplierIdColumnName(queryParameters.AmountType)} = '{queryParameters.EnergySupplierId}'
+            return $"""
+                    {prefix}.{GetCalculationTypeColumnName()} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
-        if (queryParameters.ChargeOwnerId is not null)
+        if (calculationTypePerGridAreas.IsNullOrEmpty())
+        {
+            return """
+                   FALSE
+                   """;
+        }
+
+        var calculationTypePerGridAreaConstraints = calculationTypePerGridAreas
+            .Select(ctpga => $"""
+                              ({prefix}.{GetGridAreaCodeColumnName()} = '{ctpga.GridArea}' AND {prefix}.{GetCalculationTypeColumnName()} = '{ctpga.CalculationType}')
+                              """);
+
+        return $"""
+                ({string.Join(" OR ", calculationTypePerGridAreaConstraints)})
+                """;
+    }
+
+    private string GenerateConstraintForActorsForTotalAmounts(string table, string sql)
+    {
+        if (_queryParameters.EnergySupplierId is not null)
         {
             sql += $"""
-                    AND {table}.{GetChargeOwnerIdColumnName(queryParameters.AmountType)} = '{queryParameters.ChargeOwnerId}'
+                    AND {table}.{GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
+                    """;
+        }
+
+        if (_queryParameters.ChargeOwnerId is not null)
+        {
+            sql += $"""
+                    AND {table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
                     """;
         }
         else
         {
             sql += $"""
-                    AND {table}.{GetChargeOwnerIdColumnName(queryParameters.AmountType)} is null
+                    AND {table}.{GetChargeOwnerIdColumnName()} is null
                     """;
         }
 
         return sql;
     }
 
-    private string GenerateConstraintForActorsForNonTotalAmounts(
-        WholesaleServicesQueryParameters queryParameters,
-        string table,
-        string sql)
+    private string GenerateConstraintForActorsForNonTotalAmounts(string table, string sql)
     {
-        if (queryParameters.EnergySupplierId is not null)
+        if (_queryParameters.EnergySupplierId is not null)
         {
             sql += $"""
-                    AND {table}.{GetEnergySupplierIdColumnName(queryParameters.AmountType)} = '{queryParameters.EnergySupplierId}'
+                    AND {table}.{GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
                     """;
         }
 
-        if (queryParameters.ChargeOwnerId is not null)
+        if (_queryParameters.ChargeOwnerId is not null)
         {
             sql += $"""
-                    AND {table}.{GetChargeOwnerIdColumnName(queryParameters.AmountType)} = '{queryParameters.ChargeOwnerId}'
+                    AND {table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
                     """;
         }
 
@@ -275,8 +200,7 @@ public class WholesaleServicesQueryStatementHelper
     private string GenerateConstraintForChargeType(
         string? chargeCode,
         ChargeType? chargeType,
-        string table,
-        AmountType amountType)
+        string table)
     {
         if (chargeCode == null && chargeType == null)
             throw new ArgumentException("Both chargeCode and chargeType cannot be null");
@@ -284,10 +208,13 @@ public class WholesaleServicesQueryStatementHelper
         var sqlStatements = new List<string>();
 
         if (!string.IsNullOrEmpty(chargeCode))
-            sqlStatements.Add($"{table}.{GetChargeCodeColumnName(amountType)} = '{chargeCode}'");
+            sqlStatements.Add($"{table}.{GetChargeCodeColumnName()} = '{chargeCode}'");
 
         if (chargeType != null)
-            sqlStatements.Add($"{table}.{GetChargeTypeColumnName(amountType)} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
+        {
+            sqlStatements.Add(
+                $"{table}.{GetChargeTypeColumnName()} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
+        }
 
         var combinedString = string.Join(" AND ", sqlStatements);
 
@@ -296,88 +223,4 @@ public class WholesaleServicesQueryStatementHelper
 
         return combinedString;
     }
-
-    private static string[] ColumnsToAggregateByForAmountsPerCharge =>
-    [
-        AmountsPerChargeViewColumnNames.GridAreaCode,
-        AmountsPerChargeViewColumnNames.EnergySupplierId,
-        AmountsPerChargeViewColumnNames.ChargeOwnerId,
-        AmountsPerChargeViewColumnNames.ChargeType,
-        AmountsPerChargeViewColumnNames.ChargeCode,
-        AmountsPerChargeViewColumnNames.Resolution,
-        AmountsPerChargeViewColumnNames.MeteringPointType,
-        AmountsPerChargeViewColumnNames.SettlementMethod,
-    ];
-
-    private static string[] ColumnsToAggregateByForMonthlyAmountsPerCharge =>
-    [
-        MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
-        MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
-        MonthlyAmountsPerChargeViewColumnNames.ChargeOwnerId,
-        MonthlyAmountsPerChargeViewColumnNames.ChargeType,
-        MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
-    ];
-
-    private static string[] ColumnsToAggregateByForTotalMonthlyAmounts =>
-    [
-        TotalMonthlyAmountsViewColumnNames.GridAreaCode,
-        TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
-        TotalMonthlyAmountsViewColumnNames.ChargeOwnerId,
-    ];
-
-    private static string[] ColumnsToProjectForAmountsPerCharge =>
-    [
-        AmountsPerChargeViewColumnNames.CalculationId,
-        AmountsPerChargeViewColumnNames.CalculationType,
-        AmountsPerChargeViewColumnNames.CalculationVersion,
-        AmountsPerChargeViewColumnNames.CalculationResultId,
-        AmountsPerChargeViewColumnNames.GridAreaCode,
-        AmountsPerChargeViewColumnNames.EnergySupplierId,
-        AmountsPerChargeViewColumnNames.ChargeCode,
-        AmountsPerChargeViewColumnNames.ChargeType,
-        AmountsPerChargeViewColumnNames.ChargeOwnerId,
-        AmountsPerChargeViewColumnNames.Resolution,
-        AmountsPerChargeViewColumnNames.QuantityUnit,
-        AmountsPerChargeViewColumnNames.MeteringPointType,
-        AmountsPerChargeViewColumnNames.SettlementMethod,
-        AmountsPerChargeViewColumnNames.IsTax,
-        AmountsPerChargeViewColumnNames.Currency,
-        AmountsPerChargeViewColumnNames.Time,
-        AmountsPerChargeViewColumnNames.Quantity,
-        AmountsPerChargeViewColumnNames.QuantityQualities,
-        AmountsPerChargeViewColumnNames.Price,
-        AmountsPerChargeViewColumnNames.Amount,
-    ];
-
-    private static string[] ColumnsToProjectForMonthlyAmountsPerCharge =>
-    [
-        MonthlyAmountsPerChargeViewColumnNames.CalculationId,
-        MonthlyAmountsPerChargeViewColumnNames.CalculationType,
-        MonthlyAmountsPerChargeViewColumnNames.CalculationVersion,
-        MonthlyAmountsPerChargeViewColumnNames.CalculationResultId,
-        MonthlyAmountsPerChargeViewColumnNames.GridAreaCode,
-        MonthlyAmountsPerChargeViewColumnNames.EnergySupplierId,
-        MonthlyAmountsPerChargeViewColumnNames.ChargeCode,
-        MonthlyAmountsPerChargeViewColumnNames.ChargeType,
-        MonthlyAmountsPerChargeViewColumnNames.ChargeOwnerId,
-        MonthlyAmountsPerChargeViewColumnNames.QuantityUnit,
-        MonthlyAmountsPerChargeViewColumnNames.IsTax,
-        MonthlyAmountsPerChargeViewColumnNames.Currency,
-        MonthlyAmountsPerChargeViewColumnNames.Time,
-        MonthlyAmountsPerChargeViewColumnNames.Amount,
-    ];
-
-    private static string[] ColumnsToProjectForTotalMonthlyAmounts =>
-    [
-        TotalMonthlyAmountsViewColumnNames.CalculationId,
-        TotalMonthlyAmountsViewColumnNames.CalculationType,
-        TotalMonthlyAmountsViewColumnNames.CalculationVersion,
-        TotalMonthlyAmountsViewColumnNames.CalculationResultId,
-        TotalMonthlyAmountsViewColumnNames.GridAreaCode,
-        TotalMonthlyAmountsViewColumnNames.EnergySupplierId,
-        TotalMonthlyAmountsViewColumnNames.ChargeOwnerId,
-        TotalMonthlyAmountsViewColumnNames.Currency,
-        TotalMonthlyAmountsViewColumnNames.Time,
-        TotalMonthlyAmountsViewColumnNames.Amount,
-    ];
 }
