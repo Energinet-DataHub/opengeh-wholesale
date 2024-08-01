@@ -13,7 +13,7 @@ module "create_hosts_as_db_readers_or_writers" {
       },
       {
         role_name = "db_revision_log_writer",
-        application_hosts_names = [ module.app_writer_api.name ]
+        application_hosts_names = [ module.func_log_ingestion.name ]
       }
     ]
 }

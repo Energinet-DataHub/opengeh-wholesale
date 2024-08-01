@@ -19,6 +19,8 @@ locals {
       "KeyVault:TokenSignKeyName"     = azurerm_key_vault_key.token_sign.name
       "KeyVault:CertificatesKeyVault" = module.kv_dh2_certificates.vault_uri
 
+      "RevisionLogOptions:ApiAddress" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
+
       "CvrRegister:BaseAddress" = var.cvr_base_address
       "CvrRegister:Username"    = var.cvr_username
       "CvrRegister:Password"    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
