@@ -1,6 +1,6 @@
 module "monitor_action_group_edi" {
   count  = var.alert_email_address != null ? 1 : 0
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_2.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_3.0.0"
 
   name                 = "alerts"
   project_name         = var.domain_name_short
@@ -19,13 +19,18 @@ module "monitor_action_group_edi" {
       name        = "exception-trigger"
       description = "Alert when total results cross threshold"
       query       = <<-QUERY
-        exceptions
-        | where timestamp > ago(10m)
-            and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
-            or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
-          and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
-        QUERY
-    },
+                      exceptions
+                      | where timestamp > ago(10m)
+                          and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
+                          or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
+                        and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
+                    QUERY
+      severity    = 1
+      frequency   = 5
+      time_window = 5
+      threshold   = 0
+      operator    = "GreaterThan"
+    }
   ]
   application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
 }

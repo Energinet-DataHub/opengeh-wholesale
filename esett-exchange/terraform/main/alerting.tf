@@ -1,6 +1,6 @@
 module "monitor_action_group_esett" {
   count  = var.alert_email_address != null ? 1 : 0
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_2.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_3.0.0"
 
   name                 = "alerts"
   project_name         = var.domain_name_short
@@ -19,16 +19,21 @@ module "monitor_action_group_esett" {
       name        = "healthcheck-trigger"
       description = "Alert on healthcheck failure"
       query       = <<-QUERY
-                  exceptions
-                  | where timestamp > ago(10m)
-                    and (cloud_RoleName == 'func-ecp-inbox-${local.NAME_SUFFIX}'
-                      or cloud_RoleName == 'func-ecp-outbox-${local.NAME_SUFFIX}'
-                      or cloud_RoleName == 'func-peek-${local.NAME_SUFFIX}'
-                      or cloud_RoleName == 'func-exchange-event-receiver-${local.NAME_SUFFIX}'
-                      or cloud_RoleName == 'app-webapi-${local.NAME_SUFFIX}')
-                    and (operation_Name == "GET /monitor/ready")
-        QUERY
-    },
+                      exceptions
+                      | where timestamp > ago(10m)
+                        and (cloud_RoleName == 'func-ecp-inbox-${local.NAME_SUFFIX}'
+                          or cloud_RoleName == 'func-ecp-outbox-${local.NAME_SUFFIX}'
+                          or cloud_RoleName == 'func-peek-${local.NAME_SUFFIX}'
+                          or cloud_RoleName == 'func-exchange-event-receiver-${local.NAME_SUFFIX}'
+                          or cloud_RoleName == 'app-webapi-${local.NAME_SUFFIX}')
+                        and (operation_Name == "GET /monitor/ready")
+                    QUERY
+      severity    = 1
+      frequency   = 5
+      time_window = 5
+      threshold   = 0
+      operator    = "GreaterThan"
+    }
   ]
 
   application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
