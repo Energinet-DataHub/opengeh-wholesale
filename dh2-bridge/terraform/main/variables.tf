@@ -87,6 +87,12 @@ variable "pim_contributor_group_name" {
   default     = ""
 }
 
+variable "pim_contributor_control_plane_group_name" {
+  type        = string
+  description = "Name of the PIM group that needs contributor control plane."
+  default     = ""
+}
+
 variable "ip_restrictions" {
   type = list(object({
     ip_address = string

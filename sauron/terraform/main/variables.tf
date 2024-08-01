@@ -56,6 +56,12 @@ variable "pim_contributor_group_name" {
   default     = ""
 }
 
+variable "pim_contributor_control_plane_group_name" {
+  type        = string
+  description = "Name of the PIM group that needs contributor control plane."
+  default     = ""
+}
+
 variable "developer_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the sub-system resources."

@@ -6,4 +6,5 @@ databricks_public_subnet_address_prefix            = "10.142.105.0/24"
 databricks_private_endpoints_subnet_address_prefix = "10.142.106.0/24"
 developer_security_group_name                      = "SEC-G-Datahub-DevelopersAzure"
 pim_contributor_group_name                         = "SEC-A-Datahub-Test-001-Contributor"
+pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Test-001-Contributor-Controlplane"
 developer_security_group_reader_access             = true
