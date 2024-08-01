@@ -21,4 +21,11 @@ resource "azurerm_key_vault_key" "token_sign" {
     expire_after         = "P11M"
     notify_before_expiry = "P30D"
   }
+
+  lifecycle {
+    ignore_changes = [
+      # 'expiration_date' is only assigned initially and then managed by the rotation policy.
+      expiration_date
+    ]
+  }
 }
