@@ -23,15 +23,17 @@ resource "azurerm_resource_group" "this" {
   tags = local.tags
 }
 
-module "pim_contributor_security_group_permissions" {
-  count = var.pim_contributor_data_plane_group_name != "" ? 1 : 0
-
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_2.0.0"
-
-  resource_group_name = azurerm_resource_group.this.name
-  security_group_name = var.pim_contributor_data_plane_group_name
-  role_level          = "Contributor Data Plane"
-}
+# module "pim_contributor_security_group_permissions" {
+#   count = var.pim_contributor_data_plane_group_name != "" ? 1 : 0
+#
+#   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_2.0.0"
+#
+#   resource_group_name = azurerm_resource_group.this.name
+#   security_group_name = var.pim_contributor_data_plane_group_name
+#   role_level          = "Contributor Data Plane"
+#
+#   depends_on = [azurerm_resource_group.this]
+# }
 
 module "pim_contributor_control_plane_security_group_permissions" {
   count = var.pim_contributor_control_plane_group_name != "" ? 1 : 0
