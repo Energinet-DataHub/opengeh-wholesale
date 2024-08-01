@@ -38,7 +38,7 @@ locals {
       name = var.pim_reader_group_name
     },
     {
-      name                 = var.pim_contributor_group_name
+      name                 = var.pim_contributor_data_plane_group_name
       enable_db_datawriter = true
     }
   ]

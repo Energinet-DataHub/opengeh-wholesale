@@ -66,7 +66,7 @@ variable "pim_reader_group_name" {
   default     = ""
 }
 
-variable "pim_contributor_group_name" {
+variable "pim_contributor_data_plane_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = ""
