@@ -2,7 +2,7 @@ terraform {
   required_providers {
     # It is recommended to pin to a given version of the Azure provider
 
-    azurerm = "3.97.1"
+    azurerm = "3.113.0"
     azuread = "2.47.0"
 
     databricks = {
@@ -14,7 +14,7 @@ terraform {
 
 provider "databricks" {
   alias = "dbw"
-  host = "https://${azurerm_databricks_workspace.this.workspace_url}"
+  host  = "https://${azurerm_databricks_workspace.this.workspace_url}"
 }
 
 provider "azurerm" {
