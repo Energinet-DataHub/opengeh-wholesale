@@ -29,7 +29,7 @@ resource "databricks_permissions" "databricks_sql_endpoint_settlement_report" {
 #
 
 module "kvs_settlement_report_databricks_warehouse_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
   name         = "dbw-settlement-report-sql-endpoint-id"
   value        = resource.databricks_sql_endpoint.settlement_report_sql_endpoint.id

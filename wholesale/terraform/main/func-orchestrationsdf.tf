@@ -1,5 +1,5 @@
 module "func_orchestrationsdf" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
 
   name                                   = "orchestrationsdf"
   project_name                           = var.domain_name_short
@@ -19,12 +19,12 @@ module "func_orchestrationsdf" {
   scm_ip_restrictions                    = var.ip_restrictions
   app_settings                           = local.func_orchestrationsdf.app_settings
 
-  health_check_alert                     = length(module.monitor_action_group_wholesale) != 1 ? null : {
+  health_check_alert = length(module.monitor_action_group_wholesale) != 1 ? null : {
     enabled         = true
     action_group_id = module.monitor_action_group_wholesale[0].id
   }
 
-  role_assignments                       = [
+  role_assignments = [
     {
       // DataLake
       resource_id          = data.azurerm_key_vault_secret.st_data_lake_id.value
@@ -49,7 +49,7 @@ module "func_orchestrationsdf" {
 }
 
 module "kvs_func_orchestrationsdf_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
   name         = "func-wholesale-orchestrationsdf-base-url"
   value        = "https://${module.func_orchestrationsdf.default_hostname}"
