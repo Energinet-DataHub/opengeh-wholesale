@@ -1,14 +1,14 @@
 module "apimao_ebix_peekmessage" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_4.0.1"
 
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
   api_management_api_name = module.apima_b2b_ebix.name
 
-  operation_id            = "peek-message" // Taken from the imported WSDL, is this correct?
-  method                  = "POST"
-  display_name            = "Peek message - ebIX"
-  url_template            = "/?soapAction=peekMessage"
+  operation_id = "peek-message" // Taken from the imported WSDL, is this correct?
+  method       = "POST"
+  display_name = "Peek message - ebIX"
+  url_template = "/?soapAction=peekMessage"
 
   policies = [
     {

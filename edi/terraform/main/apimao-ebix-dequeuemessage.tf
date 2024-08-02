@@ -1,14 +1,14 @@
 module "apimao_ebix_dequeuemessage" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_4.0.1"
 
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
   api_management_api_name = module.apima_b2b_ebix.name
 
-  operation_id            = "dequeue-message"
-  method                  = "POST"
-  display_name            = "Dequeue message - ebIX"
-  url_template            = "/?soapAction=dequeueMessage"
+  operation_id = "dequeue-message"
+  method       = "POST"
+  display_name = "Dequeue message - ebIX"
+  url_template = "/?soapAction=dequeueMessage"
 
   policies = [
     {

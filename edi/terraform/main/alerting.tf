@@ -1,6 +1,6 @@
 module "monitor_action_group_edi" {
   count  = var.alert_email_address != null ? 1 : 0
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_3.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_4.0.1"
 
   name                 = "alerts"
   project_name         = var.domain_name_short
@@ -13,10 +13,10 @@ module "monitor_action_group_edi" {
   email_receiver_name        = "Alerts-Edi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   email_receiver_address     = var.alert_email_address
   custom_dimension_subsystem = ["EDI"]
-  application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
+  application_insights_id    = data.azurerm_key_vault_secret.appi_shared_id.value
 
   default_query_exceptions_errors = {
-    enabled     = false
+    enabled = false
   }
 
   query_alerts_list = [

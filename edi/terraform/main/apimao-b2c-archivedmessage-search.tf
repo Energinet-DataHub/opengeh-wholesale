@@ -1,5 +1,5 @@
 module "apimao-b2c-archivedmessage-search" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_4.0.1"
 
   operation_id            = "b2c-archivedmessage-search"
   api_management_api_name = module.apima_b2c.name
