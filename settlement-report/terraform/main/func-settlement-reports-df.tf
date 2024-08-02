@@ -1,5 +1,5 @@
 module "func_settlement_reports_df" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
 
   name                                   = "settlement-reports-df"
   project_name                           = var.domain_name_short
@@ -39,7 +39,7 @@ module "func_settlement_reports_df" {
 }
 
 module "kvs_func_settlement_reports_df_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
   name         = "func-settlement-reports-df-base-url"
   value        = "https://${module.func_settlement_reports_df.default_hostname}"
