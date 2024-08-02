@@ -34,4 +34,5 @@ public sealed record CalculationDto(
     CalculationType CalculationType,
     Guid CreatedByUserId,
     long Version,
-    CalculationOrchestrationState OrchestrationState);
+    CalculationOrchestrationState OrchestrationState,
+    DateTimeOffset? CompletedTime);
