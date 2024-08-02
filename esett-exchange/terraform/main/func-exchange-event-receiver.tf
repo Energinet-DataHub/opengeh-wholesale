@@ -1,5 +1,5 @@
 module "func_entrypoint_exchange_event_receiver" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
 
   name                                   = "exchange-event-receiver"
   project_name                           = var.domain_name_short

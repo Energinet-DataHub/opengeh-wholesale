@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_esett_exchange" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.32.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_4.0.1"
 
   name                 = "esett-exchange"
   enclave_type         = null
@@ -25,7 +25,7 @@ module "mssqldb_esett_exchange" {
 }
 
 module "kvs_sql_ms_esett_exchange_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
   name         = "mssql-esett-exchange-database-name"
   value        = module.mssqldb_esett_exchange.name

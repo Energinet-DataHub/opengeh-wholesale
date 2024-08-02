@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_revision_log" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.32.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_4.0.1"
 
   name                 = "revision-log"
   location             = azurerm_resource_group.this.location
@@ -21,7 +21,7 @@ module "mssqldb_revision_log" {
 }
 
 module "kvs_sql_ms_revision_log_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
   name         = "mssql-revision-log-database-name"
   value        = module.mssqldb_revision_log.name
