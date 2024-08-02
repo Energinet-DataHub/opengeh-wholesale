@@ -1,5 +1,5 @@
 module "func_entrypoint_grid_loss_simulator" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
 
   name                                   = "grid-loss-simulator"
   project_name                           = var.domain_name_short

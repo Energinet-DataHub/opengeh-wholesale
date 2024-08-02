@@ -1,5 +1,5 @@
 module "app_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.30.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_4.0.1"
 
   name                                   = "api"
   project_name                           = var.domain_name_short
@@ -31,7 +31,7 @@ module "app_api" {
 }
 
 module "kvs_app_grid_loss_imbalance_prices_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
   name         = "app-grid-loss-imbalance-prices-api-base-url"
   value        = "https://${module.app_api.default_hostname}"
