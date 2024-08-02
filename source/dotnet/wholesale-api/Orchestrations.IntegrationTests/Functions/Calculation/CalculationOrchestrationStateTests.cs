@@ -88,7 +88,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
@@ -197,7 +198,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
