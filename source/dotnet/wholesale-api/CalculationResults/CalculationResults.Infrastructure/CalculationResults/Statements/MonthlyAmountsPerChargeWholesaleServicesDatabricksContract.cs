@@ -77,6 +77,11 @@ public class
         return MonthlyAmountsPerChargeViewColumnNames.CalculationId;
     }
 
+    public string GetIsTaxColumnName()
+    {
+        return MonthlyAmountsPerChargeViewColumnNames.IsTax;
+    }
+
     public string[] GetColumnsToProject()
     {
         return ColumnsToProjectForMonthlyAmountsPerCharge;

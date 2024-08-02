@@ -75,6 +75,11 @@ public class AmountsPerChargeWholesaleServicesDatabricksContract : IWholesaleSer
         return AmountsPerChargeViewColumnNames.CalculationId;
     }
 
+    public string GetIsTaxColumnName()
+    {
+        return AmountsPerChargeViewColumnNames.IsTax;
+    }
+
     public string[] GetColumnsToProject()
     {
         return ColumnsToProjectForAmountsPerCharge;

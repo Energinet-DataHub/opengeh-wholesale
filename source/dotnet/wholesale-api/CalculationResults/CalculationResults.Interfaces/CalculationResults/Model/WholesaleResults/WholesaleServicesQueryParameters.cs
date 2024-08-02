@@ -23,4 +23,6 @@ public record WholesaleServicesQueryParameters(
     string? ChargeOwnerId,
     List<(string? ChargeCode, ChargeType? ChargeType)> ChargeTypes,
     CalculationType? CalculationType,
-    Period Period);
+    Period Period,
+    bool RequestedForEnergySupplier,
+    string RequestedForActorNumber);
