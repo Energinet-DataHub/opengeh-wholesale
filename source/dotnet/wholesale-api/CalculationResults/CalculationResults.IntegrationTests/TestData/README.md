@@ -45,8 +45,9 @@ gantt
     section 2nd
         6ffe3ba8(v2)   :2021-12-31, 2022-01-31
         a6288d0d(v3)   :2021-12-31, 2022-01-31
+        d31cfa40(v4 - only grid area 543)   :2021-12-31, 2022-01-31
     section 3rd
-        bf5edc4c(v2 - only  grid area 804)   :2021-12-31, 2022-01-31
+        bf5edc4c(v2 - only grid area 804)   :2021-12-31, 2022-01-31
 ```
 
 ## Energy results
