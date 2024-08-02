@@ -41,7 +41,7 @@ class ViewScenarioExecutor:
         self._write_to_tables(input_dataframes_wrappers)
 
         output_dataframe_wrappers = self.parser.parse_csv_files_concurrently(
-            f"{scenario_folder_path}/output"
+            f"{scenario_folder_path}/then"
         )
 
         expected = self.correct_dataframe_types(output_dataframe_wrappers)
