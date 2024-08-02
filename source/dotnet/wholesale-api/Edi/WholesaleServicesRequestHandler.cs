@@ -111,7 +111,9 @@ public class WholesaleServicesRequestHandler(
             request.RequestedCalculationType == RequestedCalculationType.LatestCorrection
                 ? null
                 : CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
-            new Period(request.Period.Start, request.Period.End));
+            new Period(request.Period.Start, request.Period.End),
+            request.RequestedForActorRole == DataHubNames.ActorRole.EnergySupplier,
+            request.RequestedForActorNumber);
     }
 
     private async Task<bool> HasDataInAnotherGridAreaAsync(

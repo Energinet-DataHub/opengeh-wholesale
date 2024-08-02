@@ -76,6 +76,11 @@ public class TotalMonthlyAmountWholesaleServicesDatabricksContract : IWholesaleS
         return TotalMonthlyAmountsViewColumnNames.CalculationId;
     }
 
+    public string GetIsTaxColumnName()
+    {
+        throw new InvalidOperationException("Oh dear, there is no is_tax for total monthly amounts");
+    }
+
     public string[] GetColumnsToProject()
     {
         return ColumnsToProjectForTotalMonthlyAmounts;

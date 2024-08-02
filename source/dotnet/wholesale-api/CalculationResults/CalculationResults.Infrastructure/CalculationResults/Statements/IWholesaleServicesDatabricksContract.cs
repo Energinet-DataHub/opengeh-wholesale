@@ -41,6 +41,8 @@ public interface IWholesaleServicesDatabricksContract
 
     string GetCalculationIdColumnName();
 
+    string GetIsTaxColumnName();
+
     string[] GetColumnsToProject();
 
     string[] GetColumnsToAggregateBy();

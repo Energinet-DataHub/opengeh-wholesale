@@ -194,6 +194,18 @@ public class WholesaleServicesQueryStatementHelper(
                     """;
         }
 
+        if (_queryParameters is { RequestedForEnergySupplier: false, ChargeOwnerId: null })
+        {
+            // The following is sufficient, as the validations ensure that the grid area(s) is/are a non-empty,
+            // finite set of grid areas the charge owner owns.
+            // If this assumption changes, then the following should be changed to a more complex query,
+            // to ensure the charge owner only gets 'is_tax' charges from grid areas they own.
+            sql += $"""
+                    AND ({table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
+                         OR {table}.{_databricksContract.GetIsTaxColumnName()} = true)
+                    """;
+        }
+
         return sql;
     }
 

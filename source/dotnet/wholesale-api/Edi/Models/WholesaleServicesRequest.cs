@@ -21,4 +21,6 @@ public record WholesaleServicesRequest(
     string? ChargeOwnerId,
     List<ChargeCodeAndType> ChargeTypes,
     Period Period,
-    RequestedCalculationType RequestedCalculationType);
+    RequestedCalculationType RequestedCalculationType,
+    string RequestedForActorRole,
+    string RequestedForActorNumber);
