@@ -15,4 +15,27 @@ module "monitor_action_group_wholesale" {
   custom_dimension_subsystem = ["wholesale"]
 
   application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
+
+  default_query_exceptions_errors = {
+    enabled     = false
+  }
+
+  query_alerts_list = [
+    {
+      name        = "exception-trigger"
+      description = "Alert when total results cross threshold"
+      query       = <<-QUERY
+                      exceptions
+                        | where timestamp > ago(10m)
+                        | where customDimensions[\"Subsystem\"] == "wholesale"
+                        // avoid triggering alert when exception is logged as a warring
+                        and severityLevel >= 2
+                    QUERY
+      severity    = 1
+      frequency   = 10
+      time_window = 60
+      threshold   = 2
+      operator    = "GreaterThan"
+    },
+  ]
 }

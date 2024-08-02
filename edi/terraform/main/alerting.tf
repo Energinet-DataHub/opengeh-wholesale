@@ -13,24 +13,30 @@ module "monitor_action_group_edi" {
   email_receiver_name        = "Alerts-Edi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   email_receiver_address     = var.alert_email_address
   custom_dimension_subsystem = ["EDI"]
+  application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
+
+  default_query_exceptions_errors = {
+    enabled     = false
+  }
 
   query_alerts_list = [
     {
       name        = "exception-trigger"
-      description = "Alert when total results cross threshold"
+      description = "Alert when a exception occurs"
       query       = <<-QUERY
                       exceptions
                       | where timestamp > ago(10m)
                           and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
                           or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
-                        and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
+                          and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
+                          // avoid triggering alert when exception is logged as a warring
+                          and severityLevel >= 2
                     QUERY
       severity    = 1
       frequency   = 5
       time_window = 5
       threshold   = 0
       operator    = "GreaterThan"
-    }
+    },
   ]
-  application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
 }
