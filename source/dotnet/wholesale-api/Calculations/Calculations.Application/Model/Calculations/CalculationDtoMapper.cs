@@ -36,7 +36,8 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.CalculationType,
             calculation.CreatedByUserId,
             calculation.Version,
-            calculation.OrchestrationState);
+            calculation.OrchestrationState,
+            calculation.CompletedTime?.ToDateTimeOffset() ?? null);
     }
 
     private static Interfaces.Models.CalculationState MapState(CalculationExecutionState state)
