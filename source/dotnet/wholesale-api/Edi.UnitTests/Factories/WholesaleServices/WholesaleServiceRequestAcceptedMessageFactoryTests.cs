@@ -36,7 +36,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
 {
     private readonly string _gridArea = "543";
     private readonly string _energySupplier = "1234567891234";
-    private readonly string _chargeOwner = "1234567891999";
+    private readonly string? _chargeOwner = "1234567891999";
     private readonly Instant _periodStart = Instant.FromUtc(2020, 12, 31, 23, 0);
     private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 1, 23, 0);
     private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
@@ -121,6 +121,42 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
             p.Amount.Equals(DecimalValueMapper.Map(expectedAmount2)) &&
             p.Price.Equals(DecimalValueMapper.Map(expectedPrice2)) &&
             p.QuantityQualities.Count == 2 && p.QuantityQualities.SequenceEqual(new[] { QuantityQuality.Calculated, QuantityQuality.Estimated }));
+    }
+
+    [Fact]
+    public void Create_TotalMonthlyAmount_CanBeCreated()
+    {
+        var point = new WholesaleTimeSeriesPoint(
+            Instant.FromUtc(2021, 12, 31, 23, 0).ToDateTimeOffset(),
+            null,
+            null,
+            null,
+            9857.916610M);
+
+        var wholesaleServices = new CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices(
+            new Period(Instant.FromUtc(2021, 12, 31, 23, 00), Instant.FromUtc(2022, 1, 31, 23, 0)),
+            "543",
+            "5790000701278",
+            null,
+            null,
+            null,
+            AmountType.TotalMonthlyAmount,
+            Resolution.Month,
+            null,
+            null,
+            null,
+            Currency.DKK,
+            CalculationType.SecondCorrectionSettlement,
+            [point],
+            4);
+
+        var actual = WholesaleServiceRequestAcceptedMessageFactory.Create([wholesaleServices], "foobar");
+
+        // Assert
+        actual.Should().NotBeNull();
+        var responseBody = WholesaleServicesRequestAccepted.Parser.ParseFrom(actual.Body);
+        responseBody.Should().NotBeNull();
+        responseBody.Series.Should().NotBeNull().And.ContainSingle();
     }
 
     [Theory]
