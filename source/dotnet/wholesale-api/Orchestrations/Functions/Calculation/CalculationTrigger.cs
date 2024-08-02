@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -28,6 +29,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
 internal class CalculationTrigger
 {
+    private const string PermissionCalculationsManage = "calculations:manage";
+
     private readonly IUserContext<FrontendUser> _userContext;
     private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions;
 
@@ -40,6 +43,7 @@ internal class CalculationTrigger
     }
 
     [Function(nameof(StartCalculation))]
+    [Authorize(Roles = PermissionCalculationsManage)]
     public async Task<IActionResult> StartCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest httpRequest,
         [FromBody] StartCalculationRequestDto startCalculationRequestDto,
