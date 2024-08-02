@@ -17,7 +17,7 @@ module "monitor_action_group_wholesale" {
   application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
 
   default_query_exceptions_errors = {
-    enabled     = false
+    enabled = false
   }
 
   query_alerts_list = [
@@ -27,7 +27,7 @@ module "monitor_action_group_wholesale" {
       query       = <<-QUERY
                       exceptions
                         | where timestamp > ago(10m)
-                        | where customDimensions[\"Subsystem\"] == "wholesale"
+                        | where customDimensions["Subsystem"] == "wholesale"
                         // avoid triggering alert when exception is logged as a warring
                         and severityLevel >= 2
                     QUERY
