@@ -1,5 +1,5 @@
 module "func_certificatesynchronization" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=14.22.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_4.0.1"
 
   name                                   = "certificatesynchronization"
   project_name                           = var.domain_name_short
