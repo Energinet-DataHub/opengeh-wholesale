@@ -1,0 +1,226 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.IdentityModel.Tokens;
+
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
+
+public class WholesaleServicesQueryStatementHelper(
+    IWholesaleServicesDatabricksContract databricksContract,
+    WholesaleServicesQueryParameters queryParameters)
+{
+    private readonly IWholesaleServicesDatabricksContract _databricksContract = databricksContract;
+    private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
+
+    public string GetSource(DeltaTableOptions tableOptions)
+    {
+        return _databricksContract.GetSource(tableOptions);
+    }
+
+    public string GetCalculationTypeColumnName()
+    {
+        return _databricksContract.GetCalculationTypeColumnName();
+    }
+
+    public string GetGridAreaCodeColumnName()
+    {
+        return _databricksContract.GetGridAreaCodeColumnName();
+    }
+
+    public string GetTimeColumnName()
+    {
+        return _databricksContract.GetTimeColumnName();
+    }
+
+    public string GetEnergySupplierIdColumnName()
+    {
+        return _databricksContract.GetEnergySupplierIdColumnName();
+    }
+
+    public string GetChargeOwnerIdColumnName()
+    {
+        return _databricksContract.GetChargeOwnerIdColumnName();
+    }
+
+    public string GetChargeCodeColumnName()
+    {
+        return _databricksContract.GetChargeCodeColumnName();
+    }
+
+    public string GetChargeTypeColumnName()
+    {
+        return _databricksContract.GetChargeTypeColumnName();
+    }
+
+    public string GetCalculationVersionColumnName()
+    {
+        return _databricksContract.GetCalculationVersionColumnName();
+    }
+
+    public string GetCalculationIdColumnName()
+    {
+        return _databricksContract.GetCalculationIdColumnName();
+    }
+
+    public string[] GetColumnsToProject()
+    {
+        return _databricksContract.GetColumnsToProject();
+    }
+
+    public string[] GetColumnsToAggregateBy()
+    {
+        return _databricksContract.GetColumnsToAggregateBy();
+    }
+
+    internal string GetProjection(string prefix)
+    {
+        return string.Join(", ", GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"));
+    }
+
+    internal string GetSelection(string table = "wrv")
+    {
+        var sql = $"""
+                   ({table}.{GetTimeColumnName()} >= '{_queryParameters.Period.Start}'
+                     AND {table}.{GetTimeColumnName()} < '{_queryParameters.Period.End}')
+                   """;
+
+        if (_queryParameters.GridAreaCodes.Count != 0)
+        {
+            sql += $"""
+                    AND {table}.{GetGridAreaCodeColumnName()} in ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})
+                    """;
+        }
+
+        sql = _queryParameters.AmountType != AmountType.TotalMonthlyAmount
+            ? GenerateConstraintForActorsForNonTotalAmounts(table, sql)
+            : GenerateConstraintForActorsForTotalAmounts(table, sql);
+
+        if (_queryParameters.ChargeTypes.Count != 0)
+        {
+            var chargeTypesSql = _queryParameters.ChargeTypes
+                .Select<(string? ChargeCode, ChargeType? ChargeType), string>(c =>
+                    GenerateConstraintForChargeType(c.ChargeCode, c.ChargeType, table))
+                .ToList();
+
+            sql += $"""
+                    AND ({string.Join(" OR ", chargeTypesSql)})
+                    """;
+        }
+
+        return sql;
+    }
+
+    internal string GetLatestOrFixedCalculationTypeSelection(
+        string prefix,
+        IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas)
+    {
+        if (_queryParameters.CalculationType is not null)
+        {
+            return $"""
+                    {prefix}.{GetCalculationTypeColumnName()} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    """;
+        }
+
+        if (calculationTypePerGridAreas.IsNullOrEmpty())
+        {
+            return """
+                   FALSE
+                   """;
+        }
+
+        var calculationTypePerGridAreaConstraints = calculationTypePerGridAreas
+            .Select(ctpga => $"""
+                              ({prefix}.{GetGridAreaCodeColumnName()} = '{ctpga.GridArea}' AND {prefix}.{GetCalculationTypeColumnName()} = '{ctpga.CalculationType}')
+                              """);
+
+        return $"""
+                ({string.Join(" OR ", calculationTypePerGridAreaConstraints)})
+                """;
+    }
+
+    private string GenerateConstraintForActorsForTotalAmounts(string table, string sql)
+    {
+        if (_queryParameters.EnergySupplierId is not null)
+        {
+            sql += $"""
+                    AND {table}.{GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
+                    """;
+        }
+
+        if (_queryParameters.ChargeOwnerId is not null)
+        {
+            sql += $"""
+                    AND {table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
+                    """;
+        }
+        else
+        {
+            sql += $"""
+                    AND {table}.{GetChargeOwnerIdColumnName()} is null
+                    """;
+        }
+
+        return sql;
+    }
+
+    private string GenerateConstraintForActorsForNonTotalAmounts(string table, string sql)
+    {
+        if (_queryParameters.EnergySupplierId is not null)
+        {
+            sql += $"""
+                    AND {table}.{GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
+                    """;
+        }
+
+        if (_queryParameters.ChargeOwnerId is not null)
+        {
+            sql += $"""
+                    AND {table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
+                    """;
+        }
+
+        return sql;
+    }
+
+    private string GenerateConstraintForChargeType(
+        string? chargeCode,
+        ChargeType? chargeType,
+        string table)
+    {
+        if (chargeCode == null && chargeType == null)
+            throw new ArgumentException("Both chargeCode and chargeType cannot be null");
+
+        var sqlStatements = new List<string>();
+
+        if (!string.IsNullOrEmpty(chargeCode))
+            sqlStatements.Add($"{table}.{GetChargeCodeColumnName()} = '{chargeCode}'");
+
+        if (chargeType != null)
+        {
+            sqlStatements.Add(
+                $"{table}.{GetChargeTypeColumnName()} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
+        }
+
+        var combinedString = string.Join(" AND ", sqlStatements);
+
+        if (sqlStatements.Count > 1)
+            combinedString = $"({combinedString})";
+
+        return combinedString;
+    }
+}
