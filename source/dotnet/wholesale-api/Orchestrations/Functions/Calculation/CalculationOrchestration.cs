@@ -105,19 +105,11 @@ internal class CalculationOrchestration
             calculationMetadata.OrchestrationProgress = "CalculationJobCompleted";
             context.SetCustomStatus(calculationMetadata);
 
-            // OBSOLETE: Create calculation completed (SQL - Event database)
-            await context.CallActivityAsync(
-                nameof(CreateCompletedCalculationActivity),
-                new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId),
-                defaultRetryOptions);
-
-            //// TODO XDAST: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
-
-            // TODO XDAST: Add retry policy when we have removed the old integration events
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
                 nameof(SendCalculationResultsActivity),
-                calculationMetadata.Id);
+                new SendCalculationResultsInput(calculationMetadata.Id, context.InstanceId),
+                defaultRetryOptions);
             calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
             context.SetCustomStatus(calculationMetadata);

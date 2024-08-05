@@ -59,7 +59,6 @@ public sealed class WireMockExtensionsFixture : IDisposable
         {
             [$"{nameof(DatabricksJobsOptions.WorkspaceUrl)}"] = workspaceUrl,
             [$"{nameof(DatabricksJobsOptions.WorkspaceToken)}"] = "notEmpty",
-            [$"{nameof(DatabricksJobsOptions.WarehouseId)}"] = "notEmpty",
 
             [$"{nameof(DatabricksSqlStatementOptions.WorkspaceUrl)}"] = workspaceUrl,
             [$"{nameof(DatabricksSqlStatementOptions.WorkspaceToken)}"] = "notEmpty",

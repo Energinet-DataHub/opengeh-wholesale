@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
@@ -28,16 +28,16 @@ public class CalculationCompletedEventProvider : ICalculationCompletedEventProvi
         _calculationCompletedFactory = calculationCompletedFactory;
     }
 
-    public IntegrationEvent Get(CompletedCalculation unpublishedCalculation)
+    public IntegrationEvent Get(CalculationDto unpublishedCalculation, string orchestrationInstanceId)
     {
         var calculationCompletedV1 = _calculationCompletedFactory.Create(
-            unpublishedCalculation.Id,
-            unpublishedCalculation.OrchestrationInstanceId!,
+            unpublishedCalculation.CalculationId,
+            orchestrationInstanceId,
             unpublishedCalculation.CalculationType,
             unpublishedCalculation.Version);
 
         return new IntegrationEvent(
-            unpublishedCalculation.Id,
+            EventIdentification: unpublishedCalculation.CalculationId,
             Contracts.IntegrationEvents.CalculationCompletedV1.EventName,
             Contracts.IntegrationEvents.CalculationCompletedV1.EventMinorVersion,
             calculationCompletedV1);

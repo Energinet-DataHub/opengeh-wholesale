@@ -27,31 +27,20 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.HealthChecks.DataL
 
 public class DataLakeHealthCheckTests
 {
-    // TODO XDAST: This tests should be moved in another PR (I have written it on the issue)
     [Theory]
-    [InlineAutoMoqData(6, 20, 14, false, HealthStatus.Unhealthy)] // Within hour interval but should be Unhealthy because check failed
-    [InlineAutoMoqData(6, 20, 14, true, HealthStatus.Healthy)] // Within hour interval should be Healthy because check was successful
-    [InlineAutoMoqData(15, 20, 14, true, HealthStatus.Healthy)] // Healthy because outside check interval - hours 15-20
-    [InlineAutoMoqData(14, 14, 14, true, HealthStatus.Healthy)] // Healthy because just inside check interval and check was successful
+    [InlineAutoMoqData(false, HealthStatus.Unhealthy)]
+    [InlineAutoMoqData(true, HealthStatus.Healthy)]
     public async Task DataLakeHealthCheckTick_When_Calling_Dependency_Returns_HealthStatus(
-        int startHour,
-        int endHour,
-        int currentHour,
-        bool checkStatus,
+        bool dataLakeExists,
         HealthStatus expectedHealthStatus,
         Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         Mock<IClock> clock)
     {
         // Arrange
-        var options = new DataLakeOptions
-        {
-            DATALAKE_HEALTH_CHECK_START = new TimeOnly(startHour, 0),
-            DATALAKE_HEALTH_CHECK_END = new TimeOnly(endHour, 0),
-        };
-        clock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
-        dataLakeFileSystemClientMock.Setup(x => x.ExistsAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Response.FromValue(checkStatus, default!));
-        var sut = new DataLakeHealthRegistration(dataLakeFileSystemClientMock.Object, clock.Object, options);
+        dataLakeFileSystemClientMock
+            .Setup(x => x.ExistsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Response.FromValue(dataLakeExists, default!));
+        var sut = new DataLakeHealthRegistration(dataLakeFileSystemClientMock.Object, clock.Object, new DataLakeOptions());
 
         // Act
         var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);

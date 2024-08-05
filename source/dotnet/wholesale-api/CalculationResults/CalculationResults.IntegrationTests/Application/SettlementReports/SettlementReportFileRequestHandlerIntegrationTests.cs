@@ -284,7 +284,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString(), true),
             filter,
             1);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
+        var actorInfo = new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null);
 
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMeteringPointMasterDataViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.METERING_POINT_MASTER_DATA_V1_VIEW_NAME,

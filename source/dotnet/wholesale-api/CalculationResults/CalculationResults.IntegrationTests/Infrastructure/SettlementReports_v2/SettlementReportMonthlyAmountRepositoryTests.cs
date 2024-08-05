@@ -126,7 +126,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 "da-DK"),
             new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "8397670583197"));
 
-        Assert.Equal(2, actual);
+        Assert.Equal(3, actual);
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 "da-DK"),
             new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "8397670583197"));
 
-        Assert.Equal(1, actual);
+        Assert.Equal(2, actual);
     }
 
     [Fact]
@@ -215,7 +215,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
                 "da-DK"),
             new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "8397670583197"));
 
-        Assert.Equal(1, actual);
+        Assert.Equal(2, actual);
     }
 
     [Fact]

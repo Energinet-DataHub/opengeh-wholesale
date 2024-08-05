@@ -100,11 +100,10 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
                 wholesaleRow.IsTax == false &&
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
-
-        if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
+        else if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             source = source.Where(wholesaleRow =>
-                wholesaleRow.IsTax == true &&
+                wholesaleRow.IsTax == true ||
                 wholesaleRow.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 

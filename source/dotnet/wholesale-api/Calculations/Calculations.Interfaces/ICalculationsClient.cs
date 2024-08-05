@@ -20,8 +20,6 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 public interface ICalculationsClient
 {
-    Task<IEnumerable<CalculationDto>> GetCompletedAfterAsync(Instant? completedTime);
-
     Task<CalculationDto> GetAsync(Guid calculationId);
 
     Task<IEnumerable<CalculationDto>> SearchAsync(

@@ -13,12 +13,9 @@
 // limitations under the License.
 
 using System.Net;
-using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Test.Core;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
@@ -36,21 +33,6 @@ public class CalculationControllerTests : WebApiTestBase
         ITestOutputHelper testOutputHelper)
         : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-    }
-
-    [Fact]
-    public async Task HTTP_POST_V3_ReturnsHttpStatusCodeOkAtExpectedUrl()
-    {
-        // Arrange
-        var expectedUrl = "/v3/calculations";
-        var expectedHttpStatusCode = HttpStatusCode.OK;
-        var calculationRequestDto = CreateCalculationRequestDto();
-
-        // Act
-        var actualContent = await Client.PostAsJsonAsync(expectedUrl, calculationRequestDto, CancellationToken.None);
-
-        // Assert
-        actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
     }
 
     [Theory]
@@ -79,16 +61,5 @@ public class CalculationControllerTests : WebApiTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    private static CalculationRequestDto CreateCalculationRequestDto()
-    {
-        var (periodStart, periodEnd, _) = Periods.January_EuropeCopenhagen;
-        var calculationRequest = new CalculationRequestDto(
-            CalculationType.BalanceFixing,
-            new List<string> { "805" },
-            periodStart,
-            periodEnd);
-        return calculationRequest;
     }
 }

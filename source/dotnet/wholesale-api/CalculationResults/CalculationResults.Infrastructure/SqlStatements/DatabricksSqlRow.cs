@@ -35,6 +35,11 @@ public class DatabricksSqlRow
         }
     }
 
+    public bool HasColumn(string columnName)
+    {
+        return _dictionary.ContainsKey(columnName);
+    }
+
     public override string ToString()
     {
         return _dictionary.Aggregate(string.Empty, (current, kvp) => current + $"Key = {kvp.Key}, Value = {kvp.Value}");

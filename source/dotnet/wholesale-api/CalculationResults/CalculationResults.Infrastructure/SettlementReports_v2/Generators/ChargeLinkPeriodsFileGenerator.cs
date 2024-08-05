@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -28,7 +29,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
     public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
         : base(
             40_000, // About 25 rows per metering point, about 1.000.000 rows per chunk in total.
-            quotedColumns: [0, 3])
+            quotedColumns: [0, 3, 8])
     {
         _dataSource = dataSource;
     }
@@ -43,9 +44,14 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
         return _dataSource.GetAsync(filter, actorInfo, skipChunks, takeChunks);
     }
 
+    protected override void RegisterClassMap(CsvWriter csvHelper, SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo)
+    {
+        csvHelper.Context.RegisterClassMap(new SettlementReportChargeLinkPeriodsResultRowMap(actorInfo));
+    }
+
     public sealed class SettlementReportChargeLinkPeriodsResultRowMap : ClassMap<SettlementReportChargeLinkPeriodsResultRow>
     {
-        public SettlementReportChargeLinkPeriodsResultRowMap()
+        public SettlementReportChargeLinkPeriodsResultRowMap(SettlementReportRequestedByActor actorInfo)
         {
             Map(r => r.MeteringPointId)
                 .Name("METERINGPOINTID")
@@ -104,6 +110,13 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
             Map(r => r.PeriodEnd)
                 .Name("PERIODEND")
                 .Index(7);
+
+            if (actorInfo.MarketRole is MarketRole.DataHubAdministrator or MarketRole.SystemOperator)
+            {
+                Map(r => r.EnergySupplierId)
+                    .Name("ENERGYSUPPLIERID")
+                    .Index(8);
+            }
         }
     }
 }
