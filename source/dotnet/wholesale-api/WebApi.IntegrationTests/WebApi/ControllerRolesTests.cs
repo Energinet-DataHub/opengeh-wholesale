@@ -73,10 +73,8 @@ public class ControllerRolesTests
     }
 
     [Theory]
-    [InlineAutoData(typeof(CalculationController), "CreateCalculation", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(CalculationController), "GetCalculation", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(CalculationController), "SearchCalculations", Permissions.CalculationsManage)]
-    [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementReportsManage)]
     public void EndpointsMustHaveCorrectPermissions(Type controllerType, string endpoint, string expectedPermissions)
     {
         // Arrange & Act

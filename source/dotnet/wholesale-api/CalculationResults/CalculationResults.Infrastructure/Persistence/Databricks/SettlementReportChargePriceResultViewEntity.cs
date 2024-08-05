@@ -51,7 +51,7 @@ public sealed class SettlementReportChargePriceResultViewEntity
     public string ChargeOwnerId { get; set; } = null!;
 
     [Column("is_tax", TypeName = "int")]
-    public bool Taxation { get; set; }
+    public bool IsTax { get; set; }
 
     [Column("price_points")]
     public SettlementReportChargePriceResultViewPricePointEntity[] PricePoints { get; set; } = [];

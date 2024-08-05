@@ -32,6 +32,11 @@ public class DeltaTableOptions
     public string SettlementReportSchemaName { get; set; } = "settlement_report";
 
     /// <summary>
+    /// Name of the schema/database to which the calculation result views belong.
+    /// </summary>
+    public string WholesaleCalculationResultsSchemaName { get; set; } = "wholesale_calculation_results";
+
+    /// <summary>
     /// Name of the energy results delta table.
     /// </summary>
     public string ENERGY_RESULTS_TABLE_NAME { get; set; } = "energy_results";
@@ -56,8 +61,6 @@ public class DeltaTableOptions
 
     public string ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME { get; set; } = "metering_point_time_series_v1";
 
-    public string CalculationResultsSchemaName { get; set; } = "wholesale_calculation_results";
-
     public string CHARGE_LINK_PERIODS_V1_VIEW_NAME { get; set; } = "charge_link_periods_v1";
 
     public string METERING_POINT_MASTER_DATA_V1_VIEW_NAME { get; set; } = "metering_point_periods_v1";
@@ -67,4 +70,10 @@ public class DeltaTableOptions
     public string CHARGE_PRICES_V1_VIEW_NAME { get; set; } = "charge_prices_v1";
 
     public string CALCULATIONS_TABLE_NAME { get; set; } = "calculations";
+
+    public string AMOUNTS_PER_CHARGE_V1_VIEW_NAME { get; set; } = "amounts_per_charge_v1";
+
+    public string MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME { get; set; } = "monthly_amounts_per_charge_v1";
+
+    public string TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME { get; set; } = "total_monthly_amounts_v1";
 }

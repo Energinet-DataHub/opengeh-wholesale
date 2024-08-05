@@ -56,7 +56,7 @@ class ScenarioExecutor:
     def _setup(self, scenario_path: str) -> None:
         self.input_path = scenario_path + "/input/"
         self.basis_data_path = scenario_path + "/basis_data/"
-        self.output_path = scenario_path + "/output/"
+        self.output_path = scenario_path + "/then/"
 
         correlations = get_data_input_specifications(self.table_reader)
         self.test_calculation_args = create_calculation_args(self.input_path)

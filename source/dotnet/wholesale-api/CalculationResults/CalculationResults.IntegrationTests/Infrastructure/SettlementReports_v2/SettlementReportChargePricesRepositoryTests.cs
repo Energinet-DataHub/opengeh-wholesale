@@ -134,7 +134,7 @@ public class SettlementReportChargePricesRepositoryTests : TestBase<SettlementRe
                 "da-DK"),
             new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, "5790001330552"));
 
-        Assert.Equal(1, actual);
+        Assert.Equal(3, actual);
     }
 
     [Fact]

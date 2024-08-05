@@ -31,19 +31,7 @@ public class CalculationScenarioState
 
     public CalculationDto? Calculation { get; set; }
 
-    public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
-        = [];
-
     public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
-        = [];
-
-    public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
-        = new List<AmountPerChargeResultProducedV1>();
-
-    public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
-        = [];
-
-    public IReadOnlyCollection<TotalMonthlyAmountResultProducedV1> ReceivedTotalMonthlyAmountResultProducedV1 { get; set; }
         = [];
 
     public IReadOnlyCollection<CalculationCompletedV1> ReceivedCalculationCompletedV1 { get; set; } = [];

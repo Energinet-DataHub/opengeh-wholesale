@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -42,6 +43,8 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
+        Fixture.Inject(new WholesaleServicesDatabricksContractInformationProvider([new AmountsPerChargeWholesaleServicesDatabricksContract(), new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(), new TotalMonthlyAmountWholesaleServicesDatabricksContract()]));
+        Fixture.Inject(new WholesaleServicesQueryStatementHelperFactory([new AmountsPerChargeWholesaleServicesDatabricksContract(), new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(), new TotalMonthlyAmountWholesaleServicesDatabricksContract()]));
         _fixture = fixture;
     }
 
@@ -61,10 +64,14 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: null,
             ChargeTypes: [],
             CalculationType: CalculationType.WholesaleFixing,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: true,
+            RequestedForActorNumber: "5790000701278");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
         actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
                 ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
                 ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
@@ -118,12 +125,86 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
                 ("543", "5790000701278", "5790000610976", ChargeType.Tariff, "NT1008", AmountType.AmountPerCharge, Resolution.Day, MeteringPointType.OwnProduction, null, CalculationType.WholesaleFixing, 24, 31),
                 ("543", "5790000701278", "5790000432752", ChargeType.Tariff, "42030", AmountType.AmountPerCharge, Resolution.Day, MeteringPointType.OwnProduction, null, CalculationType.WholesaleFixing, 24, 31),
             ]);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task
+        Given_EnergySupplierAndChargeOwnerWithTotalMonthlyAmountAndSecondCorrection_Then_CorrespondingDataReturned(
+            bool isEnergySupplier)
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.TotalMonthlyAmount,
+            GridAreaCodes: [],
+            EnergySupplierId: "5790000701278",
+            ChargeOwnerId: "5790000610976",
+            ChargeTypes: [],
+            CalculationType: CalculationType.SecondCorrectionSettlement,
+            Period: totalPeriod,
+            RequestedForEnergySupplier: isEnergySupplier,
+            RequestedForActorNumber: isEnergySupplier ? "5790000701278" : "5790000610976");
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
+                ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
+            .Should()
+            .BeEquivalentTo([
+                ("543", "5790000701278", "5790000610976", (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 4, 1)
+            ]);
     }
 
     [Fact]
-    public async Task Given_AllQueryParametersAssignedValuesWithLatestCorrection_Then_LatestCorrectionReturned()
+    public async Task Given_EnergySupplierWithTotalMonthlyAmountAndSecondCorrection_Then_CorrespondingDataReturned()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.TotalMonthlyAmount,
+            GridAreaCodes: [],
+            EnergySupplierId: "5790000701278",
+            ChargeOwnerId: null,
+            ChargeTypes: [],
+            CalculationType: CalculationType.SecondCorrectionSettlement,
+            Period: totalPeriod,
+            RequestedForEnergySupplier: true,
+            RequestedForActorNumber: "5790000701278");
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod,
+                ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
+            .Should()
+            .BeEquivalentTo([
+                ("533", "5790000701278", (string?)null, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("543", "5790000701278", null, null, null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
+                ("584", "5790000701278", null, null, null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("804", "5790000701278", null, null, null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+            ]);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Given_AllQueryParametersAssignedValuesWithLatestCorrection_Then_LatestCorrectionReturned(
+        bool isEnergySupplier)
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -138,7 +219,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: "5790000432752",
             ChargeTypes: [("EA-003", ChargeType.Tariff)],
             CalculationType: null, // This is how we denote 'latest correction'
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: isEnergySupplier,
+            RequestedForActorNumber: isEnergySupplier ? "5790001687137" : "5790000432752");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -154,7 +237,7 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     }
 
     [Fact]
-    public async Task Given_ChargeOwnerForSpecificGridAreaAndLatestCorrection_Then_LatestCorrectionReturned()
+    public async Task Given_SomeArbitraryQueryParameters_Then_AmountAndMonthlyAndTotalHaveCorrectPeriods()
     {
         await ClearAndAddDatabricksDataAsync();
 
@@ -162,6 +245,89 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             Instant.FromUtc(2021, 12, 31, 23, 0),
             Instant.FromUtc(2022, 1, 31, 23, 0));
 
+        // Amount per charge
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.AmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: "5790001687137",
+            ChargeOwnerId: "5790000432752",
+            ChargeTypes: [("EA-003", ChargeType.Tariff)],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod,
+            RequestedForEnergySupplier: true,
+            RequestedForActorNumber: "5790001687137");
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.Period.Start, ats.Period.End))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo([
+                (Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0))
+            ]);
+
+        // Monthly amount
+        parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.MonthlyAmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: "5790001687137",
+            ChargeOwnerId: "5790000432752",
+            ChargeTypes: [("EA-003", ChargeType.Tariff)],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod,
+            RequestedForEnergySupplier: true,
+            RequestedForActorNumber: "5790001687137");
+
+        // Act
+        actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        actual.Select(ats => (ats.Period.Start, ats.Period.End))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo([
+                (Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0))
+            ]);
+
+        // Total monthly amount
+        parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.AmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: "5790001687137",
+            ChargeOwnerId: "5790000432752",
+            ChargeTypes: [],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod,
+            RequestedForEnergySupplier: true,
+            RequestedForActorNumber: "5790001687137");
+
+        // Act
+        actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        actual.Select(ats => (ats.Period.Start, ats.Period.End))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo([
+                (Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0))
+            ]);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Given_ChargeOwnerForSpecificGridAreaAndLatestCorrection_Then_LatestCorrectionReturned(
+        bool isEnergySupplier)
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        // The charge owner case isn't technically possible,
+        // as an energy supplier must always provide an energy supplier.
+        // But we keep the case for completeness.
         var parameters = new WholesaleServicesQueryParameters(
             AmountType: AmountType.AmountPerCharge,
             GridAreaCodes: ["804", "584"],
@@ -169,7 +335,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: "5790000432752",
             ChargeTypes: [],
             CalculationType: null,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: isEnergySupplier,
+            RequestedForActorNumber: isEnergySupplier ? "5790001687137" : "5790000432752");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -231,7 +399,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: null,
             ChargeTypes: [("40000", ChargeType.Tariff), ("AB1025", ChargeType.Subscription)],
             CalculationType: CalculationType.SecondCorrectionSettlement,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            false,
+            "5790000432752");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -242,19 +412,67 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
                 ats.CalculationType, ats.Version, ats.TimeSeriesPoints.Count))
             .Should()
             .BeEquivalentTo([
-                ("543", "5790000701278", "5790000610976", ChargeType.Subscription, "AB1025", AmountType.MonthlyAmountPerCharge, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 3, 1),
-
-                ("533", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("533", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.SecondCorrectionSettlement, 3, 1),
                 ("533", "5790001095390", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
-                ("543", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
-                ("543", "5790001095390", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
-                ("543", "5790001687137", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
+                ("543", "5790000701278", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
+                ("543", "5790001095390", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
+                ("543", "5790001687137", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 4, 1),
                 ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "40000", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.SecondCorrectionSettlement, 3, 1),
             ]);
     }
 
     [Fact]
-    public async Task Given_EnergySupplierOnlyHaveDataForHalfOfThePeriod_Then_DataReturnedWithModifiedPeriod()
+    public async Task
+        Given_ChargeOwnerRequestsWithoutChargeOwnerOrEnergySupplier_Then_DataReturnedContainsChargeOwnerChargesAndIsTaxCharges()
+    {
+        await ClearAndAddDatabricksDataAsync();
+
+        var totalPeriod = new Period(
+            Instant.FromUtc(2021, 12, 31, 23, 0),
+            Instant.FromUtc(2022, 1, 31, 23, 0));
+
+        var parameters = new WholesaleServicesQueryParameters(
+            AmountType: AmountType.MonthlyAmountPerCharge,
+            GridAreaCodes: ["804"],
+            EnergySupplierId: null,
+            ChargeOwnerId: null,
+            ChargeTypes: [],
+            CalculationType: null, // This is how we denote 'latest correction'
+            Period: totalPeriod,
+            RequestedForEnergySupplier: false,
+            RequestedForActorNumber: "8100000000047");
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
+                ats.Version, ats.TimeSeriesPoints.Count))
+            .Should()
+            .BeEquivalentTo([
+                // Tax charges for grid area
+                ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "EA-001", AmountType.MonthlyAmountPerCharge, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "EA-002", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "EA-003", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                // Charge owners own charges
+                ("804", "5790001687137", "8100000000047", ChargeType.Tariff, "100", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790000701278", "8100000000047", ChargeType.Tariff, "4300", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "8100000000047", ChargeType.Tariff, "4300", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "8100000000047", ChargeType.Tariff, "Rabat-T", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "8100000000047", ChargeType.Tariff, "Tarif_Ny", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "100", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790000701278", "8100000000047", ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+            ]);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Given_EnergySupplierOnlyHaveDataForHalfOfThePeriod_Then_DataReturnedWithModifiedPeriod(
+        bool isEnergySupplier)
     {
         /*
          Business case example:
@@ -277,7 +495,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: "5790000432752",
             ChargeTypes: [("EA-001", ChargeType.Tariff)],
             CalculationType: CalculationType.SecondCorrectionSettlement,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: isEnergySupplier,
+            RequestedForActorNumber: isEnergySupplier ? "5790001687137" : "5790000432752");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -314,7 +534,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: "5790000432752",
             ChargeTypes: [("EA-001", ChargeType.Tariff)],
             CalculationType: CalculationType.SecondCorrectionSettlement,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: true,
+            RequestedForActorNumber: "5790001687137");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -375,7 +597,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: null,
             ChargeTypes: [],
             CalculationType: null,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: false,
+            RequestedForActorNumber: "5790000432752");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -384,8 +608,12 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         actual.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task Given_EnergySupplierAndChargeOwnerWithLatestCorrectionButOnlyOneGridAreaWithCorrectionData_Then_DataReturnedForGridArea()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task
+        Given_EnergySupplierAndChargeOwnerWithLatestCorrectionButOnlyOneGridAreaWithCorrectionData_Then_DataReturnedForGridArea(
+            bool isEnergySupplier)
     {
         await ClearAndAddDatabricksDataAsync();
         await RemoveDataForCorrections(["804", "543"]);
@@ -401,7 +629,9 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
             ChargeOwnerId: "5790000432752",
             ChargeTypes: [],
             CalculationType: null,
-            Period: totalPeriod);
+            Period: totalPeriod,
+            RequestedForEnergySupplier: isEnergySupplier,
+            RequestedForActorNumber: isEnergySupplier ? "5790000701278" : "5790000432752");
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -425,80 +655,114 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
         await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
 
-        const string wholesaleOutputWholesaleResultsCsv = "wholesale_output.wholesale_results.csv";
-        var wholesaleTestFile = Path.Combine("TestData", wholesaleOutputWholesaleResultsCsv);
+        const string view1 = "wholesale_calculation_results.amounts_per_charge_v1.csv";
+        var view1File = Path.Combine("TestData", view1);
 
-        const string basisDataCalculationsCsv = "basis_data.calculations.csv";
-        var basisDataTestFile = Path.Combine("TestData", basisDataCalculationsCsv);
+        const string view2 = "wholesale_calculation_results.monthly_amounts_per_charge_v1.csv";
+        var view2File = Path.Combine("TestData", view2);
 
-        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.CALCULATIONS_TABLE_NAME,
-            BasisDataCalculationsTableSchemaDefinition.SchemaDefinition,
-            basisDataTestFile);
+        const string view3 = "wholesale_calculation_results.total_monthly_amounts_v1.csv";
+        var view3File = Path.Combine("TestData", view3);
 
         await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
-            WholesaleResultsTableSchemaDefinition.SchemaDefinition,
-            wholesaleTestFile);
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            AmountsPerChargeViewSchemaDefinition.SchemaDefinition,
+            view1File);
+
+        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            MonthlyAmountsPerChargeViewSchemaDefinition.SchemaDefinition,
+            view2File);
+
+        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            TotalMonthlyAmountsViewSchemaDefinition.SchemaDefinition,
+            view3File);
     }
 
     private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)
     {
-        var statement = new DeleteEnergySupplierStatement(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
-            energySupplierId,
-            before,
-            after);
+        foreach (var amountType in Enum.GetValues<AmountType>())
+        {
+            var statement = new DeleteEnergySupplierStatement(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+                energySupplierId,
+                before,
+                after,
+                amountType);
 
-        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+        }
     }
 
     private async Task RemoveDataForCorrections(IReadOnlyCollection<string> gridAreasToRemoveFrom)
     {
-        var statement = new DeleteCorrectionsStatement(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
-            gridAreasToRemoveFrom);
+        foreach (var amountType in Enum.GetValues<AmountType>())
+        {
+            var statement = new DeleteCorrectionsStatement(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+                gridAreasToRemoveFrom,
+                amountType);
 
-        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+        }
     }
 
     private class DeleteEnergySupplierStatement(
         DeltaTableOptions deltaTableOptions,
         string energySupplierId,
         Instant before,
-        Instant? after) : DatabricksStatement
+        Instant? after,
+        AmountType amountType) : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly string _energySupplierId = energySupplierId;
         private readonly Instant _before = before;
         private readonly Instant? _after = after;
 
+        private readonly IWholesaleServicesDatabricksContract _helper = amountType switch
+        {
+            AmountType.AmountPerCharge => new AmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.MonthlyAmountPerCharge => new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.TotalMonthlyAmount => new TotalMonthlyAmountWholesaleServicesDatabricksContract(),
+            _ => throw new ArgumentOutOfRangeException(nameof(amountType), amountType, null),
+        };
+
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
-                    WHERE {WholesaleResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
-                    AND {WholesaleResultColumnNames.Time} <= '{_before}'
-                    {(_after is not null ? $"AND {WholesaleResultColumnNames.Time} > '{_after}'" : string.Empty)}
+                    DELETE FROM {_helper.GetSource(_deltaTableOptions)}
+                    WHERE {_helper.GetEnergySupplierIdColumnName()} = '{_energySupplierId}'
+                    AND {_helper.GetTimeColumnName()} <= '{_before}'
+                    {(_after is not null ? $"AND {_helper.GetTimeColumnName()} > '{_after}'" : string.Empty)}
                     """;
         }
     }
 
     private class DeleteCorrectionsStatement(
         DeltaTableOptions deltaTableOptions,
-        IReadOnlyCollection<string> gridAreasToRemoveFrom) : DatabricksStatement
+        IReadOnlyCollection<string> gridAreasToRemoveFrom,
+        AmountType amountType) : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly IReadOnlyCollection<string> _gridAreasToRemoveFrom = gridAreasToRemoveFrom;
 
+        private readonly IWholesaleServicesDatabricksContract _helper = amountType switch
+        {
+            AmountType.AmountPerCharge => new AmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.MonthlyAmountPerCharge => new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(),
+            AmountType.TotalMonthlyAmount => new TotalMonthlyAmountWholesaleServicesDatabricksContract(),
+            _ => throw new ArgumentOutOfRangeException(nameof(amountType), amountType, null),
+        };
+
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
-                    WHERE ({WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
-                    OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
-                    OR {WholesaleResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
-                    {(_gridAreasToRemoveFrom.Any() ? $"AND {WholesaleResultColumnNames.GridArea} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
+                    DELETE FROM {_helper.GetSource(_deltaTableOptions)}
+                    WHERE ({_helper.GetCalculationTypeColumnName()} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
+                    OR {_helper.GetCalculationTypeColumnName()} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
+                    OR {_helper.GetCalculationTypeColumnName()} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
+                    {(_gridAreasToRemoveFrom.Any() ? $"AND {_helper.GetGridAreaCodeColumnName()} IN ({string.Join(", ", _gridAreasToRemoveFrom.Select(ga => $"'{ga}'"))})" : string.Empty)}
                     """;
         }
     }

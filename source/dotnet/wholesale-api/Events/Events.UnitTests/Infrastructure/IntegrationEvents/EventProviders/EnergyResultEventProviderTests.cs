@@ -18,8 +18,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using FluentAssertions;
@@ -41,16 +39,10 @@ public class EnergyResultEventProviderTests
     private readonly string? _fromGridArea = null;
     private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
     private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
-    private readonly CompletedCalculation _completedCalculation;
     private readonly Resolution _resolution = Resolution.Quarter;
 
     public EnergyResultEventProviderTests()
     {
-        var fixture = new Fixture();
-        _completedCalculation = fixture
-            .Build<CompletedCalculation>()
-            .With(p => p.Id, _calculationId)
-            .Create();
     }
 
     [Theory]
@@ -59,7 +51,6 @@ public class EnergyResultEventProviderTests
     public async Task GetAsync_WhenNegativeOrPositiveGridLoss_ReturnsExactlyOneGridLossResultProducedV1Event(
         TimeSeriesType positiveOrNegativeGridLoss,
         [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-        EnergyResultProducedV2Factory energyResultProducedV2Factory,
         GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
     {
         // Arrange
@@ -68,15 +59,14 @@ public class EnergyResultEventProviderTests
         var energyResults = new[] { energyResult };
         var sut = new EnergyResultEventProvider(
             energyResultQueriesMock.Object,
-            energyResultProducedV2Factory,
             gridLossResultProducedV1Factory);
 
         energyResultQueriesMock
-            .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+            .Setup(mock => mock.GetAsync(_calculationId))
             .Returns(energyResults.ToAsyncEnumerable());
 
         // Act
-        var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+        var actualIntegrationEvents = await sut.GetAsync(_calculationId).ToListAsync();
 
         // Assert
         actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
@@ -86,7 +76,6 @@ public class EnergyResultEventProviderTests
     [AutoMoqData]
     public async Task GetAsync_WhenNotNegativeOrPositiveGridLoss_ReturnsNoGridLossResultProducedV1Event(
         [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-        EnergyResultProducedV2Factory energyResultProducedV2Factory,
         GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
     {
         foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
@@ -100,52 +89,18 @@ public class EnergyResultEventProviderTests
             var energyResults = new[] { energyResult };
             var sut = new EnergyResultEventProvider(
                 energyResultQueriesMock.Object,
-                energyResultProducedV2Factory,
                 gridLossResultProducedV1Factory);
 
             energyResultQueriesMock
-                .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+                .Setup(mock => mock.GetAsync(_calculationId))
                 .Returns(energyResults.ToAsyncEnumerable());
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(_calculationId).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Where(e => e.EventName == gridLossEventName).Should().BeEmpty();
         }
-    }
-
-    [Theory]
-    [InlineAutoMoqData(TimeSeriesType.Production)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.TotalConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
-    public async Task GetAsync_WhenTimeSeriesTypeIsSupportedForEnergyResultProducedV2Event_ReturnsExactlyOneEnergyResultProducedV2Event(
-        TimeSeriesType timeSeriesType,
-        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-        EnergyResultProducedV2Factory energyResultProducedV2Factory,
-        GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
-    {
-        // Arrange
-        var expectedEventName = Contracts.IntegrationEvents.EnergyResultProducedV2.EventName;
-        var energyResult = CreateEnergyResult(timeSeriesType);
-        var energyResults = new[] { energyResult };
-        var sut = new EnergyResultEventProvider(
-            energyResultQueriesMock.Object,
-            energyResultProducedV2Factory,
-            gridLossResultProducedV1Factory);
-
-        energyResultQueriesMock
-            .Setup(mock => mock.GetAsync(_completedCalculation.Id))
-            .Returns(energyResults.ToAsyncEnumerable());
-
-        // Act
-        var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
-
-        // Assert
-        actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
     }
 
     private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)

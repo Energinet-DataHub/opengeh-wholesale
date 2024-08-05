@@ -184,8 +184,8 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
     [Theory]
     [InlineData("8397670583104", 1, MarketRole.EnergySupplier, null)]
     [InlineData(null, 3, MarketRole.EnergySupplier, null)]
-    [InlineData("8397670583119", 1, MarketRole.GridAccessProvider, "7397670583109")]
-    [InlineData(null, 2, MarketRole.GridAccessProvider, "7397670583119")]
+    [InlineData("8397670583119", 3, MarketRole.GridAccessProvider, "7397670583109")]
+    [InlineData(null, 3, MarketRole.GridAccessProvider, "7397670583119")]
     [InlineData("8397670583129", 2, MarketRole.SystemOperator, "7397670583129")]
     [InlineData(null, 1, MarketRole.SystemOperator, "7397670583139")]
     public async Task Count_ValidFilter_FiltersCorrectlyOnEnergySupplier(string? energySupplier, int expected, MarketRole marketRole, string? chargeOwner)

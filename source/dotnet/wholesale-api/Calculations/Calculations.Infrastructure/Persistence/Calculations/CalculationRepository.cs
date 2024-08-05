@@ -40,27 +40,6 @@ public class CalculationRepository : ICalculationRepository
         return await _context.Calculations.FirstAsync(x => x.Id == calculationId).ConfigureAwait(false);
     }
 
-    public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(CalculationExecutionState.Created);
-
-    public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states)
-    {
-        return await _context
-            .Calculations
-            .Where(b => states.Contains(b.ExecutionState))
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
-    public async Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime)
-    {
-        return await _context
-            .Calculations
-            .Where(b => b.ExecutionState == CalculationExecutionState.Completed)
-            .Where(b => completedTime == null || b.ExecutionTimeEnd > completedTime)
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
     public async Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
@@ -84,14 +63,5 @@ public class CalculationRepository : ICalculationRepository
         return foundCalculations
             .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains))
             .ToList();
-    }
-
-    private async Task<List<Calculation>> GetByStateAsync(CalculationExecutionState state)
-    {
-        return await _context
-            .Calculations
-            .Where(b => b.ExecutionState == state)
-            .ToListAsync()
-            .ConfigureAwait(false);
     }
 }

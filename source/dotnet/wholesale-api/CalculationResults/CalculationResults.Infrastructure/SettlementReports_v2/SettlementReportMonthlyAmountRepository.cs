@@ -102,7 +102,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
                 break;
             case MarketRole.GridAccessProvider:
                 source = source.Where(row =>
-                    row.IsTax == true &&
+                    row.IsTax == true ||
                     row.ChargeOwnerId == actorInfo.ChargeOwnerId);
                 break;
         }
