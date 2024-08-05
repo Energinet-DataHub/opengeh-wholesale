@@ -40,6 +40,7 @@ class TableReader:
         spark: SparkSession,
         catalog_name: str,
         calculation_input_path: str,
+        wholesale_internal_database_name: str | None = None,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
         grid_loss_metering_points_table_name: str | None = None,
@@ -53,11 +54,14 @@ class TableReader:
             metering_point_periods_table_name
             or InputDatabase.METERING_POINT_PERIODS_TABLE_NAME
         )
+        self._catalog_name = catalog_name
+        self._wholesale_internal_database_name = (
+            wholesale_internal_database_name or WholesaleInternalDatabase.DATABASE_NAME
+        )
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
             or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
         )
-        self._catalog_name = catalog_name
 
     def read_metering_point_periods(
         self,
@@ -65,31 +69,33 @@ class TableReader:
         path = (
             f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
         )
-        return _read(self._spark, path, metering_point_period_schema)
+        return _read_from_hive(self._spark, path, metering_point_period_schema)
 
     def read_time_series_points(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
-        return _read(self._spark, path, time_series_point_schema)
+        return _read_from_hive(self._spark, path, time_series_point_schema)
 
     def read_charge_link_periods(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
-        return _read(self._spark, path, charge_link_periods_schema)
+        return _read_from_hive(self._spark, path, charge_link_periods_schema)
 
     def read_charge_price_information_periods(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
-        return _read(self._spark, path, charge_price_information_periods_schema)
+        return _read_from_hive(
+            self._spark, path, charge_price_information_periods_schema
+        )
 
     def read_charge_price_points(
         self,
     ) -> DataFrame:
         path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
-        return _read(self._spark, path, charge_price_points_schema)
+        return _read_from_hive(self._spark, path, charge_price_points_schema)
 
     def read_grid_loss_metering_points(self) -> DataFrame:
         return _read_from_uc(
             self._spark,
             self._catalog_name,
-            WholesaleInternalDatabase.DATABASE_NAME,
+            self._wholesale_internal_database_name,
             self._grid_loss_metering_points_table_name,
             grid_loss_metering_points_schema,
         )
@@ -105,7 +111,7 @@ class TableReader:
         return df
 
 
-def _read(spark: SparkSession, path: str, contract: StructType) -> DataFrame:
+def _read_from_hive(spark: SparkSession, path: str, contract: StructType) -> DataFrame:
     df = spark.read.format("delta").load(path)
 
     # Assert that the schema of the data matches the defined contract
