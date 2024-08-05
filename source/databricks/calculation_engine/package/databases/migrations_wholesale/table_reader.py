@@ -38,6 +38,7 @@ class TableReader:
     def __init__(
         self,
         spark: SparkSession,
+        catalog_name: str,
         calculation_input_path: str,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
@@ -56,6 +57,7 @@ class TableReader:
             grid_loss_metering_points_table_name
             or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
         )
+        self._catalog_name = catalog_name
 
     def read_metering_point_periods(
         self,
@@ -84,8 +86,13 @@ class TableReader:
         return _read(self._spark, path, charge_price_points_schema)
 
     def read_grid_loss_metering_points(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{self._grid_loss_metering_points_table_name}"
-        return _read(self._spark, path, grid_loss_metering_points_schema)
+        return _read_from_uc(
+            self._spark,
+            self._catalog_name,
+            WholesaleInternalDatabase.DATABASE_NAME,
+            self._grid_loss_metering_points_table_name,
+            grid_loss_metering_points_schema,
+        )
 
     def read_calculations(self) -> DataFrame:
         table_name = f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
@@ -100,6 +107,25 @@ class TableReader:
 
 def _read(spark: SparkSession, path: str, contract: StructType) -> DataFrame:
     df = spark.read.format("delta").load(path)
+
+    # Assert that the schema of the data matches the defined contract
+    assert_contract(df.schema, contract)
+
+    # Select only the columns that are defined in the contract to avoid potential downstream issues
+    df = df.select(contract.fieldNames())
+
+    return df
+
+
+def _read_from_uc(
+    spark: SparkSession,
+    catalog_name: str,
+    database_name: str,
+    table_name: str,
+    contract: StructType,
+) -> DataFrame:
+    name = f"{catalog_name}.{database_name}.{table_name}"
+    df = spark.read.format("delta").table(name)
 
     # Assert that the schema of the data matches the defined contract
     assert_contract(df.schema, contract)
