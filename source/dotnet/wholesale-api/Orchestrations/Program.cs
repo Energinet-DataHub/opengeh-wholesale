@@ -43,7 +43,7 @@ var host = new HostBuilder()
         services.AddHealthChecksForIsolatedWorker();
 
         // Http => Authentication
-        AuthenticationExtensions.DisableHttpsConfiguration = true; // TODO: Remove when dones testing
+        AuthenticationExtensions.DisableHttpsConfiguration = false; // TODO: Remove when dones testing
         services
             .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
             .AddUserAuthenticationForIsolatedWorker<FrontendUser, FrontendUserProvider>();
