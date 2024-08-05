@@ -17,6 +17,7 @@ from package.databases.wholesale_results_internal.schemas import (
 
 import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 
+# TODO BJM: Remove when we only use Unity Catalog
 schema_config = [
     Schema(
         name=paths.WholesaleInternalDatabase.DATABASE_NAME,
@@ -100,6 +101,21 @@ schema_config = [
         name=paths.WholesaleResultsDatabase.DATABASE_NAME,
         tables=[],
         views=[
+            View(
+                name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+            ),
             View(
                 name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
             ),

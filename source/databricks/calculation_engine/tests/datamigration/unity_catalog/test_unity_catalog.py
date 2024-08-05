@@ -13,6 +13,26 @@ from package.infrastructure import paths
     [
         (
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
+            paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
             paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
         ),
         (
