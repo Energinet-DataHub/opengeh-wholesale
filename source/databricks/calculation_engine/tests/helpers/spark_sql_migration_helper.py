@@ -26,7 +26,7 @@ from package.datamigration.migration import migrate_data_lake
 from package.datamigration_hive.migration_script_args import MigrationScriptArgs
 from package.datamigration_hive.schema_config import schema_config as schema_config_hive
 from package.datamigration_hive.substitutions import substitutions
-from package.datamigration.schema_config import schema_config
+from package.infrastructure.paths import UnityCatalogDatabaseNames
 
 catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
@@ -54,8 +54,9 @@ def _create_databases(spark: SparkSession) -> None:
     Create Unity Catalog databases as they are not created by migration scripts.
     They are created by infrastructure (in the real environments)
     In tests they are created in the single available default database."""
-    for schema in schema_config:
-        spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema.name}")
+    for database in UnityCatalogDatabaseNames.get_names():
+        print(f"Creating database {database}")
+        spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
 
 
 def migrate(
