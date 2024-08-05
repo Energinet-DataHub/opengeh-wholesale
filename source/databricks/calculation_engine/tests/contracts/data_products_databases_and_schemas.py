@@ -24,7 +24,7 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
     """
     Get all view databases.
     """
-    negative_databases = {
+    non_data_product_databases = {
         "default",
         "schema_migration",
         "wholesale_output",
@@ -37,7 +37,9 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
         "wholesale_results",
     }
     databases = [
-        db for db in spark.catalog.listDatabases() if db.name not in negative_databases
+        db
+        for db in spark.catalog.listDatabases()
+        if db.name not in non_data_product_databases
     ]
 
     if not databases:

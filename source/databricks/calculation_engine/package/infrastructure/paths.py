@@ -17,6 +17,26 @@
 import package.infrastructure.environment_variables as env_vars
 
 
+class UnityCatalogDatabaseNames:
+    """Unity Catalog database names are defined in the dh3infrastructure repository"""
+
+    WHOLESALE_RESULTS = "wholesale_results"
+    WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
+    WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
+    WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
+    WHOLESALE_INTERNAL = "wholesale_internal"
+
+    @classmethod
+    def get_names(cls) -> list[str]:
+        values = []
+        for attr in dir(cls):
+            value = getattr(cls, attr)
+            if not attr.startswith("__") and isinstance(value, str):
+                values.append(value)
+        return values
+
+
+# Hive
 class InputDatabase:
     DATABASE_NAME = "wholesale_input"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
@@ -28,14 +48,14 @@ class InputDatabase:
 
 
 class WholesaleInternalDatabase:
-    DATABASE_NAME = "wholesale_internal"  # Defined in dh3infrastructure
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
     CALCULATIONS_TABLE_NAME = "calculations"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 
 class WholesaleResultsInternalDatabase:
-    DATABASE_NAME = "wholesale_results_internal"  # Defined in dh3infrastructure
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS_INTERNAL
     ENERGY_TABLE_NAME = "energy"
     ENERGY_PER_ES_TABLE_NAME = "energy_per_es"
     ENERGY_PER_BRP_TABLE_NAME = "energy_per_brp"
@@ -49,14 +69,21 @@ class WholesaleResultsInternalDatabase:
 
 
 class WholesaleResultsDatabase:
-    DATABASE_NAME = "wholesale_results"  # Defined in dh3infrastructure
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
+    ENERGY_V1_VIEW_NAME = "energy_v1"
+    ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
+    ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
+    GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME = (
+        "grid_loss_metering_point_time_series_v1"
+    )
+    EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME = "exchange_per_neighbor_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
 
 
 class WholesaleSettlementReportsDatabase:
-    DATABASE_NAME = "wholesale_settlement_reports"  # Defined in dh3infrastructure
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SETTLEMENT_REPORTS
     METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
     METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
     CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
@@ -79,7 +106,7 @@ class HiveOutputDatabase:
 
 
 class WholesaleBasisDataInternalDatabase:
-    DATABASE_NAME = "wholesale_basis_data_internal"
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA_INTERNAL
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
@@ -118,6 +145,7 @@ class HiveBasisDataDatabase:
     ]
 
 
+# Hive
 class CalculationResultsPublicDataModel:
     DATABASE_NAME = "wholesale_calculation_results"
     ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_per_ga_v1"
