@@ -25,6 +25,7 @@ class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
     CATALOG_NAME = "CATALOG_NAME"
+    WHOLESALE_INTERNAL_DATABASE_NAME = "WHOLESALE_INTERNAL_DATABASE_NAME"
     CALCULATION_INPUT_FOLDER_NAME = "CALCULATION_INPUT_FOLDER_NAME"
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
@@ -72,6 +73,12 @@ def get_quarterly_resolution_transition_datetime() -> datetime:
 
 def get_catalog_name() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.CATALOG_NAME)
+
+
+def get_wholesale_internal_database_name() -> str:
+    return get_env_variable_or_throw(
+        EnvironmentVariable.WHOLESALE_INTERNAL_DATABASE_NAME
+    )
 
 
 def get_calculation_input_folder_name() -> str:
