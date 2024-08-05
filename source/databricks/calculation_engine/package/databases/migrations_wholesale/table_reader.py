@@ -47,16 +47,16 @@ class TableReader:
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
+        self._catalog_name = catalog_name
+        self._wholesale_internal_database_name = (
+            wholesale_internal_database_name or WholesaleInternalDatabase.DATABASE_NAME
+        )
         self._time_series_points_table_name = (
             time_series_points_table_name or InputDatabase.TIME_SERIES_POINTS_TABLE_NAME
         )
         self._metering_point_periods_table_name = (
             metering_point_periods_table_name
             or InputDatabase.METERING_POINT_PERIODS_TABLE_NAME
-        )
-        self._catalog_name = catalog_name
-        self._wholesale_internal_database_name = (
-            wholesale_internal_database_name or WholesaleInternalDatabase.DATABASE_NAME
         )
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
@@ -66,6 +66,13 @@ class TableReader:
     def read_metering_point_periods(
         self,
     ) -> DataFrame:
+        return _read_from_uc(
+            self._spark,
+            self._catalog_name,
+            self._wholesale_internal_database_name,
+            self._grid_loss_metering_points_table_name,
+            grid_loss_metering_points_schema,
+        )
         path = (
             f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
         )
