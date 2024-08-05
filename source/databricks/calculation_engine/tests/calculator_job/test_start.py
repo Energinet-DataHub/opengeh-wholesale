@@ -46,6 +46,64 @@ class TestWhenInvokedWithValidArguments:
             calculation_executor=lambda args, reader: None,
         )
 
+    def test_add_info_log_record_to_azure_monitor_with_expected_settings(
+        self,
+        any_calculator_args: CalculatorArgs,
+        integration_test_configuration: IntegrationTestConfiguration,
+    ):
+        """
+        Assert that the calculator job adds log records to Azure Monitor with the expected settings:
+        - cloud role name = "dbr-calculation-engine"
+        - severity level = 1
+        - message <the message>
+        - operation id has value
+        - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem-Area" = "wholesale-aggregations"
+        - custom field "calculation_id" = <the calculation id>
+        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
+
+        Debug level is not tested as it is not intended to be logged by default.
+        """
+
+        # Arrange
+        self.prepare_command_line_arguments(any_calculator_args)
+
+        # Act
+        with pytest.raises(SystemExit):
+            start_with_deps(
+                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+            )
+
+        # Assert
+        # noinspection PyTypeChecker
+        logs_client = LogsQueryClient(integration_test_configuration.credential)
+
+        query = f"""
+AppTraces
+| where AppRoleName == "dbr-calculation-engine"
+| where SeverityLevel == 1
+| where Message startswith_cs "Command line arguments"
+| where OperationId != "00000000000000000000000000000000"
+| where Properties.Subsystem == "wholesale"
+| where Properties["Subsystem-Area"] == "wholesale-aggregations"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+| where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
+| count
+        """
+
+        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+
+        def assert_logged():
+            actual = logs_client.query_workspace(
+                workspace_id, query, timespan=timedelta(minutes=5)
+            )
+            assert_row_count(actual, 1)
+
+        # Assert, but timeout if not succeeded
+        wait_for_condition(
+            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
+        )
+
     def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
         any_calculator_args: CalculatorArgs,
