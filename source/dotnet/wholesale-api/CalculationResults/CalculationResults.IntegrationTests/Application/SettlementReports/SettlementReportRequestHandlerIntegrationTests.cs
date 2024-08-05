@@ -67,7 +67,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
@@ -126,7 +126,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -163,7 +163,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(true, false, false, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -201,7 +201,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -240,7 +240,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(true, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(true, false, false, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -293,7 +293,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, true, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, true, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -371,7 +371,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, true, true, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, true, true, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -462,7 +462,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(true, true, false, filter);
+        var reportRequest = new SettlementReportRequestDto(true, false, true, false, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
@@ -644,7 +644,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(true, true, true, filter);
+        var reportRequest = new SettlementReportRequestDto(true, false, true, true, filter);
         var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act

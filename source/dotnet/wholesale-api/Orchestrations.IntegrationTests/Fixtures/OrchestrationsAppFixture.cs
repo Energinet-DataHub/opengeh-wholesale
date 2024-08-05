@@ -21,6 +21,7 @@ using System.Text;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
@@ -248,8 +249,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceToken),
             IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);
+        // => Only SQL Statement needs Warehouse
         appHostSettings.ProcessEnvironmentVariables.Add(
-            nameof(DatabricksJobsOptions.WarehouseId),
+            nameof(DatabricksSqlStatementOptions.WarehouseId),
             IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
 
         // DataLake

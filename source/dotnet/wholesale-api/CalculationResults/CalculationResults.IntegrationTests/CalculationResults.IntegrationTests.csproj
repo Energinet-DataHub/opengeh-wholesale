@@ -56,12 +56,14 @@
       <None Update="TestData\wholesale_output.energy_results_2.csv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\databricks\calculation_engine\package\datamigration\migration_scripts\*.sql">
-      <Link>migration_sql_scripts\%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+      <None Update="TestData\wholesale_calculation_results.amounts_per_charge_v1.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\wholesale_calculation_results.monthly_amounts_per_charge_v1.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\wholesale_calculation_results.total_monthly_amounts_v1.csv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
   </ItemGroup>
 </Project>

@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
-using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
@@ -27,9 +24,9 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInject
 
 public static class WholesaleInboxExtensions
 {
-    public static IServiceCollection AddWholesaleInboxHandling(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInboxSubscription(this IServiceCollection services)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        services.AddWholesaleInboxHandler();
 
         services
             .AddOptions<WholesaleInboxQueueOptions>()
@@ -44,13 +41,11 @@ public static class WholesaleInboxExtensions
                 sp => sp.GetRequiredService<IOptions<WholesaleInboxQueueOptions>>().Value.QueueName,
                 name: "WholesaleInboxQueue");
 
-        services.AddWholesaleInboxHandler();
+        return services;
+    }
 
-        // EDI Wholesale inbox request handlers
-        services.AddEdiModule(); // Edi module has Wholesale inbox handlers for requests from EDI
-        services.AddCalculationsModule(configuration); // Calculations module is used by EDI
-        services.AddServiceBusClientForApplication(configuration); // Service bus client is used by EDI
-
+    public static IServiceCollection AddCalculationOrchestrationInboxRequestHandler(this IServiceCollection services)
+    {
         // Orchestration Wholesale inbox request handlers
         services.AddScoped<IWholesaleInboxRequestHandler, ActorMessagesEnqueuedV1RequestHandler>();
 

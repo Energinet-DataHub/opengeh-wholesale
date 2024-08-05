@@ -12,16 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 internal class CreateCalculationRecordActivity(
-    ICreateCalculationHandler createCalculationHandler)
+    ICalculationFactory calculationFactory,
+    ICalculationRepository calculationRepository,
+    IUnitOfWork unitOfWork,
+    ILogger<CreateCalculationRecordActivity> logger)
 {
-    private readonly ICreateCalculationHandler _createCalculationHandler = createCalculationHandler;
+    private readonly ICalculationFactory _calculationFactory = calculationFactory;
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ILogger<CreateCalculationRecordActivity> _logger = logger;
 
     /// <summary>
     /// Create calculation status record in SQL database.
@@ -30,16 +38,20 @@ internal class CreateCalculationRecordActivity(
     public async Task<CalculationMetadata> Run(
         [ActivityTrigger] CalculationOrchestrationInput calculationOrchestrationInput)
     {
-        var calculationId = await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
+        var calculation = _calculationFactory.Create(
             calculationOrchestrationInput.StartCalculationRequestDto.CalculationType,
             calculationOrchestrationInput.StartCalculationRequestDto.GridAreaCodes,
             calculationOrchestrationInput.StartCalculationRequestDto.StartDate,
             calculationOrchestrationInput.StartCalculationRequestDto.EndDate,
-            calculationOrchestrationInput.RequestedByUserId)).ConfigureAwait(false);
+            calculationOrchestrationInput.RequestedByUserId);
+        await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+
+        _logger.LogInformation("Calculation created with id {calculation_id}", calculation.Id);
 
         return new CalculationMetadata
         {
-            Id = calculationId,
+            Id = calculation.Id,
             Input = calculationOrchestrationInput,
         };
     }

@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFileGenerator
 {
-    private const int ChunkSize = 32_500; // About 31 rows per day, 1.007.500 rows in total.
+    private const int ChunkSize = 8_125; // About 31 rows per day, 251.875 rows in total.
 
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _dataSource;
     private readonly Resolution _resolution;
@@ -39,7 +39,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        var count = await _dataSource.CountAsync(filter, _resolution).ConfigureAwait(false);
+        var count = await _dataSource.CountAsync(filter, maximumCalculationVersion, _resolution).ConfigureAwait(false);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
@@ -80,7 +80,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, maximumCalculationVersion, _resolution, fileInfo.ChunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteField(record.MeteringPointId, shouldQuote: true);
                 csvHelper.WriteField(record.MeteringPointType switch

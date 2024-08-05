@@ -39,7 +39,6 @@ var host = new HostBuilder()
 
         // Shared by modules
         services.AddNodaTimeForApplication();
-        services.AddDatabricksJobsForApplication(context.Configuration);
 
         // Modules
         services.AddCalculationsModule(context.Configuration);

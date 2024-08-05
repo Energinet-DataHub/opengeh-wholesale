@@ -12,24 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Events.Application.Communication;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 internal class SendCalculationResultsActivity(
-    IPublisher integrationEventsPublisher,
+    ICalculationIntegrationEventPublisher integrationEventsPublisher,
     ICalculationRepository calculationRepository,
-    ICompletedCalculationRepository completedCalculationRepository,
+    ICalculationDtoMapper calculationDtoMapper,
     IClock clock,
     IUnitOfWork calculationUnitOfWork)
 {
-    private readonly IPublisher _integrationEventsPublisher = integrationEventsPublisher;
-    private readonly ICompletedCalculationRepository _completedCalculationRepository = completedCalculationRepository;
+    private readonly ICalculationIntegrationEventPublisher _integrationEventsPublisher = integrationEventsPublisher;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
     private readonly IClock _clock = clock;
     private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
 
@@ -38,21 +39,14 @@ internal class SendCalculationResultsActivity(
     /// </summary>
     [Function(nameof(SendCalculationResultsActivity))]
     public async Task Run(
-        [ActivityTrigger] Guid calculationId)
+        [ActivityTrigger] SendCalculationResultsInput input)
     {
-        await _integrationEventsPublisher.PublishAsync(CancellationToken.None).ConfigureAwait(false);
+        var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
+        var calculationDto = _calculationDtoMapper.Map(calculation);
 
-        var completedCalculation = await _completedCalculationRepository.GetAsync(calculationId).ConfigureAwait(false);
+        await _integrationEventsPublisher.PublishAsync(calculationDto, input.OrchestrationInstanceId, CancellationToken.None).ConfigureAwait(false);
 
-        if (completedCalculation.PublishFailed)
-            throw new Exception($"Publish failed for completed calculation (id: {calculationId})");
-
-        if (!completedCalculation.IsPublished)
-            throw new Exception($"Completed calculation (id: {calculationId}) was not published");
-
-        var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
         calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
-
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

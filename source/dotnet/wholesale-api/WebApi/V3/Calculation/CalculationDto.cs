@@ -31,4 +31,5 @@ public sealed record CalculationDto(
     bool AreSettlementReportsCreated,
     string[] GridAreaCodes,
     CalculationType CalculationType,
-    Guid CreatedByUserId);
+    Guid CreatedByUserId,
+    DateTimeOffset? CompletedTime);
