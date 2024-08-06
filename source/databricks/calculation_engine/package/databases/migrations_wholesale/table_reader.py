@@ -39,14 +39,14 @@ class TableReader:
         self,
         spark: SparkSession,
         calculation_input_path: str,
-        catalog_name: str | None = None,
+        catalog_name: str,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
         grid_loss_metering_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
-        self._catalog_name = catalog_name or "spark_catalog"
+        self._catalog_name = catalog_name
         self._time_series_points_table_name = (
             time_series_points_table_name or InputDatabase.TIME_SERIES_POINTS_TABLE_NAME
         )
