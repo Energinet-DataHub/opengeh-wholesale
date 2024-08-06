@@ -49,10 +49,36 @@ public class WholesaleServicesQueries(
             _helperFactory.Create(queryParameters),
             _deltaTableOptions.Value);
 
-        var resultStream = GetDataAsync(sqlStatement);
+        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
+        DatabricksSqlRow? previous = null;
 
-        await foreach (var wholesaleServices in resultStream.ConfigureAwait(false))
-            yield return wholesaleServices;
+        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var current = new DatabricksSqlRow(databricksCurrentRow);
+
+            // Yield a package created from previous data, if the current row belongs to a new package
+            var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(current);
+            var calculationIdColumn = _databricksContractInformationProvider.GetCalculationIdColumnName(amountType);
+            if (previous != null && (_databricksContractInformationProvider
+                                         .GetColumnsToAggregateBy(amountType)
+                                         .Any(column => current[column] != previous[column])
+                                     || current[calculationIdColumn] != previous[calculationIdColumn]))
+            {
+                var amountType1 = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
+                yield return WholesaleServicesFactory.Create(previous, amountType1, timeSeriesPoints);
+                timeSeriesPoints = [];
+            }
+
+            timeSeriesPoints.Add(WholesaleTimeSeriesPointFactory.Create(current));
+            previous = current;
+        }
+
+        // Yield the last package
+        if (previous != null)
+        {
+            var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
+            yield return WholesaleServicesFactory.Create(previous, amountType, timeSeriesPoints);
+        }
     }
 
     public async Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
@@ -70,31 +96,6 @@ public class WholesaleServicesQueries(
             .ExecuteStatementAsync(sqlStatement)
             .AnyAsync()
             .ConfigureAwait(false);
-    }
-
-    protected bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
-    {
-        var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(current);
-        var calculationIdColumn = _databricksContractInformationProvider.GetCalculationIdColumnName(amountType);
-
-        return _databricksContractInformationProvider
-                   .GetColumnsToAggregateBy(amountType)
-                   .Any(column => current[column] != previous[column])
-               || current[calculationIdColumn] != previous[calculationIdColumn];
-    }
-
-    protected WholesaleServices CreatePackageFromRowData(
-        DatabricksSqlRow rowData,
-        List<WholesaleTimeSeriesPoint> timeSeriesPoints)
-    {
-        var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(rowData);
-
-        return WholesaleServicesFactory.Create(rowData, amountType, timeSeriesPoints);
-    }
-
-    protected WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
-    {
-        return WholesaleTimeSeriesPointFactory.Create(row);
     }
 
     private async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
@@ -169,36 +170,5 @@ public class WholesaleServicesQueries(
                     GROUP BY {_helper.GetGridAreaCodeColumnName()}, {_helper.GetCalculationTypeColumnName()}
                     """;
         }
-    }
-
-    /// <summary>
-    /// Retrieves a stream of sql rows from the Databricks SQL Warehouse and groups the sql rows into packages
-    /// which are streamed back as they are finished.
-    /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
-    /// results that can span multiple calculations
-    /// </summary>
-    protected async IAsyncEnumerable<WholesaleServices> GetDataAsync(DatabricksStatement sqlStatement)
-    {
-        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
-        DatabricksSqlRow? previous = null;
-
-        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
-        {
-            var current = new DatabricksSqlRow(databricksCurrentRow);
-
-            // Yield a package created from previous data, if the current row belongs to a new package
-            if (previous != null && RowBelongsToNewPackage(current, previous))
-            {
-                yield return CreatePackageFromRowData(previous, timeSeriesPoints);
-                timeSeriesPoints = [];
-            }
-
-            timeSeriesPoints.Add(CreateTimeSeriesPoint(current));
-            previous = current;
-        }
-
-        // Yield the last package
-        if (previous != null)
-            yield return CreatePackageFromRowData(previous, timeSeriesPoints);
     }
 }

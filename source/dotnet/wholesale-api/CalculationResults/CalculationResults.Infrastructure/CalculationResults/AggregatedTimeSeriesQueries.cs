@@ -47,30 +47,29 @@ public class AggregatedTimeSeriesQueries(
             _whereClauseProvider,
             _deltaTableOptions.Value);
 
-        var resultStream = GetDataAsync(sqlStatement);
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+        DatabricksSqlRow? previous = null;
 
-        await foreach (var aggregatedTimeSeries in resultStream.ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-    }
+        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var current = new DatabricksSqlRow(databricksCurrentRow);
 
-    protected AggregatedTimeSeries CreatePackageFromRowData(
-        DatabricksSqlRow rowData,
-        List<EnergyTimeSeriesPoint> timeSeriesPoints)
-    {
-        return AggregatedTimeSeriesFactory.Create(rowData, timeSeriesPoints);
-    }
+            // Yield a package created from previous data, if the current row belongs to a new package
+            var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] != previous?[EnergyResultColumnNames.CalculationId];
+            var hasDifferentColumnValues = AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous?[column]);
+            if (previous != null && (hasDifferentColumnValues || notSameCalculationId))
+            {
+                yield return AggregatedTimeSeriesFactory.Create(previous, timeSeriesPoints);
+                timeSeriesPoints = [];
+            }
 
-    protected EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
-    {
-        return EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(row);
-    }
+            timeSeriesPoints.Add(EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(current));
+            previous = current;
+        }
 
-    protected bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
-    {
-        var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] != previous[EnergyResultColumnNames.CalculationId];
-        var hasDifferentColumnValues = AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column]);
-
-        return hasDifferentColumnValues || notSameCalculationId;
+        // Yield the last package
+        if (previous != null)
+            yield return AggregatedTimeSeriesFactory.Create(previous, timeSeriesPoints);
     }
 
     private async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
@@ -156,36 +155,5 @@ public class AggregatedTimeSeriesQueries(
 
             return sql;
         }
-    }
-
-    /// <summary>
-    /// Retrieves a stream of sql rows from the Databricks SQL Warehouse and groups the sql rows into packages
-    /// which are streamed back as they are finished.
-    /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
-    /// results that can span multiple calculations
-    /// </summary>
-    protected async IAsyncEnumerable<AggregatedTimeSeries> GetDataAsync(DatabricksStatement sqlStatement)
-    {
-        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        DatabricksSqlRow? previous = null;
-
-        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
-        {
-            var current = new DatabricksSqlRow(databricksCurrentRow);
-
-            // Yield a package created from previous data, if the current row belongs to a new package
-            if (previous != null && RowBelongsToNewPackage(current, previous))
-            {
-                yield return CreatePackageFromRowData(previous, timeSeriesPoints);
-                timeSeriesPoints = [];
-            }
-
-            timeSeriesPoints.Add(CreateTimeSeriesPoint(current));
-            previous = current;
-        }
-
-        // Yield the last package
-        if (previous != null)
-            yield return CreatePackageFromRowData(previous, timeSeriesPoints);
     }
 }
