@@ -66,7 +66,6 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
                 row.EnergySupplierId,
                 row.Time,
                 QuantityUnitMapper.FromDeltaTableValue(row.QuantityUnit),
-                Currency.DKK,
                 row.Amount,
                 row.ChargeType is null ? null : ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeCode,
