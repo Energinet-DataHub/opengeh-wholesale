@@ -36,7 +36,8 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
 
         var resolution = request.HasResolution ? ResolutionMapper.Map(request.Resolution) : (Resolution?)null;
 
-        var amountTypes = AmountTypeMapper.Map(resolution);
+        // If no charge types are requested, both monthly amount and total monthly amount is requested
+        var amountTypes = AmountTypeMapper.Map(resolution, SpecificChargeTypesIsRequested(request));
 
         return amountTypes.Select(amountType => new WholesaleServicesRequest(
                 amountType,
@@ -53,6 +54,11 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
                 request.RequestedForActorRole,
                 request.RequestedForActorNumber))
             .ToList();
+    }
+
+    private static bool SpecificChargeTypesIsRequested(DataHub.Edi.Requests.WholesaleServicesRequest request)
+    {
+        return request.ChargeTypes.Count == 0;
     }
 
     private List<ChargeCodeAndType> MapChargeTypes(RepeatedField<Energinet.DataHub.Edi.Requests.ChargeType> chargeTypes)
