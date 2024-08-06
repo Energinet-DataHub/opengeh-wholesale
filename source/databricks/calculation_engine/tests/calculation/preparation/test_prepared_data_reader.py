@@ -27,7 +27,7 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader = TableReader(mock.Mock(), mock.Mock())
+        table_reader = TableReader(mock.Mock(), mock.Mock(), mock.Mock())
         prepared_data_reader = PreparedDataReader(table_reader)
         with patch.object(
             table_reader,
@@ -46,7 +46,7 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader = TableReader(mock.Mock(), mock.Mock())
+        table_reader = TableReader(mock.Mock(), mock.Mock(), mock.Mock())
         prepared_data_reader = PreparedDataReader(table_reader)
 
         calculation_type = CalculationType.BALANCE_FIXING
