@@ -72,7 +72,7 @@ class TestWhenValidInput:
         write_dataframe_to_table(
             spark,
             df,
-            "test_database",
+            "wholesale_internal",
             "grid_loss_metering_points",
             table_location,
             grid_loss_metering_points_schema,
