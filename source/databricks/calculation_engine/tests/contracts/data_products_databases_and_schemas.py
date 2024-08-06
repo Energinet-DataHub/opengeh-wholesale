@@ -33,7 +33,8 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
         "wholesale_basis_data_internal",
         "wholesale_results_internal",
         "wholesale_internal",
-        "hive_calculation_results",
+        "wholesale_calculation_results",  # TODO JMG: This is hive. Remove when on Unity Catalog
+        "settlement_report",  # TODO JMG: This is hive. Remove when on Unity Catalog
     }
     databases = [
         db

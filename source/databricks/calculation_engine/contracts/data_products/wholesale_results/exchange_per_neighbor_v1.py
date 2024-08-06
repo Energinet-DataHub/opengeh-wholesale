@@ -2,7 +2,7 @@ import pyspark.sql.types as t
 
 nullable = True
 
-exchange_per_neighbor_ga_v1 = t.StructType(
+exchange_per_neighbor_v1 = t.StructType(
     [
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),

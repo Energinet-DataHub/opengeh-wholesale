@@ -68,15 +68,16 @@ def test__data_product_views_have_correct_schemas(
         assert views, f"No views found in database {database.name}."
 
         for view in views:
+            view_identifier = f"{database.name}.{view.name}"
             try:
-                if view.name not in expected_schemas:
+                if view_identifier not in expected_schemas:
                     raise ValueError(
-                        f"Expected schema for {database.name}.{view.name} not found."
+                        f"Expected schema for {view_identifier} not found."
                     )
 
-                actual_df = spark.table(f"{database.name}.{view.name}")
+                actual_df = spark.table(view_identifier)
                 expected_df = spark.createDataFrame(
-                    [], expected_schemas[f"{database.name}.{view.name}"]
+                    [], expected_schemas[view_identifier]
                 )
 
                 assert_schema(
@@ -85,7 +86,7 @@ def test__data_product_views_have_correct_schemas(
                     ignore_nullability=True,
                 )
             except Exception as e:
-                errors.append(f"{database.name}.{view.name}: {e}")
+                errors.append(f"{view_identifier}: {e}")
 
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
