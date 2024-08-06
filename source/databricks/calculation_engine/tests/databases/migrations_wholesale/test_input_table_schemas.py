@@ -17,8 +17,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import StructType
 
 from package.databases.migrations_wholesale.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
+    time_series_points_schema,
+    metering_point_periods_schema,
     charge_link_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
@@ -42,7 +42,7 @@ def test__input_time_series_point_schema__matches_published_contract(
     # NOTE:It is not evident from this test that it uses the same input as the calculator job
     # Apparently nullability is ignored for CSV sources, so we have to compare schemas in this slightly odd way
     # See more at https://stackoverflow.com/questions/50609548/compare-schema-ignoring-nullable
-    _assert_is_equal(actual_input_data.schema, time_series_point_schema)
+    _assert_is_equal(actual_input_data.schema, time_series_points_schema)
 
 
 def test__input_metering_point_period_schema__matches_published_contract(
@@ -52,7 +52,7 @@ def test__input_metering_point_period_schema__matches_published_contract(
     test_input_data = spark.read.table(
         f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
     )
-    _assert_is_equal(test_input_data.schema, metering_point_period_schema)
+    _assert_is_equal(test_input_data.schema, metering_point_periods_schema)
 
 
 def test__input_charge_link_period_schema__matches_published_contract(

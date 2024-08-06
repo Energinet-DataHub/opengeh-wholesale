@@ -20,14 +20,12 @@ from .schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
-    metering_point_period_schema,
-    time_series_point_schema,
-)
-from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_calculations_schema,
+    metering_point_periods_schema,
+    time_series_points_schema,
 )
 from package.common.schemas import assert_contract
 from ..wholesale_internal.schemas import grid_loss_metering_points_schema
+from ..wholesale_internal.schemas.calculations_schema import hive_calculations_schema
 
 
 class TableReader:
@@ -59,11 +57,11 @@ class TableReader:
         path = (
             f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
         )
-        return _read(self._spark, path, metering_point_period_schema)
+        return _read(self._spark, path, metering_point_periods_schema)
 
     def read_time_series_points(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
-        return _read(self._spark, path, time_series_point_schema)
+        return _read(self._spark, path, time_series_points_schema)
 
     def read_charge_link_periods(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"

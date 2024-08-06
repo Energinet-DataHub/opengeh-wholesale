@@ -18,7 +18,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame, Row, SparkSession
 
 from package.databases.migrations_wholesale.schemas import (
-    metering_point_period_schema,
+    metering_point_periods_schema,
 )
 from package.codelists import (
     MeteringPointResolution,
@@ -80,4 +80,4 @@ def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFram
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data, schema=metering_point_period_schema)
+    return spark.createDataFrame(data, schema=metering_point_periods_schema)

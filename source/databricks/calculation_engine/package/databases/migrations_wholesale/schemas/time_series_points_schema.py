@@ -28,7 +28,7 @@ Time series points are used in both balance fixing and settlement.
 Data must be stored in a Delta table.
 Data must always be the current data.
 """
-time_series_point_schema = StructType(
+time_series_points_schema = StructType(
     [
         # GSRN (18 characters) that uniquely identifies the metering point
         # Example: 578710000000000103
