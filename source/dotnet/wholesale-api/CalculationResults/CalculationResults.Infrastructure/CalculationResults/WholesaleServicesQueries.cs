@@ -57,15 +57,17 @@ public class WholesaleServicesQueries(
             var current = new DatabricksSqlRow(databricksCurrentRow);
 
             // Yield a package created from previous data, if the current row belongs to a new package
-            var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(current);
-            var calculationIdColumn = _databricksContractInformationProvider.GetCalculationIdColumnName(amountType);
+            var currentAmountType = _databricksContractInformationProvider.GetAmountTypeFromRow(current);
+            var calculationIdColumn =
+                _databricksContractInformationProvider.GetCalculationIdColumnName(currentAmountType);
+
             if (previous != null && (_databricksContractInformationProvider
-                                         .GetColumnsToAggregateBy(amountType)
+                                         .GetColumnsToAggregateBy(currentAmountType)
                                          .Any(column => current[column] != previous[column])
                                      || current[calculationIdColumn] != previous[calculationIdColumn]))
             {
-                var amountType1 = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
-                yield return WholesaleServicesFactory.Create(previous, amountType1, timeSeriesPoints);
+                var previousAmountType = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
+                yield return WholesaleServicesFactory.Create(previous, previousAmountType, timeSeriesPoints);
                 timeSeriesPoints = [];
             }
 

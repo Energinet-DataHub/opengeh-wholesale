@@ -55,9 +55,9 @@ public class AggregatedTimeSeriesQueries(
             var current = new DatabricksSqlRow(databricksCurrentRow);
 
             // Yield a package created from previous data, if the current row belongs to a new package
-            var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] != previous?[EnergyResultColumnNames.CalculationId];
-            var hasDifferentColumnValues = AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous?[column]);
-            if (previous != null && (hasDifferentColumnValues || notSameCalculationId))
+            if (previous != null
+                && (AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column])
+                    || current[EnergyResultColumnNames.CalculationId] != previous[EnergyResultColumnNames.CalculationId]))
             {
                 yield return AggregatedTimeSeriesFactory.Create(previous, timeSeriesPoints);
                 timeSeriesPoints = [];
