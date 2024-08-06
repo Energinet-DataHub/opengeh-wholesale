@@ -43,10 +43,11 @@ public class WholesaleServicesQueries(
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(queryParameters).ConfigureAwait(false);
 
+        var helper = _helperFactory.Create(queryParameters);
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Select,
             calculationTypePerGridAreas,
-            _helperFactory.Create(queryParameters),
+            helper,
             _deltaTableOptions.Value);
 
         var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
@@ -61,10 +62,9 @@ public class WholesaleServicesQueries(
             var calculationIdColumn =
                 _databricksContractInformationProvider.GetCalculationIdColumnName(currentAmountType);
 
-            if (previous != null && (_databricksContractInformationProvider
-                                         .GetColumnsToAggregateBy(currentAmountType)
-                                         .Any(column => current[column] != previous[column])
-                                     || current[calculationIdColumn] != previous[calculationIdColumn]))
+            if (previous != null
+                && (helper.GetColumnsToAggregateBy().Any(column => current[column] != previous[column])
+                    || current[calculationIdColumn] != previous[calculationIdColumn]))
             {
                 var previousAmountType = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
                 yield return WholesaleServicesFactory.Create(previous, previousAmountType, timeSeriesPoints);
