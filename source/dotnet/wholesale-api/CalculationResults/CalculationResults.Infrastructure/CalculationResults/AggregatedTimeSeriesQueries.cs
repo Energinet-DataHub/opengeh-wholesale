@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -30,7 +31,7 @@ public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : IAggregatedTimeSeriesQueries
+    : QueriesBaseClass(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
@@ -39,7 +40,7 @@ public class AggregatedTimeSeriesQueries(
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(parameters).ConfigureAwait(false);
+            await GetCalculationTypeForGridAreasAsync(EnergyResultColumnNames.GridArea, EnergyResultColumnNames.CalculationType, new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, _whereClauseProvider, parameters), parameters.CalculationType).ConfigureAwait(false);
 
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(
             parameters,
@@ -70,60 +71,6 @@ public class AggregatedTimeSeriesQueries(
         // Yield the last package
         if (previous != null)
             yield return AggregatedTimeSeriesFactory.Create(previous, timeSeriesPoints);
-    }
-
-    private async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
-        AggregatedTimeSeriesQueryParameters queryParameters)
-    {
-        var calculationTypeForGridAreaStatement =
-            new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, _whereClauseProvider, queryParameters);
-
-        var calculationTypeForGridAreas = await _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(calculationTypeForGridAreaStatement, Format.JsonArray)
-            .Select(d =>
-            {
-                var databricksSqlRow = new DatabricksSqlRow(d);
-                return new CalculationTypeForGridArea(
-                    databricksSqlRow[EnergyResultColumnNames.GridArea]!,
-                    databricksSqlRow[EnergyResultColumnNames.CalculationType]!);
-            })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        return calculationTypeForGridAreas
-            .GroupBy(ctpga => ctpga.GridArea)
-            .Select(g =>
-            {
-                if (queryParameters.CalculationType is not null)
-                {
-                    return new CalculationTypeForGridArea(
-                        g.Key,
-                        CalculationTypeMapper.ToDeltaTableValue(queryParameters.CalculationType.Value));
-                }
-
-                var calculationTypes = g.Select(ctpga => ctpga.CalculationType).ToList();
-
-                if (calculationTypes.Contains(DeltaTableCalculationType.ThirdCorrectionSettlement))
-                {
-                    return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.ThirdCorrectionSettlement);
-                }
-
-                if (calculationTypes.Contains(DeltaTableCalculationType.SecondCorrectionSettlement))
-                {
-                    return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.SecondCorrectionSettlement);
-                }
-
-                if (calculationTypes.Contains(DeltaTableCalculationType.FirstCorrectionSettlement))
-                {
-                    return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.FirstCorrectionSettlement);
-                }
-
-                return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.BalanceFixing);
-            })
-            .Where(ctpga => queryParameters.CalculationType is not null
-                            || ctpga.CalculationType != DeltaTableCalculationType.BalanceFixing)
-            .Distinct()
-            .ToList();
     }
 
     private class CalculationTypeForGridAreasStatement(
