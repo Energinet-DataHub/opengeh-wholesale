@@ -2,7 +2,7 @@ import pyspark.sql.types as t
 
 nullable = True
 
-energy_per_ga_v1 = t.StructType(
+energy_v1 = t.StructType(
     [
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
