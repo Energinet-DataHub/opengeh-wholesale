@@ -2,7 +2,7 @@ import pyspark.sql.types as t
 
 nullable = True
 
-monthly_amounts_v1 = t.StructType(
+total_monthly_amounts_v1 = t.StructType(
     [
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
