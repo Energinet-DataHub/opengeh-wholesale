@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_calculations_schema,
-)
 from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
     metering_point_periods_schema,
@@ -24,7 +21,7 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
 )
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_points_schema, hive_calculations_schema,
 )
 
 
