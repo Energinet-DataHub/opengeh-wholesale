@@ -21,7 +21,8 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
 )
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema, hive_calculations_schema,
+    grid_loss_metering_points_schema,
+    hive_calculations_schema,
 )
 
 
