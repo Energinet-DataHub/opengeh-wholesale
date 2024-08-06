@@ -77,6 +77,12 @@ variable "feature_flag_datahub2_time_series_import" {
   default     = false
 }
 
+variable "feature_flag_purge_durable_function_history" {
+  type        = bool
+  description = "(Optional) Enables purge of durable function history for time series synchronization"
+  default     = false
+}
+
 variable "feature_flag_datahub2_healthcheck" {
   type        = bool
   description = "(Optional) Enables datahub2 healthcheck endpoint"

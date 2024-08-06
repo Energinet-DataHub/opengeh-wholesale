@@ -18,6 +18,7 @@ locals {
       "DataHub2Client__EndpointAddress"                                      = var.datahub2_migration_url,
       "FeatureManagement__DataHub2HealthCheck"                               = var.feature_flag_datahub2_healthcheck
       "FeatureManagement__DataHub2TimeSeriesImport"                          = var.feature_flag_datahub2_time_series_import
+      "FeatureManagement__PurgeDurableFunctionHistory"                       = var.feature_flag_purge_durable_function_history
       "TimeSeriesSynchronizationTaskHubName"                                 = "TimeSeriesSynchronization01"
 
       # Logging Worker
