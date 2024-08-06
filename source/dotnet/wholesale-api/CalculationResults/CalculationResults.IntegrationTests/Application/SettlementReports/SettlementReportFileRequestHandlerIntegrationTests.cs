@@ -347,8 +347,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26df'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'4'", "8397670583196", "'2022-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26df'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'4'", "8397670583196", "'2022-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26df'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'4'", "8397670583196", "'2022-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26df'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'4'", "8397670583196", "'2022-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
             ]);
 
         // Act

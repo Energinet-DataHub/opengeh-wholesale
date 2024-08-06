@@ -105,7 +105,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
+                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
                 ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
                 ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
                 ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
@@ -164,7 +164,7 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
+                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
                 ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
                 ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
                 ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
