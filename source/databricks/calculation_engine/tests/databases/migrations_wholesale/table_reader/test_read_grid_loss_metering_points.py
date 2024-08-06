@@ -19,10 +19,10 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 from package.databases.migrations_wholesale import TableReader
-from package.databases.migrations_wholesale.schemas import (
+from package.constants import Colname
+from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
-from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 

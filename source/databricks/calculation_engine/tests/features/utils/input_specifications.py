@@ -19,10 +19,12 @@ from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
     metering_point_period_schema,
     time_series_point_schema,
-    grid_loss_metering_points_schema,
     charge_price_information_periods_schema,
     charge_link_periods_schema,
     charge_price_points_schema,
+)
+from package.databases.wholesale_internal.schemas import (
+    grid_loss_metering_points_schema,
 )
 
 
