@@ -378,7 +378,6 @@ def infrastructure_settings(
 ) -> InfrastructureSettings:
     return InfrastructureSettings(
         catalog_name="spark_catalog",
-        wholesale_internal_database_name="wholesale_internal",
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,
