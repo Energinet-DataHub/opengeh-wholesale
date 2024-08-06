@@ -84,8 +84,8 @@ public class AggregatedTimeSeriesQueries(
             {
                 var databricksSqlRow = new DatabricksSqlRow(d);
                 return new CalculationTypeForGridArea(
-                    databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
-                    databricksSqlRow[WholesaleResultColumnNames.CalculationType]!);
+                    databricksSqlRow[EnergyResultColumnNames.GridArea]!,
+                    databricksSqlRow[EnergyResultColumnNames.CalculationType]!);
             })
             .ToListAsync()
             .ConfigureAwait(false);
