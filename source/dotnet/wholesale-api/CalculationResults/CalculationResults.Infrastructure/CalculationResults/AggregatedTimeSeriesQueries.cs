@@ -56,29 +56,20 @@ public class AggregatedTimeSeriesQueries(
             _whereClauseProvider,
             _deltaTableOptions.Value);
 
-        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        DatabricksSqlRow? previous = null;
+        var aggregatedTimeSeriesPackages = CreateSeriesPackagesAsync(
+            AggregatedTimeSeriesFactory.Create,
+            (currentRow, previousRow) =>
+                AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column =>
+                    currentRow[column] != previousRow[column])
+                || currentRow[EnergyResultColumnNames.CalculationId] !=
+                previousRow[EnergyResultColumnNames.CalculationId],
+            EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
+            sqlStatement);
 
-        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in aggregatedTimeSeriesPackages)
         {
-            var current = new DatabricksSqlRow(databricksCurrentRow);
-
-            // Yield a package created from previous data, if the current row belongs to a new package
-            if (previous != null
-                && (AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column])
-                    || current[EnergyResultColumnNames.CalculationId] != previous[EnergyResultColumnNames.CalculationId]))
-            {
-                yield return AggregatedTimeSeriesFactory.Create(previous, timeSeriesPoints);
-                timeSeriesPoints = [];
-            }
-
-            timeSeriesPoints.Add(EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(current));
-            previous = current;
+            yield return aggregatedTimeSeries;
         }
-
-        // Yield the last package
-        if (previous != null)
-            yield return AggregatedTimeSeriesFactory.Create(previous, timeSeriesPoints);
     }
 
     private class CalculationTypeForGridAreasStatement(

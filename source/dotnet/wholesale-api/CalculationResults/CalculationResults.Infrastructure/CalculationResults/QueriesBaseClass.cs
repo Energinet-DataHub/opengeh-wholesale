@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -76,5 +77,35 @@ public abstract class QueriesBaseClass(DatabricksSqlWarehouseQueryExecutor datab
                             || ctfga.CalculationType != DeltaTableCalculationType.WholesaleFixing)
             .Distinct()
             .ToList();
+    }
+
+    protected async IAsyncEnumerable<TSeries> CreateSeriesPackagesAsync<TSeries, TPoint>(
+        Func<DatabricksSqlRow, IReadOnlyCollection<TPoint>, TSeries> createSeries,
+        Func<DatabricksSqlRow, DatabricksSqlRow, bool> isNewPackage,
+        Func<DatabricksSqlRow, TPoint> createPoint,
+        DatabricksStatement sqlStatement)
+    {
+        var timeSeriesPoints = new List<TPoint>();
+        DatabricksSqlRow? previous = null;
+
+        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor
+                           .ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var current = new DatabricksSqlRow(databricksCurrentRow);
+
+            if (previous != null && isNewPackage(current, previous))
+            {
+                yield return createSeries(previous, timeSeriesPoints);
+                timeSeriesPoints = [];
+            }
+
+            timeSeriesPoints.Add(createPoint(current));
+            previous = current;
+        }
+
+        if (previous != null)
+        {
+            yield return createSeries(previous, timeSeriesPoints);
+        }
     }
 }

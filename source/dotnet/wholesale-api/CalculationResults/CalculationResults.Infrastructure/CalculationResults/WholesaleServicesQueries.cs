@@ -50,32 +50,18 @@ public class WholesaleServicesQueries(
             helper,
             _deltaTableOptions.Value);
 
-        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
-        DatabricksSqlRow? previous = null;
+        var calculationIdColumn = helper.GetCalculationIdColumnName();
 
-        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        var wholesaleServicesPackages = CreateSeriesPackagesAsync(
+            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
+            (currentRow, previousRow) => helper.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
+                                   || currentRow[calculationIdColumn] != previousRow[calculationIdColumn],
+            WholesaleTimeSeriesPointFactory.Create,
+            sqlStatement);
+
+        await foreach (var wholesaleServices in wholesaleServicesPackages)
         {
-            var current = new DatabricksSqlRow(databricksCurrentRow);
-
-            // Yield a package created from previous data, if the current row belongs to a new package
-            var calculationIdColumn = helper.GetCalculationIdColumnName();
-
-            if (previous != null
-                && (helper.GetColumnsToAggregateBy().Any(column => current[column] != previous[column])
-                    || current[calculationIdColumn] != previous[calculationIdColumn]))
-            {
-                yield return WholesaleServicesFactory.Create(previous, queryParameters.AmountType, timeSeriesPoints);
-                timeSeriesPoints = [];
-            }
-
-            timeSeriesPoints.Add(WholesaleTimeSeriesPointFactory.Create(current));
-            previous = current;
-        }
-
-        // Yield the last package
-        if (previous != null)
-        {
-            yield return WholesaleServicesFactory.Create(previous, queryParameters.AmountType, timeSeriesPoints);
+            yield return wholesaleServices;
         }
     }
 
