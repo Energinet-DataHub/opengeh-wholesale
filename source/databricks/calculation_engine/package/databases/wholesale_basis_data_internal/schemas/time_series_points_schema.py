@@ -22,7 +22,7 @@ from pyspark.sql.types import (
 
 from package.databases.table_column_names import TableColumnNames
 
-time_series_point_schema = StructType(
+time_series_points_schema = StructType(
     [
         StructField(TableColumnNames.calculation_id, StringType(), False),
         StructField(TableColumnNames.metering_point_id, StringType(), False),

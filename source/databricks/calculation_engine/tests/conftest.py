@@ -34,8 +34,8 @@ from pyspark.sql.types import StructType
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.databases.migrations_wholesale.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
+    time_series_points_schema,
+    metering_point_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
     charge_link_periods_schema,
@@ -413,7 +413,7 @@ def energy_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         table_name=paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        schema=metering_point_period_schema,
+        schema=metering_point_periods_schema,
         table_location=f"{calculation_input_path}/{paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME}",
     )
 
@@ -421,7 +421,7 @@ def energy_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
         table_name=paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-        schema=time_series_point_schema,
+        schema=time_series_points_schema,
         table_location=f"{calculation_input_path}/{paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
     )
 
