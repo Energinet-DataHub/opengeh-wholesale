@@ -13,14 +13,13 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
 import pytest
 
 from helpers.data_frame_utils import set_column
-
-from package.databases.migrations_wholesale.schemas import (
+from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
+
 from package.infrastructure import paths
 
 

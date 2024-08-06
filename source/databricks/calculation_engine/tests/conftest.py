@@ -36,13 +36,15 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.databases.migrations_wholesale.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
-    grid_loss_metering_points_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
     charge_link_periods_schema,
 )
 from package.codelists import CalculationType
 from package.container import create_and_configure_container, Container
+from package.databases.wholesale_internal.schemas import (
+    grid_loss_metering_points_schema,
+)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.helpers.delta_table_utils import write_dataframe_to_table
