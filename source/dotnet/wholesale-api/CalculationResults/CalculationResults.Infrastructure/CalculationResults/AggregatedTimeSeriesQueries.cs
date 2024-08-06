@@ -40,7 +40,15 @@ public class AggregatedTimeSeriesQueries(
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(EnergyResultColumnNames.GridArea, EnergyResultColumnNames.CalculationType, new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, _whereClauseProvider, parameters), parameters.CalculationType).ConfigureAwait(false);
+            await GetCalculationTypeForGridAreasAsync(
+                    EnergyResultColumnNames.GridArea,
+                    EnergyResultColumnNames.CalculationType,
+                    new CalculationTypeForGridAreasStatement(
+                        _deltaTableOptions.Value,
+                        _whereClauseProvider,
+                        parameters),
+                    parameters.CalculationType)
+                .ConfigureAwait(false);
 
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(
             parameters,

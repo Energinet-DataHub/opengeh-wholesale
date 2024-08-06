@@ -84,7 +84,12 @@ public class WholesaleServicesQueries(
         var helper = _helperFactory.Create(queryParameters);
 
         var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(helper.GetGridAreaCodeColumnName(), helper.GetCalculationTypeColumnName(), new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper, queryParameters), queryParameters.CalculationType).ConfigureAwait(false);
+            await GetCalculationTypeForGridAreasAsync(
+                    helper.GetGridAreaCodeColumnName(),
+                    helper.GetCalculationTypeColumnName(),
+                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper, queryParameters),
+                    queryParameters.CalculationType)
+                .ConfigureAwait(false);
 
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Exists,
