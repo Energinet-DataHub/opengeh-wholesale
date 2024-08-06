@@ -17,10 +17,10 @@ from pyspark.sql.functions import col
 import pytest
 
 from helpers.data_frame_utils import set_column
-
-from package.databases.migrations_wholesale.schemas import (
+from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
+
 from package.infrastructure import paths
 
 
@@ -91,7 +91,7 @@ def test__table__is_not_managed(spark: SparkSession, migrations_executed: None) 
     It is desired that the table is unmanaged to provide for greater flexibility.
     According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
+    Thus, we check whether the table is managed by comparing its location to the location of the database/schema.
     """
     database_details = spark.sql(
         f"DESCRIBE DATABASE {paths.InputDatabase.DATABASE_NAME}"
