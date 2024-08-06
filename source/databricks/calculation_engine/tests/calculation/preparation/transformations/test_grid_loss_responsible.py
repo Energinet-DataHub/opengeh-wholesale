@@ -23,11 +23,11 @@ from package.calculation.preparation.transformations.grid_loss_responsible impor
 )
 import metering_point_periods_factory as factory
 from package.databases.migrations_wholesale import TableReader
-from package.databases.migrations_wholesale.schemas import (
-    grid_loss_metering_points_schema,
-)
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.databases.wholesale_internal.schemas import (
+    grid_loss_metering_points_schema,
+)
 
 
 @patch.object(migrations_wholesale, TableReader.__name__)

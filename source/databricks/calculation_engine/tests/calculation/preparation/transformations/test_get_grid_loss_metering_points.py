@@ -18,15 +18,16 @@ import metering_point_periods_factory as factory
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
-from package.databases.migrations_wholesale.schemas import (
-    grid_loss_metering_points_schema,
-)
 from package.calculation.preparation.transformations.grid_loss_metering_points import (
     get_grid_loss_metering_points,
 )
 from package.codelists import MeteringPointType
 
 from typing import List
+
+from package.databases.wholesale_internal.schemas import (
+    grid_loss_metering_points_schema,
+)
 
 
 class DefaultValues:
