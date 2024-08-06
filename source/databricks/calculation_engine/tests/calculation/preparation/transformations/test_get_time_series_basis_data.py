@@ -17,7 +17,7 @@ from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
 from package.databases.wholesale_basis_data_internal.schemas import (
-    time_series_point_schema,
+    time_series_points_schema,
 )
 from package.databases.wholesale_basis_data_internal import (
     get_time_series_points_basis_data,
@@ -39,4 +39,4 @@ def test__when_valid_input__returns_df_with_expected_schema(
     )
 
     # Assert
-    assert_schema(actual.schema, time_series_point_schema, ignore_decimal_scale=True)
+    assert_schema(actual.schema, time_series_points_schema, ignore_decimal_scale=True)
