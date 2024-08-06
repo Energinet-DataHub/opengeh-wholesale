@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 from package.databases.migrations_wholesale import TableReader
-from package.databases.migrations_wholesale.schemas import time_series_point_schema
+from package.databases.migrations_wholesale.schemas import time_series_points_schema
 from package.constants import Colname
 from package.infrastructure.paths import InputDatabase
 from tests.helpers.delta_table_utils import write_dataframe_to_table
@@ -43,7 +43,7 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_time_series_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+        df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
@@ -69,14 +69,14 @@ class TestWhenValidInput:
             f"{calculation_input_path}/{InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
         row = _create_time_series_point_row()
-        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+        df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         write_dataframe_to_table(
             spark,
             df,
             "the_test_database",
             InputDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_points_table_location,
-            time_series_point_schema,
+            time_series_points_schema,
         )
         expected = df
 
@@ -94,7 +94,7 @@ class TestWhenValidInputAndExtraColumns:
         # Arrange
         row = _create_time_series_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+        df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
