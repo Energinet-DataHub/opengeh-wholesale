@@ -17,8 +17,8 @@ from package.databases.wholesale_basis_data_internal.schemas import (
 )
 from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
-    metering_point_period_schema,
-    time_series_point_schema,
+    metering_point_periods_schema,
+    time_series_points_schema,
     charge_price_information_periods_schema,
     charge_link_periods_schema,
     charge_price_points_schema,
@@ -39,11 +39,11 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
             table_reader.read_calculations,
         ),
         "metering_point_periods.csv": (
-            metering_point_period_schema,
+            metering_point_periods_schema,
             table_reader.read_metering_point_periods,
         ),
         "time_series_points.csv": (
-            time_series_point_schema,
+            time_series_points_schema,
             table_reader.read_time_series_points,
         ),
         "grid_loss_metering_points.csv": (

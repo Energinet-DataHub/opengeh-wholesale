@@ -35,7 +35,7 @@ The table holds all consumption, production, exchange, and child metering points
 
 The table data must always contain updated periods.
 """
-metering_point_period_schema = StructType(
+metering_point_periods_schema = StructType(
     [
         # GSRN (18 characters) that uniquely identifies the metering point
         # Used in balance fixing and settlement.
