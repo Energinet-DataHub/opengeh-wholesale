@@ -27,9 +27,6 @@ total_monthly_amounts_v1 = t.StructType(
         # 'PT1H' | 'P1D'
         t.StructField("resolution", t.StringType(), not nullable),
         #
-        # 'kWh' | 'pcs'
-        t.StructField("quantity_unit", t.StringType(), not nullable),
-        #
         # 'DKK'
         t.StructField("currency", t.StringType(), not nullable),
         #
