@@ -11,6 +11,7 @@ resource "databricks_job" "calculator_job" {
     new_cluster {
       spark_version = local.spark_version
       node_type_id  = "Standard_DS4_v2"
+      runtime_engine = "PHOTON"
       autoscale {
         min_workers = 4
         max_workers = 8
