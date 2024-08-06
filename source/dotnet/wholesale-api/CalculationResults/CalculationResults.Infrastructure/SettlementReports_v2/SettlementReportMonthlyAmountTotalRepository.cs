@@ -65,7 +65,6 @@ public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementRe
                 row.GridAreaCode,
                 row.EnergySupplierId,
                 row.Time,
-                ResolutionMapper.FromDeltaTableValue(row.Resolution),
                 QuantityUnitMapper.FromDeltaTableValue(row.QuantityUnit),
                 Currency.DKK,
                 row.Amount,

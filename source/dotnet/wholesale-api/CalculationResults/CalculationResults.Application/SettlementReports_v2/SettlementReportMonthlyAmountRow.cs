@@ -25,7 +25,6 @@ public sealed record SettlementReportMonthlyAmountRow
         string gridArea,
         string energySupplierId,
         Instant startDateTime,
-        Resolution resolution,
         QuantityUnit quantityUnit,
         Currency currency,
         decimal? amount,
@@ -36,7 +35,6 @@ public sealed record SettlementReportMonthlyAmountRow
         GridArea = gridArea;
         EnergySupplierId = energySupplierId;
         StartDateTime = startDateTime;
-        Resolution = resolution;
         QuantityUnit = quantityUnit;
         Currency = currency;
         Amount = amount;
@@ -71,7 +69,7 @@ public sealed record SettlementReportMonthlyAmountRow
 
     public Instant StartDateTime { get; }
 
-    public Resolution Resolution { get; }
+    public Resolution Resolution => Resolution.Month;
 
     public QuantityUnit QuantityUnit { get; }
 
