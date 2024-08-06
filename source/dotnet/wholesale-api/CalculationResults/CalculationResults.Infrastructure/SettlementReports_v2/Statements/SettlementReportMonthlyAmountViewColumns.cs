@@ -22,9 +22,7 @@ public class SettlementReportMonthlyAmountViewColumns
     public const string GridAreaCode = "grid_area_code";
     public const string EnergySupplierId = "energy_supplier_id";
     public const string Time = "time";
-    public const string Resolution = "resolution";
     public const string QuantityUnit = "quantity_unit";
-    public const string Currency = "currency";
     public const string Amount = "amount";
     public const string ChargeType = "charge_type";
     public const string ChargeCode = "charge_code";
@@ -39,9 +37,7 @@ public class SettlementReportMonthlyAmountViewColumns
         { GridAreaCode, ("string", false) },
         { EnergySupplierId, ("string", false) },
         { Time, ("timestamp", false) },
-        { Resolution, ("string", false) },
         { QuantityUnit, ("string", false) },
-        { Currency, ("string", false) },
         { Amount, ("decimal(18,6)", true) },
         { ChargeType, ("string", true) },
         { ChargeCode, ("string", true) },
