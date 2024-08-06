@@ -75,7 +75,9 @@ def test__data_product_views_have_correct_schemas(
                     )
 
                 actual_df = spark.table(f"{database.name}.{view.name}")
-                expected_df = spark.createDataFrame([], expected_schemas[view.name])
+                expected_df = spark.createDataFrame(
+                    [], expected_schemas[f"{database.name}.{view.name}"]
+                )
 
                 assert_schema(
                     actual_df.schema,

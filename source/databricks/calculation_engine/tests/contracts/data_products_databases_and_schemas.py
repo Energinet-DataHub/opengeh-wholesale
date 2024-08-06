@@ -33,6 +33,7 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
         "wholesale_basis_data_internal",
         "wholesale_results_internal",
         "wholesale_internal",
+        "hive_calculation_results",
     }
     databases = [
         db
@@ -52,6 +53,7 @@ def get_expected_data_product_schemas() -> dict:
     schemas_folder = current_directory / ".." / ".." / "contracts" / "data_products"
 
     for root, _, files in os.walk(schemas_folder):
+        database_name = Path(root).name
         for file_name in files:
             if file_name.endswith(".py"):
                 # Remove the file extension
@@ -63,7 +65,9 @@ def get_expected_data_product_schemas() -> dict:
                 spec.loader.exec_module(module)
 
                 if hasattr(module, schema_name):
-                    schemas[schema_name] = getattr(module, schema_name)
+                    schemas[f"{database_name}.{schema_name}"] = getattr(
+                        module, schema_name
+                    )
                 else:
                     raise AttributeError(
                         f"The data product '{module}' does not define the expected contract '{schema_name}'"
