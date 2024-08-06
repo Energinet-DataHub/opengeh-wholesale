@@ -31,7 +31,7 @@ public class WholesaleServicesQueries(
     WholesaleServicesQueryStatementHelperFactory helperFactory,
     IOptions<DeltaTableOptions> deltaTableOptions,
     WholesaleServicesDatabricksContractInformationProvider databricksContractInformationProvider)
-    : PackageQueriesBase<WholesaleServices, WholesaleTimeSeriesPoint>(databricksSqlWarehouseQueryExecutor), IWholesaleServicesQueries
+    : IWholesaleServicesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
@@ -72,7 +72,7 @@ public class WholesaleServicesQueries(
             .ConfigureAwait(false);
     }
 
-    protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
+    protected bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
         var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(current);
         var calculationIdColumn = _databricksContractInformationProvider.GetCalculationIdColumnName(amountType);
@@ -83,7 +83,7 @@ public class WholesaleServicesQueries(
                || current[calculationIdColumn] != previous[calculationIdColumn];
     }
 
-    protected override WholesaleServices CreatePackageFromRowData(
+    protected WholesaleServices CreatePackageFromRowData(
         DatabricksSqlRow rowData,
         List<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
@@ -92,7 +92,7 @@ public class WholesaleServicesQueries(
         return WholesaleServicesFactory.Create(rowData, amountType, timeSeriesPoints);
     }
 
-    protected override WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
+    protected WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
     {
         return WholesaleTimeSeriesPointFactory.Create(row);
     }
@@ -169,5 +169,36 @@ public class WholesaleServicesQueries(
                     GROUP BY {_helper.GetGridAreaCodeColumnName()}, {_helper.GetCalculationTypeColumnName()}
                     """;
         }
+    }
+
+    /// <summary>
+    /// Retrieves a stream of sql rows from the Databricks SQL Warehouse and groups the sql rows into packages
+    /// which are streamed back as they are finished.
+    /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
+    /// results that can span multiple calculations
+    /// </summary>
+    protected async IAsyncEnumerable<WholesaleServices> GetDataAsync(DatabricksStatement sqlStatement)
+    {
+        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
+        DatabricksSqlRow? previous = null;
+
+        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var current = new DatabricksSqlRow(databricksCurrentRow);
+
+            // Yield a package created from previous data, if the current row belongs to a new package
+            if (previous != null && RowBelongsToNewPackage(current, previous))
+            {
+                yield return CreatePackageFromRowData(previous, timeSeriesPoints);
+                timeSeriesPoints = [];
+            }
+
+            timeSeriesPoints.Add(CreateTimeSeriesPoint(current));
+            previous = current;
+        }
+
+        // Yield the last package
+        if (previous != null)
+            yield return CreatePackageFromRowData(previous, timeSeriesPoints);
     }
 }

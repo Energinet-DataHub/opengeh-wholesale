@@ -30,11 +30,9 @@ public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : PackageQueriesBase<AggregatedTimeSeries, EnergyTimeSeriesPoint>(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
+    : IAggregatedTimeSeriesQueries
 {
-    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor =
-        databricksSqlWarehouseQueryExecutor;
-
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
 
@@ -55,19 +53,19 @@ public class AggregatedTimeSeriesQueries(
             yield return aggregatedTimeSeries;
     }
 
-    protected override AggregatedTimeSeries CreatePackageFromRowData(
+    protected AggregatedTimeSeries CreatePackageFromRowData(
         DatabricksSqlRow rowData,
         List<EnergyTimeSeriesPoint> timeSeriesPoints)
     {
         return AggregatedTimeSeriesFactory.Create(rowData, timeSeriesPoints);
     }
 
-    protected override EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
+    protected EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
     {
         return EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(row);
     }
 
-    protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
+    protected bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
     {
         var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] != previous[EnergyResultColumnNames.CalculationId];
         var hasDifferentColumnValues = AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column]);
@@ -158,5 +156,36 @@ public class AggregatedTimeSeriesQueries(
 
             return sql;
         }
+    }
+
+    /// <summary>
+    /// Retrieves a stream of sql rows from the Databricks SQL Warehouse and groups the sql rows into packages
+    /// which are streamed back as they are finished.
+    /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
+    /// results that can span multiple calculations
+    /// </summary>
+    protected async IAsyncEnumerable<AggregatedTimeSeries> GetDataAsync(DatabricksStatement sqlStatement)
+    {
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+        DatabricksSqlRow? previous = null;
+
+        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var current = new DatabricksSqlRow(databricksCurrentRow);
+
+            // Yield a package created from previous data, if the current row belongs to a new package
+            if (previous != null && RowBelongsToNewPackage(current, previous))
+            {
+                yield return CreatePackageFromRowData(previous, timeSeriesPoints);
+                timeSeriesPoints = [];
+            }
+
+            timeSeriesPoints.Add(CreateTimeSeriesPoint(current));
+            previous = current;
+        }
+
+        // Yield the last package
+        if (previous != null)
+            yield return CreatePackageFromRowData(previous, timeSeriesPoints);
     }
 }
