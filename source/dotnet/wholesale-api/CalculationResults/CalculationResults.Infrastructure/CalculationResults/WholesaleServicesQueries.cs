@@ -29,13 +29,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class WholesaleServicesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     WholesaleServicesQueryStatementHelperFactory helperFactory,
-    IOptions<DeltaTableOptions> deltaTableOptions,
-    WholesaleServicesDatabricksContractInformationProvider databricksContractInformationProvider)
+    IOptions<DeltaTableOptions> deltaTableOptions)
     : IWholesaleServicesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
-    private readonly WholesaleServicesDatabricksContractInformationProvider _databricksContractInformationProvider = databricksContractInformationProvider;
     private readonly WholesaleServicesQueryStatementHelperFactory _helperFactory = helperFactory;
 
     public async IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters)
@@ -58,16 +56,13 @@ public class WholesaleServicesQueries(
             var current = new DatabricksSqlRow(databricksCurrentRow);
 
             // Yield a package created from previous data, if the current row belongs to a new package
-            var currentAmountType = _databricksContractInformationProvider.GetAmountTypeFromRow(current);
-            var calculationIdColumn =
-                _databricksContractInformationProvider.GetCalculationIdColumnName(currentAmountType);
+            var calculationIdColumn = helper.GetCalculationIdColumnName();
 
             if (previous != null
                 && (helper.GetColumnsToAggregateBy().Any(column => current[column] != previous[column])
                     || current[calculationIdColumn] != previous[calculationIdColumn]))
             {
-                var previousAmountType = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
-                yield return WholesaleServicesFactory.Create(previous, previousAmountType, timeSeriesPoints);
+                yield return WholesaleServicesFactory.Create(previous, queryParameters.AmountType, timeSeriesPoints);
                 timeSeriesPoints = [];
             }
 
@@ -78,8 +73,7 @@ public class WholesaleServicesQueries(
         // Yield the last package
         if (previous != null)
         {
-            var amountType = _databricksContractInformationProvider.GetAmountTypeFromRow(previous);
-            yield return WholesaleServicesFactory.Create(previous, amountType, timeSeriesPoints);
+            yield return WholesaleServicesFactory.Create(previous, queryParameters.AmountType, timeSeriesPoints);
         }
     }
 
