@@ -22,12 +22,12 @@ from .schemas import (
     charge_price_points_schema,
     metering_point_period_schema,
     time_series_point_schema,
-    grid_loss_metering_points_schema,
 )
 from package.databases.wholesale_basis_data_internal.schemas import (
     hive_calculations_schema,
 )
 from package.common.schemas import assert_contract
+from ..wholesale_internal.schemas import grid_loss_metering_points_schema
 
 
 class TableReader:

@@ -17,7 +17,7 @@ import package.databases.wholesale_basis_data_internal.schemas as basis_data_sch
 import package.infrastructure.paths as paths
 
 # calculation_input
-from package.databases.migrations_wholesale.schemas import (
+from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.databases.wholesale_results_internal.schemas import (
