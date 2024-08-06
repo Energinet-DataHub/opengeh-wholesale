@@ -38,8 +38,8 @@ class TableReader:
     def __init__(
         self,
         spark: SparkSession,
-        catalog_name: str,
         calculation_input_path: str,
+        catalog_name: str | None = None,
         wholesale_internal_database_name: str | None = None,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
@@ -47,7 +47,7 @@ class TableReader:
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
-        self._catalog_name = catalog_name
+        self._catalog_name = catalog_name or "spark_catalog"
         self._wholesale_internal_database_name = (
             wholesale_internal_database_name or WholesaleInternalDatabase.DATABASE_NAME
         )
