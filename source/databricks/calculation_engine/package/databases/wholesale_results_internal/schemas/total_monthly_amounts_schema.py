@@ -21,7 +21,9 @@ from pyspark.sql.types import (
 )
 
 from package.databases.table_column_names import TableColumnNames
-from package.constants import TotalMonthlyAmountsColumnNames
+from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
+    TotalMonthlyAmountsColumnNames,
+)
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 total_monthly_amounts_schema_uc = StructType(

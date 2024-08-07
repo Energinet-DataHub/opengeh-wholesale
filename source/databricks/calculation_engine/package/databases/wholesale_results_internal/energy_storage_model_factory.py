@@ -23,7 +23,10 @@ from package.calculation.energy.resolution_transition_factory import (
 )
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.codelists import TimeSeriesType, AggregationLevel
-from package.constants import Colname, EnergyResultColumnNames
+from package.constants import Colname
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 
 
 def create(

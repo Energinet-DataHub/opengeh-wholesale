@@ -22,8 +22,8 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_link_periods_schema_uc,
     charge_price_points_schema,
     grid_loss_metering_points_schema,
-    metering_point_period_schema_uc,
-    time_series_point_schema,
+    metering_point_periods_schema_uc,
+    time_series_points_schema,
 )
 
 from package.codelists import (
@@ -32,7 +32,12 @@ from package.codelists import (
     TimeSeriesType,
     WholesaleResultResolution,
 )
-from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
@@ -300,11 +305,11 @@ def test__when_wholesale_calculation__calculation_is_stored(
     [
         (
             paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_period_schema_uc,
+            metering_point_periods_schema_uc,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-            time_series_point_schema,
+            time_series_points_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,

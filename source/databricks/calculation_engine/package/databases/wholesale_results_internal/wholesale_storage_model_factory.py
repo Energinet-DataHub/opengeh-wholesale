@@ -23,7 +23,10 @@ from package.calculation.wholesale.data_structures.wholesale_results import (
 from package.codelists import (
     AmountType,
 )
-from package.constants import Colname, WholesaleResultColumnNames
+from package.constants import Colname
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 
 
 def create(

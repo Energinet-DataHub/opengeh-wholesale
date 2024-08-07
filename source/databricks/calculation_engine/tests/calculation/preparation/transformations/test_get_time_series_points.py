@@ -23,7 +23,7 @@ from pyspark.sql.functions import lit
 from package.databases import migrations_wholesale
 from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
-    time_series_point_schema,
+    time_series_points_schema,
 )
 from package.calculation.preparation.transformations import get_time_series_points
 from package.constants import Colname
@@ -66,7 +66,7 @@ class TestWhenValidInput:
         # Arrange
         time_series_row = _create_time_series_point_row()
         expected = spark.createDataFrame(
-            data=[time_series_row], schema=time_series_point_schema
+            data=[time_series_row], schema=time_series_points_schema
         )
         mock_calculation_input_reader.read_time_series_points.return_value = expected
 
@@ -102,7 +102,7 @@ class TestWhenValidInput:
 
         time_series_points_df = spark.createDataFrame(
             data=[time_series_row],
-            schema=time_series_point_schema,
+            schema=time_series_points_schema,
         )
         mock_calculation_input_reader.read_time_series_points.return_value = (
             time_series_points_df
@@ -134,7 +134,7 @@ class TestWhenValidInput:
         )
         dataframe = spark.createDataFrame(
             data=[time_series_row],
-            schema=time_series_point_schema,
+            schema=time_series_points_schema,
         )
         dataframe = dataframe.withColumn(column_name, lit(column_name))
         mock_calculation_input_reader.read_time_series_points.return_value = dataframe

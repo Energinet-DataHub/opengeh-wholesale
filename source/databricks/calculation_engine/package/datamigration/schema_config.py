@@ -1,6 +1,8 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
+
+import package.databases.wholesale_internal.schemas as internal_schemas
 from package.databases.wholesale_results_internal.schemas import (
     energy_schema_uc,
     energy_per_brp_schema_uc,
@@ -21,7 +23,11 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
-                schema=basis_data_schemas.calculations_schema,
+                schema=internal_schemas.calculations_schema,
+            ),
+            Table(
+                name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=internal_schemas.grid_loss_metering_points_schema,
             ),
         ],
         views=[],
@@ -69,11 +75,11 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_period_schema_uc,
+                schema=basis_data_schemas.metering_point_periods_schema_uc,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.time_series_point_schema,
+                schema=basis_data_schemas.time_series_points_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,

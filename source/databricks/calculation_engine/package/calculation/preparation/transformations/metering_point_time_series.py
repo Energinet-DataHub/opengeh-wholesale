@@ -17,8 +17,8 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
 from package.databases.migrations_wholesale.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
+    time_series_points_schema,
+    metering_point_periods_schema,
 )
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
@@ -38,8 +38,8 @@ def get_metering_point_time_series(
     Thus, there will be no missing points for a given metering point when it's connected. It may, however, not be
     connected for the entire period of the calculation.
     """
-    assert_schema(raw_time_series_points_df.schema, time_series_point_schema)
-    assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
+    assert_schema(raw_time_series_points_df.schema, time_series_points_schema)
+    assert_schema(metering_point_periods_df.schema, metering_point_periods_schema)
 
     quarterly_mp_df = metering_point_periods_df.where(
         f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value

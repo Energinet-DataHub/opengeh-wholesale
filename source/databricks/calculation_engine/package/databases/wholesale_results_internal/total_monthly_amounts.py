@@ -18,8 +18,10 @@ from package.calculation.calculation_results import (
     WholesaleResultsContainer,
 )
 from package.databases.table_column_names import TableColumnNames
-from package.constants import TotalMonthlyAmountsColumnNames
 from package.container import Container
+from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
+    TotalMonthlyAmountsColumnNames,
+)
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
