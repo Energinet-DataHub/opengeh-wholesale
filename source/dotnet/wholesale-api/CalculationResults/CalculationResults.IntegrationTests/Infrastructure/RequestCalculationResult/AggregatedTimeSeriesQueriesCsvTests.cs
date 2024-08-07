@@ -31,7 +31,7 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeriesQueries>,
+public class  AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeriesQueries>,
     IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
 {
     private const string EnergySupplierOne = "5790002617263";

@@ -37,7 +37,7 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
         var resolution = request.HasResolution ? ResolutionMapper.Map(request.Resolution) : (Resolution?)null;
 
         // If no charge types are requested, both monthly amount and total monthly amount is requested
-        var amountTypes = AmountTypeMapper.Map(resolution, SpecificChargeTypesIsRequested(request));
+        var amountTypes = AmountTypeMapper.Map(resolution, AllChargesIsRequested(request));
 
         return amountTypes.Select(amountType => new WholesaleServicesRequest(
                 amountType,
@@ -56,7 +56,7 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
             .ToList();
     }
 
-    private static bool SpecificChargeTypesIsRequested(DataHub.Edi.Requests.WholesaleServicesRequest request)
+    private static bool AllChargesIsRequested(DataHub.Edi.Requests.WholesaleServicesRequest request)
     {
         return request.ChargeTypes.Count == 0;
     }
