@@ -5,9 +5,10 @@ terraform {
       source  = "hashicorp/azuread"
       version = "2.47.0"
     }
+    # We cannot update higher currently, as the new version has a big the cluster where it says we use singlenode, but we use multinode
     databricks = {
       source  = "databricks/databricks"
-      version = "1.49.1"
+      version = "1.47.0"
     }
   }
 }
