@@ -36,6 +36,16 @@ resource "databricks_schema" "internal" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
 
+resource "databricks_grant" "internal" {
+  provider = databricks.dbw
+  schema   = databricks_schema.internal.id
+
+  principal  = "SEC-G-Datahub-DevelopersAzure"
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+}
+
 resource "databricks_external_location" "results_internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.results_internal.name}_${module.st_data_wholesale.name}"
@@ -51,6 +61,16 @@ resource "databricks_schema" "results_internal" {
   name         = "wholesale_results_internal"
   comment      = "wholesale_results_internal Schema"
   storage_root = databricks_external_location.results_internal.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+}
+
+resource "databricks_grant" "results_internal" {
+  provider = databricks.dbw
+  schema   = databricks_schema.results_internal.id
+
+  principal  = "SEC-G-Datahub-DevelopersAzure"
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
@@ -74,6 +94,16 @@ resource "databricks_schema" "results" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
 
+resource "databricks_grant" "results" {
+  provider = databricks.dbw
+  schema   = databricks_schema.results.id
+
+  principal  = "SEC-G-Datahub-DevelopersAzure"
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+}
+
 resource "databricks_external_location" "basis_data_internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.basis_data_internal.name}_${module.st_data_wholesale.name}"
@@ -93,6 +123,16 @@ resource "databricks_schema" "basis_data_internal" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
 
+resource "databricks_grant" "basis_data_internal" {
+  provider = databricks.dbw
+  schema   = databricks_schema.basis_data_internal.id
+
+  principal  = "SEC-G-Datahub-DevelopersAzure"
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+}
+
 resource "databricks_external_location" "settlement_reports" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.settlement_reports.name}_${module.st_data_wholesale.name}"
@@ -108,6 +148,16 @@ resource "databricks_schema" "settlement_reports" {
   name         = "wholesale_settlement_reports"
   comment      = "wholesale_settlement_reports Schema"
   storage_root = databricks_external_location.settlement_reports.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+}
+
+resource "databricks_grant" "settlement_reports" {
+  provider = databricks.dbw
+  schema   = databricks_schema.settlement_reports.id
+
+  principal  = "SEC-G-Datahub-DevelopersAzure"
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
