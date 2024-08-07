@@ -95,7 +95,6 @@ class WholesaleSettlementReportsDatabase:
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
 
 
-
 class HiveOutputDatabase:
     FOLDER_NAME = "calculation-output"
     """The folder in the storage account container"""
