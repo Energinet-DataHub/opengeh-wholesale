@@ -20,8 +20,8 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.databases.migrations_wholesale import TableReader
 from package.codelists import CalculationType
+from package.databases import wholesale_internal
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
     CalculationsColumnName,
 )
@@ -47,18 +47,19 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_calculation_row()
-        reader = TableReader(
+        table_reader = wholesale_internal.TableReader(
             mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
+
         df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            table_reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_calculations()
+                table_reader.read_calculations()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -87,10 +88,12 @@ class TestWhenValidInput:
         )
         expected = df
 
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        table_reader = wholesale_internal.TableReader(
+            spark, calculation_input_path, "spark_catalog"
+        )
 
         # Act
-        actual = reader.read_calculations()
+        actual = table_reader.read_calculations()
 
         # Assert
         assert_dataframes_equal(actual, expected)

@@ -14,17 +14,18 @@
 import pathlib
 from datetime import datetime
 from unittest import mock
+
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
 
-from package.databases.migrations_wholesale import TableReader
 from package.constants import Colname
+from package.databases import wholesale_internal
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
-from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -41,9 +42,7 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
-        )
+        reader = wholesale_internal.TableReader(mock.Mock(), "dummy_catalog_name")
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
         df = df.drop(Colname.metering_point_id)
         df = df.withColumn("test", f.lit("test"))
@@ -78,7 +77,7 @@ class TestWhenValidInput:
             grid_loss_metering_points_schema,
         )
         expected = df
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = wholesale_internal.TableReader(spark, "spark_catalog")
 
         # Act
         actual = reader.read_grid_loss_metering_points()
@@ -93,9 +92,7 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
-        )
+        reader = wholesale_internal.TableReader(mock.Mock(), "spark_catalog")
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
         df = df.withColumn("test", f.lit("test"))
 

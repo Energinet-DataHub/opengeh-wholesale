@@ -13,12 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -30,18 +27,23 @@ public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : PackageQueriesBase<AggregatedTimeSeries, EnergyTimeSeriesPoint>(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
+    : QueriesBaseClass(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
-    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor =
-        databricksSqlWarehouseQueryExecutor;
-
     private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(parameters).ConfigureAwait(false);
+            await GetCalculationTypeForGridAreasAsync(
+                    EnergyResultColumnNames.GridArea,
+                    EnergyResultColumnNames.CalculationType,
+                    new AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
+                        _deltaTableOptions.Value,
+                        _whereClauseProvider,
+                        parameters),
+                    parameters.CalculationType)
+                .ConfigureAwait(false);
 
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(
             parameters,
@@ -49,114 +51,40 @@ public class AggregatedTimeSeriesQueries(
             _whereClauseProvider,
             _deltaTableOptions.Value);
 
-        var resultStream = GetDataAsync(sqlStatement);
-
-        await foreach (var aggregatedTimeSeries in resultStream.ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
+                           AggregatedTimeSeriesFactory.Create,
+                           (currentRow, previousRow) =>
+                               AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column =>
+                                   currentRow[column] != previousRow[column])
+                               || currentRow[EnergyResultColumnNames.CalculationId] !=
+                               previousRow[EnergyResultColumnNames.CalculationId],
+                           EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
+                           sqlStatement))
+        {
             yield return aggregatedTimeSeries;
+        }
     }
 
-    protected override AggregatedTimeSeries CreatePackageFromRowData(
-        DatabricksSqlRow rowData,
-        List<EnergyTimeSeriesPoint> timeSeriesPoints)
-    {
-        return AggregatedTimeSeriesFactory.Create(rowData, timeSeriesPoints);
-    }
-
-    protected override EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
-    {
-        return EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(row);
-    }
-
-    protected override bool RowBelongsToNewPackage(DatabricksSqlRow current, DatabricksSqlRow previous)
-    {
-        var notSameCalculationId = current[EnergyResultColumnNames.CalculationId] != previous[EnergyResultColumnNames.CalculationId];
-        var hasDifferentColumnValues = AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => current[column] != previous[column]);
-
-        return hasDifferentColumnValues || notSameCalculationId;
-    }
-
-    private async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
-        AggregatedTimeSeriesQueryParameters queryParameters)
-    {
-        var calculationTypeForGridAreaStatement =
-            new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, _whereClauseProvider, queryParameters);
-
-        var calculationTypeForGridAreas = await _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(calculationTypeForGridAreaStatement, Format.JsonArray)
-            .Select(d =>
-            {
-                var databricksSqlRow = new DatabricksSqlRow(d);
-                return new CalculationTypeForGridArea(
-                    databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
-                    databricksSqlRow[WholesaleResultColumnNames.CalculationType]!);
-            })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        return calculationTypeForGridAreas
-            .GroupBy(ctpga => ctpga.GridArea)
-            .Select(g =>
-            {
-                if (queryParameters.CalculationType is not null)
-                {
-                    return new CalculationTypeForGridArea(
-                        g.Key,
-                        CalculationTypeMapper.ToDeltaTableValue(queryParameters.CalculationType.Value));
-                }
-
-                var calculationTypes = g.Select(ctpga => ctpga.CalculationType).ToList();
-
-                if (calculationTypes.Contains(DeltaTableCalculationType.ThirdCorrectionSettlement))
-                {
-                    return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.ThirdCorrectionSettlement);
-                }
-
-                if (calculationTypes.Contains(DeltaTableCalculationType.SecondCorrectionSettlement))
-                {
-                    return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.SecondCorrectionSettlement);
-                }
-
-                if (calculationTypes.Contains(DeltaTableCalculationType.FirstCorrectionSettlement))
-                {
-                    return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.FirstCorrectionSettlement);
-                }
-
-                return new CalculationTypeForGridArea(g.Key, DeltaTableCalculationType.BalanceFixing);
-            })
-            .Where(ctpga => queryParameters.CalculationType is not null
-                            || ctpga.CalculationType != DeltaTableCalculationType.BalanceFixing)
-            .Distinct()
-            .ToList();
-    }
-
-    private class CalculationTypeForGridAreasStatement(
+    private class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
         AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
         AggregatedTimeSeriesQueryParameters queryParameters)
-        : DatabricksStatement
+        : CalculationTypeForGridAreasStatementBase(
+            EnergyResultColumnNames.GridArea,
+            EnergyResultColumnNames.CalculationType)
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
         private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
 
-        protected override string GetSqlStatement()
-        {
-            var sql = $"""
-                       SELECT {EnergyResultColumnNames.GridArea}, {EnergyResultColumnNames.CalculationType}
-                       FROM (SELECT wr.*
-                             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
-                             INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                             ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}) wrv
-                       """;
+        protected override string GetSource() =>
+            $"""
+             (SELECT wr.*
+              FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
+              INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
+              ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
+             """;
 
-            sql = _whereClauseProvider.AddWhereClauseToSqlExpression(sql, _queryParameters, "wrv");
-
-            sql += $"""
-                    {"\n"}
-                    GROUP BY {EnergyResultColumnNames.GridArea}, {EnergyResultColumnNames.CalculationType}
-                    """;
-
-            return sql;
-        }
+        protected override string GetSelection() => _whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv").Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
     }
 }

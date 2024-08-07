@@ -20,13 +20,13 @@ from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.table_column_names import TableColumnNames
 from package.calculation.preparation import PreparedDataReader
-
-from package.databases.migrations_wholesale import TableReader
 from package.codelists.calculation_type import (
     CalculationType,
 )
+from package.databases import wholesale_internal
+from package.databases.migrations_wholesale import TableReader
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
@@ -79,7 +79,12 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
-    prepared_data_reader = PreparedDataReader(table_reader)
+    wholesale_internal_table_reader = wholesale_internal.TableReader(
+        spark, "spark_catalog"
+    )
+    prepared_data_reader = PreparedDataReader(
+        table_reader, wholesale_internal_table_reader
+    )
     calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
 
@@ -99,7 +104,12 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
-    prepared_data_reader = PreparedDataReader(table_reader)
+    wholesale_internal_table_reader = wholesale_internal.TableReader(
+        spark, "spark_catalog"
+    )
+    prepared_data_reader = PreparedDataReader(
+        table_reader, wholesale_internal_table_reader
+    )
     calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
 
