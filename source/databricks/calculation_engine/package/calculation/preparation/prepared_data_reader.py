@@ -68,7 +68,7 @@ class PreparedDataReader:
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
         return T.get_grid_loss_responsible(
-            grid_areas, metering_point_periods_df, self._table_reader
+            grid_areas, metering_point_periods_df, self._wholesale_internal_table_reader
         )
 
     @logging_configuration.use_span("get_metering_point_time_series")
