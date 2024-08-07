@@ -13,6 +13,7 @@
 # limitations under the License.
 import importlib.util
 import os
+from importlib.util import spec_from_file_location
 from pathlib import Path
 from typing import List
 
@@ -61,7 +62,12 @@ def get_expected_data_product_schemas() -> dict:
                 schema_name = file_name[:-3]
 
                 module_path = os.path.join(root, file_name)
-                spec = importlib.util.spec_from_file_location(schema_name, module_path)
+                spec = spec_from_file_location(schema_name, module_path)
+                if spec is None:
+                    raise ImportError(
+                        f"Failed to import module from path '{module_path}'."
+                    )
+
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
