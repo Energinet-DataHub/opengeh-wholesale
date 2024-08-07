@@ -13,16 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -45,7 +40,7 @@ public class WholesaleServicesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     helper.GetGridAreaCodeColumnName(),
                     helper.GetCalculationTypeColumnName(),
-                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper, queryParameters),
+                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
@@ -76,7 +71,7 @@ public class WholesaleServicesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     helper.GetGridAreaCodeColumnName(),
                     helper.GetCalculationTypeColumnName(),
-                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper, queryParameters),
+                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
@@ -94,13 +89,11 @@ public class WholesaleServicesQueries(
 
     private class CalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
-        WholesaleServicesQueryStatementHelper helper,
-        WholesaleServicesQueryParameters queryParameters)
+        WholesaleServicesQueryStatementHelper helper)
         : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly WholesaleServicesQueryStatementHelper _helper = helper;
-        private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
 
         protected override string GetSqlStatement()
         {
