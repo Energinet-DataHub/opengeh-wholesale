@@ -24,29 +24,16 @@ public class AggregatedTimeSeriesQueryStatementWhereClauseProvider
 {
     internal string GetWhereClauseSqlExpression(AggregatedTimeSeriesQueryParameters parameters, string table)
     {
-        var whereClauseSqlExpression = string.Join(
-            " OR ",
-            parameters.TimeSeriesTypes
-                .Select(timeSeriesType => TimeSeriesTypeWhereClauseSqlExpression(
-                    parameters,
-                    timeSeriesType,
-                    table))
-                .Select(s => $"({s})"));
-
         return $"""
-                {"\n"}
-                WHERE ({whereClauseSqlExpression})
+                WHERE ({string.Join(
+                    " OR ",
+                    parameters.TimeSeriesTypes
+                        .Select(timeSeriesType => TimeSeriesTypeWhereClauseSqlExpression(
+                            parameters,
+                            timeSeriesType,
+                            table))
+                        .Select(s => $"({s})"))})
                 """;
-    }
-
-    internal string AddWhereClauseToSqlExpression(
-        string sql,
-        AggregatedTimeSeriesQueryParameters queryParameters,
-        string table)
-    {
-        sql += GetWhereClauseSqlExpression(queryParameters, table);
-
-        return sql;
     }
 
     private static string TimeSeriesTypeWhereClauseSqlExpression(

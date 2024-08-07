@@ -83,14 +83,9 @@ public class AggregatedTimeSeriesQueries(
                              FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
                              INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
                              ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}) wrv
+                       {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv")}
+                       GROUP BY {EnergyResultColumnNames.GridArea}, {EnergyResultColumnNames.CalculationType}
                        """;
-
-            sql = _whereClauseProvider.AddWhereClauseToSqlExpression(sql, _queryParameters, "wrv");
-
-            sql += $"""
-                    {"\n"}
-                    GROUP BY {EnergyResultColumnNames.GridArea}, {EnergyResultColumnNames.CalculationType}
-                    """;
 
             return sql;
         }
