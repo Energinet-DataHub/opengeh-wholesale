@@ -15,11 +15,11 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_calculations_schema,
-)
 from package.codelists import CalculationType
-from package.constants.calculation_column_names import CalculationColumnNames
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
+from package.databases.wholesale_internal.schemas import hive_calculations_schema
 
 
 class DefaultValues:

@@ -15,12 +15,14 @@ from dependency_injector.wiring import Provide
 from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
-from package.databases.wholesale_basis_data_internal.schemas import (
+from package.calculation.calculator_args import CalculatorArgs
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
+from package.container import Container
+from package.databases.wholesale_internal.schemas.calculations_schema import (
     hive_calculations_schema,
 )
-from package.calculation.calculator_args import CalculatorArgs
-from package.constants.calculation_column_names import CalculationColumnNames
-from package.container import Container
 
 
 def create_calculation(

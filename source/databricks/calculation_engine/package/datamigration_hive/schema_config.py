@@ -14,10 +14,11 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
+import package.databases.wholesale_internal.schemas as internal_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
-from package.databases.migrations_wholesale.schemas import (
+from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.databases.wholesale_results_internal.schemas import (
@@ -77,7 +78,7 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.time_series_point_schema,
+                schema=basis_data_schemas.time_series_points_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
@@ -97,7 +98,7 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
-                schema=basis_data_schemas.hive_calculations_schema,
+                schema=internal_schemas.hive_calculations_schema,
             ),
         ],
         views=[],

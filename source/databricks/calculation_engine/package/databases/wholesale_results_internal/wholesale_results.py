@@ -16,8 +16,10 @@ from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
-from package.constants import WholesaleResultColumnNames
 from package.container import Container
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
