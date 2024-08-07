@@ -32,10 +32,7 @@ from package.codelists import (
     ChargeUnit,
     CalculationType,
 )
-from package.constants import (
-    Colname,
-    MonthlyAmountsColumnNames,
-)
+from package.constants import Colname
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )

@@ -20,7 +20,9 @@ from package.codelists import (
     TimeSeriesType,
     MeteringPointType,
 )
-from package.constants import EnergyResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
