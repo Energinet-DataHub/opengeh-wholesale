@@ -18,12 +18,14 @@ namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
 public static class AmountTypeMapper
 {
-    public static IReadOnlyCollection<AmountType> Map(Resolution? resolution)
+    public static IReadOnlyCollection<AmountType> Map(Resolution? resolution, bool includeTotalMonthlyAmount)
     {
         return resolution switch
         {
             null => [AmountType.AmountPerCharge],
-            Resolution.Month => [AmountType.MonthlyAmountPerCharge, AmountType.TotalMonthlyAmount],
+            Resolution.Month => includeTotalMonthlyAmount
+                ? [AmountType.MonthlyAmountPerCharge, AmountType.TotalMonthlyAmount]
+                : [AmountType.MonthlyAmountPerCharge],
 
             // This case shouldn't be possible, since it should be enforced by our validation that the resolution
             // is either null for a Resolution.Month for monthly_amount_per_charge or null for a amount_per_charge
