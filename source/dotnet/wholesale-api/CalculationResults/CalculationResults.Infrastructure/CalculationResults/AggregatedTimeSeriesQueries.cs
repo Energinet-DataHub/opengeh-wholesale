@@ -56,17 +56,15 @@ public class AggregatedTimeSeriesQueries(
             _whereClauseProvider,
             _deltaTableOptions.Value);
 
-        var aggregatedTimeSeriesPackages = CreateSeriesPackagesAsync(
-            AggregatedTimeSeriesFactory.Create,
-            (currentRow, previousRow) =>
-                AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column =>
-                    currentRow[column] != previousRow[column])
-                || currentRow[EnergyResultColumnNames.CalculationId] !=
-                previousRow[EnergyResultColumnNames.CalculationId],
-            EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
-            sqlStatement);
-
-        await foreach (var aggregatedTimeSeries in aggregatedTimeSeriesPackages)
+        await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
+                           AggregatedTimeSeriesFactory.Create,
+                           (currentRow, previousRow) =>
+                               AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column =>
+                                   currentRow[column] != previousRow[column])
+                               || currentRow[EnergyResultColumnNames.CalculationId] !=
+                               previousRow[EnergyResultColumnNames.CalculationId],
+                           EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
+                           sqlStatement))
         {
             yield return aggregatedTimeSeries;
         }

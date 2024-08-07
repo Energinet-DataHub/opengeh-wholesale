@@ -42,7 +42,12 @@ public class WholesaleServicesQueries(
         var helper = _helperFactory.Create(queryParameters);
 
         var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(helper.GetGridAreaCodeColumnName(), helper.GetCalculationTypeColumnName(), new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper, queryParameters), queryParameters.CalculationType).ConfigureAwait(false);
+            await GetCalculationTypeForGridAreasAsync(
+                    helper.GetGridAreaCodeColumnName(),
+                    helper.GetCalculationTypeColumnName(),
+                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper, queryParameters),
+                    queryParameters.CalculationType)
+                .ConfigureAwait(false);
 
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Select,
@@ -52,14 +57,12 @@ public class WholesaleServicesQueries(
 
         var calculationIdColumn = helper.GetCalculationIdColumnName();
 
-        var wholesaleServicesPackages = CreateSeriesPackagesAsync(
-            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
-            (currentRow, previousRow) => helper.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
-                                   || currentRow[calculationIdColumn] != previousRow[calculationIdColumn],
-            WholesaleTimeSeriesPointFactory.Create,
-            sqlStatement);
-
-        await foreach (var wholesaleServices in wholesaleServicesPackages)
+        await foreach (var wholesaleServices in CreateSeriesPackagesAsync(
+                           (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
+                           (currentRow, previousRow) => helper.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
+                                                        || currentRow[calculationIdColumn] != previousRow[calculationIdColumn],
+                           WholesaleTimeSeriesPointFactory.Create,
+                           sqlStatement))
         {
             yield return wholesaleServices;
         }
