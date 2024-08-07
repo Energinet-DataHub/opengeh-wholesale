@@ -429,9 +429,9 @@ def energy_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/GridLossResponsible.csv",
-        table_name=paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        table_name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
         schema=grid_loss_metering_points_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
+        table_location=f"{calculation_input_path}/{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
