@@ -186,6 +186,84 @@ public class WholesaleServicesRequestHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
+    public async Task ProcessAsync_WithMonthlyResolutionAndAChargeType_QueriesMonthlyCalculationResults(
+        [Frozen] Mock<IEdiClient> ediClient,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
+        [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
+        [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
+    {
+        // Arrange
+        const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+
+        var chargeTypeInRequest = new Energinet.DataHub.Edi.Requests.ChargeType() { ChargeCode = "ChargeCode", ChargeType_ = ChargeType.Tariff.ToString(), };
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(new WholesaleServicesRequestBuilder()
+                .WithResolution(DataHubNames.Resolution.Monthly)
+                .WithChargeTypes(chargeTypeInRequest)
+                .Build()
+                .ToByteArray()));
+
+        List<WholesaleServices> wholesaleServices =
+        [
+            CreateWholesaleServices(),
+            CreateWholesaleServices(),
+            CreateWholesaleServices(),
+        ];
+
+        // Query is executed once for both MonthlyAmountPerCharge
+        var expectedSeriesCount = wholesaleServices.Count;
+
+        queries
+            .Setup(q => q.GetAsync(It.IsAny<WholesaleServicesQueryParameters>()))
+            .Returns(wholesaleServices.ToAsyncEnumerable());
+
+        var sut = new WholesaleServicesRequestHandler(
+            ediClient.Object,
+            validator.Object,
+            queries.Object,
+            mapper.Object,
+            logger.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+
+        // Verify accepted response message
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedAcceptedSubject) &&
+                    WholesaleServicesRequestAccepted.Parser.ParseFrom(message.Body).Series.Count == expectedSeriesCount),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        // Verify wholesale query was executed once for MonthlyAmountPerCharge
+        queries.Verify(
+            q =>
+                q.GetAsync(It.Is<WholesaleServicesQueryParameters>(queryParameters =>
+                    queryParameters.AmountType == AmountType.MonthlyAmountPerCharge)),
+            Times.Once);
+
+        // Verify wholesale query was never executed for TotalMonthlyAmount
+        queries.Verify(
+            q =>
+                q.GetAsync(It.Is<WholesaleServicesQueryParameters>(queryParameters =>
+                    queryParameters.AmountType == AmountType.TotalMonthlyAmount)),
+            Times.Never);
+
+        // Verify that only the two queries above was executed
+        queries.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public async Task ProcessAsync_WithNoWholesaleResultData_SendsRejectedEdiMessage(
         [Frozen] Mock<IEdiClient> ediClient,
         [Frozen] Mock<IWholesaleServicesQueries> queries,
