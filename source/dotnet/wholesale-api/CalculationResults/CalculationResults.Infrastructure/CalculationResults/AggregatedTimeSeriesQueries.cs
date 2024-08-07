@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     EnergyResultColumnNames.GridArea,
                     EnergyResultColumnNames.CalculationType,
-                    new CalculationTypeForGridAreasStatement(
+                    new AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
                         _deltaTableOptions.Value,
                         _whereClauseProvider,
                         parameters),
@@ -65,29 +65,26 @@ public class AggregatedTimeSeriesQueries(
         }
     }
 
-    private class CalculationTypeForGridAreasStatement(
+    private class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
         AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
         AggregatedTimeSeriesQueryParameters queryParameters)
-        : DatabricksStatement
+        : CalculationTypeForGridAreasStatementBase(
+            EnergyResultColumnNames.GridArea,
+            EnergyResultColumnNames.CalculationType)
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
         private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
         private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
 
-        protected override string GetSqlStatement()
-        {
-            var sql = $"""
-                       SELECT {EnergyResultColumnNames.GridArea}, {EnergyResultColumnNames.CalculationType}
-                       FROM (SELECT wr.*
-                             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
-                             INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                             ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}) wrv
-                       {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv")}
-                       GROUP BY {EnergyResultColumnNames.GridArea}, {EnergyResultColumnNames.CalculationType}
-                       """;
+        protected override string GetSource() =>
+            $"""
+             (SELECT wr.*
+              FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
+              INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
+              ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
+             """;
 
-            return sql;
-        }
+        protected override string GetSelection() => _whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv").Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
     }
 }

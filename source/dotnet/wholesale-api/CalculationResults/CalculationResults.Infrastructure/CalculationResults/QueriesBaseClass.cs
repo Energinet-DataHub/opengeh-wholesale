@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -29,7 +28,7 @@ public abstract class QueriesBaseClass(DatabricksSqlWarehouseQueryExecutor datab
     protected async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
         string getGridAreaCodeColumnName,
         string getCalculationTypeColumnName,
-        DatabricksStatement calculationTypeForGridAreaStatement,
+        CalculationTypeForGridAreasStatementBase calculationTypeForGridAreaStatement,
         CalculationType? queryParametersCalculationType)
     {
         var calculationTypeForGridAreas = await _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(calculationTypeForGridAreaStatement, Format.JsonArray)

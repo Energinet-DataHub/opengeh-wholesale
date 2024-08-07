@@ -40,7 +40,7 @@ public class WholesaleServicesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     helper.GetGridAreaCodeColumnName(),
                     helper.GetCalculationTypeColumnName(),
-                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
+                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
@@ -71,7 +71,7 @@ public class WholesaleServicesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     helper.GetGridAreaCodeColumnName(),
                     helper.GetCalculationTypeColumnName(),
-                    new CalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
+                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
@@ -87,22 +87,17 @@ public class WholesaleServicesQueries(
             .ConfigureAwait(false);
     }
 
-    private class CalculationTypeForGridAreasStatement(
+    private class WholesaleServicesCalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
         WholesaleServicesQueryStatementHelper helper)
-        : DatabricksStatement
+        : CalculationTypeForGridAreasStatementBase(
+            helper.GetGridAreaCodeColumnName(),
+            helper.GetCalculationTypeColumnName())
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-        private readonly WholesaleServicesQueryStatementHelper _helper = helper;
 
-        protected override string GetSqlStatement()
-        {
-            return $"""
-                    SELECT {_helper.GetGridAreaCodeColumnName()}, {_helper.GetCalculationTypeColumnName()}
-                    FROM {_helper.GetSource(_deltaTableOptions)} wrv
-                    WHERE {_helper.GetSelection()}
-                    GROUP BY {_helper.GetGridAreaCodeColumnName()}, {_helper.GetCalculationTypeColumnName()}
-                    """;
-        }
+        protected override string GetSource() => helper.GetSource(_deltaTableOptions);
+
+        protected override string GetSelection() => helper.GetSelection();
     }
 }
