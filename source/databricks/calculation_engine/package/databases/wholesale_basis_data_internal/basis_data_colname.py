@@ -14,6 +14,8 @@
 
 
 class MeteringPointPeriodColname:
+    """Column names for the metering point period storage model"""
+
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
 
@@ -37,6 +39,8 @@ class MeteringPointPeriodColname:
 
 
 class TimeSeriesColname:
+    """Column names for the time series storage model"""
+
     calculation_id = "calculation_id"
     metering_point_id = "metering_point_id"
     observation_time = "observation_time"
@@ -45,6 +49,8 @@ class TimeSeriesColname:
 
 
 class ChargePriceInformationPeriodsColname:
+    """Column names for the charge price information periods storage model"""
+
     calculation_id = "calculation_id"
     charge_key = "charge_key"
     charge_code = "charge_code"
@@ -57,6 +63,8 @@ class ChargePriceInformationPeriodsColname:
 
 
 class ChargePricePointsColname:
+    """Column names for the charge price points storage model"""
+
     calculation_id = "calculation_id"
     charge_key = "charge_key"
     charge_code = "charge_code"
@@ -67,6 +75,8 @@ class ChargePricePointsColname:
 
 
 class ChargeLinkPeriodsColname:
+    """Column names for the charge link periods storage model"""
+
     calculation_id = "calculation_id"
     charge_key = "charge_key"
     charge_code = "charge_code"
@@ -78,12 +88,18 @@ class ChargeLinkPeriodsColname:
     to_date = "to_date"
 
 
+# TODO BJM: Move to correct database folder
 class GridLossMeteringPointsColName:
+    """Column names for the grid loss metering points storage model"""
+
     calculation_id = "calculation_id"
     metering_point_id = "metering_point_id"
 
 
+# TODO BJM: Move to correct database folder
 class CalculationsColumnName:
+    """Column names for the calculations storage model"""
+
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
     period_start = "period_start"
