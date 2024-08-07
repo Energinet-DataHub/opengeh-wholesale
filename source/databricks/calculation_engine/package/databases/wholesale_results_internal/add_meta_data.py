@@ -19,7 +19,9 @@ from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants import Colname
-from package.constants.result_column_names import ResultColumnNames
+from package.databases.wholesale_results_internal.result_column_names import (
+    ResultColumnNames,
+)
 
 
 def add_metadata(

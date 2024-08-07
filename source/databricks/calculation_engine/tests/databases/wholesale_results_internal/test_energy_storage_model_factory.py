@@ -31,7 +31,10 @@ from package.calculation.energy.data_structures.energy_results import (
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.constants import Colname, EnergyResultColumnNames
+from package.constants import Colname
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 from package.infrastructure.paths import HiveOutputDatabase
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change

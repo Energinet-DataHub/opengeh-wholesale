@@ -16,8 +16,10 @@ from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
 from package.databases.table_column_names import TableColumnNames
-from package.constants import MonthlyAmountsColumnNames
 from package.container import Container
+from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
+    MonthlyAmountsColumnNames,
+)
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (

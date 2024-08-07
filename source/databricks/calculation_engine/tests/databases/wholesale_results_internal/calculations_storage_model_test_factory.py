@@ -16,7 +16,9 @@ from datetime import datetime
 from pyspark.sql import DataFrame, Row, SparkSession
 
 from package.codelists import CalculationType
-from package.constants.calculation_column_names import CalculationColumnNames
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
 from package.databases.wholesale_internal.schemas import hive_calculations_schema
 
 

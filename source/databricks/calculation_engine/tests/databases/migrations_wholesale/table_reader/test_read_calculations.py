@@ -22,7 +22,9 @@ from pyspark.sql import SparkSession
 
 from package.databases.migrations_wholesale import TableReader
 from package.codelists import CalculationType
-from package.constants.basis_data_colname import CalculationsColumnName
+from package.databases.wholesale_basis_data_internal.basis_data_colname import (
+    CalculationsColumnName,
+)
 from package.databases.wholesale_internal.schemas import hive_calculations_schema
 from package.infrastructure.paths import HiveBasisDataDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal

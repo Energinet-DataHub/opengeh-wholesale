@@ -21,7 +21,9 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.constants import EnergyResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 hive_energy_results_schema = StructType(
