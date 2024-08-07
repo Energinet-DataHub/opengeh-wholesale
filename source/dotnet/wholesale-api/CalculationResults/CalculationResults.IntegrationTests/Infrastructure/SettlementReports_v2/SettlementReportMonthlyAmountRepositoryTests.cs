@@ -47,9 +47,9 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
+                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd2-1da0c40a26de'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -76,9 +76,9 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -105,10 +105,10 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
-                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
-                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
-                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
+                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
+                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
+                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
+                ["'f8bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -135,9 +135,9 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f9af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583192", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
-                ["'f9af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
-                ["'f9af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
+                ["'f9af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583192", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
+                ["'f9af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "1" ],
+                ["'f9af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -164,10 +164,10 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
-                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
+                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
+                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f2bf5e31-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -194,10 +194,10 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
-                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
+                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "1" ],
+                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f7bf5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583196", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "NULL", "NULL", "NULL", "NULL" ],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -224,11 +224,11 @@ public class SettlementReportMonthlyAmountRepositoryTests : TestBase<SettlementR
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportMonthlyAmountViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'kWh'", "'DKK'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583195", "'2024-01-02T06:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583195", "'2024-01-02T07:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "null", "null", "null", "null" ],
-                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e5'", "'405'", "8397670583195", "'2024-01-02T07:00:00.000+00:00'", "'P1D'", "'pcs'", "'DKK'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e1'", "'405'", "8397670583196", "'2024-01-02T02:00:00.000+00:00'", "'kWh'", "18.012345", "'tariff'", "'123'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e2'", "'405'", "8397670583192", "'2024-01-02T04:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e3'", "'405'", "8397670583195", "'2024-01-02T06:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e4'", "'405'", "8397670583195", "'2024-01-02T07:00:00.000+00:00'", "'pcs'", "18.012346", "null", "null", "null", "null" ],
+                ["'f8af5e30-3c65-439e-8fd4-1da0c40a26d4'", "'first_correction_settlement'", "'15cba911-b91e-4782-bed4-f0d2841829e5'", "'405'", "8397670583195", "'2024-01-02T07:00:00.000+00:00'", "'pcs'", "18.012346", "'subscription'", "'122'", "8397670583197", "0" ],
             ]);
 
         var results = await Sut.GetAsync(
