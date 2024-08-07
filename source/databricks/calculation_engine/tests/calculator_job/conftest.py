@@ -78,10 +78,7 @@ def executed_balance_fixing(
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
-    table_reader = TableReader(
-        spark,
-        calculation_input_path,
-    )
+    table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
     prepared_data_reader = PreparedDataReader(table_reader)
     calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
@@ -101,7 +98,7 @@ def executed_wholesale_fixing(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    table_reader = TableReader(spark, calculation_input_path)
+    table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
     prepared_data_reader = PreparedDataReader(table_reader)
     calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
