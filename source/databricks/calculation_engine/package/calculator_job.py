@@ -22,13 +22,13 @@ from pyspark.sql import SparkSession
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
-from package.databases import migrations_wholesale
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job_args import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
 from package.container import create_and_configure_container
+from package.databases import migrations_wholesale, wholesale_internal
 from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
@@ -123,5 +123,14 @@ def create_prepared_data_reader(
         settings.metering_point_periods_table_name,
         settings.grid_loss_metering_points_table_name,
     )
-    prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
+
+    wholesale_internal_table_reader = wholesale_internal.TableReader(
+        spark,
+        settings.calculation_input_path,
+        settings.catalog_name,
+    )
+
+    prepared_data_reader = calculation.PreparedDataReader(
+        delta_table_reader, wholesale_internal_table_reader
+    )
     return prepared_data_reader
