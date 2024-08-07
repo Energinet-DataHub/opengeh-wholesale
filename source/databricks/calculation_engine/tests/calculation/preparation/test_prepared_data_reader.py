@@ -28,7 +28,7 @@ class TestGetLatestCalculationVersion:
     ) -> None:
         # Arrange
         table_reader = TableReader(mock.Mock(), mock.Mock(), mock.Mock())
-        prepared_data_reader = PreparedDataReader(table_reader)
+        prepared_data_reader = PreparedDataReader(table_reader, mock.Mock())
         with patch.object(
             table_reader,
             table_reader.read_calculations.__name__,
@@ -47,7 +47,7 @@ class TestGetLatestCalculationVersion:
     ) -> None:
         # Arrange
         table_reader = TableReader(mock.Mock(), mock.Mock(), mock.Mock())
-        prepared_data_reader = PreparedDataReader(table_reader, None)
+        prepared_data_reader = PreparedDataReader(table_reader, mock.Mock())
 
         calculation_type = CalculationType.BALANCE_FIXING
         calculation = factory.create_calculation_row(

@@ -17,20 +17,20 @@ from unittest.mock import patch
 from pyspark.sql import Row
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.wholesale_internal.schemas import hive_calculations_schema
-from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
-    create_calculation,
-)
 from package.calculation.preparation import PreparedDataReader
 from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
+)
+from package.databases.wholesale_internal.schemas import hive_calculations_schema
+from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
+    create_calculation,
 )
 
 
 def test__when_valid_input__creates_calculation_with_expected_schema(
     any_calculator_args: CalculatorArgs,
 ) -> None:
-    prepared_data_reader = PreparedDataReader(mock.Mock())
+    prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
         prepared_data_reader,
         prepared_data_reader.get_latest_calculation_version.__name__,
@@ -55,7 +55,7 @@ def test__when_valid_input__creates_expected_calculation(
         CalculationColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
         CalculationColumnNames.version: next_version,
     }
-    prepared_data_reader = PreparedDataReader(mock.Mock())
+    prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
         prepared_data_reader,
         prepared_data_reader.get_latest_calculation_version.__name__,
@@ -69,7 +69,7 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
     any_calculator_args: CalculatorArgs,
 ) -> None:
     latest_version = None
-    prepared_data_reader = PreparedDataReader(mock.Mock())
+    prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
         prepared_data_reader,
         prepared_data_reader.get_latest_calculation_version.__name__,
@@ -82,7 +82,7 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
 def test__when_calculation_exists__creates_new_calculation_with_latest_version_plus_1(
     any_calculator_args: CalculatorArgs,
 ) -> None:
-    prepared_data_reader = PreparedDataReader(mock.Mock())
+    prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
         prepared_data_reader,
         prepared_data_reader.get_latest_calculation_version.__name__,

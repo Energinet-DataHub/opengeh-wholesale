@@ -126,7 +126,6 @@ def create_prepared_data_reader(
 
     wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark,
-        settings.calculation_input_path,
         settings.catalog_name,
     )
 
