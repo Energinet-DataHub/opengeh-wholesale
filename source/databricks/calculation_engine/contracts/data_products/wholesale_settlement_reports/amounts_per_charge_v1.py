@@ -41,9 +41,6 @@ amounts_per_charge_v1 = t.StructType(
         # 'kWh' | 'pcs'
         t.StructField("quantity_unit", t.StringType(), not nullable),
         #
-        # 'DKK'
-        t.StructField("currency", t.StringType(), not nullable),
-        #
         t.StructField("quantity", t.DecimalType(18, 3), nullable),
         #
         t.StructField("price", t.DecimalType(18, 6), nullable),

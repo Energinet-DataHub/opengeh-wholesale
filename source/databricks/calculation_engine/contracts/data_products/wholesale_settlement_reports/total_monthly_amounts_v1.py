@@ -24,12 +24,6 @@ total_monthly_amounts_v1 = t.StructType(
         # UTC time
         t.StructField("time", t.TimestampType(), not nullable),
         #
-        # 'PT1H' | 'P1D'
-        t.StructField("resolution", t.StringType(), not nullable),
-        #
-        # 'DKK'
-        t.StructField("currency", t.StringType(), not nullable),
-        #
         t.StructField("amount", t.DecimalType(18, 6), nullable),
         #
         # EIC or GLN number
