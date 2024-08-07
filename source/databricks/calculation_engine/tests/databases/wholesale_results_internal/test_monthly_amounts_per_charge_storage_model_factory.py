@@ -33,6 +33,9 @@ from package.codelists import (
     CalculationType,
 )
 from package.constants import Colname
+from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
+    MonthlyAmountsColumnNames,
+)
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
