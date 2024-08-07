@@ -49,7 +49,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "exchange_per_neighbor",
         energy_results.exchange_per_neighbor,
         WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
-        schemas.exchange_per_neighbor_schema_uc,
+        schemas.exchange_per_neighbor_schema,
     )
 
     # Write energy per grid area
@@ -67,7 +67,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "energy",
         energy,
         WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-        schemas.energy_schema_uc,
+        schemas.energy_schema,
     )
 
     # Write energy per balance responsible party
@@ -80,7 +80,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "energy_per_brp",
         energy_per_brp,
         WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-        schemas.energy_per_brp_schema_uc,
+        schemas.energy_per_brp_schema,
     )
 
     # Write energy per energy supplier
@@ -93,7 +93,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "energy_per_es",
         energy_per_es,
         WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-        schemas.energy_per_es_schema_uc,
+        schemas.energy_per_es_schema,
     )
 
     # Write positive and negative grid loss time series
@@ -116,7 +116,7 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
         "grid_loss_metering_point_time_series",
         grid_loss_metering_point_time_series,
         WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
-        schemas.grid_loss_metering_point_time_series_schema_uc,
+        schemas.grid_loss_metering_point_time_series_schema,
     )
 
     # TODO BJM: Remove when we're on Unity Catalog
