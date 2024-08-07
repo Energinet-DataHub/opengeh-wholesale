@@ -22,8 +22,8 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.constants import (
-    Colname,
+from package.constants import Colname
+from package.databases.wholesale_basis_data_internal.basis_data_colname import (
     MeteringPointPeriodColname,
     TimeSeriesColname,
     ChargePriceInformationPeriodsColname,

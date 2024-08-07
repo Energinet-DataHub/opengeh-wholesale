@@ -18,7 +18,9 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
-from package.constants.result_column_names import ResultColumnNames
+from package.databases.wholesale_results_internal.result_column_names import (
+    ResultColumnNames,
+)
 from testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 

@@ -42,7 +42,9 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_time_series_point_row()
-        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+        )
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.drop(Colname.metering_point_id)
 
@@ -80,7 +82,7 @@ class TestWhenValidInput:
         )
         expected = df
 
-        reader = TableReader(spark, calculation_input_path)
+        reader = TableReader(spark, calculation_input_path, "spark_catalog")
 
         # Act
         actual = reader.read_time_series_points()
@@ -93,7 +95,9 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_time_series_point_row()
-        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+        )
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.withColumn("test", f.lit("test"))
 

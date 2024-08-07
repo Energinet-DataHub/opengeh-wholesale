@@ -22,11 +22,13 @@ import package.databases.wholesale_results_internal.schemas as schemas
 from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
 )
 from package.codelists import MeteringPointType
-from package.constants import EnergyResultColumnNames
 from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure import paths

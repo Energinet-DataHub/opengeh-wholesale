@@ -33,7 +33,9 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.codelists import ChargeResolution, CalculationType
 from . import transformations as T
 from ...constants import Colname
-from ...constants.calculation_column_names import CalculationColumnNames
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
 from ...infrastructure import logging_configuration
 
 

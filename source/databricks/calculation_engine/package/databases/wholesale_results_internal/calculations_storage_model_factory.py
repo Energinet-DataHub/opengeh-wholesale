@@ -16,7 +16,9 @@ from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
 from package.calculation.calculator_args import CalculatorArgs
-from package.constants.calculation_column_names import CalculationColumnNames
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
 from package.container import Container
 from package.databases.wholesale_internal.schemas.calculations_schema import (
     hive_calculations_schema,
