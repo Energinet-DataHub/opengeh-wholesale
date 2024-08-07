@@ -142,6 +142,15 @@ schema_config = [
             View(
                 name=paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1
             ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            ),
         ],
     ),
 ]
