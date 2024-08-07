@@ -44,6 +44,8 @@ internal sealed class SettlementReportOrchestration
                 retryContext,
                 executionContext.GetLogger<SettlementReportOrchestration>()));
 
+        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 1 });
+
         var scatterResults = await context
             .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(
                 nameof(ScatterSettlementReportFilesActivity),
