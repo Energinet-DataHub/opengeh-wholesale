@@ -22,7 +22,9 @@ from package.databases.wholesale_results_internal.calculations_storage_model_fac
     create_calculation,
 )
 from package.calculation.preparation import PreparedDataReader
-from package.constants.calculation_column_names import CalculationColumnNames
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
 
 
 def test__when_valid_input__creates_calculation_with_expected_schema(

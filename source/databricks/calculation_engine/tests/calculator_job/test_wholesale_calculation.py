@@ -32,7 +32,12 @@ from package.codelists import (
     TimeSeriesType,
     WholesaleResultResolution,
 )
-from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c

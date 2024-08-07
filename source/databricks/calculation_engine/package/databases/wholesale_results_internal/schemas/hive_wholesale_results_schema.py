@@ -22,7 +22,9 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.constants import WholesaleResultColumnNames
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 hive_wholesale_results_schema = StructType(

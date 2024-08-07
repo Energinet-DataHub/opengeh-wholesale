@@ -17,5 +17,7 @@ from .result_column_names import ResultColumnNames
 
 
 class TotalMonthlyAmountsColumnNames(ResultColumnNames):
+    """Column names for the total monthly amounts storage model."""
+
     amount = "amount"
     charge_owner_id = "charge_owner_id"

@@ -16,20 +16,12 @@
 from .result_column_names import ResultColumnNames
 
 
-class WholesaleResultColumnNames(ResultColumnNames):
-    amount_type = "amount_type"
-    quantity_unit = "quantity_unit"
-    resolution = "resolution"
+class MonthlyAmountsColumnNames(ResultColumnNames):
+    """Column names for the monthly amounts storage model."""
 
-    metering_point_type = "metering_point_type"
-    settlement_method = "settlement_method"
-    price = "price"
     amount = "amount"
-    is_tax = "is_tax"
-
+    charge_owner_id = "charge_owner_id"
     charge_code = "charge_code"
     charge_type = "charge_type"
-    charge_owner_id = "charge_owner_id"
-
-    quantity = "quantity"
-    quantity_qualities = "quantity_qualities"
+    is_tax = "is_tax"
+    quantity_unit = "quantity_unit"
