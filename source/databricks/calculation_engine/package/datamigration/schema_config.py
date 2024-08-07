@@ -4,11 +4,11 @@ import package.infrastructure.paths as paths
 
 import package.databases.wholesale_internal.schemas as internal_schemas
 from package.databases.wholesale_results_internal.schemas import (
-    energy_schema_uc,
-    energy_per_brp_schema_uc,
-    energy_per_es_schema_uc,
-    grid_loss_metering_point_time_series_schema_uc,
-    exchange_per_neighbor_schema_uc,
+    energy_schema,
+    energy_per_brp_schema,
+    energy_per_es_schema,
+    grid_loss_metering_point_time_series_schema,
+    exchange_per_neighbor_schema,
     amounts_per_charge_schema,
     monthly_amounts_schema_uc,
     total_monthly_amounts_schema_uc,
@@ -37,23 +37,23 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-                schema=energy_schema_uc,
+                schema=energy_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-                schema=energy_per_brp_schema_uc,
+                schema=energy_per_brp_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-                schema=energy_per_es_schema_uc,
+                schema=energy_per_es_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
-                schema=exchange_per_neighbor_schema_uc,
+                schema=exchange_per_neighbor_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
-                schema=grid_loss_metering_point_time_series_schema_uc,
+                schema=grid_loss_metering_point_time_series_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
