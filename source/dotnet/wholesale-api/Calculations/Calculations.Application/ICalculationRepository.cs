@@ -25,12 +25,6 @@ public interface ICalculationRepository
 
     Task<Calculation> GetAsync(Guid calculationId);
 
-    Task<List<Calculation>> GetCreatedAsync();
-
-    Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states);
-
-    Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime);
-
     Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,

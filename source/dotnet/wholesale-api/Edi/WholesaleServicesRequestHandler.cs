@@ -67,13 +67,31 @@ public class WholesaleServicesRequestHandler(
             return;
         }
 
-        var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
-        var queryParameters = GetWholesaleResultQueryParameters(request);
+        var requests = _wholesaleServicesRequestMapper.Map(incomingRequest);
 
-        var calculationResults = await _wholesaleServicesQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        if (!requests.Any())
+            throw new InvalidOperationException("No mapped WholesaleServices requests found, there should always be atleast one");
+
+        List<WholesaleServices> calculationResults = [];
+
+        foreach (var request in requests)
+        {
+            var queryParameters = GetWholesaleResultQueryParameters(request);
+            var results = await _wholesaleServicesQueries
+                .GetAsync(queryParameters)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            calculationResults.AddRange(results);
+        }
+
         if (!calculationResults.Any())
         {
-            await SendNoDateRejectMessageAsync(referenceId, cancellationToken, incomingRequest, queryParameters)
+            await SendNoDataRejectMessageAsync(
+                    referenceId,
+                    cancellationToken,
+                    incomingRequest,
+                    GetWholesaleResultQueryParameters(requests.First()))
                 .ConfigureAwait(false);
             return;
         }
@@ -82,7 +100,7 @@ public class WholesaleServicesRequestHandler(
         await SendAcceptedMessageAsync(calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendNoDateRejectMessageAsync(
+    private async Task SendNoDataRejectMessageAsync(
         string referenceId,
         CancellationToken cancellationToken,
         DataHub.Edi.Requests.WholesaleServicesRequest incomingRequest,
@@ -111,7 +129,9 @@ public class WholesaleServicesRequestHandler(
             request.RequestedCalculationType == RequestedCalculationType.LatestCorrection
                 ? null
                 : CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
-            new Period(request.Period.Start, request.Period.End));
+            new Period(request.Period.Start, request.Period.End),
+            request.RequestedForActorRole == DataHubNames.ActorRole.EnergySupplier,
+            request.RequestedForActorNumber);
     }
 
     private async Task<bool> HasDataInAnotherGridAreaAsync(

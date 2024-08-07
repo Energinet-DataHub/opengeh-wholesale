@@ -13,128 +13,106 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
 public class WholesaleServicesQueryStatement(
     WholesaleServicesQueryStatement.StatementType statementType,
-    WholesaleServicesQueryParameters queryParameters,
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
-    WholesaleServicesQueryStatementWhereClauseProvider whereClauseProvider,
+    WholesaleServicesQueryStatementHelper helper,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
+    private const string WholesaleServicesTableName = "wsr";
+    private const string ChargesTableName = "chrg";
+    private const string PackagesWithVersionTableName = "pckg";
+
     private readonly StatementType _statementType = statementType;
-    private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
     private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-    private readonly WholesaleServicesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
+    private readonly WholesaleServicesQueryStatementHelper _helper = helper;
 
     protected override string GetSqlStatement()
     {
         var selectTarget = _statementType switch
         {
-            StatementType.Select =>
-                $"{string.Join(", ", ColumnsToSelect.Select(cts => $"`wrv`.`{cts}`"))}, `wrv`.`{BasisDataCalculationsColumnNames.Version}`",
+            StatementType.Select => _helper.GetProjection(ChargesTableName),
             StatementType.Exists => "1",
             _ => throw new ArgumentOutOfRangeException(nameof(_statementType), _statementType, "Unknown StatementType"),
         };
 
-        var sql = $"""
-                    SELECT {selectTarget}
-                    FROM (SELECT {string.Join(", ", ColumnsToSelect.Select(cts => $"`wr`.`{cts}`"))}, `cs`.`{BasisDataCalculationsColumnNames.Version}`
-                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
-                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                    ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                    WHERE {GenerateLatestOrFixedCalculationTypeWhereClause()}) wrv
-                    INNER JOIN (SELECT max({BasisDataCalculationsColumnNames.Version}) AS max_version, {WholesaleResultColumnNames.Time} AS max_time, {string.Join(", ", ColumnsToGroupBy.Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
-                    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME} wr
-                    INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                    ON wr.{WholesaleResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                    {_whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wr")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
-                    GROUP BY {WholesaleResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
-                    ON wrv.{WholesaleResultColumnNames.Time} = maxver.max_time AND wrv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(wrv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
-                    """;
-
-        // The order is important for combining the rows into packages, since the sql rows are streamed and
-        // packages are created on-the-fly each time a new row is received.
-        sql += $"""
-                {"\n"}ORDER BY {string.Join(", ", ColumnsToGroupBy)}, {WholesaleResultColumnNames.Time}
+        /*
+         * SELECT chrg.A, chrg.B, chrg.C, ...
+         * FROM (SomeQuery) chrg
+         * INNER JOIN (SomeOtherQuery) pckg
+         * ON chrg.A = pckg.max_A AND chrg.B = pckg.max_B AND ...
+         * ORDER BY chrg.A, chrg.B, ..., chrg.time
+         *
+         * OR
+         *
+         * SELECT 1
+         * FROM (SomeQuery) chrg
+         * INNER JOIN (SomeOtherQuery) pckg
+         * ON chrg.A = pckg.max_A AND chrg.B = pckg.max_B AND ...
+         * ORDER BY chrg.A, chrg.B, ..., chrg.time
+         */
+        return $"""
+                SELECT {selectTarget}
+                FROM ({GetChargesToChooseFrom()}) {ChargesTableName}
+                INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
+                ON {MatchChargesWithPackages(ChargesTableName, PackagesWithVersionTableName)}
+                ORDER BY {string.Join(", ", _helper.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_helper.GetTimeColumnName()}
                 """;
-
-        return sql;
     }
-
-    private string GenerateLatestOrFixedCalculationTypeWhereClause()
-    {
-        if (_queryParameters.CalculationType is not null)
-        {
-            return $"""
-                    wr.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
-                    """;
-        }
-
-        if (_calculationTypePerGridAreas.IsNullOrEmpty())
-        {
-            return """
-                   FALSE
-                   """;
-        }
-
-        var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
-            .Select(ctpga => $"""
-                              (wr.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND wr.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
-                              """);
-
-        return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
-    }
-
-    /// <summary>
-    /// Since results are streamed and packages are created on-the-fly, the data need to be ordered so that
-    ///     all rows belonging to one package are ordered directly after one another.
-    /// </summary>
-    public static string[] ColumnsToGroupBy =>
-    [
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
-        WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.ChargeCode,
-        WholesaleResultColumnNames.AmountType,
-        WholesaleResultColumnNames.Resolution,
-        WholesaleResultColumnNames.MeteringPointType,
-        WholesaleResultColumnNames.SettlementMethod,
-    ];
-
-    private static string[] ColumnsToSelect { get; } =
-    [
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
-        WholesaleResultColumnNames.AmountType,
-        WholesaleResultColumnNames.MeteringPointType,
-        WholesaleResultColumnNames.SettlementMethod,
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.ChargeCode,
-        WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.Resolution,
-        WholesaleResultColumnNames.QuantityUnit,
-        WholesaleResultColumnNames.Time,
-        WholesaleResultColumnNames.Quantity,
-        WholesaleResultColumnNames.QuantityQualities,
-        WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.Amount,
-        WholesaleResultColumnNames.CalculationId,
-        WholesaleResultColumnNames.CalculationType,
-    ];
 
     public enum StatementType
     {
         Select,
         Exists,
+    }
+
+    private string GetChargesToChooseFrom()
+    {
+        /*
+         * SELECT wsr.A, wsr.B, wsr.C, ...
+         * FROM SomeTable wsr
+         * WHERE wsr.A = a AND wsr.B = b AND ...
+         */
+        return $"""
+                SELECT {_helper.GetProjection(WholesaleServicesTableName)}
+                FROM {_helper.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
+                WHERE {_helper.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
+                """;
+    }
+
+    private string GetMaxVersionForEachPackage()
+    {
+        /*
+         * SELECT max(wsr.version) AS max_version, wsr.time AS max_time, wsr.A AS max_A, wsr.B AS max_B, ...
+         * FROM SomeTable wsr
+         * WHERE wsr.A = a AND wsr.B = b AND ...
+         * GROUP BY wsr.time, wsr.A, wsr.B, ...
+         */
+        return $"""
+                SELECT max({WholesaleServicesTableName}.{_helper.GetCalculationVersionColumnName()}) AS max_version, {WholesaleServicesTableName}.{_helper.GetTimeColumnName()} AS max_time, {string.Join(", ", _helper.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab} AS max_{ctab}"))}
+                FROM {_helper.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
+                WHERE {_helper.GetSelection(WholesaleServicesTableName)} AND {_helper.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
+                GROUP BY {WholesaleServicesTableName}.{_helper.GetTimeColumnName()}, {string.Join(", ", _helper.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab}"))}
+                """;
+    }
+
+    private string MatchChargesWithPackages(string chargesPrefix, string packagesPrefix)
+    {
+        /*
+         * chrg.time = pckg.max_time
+         * AND chrg.version = pckg.max_version
+         * AND coalesce(chrg.A, 'is_null_value') = coalesce(pckg.max_A, 'is_null_value') AND ...
+         */
+        return $"""
+                {chargesPrefix}.{_helper.GetTimeColumnName()} = {packagesPrefix}.max_time
+                AND {chargesPrefix}.{_helper.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
+                AND {string.Join(" AND ", _helper.GetColumnsToAggregateBy().Select(ctab => $"coalesce({chargesPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
+                """;
     }
 }

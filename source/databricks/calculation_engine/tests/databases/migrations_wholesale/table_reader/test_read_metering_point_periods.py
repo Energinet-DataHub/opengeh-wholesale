@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 from package.databases.migrations_wholesale import TableReader
-from package.databases.migrations_wholesale.schemas import metering_point_period_schema
+from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
 import databases.migrations_wholesale.table_reader.input_metering_point_periods_factory as factory
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
@@ -44,9 +44,9 @@ class TestWhenValidInput:
             "test_database",
             "metering_point_periods",
             table_location,
-            metering_point_period_schema,
+            metering_point_periods_schema,
         )
-        reader = TableReader(spark, calculation_input_path)
+        reader = TableReader(spark, calculation_input_path, "spark_catalog")
 
         # Act
         actual = reader.read_metering_point_periods()
@@ -58,7 +58,9 @@ class TestWhenValidInput:
 class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
-        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+        )
         row = factory.create_row()
         df = factory.create(spark, row)
         df = df.withColumn("test", f.lit("test"))
@@ -73,7 +75,9 @@ class TestWhenValidInputAndMoreColumns:
 class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
-        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+        )
         row = factory.create_row()
         df = factory.create(spark, row)
         df = df.drop(Colname.metering_point_id)

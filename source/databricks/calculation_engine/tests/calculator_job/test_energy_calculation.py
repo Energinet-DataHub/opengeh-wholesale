@@ -20,7 +20,9 @@ from package.codelists import (
     TimeSeriesType,
     MeteringPointType,
 )
-from package.constants import EnergyResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
@@ -168,7 +170,10 @@ def test__when_energy_calculation__basis_data_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
-    ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -184,7 +189,10 @@ def test__when_energy_calculation__calculation_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -224,8 +232,25 @@ def test__when_energy_calculation__calculation_is_stored(
             f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
             True,
         ),
+        # TODO: Only delete cases above when moved to Unity Catalog
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
             True,
         ),
     ],
@@ -233,5 +258,9 @@ def test__when_energy_calculation__calculation_is_stored(
 def test__when_balance_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_balance_fixing: None, view_name: str, has_data: bool
 ) -> None:
-    actual = spark.sql(f"SELECT * FROM {view_name}")
+    actual = spark.sql(f"SELECT * FROM {view_name}").where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
+
     assert actual.count() > 0 if has_data else actual.count() == 0

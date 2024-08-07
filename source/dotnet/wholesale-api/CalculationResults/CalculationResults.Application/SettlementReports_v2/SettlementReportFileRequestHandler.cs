@@ -36,7 +36,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
 
-        var resultingFileName = GenerateFilename(fileRequest, actorInfo) + fileGenerator.FileExtension;
+        var resultingFileName = GenerateFilename(fileRequest) + fileGenerator.FileExtension;
         var storageFileName = $"{fileRequest.PartialFileInfo.FileName}_{fileRequest.PartialFileInfo.FileOffset}_{fileRequest.PartialFileInfo.ChunkOffset}{fileGenerator.FileExtension}";
 
         var writeStream = await _fileRepository
@@ -65,23 +65,17 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             storageFileName);
     }
 
-    private string GenerateFilename(SettlementReportFileRequestDto fileRequest, SettlementReportRequestedByActor actorInfo)
+    private static string GenerateFilename(SettlementReportFileRequestDto fileRequest)
     {
         var filename = $"{fileRequest.PartialFileInfo.FileName}";
 
         if (!string.IsNullOrWhiteSpace(fileRequest.RequestFilter.EnergySupplier))
         {
-            filename += $"_{fileRequest.RequestFilter.EnergySupplier}";
+            filename += $"_{fileRequest.RequestFilter.EnergySupplier}_DDQ";
         }
-
-        switch (actorInfo.MarketRole)
+        else
         {
-            case MarketRole.EnergySupplier:
-                filename += "_DDQ";
-                break;
-            case MarketRole.GridAccessProvider:
-                filename += "_DDM";
-                break;
+            filename += "_DDM";
         }
 
         var convertedStart = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(fileRequest.RequestFilter.PeriodStart, "Romance Standard Time");

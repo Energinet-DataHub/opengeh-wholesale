@@ -58,10 +58,4 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\databricks\calculation_engine\contracts\calculation-job-parameters-reference.txt">
-      <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>

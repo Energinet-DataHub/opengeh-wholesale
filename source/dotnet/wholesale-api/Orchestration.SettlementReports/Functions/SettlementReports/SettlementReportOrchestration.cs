@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure;
-using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Activities;
 using Energinet.DataHub.Wholesale.Orchestration.SettlementReports.Functions.SettlementReports.Model;
@@ -44,11 +44,15 @@ internal sealed class SettlementReportOrchestration
                 retryContext,
                 executionContext.GetLogger<SettlementReportOrchestration>()));
 
+        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 1 });
+
         var scatterResults = await context
             .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(
                 nameof(ScatterSettlementReportFilesActivity),
                 scatterInput,
                 dataSourceExceptionHandler);
+
+        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 10 });
 
         var generatedFiles = new List<GeneratedSettlementReportFileDto>();
         var orderedResults = scatterResults
@@ -65,15 +69,24 @@ internal sealed class SettlementReportOrchestration
                     dataSourceExceptionHandler));
 
             generatedFiles.AddRange(await Task.WhenAll(fileRequestTasks));
+
+            context.SetCustomStatus(new OrchestrateSettlementReportMetadata
+            {
+                OrchestrationProgress = (80.0 * generatedFiles.Count / orderedResults.Count) + 10,
+            });
         }
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFilesActivity),
             new GatherSettlementReportFilesInput(requestId, generatedFiles));
 
+        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 95 });
+
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReportActivity),
             generatedSettlementReport);
+
+        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 100 });
 
         return "Success";
     }
@@ -83,7 +96,7 @@ internal sealed class SettlementReportOrchestration
         // When running ScatterSettlementReportFilesActivity or GenerateSettlementReportFile, the call to the data source may time out for several reasons:
         // 1) The server is stopped, but requesting the data has triggered a startup. It should come online within 3 retries.
         // 2) The query for getting the data timed out. It is not known if query will succeed, but we are trying up to 6 times.
-        if (retryContext.LastFailure.ErrorMessage == SettlementReportDataRepositoryExceptions.DataSourceUnavailableExceptionMessage)
+        if (retryContext.LastFailure.ErrorType == typeof(DatabricksException).FullName)
         {
             logger.LogError("Databricks data source failed. Inner exception message: {innerException}.", retryContext.LastFailure.InnerFailure?.ToString());
             return retryContext.LastAttemptNumber <= 6;

@@ -1,12 +1,14 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
+
+import package.databases.wholesale_internal.schemas as internal_schemas
 from package.databases.wholesale_results_internal.schemas import (
-    energy_schema_uc,
-    energy_per_brp_schema_uc,
-    energy_per_es_schema_uc,
-    grid_loss_metering_point_time_series_schema_uc,
-    exchange_per_neighbor_schema_uc,
+    energy_schema,
+    energy_per_brp_schema,
+    energy_per_es_schema,
+    grid_loss_metering_point_time_series_schema,
+    exchange_per_neighbor_schema,
     amounts_per_charge_schema,
     monthly_amounts_schema_uc,
     total_monthly_amounts_schema_uc,
@@ -14,13 +16,18 @@ from package.databases.wholesale_results_internal.schemas import (
 
 import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 
+# TODO BJM: Remove when we only use Unity Catalog
 schema_config = [
     Schema(
         name=paths.WholesaleInternalDatabase.DATABASE_NAME,
         tables=[
             Table(
                 name=paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
-                schema=basis_data_schemas.calculations_schema,
+                schema=internal_schemas.calculations_schema,
+            ),
+            Table(
+                name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=internal_schemas.grid_loss_metering_points_schema,
             ),
         ],
         views=[],
@@ -30,23 +37,23 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-                schema=energy_schema_uc,
+                schema=energy_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-                schema=energy_per_brp_schema_uc,
+                schema=energy_per_brp_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
-                schema=energy_per_es_schema_uc,
+                schema=energy_per_es_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
-                schema=exchange_per_neighbor_schema_uc,
+                schema=exchange_per_neighbor_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
-                schema=grid_loss_metering_point_time_series_schema_uc,
+                schema=grid_loss_metering_point_time_series_schema,
             ),
             Table(
                 name=paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
@@ -68,11 +75,11 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_period_schema_uc,
+                schema=basis_data_schemas.metering_point_periods_schema_uc,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.time_series_point_schema,
+                schema=basis_data_schemas.time_series_points_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
@@ -93,6 +100,21 @@ schema_config = [
         name=paths.WholesaleResultsDatabase.DATABASE_NAME,
         tables=[],
         views=[
+            View(
+                name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+            ),
             View(
                 name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
             ),
@@ -119,6 +141,15 @@ schema_config = [
             ),
             View(
                 name=paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
             ),
         ],
     ),

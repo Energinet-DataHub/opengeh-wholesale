@@ -24,10 +24,21 @@ public static class WholesaleTimeSeriesPointFactory
     public static WholesaleTimeSeriesPoint Create(DatabricksSqlRow databricksSqlRow)
     {
         var time = databricksSqlRow[WholesaleResultColumnNames.Time];
-        var quantity = databricksSqlRow[WholesaleResultColumnNames.Quantity];
-        var qualities = databricksSqlRow[WholesaleResultColumnNames.QuantityQualities];
-        var price = databricksSqlRow[WholesaleResultColumnNames.Price];
-        var amount = databricksSqlRow[WholesaleResultColumnNames.Amount];
+        var quantity = databricksSqlRow.HasColumn(WholesaleResultColumnNames.Quantity)
+            ? databricksSqlRow[WholesaleResultColumnNames.Quantity]
+            : null;
+
+        var qualities = databricksSqlRow.HasColumn(WholesaleResultColumnNames.QuantityQualities)
+            ? databricksSqlRow[WholesaleResultColumnNames.QuantityQualities]
+            : null;
+
+        var price = databricksSqlRow.HasColumn(WholesaleResultColumnNames.Price)
+            ? databricksSqlRow[WholesaleResultColumnNames.Price]
+            : null;
+
+        var amount = databricksSqlRow.HasColumn(WholesaleResultColumnNames.Amount)
+            ? databricksSqlRow[WholesaleResultColumnNames.Amount]
+            : null;
 
         return new WholesaleTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,

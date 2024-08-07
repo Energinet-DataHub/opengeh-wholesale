@@ -22,17 +22,17 @@ from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
 
 
-def test__data_product_views_have_registered_column_names_and_types(
+def test__data_product_views_have_the_expected_column_names_and_types(
     migrations_executed: None,
     spark: SparkSession,
 ) -> None:
-    """Verify that all columns in all views in all public view models match the expected column names and data types"""
+    """Verify that all columns in public data products (views) have the expected column name and data type."""
 
     # Arrange
     databases = get_data_product_databases(spark)
     errors = []
 
-    # Act & Assert
+    # Act
     for database in databases:
         views = spark.catalog.listTables(database.name)
         assert views, f"No views found in database {database.name}."
@@ -41,6 +41,7 @@ def test__data_product_views_have_registered_column_names_and_types(
             try:
                 df = spark.table(f"{database.name}.{view.name}")
                 for column in df.columns:
+                    # Assert
                     _assert_name_and_data_type(column, df)
             except Exception as e:
                 errors.append(f"{database.name}.{view.name}: {e}")
@@ -48,11 +49,11 @@ def test__data_product_views_have_registered_column_names_and_types(
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
 
-def test__data_product_views_have_correct_schemas(
+def test__data_product_views_have_the_expected_schemas(
     migrations_executed: None,
     spark: SparkSession,
 ) -> None:
-    """Verify that all schemas from all views in all public view models match the respective expected schema."""
+    """Verify that all public data products (views) have the expected schemas."""
 
     # Arrange
     expected_schemas = get_expected_data_product_schemas()
@@ -62,28 +63,32 @@ def test__data_product_views_have_correct_schemas(
     databases = get_data_product_databases(spark)
     errors = []
 
-    # Act & Assert
+    # Act
     for database in databases:
         views = spark.catalog.listTables(database.name)
         assert views, f"No views found in database {database.name}."
 
         for view in views:
+            view_identifier = f"{database.name}.{view.name}"
             try:
-                if view.name not in expected_schemas:
+                if view_identifier not in expected_schemas:
                     raise ValueError(
-                        f"Expected schema for {database.name}.{view.name} not found."
+                        f"Expected schema for {view_identifier} not found."
                     )
 
-                actual_df = spark.table(f"{database.name}.{view.name}")
-                expected_df = spark.createDataFrame([], expected_schemas[view.name])
+                actual_df = spark.table(view_identifier)
+                expected_df = spark.createDataFrame(
+                    [], expected_schemas[view_identifier]
+                )
 
+                # Assert
                 assert_schema(
                     actual_df.schema,
                     expected_df.schema,
                     ignore_nullability=True,
                 )
             except Exception as e:
-                errors.append(f"{database.name}.{view.name}: {e}")
+                errors.append(f"{view_identifier}: {e}")
 
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 

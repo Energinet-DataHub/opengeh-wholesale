@@ -115,7 +115,6 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "StartCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "GetJobStatusActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationStateFromJobStatusActivity"),
-            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCompletedCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SendCalculationResultsActivity"),
             new OrchestrationHistoryItem("TimerCreated"), // Wait for raised event (ActorMessagesEnqueued)
             new OrchestrationHistoryItem("EventRaised", Name: "ActorMessagesEnqueuedV1"),

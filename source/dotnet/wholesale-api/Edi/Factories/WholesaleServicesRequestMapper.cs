@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Factories;
 
 public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
 {
-    public WholesaleServicesRequest Map(Energinet.DataHub.Edi.Requests.WholesaleServicesRequest request)
+    public IReadOnlyCollection<WholesaleServicesRequest> Map(Energinet.DataHub.Edi.Requests.WholesaleServicesRequest request)
     {
         var periodStart = InstantPattern.General.Parse(request.PeriodStart).Value;
 
@@ -36,16 +36,23 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
 
         var resolution = request.HasResolution ? ResolutionMapper.Map(request.Resolution) : (Resolution?)null;
 
-        return new WholesaleServicesRequest(
-            AmountTypeMapper.Map(resolution),
-            request.GridAreaCodes,
-            request.HasEnergySupplierId ? request.EnergySupplierId : null,
-            request.HasChargeOwnerId ? request.ChargeOwnerId : null,
-            MapChargeTypes(request.ChargeTypes),
-            new Period(
-                periodStart,
-                periodEnd),
-            RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementVersion ? request.SettlementVersion : null));
+        var amountTypes = AmountTypeMapper.Map(resolution);
+
+        return amountTypes.Select(amountType => new WholesaleServicesRequest(
+                amountType,
+                request.GridAreaCodes,
+                request.HasEnergySupplierId ? request.EnergySupplierId : null,
+                request.HasChargeOwnerId ? request.ChargeOwnerId : null,
+                MapChargeTypes(request.ChargeTypes),
+                new Period(
+                    periodStart,
+                    periodEnd),
+                RequestedCalculationTypeMapper.ToRequestedCalculationType(
+                    request.BusinessReason,
+                    request.HasSettlementVersion ? request.SettlementVersion : null),
+                request.RequestedForActorRole,
+                request.RequestedForActorNumber))
+            .ToList();
     }
 
     private List<ChargeCodeAndType> MapChargeTypes(RepeatedField<Energinet.DataHub.Edi.Requests.ChargeType> chargeTypes)

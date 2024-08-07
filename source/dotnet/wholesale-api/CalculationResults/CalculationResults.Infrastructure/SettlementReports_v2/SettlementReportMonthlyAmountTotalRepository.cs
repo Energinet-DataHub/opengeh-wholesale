@@ -65,9 +65,7 @@ public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementRe
                 row.GridAreaCode,
                 row.EnergySupplierId,
                 row.Time,
-                ResolutionMapper.FromDeltaTableValue(row.Resolution),
                 QuantityUnitMapper.FromDeltaTableValue(row.QuantityUnit),
-                Currency.DKK,
                 row.Amount,
                 row.ChargeType is null ? null : ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeCode,
@@ -96,16 +94,17 @@ public sealed class SettlementReportMonthlyAmountTotalRepository : ISettlementRe
         {
             case MarketRole.SystemOperator:
             case MarketRole.GridAccessProvider:
-                source = source.Where(row =>
-                    row.ChargeOwnerId == actorInfo.ChargeOwnerId);
+                source = source.Where(row => row.ChargeOwnerId == actorInfo.ChargeOwnerId);
+                break;
+            default:
+                source = source.Where(row => row.ChargeOwnerId == null);
                 break;
         }
 
         if (!string.IsNullOrWhiteSpace(filter.EnergySupplier))
         {
             source = source
-                .Where(row => row.EnergySupplierId == filter.EnergySupplier)
-                .Where(row => row.ChargeOwnerId == null);
+                .Where(row => row.EnergySupplierId == filter.EnergySupplier);
         }
 
         return source;

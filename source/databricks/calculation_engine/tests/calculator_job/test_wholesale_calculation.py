@@ -22,8 +22,8 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_link_periods_schema_uc,
     charge_price_points_schema,
     grid_loss_metering_points_schema,
-    metering_point_period_schema_uc,
-    time_series_point_schema,
+    metering_point_periods_schema_uc,
+    time_series_points_schema,
 )
 
 from package.codelists import (
@@ -32,7 +32,12 @@ from package.codelists import (
     TimeSeriesType,
     WholesaleResultResolution,
 )
-from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
@@ -264,7 +269,10 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
-    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_wholesale_calculation_id
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -280,7 +288,10 @@ def test__when_wholesale_calculation__calculation_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_wholesale_calculation_id
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -294,11 +305,11 @@ def test__when_wholesale_calculation__calculation_is_stored(
     [
         (
             paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_period_schema_uc,
+            metering_point_periods_schema_uc,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-            time_series_point_schema,
+            time_series_points_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
@@ -409,17 +420,36 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
+            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
+            False,
         ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_wholesale_fixing: None, view_name: str, has_data: bool
 ) -> None:
-    actual = spark.sql(f"SELECT * FROM {view_name}")
+    actual = spark.sql(f"SELECT * FROM {view_name}").where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_wholesale_calculation_id
+    )
     assert actual.count() > 0 if has_data else actual.count() == 0

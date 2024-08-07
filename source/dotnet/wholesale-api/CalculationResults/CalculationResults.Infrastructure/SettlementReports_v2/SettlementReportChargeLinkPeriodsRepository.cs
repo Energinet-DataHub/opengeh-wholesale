@@ -67,7 +67,8 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
                 row.ChargeCode,
                 row.Quantity,
                 row.FromDate,
-                row.ToDate);
+                row.ToDate,
+                row.EnergySupplierId);
         }
     }
 
@@ -95,7 +96,7 @@ public sealed class SettlementReportChargeLinkPeriodsRepository : ISettlementRep
         if (actorInfo.MarketRole == MarketRole.GridAccessProvider)
         {
             source = source.Where(row =>
-                row.IsTax == true &&
+                row.IsTax == true ||
                 row.ChargeOwnerId == actorInfo.ChargeOwnerId);
         }
 

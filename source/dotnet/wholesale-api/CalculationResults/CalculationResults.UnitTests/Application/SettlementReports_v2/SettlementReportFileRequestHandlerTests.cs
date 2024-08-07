@@ -30,10 +30,8 @@ public class SettlementReportFileRequestHandlerTests
     private readonly string _energySupplier = "EnergySupplier";
     private readonly SettlementReportRequestId _requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
 
-    [Theory]
-    [InlineData(MarketRole.EnergySupplier, "DDQ")]
-    [InlineData(MarketRole.GridAccessProvider, "DDM")]
-    public async Task RequestFile_MarketRoleProvided_ShouldAppearInFilename(MarketRole marketRole, string expectedRoleToFind)
+    [Fact]
+    public async Task RequestFile_EnergySupplier_ShouldAppearInFilename()
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
@@ -66,59 +64,15 @@ public class SettlementReportFileRequestHandlerTests
             settlementReportFileRepository.Object);
 
         // Act
-        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest, new SettlementReportRequestedByActor(marketRole, null));
+        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest, new SettlementReportRequestedByActor(MarketRole.DataHubAdministrator, null));
         var resultedFileName = resultGeneratedSettlementReportFile.FileInfo.FileName;
 
         // Assert
         Assert.Contains(_fileName, resultedFileName);
         Assert.Contains(_energySupplier, resultedFileName);
-        Assert.Contains(expectedRoleToFind, resultedFileName);
+        Assert.Contains("DDQ", resultedFileName);
         Assert.Contains($"{_startDate:dd-MM-yyyy}", resultedFileName);
         Assert.Contains($"{_endDate:dd-MM-yyyy}", resultedFileName);
-    }
-
-    [Theory]
-    [InlineData(MarketRole.SystemOperator)]
-    [InlineData(MarketRole.DataHubAdministrator)]
-    [InlineData(MarketRole.Other)]
-    public async Task RequestFile_MarketRoleProvided_ShouldNotAppearInFilename(MarketRole marketRole)
-    {
-        // Arrange
-        await using var memoryStream = new MemoryStream();
-        var settlementReportFileGenerator = new Mock<ISettlementReportFileGenerator>();
-        var settlementReportFileGeneratorFactory = new Mock<ISettlementReportFileGeneratorFactory>();
-        var settlementReportFileRepository = new Mock<ISettlementReportFileRepository>();
-
-        settlementReportFileGeneratorFactory.Setup(x => x.Create(It.IsAny<SettlementReportFileContent>()))
-            .Returns(settlementReportFileGenerator.Object);
-        settlementReportFileRepository.Setup(x => x.OpenForWritingAsync(It.IsAny<SettlementReportRequestId>(), It.IsAny<string>()))
-            .ReturnsAsync(memoryStream);
-
-        var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes,
-            _startDate.ToDateTimeOffset(),
-            _endDate.ToDateTimeOffset(),
-            CalculationType.WholesaleFixing,
-            null,
-            null);
-
-        var fileRequest = new SettlementReportFileRequestDto(
-            _requestId,
-            SettlementReportFileContent.ChargePrice,
-            new SettlementReportPartialFileInfo(_fileName, true),
-            filter,
-            1);
-
-        var sut = new SettlementReportFileRequestHandler(
-            settlementReportFileGeneratorFactory.Object,
-            settlementReportFileRepository.Object);
-
-        // Act
-        var resultGeneratedSettlementReportFile = await sut.RequestFileAsync(fileRequest, new SettlementReportRequestedByActor(marketRole, null));
-        var resultedFileName = resultGeneratedSettlementReportFile.FileInfo.FileName;
-
-        // Assert
-        Assert.Contains($"{_fileName}_{_startDate:dd-MM-yyyy}", resultedFileName);
     }
 
     [Theory]
@@ -162,6 +116,6 @@ public class SettlementReportFileRequestHandlerTests
         var resultedFileName = resultGeneratedSettlementReportFile.FileInfo.FileName;
 
         // Assert
-        Assert.Contains($"{_fileName}_{_startDate:dd-MM-yyyy}", resultedFileName);
+        Assert.Contains($"{_fileName}_DDM_{_startDate:dd-MM-yyyy}", resultedFileName);
     }
 }

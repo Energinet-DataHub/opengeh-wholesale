@@ -41,7 +41,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
             .DatabricksSqlCountAsync();
     }
 
-    public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo,  int skip, int take)
+    public async IAsyncEnumerable<SettlementReportMonthlyAmountRow> GetAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, int skip, int take)
     {
         var view = ApplyFilter(_settlementReportDatabricksContext.MonthlyAmountsView, filter, actorInfo);
 
@@ -65,9 +65,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
                 row.GridAreaCode,
                 row.EnergySupplierId,
                 row.Time,
-                ResolutionMapper.FromDeltaTableValue(row.Resolution),
                 QuantityUnitMapper.FromDeltaTableValue(row.QuantityUnit),
-                Currency.DKK,
                 row.Amount,
                 row.ChargeType is null ? null : ChargeTypeMapper.FromDeltaTableValue(row.ChargeType),
                 row.ChargeCode,
@@ -102,7 +100,7 @@ public sealed class SettlementReportMonthlyAmountRepository : ISettlementReportM
                 break;
             case MarketRole.GridAccessProvider:
                 source = source.Where(row =>
-                    row.IsTax == true &&
+                    row.IsTax == true ||
                     row.ChargeOwnerId == actorInfo.ChargeOwnerId);
                 break;
         }

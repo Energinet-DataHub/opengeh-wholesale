@@ -22,15 +22,15 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class AmountTypeMapperTests
 {
     [Theory]
-    [InlineData(Resolution.Month, AmountType.MonthlyAmountPerCharge)]
-    [InlineData(null, AmountType.AmountPerCharge)]
-    public void Map_WhenValid_ReturnsExpectedChargeType(Resolution? resolution, AmountType expectedResult)
+    [InlineData(Resolution.Month, new[] { AmountType.MonthlyAmountPerCharge, AmountType.TotalMonthlyAmount })]
+    [InlineData(null, new[] { AmountType.AmountPerCharge })]
+    public void Map_WhenValid_ReturnsExpectedChargeType(Resolution? resolution, AmountType[] expectedResults)
     {
         // Act
         var actual = AmountTypeMapper.Map(resolution);
 
         // Assert
-        actual.Should().Be(expectedResult);
+        actual.Should().BeEquivalentTo(expectedResults);
     }
 
     [Theory]

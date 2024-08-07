@@ -21,8 +21,8 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 
 from package.databases.migrations_wholesale.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
+    time_series_points_schema,
+    metering_point_periods_schema,
 )
 from package.calculation.preparation.transformations import (
     get_metering_point_time_series,
@@ -48,7 +48,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
             Colname.observation_time: time,
         }
         rows = [Row(**row)]
-        return spark.createDataFrame(rows, time_series_point_schema)
+        return spark.createDataFrame(rows, time_series_points_schema)
 
     return factory
 
@@ -76,7 +76,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             Colname.to_date: to_date,
         }
         rows = [Row(**row)]
-        return spark.createDataFrame(rows, metering_point_period_schema)
+        return spark.createDataFrame(rows, metering_point_periods_schema)
 
     return factory
 
@@ -385,7 +385,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     # Arrange
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-08T23:00:00.000Z"
-    empty_time_series = spark.createDataFrame(data=[], schema=time_series_point_schema)
+    empty_time_series = spark.createDataFrame(data=[], schema=time_series_points_schema)
 
     metering_point_period_df = metering_point_period_df_factory(
         resolution=resolution.value,
@@ -418,7 +418,7 @@ def test__when_time_series_point_is_missing__quantity_is_zero(
     # Arrange
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-08T23:00:00.000Z"
-    empty_time_series = spark.createDataFrame(data=[], schema=time_series_point_schema)
+    empty_time_series = spark.createDataFrame(data=[], schema=time_series_points_schema)
 
     metering_point_period_df = metering_point_period_df_factory(
         resolution=resolution.value,
