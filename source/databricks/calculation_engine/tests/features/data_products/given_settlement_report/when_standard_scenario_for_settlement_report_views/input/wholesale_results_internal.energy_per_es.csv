@@ -1,4 +1,4 @@
-calculation_id;result_id;grid_area_code;energy_supplier_id;balance_responsible_id;time_series_type;resolution;time;quantity;quantity_qualities
+calculation_id;result_id;grid_area_code;energy_supplier_id;balance_responsible_party_id;time_series_type;resolution;time;quantity;quantity_qualities
 0b15a420-9fc8-409a-a169-fbd49479d718;8cb0d8b3-89e2-457a-bf9e-8dc6389badf4;800;1000000000000;1100000000000;flex_consumption;PT15M;2023-01-31 23:00:00;0;['missing', 'calculated']
 0b15a420-9fc8-409a-a169-fbd49479d718;8cb0d8b3-89e2-457a-bf9e-8dc6389badf4;800;1000000000000;1100000000000;flex_consumption;PT15M;2023-01-31 23:15:00;0;['missing', 'calculated']
 0b15a420-9fc8-409a-a169-fbd49479d718;8cb0d8b3-89e2-457a-bf9e-8dc6389badf4;800;1000000000000;1100000000000;flex_consumption;PT15M;2023-01-31 23:30:00;0;['missing', 'calculated']
