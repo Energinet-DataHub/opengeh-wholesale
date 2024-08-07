@@ -10,7 +10,5 @@ SELECT calculation_id,
        time,
        quantity,
        energy_supplier_id
-FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.succeeded_energy_results_v1
-WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption')
+FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.energy_per_es_v1
 AND calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
-AND aggregation_level = 'es_brp_ga'
