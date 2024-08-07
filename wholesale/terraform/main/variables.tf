@@ -96,6 +96,12 @@ variable "calculation_input_folder" {
   default     = "calculation_input"
 }
 
+variable "calculation_input_database" {
+  type        = string
+  description = "Name of database used by calculations running in Spark in Databricks."
+  default     = "migrations_wholesale"
+}
+
 variable "quarterly_resolution_transition_datetime" {
   type        = string
   description = "Start date 15 minuts imbalance settlement"

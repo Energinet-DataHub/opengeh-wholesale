@@ -34,6 +34,7 @@ resource "databricks_job" "calculator_job" {
         "TIME_ZONE"                                = local.TIME_ZONE
         "CATALOG_NAME"                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "CALCULATION_INPUT_FOLDER_NAME"            = var.calculation_input_folder
+        "CALCULATION_INPUT_DATABASE_NAME"          = var.calculation_input_database
         "QUARTERLY_RESOLUTION_TRANSITION_DATETIME" = var.quarterly_resolution_transition_datetime
         # Using the name 'APPLICATIONINSIGHTS_CONNECTION_STRING' ensures the logging module is configured automatically
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
