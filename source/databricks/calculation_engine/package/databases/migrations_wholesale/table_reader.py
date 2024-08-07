@@ -14,11 +14,9 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.common import assert_schema
 from package.common.schemas import assert_contract
 from package.infrastructure.paths import (
     InputDatabase,
-    HiveBasisDataDatabase,
     WholesaleInternalDatabase,
 )
 from .schemas import (
@@ -28,7 +26,6 @@ from .schemas import (
     metering_point_periods_schema,
     time_series_points_schema,
 )
-from ..wholesale_internal.schemas.calculations_schema import hive_calculations_schema
 
 
 class TableReader:
@@ -83,16 +80,6 @@ class TableReader:
     ) -> DataFrame:
         path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
         return _read_from_hive(self._spark, path, charge_price_points_schema)
-
-    def read_calculations(self) -> DataFrame:
-        table_name = f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
-        df = self._spark.read.format("delta").table(table_name)
-
-        # Though it's our own table, we still want to make sure it has the expected schema as
-        # it might have been changed due to e.g. (failed) migrations or backup/restore.
-        assert_schema(df.schema, hive_calculations_schema)
-
-        return df
 
 
 def _read_from_hive(spark: SparkSession, path: str, contract: StructType) -> DataFrame:

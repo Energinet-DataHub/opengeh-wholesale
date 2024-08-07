@@ -175,7 +175,7 @@ class PreparedDataReader:
     ) -> int | None:
         """Returns the latest used version for the selected calculation type or None."""
 
-        calculations = self._table_reader.read_calculations()
+        calculations = self._wholesale_internal_table_reader.read_calculations()
 
         latest_version = (
             calculations.where(

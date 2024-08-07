@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import databases.wholesale_results_internal.calculations_storage_model_test_factory as factory
 from package.calculation import PreparedDataReader
 from package.codelists import CalculationType
-from package.databases.migrations_wholesale import TableReader
+from package.databases import wholesale_internal
 
 
 class TestGetLatestCalculationVersion:
@@ -27,8 +27,8 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader = TableReader(mock.Mock(), mock.Mock(), mock.Mock())
-        prepared_data_reader = PreparedDataReader(table_reader, mock.Mock())
+        table_reader = wholesale_internal.TableReader(mock.Mock(), mock.Mock())
+        prepared_data_reader = PreparedDataReader(mock.Mock(), table_reader)
         with patch.object(
             table_reader,
             table_reader.read_calculations.__name__,
@@ -46,8 +46,8 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader = TableReader(mock.Mock(), mock.Mock(), mock.Mock())
-        prepared_data_reader = PreparedDataReader(table_reader, mock.Mock())
+        table_reader = wholesale_internal.TableReader(mock.Mock(), mock.Mock())
+        prepared_data_reader = PreparedDataReader(mock.Mock(), table_reader)
 
         calculation_type = CalculationType.BALANCE_FIXING
         calculation = factory.create_calculation_row(

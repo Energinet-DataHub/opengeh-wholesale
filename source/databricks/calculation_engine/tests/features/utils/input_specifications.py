@@ -37,7 +37,7 @@ def get_data_input_specifications(
     return {
         "calculations.csv": (
             hive_calculations_schema,
-            table_reader.read_calculations,
+            wholesale_internal_table_reader.read_calculations,
         ),
         "metering_point_periods.csv": (
             metering_point_periods_schema,
