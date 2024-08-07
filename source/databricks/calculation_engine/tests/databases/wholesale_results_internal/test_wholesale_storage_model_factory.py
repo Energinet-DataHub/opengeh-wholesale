@@ -37,7 +37,10 @@ from package.codelists import (
     SettlementMethod,
     AmountType,
 )
-from package.constants import Colname, WholesaleResultColumnNames
+from package.constants import Colname
+from package.databases.wholesale_results_internal.wholesale_result_column_names import (
+    WholesaleResultColumnNames,
+)
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"

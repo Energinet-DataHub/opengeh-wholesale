@@ -18,7 +18,10 @@ from pyspark.sql.functions import col
 from package.calculation.calculator_args import CalculatorArgs
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
-from package.constants import Colname, MonthlyAmountsColumnNames
+from package.constants import Colname
+from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
+    MonthlyAmountsColumnNames,
+)
 
 
 def create(args: CalculatorArgs, monthly_amounts: MonthlyAmountPerCharge) -> DataFrame:

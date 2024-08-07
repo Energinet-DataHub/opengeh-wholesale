@@ -60,6 +60,7 @@ class WholesaleResultsContainer:
 class BasisDataContainer:
     calculations: DataFrame
     metering_point_periods: DataFrame
+    """Data frame where the columns uses the column names of the storage model."""
     time_series_points: DataFrame
     charge_price_information_periods: DataFrame | None
     charge_price_points: DataFrame | None

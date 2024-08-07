@@ -11,13 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.constants.result_column_names import ResultColumnNames
 
 
-class CalculationColumnNames(ResultColumnNames):
-    execution_time_start = "execution_time_start"
+class ResultColumnNames:
+    """Shared column names for the result storage models."""
+
+    calculation_id = "calculation_id"
+    calculation_execution_time_start = "calculation_execution_time_start"
     calculation_type = "calculation_type"
-    period_start = "period_start"
-    period_end = "period_end"
-    created_by_user_id = "created_by_user_id"
-    version = "version"
+    calculation_result_id = "calculation_result_id"
+    """Obsolete. Use result_id"""
+    result_id = "result_id"
+    grid_area_code = "grid_area_code"
+    energy_supplier_id = "energy_supplier_id"
+    balance_responsible_party_id = "balance_responsible_party_id"
+    time = "time"

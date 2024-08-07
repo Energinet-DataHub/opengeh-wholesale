@@ -18,6 +18,9 @@ from calculation.preparation.transformations import metering_point_periods_facto
 from package.databases.wholesale_basis_data_internal import (
     get_metering_point_periods_basis_data,
 )
+from package.databases.wholesale_basis_data_internal.basis_data_colname import (
+    MeteringPointPeriodColname,
+)
 from package.databases.wholesale_basis_data_internal.schemas import (
     hive_metering_point_period_schema,
 )
@@ -25,7 +28,7 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.common import assert_schema
-from package.constants import Colname, MeteringPointPeriodColname
+from package.constants import Colname
 
 
 def test__when_valid_input__returns_df_with_expected_schema(
