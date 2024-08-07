@@ -27,7 +27,9 @@ from package.databases.migrations_wholesale import TableReader
 from package.codelists.calculation_type import (
     CalculationType,
 )
-from package.constants import EnergyResultColumnNames
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 from package.infrastructure import paths
 from . import configuration as C
 

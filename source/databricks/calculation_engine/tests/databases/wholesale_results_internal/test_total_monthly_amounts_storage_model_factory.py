@@ -30,7 +30,10 @@ from package.calculation.wholesale.data_structures.total_monthly_amount import (
 from package.codelists import (
     CalculationType,
 )
-from package.constants import Colname, TotalMonthlyAmountsColumnNames
+from package.constants import Colname
+from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
+    TotalMonthlyAmountsColumnNames,
+)
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
