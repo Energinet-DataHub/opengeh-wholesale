@@ -68,21 +68,39 @@ class TableReader:
         )
 
     def read_time_series_points(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
-        return read_from_hive(self._spark, path, time_series_points_schema)
+        return read_from_uc(
+            self._spark,
+            self._catalog_name,
+            self._calculation_input_database_name,
+            self._time_series_points_table_name,
+            time_series_points_schema,
+        )
 
     def read_charge_link_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
-        return read_from_hive(self._spark, path, charge_link_periods_schema)
+        return read_from_uc(
+            self._spark,
+            self._catalog_name,
+            self._calculation_input_database_name,
+            InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            charge_link_periods_schema,
+        )
 
     def read_charge_price_information_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
-        return read_from_hive(
-            self._spark, path, charge_price_information_periods_schema
+        return read_from_uc(
+            self._spark,
+            self._catalog_name,
+            self._calculation_input_database_name,
+            InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            charge_price_information_periods_schema,
         )
 
     def read_charge_price_points(
         self,
     ) -> DataFrame:
-        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
-        return read_from_hive(self._spark, path, charge_price_points_schema)
+        return read_from_uc(
+            self._spark,
+            self._catalog_name,
+            self._calculation_input_database_name,
+            InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            charge_price_points_schema,
+        )

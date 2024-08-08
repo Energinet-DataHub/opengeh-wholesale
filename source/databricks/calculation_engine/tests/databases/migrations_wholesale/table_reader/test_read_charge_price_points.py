@@ -59,7 +59,7 @@ class TestWhenContractMismatch:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_price_points()
@@ -117,6 +117,6 @@ class TestWhenValidInputAndExtraColumns:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             reader.read_charge_price_points()
