@@ -58,6 +58,9 @@ module "apima_bff" {
             <set-header name="RequestTime" exists-action="override">
                 <value>@(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))</value>
             </set-header>
+            <set-header name="X-Forwarded-Prefix" exists-action="override">
+              <value>/bff</value>
+            </set-header>
             <cors allow-credentials="true">
                 <allowed-origins>
                     <origin>https://${local.frontend_url}</origin>
