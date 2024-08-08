@@ -218,8 +218,8 @@ def calculation_input_folder(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def calculation_input_database(data_lake_path: str) -> str:
-    return "wholesale_input"
+def calculation_input_database() -> str:
+    return "migrations_wholesale_test"
 
 
 @pytest.fixture(scope="session")
