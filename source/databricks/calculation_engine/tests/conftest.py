@@ -380,6 +380,7 @@ def infrastructure_settings(
 ) -> InfrastructureSettings:
     return InfrastructureSettings(
         catalog_name="spark_catalog",
+        calculation_input_database_name="wholesale_migrations_wholesale",
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,
