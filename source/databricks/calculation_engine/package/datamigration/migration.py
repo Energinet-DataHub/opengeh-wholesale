@@ -40,9 +40,7 @@ def migrate_data_lake(
 def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
     return SparkSqlMigrationsConfiguration(
         migration_schema_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
-        migration_schema_location=None,
         migration_table_name=paths.WholesaleInternalDatabase.EXECUTED_MIGRATIONS_TABLE_NAME,
-        migration_table_location=None,
         migration_scripts_folder_path=MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=None,
         current_state_tables_folder_path=None,
