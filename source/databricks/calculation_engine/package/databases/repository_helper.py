@@ -18,18 +18,6 @@ from pyspark.sql.types import StructType
 from package.common.schemas import assert_contract
 
 
-def read_from_hive(spark: SparkSession, path: str, contract: StructType) -> DataFrame:
-    df = spark.read.format("delta").load(path)
-
-    # Assert that the schema of the data matches the defined contract
-    assert_contract(df.schema, contract)
-
-    # Select only the columns that are defined in the contract to avoid potential downstream issues
-    df = df.select(contract.fieldNames())
-
-    return df
-
-
 def read_from_uc(
     spark: SparkSession,
     catalog_name: str,

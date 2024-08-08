@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType
 
-from package.common.schemas import assert_contract
 from package.infrastructure.paths import (
     InputDatabase,
     WholesaleInternalDatabase,
@@ -26,7 +24,7 @@ from .schemas import (
     metering_point_periods_schema,
     time_series_points_schema,
 )
-from ..repository_helper import read_from_uc, read_from_hive
+from ..repository_helper import read_from_uc
 
 
 class TableReader:
