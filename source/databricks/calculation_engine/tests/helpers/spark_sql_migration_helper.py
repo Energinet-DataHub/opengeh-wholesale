@@ -53,10 +53,16 @@ def _create_databases(spark: SparkSession) -> None:
     """
     Create Unity Catalog databases as they are not created by migration scripts.
     They are created by infrastructure (in the real environments)
-    In tests they are created in the single available default database."""
+    In tests they are created in the single available default database.
+
+    Create hive database for migrations as well.
+    """
     for database in UnityCatalogDatabaseNames.get_names():
         print(f"Creating database {database}")
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
+
+    # TODO BJM: Remove when removing hive
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS schema_migration")
 
 
 def migrate(
