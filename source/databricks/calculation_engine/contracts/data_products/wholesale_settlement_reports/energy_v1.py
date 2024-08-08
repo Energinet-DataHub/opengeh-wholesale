@@ -7,15 +7,9 @@ energy_v1 = t.StructType(
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
         #
-        # 'balance_fixing' | 'aggregation' | 'wholesale_fixing' | 'first_correction_settlement' |
+        # 'balance_fixing' | 'wholesale_fixing' | 'first_correction_settlement' |
         # 'second_correction_settlement' | 'third_correction_settlement'
         t.StructField("calculation_type", t.StringType(), not nullable),
-        #
-        # UTC time
-        t.StructField("calculation_period_start", t.TimestampType(), not nullable),
-        #
-        # UTC time
-        t.StructField("calculation_period_end", t.TimestampType(), not nullable),
         #
         t.StructField("calculation_version", t.LongType(), not nullable),
         #
@@ -37,12 +31,5 @@ energy_v1 = t.StructType(
         t.StructField("time", t.TimestampType(), not nullable),
         #
         t.StructField("quantity", t.DecimalType(18, 3), not nullable),
-        #
-        # 'kWh'
-        t.StructField("quantity_unit", t.StringType(), not nullable),
-        #
-        # [ 'measured' | 'missing' | 'calculated' | 'estimated' ]
-        # There is at least one element, and no element is included more than once.
-        t.StructField("quantity_qualities", t.ArrayType(t.StringType()), not nullable),
     ]
 )
