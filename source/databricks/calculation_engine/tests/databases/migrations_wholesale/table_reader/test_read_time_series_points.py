@@ -44,7 +44,6 @@ class TestWhenContractMismatch:
         row = _create_time_series_point_row()
         reader = TableReader(
             mock.Mock(),
-            "dummy_calculation_input_path",
             "dummy_catalog_name",
             "dummy_database_name",
         )
@@ -85,9 +84,7 @@ class TestWhenValidInput:
         )
         expected = df
 
-        reader = TableReader(
-            spark, calculation_input_path, "spark_catalog", "test_database"
-        )
+        reader = TableReader(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_time_series_points()
@@ -102,7 +99,6 @@ class TestWhenValidInputAndExtraColumns:
         row = _create_time_series_point_row()
         reader = TableReader(
             mock.Mock(),
-            "dummy_calculation_input_path",
             "dummy_catalog_name",
             "dummy_database_name",
         )

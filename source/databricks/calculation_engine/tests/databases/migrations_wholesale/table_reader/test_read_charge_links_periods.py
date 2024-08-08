@@ -50,7 +50,6 @@ class TestWhenContractMismatch:
         row = _create_charge_link_period_row()
         reader = TableReader(
             mock.Mock(),
-            "dummy_calculation_input_path",
             "dummy_catalog_name",
             "dummy_database_name",
         )
@@ -88,9 +87,7 @@ class TestWhenValidInput:
             charge_link_periods_schema,
         )
         expected = df
-        reader = TableReader(
-            spark, calculation_input_path, "spark_catalog", "test_database"
-        )
+        reader = TableReader(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_link_periods()
@@ -104,7 +101,6 @@ class TestWhenValidInputAndMoreColumns:
         # Arrange
         reader = TableReader(
             mock.Mock(),
-            "dummy_calculation_input_path",
             "dummy_catalog_name",
             "dummy_database_name",
         )
