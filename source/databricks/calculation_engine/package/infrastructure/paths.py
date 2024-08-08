@@ -38,7 +38,7 @@ class UnityCatalogDatabaseNames:
 
 # Hive
 class InputDatabase:
-    DATABASE_NAME = "wholesale_input"
+    DATABASE_NAME = "migrations_wholesale"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
