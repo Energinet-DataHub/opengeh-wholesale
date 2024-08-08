@@ -43,6 +43,11 @@ resource "azuread_application" "backend" {
   }
 }
 
+resource "azuread_service_principal" "backend" {
+  provider  = azuread.b2c
+  client_id = azuread_application.backend.client_id
+}
+
 resource "azuread_application" "sp" {
   provider         = azuread.b2c
   display_name     = "sp-b2c-${local.resource_suffix_with_dash}"
@@ -76,7 +81,7 @@ resource "azuread_application_federated_identity_credential" "sp" {
   issuer    = "https://token.actions.githubusercontent.com"
 }
 
-resource "azurerm_key_vault_secret" "kvs_azure-b2c-testbff-app-id" {
+resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbff_app_id" {
   name         = "AZURE-B2C-TESTBFF-APP-ID"
   value        = azuread_application.bff.application_id
   key_vault_id = azurerm_key_vault.this.id
@@ -86,7 +91,7 @@ resource "azurerm_key_vault_secret" "kvs_azure-b2c-testbff-app-id" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_azure-b2c-testbackend-app-id" {
+resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbackend_app_id" {
   name         = "AZURE-B2C-TESTBACKEND-APP-ID"
   value        = azuread_application.backend.application_id
   key_vault_id = azurerm_key_vault.this.id
@@ -96,7 +101,7 @@ resource "azurerm_key_vault_secret" "kvs_azure-b2c-testbackend-app-id" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_azure-b2c-backend-app-objectid" {
+resource "azurerm_key_vault_secret" "kvs_azure_b2c_backend_app_objectid" {
   name         = "AZURE-B2C-TESTBACKEND-APP-OBJECTID"
   value        = azuread_application.backend.object_id
   key_vault_id = azurerm_key_vault.this.id
@@ -106,9 +111,9 @@ resource "azurerm_key_vault_secret" "kvs_azure-b2c-backend-app-objectid" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_azure-b2c-backend-spn-objectid" {
+resource "azurerm_key_vault_secret" "kvs_azure_b2c_backend_spn_objectid" {
   name         = "AZURE-B2C-TESTBACKEND-SPN-OBJECTID"
-  value        = azuread_service_principal.sp.object_id
+  value        = azuread_service_principal.backend.object_id
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
