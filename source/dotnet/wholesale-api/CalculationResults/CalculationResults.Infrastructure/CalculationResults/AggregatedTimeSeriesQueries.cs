@@ -86,6 +86,8 @@ public class AggregatedTimeSeriesQueries(
               ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
              """;
 
-        protected override string GetSelection() => _whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv").Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+        protected override string GetSelection(string table) => _whereClauseProvider
+            .GetWhereClauseSqlExpression(_queryParameters, table)
+            .Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
     }
 }

@@ -99,6 +99,6 @@ public class WholesaleServicesQueries(
 
         protected override string GetSource() => helper.DatabricksContract.GetSource(_deltaTableOptions);
 
-        protected override string GetSelection() => helper.GetSelection();
+        protected override string GetSelection(string table) => helper.GetSelection(table);
     }
 }

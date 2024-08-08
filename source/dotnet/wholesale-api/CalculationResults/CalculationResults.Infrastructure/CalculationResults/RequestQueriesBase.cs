@@ -32,7 +32,8 @@ public abstract class RequestQueriesBase(DatabricksSqlWarehouseQueryExecutor dat
         CalculationTypeForGridAreasStatementBase calculationTypeForGridAreaStatement,
         CalculationType? queryParametersCalculationType)
     {
-        var calculationTypeForGridAreas = await _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(calculationTypeForGridAreaStatement, Format.JsonArray)
+        var calculationTypeForGridAreas = await _databricksSqlWarehouseQueryExecutor
+            .ExecuteStatementAsync(calculationTypeForGridAreaStatement, Format.JsonArray)
             .Select(d =>
             {
                 var databricksSqlRow = new DatabricksSqlRow(d);

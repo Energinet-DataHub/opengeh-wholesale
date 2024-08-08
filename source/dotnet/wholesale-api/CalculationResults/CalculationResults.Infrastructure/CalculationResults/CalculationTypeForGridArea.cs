@@ -14,5 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-// TODO (MWO): Rename record
 public readonly record struct CalculationTypeForGridArea(string GridArea, string CalculationType);
