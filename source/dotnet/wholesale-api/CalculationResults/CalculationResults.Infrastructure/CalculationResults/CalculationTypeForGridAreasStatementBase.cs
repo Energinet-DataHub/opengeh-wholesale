@@ -16,10 +16,12 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
+// TODO (MWO): Rename class and arguments
 public abstract class CalculationTypeForGridAreasStatementBase(
     string gridAreaCodeColumnName,
     string calculationTypeColumnName) : DatabricksStatement
 {
+    // TODO (MWO): Rename fields
     private readonly string _gridAreaCodeColumnName = gridAreaCodeColumnName;
     private readonly string _calculationTypeColumnName = calculationTypeColumnName;
 

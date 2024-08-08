@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
+// TODO (MWO): Rename class to match rename of result class
 public class WholesaleServicesQueryStatementHelperFactory(
     IEnumerable<IWholesaleServicesDatabricksContract> helperComponents)
 {

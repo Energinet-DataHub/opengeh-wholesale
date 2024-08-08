@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
+// TODO (MWO): Rename interface (and methods?)
 public interface IWholesaleServicesDatabricksContract
 {
     AmountType GetAmountType();

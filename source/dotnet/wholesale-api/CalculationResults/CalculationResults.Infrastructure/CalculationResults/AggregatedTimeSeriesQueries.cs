@@ -65,6 +65,7 @@ public class AggregatedTimeSeriesQueries(
         }
     }
 
+    // TODO (MWO): Rename class
     private class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
         AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,

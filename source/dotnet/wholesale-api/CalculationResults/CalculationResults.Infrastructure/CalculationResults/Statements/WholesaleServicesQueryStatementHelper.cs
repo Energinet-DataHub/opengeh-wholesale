@@ -20,10 +20,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
+// TODO (MWO): Rename class (and methods?)
+// Provider?
 public class WholesaleServicesQueryStatementHelper(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {
+    // TODO (MWO) to public and rm meths
     private readonly IWholesaleServicesDatabricksContract _databricksContract = databricksContract;
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
 

@@ -87,6 +87,7 @@ public class WholesaleServicesQueries(
             .ConfigureAwait(false);
     }
 
+    // TODO (MWO): Rename class
     private class WholesaleServicesCalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
         WholesaleServicesQueryStatementHelper helper)
