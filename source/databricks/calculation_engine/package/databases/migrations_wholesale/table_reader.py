@@ -24,7 +24,7 @@ from .schemas import (
     metering_point_periods_schema,
     time_series_points_schema,
 )
-from ..repository_helper import read_from_uc
+from ..repository_helper import read_table
 
 
 class TableReader:
@@ -55,7 +55,7 @@ class TableReader:
     def read_metering_point_periods(
         self,
     ) -> DataFrame:
-        return read_from_uc(
+        return read_table(
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
@@ -64,7 +64,7 @@ class TableReader:
         )
 
     def read_time_series_points(self) -> DataFrame:
-        return read_from_uc(
+        return read_table(
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
@@ -73,7 +73,7 @@ class TableReader:
         )
 
     def read_charge_link_periods(self) -> DataFrame:
-        return read_from_uc(
+        return read_table(
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
@@ -82,7 +82,7 @@ class TableReader:
         )
 
     def read_charge_price_information_periods(self) -> DataFrame:
-        return read_from_uc(
+        return read_table(
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
@@ -93,7 +93,7 @@ class TableReader:
     def read_charge_price_points(
         self,
     ) -> DataFrame:
-        return read_from_uc(
+        return read_table(
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,

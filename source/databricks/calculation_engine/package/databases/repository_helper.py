@@ -18,7 +18,7 @@ from pyspark.sql.types import StructType
 from package.common.schemas import assert_contract
 
 
-def read_from_uc(
+def read_table(
     spark: SparkSession,
     catalog_name: str,
     database_name: str,
