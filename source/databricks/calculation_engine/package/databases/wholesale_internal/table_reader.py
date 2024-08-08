@@ -20,6 +20,7 @@ from package.infrastructure.paths import (
     HiveBasisDataDatabase,
 )
 from .schemas import hive_calculations_schema, grid_loss_metering_points_schema
+from ..repository_helper import read_from_uc
 
 
 class TableReader:
@@ -37,7 +38,7 @@ class TableReader:
         )
 
     def read_grid_loss_metering_points(self) -> DataFrame:
-        return _read_from_uc(
+        return read_from_uc(
             self._spark,
             self._catalog_name,
             WholesaleInternalDatabase.DATABASE_NAME,
@@ -54,22 +55,3 @@ class TableReader:
         assert_schema(df.schema, hive_calculations_schema)
 
         return df
-
-
-def _read_from_uc(
-    spark: SparkSession,
-    catalog_name: str,
-    database_name: str,
-    table_name: str,
-    contract: StructType,
-) -> DataFrame:
-    name = f"{catalog_name}.{database_name}.{table_name}"
-    df = spark.read.format("delta").table(name)
-
-    # Assert that the schema of the data matches the defined contract
-    assert_contract(df.schema, contract)
-
-    # Select only the columns that are defined in the contract to avoid potential downstream issues
-    df = df.select(contract.fieldNames())
-
-    return df
