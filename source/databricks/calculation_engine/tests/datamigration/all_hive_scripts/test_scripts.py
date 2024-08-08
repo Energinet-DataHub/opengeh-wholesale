@@ -81,6 +81,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
     )
+    spark.sql(
+        f"CREATE DATABASE IF NOT EXISTS {spark_sql_migration_helper.schema_migration_schema_name}"
+    )
     sut.migrate_data_lake(spark_config)
 
     # Act current state scripts

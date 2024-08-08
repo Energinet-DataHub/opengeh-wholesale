@@ -56,7 +56,7 @@ def _create_databases(spark: SparkSession) -> None:
     In tests they are created in the single available default database.
     """
 
-    spark.sql("CREATE DATABASE IF NOT EXISTS schema_migration")
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
 
     for database in UnityCatalogDatabaseNames.get_names():
         print(f"Creating database {database}")
