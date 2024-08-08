@@ -26,86 +26,26 @@ public class WholesaleServicesQueryStatementHelper(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {
-    // TODO (MWO) to public and rm meths
-    private readonly IWholesaleServicesDatabricksContract _databricksContract = databricksContract;
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
 
-    public string GetSource(DeltaTableOptions tableOptions)
-    {
-        return _databricksContract.GetSource(tableOptions);
-    }
-
-    public string GetCalculationTypeColumnName()
-    {
-        return _databricksContract.GetCalculationTypeColumnName();
-    }
-
-    public string GetGridAreaCodeColumnName()
-    {
-        return _databricksContract.GetGridAreaCodeColumnName();
-    }
-
-    public string GetTimeColumnName()
-    {
-        return _databricksContract.GetTimeColumnName();
-    }
-
-    public string GetEnergySupplierIdColumnName()
-    {
-        return _databricksContract.GetEnergySupplierIdColumnName();
-    }
-
-    public string GetChargeOwnerIdColumnName()
-    {
-        return _databricksContract.GetChargeOwnerIdColumnName();
-    }
-
-    public string GetChargeCodeColumnName()
-    {
-        return _databricksContract.GetChargeCodeColumnName();
-    }
-
-    public string GetChargeTypeColumnName()
-    {
-        return _databricksContract.GetChargeTypeColumnName();
-    }
-
-    public string GetCalculationVersionColumnName()
-    {
-        return _databricksContract.GetCalculationVersionColumnName();
-    }
-
-    public string GetCalculationIdColumnName()
-    {
-        return _databricksContract.GetCalculationIdColumnName();
-    }
-
-    public string[] GetColumnsToProject()
-    {
-        return _databricksContract.GetColumnsToProject();
-    }
-
-    public string[] GetColumnsToAggregateBy()
-    {
-        return _databricksContract.GetColumnsToAggregateBy();
-    }
+    public IWholesaleServicesDatabricksContract DatabricksContract { get; } = databricksContract;
 
     internal string GetProjection(string prefix)
     {
-        return string.Join(", ", GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"));
+        return string.Join(", ", DatabricksContract.GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"));
     }
 
     internal string GetSelection(string table = "wrv")
     {
         var sql = $"""
-                   ({table}.{GetTimeColumnName()} >= '{_queryParameters.Period.Start}'
-                     AND {table}.{GetTimeColumnName()} < '{_queryParameters.Period.End}')
+                   ({table}.{DatabricksContract.GetTimeColumnName()} >= '{_queryParameters.Period.Start}'
+                     AND {table}.{DatabricksContract.GetTimeColumnName()} < '{_queryParameters.Period.End}')
                    """;
 
         if (_queryParameters.GridAreaCodes.Count != 0)
         {
             sql += $"""
-                    AND {table}.{GetGridAreaCodeColumnName()} in ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})
+                    AND {table}.{DatabricksContract.GetGridAreaCodeColumnName()} in ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})
                     """;
         }
 
@@ -135,7 +75,7 @@ public class WholesaleServicesQueryStatementHelper(
         if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    {prefix}.{GetCalculationTypeColumnName()} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    {prefix}.{DatabricksContract.GetCalculationTypeColumnName()} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
@@ -148,7 +88,7 @@ public class WholesaleServicesQueryStatementHelper(
 
         var calculationTypePerGridAreaConstraints = calculationTypePerGridAreas
             .Select(ctpga => $"""
-                              ({prefix}.{GetGridAreaCodeColumnName()} = '{ctpga.GridArea}' AND {prefix}.{GetCalculationTypeColumnName()} = '{ctpga.CalculationType}')
+                              ({prefix}.{DatabricksContract.GetGridAreaCodeColumnName()} = '{ctpga.GridArea}' AND {prefix}.{DatabricksContract.GetCalculationTypeColumnName()} = '{ctpga.CalculationType}')
                               """);
 
         return $"""
@@ -161,20 +101,20 @@ public class WholesaleServicesQueryStatementHelper(
         if (_queryParameters.EnergySupplierId is not null)
         {
             sql += $"""
-                    AND {table}.{GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
+                    AND {table}.{DatabricksContract.GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
                     """;
         }
 
         if (_queryParameters.ChargeOwnerId is not null)
         {
             sql += $"""
-                    AND {table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
+                    AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
                     """;
         }
         else
         {
             sql += $"""
-                    AND {table}.{GetChargeOwnerIdColumnName()} is null
+                    AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is null
                     """;
         }
 
@@ -186,14 +126,14 @@ public class WholesaleServicesQueryStatementHelper(
         if (_queryParameters.EnergySupplierId is not null)
         {
             sql += $"""
-                    AND {table}.{GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
+                    AND {table}.{DatabricksContract.GetEnergySupplierIdColumnName()} = '{_queryParameters.EnergySupplierId}'
                     """;
         }
 
         if (_queryParameters.ChargeOwnerId is not null)
         {
             sql += $"""
-                    AND {table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
+                    AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
                     """;
         }
 
@@ -204,8 +144,8 @@ public class WholesaleServicesQueryStatementHelper(
             // If this assumption changes, then the following should be changed to a more complex query,
             // to ensure the charge owner only gets 'is_tax' charges from grid areas they own.
             sql += $"""
-                    AND ({table}.{GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
-                         OR {table}.{_databricksContract.GetIsTaxColumnName()} = true)
+                    AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
+                         OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true)
                     """;
         }
 
@@ -223,12 +163,12 @@ public class WholesaleServicesQueryStatementHelper(
         var sqlStatements = new List<string>();
 
         if (!string.IsNullOrEmpty(chargeCode))
-            sqlStatements.Add($"{table}.{GetChargeCodeColumnName()} = '{chargeCode}'");
+            sqlStatements.Add($"{table}.{DatabricksContract.GetChargeCodeColumnName()} = '{chargeCode}'");
 
         if (chargeType != null)
         {
             sqlStatements.Add(
-                $"{table}.{GetChargeTypeColumnName()} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
+                $"{table}.{DatabricksContract.GetChargeTypeColumnName()} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
         }
 
         var combinedString = string.Join(" AND ", sqlStatements);

@@ -38,8 +38,8 @@ public class WholesaleServicesQueries(
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
-                    helper.GetGridAreaCodeColumnName(),
-                    helper.GetCalculationTypeColumnName(),
+                    helper.DatabricksContract.GetGridAreaCodeColumnName(),
+                    helper.DatabricksContract.GetCalculationTypeColumnName(),
                     new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
@@ -50,11 +50,11 @@ public class WholesaleServicesQueries(
             helper,
             _deltaTableOptions.Value);
 
-        var calculationIdColumn = helper.GetCalculationIdColumnName();
+        var calculationIdColumn = helper.DatabricksContract.GetCalculationIdColumnName();
 
         await foreach (var wholesaleServices in CreateSeriesPackagesAsync(
                            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
-                           (currentRow, previousRow) => helper.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
+                           (currentRow, previousRow) => helper.DatabricksContract.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
                                                         || currentRow[calculationIdColumn] != previousRow[calculationIdColumn],
                            WholesaleTimeSeriesPointFactory.Create,
                            sqlStatement))
@@ -69,8 +69,8 @@ public class WholesaleServicesQueries(
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
-                    helper.GetGridAreaCodeColumnName(),
-                    helper.GetCalculationTypeColumnName(),
+                    helper.DatabricksContract.GetGridAreaCodeColumnName(),
+                    helper.DatabricksContract.GetCalculationTypeColumnName(),
                     new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
@@ -92,12 +92,12 @@ public class WholesaleServicesQueries(
         DeltaTableOptions deltaTableOptions,
         WholesaleServicesQueryStatementHelper helper)
         : CalculationTypeForGridAreasStatementBase(
-            helper.GetGridAreaCodeColumnName(),
-            helper.GetCalculationTypeColumnName())
+            helper.DatabricksContract.GetGridAreaCodeColumnName(),
+            helper.DatabricksContract.GetCalculationTypeColumnName())
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
-        protected override string GetSource() => helper.GetSource(_deltaTableOptions);
+        protected override string GetSource() => helper.DatabricksContract.GetSource(_deltaTableOptions);
 
         protected override string GetSelection() => helper.GetSelection();
     }

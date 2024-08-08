@@ -62,7 +62,7 @@ public class WholesaleServicesQueryStatement(
                 FROM ({GetChargesToChooseFrom()}) {ChargesTableName}
                 INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
                 ON {MatchChargesWithPackages(ChargesTableName, PackagesWithVersionTableName)}
-                ORDER BY {string.Join(", ", _helper.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_helper.GetTimeColumnName()}
+                ORDER BY {string.Join(", ", _helper.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_helper.DatabricksContract.GetTimeColumnName()}
                 """;
     }
 
@@ -81,7 +81,7 @@ public class WholesaleServicesQueryStatement(
          */
         return $"""
                 SELECT {_helper.GetProjection(WholesaleServicesTableName)}
-                FROM {_helper.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
+                FROM {_helper.DatabricksContract.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
                 WHERE {_helper.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
                 """;
     }
@@ -95,10 +95,10 @@ public class WholesaleServicesQueryStatement(
          * GROUP BY wsr.time, wsr.A, wsr.B, ...
          */
         return $"""
-                SELECT max({WholesaleServicesTableName}.{_helper.GetCalculationVersionColumnName()}) AS max_version, {WholesaleServicesTableName}.{_helper.GetTimeColumnName()} AS max_time, {string.Join(", ", _helper.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab} AS max_{ctab}"))}
-                FROM {_helper.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
+                SELECT max({WholesaleServicesTableName}.{_helper.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {WholesaleServicesTableName}.{_helper.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _helper.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab} AS max_{ctab}"))}
+                FROM {_helper.DatabricksContract.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
                 WHERE {_helper.GetSelection(WholesaleServicesTableName)} AND {_helper.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
-                GROUP BY {WholesaleServicesTableName}.{_helper.GetTimeColumnName()}, {string.Join(", ", _helper.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab}"))}
+                GROUP BY {WholesaleServicesTableName}.{_helper.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _helper.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab}"))}
                 """;
     }
 
@@ -110,9 +110,9 @@ public class WholesaleServicesQueryStatement(
          * AND coalesce(chrg.A, 'is_null_value') = coalesce(pckg.max_A, 'is_null_value') AND ...
          */
         return $"""
-                {chargesPrefix}.{_helper.GetTimeColumnName()} = {packagesPrefix}.max_time
-                AND {chargesPrefix}.{_helper.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
-                AND {string.Join(" AND ", _helper.GetColumnsToAggregateBy().Select(ctab => $"coalesce({chargesPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
+                {chargesPrefix}.{_helper.DatabricksContract.GetTimeColumnName()} = {packagesPrefix}.max_time
+                AND {chargesPrefix}.{_helper.DatabricksContract.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
+                AND {string.Join(" AND ", _helper.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"coalesce({chargesPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
                 """;
     }
 }
