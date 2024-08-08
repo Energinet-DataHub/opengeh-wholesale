@@ -26,6 +26,7 @@ class EnvironmentVariable(Enum):
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
     CATALOG_NAME = "CATALOG_NAME"
     CALCULATION_INPUT_FOLDER_NAME = "CALCULATION_INPUT_FOLDER_NAME"
+    CALCULATION_INPUT_DATABASE_NAME = "CALCULATION_INPUT_DATABASE_NAME"
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
     SPN_APP_SECRET = "SPN_APP_SECRET"
@@ -76,6 +77,12 @@ def get_catalog_name() -> str:
 
 def get_calculation_input_folder_name() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME)
+
+
+def get_calculation_input_database_name() -> str:
+    return get_env_variable_or_throw(
+        EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME
+    )
 
 
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
