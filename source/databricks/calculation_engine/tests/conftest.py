@@ -218,6 +218,11 @@ def calculation_input_folder(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
+def calculation_input_database(data_lake_path: str) -> str:
+    return "migrations_wholesale_test"
+
+
+@pytest.fixture(scope="session")
 def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -> str:
     return f"{data_lake_path}/{calculation_input_folder}"
 
@@ -466,11 +471,13 @@ def price_input_data_written_to_delta(
     test_files_folder_path: str,
     calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
+    calculation_input_database: str,
 ) -> None:
     # Charge master data periods
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+        database_name=calculation_input_database,
         table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         schema=charge_price_information_periods_schema,
         table_location=f"{calculation_input_path}/charge_price_information_periods",
@@ -480,6 +487,7 @@ def price_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+        database_name=calculation_input_database,
         table_name=paths.InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
         table_location=f"{calculation_input_path}/charge_link_periods",
@@ -489,6 +497,7 @@ def price_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+        database_name=calculation_input_database,
         table_name=paths.InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
         table_location=f"{calculation_input_path}/charge_price_points",
@@ -498,6 +507,7 @@ def price_input_data_written_to_delta(
 def _write_input_test_data_to_table(
     spark: SparkSession,
     file_name: str,
+    database_name: str,
     table_name: str,
     table_location: str,
     schema: StructType,
@@ -506,7 +516,7 @@ def _write_input_test_data_to_table(
     write_dataframe_to_table(
         spark,
         df,
-        paths.InputDatabase.DATABASE_NAME,
+        database_name,
         table_name,
         table_location,
         schema,

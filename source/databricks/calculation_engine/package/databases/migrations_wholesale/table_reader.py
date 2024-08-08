@@ -31,7 +31,6 @@ class TableReader:
     def __init__(
         self,
         spark: SparkSession,
-        calculation_input_path: str,
         catalog_name: str,
         calculation_input_database_name: str,
         time_series_points_table_name: str | None = None,
@@ -39,7 +38,6 @@ class TableReader:
         grid_loss_metering_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
-        self._calculation_input_path = calculation_input_path
         self._catalog_name = catalog_name
         self._calculation_input_database_name = calculation_input_database_name
         self._time_series_points_table_name = (

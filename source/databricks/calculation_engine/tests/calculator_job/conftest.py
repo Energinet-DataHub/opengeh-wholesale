@@ -69,7 +69,7 @@ def executed_balance_fixing(
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
-    calculation_input_path: str,
+    calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -78,7 +78,7 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     table_reader = migrations_wholesale.TableReader(
-        spark, calculation_input_path, "spark_catalog", "wholesale_migrations_wholesale"
+        spark, "spark_catalog", calculation_input_database
     )
     wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark, "spark_catalog"
@@ -96,7 +96,7 @@ def executed_wholesale_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
-    calculation_input_path: str,
+    calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -105,7 +105,7 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     table_reader = migrations_wholesale.TableReader(
-        spark, calculation_input_path, "spark_catalog", "wholesale_migrations_wholesale"
+        spark, "spark_catalog", calculation_input_database
     )
     wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark, "spark_catalog"
