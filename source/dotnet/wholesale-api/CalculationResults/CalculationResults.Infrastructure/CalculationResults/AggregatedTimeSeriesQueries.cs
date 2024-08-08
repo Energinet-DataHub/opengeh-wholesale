@@ -27,7 +27,7 @@ public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : QueriesBaseClass(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
+    : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
     private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;

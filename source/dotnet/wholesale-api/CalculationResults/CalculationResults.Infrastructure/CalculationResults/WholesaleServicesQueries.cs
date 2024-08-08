@@ -26,7 +26,7 @@ public class WholesaleServicesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     WholesaleServicesQueryStatementHelperFactory helperFactory,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : QueriesBaseClass(databricksSqlWarehouseQueryExecutor), IWholesaleServicesQueries
+    : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IWholesaleServicesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;

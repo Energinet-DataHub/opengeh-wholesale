@@ -21,15 +21,14 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-// TODO (MWO): Rename class
-public abstract class QueriesBaseClass(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
+public abstract class RequestQueriesBase(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
 
-    // TODO (MWO): Rename method arguments
+    // TODO (MWO): Use DatabricksContract instead of string fields, once energy has been converted maybe?
     protected async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
-        string getGridAreaCodeColumnName,
-        string getCalculationTypeColumnName,
+        string gridAreaCodeColumnName,
+        string calculationTypeColumnName,
         CalculationTypeForGridAreasStatementBase calculationTypeForGridAreaStatement,
         CalculationType? queryParametersCalculationType)
     {
@@ -38,8 +37,8 @@ public abstract class QueriesBaseClass(DatabricksSqlWarehouseQueryExecutor datab
             {
                 var databricksSqlRow = new DatabricksSqlRow(d);
                 return new CalculationTypeForGridArea(
-                    databricksSqlRow[getGridAreaCodeColumnName]!,
-                    databricksSqlRow[getCalculationTypeColumnName]!);
+                    databricksSqlRow[gridAreaCodeColumnName]!,
+                    databricksSqlRow[calculationTypeColumnName]!);
             })
             .ToListAsync()
             .ConfigureAwait(false);
@@ -86,8 +85,7 @@ public abstract class QueriesBaseClass(DatabricksSqlWarehouseQueryExecutor datab
         Func<DatabricksSqlRow, TPoint> createPoint,
         DatabricksStatement sqlStatement)
     {
-        // TODO (MWO): Rename var
-        var timeSeriesPoints = new List<TPoint>();
+        var points = new List<TPoint>();
         DatabricksSqlRow? previous = null;
 
         await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor
@@ -97,17 +95,17 @@ public abstract class QueriesBaseClass(DatabricksSqlWarehouseQueryExecutor datab
 
             if (previous != null && isNewPackage(current, previous))
             {
-                yield return createSeries(previous, timeSeriesPoints);
-                timeSeriesPoints = [];
+                yield return createSeries(previous, points);
+                points = [];
             }
 
-            timeSeriesPoints.Add(createPoint(current));
+            points.Add(createPoint(current));
             previous = current;
         }
 
         if (previous != null)
         {
-            yield return createSeries(previous, timeSeriesPoints);
+            yield return createSeries(previous, points);
         }
     }
 }
