@@ -46,7 +46,9 @@ class TestWhenValidInput:
             table_location,
             metering_point_periods_schema,
         )
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = TableReader(
+            spark, calculation_input_path, "spark_catalog", "test_database"
+        )
 
         # Act
         actual = reader.read_metering_point_periods()
@@ -59,7 +61,10 @@ class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_calculation_input_path",
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         row = factory.create_row()
         df = factory.create(spark, row)
@@ -76,7 +81,10 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_calculation_input_path",
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         row = factory.create_row()
         df = factory.create(spark, row)

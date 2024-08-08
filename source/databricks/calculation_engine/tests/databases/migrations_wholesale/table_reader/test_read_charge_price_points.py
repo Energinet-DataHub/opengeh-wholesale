@@ -49,7 +49,10 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_change_price_point_row()
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_calculation_input_path",
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         df = df.drop(Colname.charge_code)
@@ -85,7 +88,9 @@ class TestWhenValidInput:
             charge_price_points_schema,
         )
         expected = df
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = TableReader(
+            spark, calculation_input_path, "spark_catalog", "test_database"
+        )
 
         # Act
         actual = reader.read_charge_price_points()
@@ -102,7 +107,10 @@ class TestWhenValidInputAndExtraColumns:
         # Arrange
         row = _create_change_price_point_row()
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_calculation_input_path",
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         df = df.withColumn("test", f.lit("test"))

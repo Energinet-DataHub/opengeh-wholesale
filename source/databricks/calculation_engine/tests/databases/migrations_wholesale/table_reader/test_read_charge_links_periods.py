@@ -49,7 +49,10 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_charge_link_period_row()
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_calculation_input_path",
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
         df = df.drop(Colname.charge_type)
@@ -85,7 +88,9 @@ class TestWhenValidInput:
             charge_link_periods_schema,
         )
         expected = df
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = TableReader(
+            spark, calculation_input_path, "spark_catalog", "test_database"
+        )
 
         # Act
         actual = reader.read_charge_link_periods()
@@ -98,7 +103,10 @@ class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_calculation_input_path",
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         row = _create_charge_link_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
