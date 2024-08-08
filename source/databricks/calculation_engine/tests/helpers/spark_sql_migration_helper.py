@@ -53,7 +53,11 @@ def _create_databases(spark: SparkSession) -> None:
     """
     Create Unity Catalog databases as they are not created by migration scripts.
     They are created by infrastructure (in the real environments)
-    In tests they are created in the single available default database."""
+    In tests they are created in the single available default database.
+    """
+
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
+
     for database in UnityCatalogDatabaseNames.get_names():
         print(f"Creating database {database}")
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
@@ -122,9 +126,7 @@ def create_spark_sql_migrations_configuration(
 
     return SparkSqlMigrationsConfiguration(
         migration_schema_name=schema_migration_schema_name,
-        migration_schema_location="",
         migration_table_name=schema_migration_table_name,
-        migration_table_location="",
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
@@ -143,7 +145,6 @@ def get_migration_script_args(spark: SparkSession) -> MigrationScriptArgs:
         calculation_input_folder="calculation_input",
         spark=spark,
         storage_container_path="container",
-        schema_migration_storage_container_path="container",
     )
 
 
