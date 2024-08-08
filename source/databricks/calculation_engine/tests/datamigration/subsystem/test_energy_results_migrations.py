@@ -21,6 +21,9 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 
 from helpers.data_frame_utils import set_column
+from package.databases.wholesale_results_internal.energy_result_column_names import (
+    EnergyResultColumnNames,
+)
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
 )
@@ -31,7 +34,6 @@ from package.codelists import (
     QuantityQuality,
     MeteringPointResolution,
 )
-from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import HiveOutputDatabase
 
 

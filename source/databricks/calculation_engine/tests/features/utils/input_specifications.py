@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from package.databases import wholesale_internal
 from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
     metering_point_periods_schema,
@@ -26,7 +26,10 @@ from package.databases.wholesale_internal.schemas import (
 )
 
 
-def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]:
+def get_data_input_specifications(
+    table_reader: TableReader,
+    wholesale_internal_table_reader: wholesale_internal.TableReader,
+) -> dict[str, tuple]:
     """
     Contains the mapping between the csv file name, the schema name and the function
     to be mocked.
@@ -34,7 +37,7 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
     return {
         "calculations.csv": (
             hive_calculations_schema,
-            table_reader.read_calculations,
+            wholesale_internal_table_reader.read_calculations,
         ),
         "metering_point_periods.csv": (
             metering_point_periods_schema,
@@ -46,7 +49,7 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
         ),
         "grid_loss_metering_points.csv": (
             grid_loss_metering_points_schema,
-            table_reader.read_grid_loss_metering_points,
+            wholesale_internal_table_reader.read_grid_loss_metering_points,
         ),
         "charge_price_information_periods.csv": (
             charge_price_information_periods_schema,
