@@ -66,6 +66,8 @@ class BasisDataContainer:
     charge_price_points: DataFrame | None
     charge_link_periods: DataFrame | None
     grid_loss_metering_points: DataFrame
+    """Data frame containing grid areas covered in the calculation."""
+    calculation_grid_areas: DataFrame
 
 
 @dataclass
