@@ -84,6 +84,7 @@ def job_environment_variables() -> dict:
         EnvironmentVariable.TIME_ZONE.name: "Europe/Copenhagen",
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.name: "some_storage_account_name",
         EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.name: "input",
+        EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.name: "input_database",
         EnvironmentVariable.TENANT_ID.name: "550e8400-e29b-41d4-a716-446655440000",
         EnvironmentVariable.SPN_APP_ID.name: "some_spn_app_id",
         EnvironmentVariable.SPN_APP_SECRET.name: "some_spn_app_secret",
