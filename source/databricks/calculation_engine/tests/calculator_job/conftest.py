@@ -24,8 +24,7 @@ from package.calculation.preparation import PreparedDataReader
 from package.codelists.calculation_type import (
     CalculationType,
 )
-from package.databases import wholesale_internal
-from package.databases.migrations_wholesale import TableReader
+from package.databases import wholesale_internal, migrations_wholesale
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
@@ -78,7 +77,9 @@ def executed_balance_fixing(
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
-    table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
+    table_reader = migrations_wholesale.TableReader(
+        spark, calculation_input_path, "spark_catalog", "wholesale_migrations_wholesale"
+    )
     wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark, "spark_catalog"
     )
@@ -103,7 +104,9 @@ def executed_wholesale_fixing(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
+    table_reader = migrations_wholesale.TableReader(
+        spark, calculation_input_path, "spark_catalog", "wholesale_migrations_wholesale"
+    )
     wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark, "spark_catalog"
     )
