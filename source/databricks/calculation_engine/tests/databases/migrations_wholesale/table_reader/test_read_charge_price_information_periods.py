@@ -51,7 +51,9 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_charge_price_information_period_row()
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
@@ -60,7 +62,7 @@ class TestWhenContractMismatch:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_price_information_periods()
@@ -91,7 +93,7 @@ class TestWhenValidInput:
             charge_price_information_periods_schema,
         )
         expected = df
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = TableReader(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_price_information_periods()
@@ -108,7 +110,9 @@ class TestWhenValidInputAndMoreColumns:
         # Arrange
         row = _create_charge_price_information_period_row()
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
@@ -117,6 +121,6 @@ class TestWhenValidInputAndMoreColumns:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             reader.read_charge_price_information_periods()
