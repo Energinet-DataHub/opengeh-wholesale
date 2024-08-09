@@ -40,9 +40,11 @@ def _create_calculation_row() -> dict:
         TableColumnNames.calculation_type: CalculationType.BALANCE_FIXING.value,
         TableColumnNames.calculation_period_start: datetime(2022, 6, 8, 22, 0, 0),
         TableColumnNames.calculation_period_end: datetime(2022, 6, 9, 22, 0, 0),
-        "calculation_execution_time_start": datetime(2022, 6, 8, 22, 0, 0),
+        TableColumnNames.calculation_execution_time_start: datetime(
+            2022, 6, 8, 22, 0, 0
+        ),
         TableColumnNames.created_by_user_id: str(uuid.uuid4()),
-        "calculation_version": 1,
+        TableColumnNames.calculation_version: 1,
     }
 
 
