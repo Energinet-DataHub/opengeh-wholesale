@@ -29,6 +29,7 @@ def get_data_product_databases(spark: SparkSession) -> List[Database]:
         "default",
         "schema_migration",
         "wholesale_output",
+        "wholesale_input",
         "migrations_wholesale",
         "basis_data",
         "wholesale_basis_data_internal",
