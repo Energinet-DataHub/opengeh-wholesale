@@ -25,7 +25,6 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
-    MIGRATIONS_WHOLESALE = env_vars.get_calculation_input_database_name()
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -49,7 +48,7 @@ class InputDatabase:
 
 
 class MigrationsWholesaleDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.MIGRATIONS_WHOLESALE
+    DATABASE_NAME = "migrations_wholesale"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
