@@ -62,7 +62,7 @@ resource "azurerm_monitor_metric_alert" "dropzoneunzipper_cl_metric_alert" {
   scopes              = [azurerm_eventgrid_system_topic.st_dh2data.id]
   description         = "Check every 1 hour if there has been any CL data received within the last 24 hours, alert if not"
   severity            = 1
-  enabled             = false
+  enabled             = true
 
   criteria {
     metric_namespace = "Microsoft.EventGrid/systemTopics"
