@@ -22,7 +22,6 @@ module "st_documents" {
     backup_storage_account_fqdn = module.st_documents_backup.fully_qualified_domain_name
   }
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
-  prevent_deletion                      = false
 }
 
 resource "azurerm_storage_container" "outgoing" {
