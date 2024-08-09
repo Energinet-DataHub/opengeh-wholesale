@@ -31,3 +31,6 @@ All metering point types relevant for energy calculations
 - System Correction MP
 
 Each of the metering point types both have a metering point with resolution 15M and 1H.
+
+Added two MP which are in another grid area and have the same energy supplier/balance responsible as Grid Loss/System
+Correction MP in the grid area for the calculation.
