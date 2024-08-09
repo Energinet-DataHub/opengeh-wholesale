@@ -25,14 +25,14 @@ public abstract class CalculationTypeForGridAreasStatementBase(
 
     protected abstract string GetSource();
 
-    protected abstract string GetSelection();
+    protected abstract string GetSelection(string table);
 
     protected override string GetSqlStatement()
     {
         return $"""
                 SELECT {_gridAreaCodeColumnName}, {_calculationTypeColumnName}
-                FROM {GetSource()} wrv
-                WHERE {GetSelection()}
+                FROM {GetSource()} source
+                WHERE {GetSelection("source")}
                 GROUP BY {_gridAreaCodeColumnName}, {_calculationTypeColumnName}
                 """;
     }
