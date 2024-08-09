@@ -79,6 +79,16 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
         action  = "Log"
       }
     }
+
+    override {
+      rule_group_name = "Microsoft_DefaultRuleSet-2.1"
+      # Inbound Anomaly Score Exceeded, reason: 'AngularJS client side template injection detected' - blocks requests from HoFor, see INC0400420
+      rule {
+        rule_id = "941380"
+        enabled = true
+        action  = "Log"
+      }
+    }
   }
 
   managed_rule {
