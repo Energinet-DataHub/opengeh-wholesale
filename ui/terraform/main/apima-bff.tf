@@ -77,7 +77,14 @@ module "apima_bff" {
             </cors>
           </inbound>
           <backend>
-              <base />
+              <choose>
+                  <when condition="@(context.Operation.UrlTemplate.Equals("/graphql"))">
+                      <forward-request timeout="120" fail-on-error-status-code="true" buffer-response="false" />
+                  </when>
+                  <otherwise>
+                      <forward-request fail-on-error-status-code="true" buffer-response="true" />
+                  </otherwise>
+              </choose>
           </backend>
           <outbound>
               <base />
