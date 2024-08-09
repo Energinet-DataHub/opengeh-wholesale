@@ -42,7 +42,9 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), "dummy_catalog_name")
+        reader = wholesale_internal.WholesaleInternalRepository(
+            mock.Mock(), "dummy_catalog_name"
+        )
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
         df = df.drop(Colname.metering_point_id)
         df = df.withColumn("test", f.lit("test"))
@@ -92,7 +94,9 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), "spark_catalog")
+        reader = wholesale_internal.WholesaleInternalRepository(
+            mock.Mock(), "spark_catalog"
+        )
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
         df = df.withColumn("test", f.lit("test"))
 

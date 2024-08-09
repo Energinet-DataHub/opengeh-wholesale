@@ -52,7 +52,9 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_calculation_row()
-        table_reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), "dummy_catalog_name")
+        table_reader = wholesale_internal.WholesaleInternalRepository(
+            mock.Mock(), "dummy_catalog_name"
+        )
         df = spark.createDataFrame(data=[row], schema=calculations_schema)
         df = df.drop(CalculationsColumnName.calculation_id)
         df = df.withColumn("test", f.lit("test"))
@@ -89,7 +91,9 @@ class TestWhenValidInput:
         )
         expected = df
 
-        table_reader = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+        table_reader = wholesale_internal.WholesaleInternalRepository(
+            spark, "spark_catalog"
+        )
 
         # Act
         actual = table_reader.read_calculations()
