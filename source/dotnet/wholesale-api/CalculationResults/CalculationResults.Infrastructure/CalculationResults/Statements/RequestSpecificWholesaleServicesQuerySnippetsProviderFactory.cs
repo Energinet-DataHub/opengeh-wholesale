@@ -16,17 +16,16 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-// TODO (MWO): Rename class to match rename of result class
-public class WholesaleServicesQueryStatementHelperFactory(
-    IEnumerable<IWholesaleServicesDatabricksContract> helperComponents)
+public class RequestSpecificWholesaleServicesQuerySnippetsProviderFactory(
+    IEnumerable<IWholesaleServicesDatabricksContract> databricksContracts)
 {
-    private readonly IDictionary<AmountType, IWholesaleServicesDatabricksContract> _helperComponents =
-        helperComponents
+    private readonly IDictionary<AmountType, IWholesaleServicesDatabricksContract> _databricksContracts =
+        databricksContracts
             .DistinctBy(hc => hc.GetAmountType())
             .ToDictionary(hc => hc.GetAmountType());
 
-    public WholesaleServicesQueryStatementHelper Create(WholesaleServicesQueryParameters parameters)
+    public RequestSpecificWholesaleServicesQuerySnippetsProvider Create(WholesaleServicesQueryParameters parameters)
     {
-        return new WholesaleServicesQueryStatementHelper(_helperComponents[parameters.AmountType], parameters);
+        return new RequestSpecificWholesaleServicesQuerySnippetsProvider(_databricksContracts[parameters.AmountType], parameters);
     }
 }

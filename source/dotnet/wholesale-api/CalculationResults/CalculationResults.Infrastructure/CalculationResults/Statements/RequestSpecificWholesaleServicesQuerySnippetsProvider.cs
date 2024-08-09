@@ -15,14 +15,11 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-// TODO (MWO): Rename class (and methods?)
-// Provider?
-public class WholesaleServicesQueryStatementHelper(
+public class RequestSpecificWholesaleServicesQuerySnippetsProvider(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {

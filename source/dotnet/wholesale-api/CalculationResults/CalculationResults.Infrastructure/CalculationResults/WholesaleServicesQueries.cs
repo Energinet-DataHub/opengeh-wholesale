@@ -24,37 +24,37 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class WholesaleServicesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-    WholesaleServicesQueryStatementHelperFactory helperFactory,
+    RequestSpecificWholesaleServicesQuerySnippetsProviderFactory querySnippetsProviderFactory,
     IOptions<DeltaTableOptions> deltaTableOptions)
     : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IWholesaleServicesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
-    private readonly WholesaleServicesQueryStatementHelperFactory _helperFactory = helperFactory;
+    private readonly RequestSpecificWholesaleServicesQuerySnippetsProviderFactory _querySnippetsProviderFactory = querySnippetsProviderFactory;
 
     public async IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        var helper = _helperFactory.Create(queryParameters);
+        var querySnippetsProvider = _querySnippetsProviderFactory.Create(queryParameters);
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
-                    helper.DatabricksContract.GetGridAreaCodeColumnName(),
-                    helper.DatabricksContract.GetCalculationTypeColumnName(),
-                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
+                    querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
+                    querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName(),
+                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, querySnippetsProvider),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Select,
             calculationTypePerGridAreas,
-            helper,
+            querySnippetsProvider,
             _deltaTableOptions.Value);
 
-        var calculationIdColumn = helper.DatabricksContract.GetCalculationIdColumnName();
+        var calculationIdColumn = querySnippetsProvider.DatabricksContract.GetCalculationIdColumnName();
 
         await foreach (var wholesaleServices in CreateSeriesPackagesAsync(
                            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
-                           (currentRow, previousRow) => helper.DatabricksContract.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
+                           (currentRow, previousRow) => querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
                                                         || currentRow[calculationIdColumn] != previousRow[calculationIdColumn],
                            WholesaleTimeSeriesPointFactory.Create,
                            sqlStatement))
@@ -65,20 +65,20 @@ public class WholesaleServicesQueries(
 
     public async Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        var helper = _helperFactory.Create(queryParameters);
+        var querySnippetsProvider = _querySnippetsProviderFactory.Create(queryParameters);
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
-                    helper.DatabricksContract.GetGridAreaCodeColumnName(),
-                    helper.DatabricksContract.GetCalculationTypeColumnName(),
-                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, helper),
+                    querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
+                    querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName(),
+                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, querySnippetsProvider),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Exists,
             calculationTypePerGridAreas,
-            _helperFactory.Create(queryParameters),
+            _querySnippetsProviderFactory.Create(queryParameters),
             _deltaTableOptions.Value);
 
         return await _databricksSqlWarehouseQueryExecutor
@@ -87,18 +87,18 @@ public class WholesaleServicesQueries(
             .ConfigureAwait(false);
     }
 
-    // TODO (MWO): Rename class
     private class WholesaleServicesCalculationTypeForGridAreasStatement(
         DeltaTableOptions deltaTableOptions,
-        WholesaleServicesQueryStatementHelper helper)
+        RequestSpecificWholesaleServicesQuerySnippetsProvider querySnippetsProvider)
         : CalculationTypeForGridAreasStatementBase(
-            helper.DatabricksContract.GetGridAreaCodeColumnName(),
-            helper.DatabricksContract.GetCalculationTypeColumnName())
+            querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
+            querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName())
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
+        private readonly RequestSpecificWholesaleServicesQuerySnippetsProvider _querySnippetsProvider = querySnippetsProvider;
 
-        protected override string GetSource() => helper.DatabricksContract.GetSource(_deltaTableOptions);
+        protected override string GetSource() => _querySnippetsProvider.DatabricksContract.GetSource(_deltaTableOptions);
 
-        protected override string GetSelection(string table) => helper.GetSelection(table);
+        protected override string GetSelection(string table) => _querySnippetsProvider.GetSelection(table);
     }
 }
