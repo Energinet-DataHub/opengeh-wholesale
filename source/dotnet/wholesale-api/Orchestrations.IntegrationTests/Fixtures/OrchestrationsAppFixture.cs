@@ -14,14 +14,14 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
@@ -32,15 +32,12 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.O
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using NodaTime;
+using Microsoft.Identity.Client;
 using WireMock.Server;
 using Xunit.Abstractions;
 
@@ -210,6 +207,53 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         TestLogger.TestOutputHelper = testOutputHelper;
     }
 
+    /// <summary>
+    /// Get an access token that allows the "client app" to call the "backend app".
+    /// </summary>
+    public Task<AuthenticationResult> GetTokenAsync()
+    {
+        var confidentialClientApp = ConfidentialClientApplicationBuilder
+            .Create(IntegrationTestConfiguration.B2CSettings.ServicePrincipalId)
+            .WithClientSecret(IntegrationTestConfiguration.B2CSettings.ServicePrincipalSecret)
+            .WithAuthority(authorityUri: $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}")
+            .Build();
+
+        var fakeBffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
+
+        return confidentialClientApp
+            .AcquireTokenForClient(scopes: new[] { $"{fakeBffAppId}/.default" })
+            .ExecuteAsync();
+    }
+
+    /// <summary>
+    /// Calls the <see cref="MockedTokenFunction"/> on "App01" to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] permissions)
+    {
+        var externalAuthenticationResult = await GetTokenAsync();
+
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new
+            {
+                ExternalToken = externalAuthenticationResult.AccessToken,
+                Roles = string.Join(',', permissions),
+            }),
+            Encoding.UTF8,
+            "application/json");
+
+        using var tokenResponse = await AppHostManager.HttpClient.PostAsync(
+            "api/token",
+            jsonContent);
+
+        var nestedToken = await tokenResponse.Content.ReadAsStringAsync();
+        if (string.IsNullOrWhiteSpace(nestedToken))
+            throw new InvalidOperationException("Nested token was not created.");
+
+        var authenticationHeader = $"Bearer {nestedToken}";
+        return authenticationHeader;
+    }
+
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
     {
         var buildConfiguration = GetBuildConfiguration();
@@ -235,6 +279,22 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             "OrchestrationsTaskHubName",
             TaskHubName);
+
+        // => Authentication
+        // This is not the actual BFF but a test app registration that allows us to verify some of the JWT code.
+        var fakeBffAppId = IntegrationTestConfiguration.Configuration.GetValue("AZURE-B2C-TESTBFF-APP-ID");
+        var mockedTokenIssuerBaseUrl = $"http://localhost:{appHostSettings.Port}";
+        var externalMetadataAddress = $"https://login.microsoftonline.com/{IntegrationTestConfiguration.B2CSettings.Tenant}/v2.0/.well-known/openid-configuration";
+        var internalMetadataAddress = $"{mockedTokenIssuerBaseUrl}/api/v2.0/.well-known/openid-configuration";
+
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", externalMetadataAddress);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", externalMetadataAddress);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", fakeBffAppId);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", internalMetadataAddress);
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(

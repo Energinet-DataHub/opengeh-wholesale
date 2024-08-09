@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 
 public static class AppHostManagerExtensions
 {
-    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager)
+    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager, string nestedToken)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -50,8 +50,8 @@ public static class AppHostManagerExtensions
             Encoding.UTF8,
             "application/json");
 
-        var token = CreateFakeInternalToken();
-        request.Headers.Add("Authorization", $"Bearer {token}");
+        ////var token = CreateFakeInternalToken(); // TODO: BEWARE that we don't add Bearer twice ;)
+        request.Headers.Add("Authorization", $"{nestedToken}");
 
         using var startCalculationResponse = await appHostManager.HttpClient.SendAsync(request);
         startCalculationResponse.EnsureSuccessStatusCode();
