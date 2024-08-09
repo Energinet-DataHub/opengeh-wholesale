@@ -86,19 +86,4 @@ public class WholesaleServicesQueries(
             .AnyAsync()
             .ConfigureAwait(false);
     }
-
-    private class WholesaleServicesCalculationTypeForGridAreasStatement(
-        DeltaTableOptions deltaTableOptions,
-        RequestSpecificWholesaleServicesQuerySnippetsProvider querySnippetsProvider)
-        : CalculationTypeForGridAreasStatementBase(
-            querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
-            querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName())
-    {
-        private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-        private readonly RequestSpecificWholesaleServicesQuerySnippetsProvider _querySnippetsProvider = querySnippetsProvider;
-
-        protected override string GetSource() => _querySnippetsProvider.DatabricksContract.GetSource(_deltaTableOptions);
-
-        protected override string GetSelection(string table) => _querySnippetsProvider.GetSelection(table);
-    }
 }

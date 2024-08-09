@@ -64,30 +64,4 @@ public class AggregatedTimeSeriesQueries(
             yield return aggregatedTimeSeries;
         }
     }
-
-    // TODO (MWO): Rename class
-    private class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
-        DeltaTableOptions deltaTableOptions,
-        AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
-        AggregatedTimeSeriesQueryParameters queryParameters)
-        : CalculationTypeForGridAreasStatementBase(
-            EnergyResultColumnNames.GridArea,
-            EnergyResultColumnNames.CalculationType)
-    {
-        private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-        private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
-        private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
-
-        protected override string GetSource() =>
-            $"""
-             (SELECT wr.*
-              FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
-              INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-              ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
-             """;
-
-        protected override string GetSelection(string table) => _whereClauseProvider
-            .GetWhereClauseSqlExpression(_queryParameters, table)
-            .Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
-    }
 }
