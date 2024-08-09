@@ -185,6 +185,7 @@ def _write_output(
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(results.basis_data)
 
+    # Write calculation grid areas to table Wholesale internal table calculation_grid_areas.
     write_calculation_grid_areas(results.basis_data.calculation_grid_areas)
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
