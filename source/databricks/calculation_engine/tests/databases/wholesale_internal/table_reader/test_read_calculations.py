@@ -49,9 +49,7 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_calculation_row()
-        table_reader = wholesale_internal.TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
-        )
+        table_reader = wholesale_internal.TableReader(mock.Mock(), "dummy_catalog_name")
 
         df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         df = df.withColumn("test", f.lit("test"))
