@@ -25,7 +25,6 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
-    MIGRATIONS_WHOLESALE = env_vars.get_calculation_input_database_name()
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -39,22 +38,13 @@ class UnityCatalogDatabaseNames:
 
 # Hive
 class InputDatabase:
-    DATABASE_NAME = "wholesale_input"
+    DATABASE_NAME = "migrations_wholesale"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
-
-
-class MigrationsWholesaleDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.MIGRATIONS_WHOLESALE
-    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
-    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
-    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
-    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
-    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
 
 
 class WholesaleInternalDatabase:
