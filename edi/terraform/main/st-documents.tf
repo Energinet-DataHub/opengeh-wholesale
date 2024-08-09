@@ -25,6 +25,28 @@ module "st_documents" {
   prevent_deletion                      = false
 }
 
+import {
+  to = azurerm_storage_container.outgoing
+  id = "https://${module.st_documents.name}.blob.core.windows.net/outgoing"
+}
+
+resource "azurerm_storage_container" "outgoing" {
+  name                  = "outgoing"
+  storage_account_name  = module.st_documents.name
+  container_access_type = "private"
+}
+
+import {
+  to = azurerm_storage_container.archived
+  id = "https://${module.st_documents.name}.blob.core.windows.net/archived"
+}
+
+resource "azurerm_storage_container" "archived" {
+  name                  = "archived"
+  storage_account_name  = module.st_documents.name
+  container_access_type = "private"
+}
+
 module "st_documents_backup" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_5.0.0"
 
