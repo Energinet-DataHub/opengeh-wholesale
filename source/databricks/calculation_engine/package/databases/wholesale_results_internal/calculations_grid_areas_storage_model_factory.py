@@ -25,7 +25,7 @@ def create_calculation_grid_areas(
     args: CalculatorArgs,
 ) -> DataFrame:
     """
-    TODO
+    Creates a data frame containing calculation_id and grid area code.
     """
     return _create_calculation_grid_areas(args)
 
