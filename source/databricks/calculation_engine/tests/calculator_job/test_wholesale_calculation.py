@@ -364,31 +364,35 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
     "view_name, has_data",
     [
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
             False,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.AMOUNTS_PER_CHARGE_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
             True,
         ),
         (
@@ -408,40 +412,24 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.ENERGY_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.ENERGY_PER_ES_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.WHOLESALE_RESULTS_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.HiveSettlementReportPublicDataModel.DATABASE_NAME}.{paths.HiveSettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
+            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
             True,
-        ),
-        (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME}",
-            False,
-        ),
-        (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
-            False,
         ),
     ],
 )
