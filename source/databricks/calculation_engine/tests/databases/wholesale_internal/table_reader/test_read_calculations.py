@@ -25,8 +25,10 @@ from package.databases import wholesale_internal
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
     CalculationsColumnName,
 )
-from package.databases.wholesale_internal.schemas import hive_calculations_schema
-from package.infrastructure.paths import HiveBasisDataDatabase
+from package.databases.wholesale_internal.schemas import (
+    hive_calculations_schema,
+)
+from package.infrastructure.paths import WholesaleInternalDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -56,7 +58,7 @@ class TestWhenContractMismatch:
 
         # Act & Assert
         with mock.patch.object(
-            table_reader._spark.read.format("delta"), "load", return_value=df
+            table_reader._spark.read.format("delta"), "table", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 table_reader.read_calculations()
@@ -73,24 +75,20 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        calculations_table_location = (
-            f"{calculation_input_path}/{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
-        )
+        calculations_table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
         row = _create_calculation_row()
         df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
         write_dataframe_to_table(
             spark,
             df,
-            HiveBasisDataDatabase.DATABASE_NAME,
-            HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME,
+            WholesaleInternalDatabase.DATABASE_NAME,
+            WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
             calculations_table_location,
             hive_calculations_schema,
         )
         expected = df
 
-        table_reader = wholesale_internal.TableReader(
-            spark, calculation_input_path, "spark_catalog"
-        )
+        table_reader = wholesale_internal.TableReader(spark, "spark_catalog")
 
         # Act
         actual = table_reader.read_calculations()
