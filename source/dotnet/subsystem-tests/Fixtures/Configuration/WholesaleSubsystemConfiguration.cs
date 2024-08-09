@@ -31,6 +31,7 @@ public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
         WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
         OrchestrationsApiBaseAddress = new Uri(Root.GetValue<string>("ORCHESTRATIONSAPI_BASEADDRESS")!);
         UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
+        DatabricksCatalogName = Root.GetValue<string>("DATABRICKS_CATALOG_NAME")!;
 
         var secretsConfiguration = Root.BuildSecretsConfiguration();
         ServiceBus = ServiceBusConfiguration.CreateFromConfiguration(secretsConfiguration);
@@ -67,4 +68,9 @@ public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
     /// Setting necessary to use the shared Log Analytics workspace.
     /// </summary>
     public string LogAnalyticsWorkspaceId { get; }
+
+    /// <summary>
+    /// Setting necessary for specifying the Databricks test catalog.
+    /// </summary>
+    public string DatabricksCatalogName { get; }
 }
