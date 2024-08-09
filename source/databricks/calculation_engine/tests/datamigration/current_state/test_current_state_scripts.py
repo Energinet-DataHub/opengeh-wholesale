@@ -45,12 +45,6 @@ def test__schema_config__when_current_state_script_files_are_executed(
 
     mocker.patch.object(
         sut.paths,
-        sut.paths.get_spark_sql_migrations_path.__name__,
-        return_value=storage_account,
-    )
-
-    mocker.patch.object(
-        sut.paths,
         sut.paths.get_container_root_path.__name__,
         return_value=storage_account,
     )

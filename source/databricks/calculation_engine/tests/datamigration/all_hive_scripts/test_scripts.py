@@ -57,12 +57,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
 
     mocker.patch.object(
         sut.paths,
-        sut.paths.get_spark_sql_migrations_path.__name__,
-        return_value=storage_account,
-    )
-
-    mocker.patch.object(
-        sut.paths,
         sut.paths.get_container_root_path.__name__,
         return_value=storage_account,
     )
@@ -86,6 +80,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         spark,
         substitution_variables=migration_scripts_substitutions,
         table_prefix="migration_",
+    )
+    spark.sql(
+        f"CREATE DATABASE IF NOT EXISTS {spark_sql_migration_helper.schema_migration_schema_name}"
     )
     sut.migrate_data_lake(spark_config)
 

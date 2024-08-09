@@ -46,13 +46,11 @@ def _create_spark_config() -> SparkSqlMigrationsConfiguration:
         storage_account_name,
     )
 
-    spark_container_url = paths.get_spark_sql_migrations_path(storage_account_name)
     container_url = paths.get_container_root_path(storage_account_name)
 
     migration_args = MigrationScriptArgs(
         data_storage_account_url=storage_account_url,
         data_storage_account_name=storage_account_name,
-        schema_migration_storage_container_path=spark_container_url,
         storage_container_path=container_url,
         spark=spark,
         calculation_input_folder=calculation_input_folder,
@@ -60,9 +58,7 @@ def _create_spark_config() -> SparkSqlMigrationsConfiguration:
 
     return SparkSqlMigrationsConfiguration(
         migration_schema_name="schema_migration",
-        migration_schema_location=migration_args.schema_migration_storage_container_path,
         migration_table_name="executed_migrations",
-        migration_table_location=migration_args.schema_migration_storage_container_path,
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,

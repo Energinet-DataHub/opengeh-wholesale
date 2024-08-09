@@ -27,7 +27,7 @@ energy_v1 = t.StructType(
         # 'consumption' | 'production' | 'exchange'
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #
-        # 'flex' | 'non_profiled'
+        # 'flex' | 'non_profiled' | NULL
         t.StructField("settlement_method", t.StringType(), nullable),
         #
         # 'PT15M' | 'PT1H'
