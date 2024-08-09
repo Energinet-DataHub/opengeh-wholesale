@@ -50,8 +50,8 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_calculation_row()
         table_reader = wholesale_internal.TableReader(mock.Mock(), "dummy_catalog_name")
-
         df = spark.createDataFrame(data=[row], schema=hive_calculations_schema)
+        df = df.drop(CalculationsColumnName.calculation_id)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
