@@ -94,7 +94,10 @@ public static class EdiExtensions
                 Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.PeriodValidationRule>()
             .AddScoped<
                 IValidationRule<WholesaleServicesRequest>,
-                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.GridAreaValidationRule>();
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.GridAreaValidationRule>()
+            .AddScoped<
+                IValidationRule<WholesaleServicesRequest>,
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.SettlementVersionValidationRule>();
 
         return services;
     }

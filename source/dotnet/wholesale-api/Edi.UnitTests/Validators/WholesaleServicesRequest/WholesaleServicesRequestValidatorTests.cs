@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -148,5 +149,22 @@ public sealed class WholesaleServicesRequestValidatorTests
         // Assert
         validationErrors.Should().ContainSingle()
             .Which.ErrorCode.Should().Be("D14");
+    }
+
+    [Fact]
+    public async Task Validate_WhenSettlementVersionIsInvalid_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new WholesaleServicesRequestBuilder()
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
+            .WithSettlementVersion("invalid-settlement-version")
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("E86");
     }
 }

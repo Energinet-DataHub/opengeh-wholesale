@@ -14,13 +14,13 @@
 
 using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public class SettlementVersionValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
+public class SettlementVersionValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
     private static readonly ValidationError _invalidSettlementVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
 
-    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
         var validSettlementVersion = SettlementVersionValidationHelper.IsSettlementVersionValid(
             subject.BusinessReason,

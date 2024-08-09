@@ -110,7 +110,7 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithSettlementVersion(string settlementVersion)
+    public WholesaleServicesRequestBuilder WithSettlementVersion(string? settlementVersion)
     {
         _settlementVersion = settlementVersion;
         return this;
