@@ -17,14 +17,13 @@ from package.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
 from .schemas import (
-    hive_calculations_schema,
     grid_loss_metering_points_schema,
     calculations_schema,
 )
 from ..repository_helper import read_table
 
 
-class TableReader:
+class WholesaleInternalRepository:
     def __init__(
         self,
         spark: SparkSession,
