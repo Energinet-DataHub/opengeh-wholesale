@@ -429,7 +429,7 @@ def energy_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+        table_name="time_series_points",
         schema=time_series_points_schema,
         table_location=f"{calculation_input_path}/{paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
     )
