@@ -17,9 +17,7 @@ from pyspark.sql import DataFrame, Row, SparkSession
 
 from package.codelists import CalculationType
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_internal.calculation_column_names import (
-    CalculationColumnNames,
-)
+
 from package.databases.wholesale_internal.schemas import (
     calculations_schema,
 )

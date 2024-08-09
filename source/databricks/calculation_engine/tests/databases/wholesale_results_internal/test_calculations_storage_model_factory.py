@@ -18,9 +18,8 @@ from pyspark.sql import Row
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
-from package.databases.wholesale_internal.calculation_column_names import (
-    CalculationColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
+
 from package.databases.wholesale_internal.schemas import (
     calculations_schema,
 )
@@ -49,13 +48,13 @@ def test__when_valid_input__creates_expected_calculation(
     latest_version = 12
     next_version = 13
     expected = {
-        CalculationColumnNames.calculation_id: any_calculator_args.calculation_id,
-        CalculationColumnNames.calculation_type: any_calculator_args.calculation_type.value,
-        CalculationColumnNames.period_start: any_calculator_args.calculation_period_start_datetime,
-        CalculationColumnNames.period_end: any_calculator_args.calculation_period_end_datetime,
-        CalculationColumnNames.execution_time_start: any_calculator_args.calculation_execution_time_start,
-        CalculationColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
-        CalculationColumnNames.version: next_version,
+        TableColumnNames.calculation_id: any_calculator_args.calculation_id,
+        TableColumnNames.calculation_type: any_calculator_args.calculation_type.value,
+        TableColumnNames.calculation_period_start: any_calculator_args.calculation_period_start_datetime,
+        TableColumnNames.calculation_period_end: any_calculator_args.calculation_period_end_datetime,
+        TableColumnNames.calculation_execution_time_start: any_calculator_args.calculation_execution_time_start,
+        TableColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
+        TableColumnNames.calculation_version: next_version,
     }
     prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
