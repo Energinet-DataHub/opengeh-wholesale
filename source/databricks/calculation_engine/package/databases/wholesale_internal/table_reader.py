@@ -19,6 +19,7 @@ from package.infrastructure.paths import (
 from .schemas import (
     hive_calculations_schema,
     grid_loss_metering_points_schema,
+    calculations_schema,
 )
 from ..repository_helper import read_table
 
@@ -52,5 +53,5 @@ class TableReader:
             self._catalog_name,
             WholesaleInternalDatabase.DATABASE_NAME,
             WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
-            hive_calculations_schema,
+            calculations_schema,
         )
