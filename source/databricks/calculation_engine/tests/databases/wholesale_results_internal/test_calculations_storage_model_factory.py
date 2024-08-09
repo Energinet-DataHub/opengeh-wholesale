@@ -21,7 +21,9 @@ from package.calculation.preparation import PreparedDataReader
 from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
-from package.databases.wholesale_internal.schemas import hive_calculations_schema
+from package.databases.wholesale_internal.schemas import (
+    calculations_schema,
+)
 from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
     create_calculation,
 )
@@ -37,7 +39,7 @@ def test__when_valid_input__creates_calculation_with_expected_schema(
         return_value=0,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.schema == hive_calculations_schema
+        assert actual.schema == calculations_schema
 
 
 def test__when_valid_input__creates_expected_calculation(
