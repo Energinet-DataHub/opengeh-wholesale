@@ -41,7 +41,7 @@ class TableReader:
         self._catalog_name = catalog_name
         self._calculation_input_database_name = calculation_input_database_name
         self._time_series_points_table_name = (
-            time_series_points_table_name or InputDatabase.TIME_SERIES_POINTS_TABLE_NAME
+            time_series_points_table_name or "time_series_points"
         )
         self._metering_point_periods_table_name = (
             metering_point_periods_table_name
