@@ -294,8 +294,6 @@ jobs:
             paths: datamigration/all_hive_scripts
           - name: Current State Scripts
             paths: datamigration/current_state
-          - name: Migration subsystem
-            paths: datamigration/subsystem
           - name: Test Migration scripts
             paths: datamigration/migration_scripts
           - name: Test Unity Catalog
@@ -353,7 +351,6 @@ jobs:
           entry_points/
           datamigration/all_hive_scripts
           datamigration/current_state
-          datamigration/subsystem
           datamigration/migration_scripts
           datamigration/unity_catalog"
 
