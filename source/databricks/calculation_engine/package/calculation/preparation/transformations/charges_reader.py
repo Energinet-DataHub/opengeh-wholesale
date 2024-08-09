@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
@@ -26,7 +26,7 @@ from package.constants import Colname
 
 
 def read_charge_price_information(
-    table_reader: MigrationsWholesaleRepository,
+    table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> ChargePriceInformation:
@@ -54,7 +54,7 @@ def read_charge_price_information(
 
 
 def read_charge_prices(
-    table_reader: MigrationsWholesaleRepository,
+    table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> ChargePrices:
@@ -69,7 +69,7 @@ def read_charge_prices(
 
 
 def read_charge_links(
-    table_reader: MigrationsWholesaleRepository,
+    table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:

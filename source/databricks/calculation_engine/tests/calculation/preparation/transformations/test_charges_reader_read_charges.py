@@ -29,7 +29,7 @@ from package.databases.migrations_wholesale.schemas import (
 )
 
 from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -88,9 +88,9 @@ def _create_charges_price_points_row(
 
 
 class TestWhenValidInput:
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_read_charge_price_information_returns_expected_row_values(
-        self, table_reader_mock: MigrationsWholesaleRepository, spark: SparkSession
+        self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
         # Arrange
         table_reader_mock.read_charge_price_information_periods.return_value = (
@@ -114,9 +114,9 @@ class TestWhenValidInput:
         assert actual_row[Colname.from_date] == DEFAULT_FROM_DATE
         assert actual_row[Colname.to_date] == DEFAULT_TO_DATE
 
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_read_charge_prices_returns_expected_row_values(
-        self, table_reader_mock: MigrationsWholesaleRepository, spark: SparkSession
+        self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
         # Arrange
         table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
@@ -160,10 +160,10 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
             ),
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test__returns_empty_result(
         self,
-        table_reader_mock: MigrationsWholesaleRepository,
+        table_reader_mock: TableReader,
         spark: SparkSession,
         from_date,
         to_date,
@@ -197,10 +197,10 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
             ),
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test__returns_charge(
         self,
-        table_reader_mock: MigrationsWholesaleRepository,
+        table_reader_mock: TableReader,
         spark: SparkSession,
         from_date,
         to_date,
@@ -248,10 +248,10 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
             ),
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test__returns_expected_to_and_from_date(
         self,
-        table_reader_mock: MigrationsWholesaleRepository,
+        table_reader_mock: TableReader,
         spark: SparkSession,
         charge_from_date: datetime,
         charge_to_date: datetime,

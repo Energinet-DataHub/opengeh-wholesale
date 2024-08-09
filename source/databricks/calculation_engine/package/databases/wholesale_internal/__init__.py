@@ -1,1 +1,1 @@
-from .repository import WholesaleInternalRepository
+from .table_reader import TableReader

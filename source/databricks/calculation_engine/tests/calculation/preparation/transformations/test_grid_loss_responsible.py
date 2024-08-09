@@ -22,7 +22,7 @@ from package.calculation.preparation.transformations.grid_loss_responsible impor
     get_grid_loss_responsible,
 )
 import metering_point_periods_factory as factory
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.codelists import MeteringPointType
 from package.constants import Colname
 from package.databases.wholesale_internal.schemas import (
@@ -30,9 +30,9 @@ from package.databases.wholesale_internal.schemas import (
 )
 
 
-@patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+@patch.object(migrations_wholesale, TableReader.__name__)
 def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
-    table_reader_mock: MigrationsWholesaleRepository, spark: SparkSession
+    table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
     grid_areas = ["804"]
@@ -86,9 +86,9 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
 
 
-@patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+@patch.object(migrations_wholesale, TableReader.__name__)
 def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
-    table_reader_mock: MigrationsWholesaleRepository,
+    table_reader_mock: TableReader,
     spark: SparkSession,
 ) -> None:
     # Arrange

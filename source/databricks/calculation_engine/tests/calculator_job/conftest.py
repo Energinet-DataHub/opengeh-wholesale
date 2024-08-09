@@ -77,10 +77,10 @@ def executed_balance_fixing(
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
-    table_reader = migrations_wholesale.MigrationsWholesaleRepository(
+    table_reader = migrations_wholesale.TableReader(
         spark, "spark_catalog", calculation_input_database
     )
-    wholesale_internal_table_reader = wholesale_internal.WholesaleInternalRepository(
+    wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark, "spark_catalog"
     )
     prepared_data_reader = PreparedDataReader(
@@ -104,10 +104,10 @@ def executed_wholesale_fixing(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    table_reader = migrations_wholesale.MigrationsWholesaleRepository(
+    table_reader = migrations_wholesale.TableReader(
         spark, "spark_catalog", calculation_input_database
     )
-    wholesale_internal_table_reader = wholesale_internal.WholesaleInternalRepository(
+    wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark, "spark_catalog"
     )
     prepared_data_reader = PreparedDataReader(

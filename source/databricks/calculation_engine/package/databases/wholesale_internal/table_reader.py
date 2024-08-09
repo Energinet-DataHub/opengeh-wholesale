@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import StructType
 
+from package.common.schemas import assert_contract, assert_schema
 from package.infrastructure.paths import (
     WholesaleInternalDatabase,
+    HiveBasisDataDatabase,
 )
-from .schemas import (
-    grid_loss_metering_points_schema,
-    calculations_schema,
-)
+from .schemas import hive_calculations_schema, grid_loss_metering_points_schema
 from ..repository_helper import read_table
 
 
-class WholesaleInternalRepository:
+class TableReader:
     def __init__(
         self,
         spark: SparkSession,
@@ -47,10 +47,11 @@ class WholesaleInternalRepository:
         )
 
     def read_calculations(self) -> DataFrame:
-        return read_table(
-            self._spark,
-            self._catalog_name,
-            WholesaleInternalDatabase.DATABASE_NAME,
-            WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
-            calculations_schema,
-        )
+        table_name = f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+        df = self._spark.read.format("delta").table(table_name)
+
+        # Though it's our own table, we still want to make sure it has the expected schema as
+        # it might have been changed due to e.g. (failed) migrations or backup/restore.
+        assert_schema(df.schema, hive_calculations_schema)
+
+        return df

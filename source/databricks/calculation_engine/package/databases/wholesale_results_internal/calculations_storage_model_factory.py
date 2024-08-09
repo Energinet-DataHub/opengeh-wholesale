@@ -16,11 +16,12 @@ from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.table_column_names import TableColumnNames
-
+from package.databases.wholesale_internal.calculation_column_names import (
+    CalculationColumnNames,
+)
 from package.container import Container
 from package.databases.wholesale_internal.schemas.calculations_schema import (
-    calculations_schema,
+    hive_calculations_schema,
 )
 
 
@@ -49,13 +50,15 @@ def _create_calculation(
     next_version = (latest_version or 0) + 1
 
     calculation = {
-        TableColumnNames.calculation_id: args.calculation_id,
-        TableColumnNames.calculation_type: args.calculation_type.value,
-        TableColumnNames.calculation_period_start: args.calculation_period_start_datetime,
-        TableColumnNames.calculation_period_end: args.calculation_period_end_datetime,
-        TableColumnNames.calculation_execution_time_start: args.calculation_execution_time_start,
-        TableColumnNames.created_by_user_id: args.created_by_user_id,
-        TableColumnNames.calculation_version: next_version,
+        CalculationColumnNames.calculation_id: args.calculation_id,
+        CalculationColumnNames.calculation_type: args.calculation_type.value,
+        CalculationColumnNames.period_start: args.calculation_period_start_datetime,
+        CalculationColumnNames.period_end: args.calculation_period_end_datetime,
+        CalculationColumnNames.execution_time_start: args.calculation_execution_time_start,
+        CalculationColumnNames.created_by_user_id: args.created_by_user_id,
+        CalculationColumnNames.version: next_version,
     }
 
-    return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
+    return spark.createDataFrame(
+        data=[Row(**calculation)], schema=hive_calculations_schema
+    )

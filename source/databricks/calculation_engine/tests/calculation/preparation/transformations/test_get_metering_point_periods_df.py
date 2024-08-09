@@ -21,7 +21,7 @@ from pyspark.sql.functions import when, col
 
 import databases.migrations_wholesale.table_reader.input_metering_point_periods_factory as factory
 from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
@@ -97,7 +97,7 @@ class TestWhenValidInput:
             ],
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_df_with_correct_metering_point_types(
         self,
         mock_calculation_input_reader: Mock,
@@ -131,7 +131,7 @@ class TestWhenValidInput:
             [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_df_with_correct_settlement_methods(
         self,
         mock_calculation_input_reader: Mock,
@@ -156,7 +156,7 @@ class TestWhenValidInput:
         # Assert
         assert actual.collect()[0][Colname.settlement_method] == expected.value
 
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_dataframe_with_expected_columns(
         self,
         mock_calculation_input_reader: Mock,
@@ -207,7 +207,7 @@ class TestWhenValidInput:
             == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
 
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_expected_df(
         self,
         mock_calculation_input_reader: Mock,
@@ -278,7 +278,7 @@ class TestWhenValidInput:
             ),  # period starts at metering point from date and has no end date
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_dataframe_with_expect_from_and_to_date(
         self,
         mock_calculation_input_reader: Mock,
@@ -312,7 +312,7 @@ class TestWhenValidInput:
 
 
 class TestWhenThreeGridAreasExchangingWithEachOther:
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_expected(
         self,
         mock_calculation_input_reader: Mock,
@@ -369,7 +369,7 @@ class TestWhenExchangeMeteringPoint:
             ("111", "222", "111", "111", 1),
         ],
     )
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_metering_point_if_it_associates_to_relevant_grid_area(
         self,
         mock_calculation_input_reader: Mock,

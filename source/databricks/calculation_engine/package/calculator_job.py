@@ -115,7 +115,7 @@ def create_prepared_data_reader(
     spark: SparkSession,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
-    delta_table_reader = migrations_wholesale.MigrationsWholesaleRepository(
+    delta_table_reader = migrations_wholesale.TableReader(
         spark,
         settings.catalog_name,
         settings.calculation_input_database_name,
@@ -124,7 +124,7 @@ def create_prepared_data_reader(
         settings.grid_loss_metering_points_table_name,
     )
 
-    wholesale_internal_table_reader = wholesale_internal.WholesaleInternalRepository(
+    wholesale_internal_table_reader = wholesale_internal.TableReader(
         spark,
         settings.catalog_name,
     )

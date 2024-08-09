@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
     charge_price_information_periods_schema,
 )
@@ -50,7 +50,7 @@ class TestWhenContractMismatch:
     ) -> None:
         # Arrange
         row = _create_charge_price_information_period_row()
-        reader = MigrationsWholesaleRepository(
+        reader = TableReader(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
@@ -93,7 +93,7 @@ class TestWhenValidInput:
             charge_price_information_periods_schema,
         )
         expected = df
-        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
+        reader = TableReader(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_price_information_periods()
@@ -109,7 +109,7 @@ class TestWhenValidInputAndMoreColumns:
     ) -> None:
         # Arrange
         row = _create_charge_price_information_period_row()
-        reader = MigrationsWholesaleRepository(
+        reader = TableReader(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",

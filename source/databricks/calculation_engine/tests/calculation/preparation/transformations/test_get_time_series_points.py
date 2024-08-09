@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import lit
 
 from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import (
     time_series_points_schema,
 )
@@ -57,7 +57,7 @@ def _create_grid_loss_metering_point_row(
 
 
 class TestWhenValidInput:
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     def test_returns_expected_df(
         self,
         mock_calculation_input_reader: Mock,
@@ -78,7 +78,7 @@ class TestWhenValidInput:
         # Assert
         assert_dataframes_equal(actual, expected)
 
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     @pytest.mark.parametrize(
         "observation_time, expected",
         [
@@ -116,7 +116,7 @@ class TestWhenValidInput:
         # Assert
         assert actual.count() == expected
 
-    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+    @patch.object(migrations_wholesale, TableReader.__name__)
     @pytest.mark.parametrize(
         "column_name, expected",
         [("observation_year", True), ("observation_month", True), ("dummy", False)],
