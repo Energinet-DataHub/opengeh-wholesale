@@ -21,7 +21,7 @@ from pyspark.sql.functions import (
     lit,
 )
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.codelists import (
     InputMeteringPointType,
@@ -33,7 +33,7 @@ from package.constants import Colname
 
 
 def get_metering_point_periods_df(
-    calculation_input_reader: TableReader,
+    calculation_input_reader: MigrationsWholesaleRepository,
     period_start: datetime,
     period_end: datetime,
     calculation_grid_areas: list[str],

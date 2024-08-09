@@ -19,7 +19,7 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import charge_link_periods_schema
 from package.constants import Colname
 from tests.helpers.data_frame_utils import assert_dataframes_equal
@@ -48,7 +48,7 @@ class TestWhenContractMismatch:
     ) -> None:
         # Arrange
         row = _create_charge_link_period_row()
-        reader = TableReader(
+        reader = MigrationsWholesaleRepository(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
@@ -87,7 +87,7 @@ class TestWhenValidInput:
             charge_link_periods_schema,
         )
         expected = df
-        reader = TableReader(spark, "spark_catalog", "test_database")
+        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_link_periods()
@@ -99,7 +99,7 @@ class TestWhenValidInput:
 class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
-        reader = TableReader(
+        reader = MigrationsWholesaleRepository(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",

@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import charge_price_points_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
@@ -48,7 +48,7 @@ class TestWhenContractMismatch:
     ) -> None:
         # Arrange
         row = _create_change_price_point_row()
-        reader = TableReader(
+        reader = MigrationsWholesaleRepository(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
@@ -87,7 +87,7 @@ class TestWhenValidInput:
             charge_price_points_schema,
         )
         expected = df
-        reader = TableReader(spark, "spark_catalog", "test_database")
+        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_price_points()
@@ -103,7 +103,7 @@ class TestWhenValidInputAndExtraColumns:
     ) -> None:
         # Arrange
         row = _create_change_price_point_row()
-        reader = TableReader(
+        reader = MigrationsWholesaleRepository(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",

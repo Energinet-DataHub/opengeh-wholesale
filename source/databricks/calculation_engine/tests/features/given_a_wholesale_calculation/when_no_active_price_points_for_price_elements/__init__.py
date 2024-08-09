@@ -11,17 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.databases.wholesale_results_internal.result_column_names import (
-    ResultColumnNames,
-)
-
-
-class CalculationColumnNames(ResultColumnNames):
-    """Column names for the calculation storage model."""
-
-    execution_time_start = "execution_time_start"
-    calculation_type = "calculation_type"
-    period_start = "period_start"
-    period_end = "period_end"
-    created_by_user_id = "created_by_user_id"
-    version = "version"
