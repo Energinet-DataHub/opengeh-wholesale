@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from package.infrastructure.paths import (
-    InputDatabase,
+    MigrationsWholesaleDatabase,
     WholesaleInternalDatabase,
 )
 from .schemas import (
@@ -41,11 +41,12 @@ class TableReader:
         self._catalog_name = catalog_name
         self._calculation_input_database_name = calculation_input_database_name
         self._time_series_points_table_name = (
-            time_series_points_table_name or "time_series_points"
+            time_series_points_table_name
+            or MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME
         )
         self._metering_point_periods_table_name = (
             metering_point_periods_table_name
-            or InputDatabase.METERING_POINT_PERIODS_TABLE_NAME
+            or MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME
         )
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
@@ -77,7 +78,7 @@ class TableReader:
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
-            InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
             charge_link_periods_schema,
         )
 
@@ -86,7 +87,7 @@ class TableReader:
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
-            InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         )
 
@@ -97,6 +98,6 @@ class TableReader:
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
-            InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
         )

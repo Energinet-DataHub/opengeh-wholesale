@@ -420,18 +420,18 @@ def energy_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
         schema=metering_point_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME}",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
         database_name=calculation_input_database,
-        table_name="time_series_points",
+        table_name=paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_points_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
     )
 
     # grid loss
@@ -448,27 +448,27 @@ def energy_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
 
 
@@ -485,9 +485,9 @@ def price_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/charge_price_information_periods",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
     )
 
     # Charge link periods
@@ -495,9 +495,9 @@ def price_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/charge_link_periods",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
     )
 
     # Charge price points
@@ -505,9 +505,9 @@ def price_input_data_written_to_delta(
         spark,
         file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
         database_name=calculation_input_database,
-        table_name=paths.InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/charge_price_points",
+        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
 
 
