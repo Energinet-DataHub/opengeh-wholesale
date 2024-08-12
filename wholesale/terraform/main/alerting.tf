@@ -72,7 +72,7 @@ module "monitor_action_group_wholesale_edi" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_4.0.1"
 
   name                 = "alerts-edi"
-  project_name         = var.domain_name_short
+  project_name         = "${var.domain_name_short}-edi"
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
   resource_group_name  = azurerm_resource_group.this.name
