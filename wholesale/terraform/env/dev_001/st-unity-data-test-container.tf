@@ -28,7 +28,7 @@ resource "databricks_grant" "wholesale_migrations_wholesale" {
   schema   = databricks_schema.wholesale_migrations_wholesale.id
 
   principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE", "CREATE_TABLE"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
 }
