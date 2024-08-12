@@ -43,7 +43,7 @@ public class WholesaleServicesQueriesCsvTests : TestBase<WholesaleServicesQuerie
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
-        Fixture.Inject(new WholesaleServicesQueryStatementHelperFactory([new AmountsPerChargeWholesaleServicesDatabricksContract(), new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(), new TotalMonthlyAmountWholesaleServicesDatabricksContract()]));
+        Fixture.Inject(new WholesaleServicesQuerySnippetProviderFactory([new AmountsPerChargeWholesaleServicesDatabricksContract(), new MonthlyAmountsPerChargeWholesaleServicesDatabricksContract(), new TotalMonthlyAmountWholesaleServicesDatabricksContract()]));
         _fixture = fixture;
     }
 
