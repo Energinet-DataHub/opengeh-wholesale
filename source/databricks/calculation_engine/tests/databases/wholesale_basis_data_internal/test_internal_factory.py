@@ -18,15 +18,9 @@ from pyspark.sql.types import StructType
 from databases.wholesale_basis_data_internal.internal_test_factory import (
     create_internal_factory,
 )
-from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_charge_price_information_periods_schema,
-    charge_price_points_schema,
-    grid_loss_metering_points_schema,
-    hive_metering_point_period_schema,
-    time_series_points_schema,
-)
-from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
-    hive_charge_link_periods_schema,
+from package.databases.wholesale_internal.schemas import (
+    calculations_schema,
+    calculation_grid_areas_schema,
 )
 
 
@@ -34,22 +28,12 @@ from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods
     "basis_data_table_property_name, expected_schema",
     [
         (
-            "metering_point_periods",
-            hive_metering_point_period_schema,
+            "calculations",
+            calculations_schema,
         ),
         (
-            "time_series_points",
-            time_series_points_schema,
-        ),
-        ("charge_link_periods", hive_charge_link_periods_schema),
-        (
-            "charge_price_information_periods",
-            hive_charge_price_information_periods_schema,
-        ),
-        ("charge_price_points", charge_price_points_schema),
-        (
-            "grid_loss_metering_points",
-            grid_loss_metering_points_schema,
+            "calculation_grid_areas",
+            calculation_grid_areas_schema,
         ),
     ],
 )
@@ -57,7 +41,7 @@ def test__internal_uses_correct_schema(
     spark: SparkSession,
     internal_table_property_name: str,
     expected_schema: StructType,
-):
+) -> None:
     # Arrange
     internal_container = create_internal_factory(spark)
 
