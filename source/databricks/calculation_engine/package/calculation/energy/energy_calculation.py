@@ -27,11 +27,11 @@ from package.calculation.energy.resolution_transition_factory import (
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
-)
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
 )
 from package.codelists import (
     CalculationType,
@@ -142,6 +142,9 @@ def _calculate_exchange(
     exchange_per_neighbor = exchange_aggr.aggregate_exchange_per_neighbor(
         metering_point_time_series, args.calculation_grid_areas
     )
+
+    # exchange_per_neighbor is a result for eSett.
+    # And eSett is only interested in the calculation types aggregation and balance fixing.
     if _is_aggregation_or_balance_fixing(args.calculation_type):
         results.exchange_per_neighbor = factory.create(
             args,
