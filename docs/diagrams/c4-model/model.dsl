@@ -1,15 +1,10 @@
 # Read description in the 'views.dsl' file.
 
 wholesaleSubsystem = group "Wholesale" {
-    wholesaleDataLake = container "Wholesale DataLake" {
-        description "Calculation inputs and results"
-        technology "Azure Data Lake Gen 2"
-        tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
-    }
-    wholesaleBlobStorage = container "Settlement Report Blob Storage" {
-        description "Contains (drafts of) settlement reports"
-        technology "Azure Blob Storage"
-        tags "Data Storage" "Raccoons"
+    unityCatalog = container "Unity Catalog" {
+        description "DataHub subsystem internal data and data products"
+        technology "Azure Databricks"
+        tags "Data Storage" "Microsoft Azure - Azure Databricks" "Mandalorian" "Out of focus"
     }
     wholesaleCalculator = container "Calculation Engine" {
         description "Executes calculation job"
@@ -17,23 +12,32 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
         # Subsystem relationships
-        this -> wholesaleDataLake "Read inputs / write results"
+        this -> unityCatalog "Read inputs / write results"
     }
     wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
         description "Executes delta SQL migrations"
         technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Out of focus"
 
         # Subsystem relationships
-        this -> wholesaleDataLake "Read executed migrations / execute new migrations"
+        this -> unityCatalog "Read executed migrations / execute new migrations"
     }
-    wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
+    wholesaleEdiWarehouse = container "EDI Warehouse" {
         description "Executes delta SQL queries"
         technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Out of focus"
 
         # Subsystem relationships
-        this -> wholesaleDataLake "Read basis data and results"
+        this -> unityCatalog "Read basis data and results"
+        edi -> this "Read calculation results and active data"
+    }
+    wholesaleSettlementReportsWarehouse = container "Settlement Reports Warehouse" {
+        description "Executes delta SQL queries"
+        technology "Azure Databricks SQL Warehouse"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Out of focus"
+
+        # Subsystem relationships
+        this -> unityCatalog "Read basis data and results"
         edi -> this "Read calculation results and active data"
     }
     wholesaleDb = container "Wholesale Database" {
@@ -52,7 +56,7 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> wholesaleRuntimeWarehouse "Retrieves results from"
+        this -> wholesaleEdiWarehouse "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
@@ -70,7 +74,7 @@ wholesaleSubsystem = group "Wholesale" {
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleCalculator "Sends requests to"
-        this -> wholesaleRuntimeWarehouse "Retrieves results from"
+        this -> wholesaleEdiWarehouse "Retrieves results from"
         this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
 
         # Subsystem-to-Subsystem relationships

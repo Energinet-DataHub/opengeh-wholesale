@@ -49,6 +49,7 @@ def create_calculation_row(
         CalculationColumnNames.execution_time_start: calculation_execution_time_start,
         CalculationColumnNames.created_by_user_id: created_by_user_id,
         CalculationColumnNames.version: version,
+        CalculationColumnNames.is_control_calculation: False,
     }
 
     return Row(**calculation)
