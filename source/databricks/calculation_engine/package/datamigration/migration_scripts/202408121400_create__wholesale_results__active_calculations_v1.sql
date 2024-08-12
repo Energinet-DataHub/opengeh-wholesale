@@ -6,13 +6,14 @@ WITH calculations_by_day AS (
     calculation_version,
     explode(sequence(
       calculation_period_start,
-      date_sub(calculation_period_end, 1),
+      calculation_period_end,
       interval 1 day
     )) AS date,
     calculation_execution_time_start,
     cga.grid_area_code
   FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
   INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas cga ON c.calculation_id = cga.calculation_id
+  WHERE date < calculation_period_end
 ),
 ranked_versions AS (
   SELECT
