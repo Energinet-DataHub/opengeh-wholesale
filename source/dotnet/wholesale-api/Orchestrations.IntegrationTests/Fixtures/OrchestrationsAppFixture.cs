@@ -288,13 +288,17 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         var internalMetadataAddress = $"{mockedTokenIssuerBaseUrl}/api/v2.0/.well-known/openid-configuration";
 
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}", externalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}",
+            externalMetadataAddress);
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}", externalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}",
+            externalMetadataAddress);
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}", fakeBffAppId);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.BackendBffAppId)}",
+            fakeBffAppId);
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}", internalMetadataAddress);
+            $"{UserAuthenticationOptions.SectionName}:{nameof(UserAuthenticationOptions.InternalMetadataAddress)}",
+            internalMetadataAddress);
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
