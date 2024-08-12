@@ -219,7 +219,12 @@ def calculation_input_folder(data_lake_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def calculation_input_database() -> str:
-    return "migrations_wholesale"
+    return paths.MigrationsWholesaleDatabase.DATABASE_NAME
+
+
+@pytest.fixture(scope="session")
+def wholesale_internal_database() -> str:
+    return paths.WholesaleInternalDatabase.DATABASE_NAME
 
 
 @pytest.fixture(scope="session")
@@ -415,6 +420,7 @@ def energy_input_data_written_to_delta(
     calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
+    wholesale_internal_database: str,
 ) -> None:
     _write_input_test_data_to_table(
         spark,
@@ -438,7 +444,7 @@ def energy_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/GridLossResponsible.csv",
-        database_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
+        database_name=wholesale_internal_database,
         table_name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
         schema=grid_loss_metering_points_schema,
         table_location=f"{calculation_input_path}/{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
