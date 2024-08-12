@@ -12,8 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .calculation_writer import write_calculation, write_calculation_grid_areas
-from .energy_results import write_energy_results
-from .monthly_amounts_per_charge import write_monthly_amounts_per_charge
-from .total_monthly_amounts import write_total_monthly_amounts
-from .wholesale_results import write_wholesale_results
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    StructType,
+)
+
+from package.databases.table_column_names import TableColumnNames
+
+calculation_grid_areas_schema = StructType(
+    [
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+    ]
+)
