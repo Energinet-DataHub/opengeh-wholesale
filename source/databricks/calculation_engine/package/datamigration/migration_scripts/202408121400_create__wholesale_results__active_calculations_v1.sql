@@ -6,7 +6,7 @@ WITH calculations_by_day AS (
     calculation_version,
     explode(sequence(
       calculation_period_start,
-      calculation_period_end,
+      date_sub(calculation_period_end, 1),
       interval 1 day
     )) AS date,
     calculation_execution_time_start,
