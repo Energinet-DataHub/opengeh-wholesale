@@ -26,6 +26,7 @@ from package.databases.migrations_wholesale.schemas import (
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
+from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -79,7 +80,7 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/charge_price_information_periods"
+        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
         row = _create_charge_price_information_period_row()
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
@@ -88,7 +89,7 @@ class TestWhenValidInput:
             spark,
             df,
             "test_database",
-            "charge_price_information_periods",
+            MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             table_location,
             charge_price_information_periods_schema,
         )

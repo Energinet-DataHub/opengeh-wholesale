@@ -76,7 +76,7 @@ class TestWhenValidInput:
             spark,
             df,
             "test_database",
-            "time_series_points",
+            MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_points_table_location,
             time_series_points_schema,
         )
