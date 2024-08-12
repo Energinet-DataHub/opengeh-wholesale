@@ -14,10 +14,9 @@
 
 from datetime import datetime
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
-from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
@@ -31,17 +30,24 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.codelists import ChargeResolution, CalculationType
-from . import transformations as T
-from ...constants import Colname
+from package.databases.migrations_wholesale import TableReader
 from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
+from . import transformations as T
+from ...constants import Colname
+from ...databases import wholesale_internal
 from ...infrastructure import logging_configuration
 
 
 class PreparedDataReader:
-    def __init__(self, delta_table_reader: TableReader) -> None:
+    def __init__(
+        self,
+        delta_table_reader: TableReader,
+        wholesale_internal_table_reader: wholesale_internal.TableReader,
+    ) -> None:
         self._table_reader = delta_table_reader
+        self._wholesale_internal_table_reader = wholesale_internal_table_reader
 
     @logging_configuration.use_span("get_metering_point_periods")
     def get_metering_point_periods_df(
@@ -62,7 +68,7 @@ class PreparedDataReader:
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
         return T.get_grid_loss_responsible(
-            grid_areas, metering_point_periods_df, self._table_reader
+            grid_areas, metering_point_periods_df, self._wholesale_internal_table_reader
         )
 
     @logging_configuration.use_span("get_metering_point_time_series")
@@ -159,7 +165,7 @@ class PreparedDataReader:
     ) -> DataFrame:
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
-            self._table_reader.read_grid_loss_metering_points(),
+            self._wholesale_internal_table_reader.read_grid_loss_metering_points(),
             Colname.metering_point_id,
             "left_anti",
         )
@@ -169,7 +175,7 @@ class PreparedDataReader:
     ) -> int | None:
         """Returns the latest used version for the selected calculation type or None."""
 
-        calculations = self._table_reader.read_calculations()
+        calculations = self._wholesale_internal_table_reader.read_calculations()
 
         latest_version = (
             calculations.where(

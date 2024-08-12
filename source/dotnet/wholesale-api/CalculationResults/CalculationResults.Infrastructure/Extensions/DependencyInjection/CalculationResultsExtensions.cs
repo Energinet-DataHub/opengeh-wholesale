@@ -53,7 +53,6 @@ public static class CalculationResultsExtensions
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<WholesaleServicesQueryStatementHelperFactory>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
-        services.AddScoped<WholesaleServicesDatabricksContractInformationProvider>();
         services
             .AddScoped<IWholesaleServicesDatabricksContract,
                 AmountsPerChargeWholesaleServicesDatabricksContract>();
@@ -127,7 +126,6 @@ public static class CalculationResultsExtensions
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<WholesaleServicesQueryStatementHelperFactory>();
         services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
-        services.AddScoped<WholesaleServicesDatabricksContractInformationProvider>();
         services
             .AddScoped<IWholesaleServicesDatabricksContract,
                 AmountsPerChargeWholesaleServicesDatabricksContract>();

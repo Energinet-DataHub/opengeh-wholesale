@@ -88,6 +88,11 @@ class WholesaleSettlementReportsDatabase:
     METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
     CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
     CHARGE_PRICES_VIEW_NAME_V1 = "charge_prices_v1"
+    ENERGY_VIEW_NAME = "energy_v1"
+    ENERGY_PER_ES_VIEW_NAME = "energy_per_es_v1"
+    AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
+    MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
+    TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
 
 
 class HiveOutputDatabase:
@@ -188,10 +193,6 @@ def get_storage_account_url(storage_account_name: str) -> str:
 
 def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
-
-
-def get_spark_sql_migrations_path(storage_account_name: str) -> str:
-    return f"{get_container_root_path(storage_account_name)}spark_sql_migrations/"
 
 
 def get_calculation_input_path(

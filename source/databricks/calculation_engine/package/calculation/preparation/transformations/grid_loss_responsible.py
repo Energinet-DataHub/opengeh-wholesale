@@ -19,21 +19,21 @@ defined in the geh_stream directory in our tests.
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.databases.migrations_wholesale import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.databases import wholesale_internal
 
 
 def get_grid_loss_responsible(
     grid_areas: list[str],
     metering_point_periods_df: DataFrame,
-    table_reader: TableReader,
+    wholesale_internal_table_reader: wholesale_internal.TableReader,
 ) -> GridLossResponsible:
     grid_loss_responsible = (
-        table_reader.read_grid_loss_metering_points()
+        wholesale_internal_table_reader.read_grid_loss_metering_points()
         .join(
             metering_point_periods_df,
             Colname.metering_point_id,

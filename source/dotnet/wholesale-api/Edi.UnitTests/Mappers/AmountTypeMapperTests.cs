@@ -22,25 +22,30 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class AmountTypeMapperTests
 {
     [Theory]
-    [InlineData(Resolution.Month, new[] { AmountType.MonthlyAmountPerCharge, AmountType.TotalMonthlyAmount })]
-    [InlineData(null, new[] { AmountType.AmountPerCharge })]
-    public void Map_WhenValid_ReturnsExpectedChargeType(Resolution? resolution, AmountType[] expectedResults)
+    [InlineData(Resolution.Month, true, new[] { AmountType.MonthlyAmountPerCharge, AmountType.TotalMonthlyAmount })]
+    [InlineData(Resolution.Month, false, new[] { AmountType.MonthlyAmountPerCharge })]
+    [InlineData(null, false, new[] { AmountType.AmountPerCharge })]
+    [InlineData(null, true, new[] { AmountType.AmountPerCharge })]
+    public void Map_WhenValid_ReturnsExpectedChargeType(Resolution? resolution, bool includeTotalMonthlyAmount, AmountType[] expectedResults)
     {
         // Act
-        var actual = AmountTypeMapper.Map(resolution);
+        var actual = AmountTypeMapper.Map(resolution, includeTotalMonthlyAmount);
 
         // Assert
         actual.Should().BeEquivalentTo(expectedResults);
     }
 
     [Theory]
-    [InlineData((Resolution)int.MinValue)]
-    [InlineData(Resolution.Day)]
-    [InlineData(Resolution.Hour)]
-    public void Map_WhenInvalid_ThrowsArgumentOutOfRangeException(Resolution? resolution)
+    [InlineData((Resolution)int.MinValue, false)]
+    [InlineData(Resolution.Day, false)]
+    [InlineData(Resolution.Hour, false)]
+    [InlineData((Resolution)int.MinValue, true)]
+    [InlineData(Resolution.Day, true)]
+    [InlineData(Resolution.Hour, true)]
+    public void Map_WhenInvalid_ThrowsArgumentOutOfRangeException(Resolution? resolution, bool includeTotalMonthlyAmount)
     {
         // Act
-        var act = () => AmountTypeMapper.Map(resolution);
+        var act = () => AmountTypeMapper.Map(resolution, includeTotalMonthlyAmount);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(resolution);
