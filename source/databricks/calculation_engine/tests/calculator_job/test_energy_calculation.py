@@ -201,6 +201,25 @@ def test__when_energy_calculation__calculation_is_stored(
     assert actual.count() > 0
 
 
+def test__when_energy_calculation__calculation_grid_areas_are_stored(
+    spark: SparkSession,
+    executed_balance_fixing: None,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_balance_fixing_calculation_id
+    )
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
+
+
 @pytest.mark.parametrize(
     "view_name, has_data",
     [

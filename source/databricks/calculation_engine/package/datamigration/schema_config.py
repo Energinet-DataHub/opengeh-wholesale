@@ -1,8 +1,8 @@
 from spark_sql_migrations import Schema, Table, View
 
-import package.infrastructure.paths as paths
-
+import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 import package.databases.wholesale_internal.schemas as internal_schemas
+import package.infrastructure.paths as paths
 from package.databases.wholesale_results_internal.schemas import (
     energy_schema,
     energy_per_brp_schema,
@@ -13,8 +13,6 @@ from package.databases.wholesale_results_internal.schemas import (
     monthly_amounts_schema_uc,
     total_monthly_amounts_schema_uc,
 )
-
-import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 
 # TODO BJM: Remove when we only use Unity Catalog
 schema_config = [
@@ -28,6 +26,10 @@ schema_config = [
             Table(
                 name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=internal_schemas.grid_loss_metering_points_schema,
+            ),
+            Table(
+                name=paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME,
+                schema=internal_schemas.calculation_grid_areas_schema,
             ),
         ],
         views=[],

@@ -17,6 +17,12 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
+from package.codelists import (
+    AggregationLevel,
+    ChargeType,
+    TimeSeriesType,
+    WholesaleResultResolution,
+)
 from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema_uc,
     charge_link_periods_schema_uc,
@@ -24,13 +30,6 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     grid_loss_metering_points_schema,
     metering_point_periods_schema_uc,
     time_series_points_schema,
-)
-
-from package.codelists import (
-    AggregationLevel,
-    ChargeType,
-    TimeSeriesType,
-    WholesaleResultResolution,
 )
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
@@ -288,6 +287,25 @@ def test__when_wholesale_calculation__calculation_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+    ).where(
+        f.col(EnergyResultColumnNames.calculation_id)
+        == c.executed_wholesale_calculation_id
+    )
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
+
+
+def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
     ).where(
         f.col(EnergyResultColumnNames.calculation_id)
         == c.executed_wholesale_calculation_id
