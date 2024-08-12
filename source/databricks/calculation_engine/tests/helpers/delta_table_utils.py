@@ -27,9 +27,7 @@ def write_dataframe_to_table(
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
 
     sql_schema = _struct_type_to_sql_schema(schema)
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
-    )
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({sql_schema})")
 
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{database_name}.{table_name}"
