@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public abstract class CalculationTypeForGridAreasStatementBase(
+public abstract class CalculationTypeForGridAreasQueryStatementBase(
     string gridAreaCodeColumnName,
     string calculationTypeColumnName) : DatabricksStatement
 {
@@ -25,14 +25,14 @@ public abstract class CalculationTypeForGridAreasStatementBase(
 
     protected abstract string GetSource();
 
-    protected abstract string GetSelection();
+    protected abstract string GetSelection(string table);
 
     protected override string GetSqlStatement()
     {
         return $"""
                 SELECT {_gridAreaCodeColumnName}, {_calculationTypeColumnName}
-                FROM {GetSource()} wrv
-                WHERE {GetSelection()}
+                FROM {GetSource()} source
+                WHERE {GetSelection("source")}
                 GROUP BY {_gridAreaCodeColumnName}, {_calculationTypeColumnName}
                 """;
     }

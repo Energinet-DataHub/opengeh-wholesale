@@ -16,16 +16,16 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class WholesaleServicesQueryStatementHelperFactory(
-    IEnumerable<IWholesaleServicesDatabricksContract> helperComponents)
+public class WholesaleServicesQuerySnippetProviderFactory(
+    IEnumerable<IWholesaleServicesDatabricksContract> databricksContracts)
 {
-    private readonly IDictionary<AmountType, IWholesaleServicesDatabricksContract> _helperComponents =
-        helperComponents
+    private readonly IDictionary<AmountType, IWholesaleServicesDatabricksContract> _databricksContracts =
+        databricksContracts
             .DistinctBy(hc => hc.GetAmountType())
             .ToDictionary(hc => hc.GetAmountType());
 
-    public WholesaleServicesQueryStatementHelper Create(WholesaleServicesQueryParameters parameters)
+    public WholesaleServicesQuerySnippetProvider Create(WholesaleServicesQueryParameters parameters)
     {
-        return new WholesaleServicesQueryStatementHelper(_helperComponents[parameters.AmountType], parameters);
+        return new WholesaleServicesQuerySnippetProvider(_databricksContracts[parameters.AmountType], parameters);
     }
 }

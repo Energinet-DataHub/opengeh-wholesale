@@ -15,8 +15,8 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
-from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
-    hive_charge_link_periods_schema,
+from databases.wholesale_basis_data_internal.basis_data_test_factory import (
+    create_basis_data_factory,
 )
 from package.databases.wholesale_basis_data_internal.schemas import (
     hive_charge_price_information_periods_schema,
@@ -25,8 +25,8 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     hive_metering_point_period_schema,
     time_series_points_schema,
 )
-from databases.wholesale_basis_data_internal.basis_data_test_factory import (
-    create_basis_data_factory,
+from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
+    hive_charge_link_periods_schema,
 )
 
 
@@ -62,7 +62,7 @@ def test__basis_data_uses_correct_schema(
     basis_data_container = create_basis_data_factory(spark)
 
     # Act
-    # Refer to the property so we can use paramterization
+    # Refer to the property so we can use parameterization
     basis_data_container_property = getattr(
         basis_data_container, basis_data_table_property_name
     )
