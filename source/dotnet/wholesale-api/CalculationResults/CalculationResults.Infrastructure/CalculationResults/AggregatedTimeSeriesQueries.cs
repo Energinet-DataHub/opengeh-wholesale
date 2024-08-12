@@ -27,7 +27,7 @@ public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
     AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : QueriesBaseClass(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
+    : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
     private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     EnergyResultColumnNames.GridArea,
                     EnergyResultColumnNames.CalculationType,
-                    new AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
+                    new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
                         _deltaTableOptions.Value,
                         _whereClauseProvider,
                         parameters),
@@ -63,28 +63,5 @@ public class AggregatedTimeSeriesQueries(
         {
             yield return aggregatedTimeSeries;
         }
-    }
-
-    private class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
-        DeltaTableOptions deltaTableOptions,
-        AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
-        AggregatedTimeSeriesQueryParameters queryParameters)
-        : CalculationTypeForGridAreasStatementBase(
-            EnergyResultColumnNames.GridArea,
-            EnergyResultColumnNames.CalculationType)
-    {
-        private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-        private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
-        private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
-
-        protected override string GetSource() =>
-            $"""
-             (SELECT wr.*
-              FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
-              INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-              ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
-             """;
-
-        protected override string GetSelection() => _whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv").Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
     }
 }
