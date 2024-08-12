@@ -63,6 +63,10 @@ from package.infrastructure import paths
             paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
             paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         ),
+        (
+            paths.WholesaleInternalDatabase.DATABASE_NAME,
+            paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
+        ),
         # TODO JVM: temporary disabled, add in next pr
         # (
         #     paths.WholesaleInternalDatabase.DATABASE_NAME,
