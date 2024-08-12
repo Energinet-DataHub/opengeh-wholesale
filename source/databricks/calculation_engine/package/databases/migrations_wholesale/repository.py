@@ -27,7 +27,7 @@ from .schemas import (
 from ..repository_helper import read_table
 
 
-class TableReader:
+class MigrationsWholesaleRepository:
     def __init__(
         self,
         spark: SparkSession,
