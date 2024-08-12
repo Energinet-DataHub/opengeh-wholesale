@@ -417,9 +417,7 @@ def dependency_injection_container(
 def grid_loss_metering_points_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
-    calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
-    calculation_input_database: str,
     wholesale_internal_database: str,
     migrations_executed: None,
 ) -> None:
