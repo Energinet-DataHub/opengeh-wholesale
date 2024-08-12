@@ -25,7 +25,7 @@ from package.databases.wholesale_internal.schemas import (
 
 
 @pytest.mark.parametrize(
-    "basis_data_table_property_name, expected_schema",
+    "internal_table_property_name, expected_schema",
     [
         (
             "calculations",
