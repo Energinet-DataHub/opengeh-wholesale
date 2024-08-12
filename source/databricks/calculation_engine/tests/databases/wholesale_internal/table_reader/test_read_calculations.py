@@ -88,9 +88,7 @@ class TestWhenValidInput:
         )
         expected = df
 
-        table_reader = wholesale_internal.TableReader(
-            spark, calculation_input_path, "spark_catalog"
-        )
+        table_reader = wholesale_internal.TableReader(spark, "spark_catalog")
 
         # Act
         actual = table_reader.read_calculations()
