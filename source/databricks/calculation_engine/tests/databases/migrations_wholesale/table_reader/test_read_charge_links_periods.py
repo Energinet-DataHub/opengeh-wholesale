@@ -24,6 +24,7 @@ from package.databases.migrations_wholesale.schemas import charge_link_periods_s
 from package.constants import Colname
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
+from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -49,14 +50,16 @@ class TestWhenContractMismatch:
         # Arrange
         row = _create_charge_link_period_row()
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
         df = df.drop(Colname.charge_type)
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_link_periods()
@@ -73,19 +76,19 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/charge_link_periods"
+        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
         row = _create_charge_link_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
         write_dataframe_to_table(
             spark,
             df,
             "test_database",
-            "charge_link_periods",
+            MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
             table_location,
             charge_link_periods_schema,
         )
         expected = df
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = TableReader(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_link_periods()
@@ -98,7 +101,9 @@ class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+            mock.Mock(),
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         row = _create_charge_link_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
@@ -106,6 +111,6 @@ class TestWhenValidInputAndMoreColumns:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             reader.read_charge_link_periods()
