@@ -146,3 +146,9 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
+
+variable "alert_email_address_edi" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}
