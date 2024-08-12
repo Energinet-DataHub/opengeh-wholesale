@@ -69,6 +69,7 @@ def executed_balance_fixing(
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
+    grid_loss_metering_points_input_data_written_to_delta: None,
     calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
@@ -96,6 +97,7 @@ def executed_wholesale_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
+    grid_loss_metering_points_input_data_written_to_delta: None,
     calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
