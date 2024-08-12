@@ -22,5 +22,5 @@ SELECT
   grid_area_code,
   date,
   calculation_execution_time_start as active_from_date,
-  LEAD(calculation_execution_time_start) OVER (PARTITION BY grid_area_code, date ORDER BY calculation_version ASC) AS active_to_date
+  LEAD(calculation_execution_time_start) OVER (PARTITION BY calculation_type, grid_area_code, date ORDER BY calculation_version ASC) AS active_to_date
 FROM calculations_by_day
