@@ -23,6 +23,7 @@ from package.databases.migrations_wholesale import TableReader
 
 def chain():
 
+    # Dependency injection
     table_reader = TableReader()
     calculator_args = CalculatorArgs()
 
@@ -31,9 +32,10 @@ def chain():
     mpp_with_grid_loss_handler = MeteringPointPeriodsWithGridLoss()
     fallback_handler = BaseHandler()
 
-    # Set up the chain: MeteringPointPeriodsHandler -> MeteringPointPeriodsWithoutGridLoss -> FallbackHandler
+    # Set up the chain
     mpp_handler.set_next(mpp_without_grid_loss_handler)
     mpp_without_grid_loss_handler.set_next(mpp_with_grid_loss_handler)
     mpp_with_grid_loss_handler.set_next(fallback_handler)
 
+    # Execute calculation
     mpp_handler.handle(calculator_args)
