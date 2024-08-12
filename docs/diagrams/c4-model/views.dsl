@@ -40,7 +40,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     tags "Microsoft Azure - Azure Databricks"
 
                     # Subsystem-to-subsystem relationships.
-                    this -> wholesaleDataLake "Deliver calculation inputs"
+                    this -> sharedUnityCatalog "Deliver calculation inputs"
                 }
             }
         }
