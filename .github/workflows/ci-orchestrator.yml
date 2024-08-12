@@ -107,7 +107,7 @@ jobs:
 
   shared_resources_ci:
     needs: changes
-    if: ${{ needs.changes.outputs.shared_resources_ci == 'true' }}
+    if: ${{ needs.changes.outputs.shared_resources_infrastructure_ci == 'true' || needs.changes.outputs.shared_resources_b2c_ci == 'true' || needs.changes.outputs.shared_resources_healthcheck_app_ci == 'true' }}
     uses: ./.github/workflows/shared-resources-infrastructure-build-prerelease.yml
     with:
       infrastructure_path: ./shared-resources/terraform/infrastructure

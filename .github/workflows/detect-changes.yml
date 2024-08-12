@@ -24,8 +24,12 @@ on:
         value: ${{ jobs.changes.outputs.esett_exchange_ci }}
       migrations_ci:
         value: ${{ jobs.changes.outputs.migrations_ci }}
-      shared_resources_ci:
-        value: ${{ jobs.changes.outputs.shared_resources_ci }}
+      shared_resources_infrastructure_ci:
+        value: ${{ jobs.changes.outputs.shared_resources_infrastructure_ci }}
+      shared_resources_b2c_ci:
+        value: ${{ jobs.changes.outputs.shared_resources_b2c_ci }}
+      shared_resources_healthcheck_app_ci:
+        value: ${{ jobs.changes.outputs.shared_resources_healthcheck_app_ci }}
       ui_ci:
         value: ${{ jobs.changes.outputs.ui_ci }}
       wholesale_ci:
@@ -42,8 +46,6 @@ on:
         value: ${{ jobs.changes.outputs.sauron_ci }}
       sauron_healthchecks_api_ci:
         value: ${{ jobs.changes.outputs.sauron_healthchecks_api_ci }}
-      dotnet:
-        value: ${{ jobs.changes.outputs.dotnet }}
 
 jobs:
   changes:
@@ -58,7 +60,9 @@ jobs:
       grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
-      shared_resources_ci: ${{ steps.filter.outputs.shared_resources_ci }}
+      shared_resources_infrastructure_ci: ${{ steps.filter.outputs.shared_resources_infrastructure_ci }}
+      shared_resources_b2c_ci: ${{ steps.filter.outputs.shared_resources_b2c_ci }}
+      shared_resources_healthcheck_app_ci: ${{ steps.filter.outputs.shared_resources_healthcheck_app_ci }}
       ui_ci: ${{ steps.filter.outputs.ui_ci }}
       wholesale_ci: ${{ steps.filter.outputs.wholesale_ci }}
       render_c4model_deployment: ${{ steps.filter.outputs.render_c4model_deployment }}
@@ -67,7 +71,6 @@ jobs:
       esett_deprecated_ci: ${{ steps.filter.outputs.esett_deprecated_ci }}
       sauron_ci: ${{ steps.filter.outputs.sauron_ci }}
       sauron_healthchecks_api_ci: ${{ steps.filter.outputs.sauron_healthchecks_api_ci }}
-      dotnet: ${{ steps.filter.outputs.dotnet }}
     steps:
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
@@ -126,12 +129,20 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
-            shared_resources_ci:
-              - shared-resources/**
+            shared_resources_infrastructure_ci:
+              - shared-resources/terraform/infrastructure/**
               - .github/workflows/shared-resources-*.yml
               - .github/workflows/shared-resources-infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
+            shared_resources_b2c_ci:
+              - shared-resources/terraform/b2c/**
+              - .github/workflows/shared-resources-*.yml
+              - .github/workflows/shared-resources-infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            shared_resources_healthcheck_app_ci:
+              - shared-resources/healthcheck-app/**
             ui_ci:
               - ui/**
               - .github/workflows/ui-*.yml
@@ -174,5 +185,3 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
-            dotnet:
-              - shared-resources/healthcheck-app/**

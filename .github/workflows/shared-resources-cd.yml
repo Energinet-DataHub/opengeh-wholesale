@@ -12,9 +12,14 @@ on:
 
 jobs:
   #
+  # Detect changes to start relevant workflows
+  #
+  changes:
+    uses: ./.github/workflows/detect-changes.yml
+
+  #
   # CD Infrastructure
   #
-
   infrastructure_promote_prerelease:
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v14
     with:
@@ -23,10 +28,9 @@ jobs:
   #
   # Dispatch deployment request
   #
-
   dispatch_deployment_event:
     runs-on: ubuntu-latest
-    needs: infrastructure_promote_prerelease
+    needs: [infrastructure_promote_prerelease, changes]
     steps:
       - name: Find associated pull request
         uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v14
@@ -46,7 +50,7 @@ jobs:
           repository: ${{ vars.environment_repository_path }}
           event-type: shared-resources-deployment-request-infrastructure
           # yamllint disable-line rule:quoted-strings
-          client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
+          client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "infrastructure": "${{ needs.changes.outputs.shared_resources_infrastructure_ci }}", "b2c": "${{ needs.changes.outputs.shared_resources_b2c_ci }}", "dotnet": "${{ needs.changes.outputs.shared_resources_healthcheck_app_ci }}"}'
 
   #
   # Send notification to teams channel if deployment dispatch failed
