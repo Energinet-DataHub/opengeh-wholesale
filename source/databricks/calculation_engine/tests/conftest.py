@@ -421,7 +421,18 @@ def energy_input_data_written_to_delta(
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
     wholesale_internal_database: str,
+    migrations_executed: None,
 ) -> None:
+    # grid loss
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/GridLossResponsible.csv",
+        database_name=wholesale_internal_database,
+        table_name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        schema=grid_loss_metering_points_schema,
+        table_location=f"{calculation_input_path}/{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
+    )
+
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -438,16 +449,6 @@ def energy_input_data_written_to_delta(
         table_name=paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_points_schema,
         table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
-    )
-
-    # grid loss
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/GridLossResponsible.csv",
-        database_name=wholesale_internal_database,
-        table_name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-        schema=grid_loss_metering_points_schema,
-        table_location=f"{calculation_input_path}/{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
