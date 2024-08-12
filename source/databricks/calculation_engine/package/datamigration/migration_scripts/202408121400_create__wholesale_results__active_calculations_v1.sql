@@ -6,7 +6,7 @@ WITH calculations_by_day AS (
     calculation_version,
     explode(sequence(
       calculation_period_start,
-      calculation_period_end,
+      date_sub(calculation_period_end, 1),
       interval 1 day
     )) AS date,
     calculation_execution_time_start,
@@ -24,4 +24,3 @@ SELECT
   calculation_execution_time_start as active_from_date,
   LEAD(calculation_execution_time_start) OVER (PARTITION BY grid_area_code, date ORDER BY calculation_version ASC) AS active_to_date
 FROM calculations_by_day
-WHERE date < calculation_period_end
