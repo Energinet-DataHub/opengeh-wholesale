@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class WholesaleServicesQueryStatement(
     WholesaleServicesQueryStatement.StatementType statementType,
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
-    RequestSpecificWholesaleServicesQuerySnippetsProvider querySnippetsProvider,
+    WholesaleServicesQuerySnippetProvider querySnippetProvider,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
@@ -31,13 +31,13 @@ public class WholesaleServicesQueryStatement(
     private readonly StatementType _statementType = statementType;
     private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-    private readonly RequestSpecificWholesaleServicesQuerySnippetsProvider _querySnippetsProvider = querySnippetsProvider;
+    private readonly WholesaleServicesQuerySnippetProvider _querySnippetProvider = querySnippetProvider;
 
     protected override string GetSqlStatement()
     {
         var selectTarget = _statementType switch
         {
-            StatementType.Select => _querySnippetsProvider.GetProjection(ChargesTableName),
+            StatementType.Select => _querySnippetProvider.GetProjection(ChargesTableName),
             StatementType.Exists => "1",
             _ => throw new ArgumentOutOfRangeException(nameof(_statementType), _statementType, "Unknown StatementType"),
         };
@@ -62,7 +62,7 @@ public class WholesaleServicesQueryStatement(
                 FROM ({GetChargesToChooseFrom()}) {ChargesTableName}
                 INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
                 ON {MatchChargesWithPackages(ChargesTableName, PackagesWithVersionTableName)}
-                ORDER BY {string.Join(", ", _querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_querySnippetsProvider.DatabricksContract.GetTimeColumnName()}
+                ORDER BY {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}
                 """;
     }
 
@@ -80,9 +80,9 @@ public class WholesaleServicesQueryStatement(
          * WHERE wsr.A = a AND wsr.B = b AND ...
          */
         return $"""
-                SELECT {_querySnippetsProvider.GetProjection(WholesaleServicesTableName)}
-                FROM {_querySnippetsProvider.DatabricksContract.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
-                WHERE {_querySnippetsProvider.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
+                SELECT {_querySnippetProvider.GetProjection(WholesaleServicesTableName)}
+                FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
+                WHERE {_querySnippetProvider.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
                 """;
     }
 
@@ -95,10 +95,10 @@ public class WholesaleServicesQueryStatement(
          * GROUP BY wsr.time, wsr.A, wsr.B, ...
          */
         return $"""
-                SELECT max({WholesaleServicesTableName}.{_querySnippetsProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {WholesaleServicesTableName}.{_querySnippetsProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab} AS max_{ctab}"))}
-                FROM {_querySnippetsProvider.DatabricksContract.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
-                WHERE {_querySnippetsProvider.GetSelection(WholesaleServicesTableName)} AND {_querySnippetsProvider.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
-                GROUP BY {WholesaleServicesTableName}.{_querySnippetsProvider.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab}"))}
+                SELECT max({WholesaleServicesTableName}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {WholesaleServicesTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab} AS max_{ctab}"))}
+                FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {WholesaleServicesTableName}
+                WHERE {_querySnippetProvider.GetSelection(WholesaleServicesTableName)} AND {_querySnippetProvider.GetLatestOrFixedCalculationTypeSelection(WholesaleServicesTableName, _calculationTypePerGridAreas)}
+                GROUP BY {WholesaleServicesTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{WholesaleServicesTableName}.{ctab}"))}
                 """;
     }
 
@@ -110,9 +110,9 @@ public class WholesaleServicesQueryStatement(
          * AND coalesce(chrg.A, 'is_null_value') = coalesce(pckg.max_A, 'is_null_value') AND ...
          */
         return $"""
-                {chargesPrefix}.{_querySnippetsProvider.DatabricksContract.GetTimeColumnName()} = {packagesPrefix}.max_time
-                AND {chargesPrefix}.{_querySnippetsProvider.DatabricksContract.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
-                AND {string.Join(" AND ", _querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"coalesce({chargesPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
+                {chargesPrefix}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} = {packagesPrefix}.max_time
+                AND {chargesPrefix}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
+                AND {string.Join(" AND ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"coalesce({chargesPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
                 """;
     }
 }

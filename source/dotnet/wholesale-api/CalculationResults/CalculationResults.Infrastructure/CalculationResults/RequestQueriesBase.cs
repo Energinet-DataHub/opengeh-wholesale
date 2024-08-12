@@ -29,11 +29,11 @@ public abstract class RequestQueriesBase(DatabricksSqlWarehouseQueryExecutor dat
     protected async Task<List<CalculationTypeForGridArea>> GetCalculationTypeForGridAreasAsync(
         string gridAreaCodeColumnName,
         string calculationTypeColumnName,
-        CalculationTypeForGridAreasStatementBase calculationTypeForGridAreaStatement,
+        CalculationTypeForGridAreasQueryStatementBase calculationTypeForGridAreaQueryStatement,
         CalculationType? queryParametersCalculationType)
     {
         var calculationTypeForGridAreas = await _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(calculationTypeForGridAreaStatement, Format.JsonArray)
+            .ExecuteStatementAsync(calculationTypeForGridAreaQueryStatement, Format.JsonArray)
             .Select(d =>
             {
                 var databricksSqlRow = new DatabricksSqlRow(d);

@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class RequestSpecificWholesaleServicesQuerySnippetsProviderFactory(
+public class WholesaleServicesQuerySnippetProviderFactory(
     IEnumerable<IWholesaleServicesDatabricksContract> databricksContracts)
 {
     private readonly IDictionary<AmountType, IWholesaleServicesDatabricksContract> _databricksContracts =
@@ -24,8 +24,8 @@ public class RequestSpecificWholesaleServicesQuerySnippetsProviderFactory(
             .DistinctBy(hc => hc.GetAmountType())
             .ToDictionary(hc => hc.GetAmountType());
 
-    public RequestSpecificWholesaleServicesQuerySnippetsProvider Create(WholesaleServicesQueryParameters parameters)
+    public WholesaleServicesQuerySnippetProvider Create(WholesaleServicesQueryParameters parameters)
     {
-        return new RequestSpecificWholesaleServicesQuerySnippetsProvider(_databricksContracts[parameters.AmountType], parameters);
+        return new WholesaleServicesQuerySnippetProvider(_databricksContracts[parameters.AmountType], parameters);
     }
 }

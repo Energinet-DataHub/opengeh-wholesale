@@ -17,19 +17,19 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-internal class WholesaleServicesCalculationTypeForGridAreasStatement(
+internal class WholesaleServicesCalculationTypeForGridAreasQueryStatement(
     DeltaTableOptions deltaTableOptions,
-    RequestSpecificWholesaleServicesQuerySnippetsProvider querySnippetsProvider)
-    : CalculationTypeForGridAreasStatementBase(
-        querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
-        querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName())
+    WholesaleServicesQuerySnippetProvider querySnippetProvider)
+    : CalculationTypeForGridAreasQueryStatementBase(
+        querySnippetProvider.DatabricksContract.GetGridAreaCodeColumnName(),
+        querySnippetProvider.DatabricksContract.GetCalculationTypeColumnName())
 {
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
-    private readonly RequestSpecificWholesaleServicesQuerySnippetsProvider _querySnippetsProvider =
-        querySnippetsProvider;
+    private readonly WholesaleServicesQuerySnippetProvider _querySnippetProvider =
+        querySnippetProvider;
 
-    protected override string GetSource() => _querySnippetsProvider.DatabricksContract.GetSource(_deltaTableOptions);
+    protected override string GetSource() => _querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions);
 
-    protected override string GetSelection(string table) => _querySnippetsProvider.GetSelection(table);
+    protected override string GetSelection(string table) => _querySnippetProvider.GetSelection(table);
 }

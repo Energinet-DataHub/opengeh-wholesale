@@ -19,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class RequestSpecificWholesaleServicesQuerySnippetsProvider(
+public class WholesaleServicesQuerySnippetProvider(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {

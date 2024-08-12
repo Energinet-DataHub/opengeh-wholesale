@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesQueries(
             await GetCalculationTypeForGridAreasAsync(
                     EnergyResultColumnNames.GridArea,
                     EnergyResultColumnNames.CalculationType,
-                    new AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
+                    new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
                         _deltaTableOptions.Value,
                         _whereClauseProvider,
                         parameters),

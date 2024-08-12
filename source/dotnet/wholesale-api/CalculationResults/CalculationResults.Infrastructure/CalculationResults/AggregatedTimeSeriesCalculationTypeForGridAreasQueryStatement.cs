@@ -19,11 +19,11 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-internal class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
+internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
     DeltaTableOptions deltaTableOptions,
     AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
     AggregatedTimeSeriesQueryParameters queryParameters)
-    : CalculationTypeForGridAreasStatementBase(
+    : CalculationTypeForGridAreasQueryStatementBase(
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.CalculationType)
 {

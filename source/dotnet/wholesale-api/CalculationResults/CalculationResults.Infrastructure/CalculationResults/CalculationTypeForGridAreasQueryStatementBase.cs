@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public abstract class CalculationTypeForGridAreasStatementBase(
+public abstract class CalculationTypeForGridAreasQueryStatementBase(
     string gridAreaCodeColumnName,
     string calculationTypeColumnName) : DatabricksStatement
 {

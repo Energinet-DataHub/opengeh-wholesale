@@ -24,23 +24,23 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class WholesaleServicesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-    RequestSpecificWholesaleServicesQuerySnippetsProviderFactory querySnippetsProviderFactory,
+    WholesaleServicesQuerySnippetProviderFactory querySnippetProviderFactory,
     IOptions<DeltaTableOptions> deltaTableOptions)
     : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IWholesaleServicesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
-    private readonly RequestSpecificWholesaleServicesQuerySnippetsProviderFactory _querySnippetsProviderFactory = querySnippetsProviderFactory;
+    private readonly WholesaleServicesQuerySnippetProviderFactory _querySnippetProviderFactory = querySnippetProviderFactory;
 
     public async IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        var querySnippetsProvider = _querySnippetsProviderFactory.Create(queryParameters);
+        var querySnippetsProvider = _querySnippetProviderFactory.Create(queryParameters);
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
                     querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
                     querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName(),
-                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, querySnippetsProvider),
+                    new WholesaleServicesCalculationTypeForGridAreasQueryStatement(_deltaTableOptions.Value, querySnippetsProvider),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
@@ -65,20 +65,20 @@ public class WholesaleServicesQueries(
 
     public async Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        var querySnippetsProvider = _querySnippetsProviderFactory.Create(queryParameters);
+        var querySnippetsProvider = _querySnippetProviderFactory.Create(queryParameters);
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
                     querySnippetsProvider.DatabricksContract.GetGridAreaCodeColumnName(),
                     querySnippetsProvider.DatabricksContract.GetCalculationTypeColumnName(),
-                    new WholesaleServicesCalculationTypeForGridAreasStatement(_deltaTableOptions.Value, querySnippetsProvider),
+                    new WholesaleServicesCalculationTypeForGridAreasQueryStatement(_deltaTableOptions.Value, querySnippetsProvider),
                     queryParameters.CalculationType)
                 .ConfigureAwait(false);
 
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Exists,
             calculationTypePerGridAreas,
-            _querySnippetsProviderFactory.Create(queryParameters),
+            _querySnippetProviderFactory.Create(queryParameters),
             _deltaTableOptions.Value);
 
         return await _databricksSqlWarehouseQueryExecutor
