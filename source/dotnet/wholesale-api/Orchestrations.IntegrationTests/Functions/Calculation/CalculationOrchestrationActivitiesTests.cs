@@ -27,6 +27,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 {
+    private const string PermissionCalculationsManage = "calculations:manage";
+
     public CalculationOrchestrationActivitiesTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
@@ -77,7 +79,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
         var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
         calculationIdCallback.SetValue(calculationId);
 
@@ -146,7 +148,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
         var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
 
         // Assert
@@ -195,7 +197,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
         var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
 
         // Assert

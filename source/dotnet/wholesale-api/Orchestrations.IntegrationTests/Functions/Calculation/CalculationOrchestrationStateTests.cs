@@ -29,6 +29,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationStateTests : IAsyncLifetime
 {
+    private const string PermissionCalculationsManage = "calculations:manage";
+
     public CalculationOrchestrationStateTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
@@ -88,7 +90,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
         var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
         calculationIdCallback.SetValue(calculationId);
 
@@ -198,7 +200,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync("calculations:manage");
+        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
         var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
         calculationIdCallback.SetValue(calculationId);
 
