@@ -98,30 +98,53 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         }
 
         var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
-        var filesToRequest = new List<SettlementReportFileRequestDto>();
-        foreach (var file in filesInReport)
+
+        var tasks = filesInReport
+            .Select(file =>
+                ScatterFileAsync(
+                    requestId,
+                    reportRequest,
+                    actorInfo,
+                    file.Content,
+                    file.Name,
+                    file.SplitReportPerGridArea,
+                    maxCalculationVersion));
+
+        var filesToRequest = await Task.WhenAll(tasks).ConfigureAwait(false);
+        return filesToRequest.SelectMany(files => files);
+    }
+
+    private async Task<IReadOnlyCollection<SettlementReportFileRequestDto>> ScatterFileAsync(
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest,
+        SettlementReportRequestedByActor actorInfo,
+        SettlementReportFileContent fileContent,
+        string fileName,
+        bool splitReportPerGridArea,
+        long maxCalculationVersion)
+    {
+        var fileRequest = new SettlementReportFileRequestDto(
+            requestId,
+            fileContent,
+            new SettlementReportPartialFileInfo(fileName, reportRequest.PreventLargeTextFiles),
+            reportRequest.Filter,
+            maxCalculationVersion);
+
+        if (fileContent == SettlementReportFileContent.MonthlyAmountTotal)
         {
-            var fileRequest = new SettlementReportFileRequestDto(
+            fileRequest = new SettlementReportFileRequestDto(
                 requestId,
-                file.Content,
-                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles),
+                fileContent,
+                new SettlementReportPartialFileInfo(fileName, reportRequest.PreventLargeTextFiles) { FileOffset = int.MaxValue },
                 reportRequest.Filter,
                 maxCalculationVersion);
+        }
 
-            if (file.Content == SettlementReportFileContent.MonthlyAmountTotal)
-            {
-                fileRequest = new SettlementReportFileRequestDto(
-                requestId,
-                file.Content,
-                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles) { FileOffset = int.MaxValue },
-                reportRequest.Filter,
-                maxCalculationVersion);
-            }
+        var filesToRequest = new List<SettlementReportFileRequestDto>();
 
-            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, file.SplitReportPerGridArea).ConfigureAwait(false))
-            {
-                filesToRequest.Add(splitFileRequest);
-            }
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, splitReportPerGridArea).ConfigureAwait(false))
+        {
+            filesToRequest.Add(splitFileRequest);
         }
 
         return filesToRequest;

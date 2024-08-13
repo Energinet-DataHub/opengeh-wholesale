@@ -19,7 +19,10 @@ from package.codelists import CalculationType
 from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
-from package.databases.wholesale_internal.schemas import hive_calculations_schema
+from package.databases.wholesale_internal.schemas import (
+    hive_calculations_schema,
+    calculations_schema,
+)
 
 
 class DefaultValues:
@@ -62,7 +65,7 @@ def create_calculations(
         data = [create_calculation_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data=data, schema=hive_calculations_schema)
+    return spark.createDataFrame(data=data, schema=calculations_schema)
 
 
 def create_empty_calculations(spark: SparkSession) -> DataFrame:

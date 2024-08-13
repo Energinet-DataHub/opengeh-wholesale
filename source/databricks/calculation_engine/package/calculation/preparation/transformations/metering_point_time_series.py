@@ -162,7 +162,7 @@ def get_metering_point_time_series(
             Colname.quantity,
             Colname.quality,
             Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
+            Colname.balance_responsible_party_id,
             Colname.settlement_method,
         )
     )

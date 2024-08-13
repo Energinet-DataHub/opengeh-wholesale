@@ -30,7 +30,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.codelists import ChargeResolution, CalculationType
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
@@ -43,8 +43,8 @@ from ...infrastructure import logging_configuration
 class PreparedDataReader:
     def __init__(
         self,
-        delta_table_reader: TableReader,
-        wholesale_internal_table_reader: wholesale_internal.TableReader,
+        delta_table_reader: MigrationsWholesaleRepository,
+        wholesale_internal_table_reader: wholesale_internal.WholesaleInternalRepository,
     ) -> None:
         self._table_reader = delta_table_reader
         self._wholesale_internal_table_reader = wholesale_internal_table_reader

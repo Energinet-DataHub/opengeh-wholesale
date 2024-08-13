@@ -12,13 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Package `input`
+from pyspark.sql import DataFrame
 
-Responsible for reading calculation input data from Delta tables.
-Schemas are checked when reading.
-Only minor transformations to data frames are done merely compensating
-for minor inappropriatenesses in the input table formats.
-"""
+from package.calculation.calculation_results import InternalContainer
+from package.infrastructure import logging_configuration
 
-from .repository import MigrationsWholesaleRepository
+
+@logging_configuration.use_span("calculation.internal.prepare")
+def create(
+    calculations: DataFrame, calculation_grid_areas: DataFrame
+) -> InternalContainer:
+
+    return InternalContainer(
+        calculations=calculations,
+        calculation_grid_areas=calculation_grid_areas,
+    )
