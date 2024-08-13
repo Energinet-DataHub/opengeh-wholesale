@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType
 
-from package.common.schemas import assert_contract, assert_schema
 from package.infrastructure.paths import (
     WholesaleInternalDatabase,
     HiveBasisDataDatabase,
 )
 from .schemas import (
-    hive_calculations_schema,
     grid_loss_metering_points_schema,
     calculations_schema,
 )
