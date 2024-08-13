@@ -14,6 +14,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
@@ -215,20 +216,15 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
     /// and returns a 'Bearer' authentication header.
     /// </summary>
-    public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
+    public Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync(params string[] roles)
     {
         // Fake claims
         var actorNumberClaim = new Claim("actornumber", "0000000000000");
         var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
 
-        var token = await OpenIdJwtManager.CreateInternalTokenAsync(
-            roles: roles,
+        return OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(
+            roles: ["calculations:manage"],
             extraClaims: [actorNumberClaim, actorRoleClaim]);
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Internal token was not created.");
-
-        var authenticationHeader = $"Bearer {token}";
-        return authenticationHeader;
     }
 
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)

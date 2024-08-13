@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
@@ -24,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 
 public static class AppHostManagerExtensions
 {
-    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager, string authenticationHeaderValue)
+    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager, AuthenticationHeaderValue authenticationHeaderValue)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -46,7 +47,7 @@ public static class AppHostManagerExtensions
             Encoding.UTF8,
             "application/json");
 
-        request.Headers.Add("Authorization", $"{authenticationHeaderValue}");
+        request.Headers.Authorization = authenticationHeaderValue;
 
         using var startCalculationResponse = await appHostManager.HttpClient.SendAsync(request);
         startCalculationResponse.EnsureSuccessStatusCode();

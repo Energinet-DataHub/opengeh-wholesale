@@ -27,8 +27,6 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 {
-    private const string PermissionCalculationsManage = "calculations:manage";
-
     public CalculationOrchestrationActivitiesTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
@@ -79,8 +77,8 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
+        var authenticationHeaderValue = await Fixture.CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(authenticationHeaderValue);
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
@@ -148,8 +146,8 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
+        var authenticationHeaderValue = await Fixture.CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(authenticationHeaderValue);
 
         // Assert
         // => Verify expected behaviour by searching the orchestration history
@@ -197,8 +195,8 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var headerValue = await Fixture.CreateAuthenticationHeaderWithNestedTokenAsync(PermissionCalculationsManage);
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(headerValue);
+        var authenticationHeaderValue = await Fixture.CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(authenticationHeaderValue);
 
         // Assert
         // => Verify expected behaviour by searching the orchestration history
