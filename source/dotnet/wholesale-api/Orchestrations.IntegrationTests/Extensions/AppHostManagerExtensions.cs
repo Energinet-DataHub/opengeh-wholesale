@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NodaTime;
 
@@ -28,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 
 public static class AppHostManagerExtensions
 {
-    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager, string nestedToken)
+    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager, string authenticationHeaderValue)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -50,44 +46,11 @@ public static class AppHostManagerExtensions
             Encoding.UTF8,
             "application/json");
 
-        ////var token = CreateFakeInternalToken(); // TODO: BEWARE that we don't add Bearer twice ;)
-        request.Headers.Add("Authorization", $"{nestedToken}");
+        request.Headers.Add("Authorization", $"{authenticationHeaderValue}");
 
         using var startCalculationResponse = await appHostManager.HttpClient.SendAsync(request);
         startCalculationResponse.EnsureSuccessStatusCode();
 
         return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
-    }
-
-    /// <summary>
-    /// Create a fake token which is used by the 'UserMiddleware' to create
-    /// the 'UserContext'.
-    /// </summary>
-    private static string CreateFakeInternalToken()
-    {
-        var kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
-        RsaSecurityKey testKey = new(RSA.Create()) { KeyId = kid };
-
-        var issuer = "https://test.datahub.dk";
-        var audience = Guid.Empty.ToString();
-        var validFrom = DateTime.UtcNow;
-        var validTo = DateTime.UtcNow.AddMinutes(15);
-
-        var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
-        var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
-        var actorNumberClaim = new Claim("actornumber", "0000000000000");
-        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
-
-        var internalToken = new JwtSecurityToken(
-            issuer,
-            audience,
-            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
-            validFrom,
-            validTo,
-            new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));
-
-        var handler = new JwtSecurityTokenHandler();
-        var writtenToken = handler.WriteToken(internalToken);
-        return writtenToken;
     }
 }

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
