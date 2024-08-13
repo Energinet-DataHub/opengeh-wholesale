@@ -89,7 +89,7 @@ metering_point_periods_schema = StructType(
         # 2. When the metering point is an exchange (E20) metering point (not relevant for wholesale calculations)
         # Used in balance fixing and settlement.
         # Example: 8100000000109
-        StructField("balance_responsible_id", StringType(), True),
+        StructField("balance_responsible_party_id", StringType(), True),
         # The start date of the period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
         # Used in balance fixing and settlement.
