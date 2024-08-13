@@ -152,7 +152,7 @@ def _calculate_negative_or_positive(
         .select(
             glr[Colname.grid_area_code],
             glr[Colname.energy_supplier_id],
-            glr[Colname.balance_responsible_id],
+            glr[Colname.balance_responsible_party_id],
             gl[Colname.observation_time],
             gl[Colname.quantity],
             gl[Colname.qualities],
@@ -227,7 +227,7 @@ def apply_grid_loss_adjustment(
     grid_loss_result_df = grid_loss_result.df
     # grid_loss_result_df's energy supplier and balance responsible is always null
     grid_loss_result_df = grid_loss_result_df.drop(Colname.energy_supplier_id)
-    grid_loss_result_df = grid_loss_result_df.drop(Colname.balance_responsible_id)
+    grid_loss_result_df = grid_loss_result_df.drop(Colname.balance_responsible_party_id)
 
     grid_loss_responsible_df = grid_loss_responsible.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
@@ -235,7 +235,7 @@ def apply_grid_loss_adjustment(
         Colname.from_date,
         Colname.to_date,
         Colname.energy_supplier_id,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         f.col(Colname.grid_area_code).alias(grid_loss_responsible_grid_area),
         Colname.metering_point_type,
     )
@@ -256,7 +256,7 @@ def apply_grid_loss_adjustment(
     ).select(
         Colname.grid_area_code,
         Colname.energy_supplier_id,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.observation_time,
         Colname.quantity,
         Colname.qualities,
@@ -268,12 +268,12 @@ def apply_grid_loss_adjustment(
             Colname.observation_time,
             Colname.grid_area_code,
             Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
+            Colname.balance_responsible_party_id,
         ],
         "outer",
     ).select(
         Colname.grid_area_code,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
         result_df[Colname.quantity],
@@ -304,14 +304,14 @@ def apply_grid_loss_adjustment(
 
     result = result_df.select(
         Colname.grid_area_code,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
         f.col(adjusted_sum_quantity).alias(Colname.quantity),
         Colname.qualities,
     ).orderBy(
         Colname.grid_area_code,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
     )

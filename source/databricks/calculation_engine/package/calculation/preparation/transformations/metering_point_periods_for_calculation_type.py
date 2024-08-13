@@ -147,7 +147,7 @@ def _get_child_metering_points_with_energy_suppliers(
         potential_parent_metering_points[es].alias(
             Colname.energy_supplier_id
         ),  # energy_supplier_id is always null on child metering points
-        all_child_metering_points[Colname.balance_responsible_id],
+        all_child_metering_points[Colname.balance_responsible_party_id],
         f.when(
             potential_parent_metering_points[from_date]
             > all_child_metering_points[Colname.from_date],

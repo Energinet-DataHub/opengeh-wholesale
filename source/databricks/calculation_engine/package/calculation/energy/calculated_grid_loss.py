@@ -68,7 +68,7 @@ def add_calculated_grid_loss_to_metering_point_times_series(
             f.col(Colname.quantity).alias(Colname.quantity),
             f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
             f.col(Colname.energy_supplier_id),
-            f.col(Colname.balance_responsible_id),
+            f.col(Colname.balance_responsible_party_id),
             f.col(Colname.settlement_method),
         )
         .union(metering_point_time_series.df)
