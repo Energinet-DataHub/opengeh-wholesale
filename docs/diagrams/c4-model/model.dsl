@@ -16,6 +16,9 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> dh3.sharedUnityCatalog "Read inputs / write results"
+        this -> wholesaleDataLake "Read inputs / write results" {
+            tags "Simple View"
+        }
     }
     wholesaleMigrationJob = container "Migration Job" {
         description "Executes delta migrations (invoked during deployment)"
@@ -24,6 +27,9 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> dh3.sharedUnityCatalog "Migrate database objects and data"
+        this -> wholesaleDataLake "Read inputs / write results" {
+            tags "Simple View"
+        }
     }
     wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
         description "Executes delta SQL migrations"
@@ -49,8 +55,6 @@ wholesaleSubsystem = group "Wholesale" {
         # Subsystem relationships
         this -> dh3.sharedUnityCatalog "Read basis data and results"
     }
-
-    # TODO: Split into subsystem areas?
 
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"

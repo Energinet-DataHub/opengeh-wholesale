@@ -19,7 +19,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
             # hence subsystems that doesn't depend on others, should be listed first.
 
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G3C5S6WR5GICNQBZA4ZV3JGDA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G33BF5LS74PLGAQJBIZV3LC3Q
 
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
@@ -44,6 +44,11 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                     # Subsystem-to-subsystem relationships.
                     this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
+
+                    # Subsystem-to-Subsystem relationships
+                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" "integration event/amqp" {
+                        tags "Simple View"
+                    }
                 }
             }
         }
