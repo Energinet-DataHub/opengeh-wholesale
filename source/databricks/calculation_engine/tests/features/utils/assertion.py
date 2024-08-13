@@ -17,7 +17,7 @@ from typing import Any
 from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
-from package.calculation.calculation_results import CalculationResultsContainer
+from package.calculation.calculation_results import CalculationOutput
 from package.databases.wholesale_results_internal.result_column_names import (
     ResultColumnNames,
 )
@@ -26,7 +26,7 @@ from .expected_output import ExpectedOutput
 
 
 def assert_output(
-    actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedOutput]],
+    actual_and_expected: tuple[CalculationOutput, list[ExpectedOutput]],
     output_name: str,
     feature_tests_configuration: FeatureTestsConfiguration,
 ) -> None:
@@ -67,7 +67,7 @@ def _get_expected_for_output(
 
 
 def _get_actual_for_output(
-    calculation_results_container: CalculationResultsContainer,
+    calculation_results_container: CalculationOutput,
     expected_result_name: str,
 ) -> DataFrame:
     if _has_field(calculation_results_container.energy_results, expected_result_name):
@@ -84,8 +84,8 @@ def _get_actual_for_output(
     if _has_field(calculation_results_container.basis_data, expected_result_name):
         return getattr(calculation_results_container.basis_data, expected_result_name)
 
-    if _has_field(calculation_results_container.internal, expected_result_name):
-        return getattr(calculation_results_container.internal, expected_result_name)
+    if _has_field(calculation_results_container.internal_data, expected_result_name):
+        return getattr(calculation_results_container.internal_data, expected_result_name)
 
     raise Exception(f"Unknown expected result name: {expected_result_name}")
 

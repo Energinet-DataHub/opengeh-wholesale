@@ -13,23 +13,23 @@
 # limitations under the License.
 from dataclasses import fields
 
+import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as f
 from pyspark.sql.types import StructType
 
 import package.databases.wholesale_results_internal.schemas as schemas
 from package.calculation.calculation_results import (
-    EnergyResultsContainer,
+    EnergyResults,
 )
+from package.codelists import MeteringPointType
+from package.container import Container
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
 )
-from package.codelists import MeteringPointType
-from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -39,7 +39,7 @@ from package.infrastructure.paths import (
 
 
 @logging_configuration.use_span("calculation.write.energy")
-def write_energy_results(energy_results: EnergyResultsContainer) -> None:
+def write_energy_results(energy_results: EnergyResults) -> None:
     """Write each energy result to the output table."""
 
     print("Writing energy results to Unity Catalog")

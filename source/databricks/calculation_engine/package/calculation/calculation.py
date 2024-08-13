@@ -44,7 +44,7 @@ from package.databases.wholesale_results_internal.calculations_storage_model_fac
 )
 from package.infrastructure import logging_configuration
 from .calculation_results import (
-    CalculationResultsContainer,
+    CalculationOutput,
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
@@ -66,8 +66,8 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 def _execute(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
-) -> CalculationResultsContainer:
-    results = CalculationResultsContainer()
+) -> CalculationOutput:
+    results = CalculationOutput()
 
     with logging_configuration.start_span("calculation.prepare"):
         calculations = create_calculation(args, prepared_data_reader)
@@ -170,7 +170,7 @@ def _execute(
         grid_loss_metering_points_df,
     )
 
-    results.internal = internal_factory.create(
+    results.internal_data = internal_factory.create(
         calculations,
         calculation_grid_areas,
     )
@@ -180,7 +180,7 @@ def _execute(
 
 @logging_configuration.use_span("calculation.write")
 def _write_output(
-    results: CalculationResultsContainer,
+    results: CalculationOutput,
 ) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
@@ -192,8 +192,8 @@ def _write_output(
     write_basis_data(results.basis_data)
 
     # Write calculation grid areas to table Wholesale internal table calculation_grid_areas.
-    write_calculation_grid_areas(results.internal.calculation_grid_areas)
+    write_calculation_grid_areas(results.internal_data.calculation_grid_areas)
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(results.internal.calculations)
+    write_calculation(results.internal_data.calculations)

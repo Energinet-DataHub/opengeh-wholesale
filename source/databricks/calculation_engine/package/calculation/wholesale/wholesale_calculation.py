@@ -12,20 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import package.databases.wholesale_results_internal.wholesale_storage_model_factory as wholesale_results_factory
-import package.databases.wholesale_results_internal.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
-import package.databases.wholesale_results_internal.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
-
+import package.calculation.preparation.data_structures as d
 import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_monthly_amount_calculator
-import package.calculation.preparation.data_structures as d
+import package.databases.wholesale_results_internal.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
+import package.databases.wholesale_results_internal.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
+import package.databases.wholesale_results_internal.wholesale_storage_model_factory as wholesale_results_factory
 from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
-
 from ..calculation_results import (
-    WholesaleResultsContainer,
+    WholesaleResults,
 )
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
@@ -36,8 +34,8 @@ from ...infrastructure import logging_configuration
 def execute(
     args: CalculatorArgs,
     prepared_charges: d.PreparedChargesContainer,
-) -> WholesaleResultsContainer:
-    results = WholesaleResultsContainer()
+) -> WholesaleResults:
+    results = WholesaleResults()
 
     monthly_fees = _calculate_fees(
         args,
@@ -79,7 +77,7 @@ def execute(
 def _calculate_fees(
     args: CalculatorArgs,
     prepared_fees: d.PreparedFees,
-    results: WholesaleResultsContainer,
+    results: WholesaleResults,
 ) -> MonthlyAmountPerCharge:
     fee_per_co_es = fee_calculator.calculate(
         prepared_fees,
@@ -114,7 +112,7 @@ def _calculate_fees(
 def _calculate_subscriptions(
     args: CalculatorArgs,
     prepared_subscriptions: d.PreparedSubscriptions,
-    results: WholesaleResultsContainer,
+    results: WholesaleResults,
 ) -> MonthlyAmountPerCharge:
     subscription_per_co_es = subscription_calculator.calculate(
         prepared_subscriptions,
@@ -156,7 +154,7 @@ def _calculate_subscriptions(
 def _calculate_hourly_tariffs(
     args: CalculatorArgs,
     prepared_hourly_tariffs: d.PreparedTariffs,
-    results: WholesaleResultsContainer,
+    results: WholesaleResults,
 ) -> MonthlyAmountPerCharge:
     hourly_tariff_per_co_es = tariff_calculator.calculate_tariff_price_per_co_es(
         prepared_hourly_tariffs
@@ -199,7 +197,7 @@ def _calculate_hourly_tariffs(
 def _calculate_daily_tariffs(
     args: CalculatorArgs,
     prepared_daily_tariffs: d.PreparedTariffs,
-    results: WholesaleResultsContainer,
+    results: WholesaleResults,
 ) -> MonthlyAmountPerCharge:
 
     daily_tariff_per_co_es = tariff_calculator.calculate_tariff_price_per_co_es(
@@ -245,8 +243,8 @@ def _calculate_total_monthly_amount(
     monthly_subscriptions: MonthlyAmountPerCharge,
     monthly_hourly_tariffs: MonthlyAmountPerCharge,
     monthly_daily_tariffs: MonthlyAmountPerCharge,
-    results: WholesaleResultsContainer,
-) -> WholesaleResultsContainer:
+    results: WholesaleResults,
+) -> WholesaleResults:
     all_monthly_amounts = (
         monthly_fees.union(monthly_subscriptions)
         .union(monthly_hourly_tariffs)

@@ -13,7 +13,7 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 
-from package.calculation.calculation_results import BasisDataContainer
+from package.calculation.calculation_results import BasisData
 from package.constants import Colname
 from package.container import Container
 from package.infrastructure import logging_configuration
@@ -26,14 +26,14 @@ from package.infrastructure.paths import (
 
 @logging_configuration.use_span("calculation.write.basis_data")
 def write_basis_data(
-    basis_data: BasisDataContainer,
+    basis_data: BasisData,
 ) -> None:
     _write_basis_data(basis_data)
 
 
 @inject
 def _write_basis_data(
-    basis_data: BasisDataContainer,
+    basis_data: BasisData,
     infrastructure_settings: InfrastructureSettings = Provide[
         Container.infrastructure_settings
     ],

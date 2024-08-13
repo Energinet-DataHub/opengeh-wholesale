@@ -14,9 +14,9 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import WholesaleResultsContainer
-from package.databases.table_column_names import TableColumnNames
+from package.calculation.calculation_results import WholesaleResults
 from package.container import Container
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
     MonthlyAmountsColumnNames,
 )
@@ -30,7 +30,7 @@ from package.infrastructure.paths import (
 
 @logging_configuration.use_span("calculation.write.wholesale")
 def write_monthly_amounts_per_charge(
-    wholesale_results: WholesaleResultsContainer,
+    wholesale_results: WholesaleResults,
 ) -> None:
     """Write each wholesale result to the output table."""
     _write(

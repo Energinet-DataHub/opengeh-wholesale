@@ -19,7 +19,7 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
-from package.calculation.calculation_results import CalculationResultsContainer
+from package.calculation.calculation_results import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
 from .calculation_args import create_calculation_args
 from .dataframes.typecasting import cast_column_types
@@ -40,7 +40,7 @@ class ScenarioExecutor:
 
     def execute(
         self, scenario_folder_path: str
-    ) -> Tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+    ) -> Tuple[CalculationOutput, list[ExpectedOutput]]:
         self._setup(scenario_folder_path)
 
         from package.calculation import PreparedDataReader

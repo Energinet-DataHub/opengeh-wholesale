@@ -15,10 +15,10 @@ from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import (
-    WholesaleResultsContainer,
+    WholesaleResults,
 )
-from package.databases.table_column_names import TableColumnNames
 from package.container import Container
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
     TotalMonthlyAmountsColumnNames,
 )
@@ -32,7 +32,7 @@ from package.infrastructure.paths import (
 
 @logging_configuration.use_span("calculation.write.wholesale")
 def write_total_monthly_amounts(
-    total_monthly_amounts: WholesaleResultsContainer,
+    total_monthly_amounts: WholesaleResults,
 ) -> None:
     _write(
         "total_monthly_amounts_per_co_es",

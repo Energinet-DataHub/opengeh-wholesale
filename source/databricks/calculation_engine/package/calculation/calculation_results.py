@@ -18,7 +18,11 @@ from pyspark.sql import DataFrame
 
 
 @dataclass
-class EnergyResultsContainer:
+class EnergyResults:
+    """
+    Contains all energy results from a calculation.
+    """
+
     exchange_per_neighbor: DataFrame | None = None
     exchange: DataFrame | None = None
     temporary_production: DataFrame | None = None
@@ -39,7 +43,11 @@ class EnergyResultsContainer:
 
 
 @dataclass
-class WholesaleResultsContainer:
+class WholesaleResults:
+    """
+    Contains all wholesale results from a calculation.
+    """
+
     hourly_tariff_per_co_es: DataFrame | None = None
     monthly_tariff_from_hourly_per_co_es: DataFrame | None = None
     monthly_tariff_from_hourly_per_co_es_as_monthly_amount: DataFrame | None = None
@@ -57,7 +65,11 @@ class WholesaleResultsContainer:
 
 
 @dataclass
-class BasisDataContainer:
+class BasisData:
+    """
+    Contains all the foundation data used in a calculation.
+    """
+
     metering_point_periods: DataFrame
     """Data frame where the columns uses the column names of the storage model."""
     time_series_points: DataFrame
@@ -68,20 +80,27 @@ class BasisDataContainer:
 
 
 @dataclass
-class InternalContainer:
+class InternalData:
+    """
+    Contains non-public data used in a calculation.
+    """
+
     calculations: DataFrame
     """Data frame containing the calculation id and grid areas used in the calculation."""
     calculation_grid_areas: DataFrame
 
 
 @dataclass
-class CalculationResultsContainer:
+class CalculationOutput:
     """
+    Contains the output of a calculation.
+    The output consists of energy and wholesale results, basis data and internal data.
+
     The usage of `cast(x, None)` is a workaround to prevent the type checker from complaining.
     It's a consequence of the current code design where props are set after creation of the container.
     """
 
-    energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
-    wholesale_results: WholesaleResultsContainer | None = None
-    basis_data: BasisDataContainer = cast(BasisDataContainer, None)
-    internal: InternalContainer = cast(InternalContainer, None)
+    energy_results: EnergyResults = cast(EnergyResults, None)
+    wholesale_results: WholesaleResults | None = None
+    basis_data: BasisData = cast(BasisData, None)
+    internal_data: InternalData = cast(InternalData, None)
