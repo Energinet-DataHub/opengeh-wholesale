@@ -56,6 +56,12 @@ class ViewColumns:
 
     # Column names and types in alphabetical order
     amount = Column("amount", DecimalType(18, 6))
+    active_from_date = Column(
+        "active_from_date", TimestampType()
+    )  # ToDo JMG: Change to DateType?
+    active_to_date = Column(
+        "active_to_date", TimestampType()
+    )  # ToDo JMG: Change to DateType?
     balance_responsible_party_id = Column("balance_responsible_party_id", StringType())
     calculation_id = Column("calculation_id", StringType())
     calculation_type = Column("calculation_type", StringType())
@@ -67,6 +73,7 @@ class ViewColumns:
     charge_link_quantity = Column("charge_link_quantity", IntegerType())
     charge_owner_id = Column("charge_owner_id", StringType())
     currency = Column("currency", StringType())
+    date = Column("date", TimestampType())  # ToDo JMG: Change to DateType?
     energy_supplier_id = Column("energy_supplier_id", StringType())
     from_date = Column("from_date", TimestampType())
     from_grid_area_code = Column("from_grid_area_code", StringType())
