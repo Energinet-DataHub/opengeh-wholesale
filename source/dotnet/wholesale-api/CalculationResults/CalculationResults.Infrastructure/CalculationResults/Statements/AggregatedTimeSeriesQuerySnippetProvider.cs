@@ -22,7 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQueryStatementWhereClauseProvider
+public class AggregatedTimeSeriesQuerySnippetProvider
 {
     internal string GetWhereClauseSqlExpression(AggregatedTimeSeriesQueryParameters parameters, string table)
     {

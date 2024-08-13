@@ -22,13 +22,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class AggregatedTimeSeriesQueryStatement(
     AggregatedTimeSeriesQueryParameters parameters,
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
-    AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
+    AggregatedTimeSeriesQuerySnippetProvider whereClauseProvider,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
     private readonly AggregatedTimeSeriesQueryParameters _parameters = parameters;
     private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
-    private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
+    private readonly AggregatedTimeSeriesQuerySnippetProvider _whereClauseProvider = whereClauseProvider;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
     protected override string GetSqlStatement()

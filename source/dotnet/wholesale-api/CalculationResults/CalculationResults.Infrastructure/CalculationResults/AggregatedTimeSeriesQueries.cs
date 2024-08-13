@@ -25,11 +25,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-    AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
+    AggregatedTimeSeriesQuerySnippetProvider whereClauseProvider,
     IOptions<DeltaTableOptions> deltaTableOptions)
     : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
-    private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
+    private readonly AggregatedTimeSeriesQuerySnippetProvider _whereClauseProvider = whereClauseProvider;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)

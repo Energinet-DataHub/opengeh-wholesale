@@ -21,14 +21,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
     DeltaTableOptions deltaTableOptions,
-    AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
+    AggregatedTimeSeriesQuerySnippetProvider whereClauseProvider,
     AggregatedTimeSeriesQueryParameters queryParameters)
     : CalculationTypeForGridAreasQueryStatementBase(
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.CalculationType)
 {
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-    private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
+    private readonly AggregatedTimeSeriesQuerySnippetProvider _whereClauseProvider = whereClauseProvider;
     private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
 
     protected override string GetSource() =>
