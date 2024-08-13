@@ -62,7 +62,7 @@ def aggregate_per_es(
 
     sum_group_by = [
         Colname.grid_area_code,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
     ]

@@ -63,7 +63,7 @@ def create_row(
         Colname.quantity: quantity,
         Colname.quality: quality.value,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.balance_responsible_party_id: balance_responsible_id,
         Colname.settlement_method: settlement_method,
         Colname.observation_time: observation_time,
     }
