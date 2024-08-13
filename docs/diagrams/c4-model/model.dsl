@@ -7,7 +7,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
 
         # Relations to shared
-        sharedUnityCatalog -> this "Read data / write data"
+        dh3.sharedUnityCatalog -> this "Read data / write data"
     }
     wholesaleCalculatorJob = container "Calculator Job" {
         description "Executes calculations"
@@ -15,7 +15,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
         # Subsystem relationships
-        this -> sharedUnityCatalog "Read inputs / write results"
+        this -> dh3.sharedUnityCatalog "Read inputs / write results"
     }
     wholesaleMigrationJob = container "Migration Job" {
         description "Executes delta migrations"
@@ -23,7 +23,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
         # Subsystem relationships
-        this -> sharedUnityCatalog "Migrate database objects and data"
+        this -> dh3.sharedUnityCatalog "Migrate database objects and data"
     }
     wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
         description "Executes delta SQL migrations"
@@ -31,7 +31,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Intermediate Technology"
 
         # Subsystem relationships
-        this -> sharedUnityCatalog "Read/write executed migrations"
+        this -> dh3.sharedUnityCatalog "Read/write executed migrations"
     }
     wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
         description "Executes delta SQL queries (also used by EDI)"
@@ -39,8 +39,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Intermediate Technology"
 
         # Subsystem relationships
-        this -> sharedUnityCatalog "Read results"
-        edi -> this "Read calculation results and active data"
+        this -> dh3.sharedUnityCatalog "Read results"
     }
     settlementReportsWarehouse = container "Settlement Reports Warehouse" {
         description "Executes delta SQL queries"
@@ -48,8 +47,11 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Intermediate Technology"
 
         # Subsystem relationships
-        this -> sharedUnityCatalog "Read basis data and results"
+        this -> dh3.sharedUnityCatalog "Read basis data and results"
     }
+
+    # TODO: Split into subsystem areas?
+
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"
         technology "SQL Database Schema"
