@@ -21,7 +21,7 @@ from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
 from package.databases.wholesale_internal.schemas.calculations_schema import (
-    calculations_schema,
+    hive_calculations_schema,
 )
 
 
@@ -60,4 +60,6 @@ def _create_calculation(
         CalculationColumnNames.is_control_calculation: args.is_control_calculation,
     }
 
-    return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
+    return spark.createDataFrame(
+        data=[Row(**calculation)], schema=hive_calculations_schema
+    )
