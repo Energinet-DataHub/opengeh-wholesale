@@ -15,35 +15,35 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQuerySnippetProvider
+public class AggregatedTimeSeriesQuerySnippetProvider(AggregatedTimeSeriesQueryParameters queryParameters)
 {
-    internal string GetWhereClauseSqlExpression(AggregatedTimeSeriesQueryParameters parameters, string table)
+    private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
+
+    internal string GetWhereClauseSqlExpression(string table)
     {
         return $"""
                 WHERE ({string.Join(
                     " OR ",
-                    parameters.TimeSeriesTypes
+                    _queryParameters.TimeSeriesTypes
                         .Select(timeSeriesType => TimeSeriesTypeWhereClauseSqlExpression(
-                            parameters,
+                            _queryParameters,
                             timeSeriesType,
                             table))
                         .Select(s => $"({s})"))})
                 """;
     }
 
-    internal string GenerateLatestOrFixedCalculationTypeWhereClause(AggregatedTimeSeriesQueryParameters queryParameters, IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
+    internal string GenerateLatestOrFixedCalculationTypeWhereClause(IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
     {
-        if (queryParameters.CalculationType is not null)
+        if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    er.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(queryParameters.CalculationType.Value)}'
+                    er.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 

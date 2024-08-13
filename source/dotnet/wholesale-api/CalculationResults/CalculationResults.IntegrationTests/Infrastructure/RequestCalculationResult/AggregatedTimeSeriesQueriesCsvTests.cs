@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -47,6 +48,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
+        Fixture.Inject(new AggregatedTimeSeriesQuerySnippetProviderFactory());
         _fixture = fixture;
     }
 

@@ -14,22 +14,19 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
 internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
     DeltaTableOptions deltaTableOptions,
-    AggregatedTimeSeriesQuerySnippetProvider whereClauseProvider,
-    AggregatedTimeSeriesQueryParameters queryParameters)
+    AggregatedTimeSeriesQuerySnippetProvider querySnippetProvider)
     : CalculationTypeForGridAreasQueryStatementBase(
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.CalculationType)
 {
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-    private readonly AggregatedTimeSeriesQuerySnippetProvider _whereClauseProvider = whereClauseProvider;
-    private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
+    private readonly AggregatedTimeSeriesQuerySnippetProvider _querySnippetProvider = querySnippetProvider;
 
     protected override string GetSource() =>
         $"""
@@ -39,7 +36,7 @@ internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
           ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
          """;
 
-    protected override string GetSelection(string table) => _whereClauseProvider
-        .GetWhereClauseSqlExpression(_queryParameters, table)
+    protected override string GetSelection(string table) => _querySnippetProvider
+        .GetWhereClauseSqlExpression(table)
         .Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
 }

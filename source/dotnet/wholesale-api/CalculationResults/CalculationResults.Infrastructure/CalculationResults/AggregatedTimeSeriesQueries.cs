@@ -25,30 +25,30 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-    AggregatedTimeSeriesQuerySnippetProvider whereClauseProvider,
+    AggregatedTimeSeriesQuerySnippetProviderFactory querySnippetProviderFactory,
     IOptions<DeltaTableOptions> deltaTableOptions)
     : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
-    private readonly AggregatedTimeSeriesQuerySnippetProvider _whereClauseProvider = whereClauseProvider;
+    private readonly AggregatedTimeSeriesQuerySnippetProviderFactory _querySnippetProviderFactory = querySnippetProviderFactory;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
+        var querySnippetProvider = _querySnippetProviderFactory.Create(parameters);
+
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
                     EnergyResultColumnNames.GridArea,
                     EnergyResultColumnNames.CalculationType,
                     new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
                         _deltaTableOptions.Value,
-                        _whereClauseProvider,
-                        parameters),
+                        querySnippetProvider),
                     parameters.CalculationType)
                 .ConfigureAwait(false);
 
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(
-            parameters,
             calculationTypePerGridAreas,
-            _whereClauseProvider,
+            querySnippetProvider,
             _deltaTableOptions.Value);
 
         await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
