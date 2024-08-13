@@ -18,7 +18,7 @@ from decimal import Decimal
 from pyspark.sql import Row, SparkSession
 
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResults,
+    EnergyResultsWrapper,
     energy_results_schema,
 )
 from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
@@ -89,11 +89,13 @@ def create_grid_loss_row(
     )
 
 
-def create(spark: SparkSession, data: None | Row | list[Row] = None) -> EnergyResults:
+def create(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> EnergyResultsWrapper:
     """If data is None, a single row with default values is created."""
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, schema=energy_results_schema)
-    return EnergyResults(df)
+    return EnergyResultsWrapper(df)

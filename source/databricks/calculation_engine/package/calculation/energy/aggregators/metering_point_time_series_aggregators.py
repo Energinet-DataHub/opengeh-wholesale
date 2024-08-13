@@ -17,7 +17,9 @@ import pyspark.sql.functions as f
 from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_quantity_and_quality,
 )
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResultsWrapper,
+)
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
@@ -35,7 +37,7 @@ def aggregate_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | None,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     """
     This function creates an intermediate energy result, which is subsequently used
     to aggregate other energy results.
@@ -66,12 +68,12 @@ def aggregate_per_es(
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
     result = round_quantity(result)
-    return EnergyResults(result)
+    return EnergyResultsWrapper(result)
 
 
 def aggregate_non_profiled_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     return aggregate_per_es(
         metering_point_time_series,
         MeteringPointType.CONSUMPTION,
@@ -81,7 +83,7 @@ def aggregate_non_profiled_consumption_per_es(
 
 def aggregate_flex_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     return aggregate_per_es(
         metering_point_time_series,
         MeteringPointType.CONSUMPTION,
@@ -91,7 +93,7 @@ def aggregate_flex_consumption_per_es(
 
 def aggregate_production_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     return aggregate_per_es(
         metering_point_time_series, MeteringPointType.PRODUCTION, None
     )

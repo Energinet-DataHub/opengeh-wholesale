@@ -26,12 +26,12 @@ import package.codelists as e
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import (
     energy_results_schema,
-    EnergyResults,
+    EnergyResultsWrapper,
 )
+from package.constants import Colname
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.constants import Colname
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
@@ -112,14 +112,16 @@ def _create_result_row(
     return row
 
 
-def _create_energy_results(spark: SparkSession, row: List[dict]) -> EnergyResults:
+def _create_energy_results(
+    spark: SparkSession, row: List[dict]
+) -> EnergyResultsWrapper:
     df = spark.createDataFrame(data=row, schema=energy_results_schema)
-    return EnergyResults(df)
+    return EnergyResultsWrapper(df)
 
 
 def _create_energy_results_corresponding_to_four_calculation_results(
     spark: SparkSession,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     OTHER_GRID_AREA = "111"
     OTHER_FROM_GRID_AREA = "222"
     OTHER_ENERGY_SUPPLIER_ID = "1234567890123"

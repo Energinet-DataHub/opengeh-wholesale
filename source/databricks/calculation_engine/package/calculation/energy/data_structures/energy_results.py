@@ -19,7 +19,7 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class EnergyResults(DataFrameWrapper):
+class EnergyResultsWrapper(DataFrameWrapper):
     """
     Time series of energy results.
 

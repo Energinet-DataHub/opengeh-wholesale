@@ -20,7 +20,9 @@ import package.calculation.energy.aggregators.metering_point_time_series_aggrega
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import EnergyResults
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResultsWrapper,
+)
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution_adjusted_metering_point_time_series,
 )
@@ -138,7 +140,7 @@ def _calculate_exchange(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResults,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     exchange_per_neighbor = exchange_aggr.aggregate_exchange_per_neighbor(
         metering_point_time_series, args.calculation_grid_areas
     )
@@ -165,7 +167,7 @@ def _calculate_exchange(
 @logging_configuration.use_span("calculate_non_profiled_consumption_per_es")
 def _calculate_non_profiled_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     # Non-profiled consumption per balance responsible party and energy supplier
     non_profiled_consumption_per_es = mp_aggr.aggregate_non_profiled_consumption_per_es(
         metering_point_time_series
@@ -179,7 +181,7 @@ def _calculate_temporary_production_per_es(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResults,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     temporary_production_per_es = mp_aggr.aggregate_production_per_es(
         metering_point_time_series
     )
@@ -202,7 +204,7 @@ def _calculate_temporary_flex_consumption_per_es(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResults,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     temporary_flex_consumption_per_es = mp_aggr.aggregate_flex_consumption_per_es(
         metering_point_time_series
     )
@@ -225,10 +227,10 @@ def _calculate_temporary_flex_consumption_per_es(
 @logging_configuration.use_span("calculate_grid_loss")
 def _calculate_grid_loss(
     args: CalculatorArgs,
-    exchange: EnergyResults,
-    temporary_production_per_es: EnergyResults,
-    temporary_flex_consumption_per_es: EnergyResults,
-    non_profiled_consumption_per_es: EnergyResults,
+    exchange: EnergyResultsWrapper,
+    temporary_production_per_es: EnergyResultsWrapper,
+    temporary_flex_consumption_per_es: EnergyResultsWrapper,
+    non_profiled_consumption_per_es: EnergyResultsWrapper,
     grid_loss_responsible_df: GridLossResponsible,
     results: EnergyResults,
 ) -> tuple[EnergyResults, EnergyResults]:
@@ -271,10 +273,10 @@ def _calculate_grid_loss(
 
 @logging_configuration.use_span("calculate_adjust_production_per_es")
 def _calculate_adjust_production_per_es(
-    temporary_production_per_es: EnergyResults,
-    negative_grid_loss: EnergyResults,
+    temporary_production_per_es: EnergyResultsWrapper,
+    negative_grid_loss: EnergyResultsWrapper,
     grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     production_per_es = grid_loss_aggr.apply_grid_loss_adjustment(
         temporary_production_per_es,
         negative_grid_loss,
@@ -287,10 +289,10 @@ def _calculate_adjust_production_per_es(
 
 @logging_configuration.use_span("calculate_adjust_flex_consumption_per_es")
 def _calculate_adjust_flex_consumption_per_es(
-    temporary_flex_consumption_per_es: EnergyResults,
-    positive_grid_loss: EnergyResults,
+    temporary_flex_consumption_per_es: EnergyResultsWrapper,
+    positive_grid_loss: EnergyResultsWrapper,
     grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     flex_consumption_per_es = grid_loss_aggr.apply_grid_loss_adjustment(
         temporary_flex_consumption_per_es,
         positive_grid_loss,
@@ -304,9 +306,9 @@ def _calculate_adjust_flex_consumption_per_es(
 @logging_configuration.use_span("calculate_production")
 def _calculate_production(
     args: CalculatorArgs,
-    production_per_es: EnergyResults,
+    production_per_es: EnergyResultsWrapper,
     results: EnergyResults,
-) -> EnergyResults:
+) -> EnergyResultsWrapper:
     # production per energy supplier
     results.production_per_es = factory.create(
         args,
@@ -339,7 +341,7 @@ def _calculate_production(
 @logging_configuration.use_span("calculate_flex_consumption")
 def _calculate_flex_consumption(
     args: CalculatorArgs,
-    flex_consumption_per_es: EnergyResults,
+    flex_consumption_per_es: EnergyResultsWrapper,
     results: EnergyResults,
 ) -> None:
     # flex consumption per grid area
@@ -371,7 +373,7 @@ def _calculate_flex_consumption(
 @logging_configuration.use_span("calculate_non_profiled_consumption")
 def _calculate_non_profiled_consumption(
     args: CalculatorArgs,
-    non_profiled_consumption_per_es: EnergyResults,
+    non_profiled_consumption_per_es: EnergyResultsWrapper,
     results: EnergyResults,
 ) -> None:
     # Non-profiled consumption per energy supplier
@@ -403,8 +405,8 @@ def _calculate_non_profiled_consumption(
 @logging_configuration.use_span("calculate_total_consumption")
 def _calculate_total_consumption(
     args: CalculatorArgs,
-    production: EnergyResults,
-    exchange: EnergyResults,
+    production: EnergyResultsWrapper,
+    exchange: EnergyResultsWrapper,
     results: EnergyResults,
 ) -> None:
     results.total_consumption = factory.create(

@@ -14,7 +14,9 @@
 import pyspark.sql.functions as f
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResultsWrapper,
+)
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
@@ -32,8 +34,8 @@ from package.constants import Colname
 def add_calculated_grid_loss_to_metering_point_times_series(
     args: CalculatorArgs,
     metering_point_time_series: PreparedMeteringPointTimeSeries,
-    positive_grid_loss: EnergyResults,
-    negative_grid_loss: EnergyResults,
+    positive_grid_loss: EnergyResultsWrapper,
+    negative_grid_loss: EnergyResultsWrapper,
 ) -> PreparedMeteringPointTimeSeries:
     """
     Metering point time series for wholesale calculation includes all calculation input metering point time series,
