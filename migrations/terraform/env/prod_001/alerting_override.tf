@@ -28,7 +28,6 @@ module "monitor_action_group_mig" {
         | where cloud_RoleName in ("${module.func_dropzoneunzipper.name}")
         | where severityLevel == 3
         | where tostring(customDimensions["EventName"]) !in ("EventReceiveError", "EventProcessorPartitionProcessingError")
-        | where message !contains "ErrorCode: SoftDeletedBlobNotFound"
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
