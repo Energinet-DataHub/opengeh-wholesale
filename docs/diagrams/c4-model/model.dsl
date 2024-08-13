@@ -1,6 +1,7 @@
 # Read description in the 'views.dsl' file.
 
 wholesaleSubsystem = group "Wholesale" {
+
     wholesaleDataLake = container "Wholesale DataLake" {
         description "Calculation inputs and results"
         technology "Azure Data Lake Gen 2"
