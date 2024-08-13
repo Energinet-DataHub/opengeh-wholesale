@@ -271,7 +271,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         {
             try
             {
-                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {item.ModelName}.{item.TableName} LIMIT 1");
+                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {Configuration.DatabricksCatalogName}.{item.ModelName}.{item.TableName} LIMIT 1");
                 var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
                 var list = await queryResult.ToListAsync();
                 if (list.Count == 0)
