@@ -32,7 +32,6 @@ class ScenarioExecutor:
     test_calculation_args: CalculatorArgs
     input_path: str
     output_path: str
-    basis_data_path: str
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
@@ -56,7 +55,6 @@ class ScenarioExecutor:
 
     def _setup(self, scenario_path: str) -> None:
         self.input_path = scenario_path + "/input/"
-        self.basis_data_path = scenario_path + "/basis_data/"
         self.output_path = scenario_path + "/then/"
 
         correlations = get_data_input_specifications(

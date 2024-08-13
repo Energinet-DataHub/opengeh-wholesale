@@ -19,7 +19,7 @@ import pytest
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import time_series_points_schema
 from package.constants import Colname
 from package.infrastructure.paths import MigrationsWholesaleDatabase
@@ -42,7 +42,7 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_time_series_point_row()
-        reader = TableReader(
+        reader = MigrationsWholesaleRepository(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
@@ -82,7 +82,7 @@ class TestWhenValidInput:
         )
         expected = df
 
-        reader = TableReader(spark, "spark_catalog", "test_database")
+        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_time_series_points()
@@ -95,7 +95,7 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_time_series_point_row()
-        reader = TableReader(
+        reader = MigrationsWholesaleRepository(
             mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
