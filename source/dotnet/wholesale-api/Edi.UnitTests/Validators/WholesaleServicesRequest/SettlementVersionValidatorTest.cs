@@ -15,11 +15,11 @@
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
 
 public class SettlementVersionValidatorTest
 {
@@ -34,8 +34,7 @@ public class SettlementVersionValidatorTest
     public async Task Validate_WhenCorrectionAndInvalidSeriesVersion_ReturnsValidationErrorsAsync(string invalidSettlementVersion)
     {
         // Arrange
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementVersion(invalidSettlementVersion)
             .Build();
@@ -58,8 +57,7 @@ public class SettlementVersionValidatorTest
     public async Task Validate_WhenNotCorrectionAndSettlementVersionExists_ReturnsValidationErrorsAsync(string settlementVersion)
     {
         // Arrange
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
             .WithSettlementVersion(settlementVersion)
             .Build();
@@ -79,8 +77,7 @@ public class SettlementVersionValidatorTest
     public async Task Validate_WhenCorrectionAndValidSettlementVersion_ReturnsNoValidationErrorsAsync(string validSettlementVersion)
     {
         // Arrange
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementVersion(validSettlementVersion)
             .Build();
@@ -96,8 +93,7 @@ public class SettlementVersionValidatorTest
     public async Task Validate_WhenCorrectionAndNoSettlementVersion_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementVersion(null)
             .Build();
@@ -113,8 +109,7 @@ public class SettlementVersionValidatorTest
     public async Task Validate_WhenNotCorrectionAndNoSettlementVersion_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
             .WithSettlementVersion(null)
             .Build();
