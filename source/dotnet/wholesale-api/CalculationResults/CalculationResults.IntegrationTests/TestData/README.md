@@ -55,16 +55,35 @@ gantt
 The data is limited to the period 2022-01-01 to 2022-01-15 due to size constraints on databricks requests.
 
 ```sql
-select er.*
-from wholesale_output.energy_results er inner join basis_data.calculations cs on er.calculation_id = cs.calculation_id
+select *
+from wholesale_calculation_results.energy_per_es_brp_ga_v1
 where (time between '2021-12-31T23:00:00Z' and '2022-01-15T23:00:00Z')
   and (
     (energy_supplier_id in ('5790002617263', '5790000701414', '5790001687137'))
-        or (energy_supplier_id is null and balance_responsible_id in ("5790000701414","5790001964597"))
-        or (energy_supplier_id is null and balance_responsible_id is null)
+        or (energy_supplier_id is null and balance_responsible_party_id in ("5790000701414","5790001964597"))
+        or (energy_supplier_id is null and balance_responsible_party_id is null)
     )
   and grid_area_code in ("543","584","804")
-  and er.calculation_type in ("balance_fixing", "aggregation", "second_correction_settlement", "third_correction_settlement")
+  and calculation_type in ("balance_fixing", "aggregation", "second_correction_settlement", "third_correction_settlement")
+```
+
+```sql
+select *
+from wholesale_calculation_results.energy_per_brp_ga_v1
+where (time between '2021-12-31T23:00:00Z' and '2022-01-15T23:00:00Z')
+  and (
+    balance_responsible_party_id in ("5790000701414","5790001964597")
+  )
+  and grid_area_code in ("543","584","804")
+  and calculation_type in ("balance_fixing", "aggregation", "second_correction_settlement", "third_correction_settlement")
+```
+
+```sql
+select *
+from wholesale_calculation_results.energy_ga_v1
+where (time between '2021-12-31T23:00:00Z' and '2022-01-15T23:00:00Z')
+  and grid_area_code in ("543","584","804")
+  and calculation_type in ("balance_fixing", "aggregation", "second_correction_settlement", "third_correction_settlement")
 ```
 
 The actors and grid areas are related as follows:
