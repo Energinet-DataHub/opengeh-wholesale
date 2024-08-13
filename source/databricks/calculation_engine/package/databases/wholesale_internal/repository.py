@@ -19,7 +19,11 @@ from package.infrastructure.paths import (
     WholesaleInternalDatabase,
     HiveBasisDataDatabase,
 )
-from .schemas import hive_calculations_schema, grid_loss_metering_points_schema
+from .schemas import (
+    hive_calculations_schema,
+    grid_loss_metering_points_schema,
+    calculations_schema,
+)
 from ..repository_helper import read_table
 
 
@@ -29,12 +33,16 @@ class WholesaleInternalRepository:
         spark: SparkSession,
         catalog_name: str,
         grid_loss_metering_points_table_name: str | None = None,
+        calculations_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
             or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
+        )
+        self._calculations_table_name = (
+            calculations_table_name or HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME
         )
 
     def read_grid_loss_metering_points(self) -> DataFrame:
@@ -47,11 +55,10 @@ class WholesaleInternalRepository:
         )
 
     def read_calculations(self) -> DataFrame:
-        table_name = f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
-        df = self._spark.read.format("delta").table(table_name)
-
-        # Though it's our own table, we still want to make sure it has the expected schema as
-        # it might have been changed due to e.g. (failed) migrations or backup/restore.
-        assert_schema(df.schema, hive_calculations_schema)
-
-        return df
+        return read_table(
+            self._spark,
+            self._catalog_name,
+            WholesaleInternalDatabase.DATABASE_NAME,
+            self._calculations_table_name,
+            calculations_schema,
+        )
