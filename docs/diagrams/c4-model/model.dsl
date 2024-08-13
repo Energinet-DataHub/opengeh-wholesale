@@ -1,13 +1,21 @@
 # Read description in the 'views.dsl' file.
 
 wholesaleSubsystem = group "Wholesale" {
-    wholesaleCalculator = container "Calculation Engine" {
-        description "Executes calculation job"
+    wholesaleCalculatorJob = container "Calculator Job" {
+        description "Executes calculations"
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
         # Subsystem relationships
         this -> sharedUnityCatalog "Read inputs / write results"
+    }
+    wholesaleMigrationJob = container "Migration Job" {
+        description "Executes delta migrations"
+        technology "Azure Databricks"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+
+        # Subsystem relationships
+        this -> sharedUnityCatalog "Migrate database objects and data"
     }
     wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
         description "Executes delta SQL migrations"
@@ -17,8 +25,8 @@ wholesaleSubsystem = group "Wholesale" {
         # Subsystem relationships
         this -> sharedUnityCatalog "Read/write executed migrations"
     }
-    ediWarehouse = container "EDI Warehouse" {
-        description "Executes delta SQL queries"
+    wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
+        description "Executes delta SQL queries (also used by EDI)"
         technology "Azure Databricks SQL Warehouse"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Intermediate Technology"
 
@@ -50,7 +58,7 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> ediWarehouse "Retrieves results from"
+        this -> wholesaleRuntimeWarehouse "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
@@ -67,8 +75,8 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> wholesaleCalculator "Sends requests to"
-        this -> ediWarehouse "Retrieves results from"
+        this -> wholesaleCalculatorJob "Invokes"
+        this -> wholesaleRuntimeWarehouse "Retrieves results from"
         this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
 
         # Subsystem-to-Subsystem relationships
