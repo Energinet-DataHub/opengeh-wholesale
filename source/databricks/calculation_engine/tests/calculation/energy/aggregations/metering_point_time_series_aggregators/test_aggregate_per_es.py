@@ -53,7 +53,7 @@ class TestWhenValidInput:
             actual_row[Colname.from_grid_area_code] is None
         )  # None because it's not an exchange result
         assert (
-            actual_row[Colname.balance_responsible_id]
+            actual_row[Colname.balance_responsible_party_id]
             == factories.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
         assert (

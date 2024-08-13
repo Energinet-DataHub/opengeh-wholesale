@@ -70,7 +70,7 @@ def get_metering_point_periods_df(
         Colname.to_grid_area_code,
         Colname.parent_metering_point_id,
         Colname.energy_supplier_id,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.from_date,
         Colname.to_date,
     )
