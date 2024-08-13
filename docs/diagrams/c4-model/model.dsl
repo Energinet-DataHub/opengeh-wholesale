@@ -18,7 +18,7 @@ wholesaleSubsystem = group "Wholesale" {
         this -> dh3.sharedUnityCatalog "Read inputs / write results"
     }
     wholesaleMigrationJob = container "Migration Job" {
-        description "Executes delta migrations"
+        description "Executes delta migrations (invoked during deployment)"
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
@@ -87,14 +87,5 @@ wholesaleSubsystem = group "Wholesale" {
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleCalculatorJob "Invokes"
         this -> wholesaleRuntimeWarehouse "Retrieves results from"
-        this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
-
-        # Subsystem-to-Subsystem relationships
-        edi -> this "Sends to Wholesale Inbox" "message/amqp" {
-            tags "Simple View"
-        }
-        this -> edi "Publish calculation completed and sends to EDI Inbox" "message/amqp" {
-            tags "Simple View"
-        }
     }
 }

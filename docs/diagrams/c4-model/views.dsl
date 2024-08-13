@@ -19,7 +19,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
             # hence subsystems that doesn't depend on others, should be listed first.
 
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACGAKLTEPXCKRPXBIBRZQ6PAZV3GUPA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G3C5S6WR5GICNQBZA4ZV3JGDA
 
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
@@ -27,15 +27,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # Include Wholesale model
             !include model.dsl
 
-            # TODO: Reference the models of the subsystems below instead?
-
             # Include frontend model - placeholders
             frontendSubsystem = group "Frontend" {
-                migrationDatabricks = container "DataHub Web Application" {
-                    description "Web application"
+                frontendBff = container "BFF" {
+                    description "Backend for Frontend"
 
                     # Subsystem-to-subsystem relationships.
-                    this -> wholesaleSubsystem.wholesaleApi "Interact using HTTP API"
+                    this -> wholesaleApi "Interact using HTTP API"
                 }
             }
 
