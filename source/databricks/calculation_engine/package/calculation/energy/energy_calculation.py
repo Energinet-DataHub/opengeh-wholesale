@@ -49,7 +49,7 @@ def execute(
     args: CalculatorArgs,
     prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
-) -> Tuple[EnergyResults, EnergyResults, EnergyResults]:
+) -> Tuple[EnergyResults, EnergyResultsWrapper, EnergyResultsWrapper]:
     with logging_configuration.start_span("metering_point_time_series"):
         metering_point_time_series = (
             get_energy_result_resolution_adjusted_metering_point_time_series(
@@ -69,7 +69,7 @@ def _calculate(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
-) -> Tuple[EnergyResults, EnergyResults, EnergyResults]:
+) -> Tuple[EnergyResults, EnergyResultsWrapper, EnergyResultsWrapper]:
     results = EnergyResults()
 
     # cache of net exchange per grid area did not improve performance (01/12/2023)
@@ -233,7 +233,7 @@ def _calculate_grid_loss(
     non_profiled_consumption_per_es: EnergyResultsWrapper,
     grid_loss_responsible_df: GridLossResponsible,
     results: EnergyResults,
-) -> tuple[EnergyResults, EnergyResults]:
+) -> tuple[EnergyResultsWrapper, EnergyResultsWrapper]:
     grid_loss = grid_loss_aggr.calculate_grid_loss(
         exchange,
         non_profiled_consumption_per_es,
