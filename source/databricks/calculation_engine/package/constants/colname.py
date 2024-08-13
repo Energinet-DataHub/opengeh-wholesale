@@ -14,9 +14,7 @@
 
 
 class Colname:
-    balance_responsible_id = "balance_responsible_party_id"
-    """Obsolete. Use balance_responsible_party_id"""
-    balance_responsible_party_id = "balance_responsible_id"
+    balance_responsible_party_id = "balance_responsible_party_id"
     calculation_execution_time_start = "calculation_execution_time_start"
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
