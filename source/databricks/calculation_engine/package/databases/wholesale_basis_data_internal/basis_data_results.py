@@ -13,7 +13,7 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 
-from package.calculation.calculation_results import BasisData
+from package.calculation.calculation_output import BasisData
 from package.constants import Colname
 from package.container import Container
 from package.infrastructure import logging_configuration

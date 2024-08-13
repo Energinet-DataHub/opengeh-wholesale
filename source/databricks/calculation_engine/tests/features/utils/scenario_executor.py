@@ -19,7 +19,7 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
-from package.calculation.calculation_results import CalculationOutput
+from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
 from .calculation_args import create_calculation_args
 from .dataframes.typecasting import cast_column_types

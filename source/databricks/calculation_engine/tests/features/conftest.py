@@ -21,7 +21,7 @@ from features.utils.expected_output import ExpectedOutput
 from features.utils.scenario_executor import ScenarioExecutor
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from features.utils.views.view_scenario_executor import ViewScenarioExecutor
-from package.calculation.calculation_results import CalculationOutput
+from package.calculation.calculation_output import CalculationOutput
 
 
 @pytest.fixture(scope="module")

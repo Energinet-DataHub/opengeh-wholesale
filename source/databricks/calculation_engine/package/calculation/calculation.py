@@ -43,7 +43,7 @@ from package.databases.wholesale_results_internal.calculations_storage_model_fac
     create_calculation,
 )
 from package.infrastructure import logging_configuration
-from .calculation_results import (
+from .calculation_output import (
     CalculationOutput,
 )
 from .calculator_args import CalculatorArgs

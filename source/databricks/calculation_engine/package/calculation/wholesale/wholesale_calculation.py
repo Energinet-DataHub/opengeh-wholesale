@@ -22,9 +22,7 @@ import package.databases.wholesale_results_internal.total_monthly_amounts_storag
 import package.databases.wholesale_results_internal.wholesale_storage_model_factory as wholesale_results_factory
 from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
-from ..calculation_results import (
-    WholesaleResults,
-)
+from ..calculation_output import WholesaleResults
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
 from ...infrastructure import logging_configuration

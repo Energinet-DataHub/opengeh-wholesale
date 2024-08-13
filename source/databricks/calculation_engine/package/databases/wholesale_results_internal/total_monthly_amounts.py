@@ -14,9 +14,7 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import (
-    WholesaleResults,
-)
+from package.calculation.calculation_output import WholesaleResults
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (

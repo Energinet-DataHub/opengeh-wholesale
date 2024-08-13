@@ -19,7 +19,7 @@ from pyspark.sql import Row, SparkSession, DataFrame
 import package.codelists as e
 import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import tests.calculation.charges_factory as charges_factory
-from package.calculation.calculation_results import BasisData
+from package.calculation.calculation_output import BasisData
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.charge_price_information import (

@@ -19,9 +19,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
 
 import package.databases.wholesale_results_internal.schemas as schemas
-from package.calculation.calculation_results import (
-    EnergyResults,
-)
+from package.calculation.calculation_output import EnergyResults
 from package.codelists import MeteringPointType
 from package.container import Container
 from package.databases.wholesale_results_internal.energy_result_column_names import (

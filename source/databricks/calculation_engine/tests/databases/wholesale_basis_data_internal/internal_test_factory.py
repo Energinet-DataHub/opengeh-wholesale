@@ -20,14 +20,14 @@ from databases.wholesale_basis_data_internal.basis_data_test_factory import (
 from databases.wholesale_results_internal.calculations_storage_model_test_factory import (
     create_calculations,
 )
-from package.calculation.calculation_results import InternalData
+from package.calculation.calculation_output import InternalData
 from package.databases.wholesale_basis_data_internal import internal_factory
 from package.databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
 
 
-def create_internal_factory(spark: SparkSession) -> InternalData:
+def create_internal_data_factory(spark: SparkSession) -> InternalData:
     calculations = create_calculations(spark)
     calculation_grid_areas = create_calculation_grid_areas(create_calculation_args())
 

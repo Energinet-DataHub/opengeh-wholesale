@@ -18,7 +18,7 @@ import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
-from package.calculation.calculation_results import EnergyResults
+from package.calculation.calculation_output import EnergyResults
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.resolution_transition_factory import (

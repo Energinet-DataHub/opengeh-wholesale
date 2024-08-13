@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import BasisData
+from package.calculation.calculation_output import BasisData
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (

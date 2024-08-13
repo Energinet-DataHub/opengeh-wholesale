@@ -17,7 +17,7 @@ from typing import Any
 from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
-from package.calculation.calculation_results import CalculationOutput
+from package.calculation.calculation_output import CalculationOutput
 from package.databases.wholesale_results_internal.result_column_names import (
     ResultColumnNames,
 )
@@ -67,25 +67,19 @@ def _get_expected_for_output(
 
 
 def _get_actual_for_output(
-    calculation_results_container: CalculationOutput,
+    calculation_output: CalculationOutput,
     expected_result_name: str,
 ) -> DataFrame:
-    if _has_field(calculation_results_container.energy_results, expected_result_name):
-        return getattr(
-            calculation_results_container.energy_results, expected_result_name
-        )
-    if _has_field(
-        calculation_results_container.wholesale_results, expected_result_name
-    ):
-        return getattr(
-            calculation_results_container.wholesale_results, expected_result_name
-        )
+    if _has_field(calculation_output.energy_results, expected_result_name):
+        return getattr(calculation_output.energy_results, expected_result_name)
+    if _has_field(calculation_output.wholesale_results, expected_result_name):
+        return getattr(calculation_output.wholesale_results, expected_result_name)
 
-    if _has_field(calculation_results_container.basis_data, expected_result_name):
-        return getattr(calculation_results_container.basis_data, expected_result_name)
+    if _has_field(calculation_output.basis_data, expected_result_name):
+        return getattr(calculation_output.basis_data, expected_result_name)
 
-    if _has_field(calculation_results_container.internal_data, expected_result_name):
-        return getattr(calculation_results_container.internal_data, expected_result_name)
+    if _has_field(calculation_output.internal_data, expected_result_name):
+        return getattr(calculation_output.internal_data, expected_result_name)
 
     raise Exception(f"Unknown expected result name: {expected_result_name}")
 
