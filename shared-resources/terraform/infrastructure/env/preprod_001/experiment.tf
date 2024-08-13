@@ -14,14 +14,13 @@ resource "azurerm_role_assignment" "nhq_aadadmin" {
   principal_id         = "cc31804d-be36-486b-8a35-c24ae806385c"
 }
 
-# data "azurerm_network_security_group" "nsg_apim" {
-#   name                = "nsg-apim-shres"
-#   resource_group_name = data.azurerm_virtual_network.this.resource_group_name
-# }
+data "azurerm_network_security_group" "nsg_apim" {
+  name                = "nsg-apim-shres"
+  resource_group_name = data.azurerm_virtual_network.this.resource_group_name
+}
 
-# TODO when chaos experiment has been created
-# resource "azurerm_role_assignment" "nsg_experiment_apims_network_contributor" {
-#   scope                = data.azurerm_network_security_group.nsg_apim.id
-#   role_definition_name = "Network Contributor"
-#   principal_id         = REPLACE WITH PRINCIPAL ID OF CHAOS EXPERIMENT
-# }
+resource "azurerm_role_assignment" "nsg_experiment_apims_network_contributor" {
+  scope                = data.azurerm_network_security_group.nsg_apim.id
+  role_definition_name = "Network Contributor"
+  principal_id         = "5b5bc6c0-6b71-47d7-953a-02536a5452e7"
+}
