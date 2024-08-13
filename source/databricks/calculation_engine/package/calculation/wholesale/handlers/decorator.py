@@ -22,16 +22,12 @@ RequestType = TypeVar("RequestType")
 ResponseType = TypeVar("ResponseType")
 
 
-class Handler(ABC, Generic[RequestType, ResponseType]):
-    """
-    The Handler interface declares a method for building the chain of handlers.
-    It also declares a method for executing a request.
-    """
+class Decorator(ABC, Generic[RequestType, ResponseType]):
 
     @abstractmethod
     def set_next(
-        self, handler: "Handler[RequestType, ResponseType]"
-    ) -> "Handler[RequestType, ResponseType]":
+        self, handler: "Decorator[RequestType, ResponseType]"
+    ) -> "Decorator[RequestType, ResponseType]":
         pass
 
     @abstractmethod
@@ -39,16 +35,16 @@ class Handler(ABC, Generic[RequestType, ResponseType]):
         pass
 
 
-class BaseHandler(Handler[RequestType, ResponseType]):
+class BaseDecorator(Decorator[RequestType, ResponseType]):
     """
     The default chaining behavior can be implemented inside a base handler class.
     """
 
-    _next_handler: Optional[Handler[RequestType, ResponseType]] = None
+    _next_handler: Optional[Decorator[RequestType, ResponseType]] = None
 
     def set_next(
-        self, handler: "Handler[RequestType, ResponseType]"
-    ) -> "Handler[RequestType, ResponseType]":
+        self, handler: "Decorator[RequestType, ResponseType]"
+    ) -> "Decorator[RequestType, ResponseType]":
         self._next_handler = handler
         # Returning a handler from here will let us link handlers in a convenient way like handler1.set_next(handler2).set_next(handler3)
         return handler

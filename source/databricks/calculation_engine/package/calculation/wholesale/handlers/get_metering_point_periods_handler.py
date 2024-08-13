@@ -13,30 +13,44 @@
 # limitations under the License.
 from typing import Optional
 
+from package.calculation.wholesale.handlers.handler import BaseDecorator, ResponseType
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
+from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.handlers.handler import BaseHandler, ResponseType
 from package.constants import Colname
 from package.databases.migrations_wholesale import TableReader
 
 
-class MeteringPointPeriodsWithGridLoss(BaseHandler[DataFrame, DataFrame]):
+class MeteringPointPeriodsWithGridLossDecorator(BaseDecorator[DataFrame, DataFrame]):
 
     def handle(self, df: DataFrame) -> Optional[ResponseType]:
         pass
 
 
-class MeteringPointPeriodsWithoutGridLoss(BaseHandler[DataFrame, DataFrame]):
+class MeteringPointPeriodsWithoutGridLossDecorator(BaseDecorator[DataFrame, DataFrame]):
 
     def handle(self, df: DataFrame) -> Optional[ResponseType]:
         pass
 
 
-class MeteringPointPeriodsHandler(BaseHandler[CalculatorArgs, DataFrame]):
+class CalculationDecorator(BaseDecorator[DataFrame, None]):
 
-    def __init__(self, calculation_input_reader: TableReader):
+    def __init__(
+        self,
+        calculator_args: CalculatorArgs,
+    ):
+        self.calculator_args = calculator_args
+
+
+class MeteringPointPeriodsDecorator(BaseDecorator[CalculatorArgs, DataFrame]):
+
+    def __init__(
+        self,
+        container: CalculationResultsContainer,
+        calculation_input_reader: TableReader,
+    ):
         self.calculation_input_reader = calculation_input_reader
 
     def handle(

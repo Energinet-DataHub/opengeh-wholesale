@@ -11,31 +11,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from package.calculation.wholesale.handlers.handler import BaseDecorator
+
+from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
-    MeteringPointPeriodsHandler,
-    MeteringPointPeriodsWithoutGridLoss,
-    MeteringPointPeriodsWithGridLoss,
+    MeteringPointPeriodsDecorator,
+    MeteringPointPeriodsWithoutGridLossDecorator,
+    MeteringPointPeriodsWithGridLossDecorator,
+    CalculationDecorator,
 )
-from package.calculation.wholesale.handlers.handler import BaseHandler
 from package.databases.migrations_wholesale import TableReader
 
 
 def chain():
 
     # Dependency injection
-    table_reader = TableReader()
+    mpp_repository = TableReader()
     calculator_args = CalculatorArgs()
+    container = CalculationResultsContainer()
 
-    mpp_handler = MeteringPointPeriodsHandler(table_reader)
-    mpp_without_grid_loss_handler = MeteringPointPeriodsWithoutGridLoss()
-    mpp_with_grid_loss_handler = MeteringPointPeriodsWithGridLoss()
-    fallback_handler = BaseHandler()
+    # DI for decorators
+    calculation_decorator = CalculationDecorator(calculator_args)
+    mpp_decorator = MeteringPointPeriodsDecorator(container, mpp_repository)
+    mpp_without_grid_loss_decorator = MeteringPointPeriodsWithoutGridLossDecorator()
+    mpp_with_grid_loss_decorator = MeteringPointPeriodsWithGridLossDecorator()
+    fallback_decorator = BaseDecorator()
 
     # Set up the chain
-    mpp_handler.set_next(mpp_without_grid_loss_handler)
-    mpp_without_grid_loss_handler.set_next(mpp_with_grid_loss_handler)
-    mpp_with_grid_loss_handler.set_next(fallback_handler)
+    calculation_decorator.set_next(mpp_decorator)
+    mpp_decorator.set_next(mpp_without_grid_loss_decorator)
+    mpp_without_grid_loss_decorator.set_next(mpp_with_grid_loss_decorator)
+    mpp_with_grid_loss_decorator.set_next(fallback_decorator)
 
     # Execute calculation
-    mpp_handler.handle(calculator_args)
+    calculation_decorator.handle()
