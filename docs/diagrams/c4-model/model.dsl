@@ -1,45 +1,61 @@
 # Read description in the 'views.dsl' file.
 
 wholesaleSubsystem = group "Wholesale" {
-    unityCatalog = container "Unity Catalog" {
-        description "DataHub subsystem internal data and data products"
-        technology "Azure Databricks"
-        tags "Data Storage" "Microsoft Azure - Azure Databricks" "Mandalorian" "Out of focus"
+    wholesaleDataLake = container "Wholesale DataLake" {
+        description "Calculation inputs and results"
+        technology "Azure Data Lake Gen 2"
+        tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
+
+        # Relations to shared
+        dh3.sharedUnityCatalog -> this "Read data / write data"
     }
-    wholesaleCalculator = container "Calculation Engine" {
-        description "Executes calculation job"
+    wholesaleCalculatorJob = container "Calculator Job" {
+        description "Executes calculations"
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
         # Subsystem relationships
-        this -> unityCatalog "Read inputs / write results"
+        this -> dh3.sharedUnityCatalog "Read inputs / write results"
+        this -> wholesaleDataLake "Read inputs / write results" {
+            tags "Simple View"
+        }
+    }
+    wholesaleMigrationJob = container "Migration Job" {
+        description "Executes delta migrations (invoked during deployment)"
+        technology "Azure Databricks"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+
+        # Subsystem relationships
+        this -> dh3.sharedUnityCatalog "Migrate database objects and data"
+        this -> wholesaleDataLake "Read inputs / write results" {
+            tags "Simple View"
+        }
     }
     wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
         description "Executes delta SQL migrations"
         technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Out of focus"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Intermediate Technology"
 
         # Subsystem relationships
-        this -> unityCatalog "Read executed migrations / execute new migrations"
+        this -> dh3.sharedUnityCatalog "Read/write executed migrations"
     }
-    wholesaleEdiWarehouse = container "EDI Warehouse" {
+    wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
+        description "Executes delta SQL queries (also used by EDI)"
+        technology "Azure Databricks SQL Warehouse"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Intermediate Technology"
+
+        # Subsystem relationships
+        this -> dh3.sharedUnityCatalog "Read results"
+    }
+    settlementReportsWarehouse = container "Settlement Reports Warehouse" {
         description "Executes delta SQL queries"
         technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Out of focus"
+        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Intermediate Technology"
 
         # Subsystem relationships
-        this -> unityCatalog "Read basis data and results"
-        edi -> this "Read calculation results and active data"
+        this -> dh3.sharedUnityCatalog "Read basis data and results"
     }
-    wholesaleSettlementReportsWarehouse = container "Settlement Reports Warehouse" {
-        description "Executes delta SQL queries"
-        technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Out of focus"
 
-        # Subsystem relationships
-        this -> unityCatalog "Read basis data and results"
-        edi -> this "Read calculation results and active data"
-    }
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"
         technology "SQL Database Schema"
@@ -56,7 +72,7 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> wholesaleEdiWarehouse "Retrieves results from"
+        this -> wholesaleRuntimeWarehouse "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
@@ -73,16 +89,7 @@ wholesaleSubsystem = group "Wholesale" {
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> wholesaleCalculator "Sends requests to"
-        this -> wholesaleEdiWarehouse "Retrieves results from"
-        this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
-
-        # Subsystem-to-Subsystem relationships
-        edi -> this "Sends to Wholesale Inbox" "message/amqp" {
-            tags "Simple View"
-        }
-        this -> edi "Publish calculation completed and sends to EDI Inbox" "message/amqp" {
-            tags "Simple View"
-        }
+        this -> wholesaleCalculatorJob "Invokes"
+        this -> wholesaleRuntimeWarehouse "Retrieves results from"
     }
 }
