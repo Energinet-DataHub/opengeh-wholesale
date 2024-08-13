@@ -1,6 +1,14 @@
 # Read description in the 'views.dsl' file.
 
 wholesaleSubsystem = group "Wholesale" {
+    wholesaleDataLake = container "Wholesale DataLake" {
+        description "Calculation inputs and results"
+        technology "Azure Data Lake Gen 2"
+        tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
+
+        # Relations to shared
+        sharedUnityCatalog -> this "Read data / write data"
+    }
     wholesaleCalculatorJob = container "Calculator Job" {
         description "Executes calculations"
         technology "Azure Databricks"
