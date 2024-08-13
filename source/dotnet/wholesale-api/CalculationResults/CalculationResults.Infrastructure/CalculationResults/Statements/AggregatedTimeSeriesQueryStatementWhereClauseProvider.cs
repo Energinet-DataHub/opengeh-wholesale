@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
@@ -34,6 +36,30 @@ public class AggregatedTimeSeriesQueryStatementWhereClauseProvider
                             table))
                         .Select(s => $"({s})"))})
                 """;
+    }
+
+    internal string GenerateLatestOrFixedCalculationTypeWhereClause(AggregatedTimeSeriesQueryParameters queryParameters, IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
+    {
+        if (queryParameters.CalculationType is not null)
+        {
+            return $"""
+                    er.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(queryParameters.CalculationType.Value)}'
+                    """;
+        }
+
+        if (calculationTypeForGridAreas.IsNullOrEmpty())
+        {
+            return """
+                   FALSE
+                   """;
+        }
+
+        var calculationTypePerGridAreaConstraints = calculationTypeForGridAreas
+            .Select(ctpga => $"""
+                              (er.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND er.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              """);
+
+        return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
     }
 
     private static string TimeSeriesTypeWhereClauseSqlExpression(
