@@ -53,7 +53,7 @@ energy_results_schema = t.StructType(
         # Required for exchange, otherwise null
         t.StructField(Colname.from_grid_area_code, t.StringType(), True),
         # Required for non-exchange when aggregated per es or brp, otherwise null
-        t.StructField(Colname.balance_responsible_party_id, t.StringType(), True),
+        t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         # Required when aggregated per es, otherwise null
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.observation_time, t.TimestampType(), False),

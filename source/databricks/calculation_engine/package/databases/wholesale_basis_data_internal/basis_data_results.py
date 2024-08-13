@@ -40,7 +40,7 @@ def _write_basis_data(
 ) -> None:
     with logging_configuration.start_span("metering_point_periods"):
         basis_data.metering_point_periods.withColumnRenamed(  # ToDO JMG: rename to "balance_responsible_party_id" earlier (TableReader?)
-            Colname.balance_responsible_party_id, Colname.balance_responsible_party_id
+            Colname.balance_responsible_id, Colname.balance_responsible_party_id
         ).write.format(
             "delta"
         ).mode(
