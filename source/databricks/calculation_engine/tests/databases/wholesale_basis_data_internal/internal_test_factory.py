@@ -21,7 +21,7 @@ from databases.wholesale_results_internal.calculations_storage_model_test_factor
     create_calculations,
 )
 from package.calculation.calculation_output import InternalData
-from package.databases.wholesale_basis_data_internal import internal_factory
+from package.databases.wholesale_basis_data_internal import internal_data_factory
 from package.databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
@@ -31,7 +31,7 @@ def create_internal_data_factory(spark: SparkSession) -> InternalData:
     calculations = create_calculations(spark)
     calculation_grid_areas = create_calculation_grid_areas(create_calculation_args())
 
-    return internal_factory.create(
+    return internal_data_factory.create(
         calculations=calculations,
         calculation_grid_areas=calculation_grid_areas,
     )

@@ -21,7 +21,10 @@ import package.databases.wholesale_basis_data_internal.basis_data_factory as bas
 import tests.calculation.charges_factory as charges_factory
 from package.calculation.calculation_output import BasisData
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation.data_structures import InputChargesContainer
+from package.calculation.preparation.data_structures import (
+    InputChargesContainer,
+    PreparedMeteringPointTimeSeries,
+)
 from package.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
@@ -206,7 +209,9 @@ def create_calculation_args() -> CalculatorArgs:
     )
 
 
-def create_prepared_metering_point_time_series(spark: SparkSession):
+def create_prepared_metering_point_time_series(
+    spark: SparkSession,
+) -> PreparedMeteringPointTimeSeries:
     time_series_rows = [
         charges_factory.create_time_series_row(),
         charges_factory.create_time_series_row(),
