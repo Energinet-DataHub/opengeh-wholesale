@@ -24,7 +24,10 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
-from package.databases.wholesale_basis_data_internal import basis_data_factory
+from package.databases.wholesale_basis_data_internal import (
+    basis_data_factory,
+    internal_factory,
+)
 from package.databases.wholesale_basis_data_internal.basis_data_results import (
     write_basis_data,
 )
@@ -161,12 +164,15 @@ def _execute(
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
         args,
-        calculations,
-        calculation_grid_areas,
         metering_point_periods_for_basis_data,
         metering_point_time_series,
         input_charges,
         grid_loss_metering_points_df,
+    )
+
+    results.internal = internal_factory.create(
+        calculations,
+        calculation_grid_areas,
     )
 
     return results
@@ -186,8 +192,8 @@ def _write_output(
     write_basis_data(results.basis_data)
 
     # Write calculation grid areas to table Wholesale internal table calculation_grid_areas.
-    write_calculation_grid_areas(results.basis_data.calculation_grid_areas)
+    write_calculation_grid_areas(results.internal.calculation_grid_areas)
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(results.basis_data.calculations)
+    write_calculation(results.internal.calculations)
