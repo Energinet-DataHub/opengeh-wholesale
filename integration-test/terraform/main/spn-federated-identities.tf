@@ -100,3 +100,13 @@ resource "azuread_application_federated_identity_credential" "opengeh_revision_l
   audiences = [local.federated_identity_credential.audience_azuread]
   issuer    = local.federated_identity_credential.issuer_github
 }
+
+resource "azuread_application_federated_identity_credential" "geh_settlement_report" {
+  application_id = azuread_application.app_ci.id
+
+  display_name = "geh-settlement-report-azureauth"
+  subject      = "repo:Energinet-DataHub/geh-settlement-report:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
