@@ -20,9 +20,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQuerySnippetProvider(AggregatedTimeSeriesQueryParameters queryParameters)
+public class AggregatedTimeSeriesQuerySnippetProvider(
+    AggregatedTimeSeriesQueryParameters queryParameters,
+    IAggregatedTimeSeriesDatabricksContract databricksContract)
 {
     private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
+    private readonly IAggregatedTimeSeriesDatabricksContract _databricksContract = databricksContract;
 
     internal string GetWhereClauseSqlExpression(string table)
     {

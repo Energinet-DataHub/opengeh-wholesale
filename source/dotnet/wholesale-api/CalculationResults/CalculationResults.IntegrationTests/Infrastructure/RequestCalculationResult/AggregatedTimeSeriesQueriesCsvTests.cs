@@ -48,7 +48,10 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
-        Fixture.Inject(new AggregatedTimeSeriesQuerySnippetProviderFactory());
+        Fixture.Inject(new AggregatedTimeSeriesQuerySnippetProviderFactory([
+            new EnergyPerGaAggregatedTimeSeriesDatabricksContract(),
+            new EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract(),
+            new EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract()]));
         _fixture = fixture;
     }
 

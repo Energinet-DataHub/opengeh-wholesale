@@ -12,14 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQuerySnippetProviderFactory
+[SuppressMessage(
+    "StyleCop.CSharp.ReadabilityRules",
+    "SA1118:Parameter should not span multiple lines",
+    Justification = "It looks better this way")]
+public class AggregatedTimeSeriesQuerySnippetProviderFactory(
+    IEnumerable<IAggregatedTimeSeriesDatabricksContract> databricksContracts)
 {
-    public AggregatedTimeSeriesQuerySnippetProvider Create(AggregatedTimeSeriesQueryParameters parameters)
+    private readonly Dictionary<string, IAggregatedTimeSeriesDatabricksContract> _databricksContracts =
+        databricksContracts
+            .DistinctBy(dc => dc.GetAggregationLevel())
+            .ToDictionary(dc => dc.GetAggregationLevel());
+
+    public AggregatedTimeSeriesQuerySnippetProvider Create(
+        AggregatedTimeSeriesQueryParameters parameters,
+        TimeSeriesType timeSeriesType)
     {
-        return new AggregatedTimeSeriesQuerySnippetProvider(parameters);
+        return new AggregatedTimeSeriesQuerySnippetProvider(
+            parameters,
+            _databricksContracts[AggregationLevelMapper.ToDeltaTableValue(
+                timeSeriesType,
+                parameters.EnergySupplierId,
+                parameters.BalanceResponsibleId)]);
     }
 }

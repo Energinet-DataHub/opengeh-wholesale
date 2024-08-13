@@ -34,7 +34,8 @@ public class AggregatedTimeSeriesQueries(
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var querySnippetProvider = _querySnippetProviderFactory.Create(parameters);
+        // TODO (MWO): This is obviously wrong. We need to create and execute a query for each time series type!
+        var querySnippetProvider = _querySnippetProviderFactory.Create(parameters, parameters.TimeSeriesTypes.First());
 
         var calculationTypePerGridAreas =
             await GetCalculationTypeForGridAreasAsync(
