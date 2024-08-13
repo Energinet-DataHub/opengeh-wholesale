@@ -26,7 +26,7 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
 )
 from package.databases.wholesale_basis_data_internal import (
     basis_data_factory,
-    internal_factory,
+    internal_data_factory,
 )
 from package.databases.wholesale_basis_data_internal.basis_data_results import (
     write_basis_data,
@@ -170,7 +170,7 @@ def _execute(
         grid_loss_metering_points_df,
     )
 
-    results.internal_data = internal_factory.create(
+    results.internal_data = internal_data_factory.create(
         calculations,
         calculation_grid_areas,
     )
