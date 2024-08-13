@@ -12,8 +12,9 @@ active_calculations_v1 = t.StructType(
         t.StructField("calculation_type", t.StringType(), not nullable),
         t.StructField("calculation_version", t.LongType(), not nullable),
         t.StructField("grid_area_code", t.StringType(), not nullable),
-        t.StructField("date", t.TimestampType(), not nullable),
-        t.StructField("active_from_date", t.TimestampType(), not nullable),
-        t.StructField("active_to_date", t.TimestampType(), nullable),
+        t.StructField("from_date", t.TimestampType(), not nullable),
+        t.StructField("to_date", t.TimestampType(), nullable),
+        t.StructField("active_from_time", t.TimestampType(), not nullable),
+        t.StructField("active_to_time", t.TimestampType(), nullable),
     ]
 )
