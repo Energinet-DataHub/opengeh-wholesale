@@ -14,6 +14,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
@@ -216,7 +217,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// </summary>
     public async Task<string> CreateAuthenticationHeaderWithNestedTokenAsync(params string[] roles)
     {
-        var token = await OpenIdJwtManager.CreateInternalTokenAsync(roles: roles);
+        // Fake claims
+        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
+
+        var token = await OpenIdJwtManager.CreateInternalTokenAsync(
+            roles: roles,
+            extraClaims: [actorNumberClaim, actorRoleClaim]);
         if (string.IsNullOrWhiteSpace(token))
             throw new InvalidOperationException("Internal token was not created.");
 
