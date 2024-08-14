@@ -77,21 +77,20 @@ class ScenarioExecutor:
         if not os.path.exists(path_to_csv):
             return None
 
-        # Read the CSV file to check column names (without enforcing the schema yet).
+        # Read the CSV file to check column names.
         df = spark_session.read.csv(path_to_csv, header=True, sep=";")
 
         # Verify column names match with those in the schema
         schema_column_names = [field.name for field in schema.fields]
         if schema_column_names != df.columns:
             raise ValueError(
-                f"Column names in {path_to_csv} do not match with the schema. "
-                f"Expected: {schema_column_names}, Found: {df.columns}"
+                f"Schema mismatch {path_to_csv}. Expected: {schema_column_names} Found: {df.columns}"
             )
 
-        # Read the CSV file again, this time enforcing the schema
-        df = spark_session.read.csv(
-            path_to_csv, header=True, sep=";", schema=schema, enforceSchema=True
-        )
+        # When the schema is provided, the column names from the schema are used
+        # despite the header naming in the CSV file. The data types must, however,
+        # comply with the schema.
+        df = spark_session.read.csv(path_to_csv, header=True, sep=";", schema=schema)
 
         # Behind the scenes the dataframe is wrapped using DataFrameWrapper and verified for nullability and precision.
         return spark_session.createDataFrame(df.rdd, schema=schema, verifySchema=True)
