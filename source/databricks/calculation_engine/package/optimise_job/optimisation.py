@@ -22,7 +22,7 @@ from package.infrastructure.paths import (
 )
 
 
-def optimise_tables():
+def optimise_tables() -> None:
     spark = initialize_spark()
 
     database_dict = {
@@ -35,6 +35,6 @@ def optimise_tables():
             optimise_table(spark, database_name, table_name)
 
 
-def optimise_table(spark: SparkSession, database_name: str, table_name: str):
+def optimise_table(spark: SparkSession, database_name: str, table_name: str) -> None:
     delta_table = DeltaTable.forName(spark, f"{database_name}.{table_name}")
     delta_table.optimize()
