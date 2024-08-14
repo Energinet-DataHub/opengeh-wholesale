@@ -2,7 +2,7 @@ import pyspark.sql.types as t
 
 nullable = True
 
-active_calculations_v1 = t.StructType(
+calculations_activation_history_v1 = t.StructType(
     [
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),

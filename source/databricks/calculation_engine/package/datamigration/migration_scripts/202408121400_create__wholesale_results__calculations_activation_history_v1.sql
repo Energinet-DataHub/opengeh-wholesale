@@ -3,7 +3,7 @@
 -- between the calculation's execution start time and the execution start time of the next calculation (if another
 -- calculation covers the same day, calculation type and grid area)
 
-CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.active_calculations_v1 as
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_activation_history as
 WITH calculations_by_day AS (
   SELECT
     c.calculation_id,
