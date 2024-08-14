@@ -19,6 +19,9 @@ module "st_data_lake" {
   containers = [
     {
       name = "unityroot"
+    },
+    {
+      name = "wholesaleinput"
     }
   ]
 }
