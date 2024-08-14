@@ -39,7 +39,7 @@ class WholesaleInternalRepository:
             or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
         )
         self._calculations_table_name = (
-            calculations_table_name or HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME
+            calculations_table_name or WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME
         )
 
     def read_grid_loss_metering_points(self) -> DataFrame:
