@@ -241,7 +241,7 @@ def calculation_output_path(data_lake_path: str) -> str:
 def migrations_executed(
     spark: SparkSession,
     calculation_output_path: str,
-    energy_input_data_written_to_delta: None,  # TODO JVM: can be removed when all migrations are on unity catalog
+    energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     # Execute all migrations
@@ -414,31 +414,13 @@ def dependency_injection_container(
 
 
 @pytest.fixture(scope="session")
-def grid_loss_metering_points_input_data_written_to_delta(
-    spark: SparkSession,
-    test_files_folder_path: str,
-    test_session_configuration: TestSessionConfiguration,
-    wholesale_internal_database: str,
-    migrations_executed: None,
-) -> None:
-    # grid loss
-    df = spark.read.csv(
-        f"{test_files_folder_path}/GridLossResponsible.csv",
-        header=True,
-        schema=grid_loss_metering_points_schema,
-    )
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
-    )
-
-
-@pytest.fixture(scope="session")
 def energy_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
     calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
+    wholesale_internal_database: str,
 ) -> None:
     _write_input_test_data_to_table(
         spark,
@@ -456,6 +438,16 @@ def energy_input_data_written_to_delta(
         table_name=paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_points_schema,
         table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
+    )
+
+    # grid loss
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/GridLossResponsible.csv",
+        database_name=wholesale_internal_database,
+        table_name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        schema=grid_loss_metering_points_schema,
+        table_location=f"{calculation_input_path}/{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
