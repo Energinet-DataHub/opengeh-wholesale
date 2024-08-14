@@ -79,9 +79,6 @@ def start_with_deps(
 
             args, infrastructure_settings = parse_job_args(command_line_args)
 
-            if args.is_simulation:
-                raise NotImplementedError("Simulation is not implemented.")
-
             spark = initialize_spark()
             create_and_configure_container(spark, infrastructure_settings)
 

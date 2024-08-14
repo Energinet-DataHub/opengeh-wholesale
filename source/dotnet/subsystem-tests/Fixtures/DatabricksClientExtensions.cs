@@ -70,9 +70,10 @@ public static class DatabricksClientExtensions
     /// </summary>
     public static async Task<long> GetCalculatorJobIdAsync(this DatabricksClient databricksClient)
     {
-        var jobs = await databricksClient.Jobs.List(name: "CalculatorJob");
-        return jobs.Jobs
-            .Single()
-            .JobId;
+        var job = await databricksClient.Jobs
+            .ListPageable(name: "CalculatorJob")
+            .FirstAsync();
+
+        return job.JobId;
     }
 }

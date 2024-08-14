@@ -31,4 +31,4 @@ class CalculatorArgs:
     created_by_user_id: str
     time_zone: str
     quarterly_resolution_transition_datetime: datetime
-    is_simulation: bool
+    is_control_calculation: bool
