@@ -9,51 +9,54 @@ wholesaleSubsystem = group "Wholesale" {
         # Relations to shared
         dh3.sharedUnityCatalog -> this "Read data / write data"
     }
-    wholesaleCalculatorJob = container "Calculator Job" {
-        description "Executes calculations"
-        technology "Azure Databricks"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
-        # Subsystem relationships
-        this -> dh3.sharedUnityCatalog "Read inputs / write results"
-        this -> wholesaleDataLake "Read inputs / write results" {
-            tags "Simple View"
+    wholesaleDatabricksWorkspace = group "Databricks Workspace" {
+        wholesaleCalculatorJob = container "Calculator Job" {
+            description "Executes calculations"
+            technology "Azure Databricks"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read inputs / write results"
+            this -> wholesaleDataLake "Read inputs / write results" {
+                tags "Simple View"
+            }
         }
-    }
-    wholesaleMigrationJob = container "Migration Job" {
-        description "Executes delta migrations (invoked during deployment)"
-        technology "Azure Databricks"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+        wholesaleMigrationJob = container "Migration Job" {
+            description "Executes delta migrations (invoked during deployment)"
+            technology "Azure Databricks"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
-        # Subsystem relationships
-        this -> dh3.sharedUnityCatalog "Migrate database objects and data"
-        this -> wholesaleDataLake "Read inputs / write results" {
-            tags "Simple View"
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Migrate database objects and data"
+            this -> wholesaleDataLake "Read inputs / write results" {
+                tags "Simple View"
+            }
         }
-    }
-    wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
-        description "Executes delta SQL migrations"
-        technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Intermediate Technology"
+        wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
+            description "Executes delta SQL migrations"
+            technology "Azure Databricks SQL Warehouse"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Intermediate Technology"
 
-        # Subsystem relationships
-        this -> dh3.sharedUnityCatalog "Read/write executed migrations"
-    }
-    wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
-        description "Executes delta SQL queries (also used by EDI)"
-        technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Intermediate Technology"
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read/write executed migrations"
+        }
+        wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
+            description "Executes delta SQL queries (also used by EDI)"
+            technology "Azure Databricks SQL Warehouse"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Intermediate Technology"
 
-        # Subsystem relationships
-        this -> dh3.sharedUnityCatalog "Read results"
-    }
-    settlementReportsWarehouse = container "Settlement Reports Warehouse" {
-        description "Executes delta SQL queries"
-        technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Intermediate Technology"
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read results"
+        }
+        settlementReportsWarehouse = container "Settlement Reports Warehouse" {
+            description "Executes delta SQL queries"
+            technology "Azure Databricks SQL Warehouse"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Intermediate Technology"
 
-        # Subsystem relationships
-        this -> dh3.sharedUnityCatalog "Read basis data and results"
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read basis data and results"
+        }
     }
 
     wholesaleDb = container "Wholesale Database" {

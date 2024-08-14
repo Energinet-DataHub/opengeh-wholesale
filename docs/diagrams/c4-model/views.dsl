@@ -19,7 +19,8 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
             # hence subsystems that doesn't depend on others, should be listed first.
 
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G33BF5LS74PLGAQJBIZV3LC3Q
+            # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G3K6UFNKC3ZN5GDTIMZV3QFBQ
 
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
