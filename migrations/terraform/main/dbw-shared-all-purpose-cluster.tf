@@ -7,9 +7,9 @@ resource "databricks_cluster" "shared_all_purpose" {
   autotermination_minutes = 15
   num_workers             = 1
   spark_conf = {
-    "fs.azure.account.oauth2.client.endpoint.${module.st_dh2data.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
-    "fs.azure.account.oauth2.client.endpoint.${module.st_migrations.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
-    "fs.azure.account.oauth2.client.endpoint.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+    "fs.azure.account.oauth2.client.endpoint.${module.st_dh2data.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
+    "fs.azure.account.oauth2.client.endpoint.${module.st_migrations.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
+    "fs.azure.account.oauth2.client.endpoint.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
     "fs.azure.account.auth.type.${module.st_dh2data.name}.dfs.core.windows.net" : "OAuth"
     "fs.azure.account.auth.type.${module.st_migrations.name}.dfs.core.windows.net" : "OAuth"
     "fs.azure.account.auth.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "OAuth"

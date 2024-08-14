@@ -69,7 +69,7 @@ resource "databricks_secret" "subscription_id" {
 resource "databricks_secret" "tenant_id" {
   provider     = databricks.dbw
   key          = "tenant_id"
-  string_value = var.tenant_id
+  string_value = data.azurerm_client_config.this.tenant_id
   scope        = databricks_secret_scope.migration_scope.id
 }
 

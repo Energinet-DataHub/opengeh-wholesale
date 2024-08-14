@@ -3,11 +3,6 @@ variable "subscription_id" {
   description = "Subscription that the infrastructure code is deployed into."
 }
 
-variable "tenant_id" {
-  type        = string
-  description = "Azure Tenant that the infrastructure is deployed into."
-}
-
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
