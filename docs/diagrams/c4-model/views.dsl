@@ -8,7 +8,6 @@
 # deployment diagram files.
 
 workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-arch-diagrams/main/docs/diagrams/c4-model/dh-base-model.dsl {
-
     model {
         #
         # DataHub 3.0 (extends)
@@ -20,27 +19,37 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
             # hence subsystems that doesn't depend on others, should be listed first.
 
+            # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G3K6UFNKC3ZN5GDTIMZV3QFBQ
+
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
-
-            # Include EDI model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-edi/main/docs/diagrams/c4-model/model.dsl
 
             # Include Wholesale model
             !include model.dsl
 
-            # Include Frontend model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
-
-            # Include Migration model - placeholders
-            migrationSubsystem = group "Migration" {
-                migrationDatabricks = container "Data Migration" {
-                    description "Extract migrated JSON files. Load and transform data using Notebooks"
-                    technology "Azure Databricks"
-                    tags "Microsoft Azure - Azure Databricks"
+            # Include frontend model - placeholders
+            frontendSubsystem = group "Frontend" {
+                frontendBff = container "BFF" {
+                    description "Backend for Frontend"
 
                     # Subsystem-to-subsystem relationships.
-                    this -> wholesaleDataLake "Deliver calculation inputs"
+                    this -> wholesaleApi "Interact using HTTP API"
+                }
+            }
+
+            # Include Migration model - placeholders
+            migrationSubsystem = group "Migrations" {
+                migrationDatabricks = container "Data Migration" {
+                    description "Delivers DataHub 2.0 data to DataHub 3.0"
+
+                    # Subsystem-to-subsystem relationships.
+                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
+
+                    # Subsystem-to-Subsystem relationships
+                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" "integration event/amqp" {
+                        tags "Simple View"
+                    }
                 }
             }
         }
