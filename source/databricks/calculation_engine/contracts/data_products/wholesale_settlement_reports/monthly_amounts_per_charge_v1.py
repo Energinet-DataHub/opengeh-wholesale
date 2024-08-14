@@ -7,12 +7,6 @@ monthly_amounts_per_charge_v1 = t.StructType(
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
         #
-        # 'wholesale_fixing' | 'first_correction_settlement' |
-        # 'second_correction_settlement' | 'third_correction_settlement'
-        t.StructField("calculation_type", t.StringType(), not nullable),
-        #
-        t.StructField("calculation_version", t.LongType(), not nullable),
-        #
         # UUID
         t.StructField("result_id", t.StringType(), not nullable),
         #
