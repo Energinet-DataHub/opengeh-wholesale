@@ -42,7 +42,17 @@ module "dbw" {
       resource_name = module.st_data_wholesale.name
       dns_zone      = "privatelink.dfs.core.windows.net"
       ip_record     = module.st_data_wholesale.dfs_private_ip_address
-    }
+    },
+    {
+      resource_name = data.azurerm_key_vault_secret.st_migrations_name.value
+      dns_zone      = "privatelink.blob.core.windows.net"
+      ip_record     = data.azurerm_key_vault_secret.st_migrations_blob_private_ip.value
+    },
+    {
+      resource_name = data.azurerm_key_vault_secret.st_migrations_name.value
+      dns_zone      = "privatelink.dfs.core.windows.net"
+      ip_record     = data.azurerm_key_vault_secret.st_migrations_dfs_private_ip.value
+    },
   ]
 }
 

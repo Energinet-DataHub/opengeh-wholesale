@@ -48,3 +48,21 @@ data "azurerm_key_vault_secret" "st_data_lake_dfs_private_ip_address" {
   name         = "st-data-lake-dfs-private-ip-address"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+# TO BE REMOVED WHEN MIGRATIONS HAVE MIGRATED TO NEW SCHEMA
+data "azurerm_key_vault_secret" "st_migrations_name" {
+  name         = "stmigrations-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+# TO BE REMOVED WHEN MIGRATIONS HAVE MIGRATED TO NEW SCHEMA
+data "azurerm_key_vault_secret" "st_migrations_blob_private_ip" {
+  name         = "stmigrations-blob-private-ip"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+# TO BE REMOVED WHEN MIGRATIONS HAVE MIGRATED TO NEW SCHEMA
+data "azurerm_key_vault_secret" "st_migrations_dfs_private_ip" {
+  name         = "stmigrations-dfs-private-ip"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
