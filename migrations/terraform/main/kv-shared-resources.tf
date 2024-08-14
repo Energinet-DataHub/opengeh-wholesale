@@ -132,3 +132,30 @@ data "azurerm_key_vault_secret" "shared_unity_catalog_name" {
   name         = "shared-unity-catalog-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+# TO BE REMOVED WHEN MIGRATIONS HAVE MIGRATED TO NEW SCHEMA
+module "kvs_stmigrations_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+
+  name         = "stmigrations-name"
+  value        = module.st_migrations.name
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+# TO BE REMOVED WHEN MIGRATIONS HAVE MIGRATED TO NEW SCHEMA
+module "kvs_stmigrations_blob_private_ip" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+
+  name         = "stmigrations-blob-private-ip"
+  value        = module.st_migrations.blob_private_ip_address
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+# TO BE REMOVED WHEN MIGRATIONS HAVE MIGRATED TO NEW SCHEMA
+module "kvs_stmigrations_dfs_private_ip" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+
+  name         = "stmigrations-dfs-private-ip"
+  value        = module.st_migrations.dfs_private_ip_address
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
