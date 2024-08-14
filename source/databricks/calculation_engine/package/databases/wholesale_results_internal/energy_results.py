@@ -13,23 +13,21 @@
 # limitations under the License.
 from dataclasses import fields
 
+import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as f
 from pyspark.sql.types import StructType
 
 import package.databases.wholesale_results_internal.schemas as schemas
-from package.calculation.calculation_results import (
-    EnergyResultsContainer,
-)
+from package.calculation.calculation_output import EnergyResultsOutput
+from package.codelists import MeteringPointType
+from package.container import Container
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
 )
-from package.codelists import MeteringPointType
-from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -39,7 +37,7 @@ from package.infrastructure.paths import (
 
 
 @logging_configuration.use_span("calculation.write.energy")
-def write_energy_results(energy_results: EnergyResultsContainer) -> None:
+def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     """Write each energy result to the output table."""
 
     print("Writing energy results to Unity Catalog")
@@ -47,21 +45,21 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     # Write exchange per neighbor grid area
     _write(
         "exchange_per_neighbor",
-        energy_results.exchange_per_neighbor,
+        energy_results_output.exchange_per_neighbor,
         WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
         schemas.exchange_per_neighbor_schema,
     )
 
     # Write energy per grid area
     energy = _union(
-        energy_results.total_consumption,
-        energy_results.exchange,
-        energy_results.production,
-        energy_results.flex_consumption,
-        energy_results.non_profiled_consumption,
-        energy_results.temporary_production,
-        energy_results.temporary_flex_consumption,
-        energy_results.grid_loss,
+        energy_results_output.total_consumption,
+        energy_results_output.exchange,
+        energy_results_output.production,
+        energy_results_output.flex_consumption,
+        energy_results_output.non_profiled_consumption,
+        energy_results_output.temporary_production,
+        energy_results_output.temporary_flex_consumption,
+        energy_results_output.grid_loss,
     )
     _write(
         "energy",
@@ -72,9 +70,9 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
     # Write energy per balance responsible party
     energy_per_brp = _union(
-        energy_results.production_per_brp,
-        energy_results.flex_consumption_per_brp,
-        energy_results.non_profiled_consumption_per_brp,
+        energy_results_output.production_per_brp,
+        energy_results_output.flex_consumption_per_brp,
+        energy_results_output.non_profiled_consumption_per_brp,
     )
     _write(
         "energy_per_brp",
@@ -85,9 +83,9 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
     # Write energy per energy supplier
     energy_per_es = _union(
-        energy_results.flex_consumption_per_es,
-        energy_results.production_per_es,
-        energy_results.non_profiled_consumption_per_es,
+        energy_results_output.flex_consumption_per_es,
+        energy_results_output.production_per_es,
+        energy_results_output.non_profiled_consumption_per_es,
     )
     _write(
         "energy_per_es",
@@ -97,15 +95,15 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     )
 
     # Write positive and negative grid loss time series
-    positive_grid_loss = energy_results.positive_grid_loss
-    if energy_results.positive_grid_loss:
-        positive_grid_loss = energy_results.positive_grid_loss.withColumn(
+    positive_grid_loss = energy_results_output.positive_grid_loss
+    if energy_results_output.positive_grid_loss:
+        positive_grid_loss = energy_results_output.positive_grid_loss.withColumn(
             EnergyResultColumnNames.metering_point_type,
             f.lit(MeteringPointType.CONSUMPTION.value),
         )
-    negative_grid_loss = energy_results.negative_grid_loss
-    if energy_results.negative_grid_loss:
-        negative_grid_loss = energy_results.negative_grid_loss.withColumn(
+    negative_grid_loss = energy_results_output.negative_grid_loss
+    if energy_results_output.negative_grid_loss:
+        negative_grid_loss = energy_results_output.negative_grid_loss.withColumn(
             EnergyResultColumnNames.metering_point_type,
             f.lit(MeteringPointType.PRODUCTION.value),
         )
@@ -121,8 +119,8 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
     # TODO BJM: Remove when we're on Unity Catalog
     print("Writing energy results to Hive")
-    for field in fields(energy_results):
-        _write_to_hive(field.name, getattr(energy_results, field.name))
+    for field in fields(energy_results_output):
+        _write_to_hive(field.name, getattr(energy_results_output, field.name))
 
 
 def _union(*dfs: DataFrame) -> DataFrame | None:

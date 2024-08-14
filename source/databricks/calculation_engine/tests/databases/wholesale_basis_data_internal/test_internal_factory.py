@@ -16,7 +16,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
 from databases.wholesale_basis_data_internal.internal_test_factory import (
-    create_internal_factory,
+    create_internal_data_factory,
 )
 from package.databases.wholesale_internal.schemas import (
     calculations_schema,
@@ -43,7 +43,7 @@ def test__internal_uses_correct_schema(
     expected_schema: StructType,
 ) -> None:
     # Arrange
-    internal_container = create_internal_factory(spark)
+    internal_container = create_internal_data_factory(spark)
 
     # Act
     # Refer to the property so we can use parameterization
