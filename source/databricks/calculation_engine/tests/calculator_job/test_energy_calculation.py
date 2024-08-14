@@ -259,6 +259,10 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
             True,
         ),
+        (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_PER_DAY_V1_VIEW_NAME}",
+            True,
+        ),
     ],
 )
 def test__when_balance_fixing__view_has_data_if_expected(

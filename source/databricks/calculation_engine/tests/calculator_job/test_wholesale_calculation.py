@@ -414,6 +414,10 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_PER_DAY_V1_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1}",
             True,
         ),

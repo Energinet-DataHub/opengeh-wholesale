@@ -126,6 +126,9 @@ schema_config = [
             View(
                 name=paths.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
             ),
+            View(
+                name=paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_PER_DAY_V1_VIEW_NAME,
+            ),
         ],
     ),
     Schema(
