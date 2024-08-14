@@ -9,22 +9,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions.Analyzers" Version="0.32.0">
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.33.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.13.2" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.61.3" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.13.5" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.63.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="WireMock.Net" Version="1.5.56" />
-    <PackageReference Include="WireMock.Net.FluentAssertions" Version="1.5.56" />
-    <PackageReference Include="WireMock.Net.xUnit" Version="1.5.52" />
-    <PackageReference Include="xunit" Version="2.8.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
+    <PackageReference Include="WireMock.Net" Version="1.5.62" />
+    <PackageReference Include="WireMock.Net.FluentAssertions" Version="1.5.62" />
+    <PackageReference Include="WireMock.Net.xUnit" Version="1.5.62" />
+    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
