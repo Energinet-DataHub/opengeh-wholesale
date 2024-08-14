@@ -17,7 +17,9 @@ import pyspark.sql.functions as f
 from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_quantity_and_quality,
 )
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResults,
+)
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
