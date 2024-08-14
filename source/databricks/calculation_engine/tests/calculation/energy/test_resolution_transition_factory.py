@@ -99,7 +99,7 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
             calculation_period_start_datetime=start_datetime,
             calculation_period_end_datetime=end_datetime,
             quarterly_resolution_transition_datetime=transition_datetime,
-            is_simulation=False,
+            is_control_calculation=False,
         )
         rows = [
             factory.create_row(
