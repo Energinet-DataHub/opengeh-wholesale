@@ -56,8 +56,6 @@ class ViewColumns:
 
     # Column names and types in alphabetical order
     amount = Column("amount", DecimalType(18, 6))
-    active_from_time = Column("active_from_time", TimestampType())
-    active_to_time = Column("active_to_time", TimestampType())
     balance_responsible_party_id = Column("balance_responsible_party_id", StringType())
     calculation_id = Column("calculation_id", StringType())
     calculation_type = Column("calculation_type", StringType())
@@ -74,6 +72,8 @@ class ViewColumns:
     from_grid_area_code = Column("from_grid_area_code", StringType())
     grid_area_code = Column("grid_area_code", StringType())
     is_tax = Column("is_tax", BooleanType())
+    latest_from_time = Column("latest_from_time", TimestampType())
+    latest_to_time = Column("latest_to_time", TimestampType())
     metering_point_id = Column("metering_point_id", StringType())
     metering_point_type = Column("metering_point_type", StringType())
     neighbor_grid_area_code = Column("neighbor_grid_area_code", StringType())

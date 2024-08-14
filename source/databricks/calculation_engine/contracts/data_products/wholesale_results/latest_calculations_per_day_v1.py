@@ -24,10 +24,10 @@ calculations_activation_history_v1 = t.StructType(
         t.StructField("to_date", t.TimestampType(), not nullable),
         #
         # Time (UTC) from which the calculation's results are active. This time is inclusive.
-        t.StructField("active_from_time", t.TimestampType(), not nullable),
+        t.StructField("latest_from_time", t.TimestampType(), not nullable),
         #
         # Time (UTC) from which the calculation's results are no longer active. This time is exclusive.
         # NULL means that the calculation is still active.
-        t.StructField("active_to_time", t.TimestampType(), nullable),
+        t.StructField("latest_to_time", t.TimestampType(), nullable),
     ]
 )
