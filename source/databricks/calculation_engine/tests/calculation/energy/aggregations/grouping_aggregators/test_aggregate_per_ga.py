@@ -53,7 +53,7 @@ class TestWhenValidInput:
             actual_row[Colname.from_grid_area_code] is None
         )  # None because it's not an exchange result
         assert actual_row[Colname.energy_supplier_id] is None
-        assert actual_row[Colname.balance_responsible_party_id] is None
+        assert actual_row[Colname.balance_responsible_id] is None
         assert (
             actual_row[Colname.observation_time] == factories.DEFAULT_OBSERVATION_TIME
         )

@@ -78,7 +78,7 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     return [
         Colname.grid_area_code,
         Colname.from_grid_area_code,
-        Colname.balance_responsible_party_id,
+        Colname.balance_responsible_id,
         Colname.energy_supplier_id,
     ]
 
@@ -93,7 +93,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.energy_supplier_id).alias(
             EnergyResultColumnNames.energy_supplier_id
         ),
-        f.col(Colname.balance_responsible_party_id).alias(
+        f.col(Colname.balance_responsible_id).alias(
             EnergyResultColumnNames.balance_responsible_id
         ),
         f.col(Colname.quantity)
