@@ -89,10 +89,6 @@ jobs:
           app_id: ${{ vars.dh3serviceaccount_appid }}
           private_key: ${{ secrets.dh3serviceaccount_privatekey }}
 
-      - name: echo payload
-        run: |
-          echo '{"pr_number": "${{ steps.find_pull_request.outputs.pull_request_number }}", "databricks": "${{ needs.changes.outputs.databricks }}", "dotnet": "${{ needs.changes.outputs.dotnet }}", "db_migrations": "${{ needs.changes.outputs.db_migrations }}"}'
-
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
