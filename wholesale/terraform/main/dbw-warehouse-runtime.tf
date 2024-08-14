@@ -3,6 +3,7 @@ resource "databricks_sql_endpoint" "this" {
   provider         = databricks.dbw
   name             = "Wholesale SQL Endpoint"
   cluster_size     = "Small"
+  min_num_clusters = 1
   max_num_clusters = 10
   auto_stop_mins   = 120
   warehouse_type   = "PRO"
