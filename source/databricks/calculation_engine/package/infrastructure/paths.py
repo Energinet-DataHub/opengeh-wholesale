@@ -67,6 +67,17 @@ class WholesaleResultsInternalDatabase:
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
 
+    TABLE_NAMES = [
+        ENERGY_TABLE_NAME,
+        ENERGY_PER_ES_TABLE_NAME,
+        ENERGY_PER_BRP_TABLE_NAME,
+        GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
+        EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+        AMOUNTS_PER_CHARGE_TABLE_NAME,
+        TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+        MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
+    ]
+
 
 class WholesaleResultsDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
