@@ -44,7 +44,7 @@ jobs:
 
   ci_dotnet:
     needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
+    if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
 
   ci_databricks:
