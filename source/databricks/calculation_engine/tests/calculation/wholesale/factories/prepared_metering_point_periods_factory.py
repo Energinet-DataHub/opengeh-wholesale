@@ -68,7 +68,7 @@ def create_row(
         Colname.to_grid_area_code: to_grid_area_code,
         Colname.parent_metering_point_id: DefaultValues.PARENT_METERING_POINT_ID,
         Colname.energy_supplier_id: DefaultValues.ENERGY_SUPPLIER_ID,
-        Colname.balance_responsible_party_id: DefaultValues.BALANCE_RESPONSIBLE_ID,
+        Colname.balance_responsible_id: DefaultValues.BALANCE_RESPONSIBLE_ID,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }

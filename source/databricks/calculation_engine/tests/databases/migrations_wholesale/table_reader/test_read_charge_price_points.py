@@ -20,12 +20,11 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import charge_price_points_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
-from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -49,17 +48,15 @@ class TestWhenContractMismatch:
     ) -> None:
         # Arrange
         row = _create_change_price_point_row()
-        reader = MigrationsWholesaleRepository(
-            mock.Mock(),
-            "dummy_catalog_name",
-            "dummy_database_name",
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         df = df.drop(Colname.charge_code)
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
+            reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_price_points()
@@ -76,19 +73,19 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        table_location = f"{calculation_input_path}/charge_price_points"
         row = _create_change_price_point_row()
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         write_dataframe_to_table(
             spark,
             df,
             "test_database",
-            MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            "charge_price_points",
             table_location,
             charge_price_points_schema,
         )
         expected = df
-        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
+        reader = TableReader(spark, calculation_input_path, "spark_catalog")
 
         # Act
         actual = reader.read_charge_price_points()
@@ -104,16 +101,14 @@ class TestWhenValidInputAndExtraColumns:
     ) -> None:
         # Arrange
         row = _create_change_price_point_row()
-        reader = MigrationsWholesaleRepository(
-            mock.Mock(),
-            "dummy_catalog_name",
-            "dummy_database_name",
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
+            reader._spark.read.format("delta"), "load", return_value=df
         ):
             reader.read_charge_price_points()

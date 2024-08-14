@@ -18,13 +18,12 @@ import pytest
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
+from package.databases.migrations_wholesale import TableReader
 from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
 import databases.migrations_wholesale.table_reader.input_metering_point_periods_factory as factory
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
-from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 
 class TestWhenValidInput:
@@ -36,18 +35,18 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
+        table_location = f"{calculation_input_path}/metering_point_periods"
         row = factory.create_row()
         df = factory.create(spark, row)
         write_dataframe_to_table(
             spark,
             df,
             "test_database",
-            MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            "metering_point_periods",
             table_location,
             metering_point_periods_schema,
         )
-        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
+        reader = TableReader(spark, calculation_input_path, "spark_catalog")
 
         # Act
         actual = reader.read_metering_point_periods()
@@ -59,10 +58,8 @@ class TestWhenValidInput:
 class TestWhenValidInputAndMoreColumns:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
-        reader = MigrationsWholesaleRepository(
-            mock.Mock(),
-            "dummy_catalog_name",
-            "dummy_database_name",
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
         row = factory.create_row()
         df = factory.create(spark, row)
@@ -70,7 +67,7 @@ class TestWhenValidInputAndMoreColumns:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
+            reader._spark.read.format("delta"), "load", return_value=df
         ):
             reader.read_metering_point_periods()
 
@@ -78,10 +75,8 @@ class TestWhenValidInputAndMoreColumns:
 class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
-        reader = MigrationsWholesaleRepository(
-            mock.Mock(),
-            "dummy_catalog_name",
-            "dummy_database_name",
+        reader = TableReader(
+            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
         row = factory.create_row()
         df = factory.create(spark, row)
@@ -89,7 +84,7 @@ class TestWhenContractMismatch:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
+            reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_metering_point_periods()

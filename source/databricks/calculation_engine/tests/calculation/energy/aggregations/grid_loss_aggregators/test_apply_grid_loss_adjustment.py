@@ -259,7 +259,7 @@ class TestWhenEnergySupplierOnlyHasGridLossMeteringPoints:
             actual.df.collect()[0][Colname.energy_supplier_id] == "energy_supplier_id"
         )
         assert (
-            actual.df.collect()[0][Colname.balance_responsible_party_id]
+            actual.df.collect()[0][Colname.balance_responsible_id]
             == "balance_responsible_id"
         )
 

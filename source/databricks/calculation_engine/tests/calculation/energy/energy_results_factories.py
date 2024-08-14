@@ -59,7 +59,7 @@ def create_row(
         Colname.grid_area_code: grid_area,
         Colname.from_grid_area_code: from_grid_area,
         Colname.to_grid_area_code: to_grid_area,
-        Colname.balance_responsible_party_id: balance_responsible_id,
+        Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.observation_time: observation_time,
         Colname.quantity: quantity,

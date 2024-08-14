@@ -203,7 +203,7 @@ class TestWhenValidInput:
             actual_row[Colname.energy_supplier_id] == factory.DEFAULT_ENERGY_SUPPLIER_ID
         )
         assert (
-            actual_row[Colname.balance_responsible_party_id]
+            actual_row[Colname.balance_responsible_id]
             == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
 

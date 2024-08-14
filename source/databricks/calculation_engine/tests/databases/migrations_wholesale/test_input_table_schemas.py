@@ -27,15 +27,13 @@ from package.infrastructure import paths
 
 
 def test__input_time_series_point_schema__matches_published_contract(
-    spark: SparkSession,
-    energy_input_data_written_to_delta: None,
-    calculation_input_database: str,
+    spark: SparkSession, energy_input_data_written_to_delta: None
 ) -> None:
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
     )
 
     # When asserting both that the calculator creates output, and it does it with input data that matches
@@ -48,49 +46,41 @@ def test__input_time_series_point_schema__matches_published_contract(
 
 
 def test__input_metering_point_period_schema__matches_published_contract(
-    spark: SparkSession,
-    energy_input_data_written_to_delta: None,
-    calculation_input_database: str,
+    spark: SparkSession, energy_input_data_written_to_delta: None
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, metering_point_periods_schema)
 
 
 def test__input_charge_link_period_schema__matches_published_contract(
-    spark: SparkSession,
-    price_input_data_written_to_delta: None,
-    calculation_input_database: str,
+    spark: SparkSession, price_input_data_written_to_delta: None
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_link_periods_schema)
 
 
 def test__input_charge_price_points_schema__matches_published_contract(
-    spark: SparkSession,
-    price_input_data_written_to_delta: None,
-    calculation_input_database: str,
+    spark: SparkSession, price_input_data_written_to_delta: None
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_price_points_schema)
 
 
 def test__input_charge_price_information_periods_schema__matches_published_contract(
-    spark: SparkSession,
-    price_input_data_written_to_delta: None,
-    calculation_input_database: str,
+    spark: SparkSession, price_input_data_written_to_delta: None
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_price_information_periods_schema)
 

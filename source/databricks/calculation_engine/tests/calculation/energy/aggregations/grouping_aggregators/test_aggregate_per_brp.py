@@ -54,7 +54,7 @@ class TestWhenValidInput:
         )  # None because it's not an exchange result
         assert actual_row[Colname.energy_supplier_id] is None
         assert (
-            actual_row[Colname.balance_responsible_party_id]
+            actual_row[Colname.balance_responsible_id]
             == factories.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
         assert (

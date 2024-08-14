@@ -36,7 +36,7 @@ class TestCtor:
             nullable_columns = [
                 Colname.to_grid_area_code,
                 Colname.from_grid_area_code,
-                Colname.balance_responsible_party_id,
+                Colname.balance_responsible_id,
                 Colname.energy_supplier_id,
                 Colname.metering_point_id,
             ]
