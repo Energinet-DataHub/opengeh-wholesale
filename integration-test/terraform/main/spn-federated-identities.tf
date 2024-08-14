@@ -110,3 +110,13 @@ resource "azuread_application_federated_identity_credential" "geh_settlement_rep
   audiences = [local.federated_identity_credential.audience_azuread]
   issuer    = local.federated_identity_credential.issuer_github
 }
+
+resource "azuread_application_federated_identity_credential" "dh2_bridge" {
+  application_id = azuread_application.app_ci.id
+
+  display_name = "dh2-bridge"
+  subject      = "repo:Energinet-DataHub/dh2-bridge:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
