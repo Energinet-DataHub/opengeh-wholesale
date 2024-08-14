@@ -30,16 +30,12 @@ class WholesaleInternalRepository:
         spark: SparkSession,
         catalog_name: str,
         grid_loss_metering_points_table_name: str | None = None,
-        calculations_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
             or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
-        )
-        self._calculations_table_name = (
-            calculations_table_name or WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME
         )
 
     def read_grid_loss_metering_points(self) -> DataFrame:
@@ -56,6 +52,6 @@ class WholesaleInternalRepository:
             self._spark,
             self._catalog_name,
             WholesaleInternalDatabase.DATABASE_NAME,
-            self._calculations_table_name,
+            WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
             calculations_schema,
         )
