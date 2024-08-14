@@ -89,9 +89,7 @@ def create_grid_loss_row(
     )
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> EnergyResults:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> EnergyResults:
     """If data is None, a single row with default values is created."""
     if data is None:
         data = [create_row()]
