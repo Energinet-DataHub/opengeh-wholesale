@@ -49,11 +49,13 @@ class InputDatabase:
 
 class MigrationsWholesaleDatabase:
     DATABASE_NAME = "migrations_wholesale"
-    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_v1"
-    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v1"
-    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods_v1"
-    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods_v1"
-    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points_v1"
+    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_view_v1"
+    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_view_v1"
+    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods_view_v1"
+    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = (
+        "charge_price_information_periods_view_v1"
+    )
+    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points_view_v1"
 
 
 class WholesaleInternalDatabase:
