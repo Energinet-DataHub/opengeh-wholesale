@@ -15,7 +15,9 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Extensions.Options;
@@ -32,10 +34,14 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.O
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using Newtonsoft.Json;
+using NodaTime;
 using WireMock.Server;
 using Xunit.Abstractions;
 
@@ -213,10 +219,45 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     }
 
     /// <summary>
+    /// Calls the <see cref="AppHostManager"/> to send a post request to start the
+    /// calculation.
+    /// </summary>
+    /// <returns>Calculation id of the started calculation.</returns>
+    public async Task<Guid> StartCalculationAsync()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
+
+        var dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+        var dateAtMidnight = new LocalDate(2024, 5, 17)
+            .AtMidnight()
+            .InZoneStrictly(dateTimeZone)
+            .ToDateTimeOffset();
+
+        // Input parameters
+        var requestDto = new StartCalculationRequestDto(
+            CalculationType.Aggregation,
+            GridAreaCodes: ["256", "512"],
+            StartDate: dateAtMidnight,
+            EndDate: dateAtMidnight.AddDays(2));
+
+        request.Content = new StringContent(
+            JsonConvert.SerializeObject(requestDto),
+            Encoding.UTF8,
+            "application/json");
+
+        request.Headers.Authorization = await CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
+
+        using var startCalculationResponse = await AppHostManager.HttpClient.SendAsync(request);
+        startCalculationResponse.EnsureSuccessStatusCode();
+
+        return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
+    }
+
+    /// <summary>
     /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
     /// and returns a 'Bearer' authentication header.
     /// </summary>
-    public Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync(params string[] roles)
+    private Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync()
     {
         // Fake claims
         var actorNumberClaim = new Claim("actornumber", "0000000000000");

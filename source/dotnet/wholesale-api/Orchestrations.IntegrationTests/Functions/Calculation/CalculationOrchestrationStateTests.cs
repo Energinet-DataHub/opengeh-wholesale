@@ -88,8 +88,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var authenticationHeaderValue = await Fixture.CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(authenticationHeaderValue);
+        var calculationId = await Fixture.StartCalculationAsync();
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
@@ -198,8 +197,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var authenticationHeaderValue = await Fixture.CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync(authenticationHeaderValue);
+        var calculationId = await Fixture.StartCalculationAsync();
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
