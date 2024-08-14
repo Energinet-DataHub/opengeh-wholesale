@@ -25,7 +25,8 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
     IAggregatedTimeSeriesDatabricksContract databricksContract)
 {
     private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
-    private readonly IAggregatedTimeSeriesDatabricksContract _databricksContract = databricksContract;
+
+    internal IAggregatedTimeSeriesDatabricksContract DatabricksContract { get; } = databricksContract;
 
     internal string GetWhereClauseSqlExpression(string table)
     {
@@ -46,7 +47,7 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
         if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    er.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    er.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
@@ -59,7 +60,7 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
 
         var calculationTypePerGridAreaConstraints = calculationTypeForGridAreas
             .Select(ctpga => $"""
-                              (er.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND er.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              (er.{EnergyPerEsBrpGaViewColumnNames.GridAreaCode} = '{ctpga.GridArea}' AND er.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{ctpga.CalculationType}')
                               """);
 
         return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
@@ -70,32 +71,31 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
         TimeSeriesType timeSeriesType,
         string table)
     {
-        var whereClausesSql = $@"
-                {table}.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}')
-            AND {table}.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'";
-
-        whereClausesSql +=
+        // var whereClausesSql = $@"
+        //         {table}.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}')
+        //     AND {table}.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'";
+        var whereClausesSql =
             $"""
-             AND ({table}.{EnergyResultColumnNames.Time} >= '{parameters.Period.Start}'
-                  AND {table}.{EnergyResultColumnNames.Time} < '{parameters.Period.End}')
+             ({table}.{EnergyPerEsBrpGaViewColumnNames.Time} >= '{parameters.Period.Start}'
+              AND {table}.{EnergyPerEsBrpGaViewColumnNames.Time} < '{parameters.Period.End}')
              """;
 
         if (parameters.GridAreaCodes.Count > 0)
         {
             whereClausesSql +=
-                $" AND {table}.{EnergyResultColumnNames.GridArea} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
+                $" AND {table}.{EnergyPerEsBrpGaViewColumnNames.GridAreaCode} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
         if (parameters.EnergySupplierId is not null)
         {
             whereClausesSql +=
-                $" AND {table}.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
+                $" AND {table}.{EnergyPerEsBrpGaViewColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
         }
 
         if (parameters.BalanceResponsibleId is not null)
         {
             whereClausesSql +=
-                $" AND {table}.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
+                $" AND {table}.{EnergyPerEsBrpGaViewColumnNames.BalanceResponsiblePartyId} = '{parameters.BalanceResponsibleId}'";
         }
 
         return whereClausesSql;

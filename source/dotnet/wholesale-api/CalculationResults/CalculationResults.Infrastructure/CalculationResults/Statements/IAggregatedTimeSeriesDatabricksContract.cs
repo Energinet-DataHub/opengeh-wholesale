@@ -21,4 +21,8 @@ public interface IAggregatedTimeSeriesDatabricksContract
     string GetAggregationLevel();
 
     string GetSource(DeltaTableOptions tableOptions);
+
+    string[] GetColumnsToProject();
+
+    string[] GetColumnsToAggregateBy();
 }

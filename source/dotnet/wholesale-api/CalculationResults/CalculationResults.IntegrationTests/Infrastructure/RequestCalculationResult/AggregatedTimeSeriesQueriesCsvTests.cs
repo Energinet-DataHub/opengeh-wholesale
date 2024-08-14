@@ -586,24 +586,29 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
         await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
 
-        const string basisDataCalculationsCsv = "basis_data.calculations.csv";
-        var basisDataTestFile = Path.Combine("TestData", basisDataCalculationsCsv);
+        const string view1 = "wholesale_calculation_results.energy_per_ga_v1.csv";
+        var view1File = Path.Combine("TestData", view1);
+
+        const string view2 = "wholesale_calculation_results.energy_per_brp_ga_v1.csv";
+        var view2File = Path.Combine("TestData", view2);
+
+        const string view3 = "wholesale_calculation_results.energy_per_es_brp_ga_v1.csv";
+        var view3File = Path.Combine("TestData", view3);
 
         await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.CALCULATIONS_TABLE_NAME,
-            BasisDataCalculationsTableSchemaDefinition.SchemaDefinition,
-            basisDataTestFile);
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_GA_V1_VIEW_NAME,
+            EnergyPerGaViewSchemaDefinition.SchemaDefinition,
+            view1File);
 
-        foreach (var index in new[] { 0, 1, 2 })
-        {
-            var wholesaleOutputEnergyResultsCsv = $"wholesale_output.energy_results_{index}.csv";
-            var energyTestFile = Path.Combine("TestData", wholesaleOutputEnergyResultsCsv);
+        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_BRP_GA_V1_VIEW_NAME,
+            EnergyPerBrpGaViewSchemaDefinition.SchemaDefinition,
+            view2File);
 
-            await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
-                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-                EnergyResultsTableSchemaDefinition.SchemaDefinition,
-                energyTestFile);
-        }
+        await _fixture.DatabricksSchemaManager.InsertFromCsvFileAsync(
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME,
+            EnergyPerEsBrpGaViewSchemaDefinition.SchemaDefinition,
+            view3File);
     }
 
     private async Task RemoveDataForEnergySupplierInTimespan(string energySupplierId, Instant before, Instant? after)

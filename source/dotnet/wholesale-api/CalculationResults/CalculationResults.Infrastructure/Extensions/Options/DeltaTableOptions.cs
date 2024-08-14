@@ -79,7 +79,7 @@ public class DeltaTableOptions
 
     public string ENERGY_PER_GA_V1_VIEW_NAME { get; set; } = "energy_per_ga_v1";
 
-    public string ENERGY_PER_BRP_GA_V1_VIEW_NAME { get; set; } = "energy_per_BRP_ga_v1";
+    public string ENERGY_PER_BRP_GA_V1_VIEW_NAME { get; set; } = "energy_per_brp_ga_v1";
 
     public string ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME { get; set; } = "energy_per_es_brp_ga_v1";
 }

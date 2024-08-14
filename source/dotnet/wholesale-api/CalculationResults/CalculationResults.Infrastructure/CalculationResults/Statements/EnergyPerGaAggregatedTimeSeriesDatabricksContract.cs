@@ -29,4 +29,35 @@ public class EnergyPerGaAggregatedTimeSeriesDatabricksContract : IAggregatedTime
         return
             $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.ENERGY_PER_GA_V1_VIEW_NAME}";
     }
+
+    public string[] GetColumnsToProject()
+    {
+        return
+        [
+            EnergyPerGaViewColumnNames.CalculationId,
+            EnergyPerGaViewColumnNames.CalculationType,
+            //EnergyPerGaViewColumnNames.CalculationPeriodStart,
+            //EnergyPerGaViewColumnNames.CalculationPeriodEnd,
+            EnergyPerGaViewColumnNames.CalculationVersion,
+            EnergyPerGaViewColumnNames.ResultId,
+            EnergyPerGaViewColumnNames.GridAreaCode,
+            EnergyPerGaViewColumnNames.MeteringPointType,
+            EnergyPerGaViewColumnNames.SettlementMethod,
+            EnergyPerGaViewColumnNames.Resolution,
+            EnergyPerGaViewColumnNames.Time,
+            EnergyPerGaViewColumnNames.Quantity,
+            //EnergyPerGaViewColumnNames.QuantityUnit,
+            EnergyPerGaViewColumnNames.QuantityQualities,
+        ];
+    }
+
+    public string[] GetColumnsToAggregateBy()
+    {
+        return
+        [
+            EnergyPerGaViewColumnNames.GridAreaCode,
+            EnergyPerGaViewColumnNames.MeteringPointType,
+            EnergyPerGaViewColumnNames.SettlementMethod,
+        ];
+    }
 }

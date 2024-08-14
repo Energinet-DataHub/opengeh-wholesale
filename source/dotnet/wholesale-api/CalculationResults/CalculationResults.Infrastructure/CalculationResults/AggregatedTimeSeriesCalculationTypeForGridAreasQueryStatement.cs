@@ -31,9 +31,9 @@ internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
     protected override string GetSource() =>
         $"""
          (SELECT wr.*
-          FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
+          FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} wr
           INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-          ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
+          ON wr.{EnergyPerEsBrpGaViewColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
          """;
 
     protected override string GetSelection(string table) => _querySnippetProvider

@@ -29,4 +29,37 @@ public class EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract : IAggregate
         return
             $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME}";
     }
+
+    public string[] GetColumnsToProject()
+    {
+        return
+        [
+            EnergyPerEsBrpGaViewColumnNames.CalculationId,
+            EnergyPerEsBrpGaViewColumnNames.CalculationType,
+            //EnergyPerEsBrpGaViewColumnNames.CalculationPeriodStart,
+            //EnergyPerEsBrpGaViewColumnNames.CalculationPeriodEnd,
+            EnergyPerEsBrpGaViewColumnNames.CalculationVersion,
+            EnergyPerEsBrpGaViewColumnNames.ResultId,
+            EnergyPerEsBrpGaViewColumnNames.GridAreaCode,
+            EnergyPerEsBrpGaViewColumnNames.EnergySupplierId,
+            EnergyPerEsBrpGaViewColumnNames.BalanceResponsiblePartyId,
+            EnergyPerEsBrpGaViewColumnNames.MeteringPointType,
+            EnergyPerEsBrpGaViewColumnNames.SettlementMethod,
+            EnergyPerEsBrpGaViewColumnNames.Resolution,
+            EnergyPerEsBrpGaViewColumnNames.Time,
+            EnergyPerEsBrpGaViewColumnNames.Quantity,
+            //EnergyPerEsBrpGaViewColumnNames.QuantityUnit,
+            EnergyPerEsBrpGaViewColumnNames.QuantityQualities,
+        ];
+    }
+
+    public string[] GetColumnsToAggregateBy()
+    {
+        return
+        [
+            EnergyPerEsBrpGaViewColumnNames.GridAreaCode,
+            EnergyPerEsBrpGaViewColumnNames.MeteringPointType,
+            EnergyPerEsBrpGaViewColumnNames.SettlementMethod,
+        ];
+    }
 }

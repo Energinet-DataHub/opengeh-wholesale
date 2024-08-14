@@ -34,35 +34,37 @@ public class AggregatedTimeSeriesQueries(
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        // TODO (MWO): This is obviously wrong. We need to create and execute a query for each time series type!
-        var querySnippetProvider = _querySnippetProviderFactory.Create(parameters, parameters.TimeSeriesTypes.First());
-
-        var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(
-                    EnergyResultColumnNames.GridArea,
-                    EnergyResultColumnNames.CalculationType,
-                    new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
-                        _deltaTableOptions.Value,
-                        querySnippetProvider),
-                    parameters.CalculationType)
-                .ConfigureAwait(false);
-
-        var sqlStatement = new AggregatedTimeSeriesQueryStatement(
-            calculationTypePerGridAreas,
-            querySnippetProvider,
-            _deltaTableOptions.Value);
-
-        await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
-                           AggregatedTimeSeriesFactory.Create,
-                           (currentRow, previousRow) =>
-                               AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column =>
-                                   currentRow[column] != previousRow[column])
-                               || currentRow[EnergyResultColumnNames.CalculationId] !=
-                               previousRow[EnergyResultColumnNames.CalculationId],
-                           EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
-                           sqlStatement))
+        foreach (var timeSeriesType in parameters.TimeSeriesTypes)
         {
-            yield return aggregatedTimeSeries;
+            var querySnippetProvider = _querySnippetProviderFactory.Create(parameters, timeSeriesType);
+
+            var calculationTypePerGridAreas =
+                await GetCalculationTypeForGridAreasAsync(
+                        EnergyResultColumnNames.GridArea,
+                        EnergyResultColumnNames.CalculationType,
+                        new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
+                            _deltaTableOptions.Value,
+                            querySnippetProvider),
+                        parameters.CalculationType)
+                    .ConfigureAwait(false);
+
+            var sqlStatement = new AggregatedTimeSeriesQueryStatement(
+                calculationTypePerGridAreas,
+                querySnippetProvider,
+                _deltaTableOptions.Value);
+
+            await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
+                               AggregatedTimeSeriesFactory.Create,
+                               (currentRow, previousRow) =>
+                                   querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column =>
+                                       currentRow[column] != previousRow[column])
+                                   || currentRow[EnergyResultColumnNames.CalculationId] !=
+                                   previousRow[EnergyResultColumnNames.CalculationId],
+                               EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
+                               sqlStatement))
+            {
+                yield return aggregatedTimeSeries;
+            }
         }
     }
 }
