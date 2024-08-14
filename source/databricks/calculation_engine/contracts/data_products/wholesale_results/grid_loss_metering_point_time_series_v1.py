@@ -7,17 +7,6 @@ grid_loss_metering_point_time_series_v1 = t.StructType(
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
         #
-        # 'balance_fixing' | 'aggregation'
-        t.StructField("calculation_type", t.StringType(), not nullable),
-        #
-        # UTC time
-        t.StructField("calculation_period_start", t.TimestampType(), not nullable),
-        #
-        # UTC time
-        t.StructField("calculation_period_end", t.TimestampType(), not nullable),
-        #
-        t.StructField("calculation_version", t.LongType(), not nullable),
-        #
         # GSRN number
         t.StructField("metering_point_id", t.StringType(), not nullable),
         #
