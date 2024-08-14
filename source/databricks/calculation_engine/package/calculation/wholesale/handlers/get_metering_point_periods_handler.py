@@ -13,13 +13,22 @@
 # limitations under the License.
 from typing import Optional
 
-from package.calculation.wholesale.handlers.handler import BaseDecorator, ResponseType
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.preparation.data_structures import GridLossResponsible
+from package.calculation.preparation.transformations.grid_loss_responsible import (
+    _throw_if_no_grid_loss_responsible,
+)
+from package.calculation.wholesale.handlers.decorator import (
+    BaseDecorator,
+    ResponseType,
+    RequestType,
+)
 from package.constants import Colname
+from package.databases import wholesale_internal
 from package.databases.migrations_wholesale import TableReader
 
 
@@ -29,13 +38,48 @@ class MeteringPointPeriodsWithGridLossDecorator(BaseDecorator[DataFrame, DataFra
         pass
 
 
-class MeteringPointPeriodsWithoutGridLossDecorator(BaseDecorator[DataFrame, DataFrame]):
+class GetGridLossResponsibleDecorator(BaseDecorator[DataFrame, GridLossResponsible]):
 
-    def handle(self, df: DataFrame) -> Optional[ResponseType]:
-        pass
+    def __init__(
+        self,
+        grid_areas: list[str],
+        metering_point_periods_df: DataFrame,
+        wholesale_internal_table_reader: wholesale_internal.TableReader,
+    ):
+
+        self.grid_areas = grid_areas
+        self.metering_point_periods_df = metering_point_periods_df
+        self.wholesale_internal_table_reader = wholesale_internal_table_reader
+
+    def handle(self, df: DataFrame) -> GridLossResponsible:
+
+        grid_loss_responsible = (
+            self.wholesale_internal_table_reader.read_grid_loss_metering_points()
+            .join(
+                self.metering_point_periods_df,
+                Colname.metering_point_id,
+                "inner",
+            )
+            .select(
+                col(Colname.metering_point_id),
+                col(Colname.grid_area_code),
+                col(Colname.from_date),
+                col(Colname.to_date),
+                col(Colname.metering_point_type),
+                col(Colname.energy_supplier_id),
+                col(Colname.balance_responsible_id),
+            )
+        )
+
+        _throw_if_no_grid_loss_responsible(self.grid_areas, grid_loss_responsible)
+
+        return GridLossResponsible(grid_loss_responsible)
 
 
 class CalculationDecorator(BaseDecorator[DataFrame, None]):
+
+    def handle(self, request: RequestType) -> Optional[ResponseType]:
+        return super().handle(request)
 
     def __init__(
         self,
@@ -44,7 +88,7 @@ class CalculationDecorator(BaseDecorator[DataFrame, None]):
         self.calculator_args = calculator_args
 
 
-class MeteringPointPeriodsDecorator(BaseDecorator[CalculatorArgs, DataFrame]):
+class GetMeteringPointPeriodsDecorator(BaseDecorator[CalculatorArgs, DataFrame]):
 
     def __init__(
         self,

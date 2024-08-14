@@ -49,7 +49,6 @@ class BaseDecorator(Decorator[RequestType, ResponseType]):
         # Returning a handler from here will let us link handlers in a convenient way like handler1.set_next(handler2).set_next(handler3)
         return handler
 
-    @abstractmethod
     def handle(self, request: RequestType) -> Optional[ResponseType]:
         if self._next_handler:
             return self._next_handler.handle(request)

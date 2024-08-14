@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.handlers.handler import BaseDecorator
-
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.wholesale.handlers.decorator import BaseDecorator
 from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
-    MeteringPointPeriodsDecorator,
-    MeteringPointPeriodsWithoutGridLossDecorator,
+    GetMeteringPointPeriodsDecorator,
+    GetGridLossResponsibleDecorator,
     MeteringPointPeriodsWithGridLossDecorator,
     CalculationDecorator,
 )
@@ -34,15 +33,22 @@ def chain():
 
     # DI for decorators
     calculation_decorator = CalculationDecorator(calculator_args)
-    mpp_decorator = MeteringPointPeriodsDecorator(container, mpp_repository)
-    mpp_without_grid_loss_decorator = MeteringPointPeriodsWithoutGridLossDecorator()
+    get_mpp_decorator = GetMeteringPointPeriodsDecorator(
+        calculator_args, container, mpp_repository
+    )
+    grid_loss_responsible_decorator = GetGridLossResponsibleDecorator(
+        calculator_args.calculation_grid_areas,
+        container.metering_point_periods_df,
+        mpp_repository,
+    )
     mpp_with_grid_loss_decorator = MeteringPointPeriodsWithGridLossDecorator()
     fallback_decorator = BaseDecorator()
 
     # Set up the chain
-    calculation_decorator.set_next(mpp_decorator)
-    mpp_decorator.set_next(mpp_without_grid_loss_decorator)
-    mpp_without_grid_loss_decorator.set_next(mpp_with_grid_loss_decorator)
+    calculation_decorator.set_next(get_mpp_decorator)
+    get_mpp_decorator.set_next(grid_loss_responsible_decorator)
+    get_mpp_decorator.handle()
+    grid_loss_responsible_decorator.set_next(mpp_with_grid_loss_decorator)
     mpp_with_grid_loss_decorator.set_next(fallback_decorator)
 
     # Execute calculation
