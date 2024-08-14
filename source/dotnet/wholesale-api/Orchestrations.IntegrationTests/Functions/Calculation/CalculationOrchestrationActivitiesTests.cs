@@ -111,7 +111,6 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         activities.Should().NotBeNull().And.Equal(
         [
             new OrchestrationHistoryItem("ExecutionStarted", FunctionName: "CalculationOrchestration"),
-            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCalculationRecordActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "StartCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "GetJobStatusActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationStateFromJobStatusActivity"),
