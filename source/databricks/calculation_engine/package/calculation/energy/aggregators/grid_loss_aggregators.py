@@ -16,7 +16,9 @@ from typing import Any
 import pyspark.sql.functions as f
 
 import package.calculation.energy.aggregators.transformations as t
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResults,
+)
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )

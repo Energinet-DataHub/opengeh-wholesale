@@ -14,16 +14,16 @@
 
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import InternalContainer
+from package.calculation.calculation_output import InternalDataOutput
 from package.infrastructure import logging_configuration
 
 
 @logging_configuration.use_span("calculation.internal.prepare")
 def create(
     calculations: DataFrame, calculation_grid_areas: DataFrame
-) -> InternalContainer:
+) -> InternalDataOutput:
 
-    return InternalContainer(
+    return InternalDataOutput(
         calculations=calculations,
         calculation_grid_areas=calculation_grid_areas,
     )
