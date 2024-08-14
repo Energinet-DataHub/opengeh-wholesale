@@ -364,7 +364,7 @@ def any_calculator_args() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_simulation=False,
+        is_control_calculation=False,
     )
 
 
@@ -380,7 +380,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_simulation=False,
+        is_control_calculation=False,
     )
 
 

@@ -16,10 +16,10 @@ from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
 from package.calculation.calculator_args import CalculatorArgs
+from package.container import Container
 from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
-from package.container import Container
 from package.databases.wholesale_internal.schemas.calculations_schema import (
     hive_calculations_schema,
 )
@@ -57,6 +57,7 @@ def _create_calculation(
         CalculationColumnNames.execution_time_start: args.calculation_execution_time_start,
         CalculationColumnNames.created_by_user_id: args.created_by_user_id,
         CalculationColumnNames.version: next_version,
+        CalculationColumnNames.is_control_calculation: args.is_control_calculation,
     }
 
     return spark.createDataFrame(
