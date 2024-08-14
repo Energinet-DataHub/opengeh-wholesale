@@ -77,7 +77,8 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
         return_value=latest_version,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.collect()[0].version == 1
+        actual.show()
+        assert actual.collect()[0].calculation_version == 1
 
 
 def test__when_calculation_exists__creates_new_calculation_with_latest_version_plus_1(

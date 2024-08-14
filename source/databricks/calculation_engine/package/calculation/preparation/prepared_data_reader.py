@@ -180,8 +180,12 @@ class PreparedDataReader:
             calculations.where(
                 f.col(TableColumnNames.calculation_type) == calculation_type.value
             )
-            .agg(f.max(TableColumnNames.calculation_version).alias("version"))
-            .collect()[0]["version"]
+            .agg(
+                f.max(TableColumnNames.calculation_version).alias(
+                    TableColumnNames.calculation_version
+                )
+            )
+            .collect()[0][TableColumnNames.calculation_version]
         )
 
         return latest_version
