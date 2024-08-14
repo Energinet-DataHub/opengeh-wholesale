@@ -91,4 +91,4 @@ def test__when_calculation_exists__creates_new_calculation_with_latest_version_p
         return_value=7,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.collect()[0].version == 8
+        assert actual.collect()[0].calculation_version == 8
