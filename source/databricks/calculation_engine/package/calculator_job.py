@@ -79,9 +79,6 @@ def start_with_deps(
 
             args, infrastructure_settings = parse_job_args(command_line_args)
 
-            if args.is_simulation:
-                raise NotImplementedError("Simulation is not implemented.")
-
             spark = initialize_spark()
             create_and_configure_container(spark, infrastructure_settings)
 
@@ -115,16 +112,16 @@ def create_prepared_data_reader(
     spark: SparkSession,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
-    delta_table_reader = migrations_wholesale.TableReader(
+    delta_table_reader = migrations_wholesale.MigrationsWholesaleRepository(
         spark,
-        settings.calculation_input_path,
         settings.catalog_name,
+        settings.calculation_input_database_name,
         settings.time_series_points_table_name,
         settings.metering_point_periods_table_name,
         settings.grid_loss_metering_points_table_name,
     )
 
-    wholesale_internal_table_reader = wholesale_internal.TableReader(
+    wholesale_internal_table_reader = wholesale_internal.WholesaleInternalRepository(
         spark,
         settings.catalog_name,
     )

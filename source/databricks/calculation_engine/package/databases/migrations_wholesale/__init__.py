@@ -21,4 +21,4 @@ Only minor transformations to data frames are done merely compensating
 for minor inappropriatenesses in the input table formats.
 """
 
-from .table_reader import TableReader
+from .repository import MigrationsWholesaleRepository

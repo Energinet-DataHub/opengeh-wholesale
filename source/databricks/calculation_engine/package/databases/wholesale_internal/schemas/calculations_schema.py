@@ -18,6 +18,7 @@ from pyspark.sql.types import (
     TimestampType,
     StructType,
     LongType,
+    BooleanType,
 )
 
 from package.databases.table_column_names import TableColumnNames
@@ -35,6 +36,7 @@ calculations_schema = StructType(
         ),
         StructField(TableColumnNames.created_by_user_id, StringType(), False),
         StructField(TableColumnNames.calculation_version, LongType(), False),
+        StructField(TableColumnNames.is_control_calculation, BooleanType(), True),
     ]
 )
 
@@ -47,5 +49,6 @@ hive_calculations_schema = StructType(
         StructField("execution_time_start", TimestampType(), False),
         StructField("created_by_user_id", StringType(), False),
         StructField("version", LongType(), False),
+        StructField("is_control_calculation", BooleanType(), True),
     ]
 )

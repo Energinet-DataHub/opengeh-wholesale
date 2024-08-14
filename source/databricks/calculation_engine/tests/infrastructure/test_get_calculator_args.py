@@ -418,8 +418,8 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
                     pytest.fail(f"An unexpected exception was raised: {error}")
 
 
-class TestWhenIsSimulationFlagPresent:
-    def test_simulation_is_true(
+class TestWhenIsControlCalculationFlagPresent:
+    def test_flag_is_true(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract: list[str],
@@ -433,17 +433,17 @@ class TestWhenIsSimulationFlagPresent:
                 actual_args, actual_settings = parse_job_arguments(command_line_args)
 
         # Assert
-        assert actual_args.is_simulation
+        assert actual_args.is_control_calculation
 
 
-class TestWhenIsSimulationFlagNotPresent:
-    def test_simulation_is_false(
+class TestWhenIsControlCalculationFlagNotPresent:
+    def test_flag_is_false(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        sys_argv_from_contract.remove("--simulation")
+        sys_argv_from_contract.remove("--is-control-calculation")
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
@@ -452,7 +452,7 @@ class TestWhenIsSimulationFlagNotPresent:
                 actual_args, actual_settings = parse_job_arguments(command_line_args)
 
         # Assert
-        assert not actual_args.is_simulation
+        assert not actual_args.is_control_calculation
 
 
 class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:

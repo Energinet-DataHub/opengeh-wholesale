@@ -16,18 +16,9 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
-import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import package.codelists as e
+import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import tests.calculation.charges_factory as charges_factory
-from databases.wholesale_results_internal.calculations_storage_model_test_factory import (
-    create_calculations,
-)
-from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_charge_link_periods_schema,
-    hive_charge_price_information_periods_schema,
-    charge_price_points_schema,
-    grid_loss_metering_points_schema,
-)
 from package.calculation.calculation_results import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
@@ -40,6 +31,12 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
 )
 from package.codelists import ChargeType
 from package.constants import Colname
+from package.databases.wholesale_basis_data_internal.schemas import (
+    hive_charge_link_periods_schema,
+    hive_charge_price_information_periods_schema,
+    charge_price_points_schema,
+    grid_loss_metering_points_schema,
+)
 from tests.calculation.preparation.transformations import metering_point_periods_factory
 from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
@@ -205,7 +202,7 @@ def create_calculation_args() -> CalculatorArgs:
         time_zone=DefaultValues.TIME_ZONE,
         quarterly_resolution_transition_datetime=DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
         created_by_user_id=DefaultValues.CREATED_BY_USER_ID,
-        is_simulation=False,
+        is_control_calculation=False,
     )
 
 
@@ -236,7 +233,6 @@ def create_grid_loss_metering_points(
 
 def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     calculation_args = create_calculation_args()
-    calculations = create_calculations(spark)
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
     grid_loss_metering_points = create_grid_loss_metering_points(spark)
@@ -252,7 +248,6 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
 
     return basis_data_factory.create(
         args=calculation_args,
-        calculations=calculations,
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,

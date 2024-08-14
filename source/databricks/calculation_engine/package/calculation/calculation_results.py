@@ -58,7 +58,6 @@ class WholesaleResultsContainer:
 
 @dataclass
 class BasisDataContainer:
-    calculations: DataFrame
     metering_point_periods: DataFrame
     """Data frame where the columns uses the column names of the storage model."""
     time_series_points: DataFrame
@@ -66,6 +65,13 @@ class BasisDataContainer:
     charge_price_points: DataFrame | None
     charge_link_periods: DataFrame | None
     grid_loss_metering_points: DataFrame
+
+
+@dataclass
+class InternalContainer:
+    calculations: DataFrame
+    """Data frame containing the calculation id and grid areas used in the calculation."""
+    calculation_grid_areas: DataFrame
 
 
 @dataclass
@@ -78,3 +84,4 @@ class CalculationResultsContainer:
     energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
     wholesale_results: WholesaleResultsContainer | None = None
     basis_data: BasisDataContainer = cast(BasisDataContainer, None)
+    internal: InternalContainer = cast(InternalContainer, None)
