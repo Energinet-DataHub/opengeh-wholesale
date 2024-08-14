@@ -40,6 +40,7 @@ def _create_calculation_row() -> dict:
         CalculationsColumnName.execution_time_start: datetime(2022, 6, 8, 22, 0, 0),
         CalculationsColumnName.created_by_user_id: str(uuid.uuid4()),
         CalculationsColumnName.version: 1,
+        CalculationsColumnName.is_control_calculation: False,
     }
 
 
