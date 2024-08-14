@@ -55,6 +55,7 @@ def test__when_valid_input__creates_expected_calculation(
         TableColumnNames.calculation_execution_time_start: any_calculator_args.calculation_execution_time_start,
         TableColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
         TableColumnNames.calculation_version: next_version,
+        TableColumnNames.is_control_calculation: any_calculator_args.is_control_calculation,
     }
     prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
@@ -77,7 +78,6 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
         return_value=latest_version,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        actual.show()
         assert actual.collect()[0].calculation_version == 1
 
 

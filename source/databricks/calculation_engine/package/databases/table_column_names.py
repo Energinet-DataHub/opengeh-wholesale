@@ -33,6 +33,8 @@ class TableColumnNames:
     calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"
     calculation_version = "calculation_version"
+    is_control_calculation = "is_control_calculation"
+    """True if the calculation is a control calculation, False otherwise."""
     created_by_user_id = "created_by_user_id"
     energy_supplier_id = "energy_supplier_id"
     from_date = "from_date"
