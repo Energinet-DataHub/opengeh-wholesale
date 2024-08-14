@@ -1,2 +1,2 @@
-calculation_id;calculation_type;period_start;period_end;execution_time_start;created_by_user_id;version;is_control_calculation
+calculation_id;calculation_type;calculation_period_start;calculation_period_end;calculation_execution_time_start;created_by_user_id;calculation_version;is_control_calculation
 0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2023-07-02 02:00:00;2023-07-02 03:00:00;2024-01-31 09:39:00;00000000-0000-0000-00000000000000001;2;false
