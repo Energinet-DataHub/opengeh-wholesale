@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import BasisDataContainer
+from package.calculation.calculation_output import BasisDataOutput
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
@@ -34,7 +34,7 @@ def create(
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     input_charges_container: InputChargesContainer | None,
     grid_loss_metering_points_df: GridLossMeteringPoints,
-) -> BasisDataContainer:
+) -> BasisDataOutput:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
         args.calculation_id, metering_point_time_series_df
     )
@@ -70,7 +70,7 @@ def create(
         charge_prices_basis_data = None
         charge_links_basis_data = None
 
-    return BasisDataContainer(
+    return BasisDataOutput(
         time_series_points=time_series_points_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
         charge_price_information_periods=charge_price_information_basis_data,
