@@ -24,12 +24,26 @@ public class AggregatedTimeSeriesQueryStatement(
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
-    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
+    private const string EnergyResultTableName = "er";
+    private const string EnergyMeasurementTableName = "chrg";
+    private const string PackagesWithVersionTableName = "pckg";
+
+    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas =
+        calculationTypePerGridAreas;
+
     private readonly AggregatedTimeSeriesQuerySnippetProvider _querySnippetProvider = querySnippetProvider;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
     protected override string GetSqlStatement()
     {
+        var newSql = $"""
+                      SELECT {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToProject().Select(cn => $"{EnergyMeasurementTableName}.{cn}"))}
+                      FROM ({GetEnergyMeasurementsToChooseFrom()}) {EnergyMeasurementTableName}
+                      INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
+                      ON {MatchEnergyMeasurementsWithPackages(EnergyMeasurementTableName, PackagesWithVersionTableName)}
+                      ORDER BY {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(cn => $"{EnergyMeasurementTableName}.{cn}"))}, {EnergyMeasurementTableName}.{EnergyResultColumnNames.Time};
+                      """;
+
         var sql = $"""
                    SELECT {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToProject().Select(scn => $"`erv`.`{scn}`"))}, `erv`.`{BasisDataCalculationsColumnNames.Version}`
                    FROM (SELECT {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToProject().Select(scn => $"`er`.`{scn}`"))}, `cs`.`{BasisDataCalculationsColumnNames.Version}`
@@ -48,6 +62,34 @@ public class AggregatedTimeSeriesQueryStatement(
                    ORDER BY {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy())}, {EnergyResultColumnNames.Time};
                    """;
 
-        return sql;
+        return newSql;
+    }
+
+    private string GetEnergyMeasurementsToChooseFrom()
+    {
+        return $"""
+                SELECT {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToProject().Select(cn => $"{EnergyResultTableName}.{cn}"))}
+                FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
+                WHERE {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(_calculationTypePerGridAreas)}
+                """;
+    }
+
+    private string GetMaxVersionForEachPackage()
+    {
+        return $"""
+                SELECT max({EnergyPerGaViewColumnNames.CalculationVersion}) AS max_version, {EnergyResultColumnNames.Time} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
+                FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
+                {_querySnippetProvider.GetWhereClauseSqlExpression("er")} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(_calculationTypePerGridAreas)}
+                GROUP BY {EnergyResultColumnNames.Time}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy())}
+                """;
+    }
+
+    private string MatchEnergyMeasurementsWithPackages(string energyMeasurementPrefix, string packagesPrefix)
+    {
+        return $"""
+                {energyMeasurementPrefix}.{EnergyResultColumnNames.Time} = {packagesPrefix}.max_time
+                AND {energyMeasurementPrefix}.{EnergyPerGaViewColumnNames.CalculationVersion} = {packagesPrefix}.max_version
+                AND {string.Join(" AND ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"coalesce({energyMeasurementPrefix}.{ctgb}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctgb}, 'is_null_value')"))}
+                """;
     }
 }
