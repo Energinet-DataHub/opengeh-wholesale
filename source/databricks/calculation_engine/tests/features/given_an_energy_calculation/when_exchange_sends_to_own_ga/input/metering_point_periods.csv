@@ -1,4 +1,4 @@
-﻿metering_point_id;type;calculation_type;settlement_method;grid_area_code;resolution;from_grid_area_code;to_grid_area_code;parent_metering_point_id;energy_supplier_id;balance_responsible_id;from_date;to_date
+﻿metering_point_id;type;calculation_type;settlement_method;grid_area_code;resolution;from_grid_area_code;to_grid_area_code;parent_metering_point_id;energy_supplier_id;balance_responsible_party_id;from_date;to_date
 200000000000000001;E20;;;800;PT1H;800;801;;;;2023-01-31 23:00;
 200000000000000002;E20;;;802;PT1H;800;800;;;;2023-01-31 23:00;
 200000000000000003;E20;;;803;PT15M;803;800;;;;2020-02-02 23:00;
