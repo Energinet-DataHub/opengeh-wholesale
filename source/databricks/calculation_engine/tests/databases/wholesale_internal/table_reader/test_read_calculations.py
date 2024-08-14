@@ -40,7 +40,6 @@ def _create_calculation_row() -> dict:
         CalculationsColumnName.execution_time_start: datetime(2022, 6, 8, 22, 0, 0),
         CalculationsColumnName.created_by_user_id: str(uuid.uuid4()),
         CalculationsColumnName.version: 1,
-        CalculationsColumnName.is_control_calculation: False,
     }
 
 
@@ -48,7 +47,7 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_calculation_row()
-        table_reader = wholesale_internal.WholesaleInternalRepository(
+        table_reader = wholesale_internal.TableReader(
             mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
 
@@ -89,8 +88,8 @@ class TestWhenValidInput:
         )
         expected = df
 
-        table_reader = wholesale_internal.WholesaleInternalRepository(
-            spark, "spark_catalog"
+        table_reader = wholesale_internal.TableReader(
+            spark, calculation_input_path, "spark_catalog"
         )
 
         # Act

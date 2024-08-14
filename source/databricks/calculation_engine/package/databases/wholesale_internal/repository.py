@@ -20,7 +20,7 @@ from package.infrastructure.paths import (
     HiveBasisDataDatabase,
 )
 from .schemas import hive_calculations_schema, grid_loss_metering_points_schema
-from ..repository_helper import read_table
+from ..repository_helper import read_from_uc
 
 
 class WholesaleInternalRepository:
@@ -38,7 +38,7 @@ class WholesaleInternalRepository:
         )
 
     def read_grid_loss_metering_points(self) -> DataFrame:
-        return read_table(
+        return read_from_uc(
             self._spark,
             self._catalog_name,
             WholesaleInternalDatabase.DATABASE_NAME,
