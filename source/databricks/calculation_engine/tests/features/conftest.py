@@ -21,14 +21,14 @@ from features.utils.expected_output import ExpectedOutput
 from features.utils.scenario_executor import ScenarioExecutor
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from features.utils.views.view_scenario_executor import ViewScenarioExecutor
-from package.calculation.calculation_results import CalculationResultsContainer
+from package.calculation.calculation_output import CalculationOutput
 
 
 @pytest.fixture(scope="module")
 def actual_and_expected(
     request: FixtureRequest,
     spark: SparkSession,
-) -> tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+) -> tuple[CalculationOutput, list[ExpectedOutput]]:
     """
     Provides the actual and expected output for a scenario test case.
 
