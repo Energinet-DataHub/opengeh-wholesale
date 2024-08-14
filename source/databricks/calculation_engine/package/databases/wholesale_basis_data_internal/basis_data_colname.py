@@ -98,7 +98,6 @@ class GridLossMeteringPointsColName:
     metering_point_id = "metering_point_id"
 
 
-# TODO BJM: Move to correct database folder
 class CalculationsColumnName:
     """Column names for the calculations storage model"""
 
@@ -109,3 +108,5 @@ class CalculationsColumnName:
     execution_time_start = "execution_time_start"
     created_by_user_id = "created_by_user_id"
     version = "version"
+    is_control_calculation = "is_control_calculation"
+    """True if the calculation is a control calculation, False otherwise."""
