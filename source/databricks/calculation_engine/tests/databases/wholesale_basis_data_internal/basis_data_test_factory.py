@@ -19,7 +19,7 @@ from pyspark.sql import Row, SparkSession, DataFrame
 import package.codelists as e
 import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import tests.calculation.charges_factory as charges_factory
-from package.calculation.calculation_output import BasisData
+from package.calculation.calculation_output import BasisDataOutput
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import (
     InputChargesContainer,
@@ -236,7 +236,7 @@ def create_grid_loss_metering_points(
     )
 
 
-def create_basis_data_factory(spark: SparkSession) -> BasisData:
+def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
     calculation_args = create_calculation_args()
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)

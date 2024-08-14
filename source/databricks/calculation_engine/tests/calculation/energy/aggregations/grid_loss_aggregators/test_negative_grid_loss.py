@@ -22,7 +22,7 @@ from package.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_negative_grid_loss,
 )
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
 )
 from package.codelists import (
     MeteringPointType,
@@ -33,7 +33,7 @@ from tests.calculation.energy import energy_results_factories
 
 
 @pytest.fixture(scope="module")
-def actual_negative_grid_loss(spark: SparkSession) -> EnergyResultsWrapper:
+def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
     rows = [
         energy_results_factories.create_grid_loss_row(
             grid_area="001",
@@ -81,7 +81,7 @@ def actual_negative_grid_loss(spark: SparkSession) -> EnergyResultsWrapper:
 class TestWhenValidInput:
     def test__has_no_values_below_zero(
         self,
-        actual_negative_grid_loss: EnergyResultsWrapper,
+        actual_negative_grid_loss: EnergyResults,
     ) -> None:
         assert (
             actual_negative_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
@@ -89,7 +89,7 @@ class TestWhenValidInput:
 
     def test___changes_negative_value_to_positive(
         self,
-        actual_negative_grid_loss: EnergyResultsWrapper,
+        actual_negative_grid_loss: EnergyResults,
     ) -> None:
         assert actual_negative_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
             "12.56700"
@@ -97,7 +97,7 @@ class TestWhenValidInput:
 
     def test__changes_positive_value_to_zero(
         self,
-        actual_negative_grid_loss: EnergyResultsWrapper,
+        actual_negative_grid_loss: EnergyResults,
     ) -> None:
         assert actual_negative_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
             "0.00000"
@@ -105,7 +105,7 @@ class TestWhenValidInput:
 
     def test__values_that_are_zero_stay_zero(
         self,
-        actual_negative_grid_loss: EnergyResultsWrapper,
+        actual_negative_grid_loss: EnergyResults,
     ) -> None:
         assert actual_negative_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
             "0.00000"
@@ -113,7 +113,7 @@ class TestWhenValidInput:
 
     def test__has_expected_values(
         self,
-        actual_negative_grid_loss: EnergyResultsWrapper,
+        actual_negative_grid_loss: EnergyResults,
     ) -> None:
         actual_row = actual_negative_grid_loss.df.collect()[0]
 

@@ -24,7 +24,7 @@ from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_exchange_per_neighbor,
 )
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
 )
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
@@ -170,7 +170,7 @@ def test_exchange_aggregator_returns_correct_aggregations(
 
 
 def check_aggregation_row(
-    df: EnergyResultsWrapper, grid_area: str, quantity: Decimal, time: datetime
+    df: EnergyResults, grid_area: str, quantity: Decimal, time: datetime
 ) -> None:
     """Helper function that checks column values for the given row"""
     gridfiltered = df.df.where(df.df[Colname.grid_area_code] == grid_area).select(

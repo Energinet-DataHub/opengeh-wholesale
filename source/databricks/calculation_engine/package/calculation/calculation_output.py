@@ -18,7 +18,7 @@ from pyspark.sql import DataFrame
 
 
 @dataclass
-class EnergyResults:
+class EnergyResultsOutput:
     """
     Contains all energy results from a calculation.
     """
@@ -43,7 +43,7 @@ class EnergyResults:
 
 
 @dataclass
-class WholesaleResults:
+class WholesaleResultsOutput:
     """
     Contains all wholesale results from a calculation.
     """
@@ -65,7 +65,7 @@ class WholesaleResults:
 
 
 @dataclass
-class BasisData:
+class BasisDataOutput:
     """
     Contains all the foundation data used in a calculation.
     """
@@ -80,7 +80,7 @@ class BasisData:
 
 
 @dataclass
-class InternalData:
+class InternalDataOutput:
     """
     Contains non-public data used in a calculation.
     """
@@ -100,7 +100,7 @@ class CalculationOutput:
     It's a consequence of the current code design where props are set after creation of the container.
     """
 
-    energy_results: EnergyResults = cast(EnergyResults, None)
-    wholesale_results: WholesaleResults | None = None
-    basis_data: BasisData = cast(BasisData, None)
-    internal_data: InternalData = cast(InternalData, None)
+    energy_results_output: EnergyResultsOutput = cast(EnergyResultsOutput, None)
+    wholesale_results_output: WholesaleResultsOutput | None = None
+    basis_data_output: BasisDataOutput = cast(BasisDataOutput, None)
+    internal_data_output: InternalDataOutput = cast(InternalDataOutput, None)

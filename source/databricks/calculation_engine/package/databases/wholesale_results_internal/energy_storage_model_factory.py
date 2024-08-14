@@ -18,7 +18,7 @@ from pyspark.sql.types import DecimalType
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
 )
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
@@ -33,7 +33,7 @@ from package.databases.wholesale_results_internal.energy_result_column_names imp
 
 def create(
     args: CalculatorArgs,
-    energy_results: EnergyResultsWrapper,
+    energy_results: EnergyResults,
     time_series_type: TimeSeriesType,
     aggregation_level: AggregationLevel,
 ) -> DataFrame:

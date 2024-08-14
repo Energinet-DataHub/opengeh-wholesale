@@ -16,7 +16,7 @@ import pyspark.sql.functions as F
 
 import package.calculation.energy.aggregators.transformations as T
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
 )
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
@@ -38,7 +38,7 @@ exchange_out_from_grid_area = "ExOut_FromGridArea"
 def aggregate_exchange_per_neighbor(
     metering_point_time_series: MeteringPointTimeSeries,
     calculation_grid_areas: list[str],
-) -> EnergyResultsWrapper:
+) -> EnergyResults:
     """
     Function to aggregate net exchange per neighboring grid areas.
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
@@ -135,12 +135,12 @@ def aggregate_exchange_per_neighbor(
         F.col(Colname.grid_area_code).isin(calculation_grid_areas)
     )
     exchange = round_quantity(exchange)
-    return EnergyResultsWrapper(exchange)
+    return EnergyResults(exchange)
 
 
 def aggregate_exchange(
-    exchange_per_neighbor: EnergyResultsWrapper,
-) -> EnergyResultsWrapper:
+    exchange_per_neighbor: EnergyResults,
+) -> EnergyResults:
     """
     Function to aggregate net exchange per grid area.
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
@@ -150,4 +150,4 @@ def aggregate_exchange(
         exchange_per_neighbor.df, [Colname.grid_area_code, Colname.observation_time]
     )
 
-    return EnergyResultsWrapper(result_df)
+    return EnergyResults(result_df)

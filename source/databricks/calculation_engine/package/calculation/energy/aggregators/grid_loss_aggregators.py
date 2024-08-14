@@ -17,7 +17,7 @@ import pyspark.sql.functions as f
 
 import package.calculation.energy.aggregators.transformations as t
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
 )
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
@@ -39,11 +39,11 @@ exchange_result = "exchange_result"
 
 
 def calculate_grid_loss(
-    exchange: EnergyResultsWrapper,
-    non_profiled_consumption: EnergyResultsWrapper,
-    flex_consumption: EnergyResultsWrapper,
-    production: EnergyResultsWrapper,
-) -> EnergyResultsWrapper:
+    exchange: EnergyResults,
+    non_profiled_consumption: EnergyResults,
+    flex_consumption: EnergyResults,
+    production: EnergyResults,
+) -> EnergyResults:
 
     agg_non_profiled_consumption_result = t.aggregate_sum_quantity_and_qualities(
         non_profiled_consumption.df,
@@ -104,12 +104,12 @@ def calculate_grid_loss(
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
     )
 
-    return EnergyResultsWrapper(result)
+    return EnergyResults(result)
 
 
 def calculate_negative_grid_loss(
-    grid_loss: EnergyResultsWrapper, grid_loss_responsible: GridLossResponsible
-) -> EnergyResultsWrapper:
+    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+) -> EnergyResults:
     return _calculate_negative_or_positive(
         grid_loss,
         grid_loss_responsible,
@@ -119,8 +119,8 @@ def calculate_negative_grid_loss(
 
 
 def calculate_positive_grid_loss(
-    grid_loss: EnergyResultsWrapper, grid_loss_responsible: GridLossResponsible
-) -> EnergyResultsWrapper:
+    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+) -> EnergyResults:
     return _calculate_negative_or_positive(
         grid_loss,
         grid_loss_responsible,
@@ -130,11 +130,11 @@ def calculate_positive_grid_loss(
 
 
 def _calculate_negative_or_positive(
-    grid_loss: EnergyResultsWrapper,
+    grid_loss: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
     metering_point_type: MeteringPointType,
     value_expr: Any,
-) -> EnergyResultsWrapper:
+) -> EnergyResults:
     gl = grid_loss.df
     glr = grid_loss_responsible.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
@@ -163,12 +163,12 @@ def _calculate_negative_or_positive(
         .withColumn(Colname.quantity, value_expr)
     )
 
-    return EnergyResultsWrapper(result)
+    return EnergyResults(result)
 
 
 def calculate_total_consumption(
-    production: EnergyResultsWrapper, exchange: EnergyResultsWrapper
-) -> EnergyResultsWrapper:
+    production: EnergyResults, exchange: EnergyResults
+) -> EnergyResults:
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
             production.df,
@@ -213,15 +213,15 @@ def calculate_total_consumption(
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
     )
 
-    return EnergyResultsWrapper(result)
+    return EnergyResults(result)
 
 
 def apply_grid_loss_adjustment(
-    results: EnergyResultsWrapper,
-    grid_loss_result: EnergyResultsWrapper,
+    results: EnergyResults,
+    grid_loss_result: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
     metering_point_type: MeteringPointType,
-) -> EnergyResultsWrapper:
+) -> EnergyResults:
     grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
     adjusted_sum_quantity = "adjusted_sum_quantity"
 
@@ -318,4 +318,4 @@ def apply_grid_loss_adjustment(
         Colname.observation_time,
     )
 
-    return EnergyResultsWrapper(result)
+    return EnergyResults(result)

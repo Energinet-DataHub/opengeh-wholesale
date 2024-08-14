@@ -16,18 +16,18 @@ from package.calculation.energy.aggregators.transformations.aggregate_sum_and_qu
     aggregate_sum_quantity_and_qualities,
 )
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
 )
 from package.constants import Colname
 
 
-def aggregate(df: EnergyResultsWrapper) -> EnergyResultsWrapper:
+def aggregate(df: EnergyResults) -> EnergyResults:
     group_by = [Colname.grid_area_code, Colname.observation_time]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
-    return EnergyResultsWrapper(result)
+    return EnergyResults(result)
 
 
-def aggregate_per_brp(df: EnergyResultsWrapper) -> EnergyResultsWrapper:
+def aggregate_per_brp(df: EnergyResults) -> EnergyResults:
     """Function to aggregate sum per grid area and balance responsible party."""
     group_by = [
         Colname.grid_area_code,
@@ -35,4 +35,4 @@ def aggregate_per_brp(df: EnergyResultsWrapper) -> EnergyResultsWrapper:
         Colname.observation_time,
     ]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
-    return EnergyResultsWrapper(result)
+    return EnergyResults(result)

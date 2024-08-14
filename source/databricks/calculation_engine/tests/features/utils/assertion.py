@@ -70,16 +70,18 @@ def _get_actual_for_output(
     calculation_output: CalculationOutput,
     expected_result_name: str,
 ) -> DataFrame:
-    if _has_field(calculation_output.energy_results, expected_result_name):
-        return getattr(calculation_output.energy_results, expected_result_name)
-    if _has_field(calculation_output.wholesale_results, expected_result_name):
-        return getattr(calculation_output.wholesale_results, expected_result_name)
+    if _has_field(calculation_output.energy_results_output, expected_result_name):
+        return getattr(calculation_output.energy_results_output, expected_result_name)
+    if _has_field(calculation_output.wholesale_results_output, expected_result_name):
+        return getattr(
+            calculation_output.wholesale_results_output, expected_result_name
+        )
 
-    if _has_field(calculation_output.basis_data, expected_result_name):
-        return getattr(calculation_output.basis_data, expected_result_name)
+    if _has_field(calculation_output.basis_data_output, expected_result_name):
+        return getattr(calculation_output.basis_data_output, expected_result_name)
 
-    if _has_field(calculation_output.internal_data, expected_result_name):
-        return getattr(calculation_output.internal_data, expected_result_name)
+    if _has_field(calculation_output.internal_data_output, expected_result_name):
+        return getattr(calculation_output.internal_data_output, expected_result_name)
 
     raise Exception(f"Unknown expected result name: {expected_result_name}")
 

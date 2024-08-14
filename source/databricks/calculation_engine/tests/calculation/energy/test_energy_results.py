@@ -20,7 +20,7 @@ from pyspark.sql.types import DecimalType
 
 import tests.calculation.energy.energy_results_factories as factory
 from package.calculation.energy.data_structures.energy_results import (
-    EnergyResultsWrapper,
+    EnergyResults,
     energy_results_schema,
 )
 from package.constants import Colname
@@ -43,7 +43,7 @@ class TestCtor:
             df_with_missing_columns = df.drop(*nullable_columns)
 
             # Act
-            actual = EnergyResultsWrapper(df_with_missing_columns)
+            actual = EnergyResults(df_with_missing_columns)
 
             # Assert
             assert set(nullable_columns).issubset(set(actual.df.schema.fieldNames()))
@@ -57,7 +57,7 @@ class TestCtor:
             df = df.withColumn(Colname.quantity, lit(None).cast(DecimalType(18, 3)))
 
             # Act
-            actual = EnergyResultsWrapper(df)
+            actual = EnergyResults(df)
 
             # Assert
             assert energy_results_schema[Colname.quantity].nullable is False
@@ -67,7 +67,7 @@ class TestCtor:
         def test_returns_expected_dataframe(self, spark: SparkSession) -> None:
             df = factory.create(spark).df
 
-            actual = EnergyResultsWrapper(df)
+            actual = EnergyResults(df)
 
             assert actual.df.collect() == df.collect()
 
@@ -81,7 +81,7 @@ class TestCtor:
             df = df.withColumn(irrelevant_column, lit("test"))
 
             # Act
-            actual = EnergyResultsWrapper(df)
+            actual = EnergyResults(df)
 
             # Assert
             assert irrelevant_column not in actual.df.schema.fieldNames()
@@ -106,7 +106,7 @@ class TestCtor:
 
             # Act & Assert
             with pytest.raises(AssertionError) as exc_info:
-                EnergyResultsWrapper(df)
+                EnergyResults(df)
 
             # Assert
             assert "Decimal scale error" in str(exc_info.value)
