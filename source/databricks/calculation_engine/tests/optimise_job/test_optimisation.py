@@ -25,7 +25,7 @@ def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
 
     df_1 = spark.createDataFrame([(1,), (2,), (3,)])
 
-    spark.sql(f"CREATE SCHEMA {mock_database_name}")
+    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {mock_database_name}")
 
     df_1.write.mode("overwrite").saveAsTable(full_table_name)
     df_1.write.mode("append").saveAsTable(full_table_name)
