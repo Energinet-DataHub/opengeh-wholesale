@@ -13,4 +13,6 @@ SELECT calculation_id,
        charge_code,
        charge_owner_id,
        is_tax
-FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.monthly_amounts_per_charge_v1
+FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.monthly_amounts_per_charge_v1 AS m
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
+WHERE c.is_control_calculation = FALSE

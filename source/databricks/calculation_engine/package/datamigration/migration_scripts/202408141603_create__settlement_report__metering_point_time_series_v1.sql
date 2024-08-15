@@ -19,3 +19,4 @@ FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point
 WHERE c.calculation_type IN ('balance_fixing', 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement')
   AND t.observation_time >= m.from_date
   AND (m.to_date IS NULL OR t.observation_time < m.to_date)
+  AND c.is_control_calculation = FALSE

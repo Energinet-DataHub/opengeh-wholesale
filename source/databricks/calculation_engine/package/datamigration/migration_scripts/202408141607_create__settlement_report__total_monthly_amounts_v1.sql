@@ -9,4 +9,6 @@ SELECT calculation_id,
        time,
        amount,
        charge_owner_id
-FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.total_monthly_amounts_v1
+FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.total_monthly_amounts_v1 AS t
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS c ON c.calculation_id = t.calculation_id
+WHERE c.is_control_calculation = FALSE
