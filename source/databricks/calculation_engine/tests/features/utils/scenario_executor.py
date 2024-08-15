@@ -18,6 +18,7 @@ from typing import Tuple
 from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import StructType
 
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
@@ -68,7 +69,7 @@ class ScenarioExecutor:
                 reader.return_value = dataframes[i]
 
     def _read_file(
-        self, spark_session: SparkSession, csv_file_name: str, schema: str
+        self, spark_session: SparkSession, csv_file_name: str, schema: StructType
     ) -> DataFrame | None:
 
         path_to_csv = self.input_path + csv_file_name
@@ -76,11 +77,23 @@ class ScenarioExecutor:
         if not os.path.exists(path_to_csv):
             return None
 
+        # Read the CSV file to check column names.
+        df = spark_session.read.csv(path_to_csv, header=True, sep=";")
+
+        # Verify column names match with those in the schema
+        schema_column_names = [field.name for field in schema.fields]
+        if schema_column_names != df.columns:
+            raise ValueError(
+                f"Schema mismatch {path_to_csv}. Expected: {schema_column_names} Found: {df.columns}"
+            )
+
+        # When the schema is provided, the column names from the schema are used
+        # despite the header naming in the CSV file. The data types must, however,
+        # comply with the schema.
         df = spark_session.read.csv(path_to_csv, header=True, sep=";", schema=schema)
 
-        # We need to create the dataframe again because nullability and precision
-        # are not applied when reading the csv file.
-        return spark_session.createDataFrame(df.rdd, schema)
+        # Behind the scenes the dataframe is wrapped using DataFrameWrapper and verified for nullability and precision.
+        return spark_session.createDataFrame(df.rdd, schema=schema, verifySchema=True)
 
     def _read_files_in_parallel(
         self, correlations: dict[str, tuple]
