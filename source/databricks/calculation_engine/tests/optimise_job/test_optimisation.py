@@ -17,7 +17,6 @@ from pyspark.sql import SparkSession
 import pytest
 
 
-@pytest.fixture(scope="module")
 def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
     # Arrange
     mock_database_name = "test_database"
