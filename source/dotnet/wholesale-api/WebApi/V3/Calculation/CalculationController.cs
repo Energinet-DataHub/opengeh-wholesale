@@ -43,7 +43,9 @@ public class CalculationController : V3ControllerBase
     [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> GetAsync([FromRoute] Guid calculationId)
     {
-        return Ok(await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false));
+        var calculationDto = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
+
+        return Ok(CalculationDtoMapper.Map(calculationDto));
     }
 
     /// <summary>
