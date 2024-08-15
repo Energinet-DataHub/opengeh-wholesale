@@ -94,7 +94,7 @@ def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> Da
     if column_name == "is_tax":
         return df.withColumn(column_name, f.col(column_name).cast(BooleanType()))
 
-    if column_name == "is_control_calculation":
+    if column_name == "is_internal_calculation":
         return df.withColumn(column_name, f.col(column_name).cast(BooleanType()))
 
     return df
