@@ -414,7 +414,7 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
             True,
         ),
         (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_PER_DAY_V1_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
         (

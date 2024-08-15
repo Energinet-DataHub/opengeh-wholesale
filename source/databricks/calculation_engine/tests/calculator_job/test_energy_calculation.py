@@ -260,7 +260,7 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
             True,
         ),
         (
-            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_PER_DAY_V1_VIEW_NAME}",
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
     ],
