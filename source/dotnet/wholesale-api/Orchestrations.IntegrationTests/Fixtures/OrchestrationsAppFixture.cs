@@ -14,17 +14,19 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
@@ -38,7 +40,6 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NodaTime;
 using WireMock.Server;
@@ -80,6 +81,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
         MockServer = WireMockServer.Start(port: 1024);
+        OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
@@ -109,6 +111,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
     private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
+    private OpenIdJwtManager OpenIdJwtManager { get; }
+
     public async Task InitializeAsync()
     {
         // Storage emulator
@@ -116,6 +120,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         // Database
         await DatabaseManager.CreateDatabaseAsync();
+
+        // Authentication
+        OpenIdJwtManager.StartServer();
 
         // Prepare host settings
         var port = 8000;
@@ -172,6 +179,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         await ServiceBusResourceProvider.DisposeAsync();
         MockServer.Dispose();
         DurableTaskManager.Dispose();
+        OpenIdJwtManager.Dispose();
         AzuriteManager.Dispose();
         await DatabaseManager.DeleteDatabaseAsync();
     }
@@ -210,6 +218,56 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         TestLogger.TestOutputHelper = testOutputHelper;
     }
 
+    /// <summary>
+    /// Calls the <see cref="AppHostManager"/> to send a post request to start the
+    /// calculation.
+    /// </summary>
+    /// <returns>Calculation id of the started calculation.</returns>
+    public async Task<Guid> StartCalculationAsync()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
+
+        var dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+        var dateAtMidnight = new LocalDate(2024, 5, 17)
+            .AtMidnight()
+            .InZoneStrictly(dateTimeZone)
+            .ToDateTimeOffset();
+
+        // Input parameters
+        var requestDto = new StartCalculationRequestDto(
+            CalculationType.Aggregation,
+            GridAreaCodes: ["256", "512"],
+            StartDate: dateAtMidnight,
+            EndDate: dateAtMidnight.AddDays(2));
+
+        request.Content = new StringContent(
+            JsonConvert.SerializeObject(requestDto),
+            Encoding.UTF8,
+            "application/json");
+
+        request.Headers.Authorization = await CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
+
+        using var startCalculationResponse = await AppHostManager.HttpClient.SendAsync(request);
+        startCalculationResponse.EnsureSuccessStatusCode();
+
+        return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
+    }
+
+    /// <summary>
+    /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
+    /// and returns a 'Bearer' authentication header.
+    /// </summary>
+    private Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync()
+    {
+        // Fake claims
+        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
+
+        return OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(
+            roles: ["calculations:manage"],
+            extraClaims: [actorNumberClaim, actorRoleClaim]);
+    }
+
     private FunctionAppHostSettings CreateAppHostSettings(string csprojName, ref int port)
     {
         var buildConfiguration = GetBuildConfiguration();
@@ -235,6 +293,20 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             "OrchestrationsTaskHubName",
             TaskHubName);
+
+        // => Authentication
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}",
+            OpenIdJwtManager.ExternalMetadataAddress);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}",
+            OpenIdJwtManager.ExternalMetadataAddress);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.BackendBffAppId)}",
+            OpenIdJwtManager.TestBffAppId);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.InternalMetadataAddress)}",
+            OpenIdJwtManager.InternalMetadataAddress);
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
