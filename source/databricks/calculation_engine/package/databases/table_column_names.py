@@ -28,6 +28,7 @@ class TableColumnNames:
     charge_time = "charge_time"
     charge_type = "charge_type"
     calculation_execution_time_start = "execution_time_start"
+    calculation_completed_time = "calculation_completed_time"
     calculation_id = "calculation_id"
     calculation_period_start = "calculation_period_start"
     calculation_period_end = "calculation_period_end"

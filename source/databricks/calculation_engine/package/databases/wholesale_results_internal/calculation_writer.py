@@ -13,8 +13,10 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import current_timestamp
 
 from package.container import Container
+from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -32,6 +34,12 @@ def write_calculation(
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table."""
+
+    # create a timestamp with current time
+
+    calculations = calculations.withColumn(
+        TableColumnNames.calculation_completed_time, current_timestamp()
+    )
 
     calculations.write.format("delta").mode("append").option(
         "mergeSchema", "false"
