@@ -17,7 +17,7 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def test_optimise_is_in_history_of_delta_table(spark):
+def test__optimise_is_in_history_of_delta_table(spark):
     # Arrange
     mock_database_name = "test_database"
     mock_table_name = "test_table"
