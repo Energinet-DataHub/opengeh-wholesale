@@ -46,6 +46,19 @@ public class CalculationFactoryTests
     }
 
     [Fact]
+    public void Create_ReturnsCalculationWithCorrectScheduledAt()
+    {
+        // Arrange
+        var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
+
+        // Act
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+
+        // Assert
+        calculation.ScheduledAt.Should().Be(Instant.FromDateTimeOffset(_scheduledAt));
+    }
+
+    [Fact]
     public void Create_ReturnsCalculationWithCorrectGridAreas()
     {
         // Arrange
@@ -64,15 +77,13 @@ public class CalculationFactoryTests
     public void Create_ReturnsCalculationWithExpectedExecutionTimeStart([Frozen] Mock<IClock> clockMock)
     {
         // Arrange
-        var expected = SystemClock.Instance.GetCurrentInstant();
-        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(expected);
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
         var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
 
         // Assert
-        calculation.ExecutionTimeStart.Should().Be(expected);
+        calculation.ExecutionTimeStart.Should().Be(Instant.FromDateTimeOffset(_scheduledAt));
     }
 
     [Theory]
