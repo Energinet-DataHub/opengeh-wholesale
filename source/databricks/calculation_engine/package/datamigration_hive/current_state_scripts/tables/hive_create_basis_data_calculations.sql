@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
     execution_time_start TIMESTAMP NOT NULL,
     created_by_user_id STRING NOT NULL,
     version BIGINT NOT NULL,
-    is_internal_calculation BOOLEAN
+    is_internal_calculation BOOLEAN,
+    calculation_completed_time TIMESTAMP,
 )
 USING DELTA
 TBLPROPERTIES (
