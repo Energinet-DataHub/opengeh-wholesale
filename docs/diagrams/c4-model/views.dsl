@@ -20,7 +20,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # hence subsystems that doesn't depend on others, should be listed first.
 
             # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G3K6UFNKC3ZN5GDTIMZV3QFBQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2FQHQIBK33ML7PVCU4ZV6DMMQ
 
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
@@ -33,7 +33,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                 frontendBff = container "BFF" {
                     description "Backend for Frontend"
 
-                    # Subsystem-to-subsystem relationships.
+                    # Subsystem-to-Subsystem relationships
                     this -> wholesaleApi "Interact using HTTP API"
                 }
             }
@@ -43,10 +43,8 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                 migrationDatabricks = container "Data Migration" {
                     description "Delivers DataHub 2.0 data to DataHub 3.0"
 
-                    # Subsystem-to-subsystem relationships.
-                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
-
                     # Subsystem-to-Subsystem relationships
+                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
                     wholesaleCalculatorJob -> this "Read DataHub 2.0 data" "integration event/amqp" {
                         tags "Simple View"
                     }
