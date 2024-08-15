@@ -3,5 +3,5 @@ ALTER TABLE {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
 GO
 
 UPDATE {HIVE_BASIS_DATA_DATABASE_NAME}.calculations
-SET calculation_completed_time = calculation_execution_time_start
+SET calculation_completed_time = execution_time_start
 WHERE calculation_completed_time IS NULL
