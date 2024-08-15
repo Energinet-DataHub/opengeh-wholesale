@@ -45,7 +45,7 @@ def _create_calculation_row() -> dict:
         ),
         TableColumnNames.created_by_user_id: str(uuid.uuid4()),
         TableColumnNames.calculation_version: 1,
-        TableColumnNames.is_control_calculation: False,
+        TableColumnNames.is_internal_calculation: False,
     }
 
 
