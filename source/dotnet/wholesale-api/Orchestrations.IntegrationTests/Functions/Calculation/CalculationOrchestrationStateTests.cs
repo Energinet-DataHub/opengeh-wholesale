@@ -88,7 +88,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        var calculationId = await Fixture.StartCalculationAsync();
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
@@ -197,7 +197,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        var calculationId = await Fixture.StartCalculationAsync();
         calculationIdCallback.SetValue(calculationId);
 
         // Assert
