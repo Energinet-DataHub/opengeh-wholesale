@@ -51,10 +51,10 @@ from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..constants import Colname
 from ..databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
-from ..constants import Colname
 
 
 @logging_configuration.use_span("calculation")
@@ -129,7 +129,7 @@ def _execute(
         with logging_configuration.start_span("calculation.wholesale.prepare"):
 
             # Extract metering point ids from all metering point periods in
-            # grid areas specified in calculation arguments.
+            # the grid areas specified in the calculation arguments.
             metering_point_period_ids = all_metering_point_periods.select(
                 Colname.metering_point_id
             ).distinct()
