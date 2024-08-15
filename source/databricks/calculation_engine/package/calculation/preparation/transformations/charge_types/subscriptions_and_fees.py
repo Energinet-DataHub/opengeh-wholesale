@@ -142,35 +142,32 @@ def _join_with_links(
     charge_price_information_and_prices: DataFrame,
     charge_links: DataFrame,
 ) -> DataFrame:
-    subscriptions = charge_price_information_and_prices.join(
-        charge_links,
-        (
-            charge_price_information_and_prices[Colname.charge_key]
-            == charge_links[Colname.charge_key]
-        )
-        & (
-            charge_price_information_and_prices[Colname.charge_time]
-            >= charge_links[Colname.from_date]
-        )
-        & (
-            charge_price_information_and_prices[Colname.charge_time]
-            < charge_links[Colname.to_date]
-        ),
+    # Alias the DataFrames
+    cp_alias = charge_price_information_and_prices.alias("cp")
+    cl_alias = charge_links.alias("cl")
+    cp = "cp."
+    cl = "cl."
+
+    subscriptions = cp_alias.join(
+        cl_alias,
+        (f.col(cp + Colname.charge_key) == f.col(cl + Colname.charge_key))
+        & (f.col(cp + Colname.charge_time) >= f.col(cl + Colname.from_date))
+        & (f.col(cp + Colname.charge_time) < f.col(cl + Colname.to_date)),
         how="inner",
     ).select(
-        charge_price_information_and_prices[Colname.charge_key],
-        charge_price_information_and_prices[Colname.charge_type],
-        charge_price_information_and_prices[Colname.charge_owner],
-        charge_price_information_and_prices[Colname.charge_code],
-        charge_price_information_and_prices[Colname.charge_time],
-        charge_price_information_and_prices[Colname.charge_price],
-        charge_price_information_and_prices[Colname.charge_tax],
-        charge_links[Colname.quantity],
-        charge_links[Colname.metering_point_type],
-        charge_links[Colname.metering_point_id],
-        charge_links[Colname.settlement_method],
-        charge_links[Colname.grid_area_code],
-        charge_links[Colname.energy_supplier_id],
+        f.col(cp + Colname.charge_key),
+        f.col(cp + Colname.charge_type),
+        f.col(cp + Colname.charge_owner),
+        f.col(cp + Colname.charge_code),
+        f.col(cp + Colname.charge_time),
+        f.col(cp + Colname.charge_price),
+        f.col(cp + Colname.charge_tax),
+        f.col(cl + Colname.quantity),
+        f.col(cl + Colname.metering_point_type),
+        f.col(cl + Colname.metering_point_id),
+        f.col(cl + Colname.settlement_method),
+        f.col(cl + Colname.grid_area_code),
+        f.col(cl + Colname.energy_supplier_id),
     )
 
     return subscriptions

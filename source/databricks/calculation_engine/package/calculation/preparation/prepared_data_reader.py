@@ -35,6 +35,7 @@ from package.databases.wholesale_internal.calculation_column_names import (
     CalculationColumnNames,
 )
 from . import transformations as T
+from .data_structures import ChargePrices, ChargePriceInformation
 from ...constants import Colname
 from ...databases import wholesale_internal
 from ...infrastructure import logging_configuration
@@ -113,17 +114,41 @@ class PreparedDataReader:
             period_end_datetime,
         )
 
-        # The list of charge_links contains data from all metering point periods in all grid areas.
+        # The list of charge_links, charge_prices and change information contains data from all metering point periods in all grid areas.
         # This method ensures we only get charge data from metering points in grid areas from calculation arguments.
-        charge_links = charge_links.join(
-            metering_point_ids, Colname.metering_point_id, "inner"
+        charge_links, charge_price_information, charge_prices_df = (
+            self.get_filtered_charges(
+                charge_links,
+                charge_price_information,
+                charge_prices,
+                metering_point_ids,
+            )
         )
 
         return InputChargesContainer(
-            charge_price_information=charge_price_information,
-            charge_prices=charge_prices,
+            charge_price_information=ChargePriceInformation(charge_price_information),
+            charge_prices=ChargePrices(charge_prices_df),
             charge_links=charge_links,
         )
+
+    def get_filtered_charges(
+        self, charge_links, charge_price_information, charge_prices, metering_point_ids
+    ):
+        charge_links = charge_links.join(
+            metering_point_ids, Colname.metering_point_id, "inner"
+        )
+        change_keys = charge_links.select(Colname.charge_key).distinct()
+        charge_prices_df = charge_prices.df.join(
+            change_keys,
+            Colname.charge_key,
+            "inner",
+        )
+        charge_price_information = charge_price_information.df.join(
+            change_keys,
+            Colname.charge_key,
+            "inner",
+        )
+        return charge_links, charge_price_information, charge_prices_df
 
     def get_prepared_charges(
         self,
