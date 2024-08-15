@@ -48,7 +48,7 @@ def create_row(
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.balance_responsible_party_id: balance_responsible_id,
     }
 
     return Row(**row)

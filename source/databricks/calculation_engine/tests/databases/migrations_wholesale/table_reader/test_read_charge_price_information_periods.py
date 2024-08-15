@@ -19,13 +19,14 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import (
     charge_price_information_periods_schema,
 )
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
+from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -50,8 +51,10 @@ class TestWhenContractMismatch:
     ) -> None:
         # Arrange
         row = _create_charge_price_information_period_row()
-        reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+        reader = MigrationsWholesaleRepository(
+            mock.Mock(),
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
@@ -60,7 +63,7 @@ class TestWhenContractMismatch:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_price_information_periods()
@@ -77,7 +80,7 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/charge_price_information_periods"
+        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
         row = _create_charge_price_information_period_row()
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
@@ -86,12 +89,12 @@ class TestWhenValidInput:
             spark,
             df,
             "test_database",
-            "charge_price_information_periods",
+            MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             table_location,
             charge_price_information_periods_schema,
         )
         expected = df
-        reader = TableReader(spark, calculation_input_path, "spark_catalog")
+        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
 
         # Act
         actual = reader.read_charge_price_information_periods()
@@ -107,8 +110,10 @@ class TestWhenValidInputAndMoreColumns:
     ) -> None:
         # Arrange
         row = _create_charge_price_information_period_row()
-        reader = TableReader(
-            mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
+        reader = MigrationsWholesaleRepository(
+            mock.Mock(),
+            "dummy_catalog_name",
+            "dummy_database_name",
         )
         df = spark.createDataFrame(
             data=[row], schema=charge_price_information_periods_schema
@@ -117,6 +122,6 @@ class TestWhenValidInputAndMoreColumns:
 
         # Act & Assert
         with mock.patch.object(
-            reader._spark.read.format("delta"), "load", return_value=df
+            reader._spark.read.format("delta"), "table", return_value=df
         ):
             reader.read_charge_price_information_periods()

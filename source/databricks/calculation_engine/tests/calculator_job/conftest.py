@@ -24,8 +24,7 @@ from package.calculation.preparation import PreparedDataReader
 from package.codelists.calculation_type import (
     CalculationType,
 )
-from package.databases import wholesale_internal
-from package.databases.migrations_wholesale import TableReader
+from package.databases import wholesale_internal, migrations_wholesale
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
@@ -46,7 +45,7 @@ def calculator_args_balance_fixing() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_simulation=False,
+        is_control_calculation=False,
     )
 
 
@@ -70,7 +69,8 @@ def executed_balance_fixing(
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
-    calculation_input_path: str,
+    grid_loss_metering_points_input_data_written_to_delta: None,
+    calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -78,8 +78,10 @@ def executed_balance_fixing(
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
-    table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
-    wholesale_internal_table_reader = wholesale_internal.TableReader(
+    table_reader = migrations_wholesale.MigrationsWholesaleRepository(
+        spark, "spark_catalog", calculation_input_database
+    )
+    wholesale_internal_table_reader = wholesale_internal.WholesaleInternalRepository(
         spark, "spark_catalog"
     )
     prepared_data_reader = PreparedDataReader(
@@ -95,7 +97,8 @@ def executed_wholesale_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
-    calculation_input_path: str,
+    grid_loss_metering_points_input_data_written_to_delta: None,
+    calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -103,8 +106,10 @@ def executed_wholesale_fixing(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    table_reader = TableReader(spark, calculation_input_path, "spark_catalog")
-    wholesale_internal_table_reader = wholesale_internal.TableReader(
+    table_reader = migrations_wholesale.MigrationsWholesaleRepository(
+        spark, "spark_catalog", calculation_input_database
+    )
+    wholesale_internal_table_reader = wholesale_internal.WholesaleInternalRepository(
         spark, "spark_catalog"
     )
     prepared_data_reader = PreparedDataReader(

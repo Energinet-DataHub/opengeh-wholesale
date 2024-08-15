@@ -1,1 +1,2 @@
-calculation_id;calculation_type;period_start;period_end;execution_time_start;created_by_user_id;version
+calculation_id;calculation_type;period_start;period_end;execution_time_start;created_by_user_id;version;is_control_calculation
+whatever - input read from arguments;wholesale_fixing;1536-10-30 00:00:00;1536-10-30 00:00:00;1536-10-30 00:00:00;whatever - input read from arguments;5;whatever - hardcoded to false in generated basis data
