@@ -13,6 +13,8 @@ resource "azurerm_data_factory" "this" {
   tags = local.tags
 }
 
+# Pipelines
+
 resource "azurerm_data_factory_pipeline" "this" {
   name            = "pl-move-processed-files-${local.resources_suffix}"
   data_factory_id = azurerm_data_factory.this.id
@@ -28,6 +30,21 @@ resource "azurerm_data_factory_pipeline" "this" {
       stdh2data_ts_sync           = azurerm_data_factory_dataset_json.stdh2data_ts_sync.name
       stdh2data_ts_sync_processed = azurerm_data_factory_dataset_json.stdh2data_ts_sync_processed.name
   })
+}
+
+# Triggers
+
+resource "azurerm_data_factory_trigger_schedule" "trig-move-processed-files-weekly" {
+  name            = "trig-move-processed-files-weekly-${local.resources_suffix}"
+  data_factory_id = azurerm_data_factory.this.id
+  pipeline_name   = azurerm_data_factory_pipeline.this.name
+  frequency       = "Week"
+  description     = "Weekly trigger to move processed(31d old) files. The reason behind the moving of data, is to increase the AutoLoader(Backfill job) performance."
+  schedule {
+    days_of_week = ["Monday"]
+    hours        = [7]
+    minutes      = [0]
+  }
 }
 
 # Create datasets for the Data Factory
@@ -182,7 +199,7 @@ locals {
   ]), null)
 }
 
-## Do the actual approval for each of the connections
+# Do the actual approval for each of the connections
 resource "azapi_update_resource" "approve_private_endpoint_connection" {
   type      = "Microsoft.Storage/storageAccounts/privateEndpointConnections@2022-09-01"
   name      = local.private_endpoint_connection_name

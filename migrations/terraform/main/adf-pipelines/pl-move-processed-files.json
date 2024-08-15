@@ -24,7 +24,7 @@
             {
                 "activity": "Set 31 days from current date",
                 "dependencyConditions": [
-                    "Completed"
+                    "Succeeded"
                 ]
             }
         ],
@@ -125,7 +125,7 @@
             {
                 "activity": "Set 31 days from current date",
                 "dependencyConditions": [
-                    "Completed"
+                    "Succeeded"
                 ]
             }
         ],
@@ -226,7 +226,7 @@
             {
                 "activity": "Set 31 days from current date",
                 "dependencyConditions": [
-                    "Completed"
+                    "Succeeded"
                 ]
             }
         ],
