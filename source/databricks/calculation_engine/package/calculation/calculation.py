@@ -13,10 +13,6 @@
 # limitations under the License.
 from dependency_injector.wiring import inject
 
-from package.databases.wholesale_basis_data_internal import basis_data_factory
-from package.databases.wholesale_basis_data_internal.basis_data_results import (
-    write_basis_data,
-)
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
@@ -28,12 +24,10 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
-from package.infrastructure import logging_configuration
-from .calculation_results import (
-    CalculationResultsContainer,
+from package.databases.wholesale_basis_data_internal import basis_data_factory
+from package.databases.wholesale_basis_data_internal.basis_data_results import (
+    write_basis_data,
 )
-from .calculator_args import CalculatorArgs
-from .energy import energy_calculation
 from package.databases.wholesale_results_internal import (
     write_calculation,
     write_monthly_amounts_per_charge,
@@ -44,9 +38,16 @@ from package.databases.wholesale_results_internal import (
 from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
     create_calculation,
 )
+from package.infrastructure import logging_configuration
+from .calculation_results import (
+    CalculationResultsContainer,
+)
+from .calculator_args import CalculatorArgs
+from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..constants import Colname
 
 
 @logging_configuration.use_span("calculation")
@@ -118,9 +119,17 @@ def _execute(
 
     if is_wholesale_calculation_type(args.calculation_type):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
+
+            # Extract metering point ids from all metering point periods in
+            # grid areas specified in calculation arguments.
+            metering_point_period_ids = all_metering_point_periods.select(
+                Colname.metering_point_id
+            ).distinct()
+
             input_charges = prepared_data_reader.get_input_charges(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
+                metering_point_period_ids,
             )
 
             metering_point_periods_for_basis_data = (

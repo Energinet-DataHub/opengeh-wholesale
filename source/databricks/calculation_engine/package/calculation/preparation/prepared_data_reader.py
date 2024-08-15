@@ -91,6 +91,7 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
+        metering_point_ids: DataFrame,
     ) -> InputChargesContainer:
         charge_price_information = T.read_charge_price_information(
             self._table_reader, period_start_datetime, period_end_datetime
@@ -102,6 +103,11 @@ class PreparedDataReader:
 
         charge_links = T.read_charge_links(
             self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+        # Filter charge links by metering point ids from grid areas in calculation arguments.
+        charge_links = charge_links.join(
+            metering_point_ids, Colname.metering_point_id, "inner"
         )
 
         return InputChargesContainer(
