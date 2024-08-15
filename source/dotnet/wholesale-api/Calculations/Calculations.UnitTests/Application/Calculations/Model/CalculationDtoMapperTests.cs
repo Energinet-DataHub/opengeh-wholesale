@@ -81,7 +81,7 @@ public class CalculationDtoMapperTests
         // Arrange
         var calculation = new CalculationBuilder().Build();
         var expectedRunId = new CalculationJobId(111);
-        calculation.MarkAsSubmitted(expectedRunId);
+        calculation.MarkAsCalculationJobSubmitted(expectedRunId, SystemClock.Instance.GetCurrentInstant());
 
         // Act
         var calculationDto = sut.Map(calculation);

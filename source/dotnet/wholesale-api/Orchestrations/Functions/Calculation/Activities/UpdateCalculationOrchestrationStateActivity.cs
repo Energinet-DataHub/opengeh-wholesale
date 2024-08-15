@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -46,7 +47,34 @@ internal class UpdateCalculationOrchestrationStateActivity(
             calculation.OrchestrationState,
             input.CalculationId);
 
-        calculation.UpdateState(input.State, _clock);
+        switch (input.State)
+        {
+            case CalculationOrchestrationState.Calculating:
+                calculation.MarkAsCalculating();
+                break;
+            case CalculationOrchestrationState.Calculated:
+                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.CalculationFailed:
+                calculation.MarkAsCalculationFailed();
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueuing:
+                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueued:
+                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
+                calculation.MarkAsActorMessagesEnqueuingFailed();
+                break;
+            case CalculationOrchestrationState.Completed:
+                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.Scheduled:
+                throw new InvalidOperationException("Cannot update calculation state to Scheduled when the calculation is already running.");
+            default:
+                throw new ArgumentOutOfRangeException(nameof(input.State), input.State, "Value is an invalid calculation state update.");
+        }
 
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
 

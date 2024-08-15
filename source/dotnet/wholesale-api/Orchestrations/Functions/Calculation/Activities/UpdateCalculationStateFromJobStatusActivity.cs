@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -44,9 +44,9 @@ internal class UpdateCalculationStateFromJobStatusActivity(
             "Update calculation state from the calculation job status: {CalculationJobStatus}, calculation id: {CalculationId}",
             calculationMetadata.JobStatus,
             calculationMetadata.Id);
-
         var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id).ConfigureAwait(false);
 
+        var previousState = calculation.OrchestrationState;
         if (calculationMetadata.JobStatus == CalculationState.Canceled)
         {
             // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
@@ -55,25 +55,36 @@ internal class UpdateCalculationStateFromJobStatusActivity(
         }
         else
         {
-            var newState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
-
-            // If state wasn't changed, do nothing
-            if (calculation.OrchestrationState == newState)
+            switch (calculationMetadata.JobStatus)
             {
-                _logger.LogInformation(
-                    "Did not update calculation state since it didn't change. Current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
-                    calculation.OrchestrationState,
-                    calculationMetadata.Id);
-                return "State didn't change from: " + calculation.OrchestrationState;
-            }
+                case CalculationState.Pending:
+                    calculation.MarkAsCalculationJobPending();
+                    break;
+                case CalculationState.Running:
+                    calculation.MarkAsCalculating();
+                    break;
+                case CalculationState.Completed:
+                    calculation.MarkAsCalculated(_clock.GetCurrentInstant());
+                    break;
+                case CalculationState.Failed:
+                    calculation.MarkAsCalculationFailed();
+                    break;
 
-            _logger.LogInformation(
-                "Set new calculation state to: {NewOrchestrationState}, current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
-                newState,
-                calculation.OrchestrationState,
-                calculationMetadata.Id);
-            calculation.UpdateState(newState, _clock);
+                // Application.Model.CalculationState.Canceled cannot be mapped, since it is a databricks thing unrelated to domain
+                case CalculationState.Canceled:
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(calculationMetadata.JobStatus),
+                        actualValue: calculationMetadata.JobStatus,
+                        "Value cannot be used to update calculation state.");
+            }
         }
+
+        _logger.LogInformation(
+            "Updated calculation state to: {NewOrchestrationState}, previous state: {PreviousOrchestrationState}, calculation id: {CalculationId}",
+            calculation.OrchestrationState,
+            previousState,
+            calculationMetadata.Id);
 
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
         return "Orchestration state updated to: " + calculation.OrchestrationState;

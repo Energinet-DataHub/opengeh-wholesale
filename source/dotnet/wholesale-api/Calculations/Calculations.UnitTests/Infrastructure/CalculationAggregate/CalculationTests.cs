@@ -426,25 +426,25 @@ public class CalculationTests
             case CalculationExecutionState.Created:
                 break;
             case CalculationExecutionState.Submitted:
-                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 break;
             case CalculationExecutionState.Pending:
-                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsScheduled();
                 break;
             case CalculationExecutionState.Executing:
-                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsScheduled();
                 sut.MarkAsCalculating();
                 break;
             case CalculationExecutionState.Completed:
-                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsScheduled();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
                 break;
             case CalculationExecutionState.Failed:
-                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsScheduled();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculationFailed();
