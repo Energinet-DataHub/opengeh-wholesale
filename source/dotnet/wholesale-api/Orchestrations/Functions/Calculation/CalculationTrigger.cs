@@ -68,6 +68,7 @@ internal class CalculationTrigger
             startCalculationRequestDto.GridAreaCodes,
             startCalculationRequestDto.StartDate,
             startCalculationRequestDto.EndDate,
+            startCalculationRequestDto.ScheduledAt,
             _userContext.CurrentUser.UserId).ConfigureAwait(false);
 
         logger.LogInformation("Calculation created with id {calculationId}", calculationId);
