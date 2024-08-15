@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
@@ -43,6 +44,7 @@ internal class CreateCalculationRecordActivity(
             calculationOrchestrationInput.StartCalculationRequestDto.GridAreaCodes,
             calculationOrchestrationInput.StartCalculationRequestDto.StartDate,
             calculationOrchestrationInput.StartCalculationRequestDto.EndDate,
+            DateTimeOffset.UtcNow,
             calculationOrchestrationInput.RequestedByUserId);
         await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

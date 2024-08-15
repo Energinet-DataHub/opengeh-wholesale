@@ -27,6 +27,7 @@ public class CalculationFactoryTests
 {
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
     private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T23:00Z");
+    private readonly DateTimeOffset _scheduledAt = DateTimeOffset.Parse("2024-08-15T13:37Z");
     private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
     private readonly List<string> _someGridAreasIds = ["004", "805"];
 
@@ -37,7 +38,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
 
         // Assert
         calculation.PeriodStart.Should().Be(Instant.FromDateTimeOffset(_startDate));
@@ -51,7 +52,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
 
         // Assert
         calculation.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
@@ -68,7 +69,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
 
         // Assert
         calculation.ExecutionTimeStart.Should().Be(expected);
@@ -85,7 +86,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid()).Version;
 
         // Assert
         actual.Should().Be(expected);
@@ -96,11 +97,11 @@ public class CalculationFactoryTests
     {
         // Arrange
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
-        var earlierCalculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var earlierCalculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
         var earlierVersion = earlierCalculation.Version;
 
         // Act
-        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid()).Version;
 
         // Assert
         actual.Should().BeGreaterThan(earlierVersion);
