@@ -23,22 +23,22 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 public static class AggregatedTimeSeriesFactory
 {
     public static AggregatedTimeSeries Create(
+        TimeSeriesType timeSeriesType,
         DatabricksSqlRow databricksSqlRow,
         IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints)
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
-        var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
         var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[EnergyResultColumnNames.Resolution]!);
         var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
-            timeSeriesPoints: timeSeriesPoints.ToArray()!,
-            timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
+            timeSeriesPoints: [.. timeSeriesPoints],
+            timeSeriesType: timeSeriesType,
             calculationType: CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart: period.Start,
             periodEnd: period.End,
             resolution,
-            SqlResultValueConverters.ToInt(databricksSqlRow[BasisDataCalculationsColumnNames.Version]!)!.Value);
+            SqlResultValueConverters.ToInt(databricksSqlRow[EnergyPerGaViewColumnNames.CalculationVersion]!)!.Value);
     }
 }

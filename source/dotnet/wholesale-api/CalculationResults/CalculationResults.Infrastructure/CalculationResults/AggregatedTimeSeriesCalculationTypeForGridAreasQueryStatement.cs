@@ -28,15 +28,9 @@ internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
     private readonly AggregatedTimeSeriesQuerySnippetProvider _querySnippetProvider = querySnippetProvider;
 
-    protected override string GetSource() =>
-        $"""
-         (SELECT wr.*
-          FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} wr
-          INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-          ON wr.{EnergyPerEsBrpGaViewColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
-         """;
+    protected override string GetSource() => _querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions);
 
     protected override string GetSelection(string table) => _querySnippetProvider
-        .GetWhereClauseSqlExpression(table)
+        .GetWhereClauseSqlExpression(table, null)
         .Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
 }

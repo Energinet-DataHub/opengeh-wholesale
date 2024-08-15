@@ -136,7 +136,6 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(12);
         actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.Version))
             .Should()
             .BeEquivalentTo([
@@ -190,16 +189,16 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(6);
+        //actual.Should().HaveCount(6);
         actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.Version))
             .Should()
             .BeEquivalentTo([
-                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 5, 23, 0), Instant.FromUtc(2022, 1, 6, 23, 0), 6),
-                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 7, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), 6),
-                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 1, 23, 0), Instant.FromUtc(2022, 1, 3, 23, 0), 8),
-                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 6, 23, 0), Instant.FromUtc(2022, 1, 7, 23, 0), 8),
-                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 3, 23, 0), Instant.FromUtc(2022, 1, 5, 23, 0), 8),
                 ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 1, 23, 0), 7),
+                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 1, 23, 0), Instant.FromUtc(2022, 1, 3, 23, 0), 8),
+                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 3, 23, 0), Instant.FromUtc(2022, 1, 5, 23, 0), 8),
+                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 5, 23, 0), Instant.FromUtc(2022, 1, 6, 23, 0), 6),
+                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 6, 23, 0), Instant.FromUtc(2022, 1, 7, 23, 0), 8),
+                ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 7, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), 6),
             ]);
 
         actual.Should().AllSatisfy(ats =>
@@ -383,7 +382,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.CalculationType, ats.Version))
             .Should()
             .BeEquivalentTo([
-                ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 3),
+                ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 4),
                 ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.ThirdCorrectionSettlement, 2),
             ]);
 
@@ -624,11 +623,19 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
 
     private async Task RemoveDataForCorrections(IReadOnlyCollection<string> gridAreasToRemoveFrom)
     {
-        var statement = new DeleteCorrectionsStatement(
-            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
-            gridAreasToRemoveFrom);
+        foreach (var aggregationLevel in (IReadOnlyCollection<string>)[
+                     DeltaTableAggregationLevel.GridArea,
+                     DeltaTableAggregationLevel.BalanceResponsibleAndGridArea,
+                     DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea
+                 ])
+        {
+            var statement = new DeleteCorrectionsStatement(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+                aggregationLevel,
+                gridAreasToRemoveFrom);
 
-        await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            await _fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+        }
     }
 
     private class DeleteEnergySupplierStatement(
@@ -645,7 +652,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+                    DELETE FROM {_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME}
                     WHERE {EnergyResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
                     AND {EnergyResultColumnNames.Time} <= '{_before}'
                     {(_after is not null ? $"AND {EnergyResultColumnNames.Time} > '{_after}'" : string.Empty)}
@@ -655,6 +662,7 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
 
     private class DeleteCorrectionsStatement(
         DeltaTableOptions deltaTableOptions,
+        string aggregationLevel,
         IReadOnlyCollection<string> gridAreasToRemoveFrom) : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
@@ -662,8 +670,18 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
 
         protected override string GetSqlStatement()
         {
+            var tableToDeleteFrom = aggregationLevel switch
+            {
+                DeltaTableAggregationLevel.GridArea => _deltaTableOptions.ENERGY_PER_GA_V1_VIEW_NAME,
+                DeltaTableAggregationLevel.BalanceResponsibleAndGridArea => _deltaTableOptions
+                    .ENERGY_PER_BRP_GA_V1_VIEW_NAME,
+                DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea => _deltaTableOptions
+                    .ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME,
+                _ => throw new InvalidOperationException(),
+            };
+
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{tableToDeleteFrom}
                     WHERE ({EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
                     OR {EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
                     OR {EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')

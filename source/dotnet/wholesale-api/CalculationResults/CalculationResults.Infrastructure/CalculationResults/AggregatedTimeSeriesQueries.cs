@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -31,6 +33,7 @@ public class AggregatedTimeSeriesQueries(
 {
     private readonly AggregatedTimeSeriesQuerySnippetProviderFactory _querySnippetProviderFactory = querySnippetProviderFactory;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor1 = databricksSqlWarehouseQueryExecutor;
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
@@ -51,10 +54,11 @@ public class AggregatedTimeSeriesQueries(
             var sqlStatement = new AggregatedTimeSeriesQueryStatement(
                 calculationTypePerGridAreas,
                 querySnippetProvider,
+                timeSeriesType,
                 _deltaTableOptions.Value);
 
             await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
-                               AggregatedTimeSeriesFactory.Create,
+                               (row, points) => AggregatedTimeSeriesFactory.Create(timeSeriesType, row, points),
                                (currentRow, previousRow) =>
                                    querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column =>
                                        currentRow[column] != previousRow[column])

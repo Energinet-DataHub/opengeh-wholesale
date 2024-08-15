@@ -28,15 +28,25 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
 
     internal IAggregatedTimeSeriesDatabricksContract DatabricksContract { get; } = databricksContract;
 
-    internal string GetWhereClauseSqlExpression(string table)
+    internal string GetWhereClauseSqlExpression(string table, TimeSeriesType? timeSeriesType)
     {
+        if (timeSeriesType is not null)
+        {
+            return $"""
+                    WHERE ({TimeSeriesTypeWhereClauseSqlExpression(
+                    _queryParameters,
+                    timeSeriesType.Value,
+                    table)})
+                    """;
+        }
+
         return $"""
                 WHERE ({string.Join(
                     " OR ",
                     _queryParameters.TimeSeriesTypes
-                        .Select(timeSeriesType => TimeSeriesTypeWhereClauseSqlExpression(
+                        .Select(tst => TimeSeriesTypeWhereClauseSqlExpression(
                             _queryParameters,
-                            timeSeriesType,
+                            tst,
                             table))
                         .Select(s => $"({s})"))})
                 """;
@@ -74,10 +84,19 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
         // var whereClausesSql = $@"
         //         {table}.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}')
         //     AND {table}.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'";
+        var meteringPointType = MeteringPointTypeMapper.ToDeltaTableValue(
+            MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(
+                TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)));
+        var settlementMethod = SettlementMethodMapper.ToDeltaTableValue(
+            SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(
+                TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)));
+
         var whereClausesSql =
             $"""
-             ({table}.{EnergyPerEsBrpGaViewColumnNames.Time} >= '{parameters.Period.Start}'
-              AND {table}.{EnergyPerEsBrpGaViewColumnNames.Time} < '{parameters.Period.End}')
+             {table}.{EnergyPerEsBrpGaViewColumnNames.MeteringPointType} = '{meteringPointType}'
+             {(settlementMethod is not null ? $"AND {table}.{EnergyPerEsBrpGaViewColumnNames.SettlementMethod} = '{settlementMethod}'" : $"AND {table}.{EnergyPerEsBrpGaViewColumnNames.SettlementMethod} is null")} 
+             AND ({table}.{EnergyPerEsBrpGaViewColumnNames.Time} >= '{parameters.Period.Start}'
+                  AND {table}.{EnergyPerEsBrpGaViewColumnNames.Time} < '{parameters.Period.End}')
              """;
 
         if (parameters.GridAreaCodes.Count > 0)
