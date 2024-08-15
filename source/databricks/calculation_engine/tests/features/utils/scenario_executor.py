@@ -29,15 +29,15 @@ from .input_specifications import get_data_input_specifications
 
 
 class ScenarioExecutor:
-    table_reader: Mock
+    migrations_wholesale_repository: Mock
     test_calculation_args: CalculatorArgs
     input_path: str
     output_path: str
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
-        self.table_reader = Mock()
-        self.wholesale_internal_table_reader = Mock()
+        self.migrations_wholesale_repository = Mock()
+        self.wholesale_internal_repository = Mock()
 
     def execute(
         self, scenario_folder_path: str
@@ -49,7 +49,9 @@ class ScenarioExecutor:
 
         actual = _execute(
             self.test_calculation_args,
-            PreparedDataReader(self.table_reader, self.wholesale_internal_table_reader),
+            PreparedDataReader(
+                self.migrations_wholesale_repository, self.wholesale_internal_repository
+            ),
         )
         expected = self._get_expected_results(self.spark)
         return actual, expected
@@ -59,7 +61,7 @@ class ScenarioExecutor:
         self.output_path = scenario_path + "/then/"
 
         correlations = get_data_input_specifications(
-            self.table_reader, self.wholesale_internal_table_reader
+            self.migrations_wholesale_repository, self.wholesale_internal_repository
         )
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
