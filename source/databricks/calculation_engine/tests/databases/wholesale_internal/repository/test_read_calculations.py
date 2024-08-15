@@ -48,7 +48,7 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_calculation_row()
-        table_reader = wholesale_internal.WholesaleInternalRepository(
+        repository = wholesale_internal.WholesaleInternalRepository(
             mock.Mock(), "dummy_calculation_input_path", "dummy_catalog_name"
         )
 
@@ -57,10 +57,10 @@ class TestWhenContractMismatch:
 
         # Act & Assert
         with mock.patch.object(
-            table_reader._spark.read.format("delta"), "load", return_value=df
+            repository._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                table_reader.read_calculations()
+                repository.read_calculations()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -89,12 +89,12 @@ class TestWhenValidInput:
         )
         expected = df
 
-        table_reader = wholesale_internal.WholesaleInternalRepository(
+        repository = wholesale_internal.WholesaleInternalRepository(
             spark, "spark_catalog"
         )
 
         # Act
-        actual = table_reader.read_calculations()
+        actual = repository.read_calculations()
 
         # Assert
         assert_dataframes_equal(actual, expected)

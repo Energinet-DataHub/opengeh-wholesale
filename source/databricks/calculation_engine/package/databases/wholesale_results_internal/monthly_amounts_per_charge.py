@@ -14,9 +14,9 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import WholesaleResultsContainer
-from package.databases.table_column_names import TableColumnNames
+from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
     MonthlyAmountsColumnNames,
 )
@@ -30,24 +30,24 @@ from package.infrastructure.paths import (
 
 @logging_configuration.use_span("calculation.write.wholesale")
 def write_monthly_amounts_per_charge(
-    wholesale_results: WholesaleResultsContainer,
+    wholesale_results_output: WholesaleResultsOutput,
 ) -> None:
     """Write each wholesale result to the output table."""
     _write(
         "monthly_tariff_from_hourly_per_co_es",
-        wholesale_results.monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
+        wholesale_results_output.monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
     )
     _write(
         "monthly_tariff_from_daily_per_co_es",
-        wholesale_results.monthly_tariff_from_daily_per_co_es_as_monthly_amount,
+        wholesale_results_output.monthly_tariff_from_daily_per_co_es_as_monthly_amount,
     )
     _write(
         "monthly_subscription_per_co_es",
-        wholesale_results.monthly_subscription_per_co_es_as_monthly_amount,
+        wholesale_results_output.monthly_subscription_per_co_es_as_monthly_amount,
     )
     _write(
         "monthly_fee_per_co_es",
-        wholesale_results.monthly_fee_per_co_es_as_monthly_amount,
+        wholesale_results_output.monthly_fee_per_co_es_as_monthly_amount,
     )
 
 

@@ -18,8 +18,9 @@ from typing import Tuple
 from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import StructType
 
-from package.calculation.calculation_results import CalculationResultsContainer
+from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
 from .calculation_args import create_calculation_args
 from .dataframes.typecasting import cast_column_types
@@ -28,19 +29,19 @@ from .input_specifications import get_data_input_specifications
 
 
 class ScenarioExecutor:
-    table_reader: Mock
+    migrations_wholesale_repository: Mock
     test_calculation_args: CalculatorArgs
     input_path: str
     output_path: str
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
-        self.table_reader = Mock()
-        self.wholesale_internal_table_reader = Mock()
+        self.migrations_wholesale_repository = Mock()
+        self.wholesale_internal_repository = Mock()
 
     def execute(
         self, scenario_folder_path: str
-    ) -> Tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+    ) -> Tuple[CalculationOutput, list[ExpectedOutput]]:
         self._setup(scenario_folder_path)
 
         from package.calculation import PreparedDataReader
@@ -48,7 +49,9 @@ class ScenarioExecutor:
 
         actual = _execute(
             self.test_calculation_args,
-            PreparedDataReader(self.table_reader, self.wholesale_internal_table_reader),
+            PreparedDataReader(
+                self.migrations_wholesale_repository, self.wholesale_internal_repository
+            ),
         )
         expected = self._get_expected_results(self.spark)
         return actual, expected
@@ -58,7 +61,7 @@ class ScenarioExecutor:
         self.output_path = scenario_path + "/then/"
 
         correlations = get_data_input_specifications(
-            self.table_reader, self.wholesale_internal_table_reader
+            self.migrations_wholesale_repository, self.wholesale_internal_repository
         )
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
@@ -68,7 +71,7 @@ class ScenarioExecutor:
                 reader.return_value = dataframes[i]
 
     def _read_file(
-        self, spark_session: SparkSession, csv_file_name: str, schema: str
+        self, spark_session: SparkSession, csv_file_name: str, schema: StructType
     ) -> DataFrame | None:
 
         path_to_csv = self.input_path + csv_file_name
@@ -76,11 +79,23 @@ class ScenarioExecutor:
         if not os.path.exists(path_to_csv):
             return None
 
+        # Read the CSV file to check column names.
+        df = spark_session.read.csv(path_to_csv, header=True, sep=";")
+
+        # Verify column names match with those in the schema
+        schema_column_names = [field.name for field in schema.fields]
+        if schema_column_names != df.columns:
+            raise ValueError(
+                f"Schema mismatch {path_to_csv}. Expected: {schema_column_names} Found: {df.columns}"
+            )
+
+        # When the schema is provided, the column names from the schema are used
+        # despite the header naming in the CSV file. The data types must, however,
+        # comply with the schema.
         df = spark_session.read.csv(path_to_csv, header=True, sep=";", schema=schema)
 
-        # We need to create the dataframe again because nullability and precision
-        # are not applied when reading the csv file.
-        return spark_session.createDataFrame(df.rdd, schema)
+        # Behind the scenes the dataframe is wrapped using DataFrameWrapper and verified for nullability and precision.
+        return spark_session.createDataFrame(df.rdd, schema=schema, verifySchema=True)
 
     def _read_files_in_parallel(
         self, correlations: dict[str, tuple]

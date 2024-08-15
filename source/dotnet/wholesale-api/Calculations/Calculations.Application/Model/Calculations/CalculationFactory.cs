@@ -39,8 +39,10 @@ public class CalculationFactory : ICalculationFactory
         var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
-        // As long as scheduling is not implemented, execution time start is the same as created time
+
+        // TODO: Don't set execution time start here when scheduling is implemented - it should be set in the orchestrator instead
         var executionTimeStart = createdTime;
+
         var version = _clock.GetCurrentInstant().ToDateTimeUtc().Ticks;
         return new Calculation(createdTime, calculationType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId, version);
     }

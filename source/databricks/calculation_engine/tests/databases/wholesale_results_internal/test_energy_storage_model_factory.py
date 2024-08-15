@@ -28,10 +28,10 @@ from package.calculation.energy.data_structures.energy_results import (
     energy_results_schema,
     EnergyResults,
 )
+from package.constants import Colname
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.constants import Colname
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )

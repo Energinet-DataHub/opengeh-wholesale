@@ -15,7 +15,7 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import WholesaleResultsContainer
+from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
 from package.databases.wholesale_results_internal.wholesale_result_column_names import (
     WholesaleResultColumnNames,
@@ -29,38 +29,38 @@ from package.infrastructure.paths import (
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
-def write_wholesale_results(wholesale_results: WholesaleResultsContainer) -> None:
+def write_wholesale_results(wholesale_results_output: WholesaleResultsOutput) -> None:
     """Write each wholesale result to the output table."""
-    _write("hourly_tariff_per_co_es", wholesale_results.hourly_tariff_per_co_es)
+    _write("hourly_tariff_per_co_es", wholesale_results_output.hourly_tariff_per_co_es)
     _write(
         "daily_tariff_per_co_es",
-        wholesale_results.daily_tariff_per_co_es,
+        wholesale_results_output.daily_tariff_per_co_es,
     )
     _write(
         "subscription_per_co_es",
-        wholesale_results.subscription_per_co_es,
+        wholesale_results_output.subscription_per_co_es,
     )
     _write(
         "fee_per_co_es",
-        wholesale_results.fee_per_co_es,
+        wholesale_results_output.fee_per_co_es,
     )
 
     # TODO JVM: Remove when monthly amounts is fully implemented
     _write_to_hive(
         "monthly_tariff_from_hourly_per_co_es",
-        wholesale_results.monthly_tariff_from_hourly_per_co_es,
+        wholesale_results_output.monthly_tariff_from_hourly_per_co_es,
     )
     _write_to_hive(
         "monthly_tariff_from_daily_per_co_es",
-        wholesale_results.monthly_tariff_from_daily_per_co_es,
+        wholesale_results_output.monthly_tariff_from_daily_per_co_es,
     )
     _write_to_hive(
         "monthly_subscription_per_co_es",
-        wholesale_results.monthly_subscription_per_co_es,
+        wholesale_results_output.monthly_subscription_per_co_es,
     )
     _write_to_hive(
         "monthly_fee_per_co_es",
-        wholesale_results.monthly_fee_per_co_es,
+        wholesale_results_output.monthly_fee_per_co_es,
     )
 
 
