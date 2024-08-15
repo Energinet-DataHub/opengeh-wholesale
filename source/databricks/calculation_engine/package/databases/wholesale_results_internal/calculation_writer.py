@@ -33,9 +33,7 @@ def write_calculation(
         Container.infrastructure_settings
     ],
 ) -> None:
-    """Writes the succeeded calculation to the calculations table."""
-
-    # create a timestamp with current time
+    """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
 
     calculations = calculations.withColumn(
         TableColumnNames.calculation_completed_time, current_timestamp()
