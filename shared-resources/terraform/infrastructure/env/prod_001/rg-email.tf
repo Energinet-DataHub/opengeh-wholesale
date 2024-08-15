@@ -1,9 +1,23 @@
+locals {
+  email_resource_group_name = "rg-email-shres-p-we-001"
+}
+
+data "azurerm_resource_group" "email_resource_group" {
+  name = "rg-email-shres-p-we-001"
+}
+
+resource "azurerm_role_assignment" "xrtni_owner" {
+  scope                = data.azurerm_resource_group.email_resource_group.id
+  role_definition_name = "Owner"
+  principal_id         = "72dac0b0-db26-4fe5-a8f8-d6e34da67f87"
+}
+
 module "pim_contributor_security_group_permissions_email" {
   count = var.pim_contributor_data_plane_group_name != "" ? 1 : 0
 
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_4.0.1"
 
-  resource_group_name = "rg-email-shres-p-we-001"
+  resource_group_name = data.azurerm_resource_group.email_resource_group.name
   security_group_name = var.pim_contributor_data_plane_group_name
   role_level          = "Contributor Data Plane"
 
@@ -15,7 +29,7 @@ module "pim_contributor_control_plane_security_group_permissions_email" {
 
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_4.0.1"
 
-  resource_group_name = "rg-email-shres-p-we-001"
+  resource_group_name = data.azurerm_resource_group.email_resource_group.name
   security_group_name = var.pim_contributor_control_plane_group_name
   role_level          = "Contributor Control Plane"
   custom_roles_contributor_control_plane = [
@@ -30,7 +44,7 @@ module "pim_reader_security_group_permissions_email" {
 
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_4.0.1"
 
-  resource_group_name = "rg-email-shres-p-we-001"
+  resource_group_name = data.azurerm_resource_group.email_resource_group.name
   security_group_name = var.pim_reader_group_name
   role_level          = "Reader"
   custom_roles_reader = [
