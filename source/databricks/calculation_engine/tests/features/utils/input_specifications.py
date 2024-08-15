@@ -11,8 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql.types import StructType
+
 from package.databases import wholesale_internal
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import (
     metering_point_periods_schema,
     time_series_points_schema,
@@ -27,9 +29,9 @@ from package.databases.wholesale_internal.schemas import (
 
 
 def get_data_input_specifications(
-    table_reader: TableReader,
-    wholesale_internal_table_reader: wholesale_internal.TableReader,
-) -> dict[str, tuple]:
+    table_reader: MigrationsWholesaleRepository,
+    wholesale_internal_table_reader: wholesale_internal.WholesaleInternalRepository,
+) -> dict[str, tuple[StructType, callable]]:
     """
     Contains the mapping between the csv file name, the schema name and the function
     to be mocked.

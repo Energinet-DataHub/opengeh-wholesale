@@ -17,12 +17,12 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.constants import Colname
 
 
 def get_time_series_points(
-    calculation_input_reader: TableReader,
+    calculation_input_reader: MigrationsWholesaleRepository,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:

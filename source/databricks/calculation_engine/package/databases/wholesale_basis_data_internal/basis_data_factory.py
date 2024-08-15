@@ -14,8 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from package.databases.wholesale_basis_data_internal import basis_data
-from package.calculation.calculation_results import BasisDataContainer
+from package.calculation.calculation_output import BasisDataOutput
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
@@ -24,18 +23,18 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
+from package.databases.wholesale_basis_data_internal import basis_data
 from package.infrastructure import logging_configuration
 
 
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,
-    calculations: DataFrame,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     input_charges_container: InputChargesContainer | None,
     grid_loss_metering_points_df: GridLossMeteringPoints,
-) -> BasisDataContainer:
+) -> BasisDataOutput:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
         args.calculation_id, metering_point_time_series_df
     )
@@ -71,8 +70,7 @@ def create(
         charge_prices_basis_data = None
         charge_links_basis_data = None
 
-    return BasisDataContainer(
-        calculations=calculations,
+    return BasisDataOutput(
         time_series_points=time_series_points_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
         charge_price_information_periods=charge_price_information_basis_data,

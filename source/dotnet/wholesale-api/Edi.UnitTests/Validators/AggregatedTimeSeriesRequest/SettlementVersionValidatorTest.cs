@@ -106,7 +106,7 @@ public class SettlementVersionValidatorTest
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().BeEmpty();
+        errors.Should().BeEmpty("When Settlement version is empty the latest correction result is requested");
     }
 
     [Fact]
