@@ -114,7 +114,7 @@ class PreparedDataReader:
         )
 
         # The list of charge_links contains data from all metering point periods in all grid areas.
-        # This method ensures we only get charge links from metering points in grid areas from calculation arguments.
+        # This method ensures we only get charge data from metering points in grid areas from calculation arguments.
         charge_links = charge_links.join(
             metering_point_ids, Colname.metering_point_id, "inner"
         )
