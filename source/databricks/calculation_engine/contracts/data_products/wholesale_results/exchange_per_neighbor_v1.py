@@ -7,15 +7,6 @@ exchange_per_neighbor_v1 = t.StructType(
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
         #
-        # 'balance_fixing' | 'aggregation'
-        t.StructField("calculation_type", t.StringType(), not nullable),
-        #
-        # UTC time
-        t.StructField("calculation_period_start", t.TimestampType(), not nullable),
-        #
-        # UTC time
-        t.StructField("calculation_period_end", t.TimestampType(), not nullable),
-        #
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
         t.StructField("neighbor_grid_area_code", t.StringType(), not nullable),
