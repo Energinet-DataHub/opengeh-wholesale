@@ -99,7 +99,7 @@ variable "calculation_input_folder" {
 variable "calculation_input_database" {
   type        = string
   description = "Name of database used by calculations running in Spark in Databricks."
-  default     = "migrations_wholesale"
+  default     = "shared_wholesale_input"
 }
 
 variable "quarterly_resolution_transition_datetime" {
