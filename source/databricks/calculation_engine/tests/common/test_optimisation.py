@@ -13,11 +13,12 @@
 # limitations under the License.
 from delta.tables import DeltaTable
 from package.optimise_job.optimisation import optimise_table
+from pyspark.sql import SparkSession
 import pytest
 
 
-@pytest.fixture(scope="session")
-def test__optimise_is_in_history_of_delta_table(spark):
+@pytest.fixture(scope="module")
+def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
     # Arrange
     mock_database_name = "test_database"
     mock_table_name = "test_table"
