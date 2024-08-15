@@ -74,7 +74,7 @@ def parse_job_arguments(
             created_by_user_id=job_args.created_by_user_id,
             time_zone=time_zone,
             quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
-            is_control_calculation=job_args.is_control_calculation,
+            is_internal_calculation=job_args.is_internal_calculation,
         )
 
         storage_account_name = env_vars.get_storage_account_name()
@@ -112,7 +112,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--calculation-type", type=CalculationType, required=True)
     p.add("--created-by-user-id", type=str, required=True)
     p.add(
-        "--is-control-calculation", action="store_true"
+        "--is-internal-calculation", action="store_true"
     )  # This a flag argument that is true if present, false otherwise
 
     # Infrastructure settings
