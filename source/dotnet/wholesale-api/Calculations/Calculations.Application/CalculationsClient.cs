@@ -22,16 +22,17 @@ using CalculationState = Energinet.DataHub.Wholesale.Calculations.Interfaces.Mod
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-public class CalculationsClient : ICalculationsClient
+public class CalculationsClient(
+    ICalculationRepository calculationRepository,
+    ICalculationDtoMapper calculationDtoMapper,
+    ICalculationFactory calculationFactory,
+    IUnitOfWork unitOfWork)
+    : ICalculationsClient
 {
-    private readonly ICalculationRepository _calculationRepository;
-    private readonly ICalculationDtoMapper _calculationDtoMapper;
-
-    public CalculationsClient(ICalculationRepository calculationRepository, ICalculationDtoMapper calculationDtoMapper)
-    {
-        _calculationRepository = calculationRepository;
-        _calculationDtoMapper = calculationDtoMapper;
-    }
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
+    private readonly ICalculationFactory _calculationFactory = calculationFactory;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<CalculationDto> GetAsync(Guid calculationId)
     {
@@ -77,6 +78,26 @@ public class CalculationsClient : ICalculationsClient
             periodStart,
             periodEnd,
             calculationType).ConfigureAwait(false);
+    }
+
+    public async Task<CalculationId> CreateAndCommitAsync(
+        CalculationType calculationType,
+        IEnumerable<string> gridAreaCodes,
+        DateTimeOffset startDate,
+        DateTimeOffset endDate,
+        Guid currentUserId)
+    {
+        var calculation = _calculationFactory.Create(
+            calculationType,
+            gridAreaCodes,
+            startDate,
+            endDate,
+            currentUserId);
+
+        await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+
+        return new CalculationId(calculation.Id);
     }
 
     private async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
