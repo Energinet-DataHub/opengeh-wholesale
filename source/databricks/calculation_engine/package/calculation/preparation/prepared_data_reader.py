@@ -137,7 +137,7 @@ class PreparedDataReader:
         charge_price_information: ChargePriceInformation,
         charge_prices: ChargePrices,
         metering_point_ids: DataFrame,
-    ):
+    ) -> tuple[DataFrame, ChargePriceInformation, ChargePrices]:
         charge_links = charge_links.join(
             metering_point_ids, Colname.metering_point_id, "inner"
         )
