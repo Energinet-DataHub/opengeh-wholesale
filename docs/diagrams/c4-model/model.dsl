@@ -64,6 +64,7 @@ wholesaleSubsystem = group "Wholesale" {
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
+
     wholesaleApi = container "Wholesale API" {
         description "Backend server providing external web API for Wholesale subsystem"
         technology "Asp.Net Core Web API"
