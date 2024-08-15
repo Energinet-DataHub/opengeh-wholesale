@@ -254,7 +254,7 @@ jobs:
           - name: Entry point tests
             paths: entry_points/
           - name: Optimise (optimise_job)
-            paths: optimise_job
+            paths: optimise_job/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -355,7 +355,7 @@ jobs:
           datamigration/current_state
           datamigration/migration_scripts
           datamigration/unity_catalog
-          optimise_job"
+          optimise_job/"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
