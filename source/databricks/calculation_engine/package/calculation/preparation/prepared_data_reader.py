@@ -117,7 +117,7 @@ class PreparedDataReader:
         # The list of charge_links, charge_prices and change information contains data from all metering point periods in all grid areas.
         # This method ensures we only get charge data from metering points in grid areas from the calculation arguments.
         charge_links, charge_price_information, charge_prices = (
-            self.get_changes_filtered_by_grid_area(
+            self._get_changes_filtered_by_grid_area(
                 charge_links,
                 charge_price_information,
                 charge_prices,
@@ -131,8 +131,12 @@ class PreparedDataReader:
             charge_links=charge_links,
         )
 
-    def get_changes_filtered_by_grid_area(
-        self, charge_links, charge_price_information, charge_prices, metering_point_ids
+    def _get_changes_filtered_by_grid_area(
+        self,
+        charge_links: DataFrame,
+        charge_price_information: ChargePriceInformation,
+        charge_prices: ChargePrices,
+        metering_point_ids: DataFrame,
     ):
         charge_links = charge_links.join(
             metering_point_ids, Colname.metering_point_id, "inner"
