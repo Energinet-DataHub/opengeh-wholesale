@@ -43,11 +43,11 @@ from ...infrastructure import logging_configuration
 class PreparedDataReader:
     def __init__(
         self,
-        delta_table_reader: MigrationsWholesaleRepository,
-        wholesale_internal_table_reader: wholesale_internal.WholesaleInternalRepository,
+        migrations_wholesale_repository: MigrationsWholesaleRepository,
+        wholesale_internal_repository: wholesale_internal.WholesaleInternalRepository,
     ) -> None:
-        self._table_reader = delta_table_reader
-        self._wholesale_internal_table_reader = wholesale_internal_table_reader
+        self._migrations_wholesale_repository = migrations_wholesale_repository
+        self._wholesale_internal_repository = wholesale_internal_repository
 
     @logging_configuration.use_span("get_metering_point_periods")
     def get_metering_point_periods_df(
@@ -57,7 +57,7 @@ class PreparedDataReader:
         grid_areas: list[str],
     ) -> DataFrame:
         return T.get_metering_point_periods_df(
-            self._table_reader,
+            self._migrations_wholesale_repository,
             period_start_datetime,
             period_end_datetime,
             grid_areas,
@@ -68,7 +68,7 @@ class PreparedDataReader:
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
         return T.get_grid_loss_responsible(
-            grid_areas, metering_point_periods_df, self._wholesale_internal_table_reader
+            grid_areas, metering_point_periods_df, self._wholesale_internal_repository
         )
 
     @logging_configuration.use_span("get_metering_point_time_series")
@@ -79,7 +79,9 @@ class PreparedDataReader:
         metering_point_periods_df_without_grid_loss: DataFrame,
     ) -> PreparedMeteringPointTimeSeries:
         time_series_points_df = T.get_time_series_points(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
         return T.get_metering_point_time_series(
             time_series_points_df,
@@ -94,15 +96,21 @@ class PreparedDataReader:
         metering_point_ids: DataFrame,
     ) -> InputChargesContainer:
         charge_price_information = T.read_charge_price_information(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
 
         charge_prices = T.read_charge_prices(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
 
         charge_links = T.read_charge_links(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
 
         # The list of charge_links contains data from all metering point periods in all grid areas.
@@ -172,7 +180,7 @@ class PreparedDataReader:
     ) -> DataFrame:
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
-            self._wholesale_internal_table_reader.read_grid_loss_metering_points(),
+            self._wholesale_internal_repository.read_grid_loss_metering_points(),
             Colname.metering_point_id,
             "left_anti",
         )
@@ -182,7 +190,7 @@ class PreparedDataReader:
     ) -> int | None:
         """Returns the latest used version for the selected calculation type or None."""
 
-        calculations = self._wholesale_internal_table_reader.read_calculations()
+        calculations = self._wholesale_internal_repository.read_calculations()
 
         latest_version = (
             calculations.where(

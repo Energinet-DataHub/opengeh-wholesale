@@ -32,7 +32,7 @@ from package.databases.wholesale_internal.schemas import (
 
 @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
 def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
-    table_reader_mock: MigrationsWholesaleRepository, spark: SparkSession
+    repository_mock: MigrationsWholesaleRepository, spark: SparkSession
 ) -> None:
     # Arrange
     grid_areas = ["804"]
@@ -65,13 +65,13 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
 
     # Act
-    table_reader_mock.read_grid_loss_metering_points.return_value = (
+    repository_mock.read_grid_loss_metering_points.return_value = (
         grid_loss_metering_points
     )
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
         metering_point_period,
-        table_reader_mock,
+        repository_mock,
     )
 
     # Assert
@@ -88,7 +88,7 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
 
 @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
 def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
-    table_reader_mock: MigrationsWholesaleRepository,
+    repository_mock: MigrationsWholesaleRepository,
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -125,13 +125,13 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
     )
 
     # Act
-    table_reader_mock.read_grid_loss_metering_points.return_value = (
+    repository_mock.read_grid_loss_metering_points.return_value = (
         grid_loss_metering_points
     )
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
         metering_point_period,
-        table_reader_mock,
+        repository_mock,
     )
 
     # Assert
