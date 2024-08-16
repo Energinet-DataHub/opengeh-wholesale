@@ -417,7 +417,7 @@ public class CalculationTests
         switch (executionState)
         {
             case CalculationExecutionState.Created:
-                sut.MarkAsScheduled();
+                // This is the default state
                 break;
             case CalculationExecutionState.Submitted:
                 sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
