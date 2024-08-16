@@ -58,6 +58,7 @@ def _create_calculation(
         CalculationColumnNames.created_by_user_id: args.created_by_user_id,
         CalculationColumnNames.version: next_version,
         CalculationColumnNames.is_internal_calculation: args.is_internal_calculation,
+        CalculationColumnNames.calculation_succeeded_time: None,
     }
 
     return spark.createDataFrame(
