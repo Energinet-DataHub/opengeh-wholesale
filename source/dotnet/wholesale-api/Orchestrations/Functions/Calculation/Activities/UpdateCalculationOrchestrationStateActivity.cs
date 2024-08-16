@@ -71,7 +71,7 @@ internal class UpdateCalculationOrchestrationStateActivity(
                 calculation.MarkAsCompleted(_clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.Scheduled:
-                throw new InvalidOperationException("Cannot update calculation state to Scheduled when the calculation is already running.");
+                throw new InvalidOperationException("Cannot update calculation state to Scheduled after the calculation is already created (scheduled is the default state).");
             default:
                 throw new ArgumentOutOfRangeException(nameof(input.State), input.State, "Value is an invalid calculation state update.");
         }
