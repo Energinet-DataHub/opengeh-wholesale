@@ -127,7 +127,7 @@ public class Calculation
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
-    public CalculationExecutionState ExecutionState { get; private set; } = CalculationExecutionState.Created;
+    public CalculationExecutionState ExecutionState { get; private set; }
 
     /// <summary>
     /// Get/set the orchestration state of the calculation.
