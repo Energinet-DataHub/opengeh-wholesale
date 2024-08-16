@@ -51,6 +51,7 @@ def create_calculation_row(
         TableColumnNames.created_by_user_id: created_by_user_id,
         TableColumnNames.calculation_version: version,
         TableColumnNames.is_internal_calculation: False,
+        TableColumnNames.calculation_succeeded_time: None,
     }
 
     return Row(**calculation)
