@@ -13,16 +13,6 @@
 # limitations under the License.
 
 
-class TimeSeriesColname:
-    """Column names for the time series storage model"""
-
-    calculation_id = "calculation_id"
-    metering_point_id = "metering_point_id"
-    observation_time = "observation_time"
-    quantity = "quantity"
-    quality = "quality"
-
-
 class ChargePriceInformationPeriodsColname:
     """Column names for the charge price information periods storage model"""
 

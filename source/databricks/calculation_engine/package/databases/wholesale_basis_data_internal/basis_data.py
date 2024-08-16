@@ -25,7 +25,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    TimeSeriesColname,
     ChargePriceInformationPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
@@ -66,13 +65,13 @@ def get_time_series_points_basis_data(
     metering_point_time_series: PreparedMeteringPointTimeSeries,
 ) -> DataFrame:
     return metering_point_time_series.df.select(
-        f.lit(calculation_id).alias(TimeSeriesColname.calculation_id),
-        f.col(Colname.metering_point_id).alias(TimeSeriesColname.metering_point_id),
+        f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
         f.col(Colname.quantity)
-        .alias(TimeSeriesColname.quantity)
+        .alias(TableColumnNames.quantity)
         .cast(DecimalType(18, 3)),
-        f.col(Colname.quality).alias(TimeSeriesColname.quality),
-        f.col(Colname.observation_time).alias(TimeSeriesColname.observation_time),
+        f.col(Colname.quality).alias(TableColumnNames.quality),
+        f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
     )
 
 
