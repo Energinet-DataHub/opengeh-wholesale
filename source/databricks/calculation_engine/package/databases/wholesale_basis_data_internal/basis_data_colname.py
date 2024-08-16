@@ -13,18 +13,6 @@
 # limitations under the License.
 
 
-class ChargePricePointsColname:
-    """Column names for the charge price points storage model"""
-
-    calculation_id = "calculation_id"
-    charge_key = "charge_key"
-    charge_code = "charge_code"
-    charge_type = "charge_type"
-    charge_owner_id = "charge_owner_id"
-    charge_price = "charge_price"
-    charge_time = "charge_time"
-
-
 class ChargeLinkPeriodsColname:
     """Column names for the charge link periods storage model"""
 

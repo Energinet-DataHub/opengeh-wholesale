@@ -25,7 +25,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    ChargePricePointsColname,
     ChargeLinkPeriodsColname,
     GridLossMeteringPointsColName,
 )
@@ -100,13 +99,13 @@ def get_charge_prices_basis_data(
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
     return input_charges_container.charge_prices._df.select(
-        f.lit(calculation_id).alias(ChargePricePointsColname.calculation_id),
-        f.col(Colname.charge_key).alias(ChargePricePointsColname.charge_key),
-        f.col(Colname.charge_code).alias(ChargePricePointsColname.charge_code),
-        f.col(Colname.charge_type).alias(ChargePricePointsColname.charge_type),
-        f.col(Colname.charge_owner).alias(ChargePricePointsColname.charge_owner_id),
-        f.col(Colname.charge_price).alias(ChargePricePointsColname.charge_price),
-        f.col(Colname.charge_time).alias(ChargePricePointsColname.charge_time),
+        f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.col(Colname.charge_key).alias(TableColumnNames.charge_key),
+        f.col(Colname.charge_code).alias(TableColumnNames.charge_code),
+        f.col(Colname.charge_type).alias(TableColumnNames.charge_type),
+        f.col(Colname.charge_owner).alias(TableColumnNames.charge_owner_id),
+        f.col(Colname.charge_price).alias(TableColumnNames.charge_price),
+        f.col(Colname.charge_time).alias(TableColumnNames.charge_time),
     )
 
 
