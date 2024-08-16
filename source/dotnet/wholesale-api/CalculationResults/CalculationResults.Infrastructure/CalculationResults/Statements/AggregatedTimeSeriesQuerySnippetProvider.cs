@@ -45,15 +45,15 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
         if (timeSeriesType is not null)
         {
             return $"""
-                    WHERE ({TimeSeriesTypeWhereClauseSqlExpression(
-                    _queryParameters,
-                    timeSeriesType.Value,
-                    table)})
+                    ({TimeSeriesTypeWhereClauseSqlExpression(
+                        _queryParameters,
+                        timeSeriesType.Value,
+                        table)})
                     """;
         }
 
         return $"""
-                WHERE ({string.Join(
+                ({string.Join(
                     " OR ",
                     _queryParameters.TimeSeriesTypes
                         .Select(tst => TimeSeriesTypeWhereClauseSqlExpression(
@@ -64,7 +64,8 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
                 """;
     }
 
-    internal string GenerateLatestOrFixedCalculationTypeWhereClause(IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
+    internal string GenerateLatestOrFixedCalculationTypeWhereClause(
+        IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
     {
         if (_queryParameters.CalculationType is not null)
         {
