@@ -25,6 +25,7 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
+    WHOLESALE_SAP = "wholesale_sap"
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -106,6 +107,11 @@ class WholesaleSettlementReportsDatabase:
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
+
+
+class WholesaleSapDatabase:
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SAP
+    LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME = "latest_calculations_history_v1"
 
 
 class HiveOutputDatabase:

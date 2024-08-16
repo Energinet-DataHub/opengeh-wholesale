@@ -73,6 +73,8 @@ class ViewColumns:
     grid_area_code = Column("grid_area_code", StringType())
     is_internal_calculation = Column("is_internal_calculation", BooleanType())
     is_tax = Column("is_tax", BooleanType())
+    latest_from_time = Column("latest_from_time", TimestampType())
+    latest_to_time = Column("latest_to_time", TimestampType())
     metering_point_id = Column("metering_point_id", StringType())
     metering_point_type = Column("metering_point_type", StringType())
     neighbor_grid_area_code = Column("neighbor_grid_area_code", StringType())
