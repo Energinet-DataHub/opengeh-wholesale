@@ -1,6 +1,6 @@
 -- This view breaks down each calculation period into daily intervals for each of the calculation's grid areas,
 -- and calculates the time period for which the calculation is the latest calculation. The time period is defined as
--- the time between the calculation's execution start time and the execution start time of the next calculation (if a
+-- the time between the calculation's succeeded time and the succeeded time of the next calculation (if a
 -- newer calculation covers the same day, calculation type and grid area). Note that internal and external calculations
 -- are not distinguished in this view - the view returns the latest calculation no matter if it is internal or external.
 
@@ -22,9 +22,10 @@ WITH calculations_by_day AS (
     )) AS from_date_local,
     -- All rows should represent a full day, so the to_date is the day after the from_date
     DATE_ADD(from_date_local, 1) AS to_date_local,
-    calculation_execution_time_start as latest_from_time
+    calculation_succeeded_time as latest_from_time
   FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
   INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas cga ON c.calculation_id = cga.calculation_id
+  WHERE calculation_succeeded_time IS NOT NULL
 )
 SELECT
   calculation_id,
