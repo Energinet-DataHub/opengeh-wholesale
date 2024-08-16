@@ -37,9 +37,16 @@ internal class CalculationOrchestration
 
         var defaultRetryOptions = CreateDefaultRetryOptions();
 
-        // Create first calculation metadata custom status
+        // Set instance id on calculation
+        await context.CallActivityAsync<CalculationJobId>(
+            nameof(SetCalculationOrchestrationIdActivity),
+            input.CalculationId,
+            defaultRetryOptions);
+
+        // Set custom calculation. This is being waited for in the ScheduledCalculationTrigger to ensure that the calculation is started.
         var calculationMetadata = new CalculationMetadata
         {
+            IsStarted = true,
             Id = input.CalculationId.Id,
             Input = input,
             OrchestrationProgress = "OrchestrationStarted",

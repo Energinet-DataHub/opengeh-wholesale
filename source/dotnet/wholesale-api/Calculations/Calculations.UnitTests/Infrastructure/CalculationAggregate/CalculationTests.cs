@@ -362,6 +362,26 @@ public class CalculationTests
     }
 
     [Fact]
+    public void SetOrchestrationInstanceId_OrchestrationInstanceIdIsSet()
+    {
+        var orchestrationInstanceId = new OrchestrationInstanceId("expected-id");
+        var sut = new CalculationBuilder().Build();
+        sut.SetOrchestrationInstanceId(orchestrationInstanceId);
+        sut.OrchestrationInstanceId.Should().Be(orchestrationInstanceId);
+    }
+
+    [Fact]
+    public void SetOrchestrationInstanceId_WhenAlreadySet_ThrowsException()
+    {
+        var sut = new CalculationBuilder().Build();
+        sut.SetOrchestrationInstanceId(new OrchestrationInstanceId("id-1"));
+
+        var act = () => sut.SetOrchestrationInstanceId(new OrchestrationInstanceId("id-2"));
+
+        act.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
     public void Reset_WhenSubmitted_SetsStateCreated()
     {
         var sut = new CalculationBuilder().WithStateSubmitted().Build();

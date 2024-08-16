@@ -182,6 +182,8 @@ public class Calculation
 
     public CalculationJobId? CalculationJobId { get; private set; }
 
+    public OrchestrationInstanceId? OrchestrationInstanceId { get; private set; }
+
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
     /// </summary>
@@ -324,6 +326,14 @@ public class Calculation
     {
         OrchestrationState = CalculationOrchestrationState.Completed;
         CompletedTime = completedAt;
+    }
+
+    public void SetOrchestrationInstanceId(OrchestrationInstanceId orchestrationInstanceId)
+    {
+        if (OrchestrationInstanceId != null)
+            throw new InvalidOperationException($"Orchestration instance id is already set for calculation id: {Id}");
+
+        OrchestrationInstanceId = orchestrationInstanceId;
     }
 
     public void UpdateState(CalculationOrchestrationState newState, IClock clock)
