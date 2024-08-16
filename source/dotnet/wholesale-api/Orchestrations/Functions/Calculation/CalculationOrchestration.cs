@@ -39,8 +39,8 @@ internal class CalculationOrchestration
 
         // Set instance id on calculation
         await context.CallActivityAsync<CalculationJobId>(
-            nameof(SetCalculationOrchestrationIdActivity),
-            input.CalculationId,
+            nameof(SetCalculationAsStartedActivity),
+            new SetCalculationAsStartedInput(input.CalculationId.Id, context.InstanceId),
             defaultRetryOptions);
 
         // Set custom calculation. This is being waited for in the ScheduledCalculationTrigger to ensure that the calculation is started.

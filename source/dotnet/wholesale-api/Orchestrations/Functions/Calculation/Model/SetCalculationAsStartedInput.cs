@@ -14,6 +14,6 @@
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
-public sealed record SetCalculationOrchestrationIdInput(
+public sealed record SetCalculationAsStartedInput(
     Guid CalculationId,
     string OrchestrationInstanceId);

@@ -16,10 +16,11 @@ using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.DurableTask;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-internal class SetCalculationOrchestrationIdActivity(
+internal class SetCalculationAsStartedActivity(
     ICalculationRepository calculationRepository,
     IUnitOfWork unitOfWork)
 {
@@ -29,12 +30,12 @@ internal class SetCalculationOrchestrationIdActivity(
     /// <summary>
     /// Set calculation orchestration id on calculation entity
     /// </summary>
-    [Function(nameof(SetCalculationOrchestrationIdActivity))]
+    [Function(nameof(SetCalculationAsStartedActivity))]
     public async Task Run(
-        [ActivityTrigger] SetCalculationOrchestrationIdInput input)
+        [ActivityTrigger] SetCalculationAsStartedInput input)
     {
         var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
-        calculation.SetOrchestrationInstanceId(new OrchestrationInstanceId(input.OrchestrationInstanceId));
+        calculation.MarkAsStarted(new OrchestrationInstanceId(input.OrchestrationInstanceId));
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }
