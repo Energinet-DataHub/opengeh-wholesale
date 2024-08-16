@@ -69,15 +69,4 @@ internal class CalculationTrigger
 
         return new OkObjectResult(calculationId.Id);
     }
-
-    private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetadata)
-    {
-        if (orchestrationMetadata == null || orchestrationMetadata.SerializedCustomStatus == null)
-            return Guid.Empty;
-
-        var calculationMetadata = orchestrationMetadata.ReadCustomStatusAs<CalculationMetadata>();
-        return calculationMetadata == null || calculationMetadata.Id == Guid.Empty
-            ? Guid.Empty
-            : calculationMetadata.Id;
-    }
 }
