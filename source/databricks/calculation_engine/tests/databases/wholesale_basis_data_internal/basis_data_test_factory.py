@@ -205,7 +205,7 @@ def create_calculation_args() -> CalculatorArgs:
         time_zone=DefaultValues.TIME_ZONE,
         quarterly_resolution_transition_datetime=DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
         created_by_user_id=DefaultValues.CREATED_BY_USER_ID,
-        is_control_calculation=False,
+        is_internal_calculation=False,
     )
 
 
