@@ -259,6 +259,10 @@ public class Calculation
         if (ExecutionState is not CalculationExecutionState.Created)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
+        if (OrchestrationInstanceId != null)
+            throw new BusinessValidationException("Cannot mark calculation as started when orchestration instance id is already set (a calculation orchestration is already running)");
+
+        OrchestrationInstanceId = orchestrationInstanceId;
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Started;
     }

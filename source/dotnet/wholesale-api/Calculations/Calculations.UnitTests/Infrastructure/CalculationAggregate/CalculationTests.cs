@@ -355,23 +355,27 @@ public class CalculationTests
     }
 
     [Fact]
-    public void SetOrchestrationInstanceId_OrchestrationInstanceIdIsSet()
+    public void MarkAsStarted_ValuesAreSet()
     {
         var orchestrationInstanceId = new OrchestrationInstanceId("expected-id");
         var sut = new CalculationBuilder().Build();
-        sut.SetOrchestrationInstanceId(orchestrationInstanceId);
+
+        sut.MarkAsStarted(orchestrationInstanceId);
+
         sut.OrchestrationInstanceId.Should().Be(orchestrationInstanceId);
+        sut.OrchestrationState.Should().Be(CalculationOrchestrationState.Started);
+        sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]
-    public void SetOrchestrationInstanceId_WhenAlreadySet_ThrowsException()
+    public void MarkAsStarted_WhenAlreadyStarted_ThrowsException()
     {
         var sut = new CalculationBuilder().Build();
-        sut.SetOrchestrationInstanceId(new OrchestrationInstanceId("id-1"));
+        sut.MarkAsStarted(new OrchestrationInstanceId("id-1"));
 
-        var act = () => sut.SetOrchestrationInstanceId(new OrchestrationInstanceId("id-2"));
+        var act = () => sut.MarkAsStarted(new OrchestrationInstanceId("id-2"));
 
-        act.Should().ThrowExactly<InvalidOperationException>();
+        act.Should().ThrowExactly<BusinessValidationException>();
     }
 
     [Fact]
