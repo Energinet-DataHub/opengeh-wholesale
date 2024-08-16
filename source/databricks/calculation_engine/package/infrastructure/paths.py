@@ -83,6 +83,7 @@ class WholesaleResultsInternalDatabase:
 
 class WholesaleResultsDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
+    CALCULATIONS_V1_VIEW_NAME = "calculations_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
