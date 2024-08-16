@@ -25,7 +25,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    ChargePriceInformationPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
     GridLossMeteringPointsColName,
@@ -81,27 +80,17 @@ def get_charge_price_information_basis_data(
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
     return input_charges_container.charge_price_information._df.select(
-        f.lit(calculation_id).alias(
-            ChargePriceInformationPeriodsColname.calculation_id
-        ),
-        f.col(Colname.charge_key).alias(
-            ChargePriceInformationPeriodsColname.charge_key
-        ),
-        f.col(Colname.charge_code).alias(
-            ChargePriceInformationPeriodsColname.charge_code
-        ),
-        f.col(Colname.charge_type).alias(
-            ChargePriceInformationPeriodsColname.charge_type
-        ),
+        f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.col(Colname.charge_key).alias(TableColumnNames.charge_key),
+        f.col(Colname.charge_code).alias(TableColumnNames.charge_code),
+        f.col(Colname.charge_type).alias(TableColumnNames.charge_type),
         f.col(Colname.charge_owner).alias(
-            ChargePriceInformationPeriodsColname.charge_owner_id,
+            TableColumnNames.charge_owner_id,
         ),
-        f.col(Colname.resolution).alias(
-            ChargePriceInformationPeriodsColname.resolution
-        ),
-        f.col(Colname.charge_tax).alias(ChargePriceInformationPeriodsColname.is_tax),
-        f.col(Colname.from_date).alias(ChargePriceInformationPeriodsColname.from_date),
-        f.col(Colname.to_date).alias(ChargePriceInformationPeriodsColname.to_date),
+        f.col(Colname.resolution).alias(TableColumnNames.resolution),
+        f.col(Colname.charge_tax).alias(TableColumnNames.is_tax),
+        f.col(Colname.from_date).alias(TableColumnNames.from_date),
+        f.col(Colname.to_date).alias(TableColumnNames.to_date),
     )
 
 
