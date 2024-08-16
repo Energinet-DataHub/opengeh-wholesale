@@ -22,9 +22,7 @@ from pyspark.sql import SparkSession
 
 from package.codelists import CalculationType
 from package.databases import wholesale_internal
-from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    CalculationsColumnName,
-)
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_internal.schemas import hive_calculations_schema
 from package.infrastructure.paths import HiveBasisDataDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
@@ -33,14 +31,16 @@ from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 def _create_calculation_row() -> dict:
     return {
-        CalculationsColumnName.calculation_id: str(uuid.uuid4()),
-        CalculationsColumnName.calculation_type: CalculationType.BALANCE_FIXING.value,
-        CalculationsColumnName.period_start: datetime(2022, 6, 8, 22, 0, 0),
-        CalculationsColumnName.period_end: datetime(2022, 6, 9, 22, 0, 0),
-        CalculationsColumnName.execution_time_start: datetime(2022, 6, 8, 22, 0, 0),
-        CalculationsColumnName.created_by_user_id: str(uuid.uuid4()),
-        CalculationsColumnName.version: 1,
-        CalculationsColumnName.is_internal_calculation: False,
+        TableColumnNames.calculation_id: str(uuid.uuid4()),
+        TableColumnNames.calculation_type: CalculationType.BALANCE_FIXING.value,
+        TableColumnNames.calculation_period_start: datetime(2022, 6, 8, 22, 0, 0),
+        TableColumnNames.calculation_period_end: datetime(2022, 6, 9, 22, 0, 0),
+        TableColumnNames.calculation_execution_time_start: datetime(
+            2022, 6, 8, 22, 0, 0
+        ),
+        TableColumnNames.created_by_user_id: str(uuid.uuid4()),
+        TableColumnNames.calculation_version: 1,
+        TableColumnNames.is_internal_calculation: False,
     }
 
 
