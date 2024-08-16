@@ -33,17 +33,16 @@ public class CalculationFactory : ICalculationFactory
         IEnumerable<string> gridAreaCodes,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
+        DateTimeOffset scheduledAt,
         Guid createdByUserId)
     {
         var createdTime = _clock.GetCurrentInstant();
         var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
-
-        // TODO: Don't set execution time start here when scheduling is implemented - it should be set in the orchestrator instead
-        var executionTimeStart = createdTime;
+        var scheduledAtInstant = Instant.FromDateTimeOffset(scheduledAt);
 
         var version = _clock.GetCurrentInstant().ToDateTimeUtc().Ticks;
-        return new Calculation(createdTime, calculationType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId, version);
+        return new Calculation(createdTime, calculationType, gridAreas, periodStart, periodEnd, scheduledAtInstant, _dateTimeZone, createdByUserId, version);
     }
 }

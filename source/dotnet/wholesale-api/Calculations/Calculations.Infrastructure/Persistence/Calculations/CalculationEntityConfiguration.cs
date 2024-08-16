@@ -35,6 +35,7 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
         builder.Property(b => b.OrchestrationState);
         builder.Property(b => b.PeriodStart);
         builder.Property(b => b.PeriodEnd);
+        builder.Property(b => b.ScheduledAt);
         builder.Property(b => b.ExecutionTimeStart);
         builder.Property(b => b.ExecutionTimeEnd);
         builder.Property(b => b.ActorMessagesEnqueuingTimeStart);
