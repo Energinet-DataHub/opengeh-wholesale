@@ -14,55 +14,80 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
         #
         !ref dh3 {
 
-            # IMPORTANT:
-            # The order by which models are included is important for how the subsystem-to-subsystem relationships are specified.
-            # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
-            # hence subsystems that doesn't depend on others, should be listed first.
-
-            # Include Market Participant model - placeholders
-            markpartSubsystem = group "Market Participant" {
-                markpartApp = container "Market Participant <App>" {
-                    description "An application within the Market Participant subsystem"
-                }
-            }
-
             # Include Wholesale model
             !include model.dsl
 
-            # Subsystem-to-Subsystem relationships
-            markpartApp -> wholesaleApi "Publish Grid Area Ownership Assigned" "integration event/amqp" {
-                tags "Simple View"
-            }
-            markpartApp -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
-                tags "Detailed View"
-            }
+            # Include related subsystems.
+            # Include them as placeholders instead of referencing the models to avoid having them break this model when they change.
+            relatedSubsystems = group "Related Subsystems" {
+                markpartSubsystem = container "Market Participant" {
+                    tags "Subsystem"
 
-            # Include frontend model - placeholders
-            frontendSubsystem = group "Frontend" {
-                frontendBff = container "BFF" {
-                    description "Backend for Frontend"
-
-                    # Subsystem-to-Subsystem relationships
-                    this -> wholesaleApi "Interact using HTTP API"
+                    wholesaleApi -> this "Subscribes to integration event Grid Area Ownership Assigned" "integration event/amqp" {
+                        tags "Simple View"
+                    }
+                    this -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+                        tags "Detailed View"
+                    }
                 }
-            }
 
-            # Include Migration model - placeholders
-            migrationSubsystem = group "Migrations" {
-                migrationDatabricks = container "Data Migration" {
+                bffSubsystem = container "BFF" {
+                    description "Backend for Frontend. Partnership relationship"
+                    tags "Subsystem"
+
+                    this -> wholesaleApi "Uses HTTP API"
+                }
+
+                migrationSubsystem = container "Data Migration" {
                     description "Delivers DataHub 2.0 data to DataHub 3.0"
+                    tags "Subsystem"
 
-                    # Subsystem-to-Subsystem relationships
-                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
-                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" "integration event/amqp" {
+                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs" {
+                        tags "Detailed View"
+                    }
+                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" {
                         tags "Simple View"
                     }
                 }
+
+                downstreamReaderSubsystems = container "Downstream Readers" {
+                    description "Downstream subsystems reading data from wholesale"
+                    tags "Subsystem"
+
+                    this -> wholesaleDataLake "Read calculation output data" {
+                        tags "Simple View"
+                    }
+                    this -> dh3.sharedUnityCatalog "Read calculation output data" {
+                        tags "Detailed View"
+                    }
+                }
+
+                downstreamSubscriberSubsystems = container "Downstream Subscribers" {
+                    description "Downstream subsystems subscribing to integration events from wholesale"
+                    tags "Subsystem"
+
+                    this -> wholesaleApi "Subscribes to calculation_completed_v1 integration events" "integration event/amqp" {
+                        tags "Simple View"
+                    }
+                    this -> dh3.sharedServiceBus "Subscribes to integration events" "integration event/amqp" {
+                        tags "Detailed View"
+                    }
+                }
+
             }
         }
     }
 
     views {
+        # TODO BJM: Move these styles to the base model?
+        styles {
+            # Use to mark a related subsystem.
+            element "Subsystem" {
+                background #6ec1f8
+                color #ffffff
+            }
+        }
+        
         container dh3 "Wholesale" {
             title "[Container] DataHub 3.0 - Wholesale (Simplified)"
             include ->wholesaleSubsystem->
