@@ -42,6 +42,7 @@ public interface ICalculationsClient
         IEnumerable<string> gridAreaCodes,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
+        DateTimeOffset scheduledAt,
         Guid currentUserId);
 
     Task<IReadOnlyCollection<CalculationId>> GetScheduledCalculationsToStartAsync(Instant scheduledBefore);

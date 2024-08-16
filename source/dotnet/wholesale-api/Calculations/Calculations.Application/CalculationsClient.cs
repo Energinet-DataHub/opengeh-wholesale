@@ -85,6 +85,7 @@ public class CalculationsClient(
         IEnumerable<string> gridAreaCodes,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
+        DateTimeOffset scheduledAt,
         Guid currentUserId)
     {
         var calculation = _calculationFactory.Create(
@@ -92,6 +93,7 @@ public class CalculationsClient(
             gridAreaCodes,
             startDate,
             endDate,
+            scheduledAt,
             currentUserId);
 
         await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
