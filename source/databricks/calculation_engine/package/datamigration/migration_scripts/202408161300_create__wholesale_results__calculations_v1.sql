@@ -1,6 +1,3 @@
-DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1
-GO
-
 -- Create view exposing succeeded calculations
 CREATE VIEW {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1 AS
 SELECT calculation_id,
