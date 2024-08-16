@@ -25,7 +25,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    ChargeLinkPeriodsColname,
     GridLossMeteringPointsColName,
 )
 from package.infrastructure import logging_configuration
@@ -115,17 +114,15 @@ def get_charge_links_basis_data(
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
     return input_charges_container.charge_links.select(
-        f.lit(calculation_id).alias(ChargeLinkPeriodsColname.calculation_id),
-        f.col(Colname.charge_key).alias(ChargeLinkPeriodsColname.charge_key),
-        f.col(Colname.charge_code).alias(ChargeLinkPeriodsColname.charge_code),
-        f.col(Colname.charge_type).alias(ChargeLinkPeriodsColname.charge_type),
-        f.col(Colname.charge_owner).alias(ChargeLinkPeriodsColname.charge_owner_id),
-        f.col(Colname.metering_point_id).alias(
-            ChargeLinkPeriodsColname.metering_point_id
-        ),
-        f.col(Colname.quantity).alias(ChargeLinkPeriodsColname.quantity),
-        f.col(Colname.from_date).alias(ChargeLinkPeriodsColname.from_date),
-        f.col(Colname.to_date).alias(ChargeLinkPeriodsColname.to_date),
+        f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.col(Colname.charge_key).alias(TableColumnNames.charge_key),
+        f.col(Colname.charge_code).alias(TableColumnNames.charge_code),
+        f.col(Colname.charge_type).alias(TableColumnNames.charge_type),
+        f.col(Colname.charge_owner).alias(TableColumnNames.charge_owner_id),
+        f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
+        f.col(Colname.quantity).alias(TableColumnNames.quantity),
+        f.col(Colname.from_date).alias(TableColumnNames.from_date),
+        f.col(Colname.to_date).alias(TableColumnNames.to_date),
     )
 
 

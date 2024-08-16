@@ -13,20 +13,6 @@
 # limitations under the License.
 
 
-class ChargeLinkPeriodsColname:
-    """Column names for the charge link periods storage model"""
-
-    calculation_id = "calculation_id"
-    charge_key = "charge_key"
-    charge_code = "charge_code"
-    charge_type = "charge_type"
-    charge_owner_id = "charge_owner_id"
-    metering_point_id = "metering_point_id"
-    quantity = "quantity"
-    from_date = "from_date"
-    to_date = "to_date"
-
-
 class GridLossMeteringPointsColName:
     """
     Column names for the grid loss metering points storage model.
