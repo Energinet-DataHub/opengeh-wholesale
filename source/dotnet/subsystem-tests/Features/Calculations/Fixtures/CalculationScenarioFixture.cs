@@ -121,6 +121,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             "application/json");
 
         using var actualResponse = await WholesaleOrchestrationsApiClient.SendAsync(request);
+        actualResponse.EnsureSuccessStatusCode();
         var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
