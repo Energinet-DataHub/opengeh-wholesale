@@ -17,14 +17,17 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A domain-to-domain relationship should be specified in the "client" of a "client->server" dependency, and
             # hence domains that doesn't depend on others, should be listed first.
 
+            # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2FHT74ZKH4BZQ4C3VWZV7IKRQ
+
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
 
-            # Include EDI model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-edi/main/docs/diagrams/c4-model/model.dsl
-
             # Include Wholesale model
             !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-wholesale/main/docs/diagrams/c4-model/model.dsl
+
+            # Include EDI model
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-edi/main/docs/diagrams/c4-model/model.dsl
 
             # Include Frontend model
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
@@ -39,23 +42,23 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TDZKOKLZCPINAULFCZSNZBOQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2EKIEIFXPTMJRCDJ5YZV7ILQA
 
             # Include Grid Loss Imbalance Prices model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TPDUN7P4OBZ4TYW4UZSNZCJQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2ETHR3UDHR4TI7LIKAZV7IL3Q
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65T5XI3WUPPIV6UCG6CZSNZC7Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2EKK35JH7INW5GEKTMZV7IMJA
 
             # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65T5RW3XWPOU7FNQMPYZSNZDPA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2E6LGRU2TYSZRPJPF4ZV7IMYA
 
             # Include DH2 Bridge model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TS5HLMN4MUYXOZZLGZSNZEAQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2EG7K7VRCUDBPS3YC6ZV7INDA
         }
     }
 
