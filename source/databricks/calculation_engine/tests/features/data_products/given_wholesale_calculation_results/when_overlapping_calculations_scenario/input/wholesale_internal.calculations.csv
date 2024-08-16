@@ -1,4 +1,4 @@
-calculation_id;calculation_type;calculation_period_start;calculation_period_end;calculation_execution_time_start;created_by_user_id;calculation_version;is_control_calculation
+calculation_id;calculation_type;calculation_period_start;calculation_period_end;calculation_execution_time_start;created_by_user_id;calculation_version;is_internal_calculation
 11111111-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-01 23:00:00;2024-01-03 23:00:00;2024-01-04 02:00:00;00000000-0000-0000-00000000000000001;1;false
 22222222-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-02 23:00:00;2024-01-04 23:00:00;2024-01-05 02:00:00;00000000-0000-0000-00000000000000001;2;false
 33333333-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-03 23:00:00;2024-01-05 23:00:00;2024-01-06 02:00:00;00000000-0000-0000-00000000000000001;3;true
