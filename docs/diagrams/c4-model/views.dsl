@@ -20,12 +20,9 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # hence subsystems that doesn't depend on others, should be listed first.
 
             # Include Market Participant model - placeholders
-            markpartDomain = group "Market Participant" {
-                markpartOrganizationManager = container "Market Participant Organization Manager" {
-                    description "Synchronizes Azure B2C user and actor state with the domain."
-                    technology "Azure function, C#"
-                    tags "Microsoft Azure - Function Apps" "Raccoons"
-
+            markpartSubsystem = group "Market Participant" {
+                markpartApp = container "Market Participant <App>" {
+                    description "An application within the Market Participant subsystem"
                 }
             }
 
@@ -33,10 +30,10 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             !include model.dsl
 
             # Subsystem-to-Subsystem relationships
-            markpartOrganizationManager -> wholesaleApi "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+            markpartApp -> wholesaleApi "Publish Grid Area Ownership Assigned" "integration event/amqp" {
                 tags "Simple View"
             }
-            markpartOrganizationManager -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+            markpartApp -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
                 tags "Detailed View"
             }
 
