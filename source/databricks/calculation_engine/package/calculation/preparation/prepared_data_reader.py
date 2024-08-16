@@ -31,12 +31,11 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.codelists import ChargeResolution, CalculationType
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.wholesale_internal.calculation_column_names import (
-    CalculationColumnNames,
-)
+
 from . import transformations as T
 from ...constants import Colname
 from ...databases import wholesale_internal
+from ...databases.table_column_names import TableColumnNames
 from ...infrastructure import logging_configuration
 
 
@@ -187,10 +186,14 @@ class PreparedDataReader:
 
         latest_version = (
             calculations.where(
-                f.col(CalculationColumnNames.calculation_type) == calculation_type.value
+                f.col(TableColumnNames.calculation_type) == calculation_type.value
             )
-            .agg(f.max(CalculationColumnNames.version).alias("version"))
-            .collect()[0]["version"]
+            .agg(
+                f.max(TableColumnNames.calculation_version).alias(
+                    TableColumnNames.calculation_version
+                )
+            )
+            .collect()[0][TableColumnNames.calculation_version]
         )
 
         return latest_version
