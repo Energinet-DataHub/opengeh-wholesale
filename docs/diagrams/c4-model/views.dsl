@@ -19,14 +19,26 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
             # hence subsystems that doesn't depend on others, should be listed first.
 
-            # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2FQHQIBK33ML7PVCU4ZV6DMMQ
+            # Include Market Participant model - placeholders
+            markpartDomain = group "Market Participant" {
+                markpartOrganizationManager = container "Market Participant Organization Manager" {
+                    description "Synchronizes Azure B2C user and actor state with the domain."
+                    technology "Azure function, C#"
+                    tags "Microsoft Azure - Function Apps" "Raccoons"
 
-            # Include Market Participant model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
+                }
+            }
 
             # Include Wholesale model
             !include model.dsl
+
+            # Subsystem-to-Subsystem relationships
+            markpartOrganizationManager -> wholesaleApi "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+                tags "Simple View"
+            }
+            markpartOrganizationManager -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+                tags "Detailed View"
+            }
 
             # Include frontend model - placeholders
             frontendSubsystem = group "Frontend" {
@@ -59,6 +71,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             include ->wholesaleSubsystem->
             exclude "relationship.tag==OAuth"
             exclude "element.tag==Intermediate Technology"
+            exclude "relationship.tag==Detailed View"
         }
 
         container dh3 "WholesaleDetailed" {
