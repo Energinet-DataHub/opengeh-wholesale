@@ -17,12 +17,6 @@ calculations_v1 = t.StructType(
         # UTC time. The time is exclusive.
         t.StructField("calculation_period_end", t.TimestampType(), False),
         #
-        # The time when the calculation was initiated. UTC time.
-        t.StructField("calculation_execution_time_start", t.TimestampType(), False),
-        #
-        # The ID of the user initiating the calculation.
-        t.StructField("created_by_user_id", t.StringType(), False),
-        #
         # Number series per calculation type. Starts from number 1.
         t.StructField("calculation_version", t.LongType(), False),
         #
