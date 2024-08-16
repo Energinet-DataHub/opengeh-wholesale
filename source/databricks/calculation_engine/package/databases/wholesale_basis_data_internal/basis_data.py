@@ -23,8 +23,8 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    MeteringPointPeriodColname,
     TimeSeriesColname,
     ChargePriceInformationPeriodsColname,
     ChargePricePointsColname,
@@ -40,35 +40,23 @@ def get_metering_point_periods_basis_data(
     metering_point_df: DataFrame,
 ) -> DataFrame:
     return metering_point_df.select(
-        f.lit(calculation_id).alias(MeteringPointPeriodColname.calculation_id),
-        f.col(Colname.metering_point_id).alias(
-            MeteringPointPeriodColname.metering_point_id
-        ),
-        f.col(Colname.metering_point_type).alias(
-            MeteringPointPeriodColname.metering_point_type
-        ),
-        f.col(Colname.settlement_method).alias(
-            MeteringPointPeriodColname.settlement_method
-        ),
-        f.col(Colname.grid_area_code).alias(MeteringPointPeriodColname.grid_area_code),
-        f.col(Colname.resolution).alias(MeteringPointPeriodColname.resolution),
-        f.col(Colname.from_grid_area_code).alias(
-            MeteringPointPeriodColname.from_grid_area_code
-        ),
-        f.col(Colname.to_grid_area_code).alias(
-            MeteringPointPeriodColname.to_grid_area_code
-        ),
+        f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
+        f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),
+        f.col(Colname.settlement_method).alias(TableColumnNames.settlement_method),
+        f.col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
+        f.col(Colname.resolution).alias(TableColumnNames.resolution),
+        f.col(Colname.from_grid_area_code).alias(TableColumnNames.from_grid_area_code),
+        f.col(Colname.to_grid_area_code).alias(TableColumnNames.to_grid_area_code),
         f.col(Colname.parent_metering_point_id).alias(
-            MeteringPointPeriodColname.parent_metering_point_id
+            TableColumnNames.parent_metering_point_id
         ),
-        f.col(Colname.energy_supplier_id).alias(
-            MeteringPointPeriodColname.energy_supplier_id
-        ),
+        f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
         f.col(Colname.balance_responsible_party_id).alias(
-            MeteringPointPeriodColname.balance_responsible_id
+            TableColumnNames.balance_responsible_id
         ),
-        f.col(Colname.from_date).alias(MeteringPointPeriodColname.from_date),
-        f.col(Colname.to_date).alias(MeteringPointPeriodColname.to_date),
+        f.col(Colname.from_date).alias(TableColumnNames.from_date),
+        f.col(Colname.to_date).alias(TableColumnNames.to_date),
     )
 
 

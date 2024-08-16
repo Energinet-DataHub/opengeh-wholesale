@@ -13,31 +13,6 @@
 # limitations under the License.
 
 
-class MeteringPointPeriodColname:
-    """Column names for the metering point period storage model"""
-
-    calculation_id = "calculation_id"
-    calculation_type = "calculation_type"
-
-    # Master data
-    metering_point_id = "metering_point_id"
-    metering_point_type = "metering_point_type"
-    grid_area_code = "grid_area_code"
-    resolution = "resolution"
-    settlement_method = "settlement_method"
-    parent_metering_point_id = "parent_metering_point_id"
-    energy_supplier_id = "energy_supplier_id"
-    balance_responsible_id = "balance_responsible_id"
-
-    # Exchange
-    from_grid_area_code = "from_grid_area_code"
-    to_grid_area_code = "to_grid_area_code"
-
-    # Period
-    from_date = "from_date"
-    to_date = "to_date"
-
-
 class TimeSeriesColname:
     """Column names for the time series storage model"""
 
