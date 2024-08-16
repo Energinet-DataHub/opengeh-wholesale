@@ -65,12 +65,13 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
     }
 
     internal string GenerateLatestOrFixedCalculationTypeWhereClause(
+        string prefix,
         IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
     {
         if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    er.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    {prefix}.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
@@ -83,7 +84,7 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
 
         var calculationTypePerGridAreaConstraints = calculationTypeForGridAreas
             .Select(ctpga => $"""
-                              (er.{EnergyPerEsBrpGaViewColumnNames.GridAreaCode} = '{ctpga.GridArea}' AND er.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              ({prefix}.{EnergyPerEsBrpGaViewColumnNames.GridAreaCode} = '{ctpga.GridArea}' AND {prefix}.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{ctpga.CalculationType}')
                               """);
 
         return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";

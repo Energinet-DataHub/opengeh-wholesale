@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
@@ -27,7 +26,7 @@ public class AggregatedTimeSeriesQueryStatement(
     : DatabricksStatement
 {
     private const string EnergyResultTableName = "er";
-    private const string EnergyMeasurementTableName = "chrg";
+    private const string EnergyMeasurementTableName = "em";
     private const string PackagesWithVersionTableName = "pckg";
 
     private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas =
@@ -53,7 +52,7 @@ public class AggregatedTimeSeriesQueryStatement(
         return $"""
                 SELECT {_querySnippetProvider.GetProjection(EnergyResultTableName)}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
-                WHERE {_querySnippetProvider.GetWhereClauseSqlExpression(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(_calculationTypePerGridAreas)}
+                WHERE {_querySnippetProvider.GetWhereClauseSqlExpression(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(EnergyResultTableName, _calculationTypePerGridAreas)}
                 """;
     }
 
@@ -62,7 +61,7 @@ public class AggregatedTimeSeriesQueryStatement(
         return $"""
                 SELECT max({EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{EnergyResultTableName}.{ctgb} AS max_{ctgb}"))}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
-                WHERE {_querySnippetProvider.GetWhereClauseSqlExpression("er", _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(_calculationTypePerGridAreas)}
+                WHERE {_querySnippetProvider.GetWhereClauseSqlExpression(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(EnergyResultTableName, _calculationTypePerGridAreas)}
                 GROUP BY {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{EnergyResultTableName}.{ctab}"))}
                 """;
     }
