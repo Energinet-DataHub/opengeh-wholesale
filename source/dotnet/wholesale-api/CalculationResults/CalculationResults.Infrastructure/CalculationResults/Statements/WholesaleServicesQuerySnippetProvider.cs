@@ -29,7 +29,14 @@ public class WholesaleServicesQuerySnippetProvider(
 
     internal string GetProjection(string prefix)
     {
-        return string.Join(", ", DatabricksContract.GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"));
+        return string.Join(", ", DatabricksContract.GetColumnsToProject().Select(ctp => $"`{prefix}`.`{ctp}`"));
+    }
+
+    internal string GetOrdering(string prefix)
+    {
+        return $"""
+                {string.Join(", ", DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{prefix}.{ctab}"))}, {prefix}.{DatabricksContract.GetTimeColumnName()}
+                """;
     }
 
     internal string GetSelection(string table = "wrv")

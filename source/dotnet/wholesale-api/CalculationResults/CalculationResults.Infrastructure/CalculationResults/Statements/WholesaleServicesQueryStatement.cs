@@ -62,7 +62,7 @@ public class WholesaleServicesQueryStatement(
                 FROM ({GetChargesToChooseFrom()}) {ChargesTableName}
                 INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
                 ON {MatchChargesWithPackages(ChargesTableName, PackagesWithVersionTableName)}
-                ORDER BY {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}
+                ORDER BY {_querySnippetProvider.GetOrdering(ChargesTableName)}
                 """;
     }
 

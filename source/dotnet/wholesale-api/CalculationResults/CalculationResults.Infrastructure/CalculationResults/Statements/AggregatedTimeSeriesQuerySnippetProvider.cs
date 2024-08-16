@@ -28,6 +28,18 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
 
     internal IAggregatedTimeSeriesDatabricksContract DatabricksContract { get; } = databricksContract;
 
+    internal string GetProjection(string prefix)
+    {
+        return string.Join(", ", DatabricksContract.GetColumnsToProject().Select(ctp => $"`{prefix}`.`{ctp}`"));
+    }
+
+    internal string GetOrdering(string prefix)
+    {
+        return $"""
+                {string.Join(", ", DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{prefix}.{ctab}"))}, {prefix}.{EnergyResultColumnNames.Time}
+                """;
+    }
+
     internal string GetWhereClauseSqlExpression(string table, TimeSeriesType? timeSeriesType)
     {
         if (timeSeriesType is not null)
