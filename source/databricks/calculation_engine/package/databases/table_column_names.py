@@ -20,7 +20,7 @@ class TableColumnNames:
     """
 
     aggregation_level = "aggregation_level"
-    amount_type = "amount_type"
+    amount_type = "amount_type"  # TODO JVM: find out if this should be amount
     amount = "amount"
     balance_responsible_id = (
         "balance_responsible_id"  # TODO JVM: rename to balance_responsible_party_id
