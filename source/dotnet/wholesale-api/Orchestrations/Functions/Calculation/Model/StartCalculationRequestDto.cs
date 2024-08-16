@@ -19,4 +19,9 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model
 /// <summary>
 /// An immutable request to create (start) a calculation.
 /// </summary>
-public sealed record StartCalculationRequestDto(CalculationType CalculationType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public sealed record StartCalculationRequestDto(
+    CalculationType CalculationType,
+    IEnumerable<string> GridAreaCodes,
+    DateTimeOffset StartDate,
+    DateTimeOffset EndDate,
+    DateTimeOffset ScheduledAt);

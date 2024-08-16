@@ -42,5 +42,6 @@ public interface ICalculationsClient
         IEnumerable<string> gridAreaCodes,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
+        DateTimeOffset scheduledAt,
         Guid currentUserId);
 }
