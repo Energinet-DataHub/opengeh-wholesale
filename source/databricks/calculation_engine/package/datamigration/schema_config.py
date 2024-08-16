@@ -103,6 +103,9 @@ schema_config = [
         tables=[],
         views=[
             View(
+                name=paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME,
+            ),
+            View(
                 name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
             ),
             View(
