@@ -17,7 +17,8 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # Include Wholesale model
             !include model.dsl
 
-            # Include related subsystems - placeholders
+            # Include related subsystems.
+            # Include them as placeholders instead of referencing the models to avoid having them break this model when they change.
             relatedSubsystems = group "Related Subsystems" {
                 markpartSubsystem = container "Market Participant" {
                     tags "Subsystem"
