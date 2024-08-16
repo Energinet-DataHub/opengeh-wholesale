@@ -41,7 +41,9 @@ internal class ScheduledCalculationTrigger(
         FunctionContext context)
     {
         var scheduledBefore = _clock.GetCurrentInstant();
-        var scheduledCalculationIds = await _calculationsClient.GetScheduledCalculationsToStartAsync(scheduledBefore);
+        var scheduledCalculationIds = await _calculationsClient
+            .GetScheduledCalculationsToStartAsync(scheduledBefore)
+            .ConfigureAwait(false);
 
         foreach (var calculationIdToStart in scheduledCalculationIds)
         {
@@ -55,8 +57,8 @@ internal class ScheduledCalculationTrigger(
                 calculationIdToStart,
                 orchestrationInstanceId);
 
-            // Ensure orchestration is running by waiting for instance to start and the metadata to contain calculation id
-            var calculationIsStarted = await WaitForCalculationStartedAsync(
+            // Ensure calculation is started succesfully by waiting for orchestration instance to start
+            var calculationIsStarted = await WaitForCalculationOrchestrationStartedAsync(
                     durableTaskClient,
                     orchestrationInstanceId,
                     timeoutAt: _clock.GetCurrentInstant().Plus(Duration.FromMinutes(5)))
@@ -73,7 +75,7 @@ internal class ScheduledCalculationTrigger(
         }
     }
 
-    private async Task<bool> WaitForCalculationStartedAsync(
+    private async Task<bool> WaitForCalculationOrchestrationStartedAsync(
         DurableTaskClient durableTaskClient,
         string orchestrationInstanceId,
         Instant timeoutAt)

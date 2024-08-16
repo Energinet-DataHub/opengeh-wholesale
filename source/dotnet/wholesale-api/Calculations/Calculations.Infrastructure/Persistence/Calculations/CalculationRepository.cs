@@ -70,8 +70,7 @@ public class CalculationRepository : ICalculationRepository
         return _context
             .Calculations
             .Where(c => c.OrchestrationState == CalculationOrchestrationState.Scheduled)
-            .Where(c => c.CreatedTime < scheduledBefore) // TODO: Use scheduled at when it is merged
-            .Where(c => c.OrchestrationInstanceId == null)
+            .Where(c => c.ScheduledAt <= scheduledBefore)
             .ToListAsync();
     }
 }

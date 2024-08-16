@@ -397,11 +397,11 @@ public class Calculation
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
-    public bool ShouldRun(Instant scheduledBefore)
+    public bool ShouldStartNow(Instant scheduledBefore)
     {
         var isScheduled = OrchestrationState == CalculationOrchestrationState.Scheduled;
         var hasNoOrchestration = OrchestrationInstanceId != null;
-        var scheduleIsMet = CreatedTime < scheduledBefore; // TODO: Use ScheduledAt when merged
+        var scheduleIsMet = ScheduledAt <= scheduledBefore;
 
         return
             isScheduled &&
