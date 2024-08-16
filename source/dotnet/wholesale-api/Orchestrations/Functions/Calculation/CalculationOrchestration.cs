@@ -118,6 +118,13 @@ internal class CalculationOrchestration
                 nameof(SendCalculationResultsActivity),
                 new SendCalculationResultsInput(calculationMetadata.Id, context.InstanceId),
                 defaultRetryOptions);
+
+            await UpdateCalculationOrchestrationStateAsync(
+                context,
+                calculationMetadata.Id,
+                CalculationOrchestrationState.ActorMessagesEnqueuing,
+                defaultRetryOptions);
+
             calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
             context.SetCustomStatus(calculationMetadata);

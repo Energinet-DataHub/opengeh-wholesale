@@ -20,13 +20,48 @@ namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 /// </summary>
 public enum CalculationOrchestrationState
 {
-    Scheduled = 1, // Planlagt
+    /// <summary>
+    /// Calculation is scheduled to run at a later time (and not started yet).
+    /// </summary>
+    Scheduled = 1,
+
+    /// <summary>
+    /// The calculation orchestration is started (after the schedule has been met)
+    /// </summary>
     Started = 11,
-    Calculating = 2, // Beregner
-    Calculated = 3, // Beregnet
-    CalculationFailed = 4, // Beregning fejlet
-    ActorMessagesEnqueuing = 5, // Beskeder dannes
-    ActorMessagesEnqueued = 6, // Beskeder dannet
-    ActorMessagesEnqueuingFailed = 7, // Besked dannelse fejlet
-    Completed = 8, // Orchestration færdig
+
+    /// <summary>
+    /// The calculation results are being calculated by the calculation engine.
+    /// </summary>
+    Calculating = 2,
+
+    /// <summary>
+    /// The calculation has finished running in the calculation engine and the calculation results are ready.
+    /// </summary>
+    Calculated = 3,
+
+    /// <summary>
+    /// The calculation failed while calculating calculation results in the calculation engine.
+    /// </summary>
+    CalculationFailed = 4,
+
+    /// <summary>
+    /// Actor messages are being enqueued in the EDI subsystem based on the calculation results.
+    /// </summary>
+    ActorMessagesEnqueuing = 5,
+
+    /// <summary>
+    /// All actor messages has been enqueued in the EDI subsystem, and the actor messages are ready to be consumed by actors.
+    /// </summary>
+    ActorMessagesEnqueued = 6,
+
+    /// <summary>
+    /// Atleast one actor message failed to be enqueued in the EDI subsystem.
+    /// </summary>
+    ActorMessagesEnqueuingFailed = 7,
+
+    /// <summary>
+    /// The calculation orchestration is completed
+    /// </summary>
+    Completed = 8,
 }

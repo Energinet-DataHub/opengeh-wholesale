@@ -46,7 +46,6 @@ internal class SendCalculationResultsActivity(
 
         await _integrationEventsPublisher.PublishAsync(calculationDto, input.OrchestrationInstanceId, CancellationToken.None).ConfigureAwait(false);
 
-        calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

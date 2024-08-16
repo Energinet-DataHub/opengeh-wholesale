@@ -332,13 +332,6 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCalculating_WhenExecuting_ThrowsBusinessValidationException()
-    {
-        var sut = new CalculationBuilder().WithStateExecuting().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
-    }
-
-    [Fact]
     public void MarkAsCalculating_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
@@ -431,8 +424,8 @@ public class CalculationTests
 
     [Theory]
     [InlineData(CalculationExecutionState.Created, CalculationOrchestrationState.Scheduled)]
-    [InlineData(CalculationExecutionState.Submitted, CalculationOrchestrationState.Scheduled)]
-    [InlineData(CalculationExecutionState.Pending, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Submitted, CalculationOrchestrationState.Calculating)]
+    [InlineData(CalculationExecutionState.Pending, CalculationOrchestrationState.Calculating)]
     [InlineData(CalculationExecutionState.Executing, CalculationOrchestrationState.Calculating)]
     [InlineData(CalculationExecutionState.Completed, CalculationOrchestrationState.Calculated)]
     [InlineData(CalculationExecutionState.Failed, CalculationOrchestrationState.CalculationFailed)]
@@ -444,28 +437,29 @@ public class CalculationTests
         switch (executionState)
         {
             case CalculationExecutionState.Created:
+                // This is the default state
                 break;
             case CalculationExecutionState.Submitted:
-                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 break;
             case CalculationExecutionState.Pending:
-                sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsScheduled();
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
+                sut.MarkAsCalculationJobPending();
                 break;
             case CalculationExecutionState.Executing:
-                sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsScheduled();
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
+                sut.MarkAsCalculationJobPending();
                 sut.MarkAsCalculating();
                 break;
             case CalculationExecutionState.Completed:
-                sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsScheduled();
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
+                sut.MarkAsCalculationJobPending();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
                 break;
             case CalculationExecutionState.Failed:
-                sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsScheduled();
+                sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
+                sut.MarkAsCalculationJobPending();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculationFailed();
                 break;
