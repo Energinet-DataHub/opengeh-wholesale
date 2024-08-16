@@ -18,10 +18,11 @@ from pyspark.sql import Row
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
-from package.databases.wholesale_internal.calculation_column_names import (
-    CalculationColumnNames,
+from package.databases.table_column_names import TableColumnNames
+
+from package.databases.wholesale_internal.schemas import (
+    calculations_schema,
 )
-from package.databases.wholesale_internal.schemas import hive_calculations_schema
 from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
     create_calculation,
 )
@@ -37,7 +38,7 @@ def test__when_valid_input__creates_calculation_with_expected_schema(
         return_value=0,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.schema == hive_calculations_schema
+        assert actual.schema == calculations_schema
 
 
 def test__when_valid_input__creates_expected_calculation(
@@ -47,15 +48,15 @@ def test__when_valid_input__creates_expected_calculation(
     latest_version = 12
     next_version = 13
     expected = {
-        CalculationColumnNames.calculation_id: any_calculator_args.calculation_id,
-        CalculationColumnNames.calculation_type: any_calculator_args.calculation_type.value,
-        CalculationColumnNames.period_start: any_calculator_args.calculation_period_start_datetime,
-        CalculationColumnNames.period_end: any_calculator_args.calculation_period_end_datetime,
-        CalculationColumnNames.execution_time_start: any_calculator_args.calculation_execution_time_start,
-        CalculationColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
-        CalculationColumnNames.version: next_version,
-        CalculationColumnNames.is_internal_calculation: any_calculator_args.is_internal_calculation,
-        CalculationColumnNames.calculation_succeeded_time: None,
+        TableColumnNames.calculation_id: any_calculator_args.calculation_id,
+        TableColumnNames.calculation_type: any_calculator_args.calculation_type.value,
+        TableColumnNames.calculation_period_start: any_calculator_args.calculation_period_start_datetime,
+        TableColumnNames.calculation_period_end: any_calculator_args.calculation_period_end_datetime,
+        TableColumnNames.calculation_execution_time_start: any_calculator_args.calculation_execution_time_start,
+        TableColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
+        TableColumnNames.calculation_version: next_version,
+        TableColumnNames.is_internal_calculation: any_calculator_args.is_internal_calculation,
+        TableColumnNames.calculation_succeeded_time: None,
     }
     prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
@@ -78,7 +79,7 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
         return_value=latest_version,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.collect()[0].version == 1
+        assert actual.collect()[0].calculation_version == 1
 
 
 def test__when_calculation_exists__creates_new_calculation_with_latest_version_plus_1(
@@ -91,4 +92,4 @@ def test__when_calculation_exists__creates_new_calculation_with_latest_version_p
         return_value=7,
     ):
         actual = create_calculation(any_calculator_args, prepared_data_reader)
-        assert actual.collect()[0].version == 8
+        assert actual.collect()[0].calculation_version == 8
