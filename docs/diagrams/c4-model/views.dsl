@@ -45,7 +45,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     this -> dh3.sharedUnityCatalog "Deliver calculation inputs" {
                         tags "Detailed View"
                     }
-                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" "integration event/amqp" {
+                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" {
                         tags "Simple View"
                     }
                 }
