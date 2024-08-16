@@ -71,7 +71,7 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - App Services" "Mandalorian" "MarketParticipant Subscriber"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "Subscribes to Integration Events Topic" "integration event/amqp"
+        this -> dh3.sharedServiceBus "Subscribes to integration events" "integration event/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
