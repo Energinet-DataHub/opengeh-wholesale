@@ -41,29 +41,35 @@ internal class ScheduledCalculationTrigger(
         FunctionContext context)
     {
         var scheduledBefore = _clock.GetCurrentInstant();
-        var scheduledCalculations = await _calculationsClient.GetScheduledCalculationsToStartAsync(scheduledBefore);
+        var scheduledCalculationIds = await _calculationsClient.GetScheduledCalculationsToStartAsync(scheduledBefore);
 
-        foreach (var scheduledCalculationToStart in scheduledCalculations)
+        foreach (var calculationIdToStart in scheduledCalculationIds)
         {
             var orchestrationInput = new CalculationOrchestrationInput(
                 _orchestrationMonitorOptions,
-                new CalculationId(scheduledCalculationToStart.CalculationId));
+                calculationIdToStart);
 
             var orchestrationInstanceId = await durableTaskClient.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration), orchestrationInput).ConfigureAwait(false);
             _logger.LogInformation(
                 "Started new orchestration for calculation ID = {calculationId} with instance ID = {instanceId}",
-                scheduledCalculationToStart.CalculationId,
+                calculationIdToStart,
                 orchestrationInstanceId);
 
             // Ensure orchestration is running by waiting for instance to start and the metadata to contain calculation id
             var calculationIsStarted = await WaitForCalculationStartedAsync(
                     durableTaskClient,
                     orchestrationInstanceId,
-                    timeoutAt: _clock.GetCurrentInstant().Plus(Duration.FromMinutes(10)))
+                    timeoutAt: _clock.GetCurrentInstant().Plus(Duration.FromMinutes(5)))
                 .ConfigureAwait(false);
 
             if (!calculationIsStarted)
-
+            {
+                // Log error if orchestration did not start within the timeout. Does not throw exception since we
+                // want to continue processing the next scheduled calculations.
+                _logger.LogError(
+                    "Calculation with id = {calculationId} did not start within the timeout",
+                    calculationIdToStart.Id);
+            }
         }
     }
 

@@ -142,8 +142,9 @@ public class Calculation
 
             CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
             {
-                // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started],
+                // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
+                CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
@@ -241,6 +242,17 @@ public class Calculation
 
             _ => throw new NotImplementedException(),
         };
+    }
+
+    public void MarkAsStarted(OrchestrationInstanceId orchestrationInstanceId)
+    {
+        ArgumentNullException.ThrowIfNull(orchestrationInstanceId);
+
+        if (ExecutionState is not CalculationExecutionState.Created)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
+
+        ExecutionState = CalculationExecutionState.Created;
+        OrchestrationState = CalculationOrchestrationState.Started;
     }
 
     public void MarkAsSubmitted(CalculationJobId calculationJobId)
@@ -379,6 +391,18 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Scheduled;
+    }
+
+    public bool ShouldRun(Instant scheduledBefore)
+    {
+        var isScheduled = OrchestrationState == CalculationOrchestrationState.Scheduled;
+        var hasNoOrchestration = OrchestrationInstanceId != null;
+        var scheduleIsMet = CreatedTime < scheduledBefore; // TODO: Use ScheduledAt when merged
+
+        return
+            isScheduled &&
+            hasNoOrchestration &&
+            scheduleIsMet;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)

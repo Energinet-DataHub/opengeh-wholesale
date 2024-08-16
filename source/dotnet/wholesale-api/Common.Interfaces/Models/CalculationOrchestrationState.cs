@@ -21,6 +21,7 @@ namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 public enum CalculationOrchestrationState
 {
     Scheduled = 1, // Planlagt
+    Started = 11,
     Calculating = 2, // Beregner
     Calculated = 3, // Beregnet
     CalculationFailed = 4, // Beregning fejlet
