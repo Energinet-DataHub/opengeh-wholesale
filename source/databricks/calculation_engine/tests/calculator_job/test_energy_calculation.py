@@ -183,7 +183,7 @@ def test__when_energy_calculation__basis_data_is_stored(
     assert actual.count() > 0
 
 
-def test__when_calculation_is_stored__contains_calculation_completed_time(
+def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> None:
@@ -200,7 +200,7 @@ def test__when_calculation_is_stored__contains_calculation_completed_time(
 
     # Assert
     assert actual.count() == 1
-    assert actual.collect()[0][TableColumnNames.calculation_completed_time] is not None
+    assert actual.collect()[0][TableColumnNames.calculation_succeeded_time] is not None
 
 
 def test__when_energy_calculation__calculation_grid_areas_are_stored(

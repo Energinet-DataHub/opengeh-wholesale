@@ -55,7 +55,7 @@ def test__when_valid_input__creates_expected_calculation(
         CalculationColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
         CalculationColumnNames.version: next_version,
         CalculationColumnNames.is_internal_calculation: any_calculator_args.is_internal_calculation,
-        CalculationColumnNames.calculation_completed_time: None,
+        CalculationColumnNames.calculation_succeeded_time: None,
     }
     prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(

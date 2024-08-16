@@ -38,7 +38,7 @@ calculations_schema = StructType(
         StructField(TableColumnNames.calculation_version, LongType(), False),
         StructField(TableColumnNames.is_internal_calculation, BooleanType(), True),
         StructField(
-            TableColumnNames.calculation_completed_time,
+            TableColumnNames.calculation_succeeded_time,
             TimestampType(),
             True,
         ),
@@ -56,7 +56,7 @@ hive_calculations_schema = StructType(
         StructField("version", LongType(), False),
         StructField("is_internal_calculation", BooleanType(), True),
         StructField(
-            "calculation_completed_time",
+            "calculation_succeeded_time",
             TimestampType(),
             True,
         ),

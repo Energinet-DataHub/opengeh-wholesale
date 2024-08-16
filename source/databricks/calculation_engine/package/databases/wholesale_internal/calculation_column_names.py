@@ -27,5 +27,5 @@ class CalculationColumnNames(ResultColumnNames):
     version = "version"
     is_internal_calculation = "is_internal_calculation"
     """True if the calculation is an internal calculation, False otherwise."""
-    calculation_completed_time = "calculation_completed_time"
-    """The time when the calculation was completed. """
+    calculation_succeeded_time = "calculation_succeeded_time"
+    """The time when the calculation was succeeded. """

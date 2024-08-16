@@ -36,7 +36,7 @@ def write_calculation(
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
 
     calculations = calculations.withColumn(
-        TableColumnNames.calculation_completed_time, current_timestamp()
+        TableColumnNames.calculation_succeeded_time, current_timestamp()
     )
 
     calculations.write.format("delta").mode("append").option(
