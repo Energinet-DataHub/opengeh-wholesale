@@ -51,7 +51,6 @@ public class Calculation
 
         _orchestrationState = CalculationOrchestrationState.Scheduled;
         ExecutionState = CalculationExecutionState.Created;
-        MarkAsScheduled();
     }
 
     /// <summary>
@@ -244,17 +243,6 @@ public class Calculation
 
             _ => throw new NotImplementedException(),
         };
-    }
-
-    /// <summary>
-    /// The calculation orchestration is scheduled (before the orchestration has started running and the calculaton job has been submitted).
-    /// </summary>
-    public void MarkAsScheduled()
-    {
-        if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
-        ExecutionState = CalculationExecutionState.Created;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
     /// <summary>
