@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
@@ -42,6 +43,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var expectedCalculation = CreateCalculation(CalculationType.Aggregation, someGridAreasIds);
+        expectedCalculation.MarkAsStarted(new OrchestrationInstanceId("orchestration-id"));
         expectedCalculation.MarkAsCalculating();
         var sut = new CalculationRepository(writeContext);
 
@@ -66,6 +68,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
+        calculation.MarkAsStarted(new OrchestrationInstanceId("orchestration-id"));
         calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), SystemClock.Instance.GetCurrentInstant());
         calculation.MarkAsCalculationJobPending();
         calculation.MarkAsCalculating();
@@ -215,6 +218,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             period.DateTimeZone,
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+        calculation.MarkAsStarted(new OrchestrationInstanceId("orchestration-id"));
         calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), executionTimeStart); // Sets execution time start
 
         var sut = new CalculationRepository(writeContext);
@@ -263,12 +267,68 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         actual.Should().Contain(calculation);
     }
 
+    [Fact]
+    public async Task GetScheduledCalculationsAsync_ReturnsScheduledCalculations()
+    {
+        var now = Instant.FromUtc(2024, 08, 16, 13, 37);
+        var inThePast = now.Minus(Duration.FromMilliseconds(1));
+        var inTheFuture = now.Plus(Duration.FromMilliseconds(1));
+        var expectedCalculation1 = CreateCalculation(scheduledAt: now); // Scheduled at == now, so it should start now
+        var expectedCalculation2 = CreateCalculation(scheduledAt: inThePast); // Scheduled at == now - 1 millisecond, so it should start now
+
+        var futureCalculation = CreateCalculation(scheduledAt: inTheFuture);
+
+        var startedCalculation1 = CreateCalculation(scheduledAt: inThePast);
+        startedCalculation1.MarkAsStarted(new OrchestrationInstanceId("instance-id-1"));
+
+        var startedCalculation2 = CreateCalculation(scheduledAt: inThePast);
+        startedCalculation2.MarkAsStarted(new OrchestrationInstanceId("instance-id-2"));
+        startedCalculation2.MarkAsCalculationJobSubmitted(new CalculationJobId(1), executionTimeStart: inThePast);
+        startedCalculation2.MarkAsCalculating();
+
+        var finishedCalculation = CreateCalculation(scheduledAt: inThePast);
+        finishedCalculation.MarkAsStarted(new OrchestrationInstanceId("instance-id-2"));
+        finishedCalculation.MarkAsCalculationJobSubmitted(new CalculationJobId(2), executionTimeStart: inThePast);
+        finishedCalculation.MarkAsCalculated(executionTimeEnd: inThePast);
+        finishedCalculation.MarkAsActorMessagesEnqueuing(enqueuingTimeStart: inThePast);
+        finishedCalculation.MarkAsActorMessagesEnqueued(enqueuedTimeEnd: inThePast);
+        finishedCalculation.MarkAsCompleted(completedAt: inThePast);
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        {
+            var repository = new CalculationRepository(writeContext);
+
+            await repository.AddAsync(expectedCalculation1);
+            await repository.AddAsync(expectedCalculation2);
+            await repository.AddAsync(futureCalculation);
+            await repository.AddAsync(startedCalculation1);
+            await repository.AddAsync(startedCalculation2);
+            await repository.AddAsync(finishedCalculation);
+
+            await writeContext.SaveChangesAsync();
+        }
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new CalculationRepository(readContext);
+
+        // Act
+        var scheduledCalculations = await sut.GetScheduledCalculationsAsync(scheduledBefore: now);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        scheduledCalculations.Should().HaveCount(2);
+        scheduledCalculations.Should().BeEquivalentTo([expectedCalculation1, expectedCalculation2]);
+    }
+
     private static Application.Model.Calculations.Calculation CreateCalculation(List<GridAreaCode> someGridAreasIds)
     {
         return CreateCalculation(CalculationType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Application.Model.Calculations.Calculation CreateCalculation(CalculationType calculationType, List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Calculations.Calculation CreateCalculation(
+        CalculationType calculationType,
+        List<GridAreaCode> someGridAreasIds,
+        Instant? scheduledAt = null)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Application.Model.Calculations.Calculation(
@@ -277,9 +337,17 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             someGridAreasIds,
             period.PeriodStart,
             period.PeriodEnd,
-            SystemClock.Instance.GetCurrentInstant(),
+            scheduledAt ?? SystemClock.Instance.GetCurrentInstant(),
             period.DateTimeZone,
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+    }
+
+    private static Application.Model.Calculations.Calculation CreateCalculation(Instant scheduledAt)
+    {
+        return CreateCalculation(
+            calculationType: CalculationType.BalanceFixing,
+            someGridAreasIds: [new GridAreaCode("001")],
+            scheduledAt: scheduledAt);
     }
 }

@@ -437,6 +437,7 @@ public class CalculationTests
     {
         var sut = new CalculationBuilder().Build();
 
+        var orchestrationInstanceId = new OrchestrationInstanceId("orchestration-id");
         var calculationJobId = new CalculationJobId(1);
         switch (executionState)
         {
@@ -444,24 +445,29 @@ public class CalculationTests
                 // This is the default state
                 break;
             case CalculationExecutionState.Submitted:
+                sut.MarkAsStarted(orchestrationInstanceId);
                 sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 break;
             case CalculationExecutionState.Pending:
+                sut.MarkAsStarted(orchestrationInstanceId);
                 sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsCalculationJobPending();
                 break;
             case CalculationExecutionState.Executing:
+                sut.MarkAsStarted(orchestrationInstanceId);
                 sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsCalculationJobPending();
                 sut.MarkAsCalculating();
                 break;
             case CalculationExecutionState.Completed:
+                sut.MarkAsStarted(orchestrationInstanceId);
                 sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsCalculationJobPending();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
                 break;
             case CalculationExecutionState.Failed:
+                sut.MarkAsStarted(orchestrationInstanceId);
                 sut.MarkAsCalculationJobSubmitted(calculationJobId, SystemClock.Instance.GetCurrentInstant());
                 sut.MarkAsCalculationJobPending();
                 sut.MarkAsCalculating();
