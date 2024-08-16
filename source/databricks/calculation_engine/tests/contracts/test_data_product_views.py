@@ -96,7 +96,11 @@ def test__data_product_views_have_the_expected_schemas(
 def _assert_name_and_data_type(column_name: str, df: DataFrame) -> None:
     actual_schema = df.schema[column_name]
     expected_column = ViewColumns.get(actual_schema.name)
-    assert expected_column is not None, f"Column {column_name} not found."
+    assert (
+        expected_column is not None
+    ), f"Column '{column_name}' is missing in class `ViewColumns`."
     expected_type = expected_column.data_type
     actual_type = actual_schema.dataType
-    assert expected_type == actual_type, f"Column {column_name} has wrong type."
+    assert (
+        expected_type == actual_type
+    ), f"Column '{column_name}' has wrong type. Is '{actual_type}', expected '{expected_type}'."
