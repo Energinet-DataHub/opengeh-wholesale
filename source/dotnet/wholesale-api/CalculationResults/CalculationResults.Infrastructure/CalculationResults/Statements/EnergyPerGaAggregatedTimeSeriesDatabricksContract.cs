@@ -30,6 +30,16 @@ public class EnergyPerGaAggregatedTimeSeriesDatabricksContract : IAggregatedTime
             $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.ENERGY_PER_GA_V1_VIEW_NAME}";
     }
 
+    public string GetTimeColumnName()
+    {
+        return EnergyPerGaViewColumnNames.Time;
+    }
+
+    public string GetCalculationVersionColumnName()
+    {
+        return EnergyPerGaViewColumnNames.CalculationVersion;
+    }
+
     public string[] GetColumnsToProject()
     {
         return

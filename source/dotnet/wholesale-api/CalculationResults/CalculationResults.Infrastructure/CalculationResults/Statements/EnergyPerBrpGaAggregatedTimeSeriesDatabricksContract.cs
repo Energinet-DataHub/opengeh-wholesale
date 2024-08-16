@@ -30,6 +30,16 @@ public class EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract : IAggregatedT
             $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.ENERGY_PER_BRP_GA_V1_VIEW_NAME}";
     }
 
+    public string GetTimeColumnName()
+    {
+        return EnergyPerBrpGaViewColumnNames.Time;
+    }
+
+    public string GetCalculationVersionColumnName()
+    {
+        return EnergyPerBrpGaViewColumnNames.CalculationVersion;
+    }
+
     public string[] GetColumnsToProject()
     {
         return

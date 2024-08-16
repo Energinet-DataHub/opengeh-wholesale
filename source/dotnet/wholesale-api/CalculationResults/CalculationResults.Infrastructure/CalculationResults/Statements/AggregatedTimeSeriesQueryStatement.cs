@@ -60,19 +60,19 @@ public class AggregatedTimeSeriesQueryStatement(
     private string GetMaxVersionForEachPackage()
     {
         return $"""
-                SELECT max({EnergyPerGaViewColumnNames.CalculationVersion}) AS max_version, {EnergyResultColumnNames.Time} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
+                SELECT max({EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{EnergyResultTableName}.{ctgb} AS max_{ctgb}"))}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
                 WHERE {_querySnippetProvider.GetWhereClauseSqlExpression("er", _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(_calculationTypePerGridAreas)}
-                GROUP BY {EnergyResultColumnNames.Time}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy())}
+                GROUP BY {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{EnergyResultTableName}.{ctab}"))}
                 """;
     }
 
     private string MatchEnergyMeasurementsWithPackages(string energyMeasurementPrefix, string packagesPrefix)
     {
         return $"""
-                {energyMeasurementPrefix}.{EnergyResultColumnNames.Time} = {packagesPrefix}.max_time
-                AND {energyMeasurementPrefix}.{EnergyPerGaViewColumnNames.CalculationVersion} = {packagesPrefix}.max_version
-                AND {string.Join(" AND ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"coalesce({energyMeasurementPrefix}.{ctgb}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctgb}, 'is_null_value')"))}
+                {energyMeasurementPrefix}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} = {packagesPrefix}.max_time
+                AND {energyMeasurementPrefix}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
+                AND {string.Join(" AND ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"coalesce({energyMeasurementPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
                 """;
     }
 }
