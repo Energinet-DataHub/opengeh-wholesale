@@ -49,6 +49,8 @@ public class Calculation
         AreSettlementReportsCreated = false;
         Version = version;
 
+        _orchestrationState = CalculationOrchestrationState.Scheduled;
+        ExecutionState = CalculationExecutionState.Created;
         MarkAsScheduled();
     }
 
@@ -126,7 +128,7 @@ public class Calculation
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
-    public CalculationExecutionState ExecutionState { get; private set; }
+    public CalculationExecutionState ExecutionState { get; private set; } = CalculationExecutionState.Created;
 
     /// <summary>
     /// Get/set the orchestration state of the calculation.
@@ -250,7 +252,7 @@ public class Calculation
     public void MarkAsScheduled()
     {
         if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
