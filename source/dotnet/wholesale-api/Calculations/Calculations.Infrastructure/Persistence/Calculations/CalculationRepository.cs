@@ -64,4 +64,14 @@ public class CalculationRepository : ICalculationRepository
             .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains))
             .ToList();
     }
+
+    public Task<List<Calculation>> GetScheduledCalculationsAsync(Instant scheduledBefore)
+    {
+        return _context
+            .Calculations
+            .Where(c => c.OrchestrationState == CalculationOrchestrationState.Scheduled)
+            .Where(c => c) // TODO: Check scheduled at
+            .Where(c => c.OrchestrationInstanceId == null)
+            .ToListAsync();
+    }
 }

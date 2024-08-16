@@ -100,6 +100,15 @@ public class CalculationsClient(
         return new CalculationId(calculation.Id);
     }
 
+    public async Task<List<CalculationId>> GetScheduledCalculationsToStartAsync(Instant scheduledBefore)
+    {
+        var calculations = await _calculationRepository
+            .GetScheduledCalculationsAsync(scheduledBefore)
+            .ConfigureAwait(false);
+
+        return calculations.Select(c => new CalculationId(c.Id)).ToList();
+    }
+
     private async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         CalculationState? filterByExecutionState,

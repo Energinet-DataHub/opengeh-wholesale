@@ -52,6 +52,11 @@ public class CalculationMetadata
     public CalculationState JobStatus { get; set; }
         = CalculationState.Pending;
 
+    /// <summary>
+    /// When the orchestration is started and the instance id is set on the calculation
+    /// </summary>
+    public bool IsStarted { get; set; }
+
     public override string ToString()
     {
         return GetType()

@@ -43,4 +43,6 @@ public interface ICalculationsClient
         DateTimeOffset startDate,
         DateTimeOffset endDate,
         Guid currentUserId);
+
+    Task<List<CalculationId>> GetScheduledCalculationsToStartAsync(Instant scheduledBefore);
 }

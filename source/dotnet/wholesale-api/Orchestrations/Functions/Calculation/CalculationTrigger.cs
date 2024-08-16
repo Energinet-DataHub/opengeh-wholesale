@@ -38,18 +38,15 @@ internal class CalculationTrigger
     private readonly IUserContext<FrontendUser> _userContext;
     private readonly ICalculationsClient _calculationsClient;
     private readonly ILogger<CalculationTrigger> _logger;
-    private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions;
 
     public CalculationTrigger(
         IUserContext<FrontendUser> userContext,
         ICalculationsClient calculationsClient,
-        ILogger<CalculationTrigger> logger,
-        IOptions<CalculationOrchestrationMonitorOptions> jobStatusMonitorOptions)
+        ILogger<CalculationTrigger> logger)
     {
         _userContext = userContext;
         _calculationsClient = calculationsClient;
         _logger = logger;
-        _orchestrationMonitorOptions = jobStatusMonitorOptions.Value;
     }
 
     [Function(nameof(StartCalculation))]
@@ -60,34 +57,14 @@ internal class CalculationTrigger
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
-        var logger = executionContext.GetLogger<CalculationTrigger>();
-        var calculationsClient = executionContext.InstanceServices.GetRequiredService<ICalculationsClient>();
-
-        var calculationId = await calculationsClient.CreateAndCommitAsync(
+        var calculationId = await _calculationsClient.CreateAndCommitAsync(
             startCalculationRequestDto.CalculationType,
             startCalculationRequestDto.GridAreaCodes,
             startCalculationRequestDto.StartDate,
             startCalculationRequestDto.EndDate,
             _userContext.CurrentUser.UserId).ConfigureAwait(false);
 
-        logger.LogInformation("Calculation created with id {calculationId}", calculationId);
-
-        var orchestrationInput = new CalculationOrchestrationInput(
-            _orchestrationMonitorOptions,
-            calculationId);
-
-        // TODO: Move starting orchestration to a new TimeTrigger in a new PR.
-        // Since this will happen soon, we don't handle the case where the orchestration fails to start, but
-        // the calculation is already added to the database.
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration), orchestrationInput).ConfigureAwait(false);
-        logger.LogInformation("Started new orchestration for calculation ID = {calculationId} with instance ID = {instanceId}", calculationId, instanceId);
-
-        var orchestrationMetadata = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
-        while (ReadCalculationId(orchestrationMetadata) == Guid.Empty)
-        {
-            await Task.Delay(200).ConfigureAwait(false);
-            orchestrationMetadata = await client.GetInstanceAsync(instanceId, getInputsAndOutputs: true).ConfigureAwait(false);
-        }
+        _logger.LogInformation("Calculation created with id {calculationId}", calculationId);
 
         return new OkObjectResult(calculationId.Id);
     }

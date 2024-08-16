@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
@@ -33,4 +34,6 @@ public interface ICalculationRepository
         Instant? periodStart,
         Instant? periodEnd,
         CalculationType? calculationType);
+
+    Task<List<Calculation>> GetScheduledCalculationsAsync(Instant scheduledBefore);
 }
