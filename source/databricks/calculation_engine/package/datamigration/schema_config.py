@@ -155,4 +155,13 @@ schema_config = [
             ),
         ],
     ),
+    Schema(
+        name=paths.WholesaleSapDatabase.DATABASE_NAME,
+        tables=[],
+        views=[
+            View(
+                name=paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
+            ),
+        ],
+    ),
 ]
