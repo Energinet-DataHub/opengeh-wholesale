@@ -36,4 +36,11 @@ public interface ICalculationsClient
         Instant periodStart,
         Instant periodEnd,
         CalculationType calculationType);
+
+    Task<CalculationId> CreateAndCommitAsync(
+        CalculationType calculationType,
+        IEnumerable<string> gridAreaCodes,
+        DateTimeOffset startDate,
+        DateTimeOffset endDate,
+        Guid currentUserId);
 }

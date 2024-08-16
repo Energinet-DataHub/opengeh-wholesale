@@ -37,12 +37,13 @@ internal class CalculationOrchestration
 
         var defaultRetryOptions = CreateDefaultRetryOptions();
 
-        // Create calculation (SQL)
-        var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
-            nameof(CreateCalculationRecordActivity),
-            input,
-            defaultRetryOptions);
-        calculationMetadata.OrchestrationProgress = "CalculationCreated";
+        // Create first calculation metadata custom status
+        var calculationMetadata = new CalculationMetadata
+        {
+            Id = input.CalculationId.Id,
+            Input = input,
+            OrchestrationProgress = "OrchestrationStarted",
+        };
         context.SetCustomStatus(calculationMetadata);
 
         // Start calculation (Databricks)
