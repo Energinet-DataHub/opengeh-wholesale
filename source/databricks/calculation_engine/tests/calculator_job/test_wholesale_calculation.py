@@ -384,6 +384,10 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
     "view_name, has_data",
     [
         (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
         ),
@@ -449,6 +453,10 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
         ),
         (
             f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
     ],

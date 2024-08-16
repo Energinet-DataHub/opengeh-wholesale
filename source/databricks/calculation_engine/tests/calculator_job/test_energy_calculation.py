@@ -242,6 +242,10 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
             True,
         ),
         (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
         ),
@@ -259,6 +263,10 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
         ),
         (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
     ],
