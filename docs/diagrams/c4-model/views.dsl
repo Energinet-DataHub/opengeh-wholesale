@@ -19,21 +19,30 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
             # hence subsystems that doesn't depend on others, should be listed first.
 
-            # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVPD2G3K6UFNKC3ZN5GDTIMZV3QFBQ
-
-            # Include Market Participant model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
+            # Include Market Participant model - placeholders
+            markpartSubsystem = group "Market Participant" {
+                markpartApp = container "Market Participant <App>" {
+                    description "An application within the Market Participant subsystem"
+                }
+            }
 
             # Include Wholesale model
             !include model.dsl
+
+            # Subsystem-to-Subsystem relationships
+            markpartApp -> wholesaleApi "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+                tags "Simple View"
+            }
+            markpartApp -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+                tags "Detailed View"
+            }
 
             # Include frontend model - placeholders
             frontendSubsystem = group "Frontend" {
                 frontendBff = container "BFF" {
                     description "Backend for Frontend"
 
-                    # Subsystem-to-subsystem relationships.
+                    # Subsystem-to-Subsystem relationships
                     this -> wholesaleApi "Interact using HTTP API"
                 }
             }
@@ -43,10 +52,8 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                 migrationDatabricks = container "Data Migration" {
                     description "Delivers DataHub 2.0 data to DataHub 3.0"
 
-                    # Subsystem-to-subsystem relationships.
-                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
-
                     # Subsystem-to-Subsystem relationships
+                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs"
                     wholesaleCalculatorJob -> this "Read DataHub 2.0 data" "integration event/amqp" {
                         tags "Simple View"
                     }
@@ -61,6 +68,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             include ->wholesaleSubsystem->
             exclude "relationship.tag==OAuth"
             exclude "element.tag==Intermediate Technology"
+            exclude "relationship.tag==Detailed View"
         }
 
         container dh3 "WholesaleDetailed" {
