@@ -44,6 +44,11 @@ resource "azurerm_storage_container" "settlement_reports" {
   storage_account_name = module.st_data_wholesale.name
 }
 
+resource "azurerm_storage_container" "sap" {
+  name                 = "sap"
+  storage_account_name = module.st_data_wholesale.name
+}
+
 data "azurerm_key_vault_secret" "shared_access_connector_principal_id" {
   name         = "shared-access-connector-principal-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
