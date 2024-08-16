@@ -24,9 +24,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    GridLossMeteringPointsColName,
-)
 from package.infrastructure import logging_configuration
 
 
@@ -132,8 +129,6 @@ def get_grid_loss_metering_points_basis_data(
     grid_loss_metering_points: GridLossMeteringPoints,
 ) -> DataFrame:
     return grid_loss_metering_points.df.select(
-        f.lit(calculation_id).alias(GridLossMeteringPointsColName.calculation_id),
-        f.col(Colname.metering_point_id).alias(
-            GridLossMeteringPointsColName.metering_point_id
-        ),
+        f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
     )

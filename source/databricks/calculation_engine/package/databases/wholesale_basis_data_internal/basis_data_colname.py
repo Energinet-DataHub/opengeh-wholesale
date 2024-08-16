@@ -13,16 +13,6 @@
 # limitations under the License.
 
 
-class GridLossMeteringPointsColName:
-    """
-    Column names for the grid loss metering points storage model.
-    Be aware that two different delta tables exist with the same table name `grid_loss_metering_points`.
-    """
-
-    calculation_id = "calculation_id"
-    metering_point_id = "metering_point_id"
-
-
 class CalculationsColumnName:
     """Column names for the calculations storage model"""
 
