@@ -5,7 +5,7 @@
 -- are not distinguished in this view - the view returns the latest calculation no matter if it is internal or external.
 
 
-CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.latest_calculations_history_v1 as
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_history_v1 as
 WITH calculations_by_day AS (
   SELECT
     c.calculation_id,
