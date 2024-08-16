@@ -19,7 +19,12 @@ class TableColumnNames:
     Different tables should use the same names to ensure consistency across the subsystem.
     """
 
+    aggregation_level = "aggregation_level"
+    amount_type = "amount_type"
     amount = "amount"
+    balance_responsible_id = (
+        "balance_responsible_id"  # TODO JVM: rename to balance_responsible_party_id
+    )
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
     charge_key = "charge_key"
@@ -30,6 +35,7 @@ class TableColumnNames:
     calculation_execution_time_start = "calculation_execution_time_start"
     calculation_succeeded_time = "calculation_succeeded_time"
     calculation_id = "calculation_id"
+    calculation_result_id = "calculation_result_id"
     calculation_period_start = "calculation_period_start"
     calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"

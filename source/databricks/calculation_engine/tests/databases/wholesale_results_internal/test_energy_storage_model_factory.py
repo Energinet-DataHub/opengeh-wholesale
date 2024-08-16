@@ -29,11 +29,9 @@ from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
-)
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
 )
 from package.infrastructure.paths import HiveOutputDatabase
 
@@ -172,7 +170,7 @@ def test__create__with_correct_aggregation_level(
 
     # Assert
     assert (
-        actual.collect()[0][EnergyResultColumnNames.aggregation_level]
+        actual.collect()[0][TableColumnNames.aggregation_level]
         == aggregation_level.value
     )
 
@@ -180,23 +178,23 @@ def test__create__with_correct_aggregation_level(
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (EnergyResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
         (
-            EnergyResultColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (EnergyResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
-        (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
-        (EnergyResultColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
-        (EnergyResultColumnNames.neighbor_grid_area_code, DEFAULT_FROM_GRID_AREA_CODE),
+        (TableColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
+        (TableColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
+        (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
+        (TableColumnNames.neighbor_grid_area_code, DEFAULT_FROM_GRID_AREA_CODE),
         (
-            EnergyResultColumnNames.balance_responsible_id,
+            TableColumnNames.balance_responsible_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
         ),
-        (EnergyResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (EnergyResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (EnergyResultColumnNames.quantity, Decimal("1.100")),
-        (EnergyResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
+        (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (TableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (TableColumnNames.quantity, Decimal("1.100")),
+        (TableColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
     ],
 )
 def test__create__with_correct_row_values(
@@ -241,8 +239,8 @@ def test__create__with_correct_number_of_calculation_result_ids(
 
     # Assert
     distinct_calculation_result_ids = (
-        actual.where(col(EnergyResultColumnNames.calculation_id) == args.calculation_id)
-        .select(col(EnergyResultColumnNames.calculation_result_id))
+        actual.where(col(TableColumnNames.calculation_id) == args.calculation_id)
+        .select(col(TableColumnNames.calculation_result_id))
         .distinct()
         .count()
     )
@@ -295,8 +293,8 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
     # Assert
     rows = actual.collect()
     assert (
-        rows[0][EnergyResultColumnNames.calculation_result_id]
-        != rows[1][EnergyResultColumnNames.calculation_result_id]
+        rows[0][TableColumnNames.calculation_result_id]
+        != rows[1][TableColumnNames.calculation_result_id]
     )
 
 
@@ -348,8 +346,8 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     # Assert
     rows = actual.collect()
     assert (
-        rows[0][EnergyResultColumnNames.calculation_result_id]
-        != rows[1][EnergyResultColumnNames.calculation_result_id]
+        rows[0][TableColumnNames.calculation_result_id]
+        != rows[1][TableColumnNames.calculation_result_id]
     )
 
 
@@ -361,22 +359,22 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     # Arrange
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
-        EnergyResultColumnNames.calculation_id,
-        EnergyResultColumnNames.calculation_type,
-        EnergyResultColumnNames.calculation_execution_time_start,
-        EnergyResultColumnNames.time_series_type,
-        EnergyResultColumnNames.aggregation_level,
+        TableColumnNames.calculation_id,
+        TableColumnNames.calculation_type,
+        TableColumnNames.calculation_execution_time_start,
+        TableColumnNames.time_series_type,
+        TableColumnNames.aggregation_level,
         # Data that does vary but does not define distinct results
-        EnergyResultColumnNames.time,
-        EnergyResultColumnNames.quantity_qualities,
-        EnergyResultColumnNames.quantity,
-        EnergyResultColumnNames.metering_point_type,
+        TableColumnNames.time,
+        TableColumnNames.quantity_qualities,
+        TableColumnNames.quantity,
+        TableColumnNames.metering_point_type,
         # The field that defines results
-        EnergyResultColumnNames.calculation_result_id,
-        EnergyResultColumnNames.result_id,
-        EnergyResultColumnNames.metering_point_id,
-        EnergyResultColumnNames.resolution,
-        EnergyResultColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
+        TableColumnNames.calculation_result_id,
+        TableColumnNames.result_id,
+        TableColumnNames.metering_point_id,
+        TableColumnNames.resolution,
+        TableColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
     all_columns = _get_energy_result_column_names()
 
@@ -397,21 +395,21 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     while some of the data frame column names are using `Colname` names.
     """
     if field_name == Colname.grid_area_code:
-        return EnergyResultColumnNames.grid_area_code
+        return TableColumnNames.grid_area_code
     if field_name == Colname.from_grid_area_code:
-        return EnergyResultColumnNames.neighbor_grid_area_code
+        return TableColumnNames.neighbor_grid_area_code
     if field_name == Colname.balance_responsible_party_id:
-        return EnergyResultColumnNames.balance_responsible_id
+        return TableColumnNames.balance_responsible_id
     if field_name == Colname.balance_responsible_party_id:
-        return EnergyResultColumnNames.balance_responsible_party_id
+        return TableColumnNames.balance_responsible_party_id
     if field_name == Colname.energy_supplier_id:
-        return EnergyResultColumnNames.energy_supplier_id
+        return TableColumnNames.energy_supplier_id
     return field_name
 
 
 def _get_energy_result_column_names() -> List[str]:
     return [
-        getattr(EnergyResultColumnNames, key)
-        for key in dir(EnergyResultColumnNames)
+        getattr(TableColumnNames, key)
+        for key in dir(TableColumnNames)
         if not key.startswith("__")
     ]

@@ -21,9 +21,6 @@ from package.codelists import (
     MeteringPointType,
 )
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
@@ -36,7 +33,7 @@ def test__balance_fixing_exchange_per_neighbor_result_type__is_created(
     actual = spark.read.table(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
+        f.col(TableColumnNames.calculation_id)
         == c.executed_balance_fixing_calculation_id
     )
 
@@ -61,12 +58,10 @@ def test__balance_fixing_grid_loss_time_series_result_type__is_created(
             f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME}"
         )
         .where(
-            f.col(EnergyResultColumnNames.calculation_id)
+            f.col(TableColumnNames.calculation_id)
             == c.executed_balance_fixing_calculation_id
         )
-        .where(
-            f.col(EnergyResultColumnNames.metering_point_type) == metering_point_type
-        )
+        .where(f.col(TableColumnNames.metering_point_type) == metering_point_type)
     )
 
     # Assert: Result(s) are created if there are rows
@@ -145,10 +140,10 @@ def test__balance_fixing_energy_result_type__is_created(
             f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
         )
         .where(
-            f.col(EnergyResultColumnNames.calculation_id)
+            f.col(TableColumnNames.calculation_id)
             == c.executed_balance_fixing_calculation_id
         )
-        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
+        .where(f.col(TableColumnNames.time_series_type) == time_series_type)
     )
 
     # Assert: Result(s) are created if there are rows
@@ -172,7 +167,7 @@ def test__when_energy_calculation__basis_data_is_stored(
     actual = spark.read.table(
         f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
+        f.col(TableColumnNames.calculation_id)
         == c.executed_balance_fixing_calculation_id
     )
 
@@ -191,7 +186,7 @@ def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
+        f.col(TableColumnNames.calculation_id)
         == c.executed_balance_fixing_calculation_id
     )
 
@@ -211,7 +206,7 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
+        f.col(TableColumnNames.calculation_id)
         == c.executed_balance_fixing_calculation_id
     )
 
@@ -267,7 +262,7 @@ def test__when_balance_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_balance_fixing: None, view_name: str, has_data: bool
 ) -> None:
     actual = spark.sql(f"SELECT * FROM {view_name}").where(
-        f.col(EnergyResultColumnNames.calculation_id)
+        f.col(TableColumnNames.calculation_id)
         == c.executed_balance_fixing_calculation_id
     )
 

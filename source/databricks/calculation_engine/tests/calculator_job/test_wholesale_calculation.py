@@ -32,12 +32,6 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     metering_point_periods_schema_uc,
     time_series_points_schema,
 )
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
-from package.databases.wholesale_results_internal.wholesale_result_column_names import (
-    WholesaleResultColumnNames,
-)
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
@@ -110,11 +104,11 @@ def test__energy_result__is_created(
     # Arrange
     result_df = (
         wholesale_fixing_energy_results_df.where(
-            f.col(EnergyResultColumnNames.calculation_id)
+            f.col(TableColumnNames.calculation_id)
             == c.executed_wholesale_calculation_id
         )
-        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
-        .where(f.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
+        .where(f.col(TableColumnNames.time_series_type) == time_series_type)
+        .where(f.col(TableColumnNames.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session.
@@ -130,16 +124,16 @@ def test__energy_result__has_expected_number_of_types(
     # Arrange
     actual_result_type_count = (
         wholesale_fixing_energy_results_df.where(
-            f.col(EnergyResultColumnNames.calculation_id)
+            f.col(TableColumnNames.calculation_id)
             == c.executed_wholesale_calculation_id
         )
         .where(
-            f.col(EnergyResultColumnNames.calculation_id)
+            f.col(TableColumnNames.calculation_id)
             == c.executed_wholesale_calculation_id
         )
         .select(
-            EnergyResultColumnNames.time_series_type,
-            EnergyResultColumnNames.aggregation_level,
+            TableColumnNames.time_series_type,
+            TableColumnNames.aggregation_level,
         )
         .distinct()
         .count()
@@ -172,11 +166,11 @@ def test__wholesale_result__amount_per_charge_is_created(
     # Arrange
     result_df = (
         wholesale_fixing_amounts_per_charge_df.where(
-            f.col(WholesaleResultColumnNames.calculation_id)
+            f.col(TableColumnNames.calculation_id)
             == c.executed_wholesale_calculation_id
         )
-        .where(f.col(WholesaleResultColumnNames.charge_type) == charge_type.value)
-        .where(f.col(WholesaleResultColumnNames.resolution) == resolution.value)
+        .where(f.col(TableColumnNames.charge_type) == charge_type.value)
+        .where(f.col(TableColumnNames.resolution) == resolution.value)
     )
 
     # Act: Calculator job is executed just once per session.
@@ -202,8 +196,8 @@ def test__monthly_amount_for_tariffs__is_created(
     # Arrange
 
     result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
-        f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
-    ).where(f.col(WholesaleResultColumnNames.charge_code) == charge_code)
+        f.col(TableColumnNames.charge_type) == ChargeType.TARIFF.value
+    ).where(f.col(TableColumnNames.charge_code) == charge_code)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -221,7 +215,7 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
     # Arrange
 
     result_df = wholesale_fixing_monthly_amounts_per_charge_df.where(
-        f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
+        f.col(TableColumnNames.charge_type) == charge_type.value
     )
 
     # Act: Calculator job is executed just once per session.
@@ -270,8 +264,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     actual = spark.read.table(
         f"{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
-        == c.executed_wholesale_calculation_id
+        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
     )
 
     # Act: Calculator job is executed just once per session.
@@ -289,8 +282,7 @@ def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
-        == c.executed_wholesale_calculation_id
+        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
     )
 
     # Act: Calculator job is executed just once per session.
@@ -309,8 +301,7 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
     ).where(
-        f.col(EnergyResultColumnNames.calculation_id)
-        == c.executed_wholesale_calculation_id
+        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
     )
 
     # Act: Calculator job is executed just once per session.
@@ -457,7 +448,6 @@ def test__when_wholesale_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_wholesale_fixing: None, view_name: str, has_data: bool
 ) -> None:
     actual = spark.sql(f"SELECT * FROM {view_name}").where(
-        f.col(EnergyResultColumnNames.calculation_id)
-        == c.executed_wholesale_calculation_id
+        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
     )
     assert actual.count() > 0 if has_data else actual.count() == 0
