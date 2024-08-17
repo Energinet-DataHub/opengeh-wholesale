@@ -20,7 +20,7 @@ import pytest
 def _initialise_table(spark: SparkSession, database_name: str, table_name: str) -> None:
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {database_name}")
     spark.sql(
-        f"CREATE TABLE {database_name}.{table_name} (id int) USING DELTA LOCATION 'dbfs:/tmp/{database_name}/{table_name}'"
+        f"CREATE TABLE {database_name}.{table_name} (id int) USING DELTA LOCATION '/tmp/{database_name}/{table_name}'"
     )
 
 
