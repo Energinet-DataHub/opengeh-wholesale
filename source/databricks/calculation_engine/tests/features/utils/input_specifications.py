@@ -24,7 +24,7 @@ from package.databases.migrations_wholesale.schemas import (
 )
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
-    hive_calculations_schema,
+    calculations_schema,
 )
 
 
@@ -38,7 +38,7 @@ def get_data_input_specifications(
     """
     return {
         "calculations.csv": (
-            hive_calculations_schema,
+            calculations_schema,
             wholesale_internal_repository.read_calculations,
         ),
         "metering_point_periods.csv": (
