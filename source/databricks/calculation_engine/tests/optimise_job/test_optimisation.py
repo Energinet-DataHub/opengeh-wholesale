@@ -14,27 +14,33 @@
 from delta.tables import DeltaTable
 from package.optimise_job.optimisation import optimise_table
 from pyspark.sql import SparkSession
+from tests.helpers.delta_table_utils import write_dataframe_to_table
+from pyspark.sql.types import StructType, StructField, IntegerType
 import pytest
-
-
-def _initialise_table(spark: SparkSession, database_name: str, table_name: str) -> None:
-    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {database_name}")
-    spark.sql(
-        f"CREATE TABLE {database_name}.{table_name} (id int) USING DELTA LOCATION '/tmp/{database_name}/{table_name}'"
-    )
 
 
 def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
     # Arrange
     mock_database_name = "test_database"
     mock_table_name = "test_table"
+    table_location = "/tmp/test"
     full_table_name = f"{mock_database_name}.{mock_table_name}"
 
-    df_1 = spark.createDataFrame([(1,), (2,), (3,)])
+    df = spark.createDataFrame([(1,), (2,), (3,)])
+    schema = StructType(
+        [
+            StructField("id", IntegerType(), False),
+        ]
+    )
 
-    _initialise_table(spark, mock_database_name, mock_table_name)
-    df_1.write.format("delta").mode("append").saveAsTable(full_table_name)
-    df_1.write.format("delta").mode("append").saveAsTable(full_table_name)
+    write_dataframe_to_table(
+        spark,
+        df,
+        mock_database_name,
+        mock_table_name,
+        table_location,
+        schema,
+    )
 
     delta_table = DeltaTable.forName(spark, full_table_name)
 
