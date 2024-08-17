@@ -17,6 +17,13 @@ from pyspark.sql import SparkSession
 import pytest
 
 
+def _initialise_table(spark: SparkSession, database_name: str, table_name: str) -> None:
+    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {database_name}")
+    spark.sql(
+        f"CREATE TABLE {database_name}.{table_name} (id int) USING DELTA LOCATION 'dbfs:/tmp/{database_name}/{table_name}'"
+    )
+
+
 def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
     # Arrange
     mock_database_name = "test_database"
@@ -25,9 +32,8 @@ def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
 
     df_1 = spark.createDataFrame([(1,), (2,), (3,)])
 
-    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {mock_database_name}")
-
-    df_1.write.mode("overwrite").saveAsTable(full_table_name)
+    _initialise_table(spark, mock_database_name, mock_table_name)
+    df_1.write.mode("append").saveAsTable(full_table_name)
     df_1.write.mode("append").saveAsTable(full_table_name)
 
     delta_table = DeltaTable.forName(spark, full_table_name)
