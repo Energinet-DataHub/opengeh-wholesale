@@ -27,6 +27,7 @@ def get_spark_session() -> SparkSession:
         .config("spark.default.parallelism", 1)
         .config("spark.driver.memory", "2g")
         .config("spark.executor.memory", "2g")
+        .config("hive.metastore.disallow.incompatible.col.type.changes", "false")
         .getOrCreate()
     )
 
