@@ -37,4 +37,4 @@ def optimise_tables() -> None:
 
 def optimise_table(spark: SparkSession, database_name: str, table_name: str) -> None:
     delta_table = DeltaTable.forName(spark, f"{database_name}.{table_name}")
-    delta_table.optimize()
+    delta_table.optimize().executeCompaction()
