@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from delta.tables import DeltaTable
 from package.optimise_job.optimisation import optimise_table
 from pyspark.sql import SparkSession
@@ -19,8 +20,22 @@ from pyspark.sql.types import StructType, StructField, IntegerType
 import pytest
 
 
-def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
+def get_spark_session() -> SparkSession:
+    session = (
+        SparkSession.builder.master("local")
+        .appName("test_optimisation")
+        .config("spark.default.parallelism", 1)
+        .config("spark.driver.memory", "2g")
+        .config("spark.executor.memory", "2g")
+        .getOrCreate()
+    )
+
+    return session
+
+
+def test__optimise_is_in_history_of_delta_table() -> None:
     # Arrange
+    spark = get_spark_session()
     mock_database_name = "test_database"
     mock_table_name = "test_table"
     table_location = "/tmp/test"
