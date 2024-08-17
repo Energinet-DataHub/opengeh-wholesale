@@ -24,6 +24,7 @@ def write_dataframe_to_table(
     table_location: str,
     schema: StructType,
 ) -> None:
+    print(f"{database_name}.{table_name} write")
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
 
     sql_schema = _struct_type_to_sql_schema(schema)
