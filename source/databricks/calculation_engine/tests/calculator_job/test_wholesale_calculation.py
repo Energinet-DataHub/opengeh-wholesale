@@ -23,6 +23,7 @@ from package.codelists import (
     TimeSeriesType,
     WholesaleResultResolution,
 )
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema_uc,
     charge_link_periods_schema_uc,
@@ -280,7 +281,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     assert actual.count() > 0
 
 
-def test__when_wholesale_calculation__calculation_is_stored(
+def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> None:
@@ -295,8 +296,9 @@ def test__when_wholesale_calculation__calculation_is_stored(
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert: The result is created if there are rows
-    assert actual.count() > 0
+    # Assert
+    assert actual.count() == 1
+    assert actual.collect()[0][TableColumnNames.calculation_succeeded_time] is not None
 
 
 def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
@@ -382,6 +384,10 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
     "view_name, has_data",
     [
         (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
         ),
@@ -447,6 +453,10 @@ def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_c
         ),
         (
             f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
     ],

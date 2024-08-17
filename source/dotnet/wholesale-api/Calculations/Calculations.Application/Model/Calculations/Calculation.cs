@@ -29,7 +29,7 @@ public class Calculation
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
-        Instant executionTimeStart,
+        Instant scheduledAt,
         DateTimeZone dateTimeZone,
         Guid createdByUserId,
         long version)
@@ -44,7 +44,8 @@ public class Calculation
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
-        ExecutionTimeStart = executionTimeStart;
+        ScheduledAt = scheduledAt;
+        ExecutionTimeStart = scheduledAt; // TODO: Set execution time start when the calculation is no longer scheduled, but actually running
         CreatedTime = createdTime;
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
@@ -162,9 +163,12 @@ public class Calculation
     }
 
     /// <summary>
-    /// The calculation engine registers its own perception of the start time.
-    /// So the values will most likely differ and depend on from which data source
-    /// it's being read.
+    /// When they calculation is scheduled to run.
+    /// </summary>
+    public Instant ScheduledAt { get; }
+
+    /// <summary>
+    /// When the calculation orchestration actually started (after the schedule is met).
     /// </summary>
     public Instant? ExecutionTimeStart { get; }
 

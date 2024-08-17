@@ -4,7 +4,7 @@
   "documentation" : { },
   "id" : 1,
   "lastModifiedAgent" : "structurizr-javascript",
-  "lastModifiedDate" : "2024-08-13T14:57:44Z",
+  "lastModifiedDate" : "2024-08-16T11:05:41Z",
   "model" : {
     "people" : [ {
       "description" : "Person who interacts with DataHub.",
@@ -20,7 +20,7 @@
         "destinationId" : "22",
         "id" : "44",
         "properties" : {
-          "structurizr.dsl.identifier" : "54a5345e-cbb9-4159-bb3a-0df3c2645074"
+          "structurizr.dsl.identifier" : "f8413f36-c14a-42b8-9cb9-4ae9bd83a13b"
         },
         "sourceId" : "1",
         "tags" : "Relationship",
@@ -41,7 +41,7 @@
         "destinationId" : "19",
         "id" : "48",
         "properties" : {
-          "structurizr.dsl.identifier" : "abfcc4ab-e208-46c3-b2d1-5562e0a1ec73"
+          "structurizr.dsl.identifier" : "66794f88-2bfb-4e15-8e19-4688bef01e50"
         },
         "sourceId" : "3",
         "tags" : "Relationship",
@@ -62,7 +62,7 @@
         "destinationId" : "20",
         "id" : "60",
         "properties" : {
-          "structurizr.dsl.identifier" : "9612cd62-03b8-499d-9712-721e1f326b8d"
+          "structurizr.dsl.identifier" : "92facca4-eafd-4fc1-8125-435ee8f21cf8"
         },
         "sourceId" : "6",
         "tags" : "Relationship",
@@ -83,7 +83,7 @@
         "destinationId" : "36",
         "id" : "63",
         "properties" : {
-          "structurizr.dsl.identifier" : "944e4832-ff04-48e7-ba34-5e143a8b7c04"
+          "structurizr.dsl.identifier" : "43975125-6d26-4ec1-a6f7-5898ea9f38aa"
         },
         "sourceId" : "17",
         "tags" : "Relationship"
@@ -103,7 +103,7 @@
         "destinationId" : "21",
         "id" : "40",
         "properties" : {
-          "structurizr.dsl.identifier" : "61323fde-7630-42fe-b59d-8d204b713707"
+          "structurizr.dsl.identifier" : "a4390e21-910a-48b0-8c8f-9e6957895de7"
         },
         "sourceId" : "18",
         "tags" : "Relationship",
@@ -113,7 +113,7 @@
         "destinationId" : "22",
         "id" : "43",
         "properties" : {
-          "structurizr.dsl.identifier" : "d8333349-1b42-4532-a2eb-800a78aeaf0a"
+          "structurizr.dsl.identifier" : "94d41b52-0a52-40d8-b142-a1d12c582ac4"
         },
         "sourceId" : "18",
         "tags" : "Relationship",
@@ -139,7 +139,7 @@
         "destinationId" : "31",
         "id" : "32",
         "properties" : {
-          "structurizr.dsl.identifier" : "12b661e5-a36b-4001-b441-95299fb80493"
+          "structurizr.dsl.identifier" : "e8eacfc1-0f45-4dfb-88c8-5e8d2f1ffb76"
         },
         "sourceId" : "2",
         "tags" : "Relationship,OAuth",
@@ -156,7 +156,7 @@
         "destinationId" : "22",
         "id" : "45",
         "properties" : {
-          "structurizr.dsl.identifier" : "faeae297-7e2e-4f81-ab74-8dd201cf008e"
+          "structurizr.dsl.identifier" : "5e37e84d-53e6-4841-9ecd-576af7865cbe"
         },
         "sourceId" : "2",
         "tags" : "Relationship",
@@ -178,7 +178,7 @@
         "destinationId" : "19",
         "id" : "49",
         "properties" : {
-          "structurizr.dsl.identifier" : "72de677b-19bc-494c-a882-155d932806a8"
+          "structurizr.dsl.identifier" : "8a833428-3478-4eee-b6ec-05edb585179a"
         },
         "sourceId" : "4",
         "tags" : "Relationship",
@@ -200,7 +200,7 @@
         "destinationId" : "20",
         "id" : "61",
         "properties" : {
-          "structurizr.dsl.identifier" : "fe691de0-b44a-40b4-bf57-0f25a458c3c0"
+          "structurizr.dsl.identifier" : "3be15bb9-d29f-4266-bac4-d51d8c5d6439"
         },
         "sourceId" : "5",
         "tags" : "Relationship",
@@ -222,7 +222,7 @@
         "destinationId" : "22",
         "id" : "46",
         "properties" : {
-          "structurizr.dsl.identifier" : "dfd45957-3916-4486-a053-beb0bf551397"
+          "structurizr.dsl.identifier" : "0bb297a1-d1cd-4189-80d4-a28730f480d0"
         },
         "sourceId" : "7",
         "tags" : "Relationship",
@@ -277,7 +277,7 @@
         "destinationId" : "22",
         "id" : "47",
         "properties" : {
-          "structurizr.dsl.identifier" : "6b71f050-8ae2-4eef-9127-d7a21d493d7d"
+          "structurizr.dsl.identifier" : "7419d715-5aea-471f-8b1f-37785f80fa7d"
         },
         "sourceId" : "11",
         "tags" : "Relationship",
@@ -287,7 +287,7 @@
         "destinationId" : "19",
         "id" : "53",
         "properties" : {
-          "structurizr.dsl.identifier" : "3a37a6cd-063f-45fb-9d56-31f809045e7a"
+          "structurizr.dsl.identifier" : "bbe62abf-4c98-4220-8e43-8d0cbe958ec4"
         },
         "sourceId" : "11",
         "tags" : "Relationship",
@@ -309,7 +309,7 @@
         "destinationId" : "8",
         "id" : "39",
         "properties" : {
-          "structurizr.dsl.identifier" : "e69285b1-f699-4e6d-b827-80000e70a6f6"
+          "structurizr.dsl.identifier" : "ef84416c-88fa-4a49-9fd9-43acdf7e766d"
         },
         "sourceId" : "12",
         "tags" : "Relationship",
@@ -375,7 +375,7 @@
         "destinationId" : "31",
         "id" : "34",
         "properties" : {
-          "structurizr.dsl.identifier" : "0f73dc45-f80d-4753-8c49-1399b2ab46f3"
+          "structurizr.dsl.identifier" : "b6c90440-4aba-413f-be42-c2d4d6e530e8"
         },
         "sourceId" : "19",
         "tags" : "Relationship,OAuth",
@@ -392,7 +392,7 @@
         "destinationId" : "7",
         "id" : "42",
         "properties" : {
-          "structurizr.dsl.identifier" : "f20a44f8-bd36-451c-a629-ac8fa05f147d"
+          "structurizr.dsl.identifier" : "63fb26cc-a384-49e6-9e1d-e153e743c520"
         },
         "sourceId" : "19",
         "tags" : "Relationship",
@@ -402,7 +402,7 @@
         "destinationId" : "13",
         "id" : "50",
         "properties" : {
-          "structurizr.dsl.identifier" : "d461d197-3a14-4d4b-808c-a54962bc9dd5"
+          "structurizr.dsl.identifier" : "a432d622-f8a0-4b0c-a736-4ad573f0ab40"
         },
         "sourceId" : "19",
         "tags" : "Relationship",
@@ -412,7 +412,7 @@
         "destinationId" : "9",
         "id" : "51",
         "properties" : {
-          "structurizr.dsl.identifier" : "05ee5b3c-0905-4d0a-9fdb-eee6e474664e"
+          "structurizr.dsl.identifier" : "91bc81e6-75c2-4f4b-bdd0-5869373ac40b"
         },
         "sourceId" : "19",
         "tags" : "Relationship",
@@ -422,7 +422,7 @@
         "destinationId" : "10",
         "id" : "52",
         "properties" : {
-          "structurizr.dsl.identifier" : "398ad57a-c42b-42d5-83cb-238d6c85cb79"
+          "structurizr.dsl.identifier" : "4373caed-df91-48a6-a75d-d2876c704e82"
         },
         "sourceId" : "19",
         "tags" : "Relationship",
@@ -432,7 +432,7 @@
         "destinationId" : "22",
         "id" : "54",
         "properties" : {
-          "structurizr.dsl.identifier" : "9e2d74dc-e4e1-4945-a63e-e17fdaf35ca4"
+          "structurizr.dsl.identifier" : "f9ff7edf-bb97-4b06-b7b8-80089d90b5b8"
         },
         "sourceId" : "19",
         "tags" : "Relationship",
@@ -454,7 +454,7 @@
         "destinationId" : "7",
         "id" : "55",
         "properties" : {
-          "structurizr.dsl.identifier" : "79b2181f-b158-45aa-acd2-449b34762da1"
+          "structurizr.dsl.identifier" : "074d44dc-50d3-4be0-80dc-0bb84849cc33"
         },
         "sourceId" : "20",
         "tags" : "Relationship",
@@ -464,7 +464,7 @@
         "destinationId" : "14",
         "id" : "56",
         "properties" : {
-          "structurizr.dsl.identifier" : "7f369ac3-d2d8-4371-8791-e7afea2e2e33"
+          "structurizr.dsl.identifier" : "52aa24f6-0980-4f68-82ff-fb50e66d806b"
         },
         "sourceId" : "20",
         "tags" : "Relationship",
@@ -474,7 +474,7 @@
         "destinationId" : "15",
         "id" : "57",
         "properties" : {
-          "structurizr.dsl.identifier" : "8caa6fde-d855-42a7-bc58-f037d5ae9d93"
+          "structurizr.dsl.identifier" : "3129e5db-f682-4aaf-8d85-f1d1c2c8294a"
         },
         "sourceId" : "20",
         "tags" : "Relationship",
@@ -484,7 +484,7 @@
         "destinationId" : "13",
         "id" : "58",
         "properties" : {
-          "structurizr.dsl.identifier" : "157cae3f-b846-4080-aa6d-1145719c7ce8"
+          "structurizr.dsl.identifier" : "3c998a44-e5f1-4cf5-bd32-4d4b893220f1"
         },
         "sourceId" : "20",
         "tags" : "Relationship",
@@ -494,7 +494,7 @@
         "destinationId" : "9",
         "id" : "59",
         "properties" : {
-          "structurizr.dsl.identifier" : "c777f09e-81e8-4e77-ad9e-7b4c4a979957"
+          "structurizr.dsl.identifier" : "9ae014fa-182d-4c40-892a-3679d49278cc"
         },
         "sourceId" : "20",
         "tags" : "Relationship",
@@ -504,7 +504,7 @@
         "destinationId" : "10",
         "id" : "62",
         "properties" : {
-          "structurizr.dsl.identifier" : "ead1bec1-37a2-4816-ab47-768abba7c260"
+          "structurizr.dsl.identifier" : "ae4d9e33-75a3-45c5-91c5-a99df32809ad"
         },
         "sourceId" : "20",
         "tags" : "Relationship",
@@ -526,7 +526,7 @@
         "destinationId" : "12",
         "id" : "38",
         "properties" : {
-          "structurizr.dsl.identifier" : "7e934922-81d5-4601-80ec-d12788a933d9"
+          "structurizr.dsl.identifier" : "5ca688d0-51ba-484f-9ec9-374eb8eb314c"
         },
         "sourceId" : "21",
         "tags" : "Relationship",
@@ -536,7 +536,7 @@
         "destinationId" : "7",
         "id" : "41",
         "properties" : {
-          "structurizr.dsl.identifier" : "4532e601-26ae-45e4-896d-3b13983b8785"
+          "structurizr.dsl.identifier" : "dedcdb56-e2c9-490e-8c70-b8d336644fce"
         },
         "sourceId" : "21",
         "tags" : "Relationship",
@@ -554,10 +554,10 @@
         },
         "relationships" : [ {
           "description" : "Read data / write data",
-          "destinationId" : "123",
-          "id" : "124",
+          "destinationId" : "69",
+          "id" : "70",
           "properties" : {
-            "structurizr.dsl.identifier" : "2976184a-05f5-4c32-bb3f-b542aa11d0b4"
+            "structurizr.dsl.identifier" : "2e6ff04a-c24f-43d7-a212-f0dba8079e81"
           },
           "sourceId" : "23",
           "tags" : "Relationship"
@@ -592,34 +592,6 @@
         "properties" : {
           "structurizr.dsl.identifier" : "dh3.sharedservicebus"
         },
-        "relationships" : [ {
-          "description" : "Receives integration events.",
-          "destinationId" : "116",
-          "id" : "117",
-          "properties" : {
-            "structurizr.dsl.identifier" : "21cacd73-2633-4b5f-87ff-55f1028cc41d"
-          },
-          "sourceId" : "26",
-          "tags" : "Relationship",
-          "technology" : "integration event/amqp"
-        }, {
-          "description" : "Receives integration events.",
-          "destinationId" : "102",
-          "id" : "118",
-          "linkedRelationshipId" : "117",
-          "sourceId" : "26",
-          "technology" : "integration event/amqp"
-        }, {
-          "description" : "Subscribes to Integration Events",
-          "destinationId" : "138",
-          "id" : "139",
-          "properties" : {
-            "structurizr.dsl.identifier" : "c18f0f96-0336-4336-9431-865347da85fd"
-          },
-          "sourceId" : "26",
-          "tags" : "Relationship",
-          "technology" : "integration event/amqp"
-        } ],
         "tags" : "Element,Container,Intermediate Technology,PaaS,Microsoft Azure - Azure Service Bus",
         "technology" : "Azure Service Bus"
       }, {
@@ -645,7 +617,7 @@
           "destinationId" : "1",
           "id" : "29",
           "properties" : {
-            "structurizr.dsl.identifier" : "d26837dd-08e1-45ad-b9f9-d2e491f102c8"
+            "structurizr.dsl.identifier" : "a598f184-ac2c-49fc-9571-38e8fd242456"
           },
           "sourceId" : "28",
           "tags" : "Relationship"
@@ -663,545 +635,10 @@
         "tags" : "Element,Container,Microsoft Azure - Azure AD B2C",
         "technology" : "Azure AD B2C"
       }, {
-        "description" : "Contains the revision logs.",
-        "documentation" : { },
-        "group" : "Revision Log",
-        "id" : "69",
-        "name" : "Revision Log Database",
-        "properties" : {
-          "structurizr.dsl.identifier" : "revlogdatabase"
-        },
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Raccoons",
-        "technology" : "SQL Database Schema"
-      }, {
-        "description" : "HTTP API endpoint for submitting revision logs.",
-        "documentation" : { },
-        "group" : "Revision Log",
-        "id" : "70",
-        "name" : "Log Ingestion API",
-        "properties" : {
-          "structurizr.dsl.identifier" : "revlogingestion"
-        },
-        "relationships" : [ {
-          "description" : "writes to",
-          "destinationId" : "69",
-          "id" : "71",
-          "properties" : {
-            "structurizr.dsl.identifier" : "9bdb3945-362a-4608-807c-ecc07dfbd474"
-          },
-          "sourceId" : "70",
-          "tags" : "Relationship",
-          "technology" : "EF Core"
-        } ],
-        "tags" : "Element,Container,Microsoft Azure - Function Apps,Raccoons",
-        "technology" : "Azure function, C#"
-      }, {
-        "description" : "Contains data regarding actors, users and permissions.",
-        "documentation" : { },
-        "group" : "Market Participant",
-        "id" : "72",
-        "name" : "Market Participant Database",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartdb"
-        },
-        "tags" : "Element,Container,Data Storage,Microsoft Azure - SQL Database,Raccoons",
-        "technology" : "SQL Database Schema"
-      }, {
-        "description" : "Contains the key used for signing tokens.",
-        "documentation" : { },
-        "group" : "Market Participant",
-        "id" : "73",
-        "name" : "Market Participant Internal Key Vault",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartkeyvault"
-        },
-        "tags" : "Element,Container,Microsoft Azure - Key Vaults,Raccoons",
-        "technology" : "Azure Key Vault"
-      }, {
-        "description" : "Contains public DH2 certificates used for B2B authentication.",
-        "documentation" : { },
-        "group" : "Market Participant",
-        "id" : "74",
-        "name" : "Market Participant Certificate Key Vault",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartcertkeyvault"
-        },
-        "tags" : "Element,Container,Microsoft Azure - Key Vaults,Raccoons",
-        "technology" : "Azure Key Vault"
-      }, {
-        "components" : [ {
-          "description" : "Manages access to B2C user data through GraphAPI.",
-          "documentation" : { },
-          "id" : "81",
-          "name" : "UserIdentityRepository",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuseridentityrepositoryinmarkpartapi"
-          },
-          "relationships" : [ {
-            "description" : "Accesses user information.",
-            "destinationId" : "31",
-            "id" : "82",
-            "properties" : {
-              "structurizr.dsl.identifier" : "8bec294d-dd5d-440a-ac14-5ca2f166953e"
-            },
-            "sourceId" : "81",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "API for managing users.",
-          "documentation" : { },
-          "id" : "83",
-          "name" : "UserController",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartusercontroller"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "84",
-            "properties" : {
-              "structurizr.dsl.identifier" : "77e47559-1099-4ca0-bd39-8e43e43d1442"
-            },
-            "sourceId" : "83",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          }, {
-            "description" : "Accesses user information.",
-            "destinationId" : "81",
-            "id" : "85",
-            "properties" : {
-              "structurizr.dsl.identifier" : "c12dd0be-24f8-4de7-8fb1-1d07a84cc602"
-            },
-            "sourceId" : "83",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "API for managing system permissions.",
-          "documentation" : { },
-          "id" : "86",
-          "name" : "PermissionController",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartpermissioncontroller"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "87",
-            "properties" : {
-              "structurizr.dsl.identifier" : "703f2467-8ba9-4e8c-adb4-58bd479df7a9"
-            },
-            "sourceId" : "86",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "API for managing user roles and underlying permissions.",
-          "documentation" : { },
-          "id" : "88",
-          "name" : "UserRoleController",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuserrolecontroller"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "89",
-            "properties" : {
-              "structurizr.dsl.identifier" : "0408b817-710d-42b2-895a-9df753c3dacd"
-            },
-            "sourceId" : "88",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "API for managing users and their assigned user roles.",
-          "documentation" : { },
-          "id" : "90",
-          "name" : "UserRoleAssignmentController",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuserroleassignmentcontroller"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "91",
-            "properties" : {
-              "structurizr.dsl.identifier" : "fdc07b61-d100-4900-a07d-66ea3b42700f"
-            },
-            "sourceId" : "90",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          }, {
-            "description" : "Accesses user information.",
-            "destinationId" : "81",
-            "id" : "92",
-            "properties" : {
-              "structurizr.dsl.identifier" : "907990e4-64a6-4cc1-a87d-82bc7c812899"
-            },
-            "sourceId" : "90",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "Read-only API for filtered listing of users for frontend presentation.",
-          "documentation" : { },
-          "id" : "93",
-          "name" : "UserOverviewController",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuseroverviewcontroller"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "94",
-            "properties" : {
-              "structurizr.dsl.identifier" : "c0aa1d56-47b3-42b3-abe3-3c16f873a406"
-            },
-            "sourceId" : "93",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          }, {
-            "description" : "Accesses user information.",
-            "destinationId" : "81",
-            "id" : "95",
-            "properties" : {
-              "structurizr.dsl.identifier" : "c9c878ee-5f57-4ebc-ab20-d2d534ef9193"
-            },
-            "sourceId" : "93",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "API for user invitations as well as additional actor invitations for existing users. Invitations are only prepared for dispatch here.",
-          "documentation" : { },
-          "id" : "96",
-          "name" : "InvitationController",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartinvitationcontroller"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "97",
-            "properties" : {
-              "structurizr.dsl.identifier" : "79cf0783-c9de-430c-8fa6-22f47bfa0339"
-            },
-            "sourceId" : "96",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          }, {
-            "description" : "Accesses user information.",
-            "destinationId" : "81",
-            "id" : "98",
-            "properties" : {
-              "structurizr.dsl.identifier" : "b16b2a5c-a48b-4984-87bb-d197e36daefd"
-            },
-            "sourceId" : "96",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        } ],
-        "description" : "Multi-tenant API for managing actors, users and permissions.",
-        "documentation" : { },
-        "group" : "Market Participant",
-        "id" : "75",
-        "name" : "Market Participant API",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartapi"
-        },
-        "relationships" : [ {
-          "description" : "Creates and manages B2C users.",
-          "destinationId" : "31",
-          "id" : "76",
-          "properties" : {
-            "structurizr.dsl.identifier" : "9111cb42-f54e-41c8-9c2a-72571959f0ce"
-          },
-          "sourceId" : "75",
-          "tags" : "Relationship",
-          "technology" : "Microsoft.Graph/https"
-        }, {
-          "description" : "Reads and writes actor/user data.",
-          "destinationId" : "72",
-          "id" : "77",
-          "properties" : {
-            "structurizr.dsl.identifier" : "6f743d30-3c7b-4c69-8ded-c3cf30e19b5c"
-          },
-          "sourceId" : "75",
-          "tags" : "Relationship",
-          "technology" : "EF Core"
-        }, {
-          "description" : "Signs, and reads public key for, tokens.",
-          "destinationId" : "73",
-          "id" : "78",
-          "properties" : {
-            "structurizr.dsl.identifier" : "d0d3c916-3ef5-4e16-a076-7c956faf346b"
-          },
-          "sourceId" : "75",
-          "tags" : "Relationship",
-          "technology" : "Microsoft.Graph/https"
-        }, {
-          "description" : "Manages active DH2 certificates used for B2B authentication.",
-          "destinationId" : "74",
-          "id" : "79",
-          "properties" : {
-            "structurizr.dsl.identifier" : "2ec8c088-5675-4eaa-b162-d7b5df94c49e"
-          },
-          "sourceId" : "75",
-          "tags" : "Relationship",
-          "technology" : "Microsoft.Graph/https"
-        }, {
-          "description" : "submits logs",
-          "destinationId" : "70",
-          "id" : "80",
-          "properties" : {
-            "structurizr.dsl.identifier" : "8ac77dbd-416e-430e-99b4-fbf03e8e1a2f"
-          },
-          "sourceId" : "75",
-          "tags" : "Relationship",
-          "technology" : "HTTP"
-        } ],
-        "tags" : "Element,Container,Microsoft Azure - App Services,Raccoons",
-        "technology" : "Asp.Net Core Web API"
-      }, {
-        "description" : "Synchronizes active DH2 authentication certificates with APIM.",
-        "documentation" : { },
-        "group" : "Market Participant",
-        "id" : "99",
-        "name" : "Market Participant Certificate Synchronization",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartcertificatesynchronization"
-        },
-        "relationships" : [ {
-          "description" : "Links and unlinks DH2 active authentication certificates.",
-          "destinationId" : "25",
-          "id" : "100",
-          "properties" : {
-            "structurizr.dsl.identifier" : "47324868-0a61-48d6-bea4-0387d19ba4c8"
-          },
-          "sourceId" : "99",
-          "tags" : "Relationship",
-          "technology" : "REST/https"
-        }, {
-          "description" : "Gets certificates that should be active in APIM.",
-          "destinationId" : "74",
-          "id" : "101",
-          "properties" : {
-            "structurizr.dsl.identifier" : "9ab6ee2f-3c03-4c4d-b5b8-ebb0e4216086"
-          },
-          "sourceId" : "99",
-          "tags" : "Relationship",
-          "technology" : "Microsoft.Graph/https"
-        } ],
-        "tags" : "Element,Container,Microsoft Azure - Function Apps,Raccoons",
-        "technology" : "Azure function, C#"
-      }, {
-        "components" : [ {
-          "description" : "Manages access to B2C user data through GraphAPI.",
-          "documentation" : { },
-          "id" : "103",
-          "name" : "UserIdentityRepository",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuseridentityrepositoryinorganizationmanager"
-          },
-          "relationships" : [ {
-            "description" : "Accesses user information.",
-            "destinationId" : "31",
-            "id" : "104",
-            "properties" : {
-              "structurizr.dsl.identifier" : "ca05a1f4-4774-4d1e-9c1f-5d646aa38535"
-            },
-            "sourceId" : "103",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        }, {
-          "description" : "Creates B2C application registration for newly created actors.",
-          "documentation" : { },
-          "id" : "106",
-          "name" : "Actor Synchronizer",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markparteventactorsynchronizer"
-          },
-          "relationships" : [ {
-            "description" : "Creates B2C App Registrations.",
-            "destinationId" : "31",
-            "id" : "107",
-            "properties" : {
-              "structurizr.dsl.identifier" : "d12cd78a-7cb9-43fe-a383-ff06d200ac26"
-            },
-            "sourceId" : "106",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          }, {
-            "description" : "Sends market participant events.",
-            "destinationId" : "26",
-            "id" : "108",
-            "properties" : {
-              "structurizr.dsl.identifier" : "534f6cfc-57e4-42b1-bc01-995acc1774b4"
-            },
-            "sourceId" : "106",
-            "tags" : "Relationship",
-            "technology" : "integration event/amqp"
-          }, {
-            "description" : "Updates actors with external B2C id.",
-            "destinationId" : "72",
-            "id" : "110",
-            "properties" : {
-              "structurizr.dsl.identifier" : "b2484ac0-3cb2-496f-9b1c-42a194f8c9e6"
-            },
-            "sourceId" : "106",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          } ],
-          "tags" : "Element,Component,Microsoft Azure - Function Apps,Raccoons",
-          "technology" : "Timer Trigger"
-        }, {
-          "description" : "Responsible for sending user invitations.",
-          "documentation" : { },
-          "id" : "112",
-          "name" : "Mail Dispatcher",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartmaildispatcher"
-          },
-          "relationships" : [ {
-            "description" : "Sends invitation mail.",
-            "destinationId" : "28",
-            "id" : "113",
-            "properties" : {
-              "structurizr.dsl.identifier" : "3325f96c-b914-40a5-9d2d-3bbba132c017"
-            },
-            "sourceId" : "112",
-            "tags" : "Relationship",
-            "technology" : "SendGrid/https"
-          }, {
-            "description" : "Reads data regarding newly invited users.",
-            "destinationId" : "72",
-            "id" : "115",
-            "properties" : {
-              "structurizr.dsl.identifier" : "d761e11e-a3fe-4652-aa31-e549a20a4df5"
-            },
-            "sourceId" : "112",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          } ],
-          "tags" : "Element,Component,Microsoft Azure - Function Apps,Raccoons",
-          "technology" : "Timer Trigger"
-        }, {
-          "description" : "Receiver for domain event sent to shared servicebus.",
-          "documentation" : { },
-          "id" : "116",
-          "name" : "Integration Event Receiver",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartintegrationevents"
-          },
-          "relationships" : [ {
-            "description" : "Sends change notification.",
-            "destinationId" : "28",
-            "id" : "119",
-            "properties" : {
-              "structurizr.dsl.identifier" : "markpartiesendgrid"
-            },
-            "sourceId" : "116",
-            "tags" : "Relationship",
-            "technology" : "SendGrid/https"
-          } ],
-          "tags" : "Element,Component,Microsoft Azure - Function Apps,Raccoons",
-          "technology" : "ServiceBus"
-        }, {
-          "description" : "Timer Trigger checking for users with expired invitations. Users with expired invitations are disabled in B2C.",
-          "documentation" : { },
-          "id" : "120",
-          "name" : "UserInvitationExpiredTimerTrigger",
-          "properties" : {
-            "structurizr.dsl.identifier" : "markpartuserinvitationexpiredtimertrigger"
-          },
-          "relationships" : [ {
-            "description" : "uses",
-            "destinationId" : "72",
-            "id" : "121",
-            "properties" : {
-              "structurizr.dsl.identifier" : "01c0bcd8-80ea-42ce-bb59-1ec0d1796cb2"
-            },
-            "sourceId" : "120",
-            "tags" : "Relationship",
-            "technology" : "EF Core"
-          }, {
-            "description" : "Accesses user information.",
-            "destinationId" : "103",
-            "id" : "122",
-            "properties" : {
-              "structurizr.dsl.identifier" : "3876a581-b322-4646-a169-a2fb7e65cded"
-            },
-            "sourceId" : "120",
-            "tags" : "Relationship",
-            "technology" : "Microsoft.Graph/https"
-          } ],
-          "tags" : "Element,Component"
-        } ],
-        "description" : "Synchronizes Azure B2C user and actor state with the domain.",
-        "documentation" : { },
-        "group" : "Market Participant",
-        "id" : "102",
-        "name" : "Market Participant Organization Manager",
-        "properties" : {
-          "structurizr.dsl.identifier" : "markpartorganizationmanager"
-        },
-        "relationships" : [ {
-          "description" : "Accesses user information.",
-          "destinationId" : "31",
-          "id" : "105",
-          "linkedRelationshipId" : "104",
-          "sourceId" : "102",
-          "technology" : "Microsoft.Graph/https"
-        }, {
-          "description" : "Sends market participant events.",
-          "destinationId" : "26",
-          "id" : "109",
-          "linkedRelationshipId" : "108",
-          "sourceId" : "102",
-          "technology" : "integration event/amqp"
-        }, {
-          "description" : "Updates actors with external B2C id.",
-          "destinationId" : "72",
-          "id" : "111",
-          "linkedRelationshipId" : "110",
-          "sourceId" : "102",
-          "technology" : "EF Core"
-        }, {
-          "description" : "Sends invitation mail.",
-          "destinationId" : "28",
-          "id" : "114",
-          "linkedRelationshipId" : "113",
-          "sourceId" : "102",
-          "technology" : "SendGrid/https"
-        }, {
-          "description" : "Publish Grid Area Ownership Assigned",
-          "destinationId" : "138",
-          "id" : "143",
-          "properties" : {
-            "structurizr.dsl.identifier" : "0ebfe393-7d77-44c3-81ec-0b31092a3105"
-          },
-          "sourceId" : "102",
-          "tags" : "Relationship,Simple View",
-          "technology" : "integration event/amqp"
-        } ],
-        "tags" : "Element,Container,Microsoft Azure - Function Apps,Raccoons",
-        "technology" : "Azure function, C#"
-      }, {
         "description" : "Calculation inputs and results",
         "documentation" : { },
         "group" : "Wholesale",
-        "id" : "123",
+        "id" : "69",
         "name" : "Wholesale DataLake",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesaledatalake"
@@ -1212,7 +649,7 @@
         "description" : "Executes calculations",
         "documentation" : { },
         "group" : "Wholesale/Databricks Workspace",
-        "id" : "125",
+        "id" : "71",
         "name" : "Calculator Job",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesalecalculatorjob"
@@ -1220,31 +657,30 @@
         "relationships" : [ {
           "description" : "Read inputs / write results",
           "destinationId" : "23",
-          "id" : "126",
+          "id" : "72",
           "properties" : {
-            "structurizr.dsl.identifier" : "acda263e-28ce-4746-99ec-22bcb05ab73a"
+            "structurizr.dsl.identifier" : "f0457136-0c27-41bd-a0fc-f3d7731c0664"
           },
-          "sourceId" : "125",
+          "sourceId" : "71",
           "tags" : "Relationship"
         }, {
           "description" : "Read inputs / write results",
-          "destinationId" : "123",
-          "id" : "127",
+          "destinationId" : "69",
+          "id" : "73",
           "properties" : {
-            "structurizr.dsl.identifier" : "8b0aa280-654e-4ff2-9350-c587fc329322"
+            "structurizr.dsl.identifier" : "8ca4cef6-51af-474e-ba80-804bf5632da9"
           },
-          "sourceId" : "125",
+          "sourceId" : "71",
           "tags" : "Relationship,Simple View"
         }, {
           "description" : "Read DataHub 2.0 data",
-          "destinationId" : "151",
-          "id" : "153",
+          "destinationId" : "100",
+          "id" : "102",
           "properties" : {
-            "structurizr.dsl.identifier" : "47e185a0-0e21-46c3-8e4e-b08bd52943ce"
+            "structurizr.dsl.identifier" : "540f9bb4-9e08-45d1-aedb-630fd8e3fb12"
           },
-          "sourceId" : "125",
-          "tags" : "Relationship,Simple View",
-          "technology" : "integration event/amqp"
+          "sourceId" : "71",
+          "tags" : "Relationship,Simple View"
         } ],
         "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
         "technology" : "Azure Databricks"
@@ -1252,7 +688,7 @@
         "description" : "Executes delta migrations (invoked during deployment)",
         "documentation" : { },
         "group" : "Wholesale/Databricks Workspace",
-        "id" : "128",
+        "id" : "74",
         "name" : "Migration Job",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesalemigrationjob"
@@ -1260,20 +696,20 @@
         "relationships" : [ {
           "description" : "Migrate database objects and data",
           "destinationId" : "23",
-          "id" : "129",
+          "id" : "75",
           "properties" : {
-            "structurizr.dsl.identifier" : "9108d2be-fd21-4693-ba7d-819548f52e39"
+            "structurizr.dsl.identifier" : "6f4b1acc-1b84-4c3d-b363-4a70dd42a91e"
           },
-          "sourceId" : "128",
+          "sourceId" : "74",
           "tags" : "Relationship"
         }, {
           "description" : "Read inputs / write results",
-          "destinationId" : "123",
-          "id" : "130",
+          "destinationId" : "69",
+          "id" : "76",
           "properties" : {
-            "structurizr.dsl.identifier" : "7389857d-84f3-4500-b7da-2fdaed426514"
+            "structurizr.dsl.identifier" : "3a6c7aef-22b9-43bd-a5d0-da61cbdcf5f4"
           },
-          "sourceId" : "128",
+          "sourceId" : "74",
           "tags" : "Relationship,Simple View"
         } ],
         "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian",
@@ -1282,7 +718,7 @@
         "description" : "Executes delta SQL migrations",
         "documentation" : { },
         "group" : "Wholesale/Databricks Workspace",
-        "id" : "131",
+        "id" : "77",
         "name" : "Deployment Warehouse",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesaledeploymentwarehouse"
@@ -1290,11 +726,11 @@
         "relationships" : [ {
           "description" : "Read/write executed migrations",
           "destinationId" : "23",
-          "id" : "132",
+          "id" : "78",
           "properties" : {
-            "structurizr.dsl.identifier" : "2208384e-08da-4728-8a12-4c18499224cf"
+            "structurizr.dsl.identifier" : "c4a7e4c7-7066-4e0b-b21f-a705d189862b"
           },
-          "sourceId" : "131",
+          "sourceId" : "77",
           "tags" : "Relationship"
         } ],
         "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian,Intermediate Technology",
@@ -1303,7 +739,7 @@
         "description" : "Executes delta SQL queries (also used by EDI)",
         "documentation" : { },
         "group" : "Wholesale/Databricks Workspace",
-        "id" : "133",
+        "id" : "79",
         "name" : "Runtime Warehouse",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesaleruntimewarehouse"
@@ -1311,11 +747,11 @@
         "relationships" : [ {
           "description" : "Read results",
           "destinationId" : "23",
-          "id" : "134",
+          "id" : "80",
           "properties" : {
-            "structurizr.dsl.identifier" : "56be7240-a327-4b67-9013-597b44e27836"
+            "structurizr.dsl.identifier" : "c9dc2ca1-88d6-432b-a827-9407a9e17716"
           },
-          "sourceId" : "133",
+          "sourceId" : "79",
           "tags" : "Relationship"
         } ],
         "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian,Mosaic,Intermediate Technology",
@@ -1324,7 +760,7 @@
         "description" : "Executes delta SQL queries",
         "documentation" : { },
         "group" : "Wholesale/Databricks Workspace",
-        "id" : "135",
+        "id" : "81",
         "name" : "Settlement Reports Warehouse",
         "properties" : {
           "structurizr.dsl.identifier" : "settlementreportswarehouse"
@@ -1332,11 +768,11 @@
         "relationships" : [ {
           "description" : "Read basis data and results",
           "destinationId" : "23",
-          "id" : "136",
+          "id" : "82",
           "properties" : {
-            "structurizr.dsl.identifier" : "7975282a-32d8-4265-9a2d-6e155283a958"
+            "structurizr.dsl.identifier" : "f8b76667-499f-4d8b-adb5-8bf439180f1d"
           },
-          "sourceId" : "135",
+          "sourceId" : "81",
           "tags" : "Relationship"
         } ],
         "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian,Raccoons,Intermediate Technology",
@@ -1345,7 +781,7 @@
         "description" : "Meta data of calculations",
         "documentation" : { },
         "group" : "Wholesale",
-        "id" : "137",
+        "id" : "83",
         "name" : "Wholesale Database",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesaledb"
@@ -1356,40 +792,59 @@
         "description" : "Backend server providing external web API for Wholesale subsystem",
         "documentation" : { },
         "group" : "Wholesale",
-        "id" : "138",
+        "id" : "84",
         "name" : "Wholesale API",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesaleapi"
         },
         "relationships" : [ {
-          "description" : "Sends to EDI Inbox",
+          "description" : "Subscribes to integration events",
           "destinationId" : "26",
-          "id" : "140",
+          "id" : "85",
           "properties" : {
-            "structurizr.dsl.identifier" : "d377fc70-ca7f-43be-ba2f-949513f1b54d"
+            "structurizr.dsl.identifier" : "66bcc130-a977-4c0a-927c-43779acb157e"
           },
-          "sourceId" : "138",
+          "sourceId" : "84",
           "tags" : "Relationship",
-          "technology" : "message/amqp"
+          "technology" : "integration event/amqp"
         }, {
           "description" : "Uses",
-          "destinationId" : "137",
-          "id" : "141",
+          "destinationId" : "83",
+          "id" : "86",
           "properties" : {
-            "structurizr.dsl.identifier" : "a56a4cf6-52f9-4ce0-a33b-93a92922c245"
+            "structurizr.dsl.identifier" : "71a4528c-34a2-4db8-816e-96e5d8b27445"
           },
-          "sourceId" : "138",
+          "sourceId" : "84",
           "tags" : "Relationship",
           "technology" : "EF Core"
         }, {
           "description" : "Retrieves results from",
-          "destinationId" : "133",
-          "id" : "142",
+          "destinationId" : "79",
+          "id" : "87",
           "properties" : {
-            "structurizr.dsl.identifier" : "4df936fc-e14c-4a9c-8c98-ec062458fcf4"
+            "structurizr.dsl.identifier" : "f423d5bb-c318-4124-8e2a-05eab8b7d8c8"
           },
-          "sourceId" : "138",
+          "sourceId" : "84",
           "tags" : "Relationship"
+        }, {
+          "description" : "Retrieves results from",
+          "destinationId" : "69",
+          "id" : "88",
+          "properties" : {
+            "structurizr.dsl.identifier" : "111d7207-8e8a-492c-ad97-436ba4f42fd3"
+          },
+          "sourceId" : "84",
+          "tags" : "Relationship,Simple View"
+        }, {
+          "description" : "Subscribes to integration event Grid Area Ownership Assigned",
+          "destinationId" : "95",
+          "id" : "96",
+          "properties" : {
+            "structurizr.dsl.identifier" : "4e919649-2a9b-4964-a4da-3585fb780687"
+          },
+          "sourceId" : "84",
+          "tags" : "Relationship,Simple View",
+          "technology" : "integration event/amqp"
         } ],
         "tags" : "Element,Container,Microsoft Azure - App Services,Mandalorian,MarketParticipant Subscriber",
         "technology" : "Asp.Net Core Web API"
@@ -1397,92 +852,181 @@
         "description" : "Orchestrate calculation workflow, generate settlement reports",
         "documentation" : { },
         "group" : "Wholesale",
-        "id" : "144",
+        "id" : "89",
         "name" : "Wholesale Orchestrations",
         "properties" : {
           "structurizr.dsl.identifier" : "wholesaleorchestrations"
         },
         "relationships" : [ {
-          "description" : "Publish calculation completed and grid loss",
+          "description" : "Listens on Wholesale Inbox queue",
           "destinationId" : "26",
-          "id" : "145",
+          "id" : "90",
           "properties" : {
-            "structurizr.dsl.identifier" : "01c5a95f-53e5-4d71-ba8c-0f75d7235957"
+            "structurizr.dsl.identifier" : "90013667-2ea5-45bb-beef-040f3cc2e23b"
           },
-          "sourceId" : "144",
+          "sourceId" : "89",
           "tags" : "Relationship",
-          "technology" : "integration event/amqp"
+          "technology" : "message/amqp"
         }, {
           "description" : "Uses",
-          "destinationId" : "137",
-          "id" : "146",
+          "destinationId" : "83",
+          "id" : "91",
           "properties" : {
-            "structurizr.dsl.identifier" : "ba848edc-921f-4ccd-a3a2-eb11edb4bd9e"
+            "structurizr.dsl.identifier" : "ee2a84f3-dce2-4526-81bf-2d9126ca34ef"
           },
-          "sourceId" : "144",
+          "sourceId" : "89",
           "tags" : "Relationship",
           "technology" : "EF Core"
         }, {
           "description" : "Invokes",
-          "destinationId" : "125",
-          "id" : "147",
+          "destinationId" : "71",
+          "id" : "92",
           "properties" : {
-            "structurizr.dsl.identifier" : "99d14be7-1cfa-4b73-a56e-c50c88dafc30"
+            "structurizr.dsl.identifier" : "6a8f735a-1a3f-4919-ad34-79b5bd9e03d2"
           },
-          "sourceId" : "144",
+          "sourceId" : "89",
           "tags" : "Relationship"
         }, {
           "description" : "Retrieves results from",
-          "destinationId" : "133",
-          "id" : "148",
+          "destinationId" : "79",
+          "id" : "93",
           "properties" : {
-            "structurizr.dsl.identifier" : "bfadc0b1-b9fe-4c78-8750-ad244bef2fa6"
+            "structurizr.dsl.identifier" : "62eb08fa-fdcb-42b5-8baa-f2be0fdeaadb"
           },
-          "sourceId" : "144",
+          "sourceId" : "89",
           "tags" : "Relationship"
+        }, {
+          "description" : "Retrieves results from",
+          "destinationId" : "69",
+          "id" : "94",
+          "properties" : {
+            "structurizr.dsl.identifier" : "5b762a34-9e54-4d90-9f9b-167e45d6fc9a"
+          },
+          "sourceId" : "89",
+          "tags" : "Relationship,Simple View"
         } ],
         "tags" : "Element,Container,Microsoft Azure - Function Apps,Mandalorian",
         "technology" : "Azure function, C#"
       }, {
-        "description" : "Backend for Frontend",
         "documentation" : { },
-        "group" : "Frontend",
-        "id" : "149",
-        "name" : "BFF",
+        "group" : "Related Subsystems",
+        "id" : "95",
+        "name" : "Market Participant",
         "properties" : {
-          "structurizr.dsl.identifier" : "frontendbff"
+          "structurizr.dsl.identifier" : "markpartsubsystem"
         },
         "relationships" : [ {
-          "description" : "Interact using HTTP API",
-          "destinationId" : "138",
-          "id" : "150",
+          "description" : "Publish Grid Area Ownership Assigned",
+          "destinationId" : "26",
+          "id" : "97",
           "properties" : {
-            "structurizr.dsl.identifier" : "bc6dba80-0302-4731-b490-c05fe30be5cb"
+            "structurizr.dsl.identifier" : "60be782d-09aa-4956-8d83-f41df0d99df5"
           },
-          "sourceId" : "149",
+          "sourceId" : "95",
+          "tags" : "Relationship,Detailed View",
+          "technology" : "integration event/amqp"
+        } ],
+        "tags" : "Element,Container,Subsystem"
+      }, {
+        "description" : "Backend for Frontend. Partnership relationship",
+        "documentation" : { },
+        "group" : "Related Subsystems",
+        "id" : "98",
+        "name" : "BFF",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bffsubsystem"
+        },
+        "relationships" : [ {
+          "description" : "Uses HTTP API",
+          "destinationId" : "84",
+          "id" : "99",
+          "properties" : {
+            "structurizr.dsl.identifier" : "0ee2d1c7-763b-420b-9bb3-9df453d722ef"
+          },
+          "sourceId" : "98",
           "tags" : "Relationship"
         } ],
-        "tags" : "Element,Container"
+        "tags" : "Element,Container,Subsystem"
       }, {
         "description" : "Delivers DataHub 2.0 data to DataHub 3.0",
         "documentation" : { },
-        "group" : "Migrations",
-        "id" : "151",
+        "group" : "Related Subsystems",
+        "id" : "100",
         "name" : "Data Migration",
         "properties" : {
-          "structurizr.dsl.identifier" : "migrationdatabricks"
+          "structurizr.dsl.identifier" : "migrationsubsystem"
         },
         "relationships" : [ {
           "description" : "Deliver calculation inputs",
           "destinationId" : "23",
-          "id" : "152",
+          "id" : "101",
           "properties" : {
-            "structurizr.dsl.identifier" : "29677a1d-51cc-4c65-9526-1a4454380615"
+            "structurizr.dsl.identifier" : "c3676905-abeb-4b62-abcd-b252ba5798b9"
           },
-          "sourceId" : "151",
-          "tags" : "Relationship"
+          "sourceId" : "100",
+          "tags" : "Relationship,Detailed View"
         } ],
-        "tags" : "Element,Container"
+        "tags" : "Element,Container,Subsystem"
+      }, {
+        "description" : "Downstream subsystems reading data from wholesale",
+        "documentation" : { },
+        "group" : "Related Subsystems",
+        "id" : "103",
+        "name" : "Downstream Readers",
+        "properties" : {
+          "structurizr.dsl.identifier" : "downstreamreadersubsystems"
+        },
+        "relationships" : [ {
+          "description" : "Read calculation output data",
+          "destinationId" : "69",
+          "id" : "104",
+          "properties" : {
+            "structurizr.dsl.identifier" : "eb790b81-9188-47a1-8e9e-17422179ae7a"
+          },
+          "sourceId" : "103",
+          "tags" : "Relationship,Simple View"
+        }, {
+          "description" : "Read calculation output data",
+          "destinationId" : "23",
+          "id" : "105",
+          "properties" : {
+            "structurizr.dsl.identifier" : "b3ec7710-6fb1-4fb5-9e8d-f735e45085c8"
+          },
+          "sourceId" : "103",
+          "tags" : "Relationship,Detailed View"
+        } ],
+        "tags" : "Element,Container,Subsystem"
+      }, {
+        "description" : "Downstream subsystems subscribing to integration events from wholesale",
+        "documentation" : { },
+        "group" : "Related Subsystems",
+        "id" : "106",
+        "name" : "Downstream Subscribers",
+        "properties" : {
+          "structurizr.dsl.identifier" : "downstreamsubscribersubsystems"
+        },
+        "relationships" : [ {
+          "description" : "Subscribes to calculation_completed_v1 integration events",
+          "destinationId" : "84",
+          "id" : "107",
+          "properties" : {
+            "structurizr.dsl.identifier" : "9345725e-d232-4260-86f3-829d7b632512"
+          },
+          "sourceId" : "106",
+          "tags" : "Relationship,Simple View",
+          "technology" : "integration event/amqp"
+        }, {
+          "description" : "Subscribes to integration events",
+          "destinationId" : "26",
+          "id" : "108",
+          "properties" : {
+            "structurizr.dsl.identifier" : "3e1d62dd-3200-4de6-b555-3990aab55d86"
+          },
+          "sourceId" : "106",
+          "tags" : "Relationship,Detailed View",
+          "technology" : "integration event/amqp"
+        } ],
+        "tags" : "Element,Container,Subsystem"
       } ],
       "description" : "Provides uniform communication and standardized processes for actors operating on the Danish electricity market.",
       "documentation" : { },
@@ -1516,7 +1060,7 @@
         "destinationId" : "20",
         "id" : "64",
         "properties" : {
-          "structurizr.dsl.identifier" : "e7ac3d0f-2ce5-4982-9d7a-2bb993eba49c"
+          "structurizr.dsl.identifier" : "95bc106d-ac08-4d97-8d76-985b969c69f1"
         },
         "sourceId" : "36",
         "tags" : "Relationship"
@@ -1525,7 +1069,7 @@
         "destinationId" : "19",
         "id" : "65",
         "properties" : {
-          "structurizr.dsl.identifier" : "7867b555-a71a-43f7-b8b1-28ec2679404b"
+          "structurizr.dsl.identifier" : "bb25a42a-07f3-4f84-9ae1-a974bad3a4b0"
         },
         "sourceId" : "36",
         "tags" : "Relationship"
@@ -1534,7 +1078,7 @@
         "destinationId" : "14",
         "id" : "66",
         "properties" : {
-          "structurizr.dsl.identifier" : "07f96087-a09c-4a0d-a596-57765c32b0cb"
+          "structurizr.dsl.identifier" : "5c3ccc43-a730-4ac7-a94f-3242f76e92f9"
         },
         "sourceId" : "36",
         "tags" : "Relationship"
@@ -1543,7 +1087,7 @@
         "destinationId" : "15",
         "id" : "67",
         "properties" : {
-          "structurizr.dsl.identifier" : "dab72e13-e58a-4f58-97d3-2282510bfc07"
+          "structurizr.dsl.identifier" : "b32845f6-08ff-4e6a-b18a-4717c1154835"
         },
         "sourceId" : "36",
         "tags" : "Relationship"
@@ -1564,7 +1108,7 @@
         "destinationId" : "22",
         "id" : "68",
         "properties" : {
-          "structurizr.dsl.identifier" : "5f9fcdbe-e695-43ac-a0d4-6ed6645efff0"
+          "structurizr.dsl.identifier" : "a441e74a-34d9-406f-9231-33cab7cc7558"
         },
         "sourceId" : "37",
         "tags" : "Relationship"
@@ -1574,12 +1118,12 @@
   },
   "name" : "DataHub",
   "properties" : {
-    "structurizr.dsl" : "IyBUaGUgJ3ZpZXdzLmRzbCcgZmlsZSBpcyBpbnRlbmRlZCBhcyBhIG1lYW4gZm9yIHZpZXdpbmcgYW5kIHZhbGlkYXRpbmcgdGhlIG1vZGVsCiMgaW4gdGhlIHN1YnN5c3RlbSByZXBvc2l0b3J5LiBJdCBzaG91bGQKIyAgICogRXh0ZW5kIHRoZSBiYXNlIG1vZGVsIGFuZCBvdmVycmlkZSB0aGUgJ2RoMycgc29mdHdhcmUgc3lzdGVtCiMgICAqIEluY2x1ZGUgb2YgdGhlIGBtb2RlbC5kc2xgIGZpbGVzIGZyb20gZWFjaCBzdWJzeXN0ZW0gcmVwb3NpdG9yeSB1c2luZyBhbiBVUkwKIwojIFRoZSBgbW9kZWwuZHNsYCBmaWxlIG11c3QgY29udGFpbiB0aGUgYWN0dWFsIG1vZGVsLCBhbmQgaXMgdGhlIHBpZWNlIHRoYXQgbXVzdAojIGJlIHJldXNhYmxlIGFuZCBpbmNsdWRlZCBpbiBvdGhlciBTdHJ1Y3R1cml6ciBmaWxlcyBsaWtlIGB2aWV3cy5kc2xgIGFuZAojIGRlcGxveW1lbnQgZGlhZ3JhbSBmaWxlcy4KCndvcmtzcGFjZSBleHRlbmRzIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9FbmVyZ2luZXQtRGF0YUh1Yi9vcGVuZ2VoLWFyY2gtZGlhZ3JhbXMvbWFpbi9kb2NzL2RpYWdyYW1zL2M0LW1vZGVsL2RoLWJhc2UtbW9kZWwuZHNsIHsKICAgIG1vZGVsIHsKICAgICAgICAjCiAgICAgICAgIyBEYXRhSHViIDMuMCAoZXh0ZW5kcykKICAgICAgICAjCiAgICAgICAgIXJlZiBkaDMgewoKICAgICAgICAgICAgIyBJTVBPUlRBTlQ6CiAgICAgICAgICAgICMgVGhlIG9yZGVyIGJ5IHdoaWNoIG1vZGVscyBhcmUgaW5jbHVkZWQgaXMgaW1wb3J0YW50IGZvciBob3cgdGhlIHN1YnN5c3RlbS10by1zdWJzeXN0ZW0gcmVsYXRpb25zaGlwcyBhcmUgc3BlY2lmaWVkLgogICAgICAgICAgICAjIEEgc3Vic3lzdGVtLXRvLXN1YnN5c3RlbSByZWxhdGlvbnNoaXAgc2hvdWxkIGJlIHNwZWNpZmllZCBpbiB0aGUgImNsaWVudCIgb2YgYSAiY2xpZW50LT5zZXJ2ZXIiIGRlcGVuZGVuY3ksIGFuZAogICAgICAgICAgICAjIGhlbmNlIHN1YnN5c3RlbXMgdGhhdCBkb2Vzbid0IGRlcGVuZCBvbiBvdGhlcnMsIHNob3VsZCBiZSBsaXN0ZWQgZmlyc3QuCgogICAgICAgICAgICAjIElNUE9SVEFOVDogVGhlIHRva2VuIGV4cGlyZXMgd2l0aGluIGFuIGhvdXIgKG9yIHNvKS4gR28gdG8gdGhlIHJlcG8gYW5kIGZpbmQgdGhlIGZpbGUgYW5kIHZpZXcgdGhlIHJhdyBjb250ZW50IHRvIGdldCBhIG5ldyB0b2tlbiAoY29weSBmcm9tIHRoZSB1cmwpCiAgICAgICAgICAgIHJldkxvZyA9IGdyb3VwICJSZXZpc2lvbiBMb2ciIHsKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICByZXZMb2dEYXRhYmFzZSA9IGNvbnRhaW5lciAiUmV2aXNpb24gTG9nIERhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkNvbnRhaW5zIHRoZSByZXZpc2lvbiBsb2dzLiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJTUUwgRGF0YWJhc2UgU2NoZW1hIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGEgU3RvcmFnZSIgIk1pY3Jvc29mdCBBenVyZSAtIFNRTCBEYXRhYmFzZSIgIlJhY2Nvb25zIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgIHJldkxvZ0luZ2VzdGlvbiA9IGNvbnRhaW5lciAiTG9nIEluZ2VzdGlvbiBBUEkiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiSFRUUCBBUEkgZW5kcG9pbnQgZm9yIHN1Ym1pdHRpbmcgcmV2aXNpb24gbG9ncy4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgZnVuY3Rpb24sIEMjIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEZ1bmN0aW9uIEFwcHMiICJSYWNjb29ucyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiByZXZMb2dEYXRhYmFzZSAid3JpdGVzIHRvIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgIyBJbmNsdWRlIE1hcmtldCBQYXJ0aWNpcGFudCBtb2RlbAogICAgICAgICAgICAjIFJlYWQgZGVzY3JpcHRpb24gaW4gdGhlICd2aWV3cy5kc2wnIGZpbGUuCiAgICAgICAgICAgIAogICAgICAgICAgICBtYXJrcGFydERvbWFpbiA9IGdyb3VwICJNYXJrZXQgUGFydGljaXBhbnQiIHsKICAgICAgICAgICAgICAgICMKICAgICAgICAgICAgICAgICMgQ29tbW9uIChtYW5hZ2VkIGJ5IE1hcmtldCBQYXJ0aWNpcGFudCkKICAgICAgICAgICAgICAgICMKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAjCiAgICAgICAgICAgICAgICAjIERvbWFpbgogICAgICAgICAgICAgICAgIwogICAgICAgICAgICAgICAgbWFya3BhcnREYiA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IERhdGFiYXNlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkNvbnRhaW5zIGRhdGEgcmVnYXJkaW5nIGFjdG9ycywgdXNlcnMgYW5kIHBlcm1pc3Npb25zLiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJTUUwgRGF0YWJhc2UgU2NoZW1hIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGEgU3RvcmFnZSIgIk1pY3Jvc29mdCBBenVyZSAtIFNRTCBEYXRhYmFzZSIgIlJhY2Nvb25zIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgIG1hcmtwYXJ0S2V5VmF1bHQgPSBjb250YWluZXIgIk1hcmtldCBQYXJ0aWNpcGFudCBJbnRlcm5hbCBLZXkgVmF1bHQiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQ29udGFpbnMgdGhlIGtleSB1c2VkIGZvciBzaWduaW5nIHRva2Vucy4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgS2V5IFZhdWx0IgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEtleSBWYXVsdHMiICJSYWNjb29ucyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBtYXJrcGFydENlcnRLZXlWYXVsdCA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IENlcnRpZmljYXRlIEtleSBWYXVsdCIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJDb250YWlucyBwdWJsaWMgREgyIGNlcnRpZmljYXRlcyB1c2VkIGZvciBCMkIgYXV0aGVudGljYXRpb24uIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIEtleSBWYXVsdCIKICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBLZXkgVmF1bHRzIiAiUmFjY29vbnMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgbWFya3BhcnRBcGkgPSBjb250YWluZXIgIk1hcmtldCBQYXJ0aWNpcGFudCBBUEkiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiTXVsdGktdGVuYW50IEFQSSBmb3IgbWFuYWdpbmcgYWN0b3JzLCB1c2VycyBhbmQgcGVybWlzc2lvbnMuIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkFzcC5OZXQgQ29yZSBXZWIgQVBJIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEFwcCBTZXJ2aWNlcyIgIlJhY2Nvb25zIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRCMkMgIkNyZWF0ZXMgYW5kIG1hbmFnZXMgQjJDIHVzZXJzLiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgIlJlYWRzIGFuZCB3cml0ZXMgYWN0b3IvdXNlciBkYXRhLiIgIkVGIENvcmUiCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydEtleVZhdWx0ICJTaWducywgYW5kIHJlYWRzIHB1YmxpYyBrZXkgZm9yLCB0b2tlbnMuIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnRDZXJ0S2V5VmF1bHQgIk1hbmFnZXMgYWN0aXZlIERIMiBjZXJ0aWZpY2F0ZXMgdXNlZCBmb3IgQjJCIGF1dGhlbnRpY2F0aW9uLiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHJldkxvZ0luZ2VzdGlvbiAic3VibWl0cyBsb2dzIiAiSFRUUCIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRVc2VySWRlbnRpdHlSZXBvc2l0b3J5SW5NYXJrcGFydEFwaSA9IGNvbXBvbmVudCAiVXNlcklkZW50aXR5UmVwb3NpdG9yeSIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiTWFuYWdlcyBhY2Nlc3MgdG8gQjJDIHVzZXIgZGF0YSB0aHJvdWdoIEdyYXBoQVBJLiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZEIyQyAiQWNjZXNzZXMgdXNlciBpbmZvcm1hdGlvbi4iICJNaWNyb3NvZnQuR3JhcGgvaHR0cHMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFVzZXJDb250cm9sbGVyID0gY29tcG9uZW50ICJVc2VyQ29udHJvbGxlciIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQVBJIGZvciBtYW5hZ2luZyB1c2Vycy4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgInVzZXMiICJFRiBDb3JlIgogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0VXNlcklkZW50aXR5UmVwb3NpdG9yeUluTWFya3BhcnRBcGkgIkFjY2Vzc2VzIHVzZXIgaW5mb3JtYXRpb24uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRQZXJtaXNzaW9uQ29udHJvbGxlciA9IGNvbXBvbmVudCAiUGVybWlzc2lvbkNvbnRyb2xsZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkFQSSBmb3IgbWFuYWdpbmcgc3lzdGVtIHBlcm1pc3Npb25zLiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnREYiAidXNlcyIgIkVGIENvcmUiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBtYXJrcGFydFVzZXJSb2xlQ29udHJvbGxlciA9IGNvbXBvbmVudCAiVXNlclJvbGVDb250cm9sbGVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJBUEkgZm9yIG1hbmFnaW5nIHVzZXIgcm9sZXMgYW5kIHVuZGVybHlpbmcgcGVybWlzc2lvbnMuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJ1c2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0VXNlclJvbGVBc3NpZ25tZW50Q29udHJvbGxlciA9IGNvbXBvbmVudCAiVXNlclJvbGVBc3NpZ25tZW50Q29udHJvbGxlciIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQVBJIGZvciBtYW5hZ2luZyB1c2VycyBhbmQgdGhlaXIgYXNzaWduZWQgdXNlciByb2xlcy4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgInVzZXMiICJFRiBDb3JlIgogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0VXNlcklkZW50aXR5UmVwb3NpdG9yeUluTWFya3BhcnRBcGkgIkFjY2Vzc2VzIHVzZXIgaW5mb3JtYXRpb24uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRVc2VyT3ZlcnZpZXdDb250cm9sbGVyID0gY29tcG9uZW50ICJVc2VyT3ZlcnZpZXdDb250cm9sbGVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJSZWFkLW9ubHkgQVBJIGZvciBmaWx0ZXJlZCBsaXN0aW5nIG9mIHVzZXJzIGZvciBmcm9udGVuZCBwcmVzZW50YXRpb24uIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJ1c2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk1hcmtwYXJ0QXBpICJBY2Nlc3NlcyB1c2VyIGluZm9ybWF0aW9uLiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0SW52aXRhdGlvbkNvbnRyb2xsZXIgPSBjb21wb25lbnQgIkludml0YXRpb25Db250cm9sbGVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJBUEkgZm9yIHVzZXIgaW52aXRhdGlvbnMgYXMgd2VsbCBhcyBhZGRpdGlvbmFsIGFjdG9yIGludml0YXRpb25zIGZvciBleGlzdGluZyB1c2Vycy4gSW52aXRhdGlvbnMgYXJlIG9ubHkgcHJlcGFyZWQgZm9yIGRpc3BhdGNoIGhlcmUuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJ1c2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk1hcmtwYXJ0QXBpICJBY2Nlc3NlcyB1c2VyIGluZm9ybWF0aW9uLiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgbWFya3BhcnRDZXJ0aWZpY2F0ZVN5bmNocm9uaXphdGlvbiA9IGNvbnRhaW5lciAiTWFya2V0IFBhcnRpY2lwYW50IENlcnRpZmljYXRlIFN5bmNocm9uaXphdGlvbiIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJTeW5jaHJvbml6ZXMgYWN0aXZlIERIMiBhdXRoZW50aWNhdGlvbiBjZXJ0aWZpY2F0ZXMgd2l0aCBBUElNLiIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBmdW5jdGlvbiwgQyMiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gRnVuY3Rpb24gQXBwcyIgIlJhY2Nvb25zIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRBcGlNYW5hZ2VtZW50ICJMaW5rcyBhbmQgdW5saW5rcyBESDIgYWN0aXZlIGF1dGhlbnRpY2F0aW9uIGNlcnRpZmljYXRlcy4iICJSRVNUL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gbWFya3BhcnRDZXJ0S2V5VmF1bHQgIkdldHMgY2VydGlmaWNhdGVzIHRoYXQgc2hvdWxkIGJlIGFjdGl2ZSBpbiBBUElNLiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBtYXJrcGFydE9yZ2FuaXphdGlvbk1hbmFnZXIgPSBjb250YWluZXIgIk1hcmtldCBQYXJ0aWNpcGFudCBPcmdhbml6YXRpb24gTWFuYWdlciIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJTeW5jaHJvbml6ZXMgQXp1cmUgQjJDIHVzZXIgYW5kIGFjdG9yIHN0YXRlIHdpdGggdGhlIGRvbWFpbi4iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgZnVuY3Rpb24sIEMjIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEZ1bmN0aW9uIEFwcHMiICJSYWNjb29ucyIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRVc2VySWRlbnRpdHlSZXBvc2l0b3J5SW5Pcmdhbml6YXRpb25NYW5hZ2VyID0gY29tcG9uZW50ICJVc2VySWRlbnRpdHlSZXBvc2l0b3J5IiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJNYW5hZ2VzIGFjY2VzcyB0byBCMkMgdXNlciBkYXRhIHRocm91Z2ggR3JhcGhBUEkuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkQjJDICJBY2Nlc3NlcyB1c2VyIGluZm9ybWF0aW9uLiIgIk1pY3Jvc29mdC5HcmFwaC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0RXZlbnRBY3RvclN5bmNocm9uaXplciA9IGNvbXBvbmVudCAiQWN0b3IgU3luY2hyb25pemVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJDcmVhdGVzIEIyQyBhcHBsaWNhdGlvbiByZWdpc3RyYXRpb24gZm9yIG5ld2x5IGNyZWF0ZWQgYWN0b3JzLiIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiVGltZXIgVHJpZ2dlciIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gRnVuY3Rpb24gQXBwcyIgIlJhY2Nvb25zIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkQjJDICJDcmVhdGVzIEIyQyBBcHAgUmVnaXN0cmF0aW9ucy4iICJNaWNyb3NvZnQuR3JhcGgvaHR0cHMiCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZFNlcnZpY2VCdXMgIlNlbmRzIG1hcmtldCBwYXJ0aWNpcGFudCBldmVudHMuIiAiaW50ZWdyYXRpb24gZXZlbnQvYW1xcCIKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJVcGRhdGVzIGFjdG9ycyB3aXRoIGV4dGVybmFsIEIyQyBpZC4iICJFRiBDb3JlIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgbWFya3BhcnRNYWlsRGlzcGF0Y2hlciA9IGNvbXBvbmVudCAiTWFpbCBEaXNwYXRjaGVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJSZXNwb25zaWJsZSBmb3Igc2VuZGluZyB1c2VyIGludml0YXRpb25zLiIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiVGltZXIgVHJpZ2dlciIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gRnVuY3Rpb24gQXBwcyIgIlJhY2Nvb25zIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkRXh0ZXJuYWxTZW5kR3JpZCAiU2VuZHMgaW52aXRhdGlvbiBtYWlsLiIgIlNlbmRHcmlkL2h0dHBzIgogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IG1hcmtwYXJ0RGIgIlJlYWRzIGRhdGEgcmVnYXJkaW5nIG5ld2x5IGludml0ZWQgdXNlcnMuIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0SW50ZWdyYXRpb25FdmVudHMgPSBjb21wb25lbnQgIkludGVncmF0aW9uIEV2ZW50IFJlY2VpdmVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJSZWNlaXZlciBmb3IgZG9tYWluIGV2ZW50IHNlbnQgdG8gc2hhcmVkIHNlcnZpY2VidXMuIgogICAgICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJTZXJ2aWNlQnVzIgogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBGdW5jdGlvbiBBcHBzIiAiUmFjY29vbnMiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICBkaDMuc2hhcmVkU2VydmljZUJ1cyAtPiB0aGlzICJSZWNlaXZlcyBpbnRlZ3JhdGlvbiBldmVudHMuIiAiaW50ZWdyYXRpb24gZXZlbnQvYW1xcCIKICAgICAgICAgICAgICAgICAgICAgICAgbWFya1BhcnRJRVNlbmRHcmlkID0gdGhpcyAtPiBkaDMuc2hhcmVkRXh0ZXJuYWxTZW5kR3JpZCAiU2VuZHMgY2hhbmdlIG5vdGlmaWNhdGlvbi4iICJTZW5kR3JpZC9odHRwcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0VXNlckludml0YXRpb25FeHBpcmVkVGltZXJUcmlnZ2VyID0gY29tcG9uZW50ICJVc2VySW52aXRhdGlvbkV4cGlyZWRUaW1lclRyaWdnZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIlRpbWVyIFRyaWdnZXIgY2hlY2tpbmcgZm9yIHVzZXJzIHdpdGggZXhwaXJlZCBpbnZpdGF0aW9ucy4gVXNlcnMgd2l0aCBleHBpcmVkIGludml0YXRpb25zIGFyZSBkaXNhYmxlZCBpbiBCMkMuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydERiICJ1c2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBtYXJrcGFydFVzZXJJZGVudGl0eVJlcG9zaXRvcnlJbk9yZ2FuaXphdGlvbk1hbmFnZXIgIkFjY2Vzc2VzIHVzZXIgaW5mb3JtYXRpb24uIiAiTWljcm9zb2Z0LkdyYXBoL2h0dHBzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgIyBJbmNsdWRlIFdob2xlc2FsZSBtb2RlbAogICAgICAgICAgICAjIFJlYWQgZGVzY3JpcHRpb24gaW4gdGhlICd2aWV3cy5kc2wnIGZpbGUuCiAgICAgICAgICAgIAogICAgICAgICAgICB3aG9sZXNhbGVTdWJzeXN0ZW0gPSBncm91cCAiV2hvbGVzYWxlIiB7CiAgICAgICAgICAgICAgICB3aG9sZXNhbGVEYXRhTGFrZSA9IGNvbnRhaW5lciAiV2hvbGVzYWxlIERhdGFMYWtlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkNhbGN1bGF0aW9uIGlucHV0cyBhbmQgcmVzdWx0cyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhIExha2UgR2VuIDIiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YSBTdG9yYWdlIiAiTWljcm9zb2Z0IEF6dXJlIC0gRGF0YSBMYWtlIFN0b3JlIEdlbjEiICJNYW5kYWxvcmlhbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBSZWxhdGlvbnMgdG8gc2hhcmVkCiAgICAgICAgICAgICAgICAgICAgZGgzLnNoYXJlZFVuaXR5Q2F0YWxvZyAtPiB0aGlzICJSZWFkIGRhdGEgLyB3cml0ZSBkYXRhIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgIHdob2xlc2FsZURhdGFicmlja3NXb3Jrc3BhY2UgPSBncm91cCAiRGF0YWJyaWNrcyBXb3Jrc3BhY2UiIHsKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgd2hvbGVzYWxlQ2FsY3VsYXRvckpvYiA9IGNvbnRhaW5lciAiQ2FsY3VsYXRvciBKb2IiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkV4ZWN1dGVzIGNhbGN1bGF0aW9ucyIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgRGF0YWJyaWNrcyIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gQXp1cmUgRGF0YWJyaWNrcyIgIk1hbmRhbG9yaWFuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBTdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRVbml0eUNhdGFsb2cgIlJlYWQgaW5wdXRzIC8gd3JpdGUgcmVzdWx0cyIKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVEYXRhTGFrZSAiUmVhZCBpbnB1dHMgLyB3cml0ZSByZXN1bHRzIiB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJTaW1wbGUgVmlldyIKICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB3aG9sZXNhbGVNaWdyYXRpb25Kb2IgPSBjb250YWluZXIgIk1pZ3JhdGlvbiBKb2IiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkV4ZWN1dGVzIGRlbHRhIG1pZ3JhdGlvbnMgKGludm9rZWQgZHVyaW5nIGRlcGxveW1lbnQpIgogICAgICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhYnJpY2tzIgogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBenVyZSBEYXRhYnJpY2tzIiAiTWFuZGFsb3JpYW4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZFVuaXR5Q2F0YWxvZyAiTWlncmF0ZSBkYXRhYmFzZSBvYmplY3RzIGFuZCBkYXRhIgogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURhdGFMYWtlICJSZWFkIGlucHV0cyAvIHdyaXRlIHJlc3VsdHMiIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIHdob2xlc2FsZURlcGxveW1lbnRXYXJlaG91c2UgPSBjb250YWluZXIgIkRlcGxveW1lbnQgV2FyZWhvdXNlIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJFeGVjdXRlcyBkZWx0YSBTUUwgbWlncmF0aW9ucyIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgRGF0YWJyaWNrcyBTUUwgV2FyZWhvdXNlIgogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBenVyZSBEYXRhYnJpY2tzIiAiTWFuZGFsb3JpYW4iICJJbnRlcm1lZGlhdGUgVGVjaG5vbG9neSIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkVW5pdHlDYXRhbG9nICJSZWFkL3dyaXRlIGV4ZWN1dGVkIG1pZ3JhdGlvbnMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIHdob2xlc2FsZVJ1bnRpbWVXYXJlaG91c2UgPSBjb250YWluZXIgIlJ1bnRpbWUgV2FyZWhvdXNlIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJFeGVjdXRlcyBkZWx0YSBTUUwgcXVlcmllcyAoYWxzbyB1c2VkIGJ5IEVESSkiCiAgICAgICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIERhdGFicmlja3MgU1FMIFdhcmVob3VzZSIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gQXp1cmUgRGF0YWJyaWNrcyIgIk1hbmRhbG9yaWFuIiAiTW9zYWljIiAiSW50ZXJtZWRpYXRlIFRlY2hub2xvZ3kiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZFVuaXR5Q2F0YWxvZyAiUmVhZCByZXN1bHRzIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBzZXR0bGVtZW50UmVwb3J0c1dhcmVob3VzZSA9IGNvbnRhaW5lciAiU2V0dGxlbWVudCBSZXBvcnRzIFdhcmVob3VzZSIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiRXhlY3V0ZXMgZGVsdGEgU1FMIHF1ZXJpZXMiCiAgICAgICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIERhdGFicmlja3MgU1FMIFdhcmVob3VzZSIKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gQXp1cmUgRGF0YWJyaWNrcyIgIk1hbmRhbG9yaWFuIiAiUmFjY29vbnMiICJJbnRlcm1lZGlhdGUgVGVjaG5vbG9neSIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkVW5pdHlDYXRhbG9nICJSZWFkIGJhc2lzIGRhdGEgYW5kIHJlc3VsdHMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgIHdob2xlc2FsZURiID0gY29udGFpbmVyICJXaG9sZXNhbGUgRGF0YWJhc2UiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiTWV0YSBkYXRhIG9mIGNhbGN1bGF0aW9ucyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJTUUwgRGF0YWJhc2UgU2NoZW1hIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRhdGEgU3RvcmFnZSIgIk1pY3Jvc29mdCBBenVyZSAtIFNRTCBEYXRhYmFzZSIgIk1hbmRhbG9yaWFuIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2hvbGVzYWxlQXBpID0gY29udGFpbmVyICJXaG9sZXNhbGUgQVBJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkJhY2tlbmQgc2VydmVyIHByb3ZpZGluZyBleHRlcm5hbCB3ZWIgQVBJIGZvciBXaG9sZXNhbGUgc3Vic3lzdGVtIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkFzcC5OZXQgQ29yZSBXZWIgQVBJIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEFwcCBTZXJ2aWNlcyIgIk1hbmRhbG9yaWFuIiAiTWFya2V0UGFydGljaXBhbnQgU3Vic2NyaWJlciIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBCYXNlIG1vZGVsIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICBkaDMuc2hhcmVkU2VydmljZUJ1cyAtPiB0aGlzICJTdWJzY3JpYmVzIHRvIEludGVncmF0aW9uIEV2ZW50cyIgImludGVncmF0aW9uIGV2ZW50L2FtcXAiCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkU2VydmljZUJ1cyAiU2VuZHMgdG8gRURJIEluYm94IiAibWVzc2FnZS9hbXFwIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVEYiAiVXNlcyIgIkVGIENvcmUiCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVSdW50aW1lV2FyZWhvdXNlICJSZXRyaWV2ZXMgcmVzdWx0cyBmcm9tIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbS10by1TdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIG1hcmtwYXJ0T3JnYW5pemF0aW9uTWFuYWdlciAtPiB0aGlzICJQdWJsaXNoIEdyaWQgQXJlYSBPd25lcnNoaXAgQXNzaWduZWQiICJpbnRlZ3JhdGlvbiBldmVudC9hbXFwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHdob2xlc2FsZU9yY2hlc3RyYXRpb25zID0gY29udGFpbmVyICJXaG9sZXNhbGUgT3JjaGVzdHJhdGlvbnMiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiT3JjaGVzdHJhdGUgY2FsY3VsYXRpb24gd29ya2Zsb3csIGdlbmVyYXRlIHNldHRsZW1lbnQgcmVwb3J0cyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBmdW5jdGlvbiwgQyMiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiTWljcm9zb2Z0IEF6dXJlIC0gRnVuY3Rpb24gQXBwcyIgIk1hbmRhbG9yaWFuIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIEJhc2UgbW9kZWwgcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZFNlcnZpY2VCdXMgIlB1Ymxpc2ggY2FsY3VsYXRpb24gY29tcGxldGVkIGFuZCBncmlkIGxvc3MiICJpbnRlZ3JhdGlvbiBldmVudC9hbXFwIgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVEYiAiVXNlcyIgIkVGIENvcmUiCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVDYWxjdWxhdG9ySm9iICJJbnZva2VzIgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlUnVudGltZVdhcmVob3VzZSAiUmV0cmlldmVzIHJlc3VsdHMgZnJvbSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgIyBJbmNsdWRlIGZyb250ZW5kIG1vZGVsIC0gcGxhY2Vob2xkZXJzCiAgICAgICAgICAgIGZyb250ZW5kU3Vic3lzdGVtID0gZ3JvdXAgIkZyb250ZW5kIiB7CiAgICAgICAgICAgICAgICBmcm9udGVuZEJmZiA9IGNvbnRhaW5lciAiQkZGIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkJhY2tlbmQgZm9yIEZyb250ZW5kIgoKICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbS10by1zdWJzeXN0ZW0gcmVsYXRpb25zaGlwcy4KICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZUFwaSAiSW50ZXJhY3QgdXNpbmcgSFRUUCBBUEkiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgICMgSW5jbHVkZSBNaWdyYXRpb24gbW9kZWwgLSBwbGFjZWhvbGRlcnMKICAgICAgICAgICAgbWlncmF0aW9uU3Vic3lzdGVtID0gZ3JvdXAgIk1pZ3JhdGlvbnMiIHsKICAgICAgICAgICAgICAgIG1pZ3JhdGlvbkRhdGFicmlja3MgPSBjb250YWluZXIgIkRhdGEgTWlncmF0aW9uIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkRlbGl2ZXJzIERhdGFIdWIgMi4wIGRhdGEgdG8gRGF0YUh1YiAzLjAiCgogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtLXRvLXN1YnN5c3RlbSByZWxhdGlvbnNoaXBzLgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZFVuaXR5Q2F0YWxvZyAiRGVsaXZlciBjYWxjdWxhdGlvbiBpbnB1dHMiCgogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtLXRvLVN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgd2hvbGVzYWxlQ2FsY3VsYXRvckpvYiAtPiB0aGlzICJSZWFkIERhdGFIdWIgMi4wIGRhdGEiICJpbnRlZ3JhdGlvbiBldmVudC9hbXFwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KCiAgICB2aWV3cyB7CiAgICAgICAgY29udGFpbmVyIGRoMyAiV2hvbGVzYWxlIiB7CiAgICAgICAgICAgIHRpdGxlICJbQ29udGFpbmVyXSBEYXRhSHViIDMuMCAtIFdob2xlc2FsZSAoU2ltcGxpZmllZCkiCiAgICAgICAgICAgIGluY2x1ZGUgLT53aG9sZXNhbGVTdWJzeXN0ZW0tPgogICAgICAgICAgICBleGNsdWRlICJyZWxhdGlvbnNoaXAudGFnPT1PQXV0aCIKICAgICAgICAgICAgZXhjbHVkZSAiZWxlbWVudC50YWc9PUludGVybWVkaWF0ZSBUZWNobm9sb2d5IgogICAgICAgIH0KCiAgICAgICAgY29udGFpbmVyIGRoMyAiV2hvbGVzYWxlRGV0YWlsZWQiIHsKICAgICAgICAgICAgdGl0bGUgIltDb250YWluZXJdIERhdGFIdWIgMy4wIC0gV2hvbGVzYWxlIChEZXRhaWxlZCB3aXRoIE9BdXRoKSIKICAgICAgICAgICAgaW5jbHVkZSAtPndob2xlc2FsZVN1YnN5c3RlbS0+CiAgICAgICAgICAgIGV4Y2x1ZGUgInJlbGF0aW9uc2hpcC50YWc9PVNpbXBsZSBWaWV3IgogICAgICAgIH0KICAgIH0KfQo="
+    "structurizr.dsl" : "IyBUaGUgJ3ZpZXdzLmRzbCcgZmlsZSBpcyBpbnRlbmRlZCBhcyBhIG1lYW4gZm9yIHZpZXdpbmcgYW5kIHZhbGlkYXRpbmcgdGhlIG1vZGVsCiMgaW4gdGhlIHN1YnN5c3RlbSByZXBvc2l0b3J5LiBJdCBzaG91bGQKIyAgICogRXh0ZW5kIHRoZSBiYXNlIG1vZGVsIGFuZCBvdmVycmlkZSB0aGUgJ2RoMycgc29mdHdhcmUgc3lzdGVtCiMgICAqIEluY2x1ZGUgb2YgdGhlIGBtb2RlbC5kc2xgIGZpbGVzIGZyb20gZWFjaCBzdWJzeXN0ZW0gcmVwb3NpdG9yeSB1c2luZyBhbiBVUkwKIwojIFRoZSBgbW9kZWwuZHNsYCBmaWxlIG11c3QgY29udGFpbiB0aGUgYWN0dWFsIG1vZGVsLCBhbmQgaXMgdGhlIHBpZWNlIHRoYXQgbXVzdAojIGJlIHJldXNhYmxlIGFuZCBpbmNsdWRlZCBpbiBvdGhlciBTdHJ1Y3R1cml6ciBmaWxlcyBsaWtlIGB2aWV3cy5kc2xgIGFuZAojIGRlcGxveW1lbnQgZGlhZ3JhbSBmaWxlcy4KCndvcmtzcGFjZSBleHRlbmRzIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9FbmVyZ2luZXQtRGF0YUh1Yi9vcGVuZ2VoLWFyY2gtZGlhZ3JhbXMvbWFpbi9kb2NzL2RpYWdyYW1zL2M0LW1vZGVsL2RoLWJhc2UtbW9kZWwuZHNsIHsKICAgIG1vZGVsIHsKICAgICAgICAjCiAgICAgICAgIyBEYXRhSHViIDMuMCAoZXh0ZW5kcykKICAgICAgICAjCiAgICAgICAgIXJlZiBkaDMgewoKICAgICAgICAgICAgIyBJbmNsdWRlIFdob2xlc2FsZSBtb2RlbAogICAgICAgICAgICAjIFJlYWQgZGVzY3JpcHRpb24gaW4gdGhlICd2aWV3cy5kc2wnIGZpbGUuCiAgICAgICAgICAgIAogICAgICAgICAgICB3aG9sZXNhbGVTdWJzeXN0ZW0gPSBncm91cCAiV2hvbGVzYWxlIiB7CiAgICAgICAgICAgICAgICB3aG9sZXNhbGVEYXRhTGFrZSA9IGNvbnRhaW5lciAiV2hvbGVzYWxlIERhdGFMYWtlIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkNhbGN1bGF0aW9uIGlucHV0cyBhbmQgcmVzdWx0cyIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhIExha2UgR2VuIDIiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YSBTdG9yYWdlIiAiTWljcm9zb2Z0IEF6dXJlIC0gRGF0YSBMYWtlIFN0b3JlIEdlbjEiICJNYW5kYWxvcmlhbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBSZWxhdGlvbnMgdG8gc2hhcmVkCiAgICAgICAgICAgICAgICAgICAgZGgzLnNoYXJlZFVuaXR5Q2F0YWxvZyAtPiB0aGlzICJSZWFkIGRhdGEgLyB3cml0ZSBkYXRhIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgICAgIHdob2xlc2FsZURhdGFicmlja3NXb3Jrc3BhY2UgPSBncm91cCAiRGF0YWJyaWNrcyBXb3Jrc3BhY2UiIHsKICAgICAgICAgICAgICAgICAgICB3aG9sZXNhbGVDYWxjdWxhdG9ySm9iID0gY29udGFpbmVyICJDYWxjdWxhdG9yIEpvYiIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiRXhlY3V0ZXMgY2FsY3VsYXRpb25zIgogICAgICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhYnJpY2tzIgogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBenVyZSBEYXRhYnJpY2tzIiAiTWFuZGFsb3JpYW4iCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAjIFN1YnN5c3RlbSByZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gZGgzLnNoYXJlZFVuaXR5Q2F0YWxvZyAiUmVhZCBpbnB1dHMgLyB3cml0ZSByZXN1bHRzIgogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURhdGFMYWtlICJSZWFkIGlucHV0cyAvIHdyaXRlIHJlc3VsdHMiIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIHdob2xlc2FsZU1pZ3JhdGlvbkpvYiA9IGNvbnRhaW5lciAiTWlncmF0aW9uIEpvYiIgewogICAgICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiRXhlY3V0ZXMgZGVsdGEgbWlncmF0aW9ucyAoaW52b2tlZCBkdXJpbmcgZGVwbG95bWVudCkiCiAgICAgICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkF6dXJlIERhdGFicmlja3MiCiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEF6dXJlIERhdGFicmlja3MiICJNYW5kYWxvcmlhbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkVW5pdHlDYXRhbG9nICJNaWdyYXRlIGRhdGFiYXNlIG9iamVjdHMgYW5kIGRhdGEiCiAgICAgICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlRGF0YUxha2UgIlJlYWQgaW5wdXRzIC8gd3JpdGUgcmVzdWx0cyIgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiU2ltcGxlIFZpZXciCiAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgd2hvbGVzYWxlRGVwbG95bWVudFdhcmVob3VzZSA9IGNvbnRhaW5lciAiRGVwbG95bWVudCBXYXJlaG91c2UiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkV4ZWN1dGVzIGRlbHRhIFNRTCBtaWdyYXRpb25zIgogICAgICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJBenVyZSBEYXRhYnJpY2tzIFNRTCBXYXJlaG91c2UiCiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEF6dXJlIERhdGFicmlja3MiICJNYW5kYWxvcmlhbiIgIkludGVybWVkaWF0ZSBUZWNobm9sb2d5IgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBTdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRVbml0eUNhdGFsb2cgIlJlYWQvd3JpdGUgZXhlY3V0ZWQgbWlncmF0aW9ucyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgd2hvbGVzYWxlUnVudGltZVdhcmVob3VzZSA9IGNvbnRhaW5lciAiUnVudGltZSBXYXJlaG91c2UiIHsKICAgICAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkV4ZWN1dGVzIGRlbHRhIFNRTCBxdWVyaWVzIChhbHNvIHVzZWQgYnkgRURJKSIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgRGF0YWJyaWNrcyBTUUwgV2FyZWhvdXNlIgogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBenVyZSBEYXRhYnJpY2tzIiAiTWFuZGFsb3JpYW4iICJNb3NhaWMiICJJbnRlcm1lZGlhdGUgVGVjaG5vbG9neSIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkVW5pdHlDYXRhbG9nICJSZWFkIHJlc3VsdHMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIHNldHRsZW1lbnRSZXBvcnRzV2FyZWhvdXNlID0gY29udGFpbmVyICJTZXR0bGVtZW50IFJlcG9ydHMgV2FyZWhvdXNlIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJFeGVjdXRlcyBkZWx0YSBTUUwgcXVlcmllcyIKICAgICAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgRGF0YWJyaWNrcyBTUUwgV2FyZWhvdXNlIgogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJNaWNyb3NvZnQgQXp1cmUgLSBBenVyZSBEYXRhYnJpY2tzIiAiTWFuZGFsb3JpYW4iICJSYWNjb29ucyIgIkludGVybWVkaWF0ZSBUZWNobm9sb2d5IgogICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgIyBTdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRVbml0eUNhdGFsb2cgIlJlYWQgYmFzaXMgZGF0YSBhbmQgcmVzdWx0cyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgd2hvbGVzYWxlRGIgPSBjb250YWluZXIgIldob2xlc2FsZSBEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJNZXRhIGRhdGEgb2YgY2FsY3VsYXRpb25zIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlNRTCBEYXRhYmFzZSBTY2hlbWEiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YSBTdG9yYWdlIiAiTWljcm9zb2Z0IEF6dXJlIC0gU1FMIERhdGFiYXNlIiAiTWFuZGFsb3JpYW4iCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgd2hvbGVzYWxlQXBpID0gY29udGFpbmVyICJXaG9sZXNhbGUgQVBJIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkJhY2tlbmQgc2VydmVyIHByb3ZpZGluZyBleHRlcm5hbCB3ZWIgQVBJIGZvciBXaG9sZXNhbGUgc3Vic3lzdGVtIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkFzcC5OZXQgQ29yZSBXZWIgQVBJIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEFwcCBTZXJ2aWNlcyIgIk1hbmRhbG9yaWFuIiAiTWFya2V0UGFydGljaXBhbnQgU3Vic2NyaWJlciIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBCYXNlIG1vZGVsIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRTZXJ2aWNlQnVzICJTdWJzY3JpYmVzIHRvIGludGVncmF0aW9uIGV2ZW50cyIgImludGVncmF0aW9uIGV2ZW50L2FtcXAiCiAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgU3Vic3lzdGVtIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURiICJVc2VzIiAiRUYgQ29yZSIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZVJ1bnRpbWVXYXJlaG91c2UgIlJldHJpZXZlcyByZXN1bHRzIGZyb20iCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVEYXRhTGFrZSAiUmV0cmlldmVzIHJlc3VsdHMgZnJvbSIgewogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJTaW1wbGUgVmlldyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB3aG9sZXNhbGVPcmNoZXN0cmF0aW9ucyA9IGNvbnRhaW5lciAiV2hvbGVzYWxlIE9yY2hlc3RyYXRpb25zIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIk9yY2hlc3RyYXRlIGNhbGN1bGF0aW9uIHdvcmtmbG93LCBnZW5lcmF0ZSBzZXR0bGVtZW50IHJlcG9ydHMiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiQXp1cmUgZnVuY3Rpb24sIEMjIgogICAgICAgICAgICAgICAgICAgIHRhZ3MgIk1pY3Jvc29mdCBBenVyZSAtIEZ1bmN0aW9uIEFwcHMiICJNYW5kYWxvcmlhbiIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBCYXNlIG1vZGVsIHJlbGF0aW9uc2hpcHMKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRTZXJ2aWNlQnVzICJMaXN0ZW5zIG9uIFdob2xlc2FsZSBJbmJveCBxdWV1ZSIgIm1lc3NhZ2UvYW1xcCIKICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgIyBTdWJzeXN0ZW0gcmVsYXRpb25zaGlwcwogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlRGIgIlVzZXMiICJFRiBDb3JlIgogICAgICAgICAgICAgICAgICAgIHRoaXMgLT4gd2hvbGVzYWxlQ2FsY3VsYXRvckpvYiAiSW52b2tlcyIKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZVJ1bnRpbWVXYXJlaG91c2UgIlJldHJpZXZlcyByZXN1bHRzIGZyb20iCiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiB3aG9sZXNhbGVEYXRhTGFrZSAiUmV0cmlldmVzIHJlc3VsdHMgZnJvbSIgewogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJTaW1wbGUgVmlldyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgICMgSW5jbHVkZSByZWxhdGVkIHN1YnN5c3RlbXMuCiAgICAgICAgICAgICMgSW5jbHVkZSB0aGVtIGFzIHBsYWNlaG9sZGVycyBpbnN0ZWFkIG9mIHJlZmVyZW5jaW5nIHRoZSBtb2RlbHMgdG8gYXZvaWQgaGF2aW5nIHRoZW0gYnJlYWsgdGhpcyBtb2RlbCB3aGVuIHRoZXkgY2hhbmdlLgogICAgICAgICAgICByZWxhdGVkU3Vic3lzdGVtcyA9IGdyb3VwICJSZWxhdGVkIFN1YnN5c3RlbXMiIHsKICAgICAgICAgICAgICAgIG1hcmtwYXJ0U3Vic3lzdGVtID0gY29udGFpbmVyICJNYXJrZXQgUGFydGljaXBhbnQiIHsKICAgICAgICAgICAgICAgICAgICB0YWdzICJTdWJzeXN0ZW0iCgogICAgICAgICAgICAgICAgICAgIHdob2xlc2FsZUFwaSAtPiB0aGlzICJTdWJzY3JpYmVzIHRvIGludGVncmF0aW9uIGV2ZW50IEdyaWQgQXJlYSBPd25lcnNoaXAgQXNzaWduZWQiICJpbnRlZ3JhdGlvbiBldmVudC9hbXFwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRTZXJ2aWNlQnVzICJQdWJsaXNoIEdyaWQgQXJlYSBPd25lcnNoaXAgQXNzaWduZWQiICJpbnRlZ3JhdGlvbiBldmVudC9hbXFwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRldGFpbGVkIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIGJmZlN1YnN5c3RlbSA9IGNvbnRhaW5lciAiQkZGIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkJhY2tlbmQgZm9yIEZyb250ZW5kLiBQYXJ0bmVyc2hpcCByZWxhdGlvbnNoaXAiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiU3Vic3lzdGVtIgoKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZUFwaSAiVXNlcyBIVFRQIEFQSSIKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICBtaWdyYXRpb25TdWJzeXN0ZW0gPSBjb250YWluZXIgIkRhdGEgTWlncmF0aW9uIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkRlbGl2ZXJzIERhdGFIdWIgMi4wIGRhdGEgdG8gRGF0YUh1YiAzLjAiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiU3Vic3lzdGVtIgoKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRVbml0eUNhdGFsb2cgIkRlbGl2ZXIgY2FsY3VsYXRpb24gaW5wdXRzIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRldGFpbGVkIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIHdob2xlc2FsZUNhbGN1bGF0b3JKb2IgLT4gdGhpcyAiUmVhZCBEYXRhSHViIDIuMCBkYXRhIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICBkb3duc3RyZWFtUmVhZGVyU3Vic3lzdGVtcyA9IGNvbnRhaW5lciAiRG93bnN0cmVhbSBSZWFkZXJzIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkRvd25zdHJlYW0gc3Vic3lzdGVtcyByZWFkaW5nIGRhdGEgZnJvbSB3aG9sZXNhbGUiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiU3Vic3lzdGVtIgoKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZURhdGFMYWtlICJSZWFkIGNhbGN1bGF0aW9uIG91dHB1dCBkYXRhIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIlNpbXBsZSBWaWV3IgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IGRoMy5zaGFyZWRVbml0eUNhdGFsb2cgIlJlYWQgY2FsY3VsYXRpb24gb3V0cHV0IGRhdGEiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdGFncyAiRGV0YWlsZWQgVmlldyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgZG93bnN0cmVhbVN1YnNjcmliZXJTdWJzeXN0ZW1zID0gY29udGFpbmVyICJEb3duc3RyZWFtIFN1YnNjcmliZXJzIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkRvd25zdHJlYW0gc3Vic3lzdGVtcyBzdWJzY3JpYmluZyB0byBpbnRlZ3JhdGlvbiBldmVudHMgZnJvbSB3aG9sZXNhbGUiCiAgICAgICAgICAgICAgICAgICAgdGFncyAiU3Vic3lzdGVtIgoKICAgICAgICAgICAgICAgICAgICB0aGlzIC0+IHdob2xlc2FsZUFwaSAiU3Vic2NyaWJlcyB0byBjYWxjdWxhdGlvbl9jb21wbGV0ZWRfdjEgaW50ZWdyYXRpb24gZXZlbnRzIiAiaW50ZWdyYXRpb24gZXZlbnQvYW1xcCIgewogICAgICAgICAgICAgICAgICAgICAgICB0YWdzICJTaW1wbGUgVmlldyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgdGhpcyAtPiBkaDMuc2hhcmVkU2VydmljZUJ1cyAiU3Vic2NyaWJlcyB0byBpbnRlZ3JhdGlvbiBldmVudHMiICJpbnRlZ3JhdGlvbiBldmVudC9hbXFwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHRhZ3MgIkRldGFpbGVkIFZpZXciCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KCiAgICB2aWV3cyB7CiAgICAgICAgIyBUT0RPIEJKTTogTW92ZSB0aGVzZSBzdHlsZXMgdG8gdGhlIGJhc2UgbW9kZWw/CiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgIyBVc2UgdG8gbWFyayBhIHJlbGF0ZWQgc3Vic3lzdGVtLgogICAgICAgICAgICBlbGVtZW50ICJTdWJzeXN0ZW0iIHsKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzZlYzFmOAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgfQogICAgICAgIAogICAgICAgIGNvbnRhaW5lciBkaDMgIldob2xlc2FsZSIgewogICAgICAgICAgICB0aXRsZSAiW0NvbnRhaW5lcl0gRGF0YUh1YiAzLjAgLSBXaG9sZXNhbGUgKFNpbXBsaWZpZWQpIgogICAgICAgICAgICBpbmNsdWRlIC0+d2hvbGVzYWxlU3Vic3lzdGVtLT4KICAgICAgICAgICAgZXhjbHVkZSAicmVsYXRpb25zaGlwLnRhZz09T0F1dGgiCiAgICAgICAgICAgIGV4Y2x1ZGUgImVsZW1lbnQudGFnPT1JbnRlcm1lZGlhdGUgVGVjaG5vbG9neSIKICAgICAgICAgICAgZXhjbHVkZSAicmVsYXRpb25zaGlwLnRhZz09RGV0YWlsZWQgVmlldyIKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBkaDMgIldob2xlc2FsZURldGFpbGVkIiB7CiAgICAgICAgICAgIHRpdGxlICJbQ29udGFpbmVyXSBEYXRhSHViIDMuMCAtIFdob2xlc2FsZSAoRGV0YWlsZWQgd2l0aCBPQXV0aCkiCiAgICAgICAgICAgIGluY2x1ZGUgLT53aG9sZXNhbGVTdWJzeXN0ZW0tPgogICAgICAgICAgICBleGNsdWRlICJyZWxhdGlvbnNoaXAudGFnPT1TaW1wbGUgVmlldyIKICAgICAgICB9CiAgICB9Cn0K"
   },
   "views" : {
     "configuration" : {
       "branding" : { },
-      "lastSavedView" : "WholesaleDetailed",
+      "lastSavedView" : "Wholesale",
       "metadataSymbols" : "SquareBrackets",
       "styles" : {
         "elements" : [ {
@@ -1616,6 +1160,10 @@
           "color" : "#ffffff",
           "shape" : "RoundedBox",
           "tag" : "Actor"
+        }, {
+          "background" : "#6ec1f8",
+          "color" : "#ffffff",
+          "tag" : "Subsystem"
         } ]
       },
       "terminology" : { },
@@ -1623,192 +1171,201 @@
     },
     "containerViews" : [ {
       "dimensions" : {
-        "height" : 2670,
-        "width" : 2300
+        "height" : 2640,
+        "width" : 3050
       },
       "elements" : [ {
-        "id" : "102",
-        "x" : 939,
-        "y" : 239
+        "id" : "69",
+        "x" : 509,
+        "y" : 1975
       }, {
-        "id" : "123",
-        "x" : 390,
-        "y" : 2175
+        "id" : "71",
+        "x" : 819,
+        "y" : 1455
       }, {
-        "id" : "125",
-        "x" : 125,
-        "y" : 1645
+        "id" : "74",
+        "x" : 259,
+        "y" : 1445
       }, {
-        "id" : "128",
-        "x" : 665,
-        "y" : 1650
+        "id" : "83",
+        "x" : 1174,
+        "y" : 1075
       }, {
-        "id" : "137",
-        "x" : 1140,
-        "y" : 1295
+        "id" : "84",
+        "x" : 1589,
+        "y" : 655
       }, {
-        "id" : "138",
-        "x" : 1470,
-        "y" : 855
+        "id" : "89",
+        "x" : 644,
+        "y" : 655
       }, {
-        "id" : "144",
-        "x" : 650,
-        "y" : 850
+        "id" : "95",
+        "x" : 2545,
+        "y" : 1279
       }, {
-        "id" : "149",
-        "x" : 1594,
-        "y" : 239
+        "id" : "98",
+        "x" : 2545,
+        "y" : 932
       }, {
-        "id" : "151",
-        "x" : 150,
-        "y" : 240
+        "id" : "100",
+        "x" : 2545,
+        "y" : 1626
+      }, {
+        "id" : "103",
+        "x" : 2545,
+        "y" : 1975
+      }, {
+        "id" : "106",
+        "x" : 2545,
+        "y" : 585
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
       "key" : "Wholesale",
       "order" : 1,
       "relationships" : [ {
-        "id" : "127"
+        "id" : "102"
       }, {
-        "id" : "130"
+        "id" : "104"
       }, {
-        "id" : "141"
+        "id" : "107"
       }, {
-        "id" : "143"
+        "id" : "73"
       }, {
-        "id" : "146"
+        "id" : "76"
       }, {
-        "id" : "147"
+        "id" : "86"
       }, {
-        "id" : "150"
+        "id" : "88",
+        "vertices" : [ {
+          "x" : 1635,
+          "y" : 1920
+        } ]
       }, {
-        "id" : "153"
+        "id" : "91"
+      }, {
+        "id" : "92"
+      }, {
+        "id" : "94",
+        "vertices" : [ {
+          "x" : 759,
+          "y" : 1335
+        } ]
+      }, {
+        "id" : "96"
+      }, {
+        "id" : "99"
       } ],
       "softwareSystemId" : "22",
       "title" : "[Container] DataHub 3.0 - Wholesale (Simplified)"
     }, {
       "dimensions" : {
-        "height" : 3255,
-        "width" : 3324
+        "height" : 3649,
+        "width" : 5010
       },
       "elements" : [ {
         "id" : "23",
-        "x" : 1154,
-        "y" : 2598
+        "x" : 2100,
+        "y" : 3150
       }, {
         "id" : "26",
-        "x" : 1500,
-        "y" : 239
+        "x" : 2439,
+        "y" : 699
       }, {
-        "id" : "102",
-        "x" : 545,
-        "y" : 239
+        "id" : "69",
+        "x" : 3524,
+        "y" : 2580
       }, {
-        "id" : "123",
-        "x" : 2634,
-        "y" : 2118
+        "id" : "71",
+        "x" : 1782,
+        "y" : 2139
       }, {
-        "id" : "125",
-        "x" : 843,
-        "y" : 1679
+        "id" : "74",
+        "x" : 1204,
+        "y" : 2139
       }, {
-        "id" : "128",
-        "x" : 265,
-        "y" : 1679
+        "id" : "77",
+        "x" : 2360,
+        "y" : 2139
       }, {
-        "id" : "131",
-        "x" : 1421,
-        "y" : 1679
+        "id" : "79",
+        "x" : 2938,
+        "y" : 2139
       }, {
-        "id" : "133",
-        "x" : 1999,
-        "y" : 1679
+        "id" : "81",
+        "x" : 3519,
+        "y" : 2139
       }, {
-        "id" : "135",
-        "x" : 2580,
-        "y" : 1679
+        "id" : "83",
+        "x" : 2569,
+        "y" : 1460
       }, {
-        "id" : "137",
-        "x" : 1774,
-        "y" : 1153
+        "id" : "84",
+        "x" : 3384,
+        "y" : 1335
       }, {
-        "id" : "138",
-        "x" : 2450,
-        "y" : 854
+        "id" : "89",
+        "x" : 1782,
+        "y" : 1330
       }, {
-        "id" : "144",
-        "x" : 1125,
-        "y" : 854
+        "id" : "95",
+        "x" : 4190,
+        "y" : 640
       }, {
-        "id" : "149",
-        "x" : 2455,
-        "y" : 239
+        "id" : "98",
+        "x" : 4190,
+        "y" : 1335
       }, {
-        "id" : "151",
-        "x" : 240,
-        "y" : 2589
+        "id" : "100",
+        "x" : 4190,
+        "y" : 3150
+      }, {
+        "id" : "103",
+        "x" : 4190,
+        "y" : 2800
+      }, {
+        "id" : "106",
+        "x" : 4190,
+        "y" : 985
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
       "key" : "WholesaleDetailed",
       "order" : 2,
       "relationships" : [ {
-        "id" : "109",
-        "vertices" : [ {
-          "x" : 1250,
-          "y" : 314
-        } ]
+        "id" : "101"
       }, {
-        "id" : "118",
-        "vertices" : [ {
-          "x" : 1250,
-          "y" : 504
-        } ]
+        "id" : "105"
       }, {
-        "id" : "124"
+        "id" : "108"
       }, {
-        "id" : "126"
+        "id" : "70"
       }, {
-        "id" : "129"
+        "id" : "72"
       }, {
-        "id" : "132"
+        "id" : "75"
       }, {
-        "id" : "134"
+        "id" : "78"
       }, {
-        "id" : "136"
+        "id" : "80"
       }, {
-        "id" : "139",
-        "vertices" : [ {
-          "x" : 2070,
-          "y" : 699
-        } ]
+        "id" : "82"
       }, {
-        "id" : "140",
-        "vertices" : [ {
-          "x" : 2265,
-          "y" : 599
-        } ]
+        "id" : "85"
       }, {
-        "id" : "141"
+        "id" : "86"
       }, {
-        "id" : "142"
+        "id" : "87"
       }, {
-        "id" : "145"
+        "id" : "90"
       }, {
-        "id" : "146"
+        "id" : "91"
       }, {
-        "id" : "147"
+        "id" : "92"
       }, {
-        "id" : "148",
-        "vertices" : [ {
-          "x" : 1674,
-          "y" : 1488
-        }, {
-          "x" : 2169,
-          "y" : 1608
-        } ]
+        "id" : "93"
       }, {
-        "id" : "150"
+        "id" : "97"
       }, {
-        "id" : "152"
+        "id" : "99"
       } ],
       "softwareSystemId" : "22",
       "title" : "[Container] DataHub 3.0 - Wholesale (Detailed with OAuth)"

@@ -20,6 +20,7 @@ from package.codelists import (
     TimeSeriesType,
     MeteringPointType,
 )
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
@@ -182,7 +183,7 @@ def test__when_energy_calculation__basis_data_is_stored(
     assert actual.count() > 0
 
 
-def test__when_energy_calculation__calculation_is_stored(
+def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> None:
@@ -197,8 +198,9 @@ def test__when_energy_calculation__calculation_is_stored(
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert: The result is created if there are rows
-    assert actual.count() > 0
+    # Assert
+    assert actual.count() == 1
+    assert actual.collect()[0][TableColumnNames.calculation_succeeded_time] is not None
 
 
 def test__when_energy_calculation__calculation_grid_areas_are_stored(
@@ -240,6 +242,10 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
             True,
         ),
         (
+            f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME}",
+            True,
+        ),
+        (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
             True,
         ),
@@ -257,6 +263,10 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
         ),
         (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
     ],
