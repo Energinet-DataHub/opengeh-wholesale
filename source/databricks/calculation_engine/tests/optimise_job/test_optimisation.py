@@ -64,8 +64,8 @@ def test__optimise_is_in_history_of_delta_table() -> None:
     optimise_table(spark, mock_database_name, mock_table_name)
 
     # Assert
-    print(delta_table.toDF().schema + "delta table schema")
-    print(df.schema + "df schema og")
+    print(delta_table.toDF().schema.simpleString() + "delta table schema")
+    print(df.schema.simpleString() + "df schema og")
     print(full_table_name + " history")
     print(delta_table.history().collect())
     assert delta_table.history().filter("operation == 'OPTIMIZE'").count() > 0
