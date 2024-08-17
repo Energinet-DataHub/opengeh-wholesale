@@ -26,12 +26,12 @@ def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
     table_location = "/tmp/test"
     full_table_name = f"{mock_database_name}.{mock_table_name}"
 
-    df = spark.createDataFrame([(1,), (2,), (3,)])
     schema = StructType(
         [
             StructField("id", IntegerType(), False),
         ]
     )
+    df = spark.createDataFrame([(1,), (2,), (3,)], schema=schema)
 
     write_dataframe_to_table(
         spark,
