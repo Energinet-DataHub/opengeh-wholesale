@@ -33,8 +33,8 @@ def test__optimise_is_in_history_of_delta_table(spark: SparkSession) -> None:
     df_1 = spark.createDataFrame([(1,), (2,), (3,)])
 
     _initialise_table(spark, mock_database_name, mock_table_name)
-    df_1.write.mode("append").saveAsTable(full_table_name)
-    df_1.write.mode("append").saveAsTable(full_table_name)
+    df_1.write.format("delta").mode("append").saveAsTable(full_table_name)
+    df_1.write.format("delta").mode("append").saveAsTable(full_table_name)
 
     delta_table = DeltaTable.forName(spark, full_table_name)
 
