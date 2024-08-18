@@ -16,7 +16,7 @@ from delta.tables import DeltaTable
 from package.optimise_job.optimisation import optimise_table
 from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
-from pyspark.sql.types import StructType, StructField, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType
 import pytest
 
 
@@ -44,10 +44,13 @@ def test__optimise_is_in_history_of_delta_table() -> None:
 
     schema = StructType(
         [
-            StructField("id", IntegerType(), False),
+            StructField("id", StringType(), False),
+            StructField("name", StringType(), False),
         ]
     )
-    df = spark.createDataFrame([(1,), (2,), (3,)], schema=schema)
+    df = spark.createDataFrame(
+        [("1", "foo"), ("2", "bar"), ("3", "test")], schema=schema
+    )
 
     write_dataframe_to_table(
         spark,
