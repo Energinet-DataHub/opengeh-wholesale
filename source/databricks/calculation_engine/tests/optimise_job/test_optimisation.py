@@ -74,7 +74,7 @@ def test__optimise_is_in_history_of_delta_table() -> None:
 
     # Act
     optimise_table(spark, mock_database_name, mock_table_name)
-    time.sleep(60)
+    # time.sleep(60)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
