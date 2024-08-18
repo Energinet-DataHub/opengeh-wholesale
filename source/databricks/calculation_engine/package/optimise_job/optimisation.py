@@ -15,7 +15,6 @@
 from delta.tables import DeltaTable
 from package.infrastructure import initialize_spark
 from pyspark.sql import SparkSession
-import time
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
     WholesaleBasisDataInternalDatabase,
@@ -39,4 +38,3 @@ def optimise_table(spark: SparkSession, database_name: str, table_name: str) -> 
     print(f"{database_name}.{table_name} optimise")
     delta_table = DeltaTable.forName(spark, f"{database_name}.{table_name}")
     delta_table.optimize().executeCompaction()
-    time.sleep(10000)
