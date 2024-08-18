@@ -21,22 +21,24 @@ from package.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
 from package.common.logger import Logger
+import package.infrastructure.environment_variables as env_vars
 
 
 def optimise_tables() -> None:
     logger = Logger(__name__)
 
     spark = initialize_spark()
+    catalog_name = env_vars.get_catalog_name()
 
-    database_dict = {
-        WholesaleResultsInternalDatabase.DATABASE_NAME: WholesaleResultsInternalDatabase.TABLE_NAMES,
-        WholesaleBasisDataInternalDatabase.DATABASE_NAME: WholesaleBasisDataInternalDatabase.TABLE_NAMES,
-        WholesaleInternalDatabase.DATABASE_NAME: WholesaleInternalDatabase.TABLE_NAMES,
+    schema_table_dicts = {
+        f"{catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}": WholesaleResultsInternalDatabase.TABLE_NAMES,
+        f"{catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}": WholesaleBasisDataInternalDatabase.TABLE_NAMES,
+        f"{catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}": WholesaleInternalDatabase.TABLE_NAMES,
     }
 
-    total_tables = sum(len(table_names) for table_names in database_dict.values())
+    total_tables = sum(len(table_names) for table_names in schema_table_dicts.values())
     logger.info(f"Total number of tables to optimise: {total_tables}")
-    for schema_name, table_names in database_dict.items():
+    for schema_name, table_names in schema_table_dicts.items():
         logger.info(f"Running optimise for tables in schema: {schema_name}")
         for table_name in table_names:
             optimise_table(spark, schema_name, table_name, logger)
