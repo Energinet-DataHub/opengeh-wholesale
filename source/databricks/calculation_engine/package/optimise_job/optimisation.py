@@ -18,23 +18,38 @@ from pyspark.sql import SparkSession
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
     WholesaleBasisDataInternalDatabase,
+    WholesaleInternalDatabase,
 )
+from package.common.logger import Logger
 
 
 def optimise_tables() -> None:
+    logger = Logger(__name__)
+
     spark = initialize_spark()
 
     database_dict = {
         WholesaleResultsInternalDatabase.DATABASE_NAME: WholesaleResultsInternalDatabase.TABLE_NAMES,
         WholesaleBasisDataInternalDatabase.DATABASE_NAME: WholesaleBasisDataInternalDatabase.TABLE_NAMES,
+        WholesaleInternalDatabase.DATABASE_NAME: WholesaleInternalDatabase.TABLE_NAMES,
     }
 
-    for database_name, table_names in database_dict.items():
+    total_tables = sum(len(table_names) for table_names in database_dict.values())
+    logger.info(f"Total number of tables to optimise: {total_tables}")
+    for schema_name, table_names in database_dict.items():
+        logger.info(f"Running optimise for tables in schema: {schema_name}")
         for table_name in table_names:
-            optimise_table(spark, database_name, table_name)
+            optimise_table(spark, schema_name, table_name, logger)
 
 
-def optimise_table(spark: SparkSession, database_name: str, table_name: str) -> None:
-    print(f"{database_name}.{table_name} optimise")
-    delta_table = DeltaTable.forName(spark, f"{database_name}.{table_name}")
-    delta_table.optimize().executeCompaction()
+def optimise_table(
+    spark: SparkSession, schema_name: str, table_name: str, logger: Logger
+) -> None:
+    full_table_name = f"{schema_name}.{table_name}"
+    try:
+        logger.info(f"Starting to optimise table: {full_table_name}")
+        delta_table = DeltaTable.forName(spark, f"{full_table_name}")
+        delta_table.optimize().executeCompaction()
+        logger.info(f"Finished optimising table: {full_table_name}")
+    except Exception as e:
+        logger.error(f"Failed to optimise table: {full_table_name}. Error: {e}")

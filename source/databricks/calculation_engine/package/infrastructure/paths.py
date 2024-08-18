@@ -66,6 +66,13 @@ class WholesaleInternalDatabase:
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
     CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
 
+    TABLE_NAMES = [
+        EXECUTED_MIGRATIONS_TABLE_NAME,
+        CALCULATIONS_TABLE_NAME,
+        GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        CALCULATION_GRID_AREAS_TABLE_NAME,
+    ]
+
 
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS_INTERNAL
