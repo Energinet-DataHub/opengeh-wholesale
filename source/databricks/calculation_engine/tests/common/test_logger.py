@@ -27,6 +27,7 @@ from package.common.logger import Logger
         ("debug", logging.Logger.debug),
         ("info", logging.Logger.info),
         ("warning", logging.Logger.warning),
+        ("warning", logging.Logger.error),
     ],
 )
 def test__log_method__when_called_with_custom_extras__passes_correct_extras(

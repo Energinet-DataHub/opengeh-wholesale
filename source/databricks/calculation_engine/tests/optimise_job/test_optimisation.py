@@ -18,6 +18,7 @@ from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from pyspark.sql.types import StructType, StructField, StringType
 import pytest
+from package.common.logger import Logger
 
 
 def get_spark_session() -> SparkSession:
@@ -41,6 +42,7 @@ def test__optimise_is_in_history_of_delta_table() -> None:
     mock_table_name = "test_table"
     table_location = "/tmp/test"
     full_table_name = f"{mock_database_name}.{mock_table_name}"
+    logger = Logger("test_logger")
 
     schema = StructType(
         [
@@ -72,7 +74,7 @@ def test__optimise_is_in_history_of_delta_table() -> None:
     )
 
     # Act
-    optimise_table(spark, mock_database_name, mock_table_name)
+    optimise_table(spark, mock_database_name, mock_table_name, logger)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
