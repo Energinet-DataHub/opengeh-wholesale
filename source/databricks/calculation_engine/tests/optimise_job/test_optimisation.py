@@ -62,24 +62,10 @@ def test__optimise_is_in_history_of_delta_table() -> None:
         schema,
     )
 
-    write_dataframe_to_table(
-        spark,
-        df,
-        mock_database_name,
-        mock_table_name,
-        table_location,
-        schema,
-        mode="append",
-    )
-
     # Act
     optimise_table(spark, mock_database_name, mock_table_name)
     time.sleep(60)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
-    print(delta_table.toDF().schema.simpleString() + "delta table schema")
-    print(df.schema.simpleString() + "df schema og")
-    print(full_table_name + " history")
-    print(delta_table.history().collect())
     assert delta_table.history().filter("operation == 'OPTIMIZE'").count() > 0
