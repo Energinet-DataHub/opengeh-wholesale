@@ -23,6 +23,7 @@ def write_dataframe_to_table(
     table_name: str,
     table_location: str,
     schema: StructType,
+    mode: str = "overwrite",
 ) -> None:
     print(f"{database_name}.{table_name} write")
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
@@ -34,9 +35,7 @@ def write_dataframe_to_table(
     print(sql_schema + "sql schema")
     print(df.schema.simpleString() + "df schema")
 
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{database_name}.{table_name}"
-    )
+    df.write.format("delta").mode(mode).saveAsTable(f"{database_name}.{table_name}")
 
 
 def _struct_type_to_sql_schema(schema: StructType) -> str:

@@ -61,6 +61,16 @@ def test__optimise_is_in_history_of_delta_table() -> None:
         schema,
     )
 
+    write_dataframe_to_table(
+        spark,
+        df,
+        mock_database_name,
+        mock_table_name,
+        table_location,
+        schema,
+        mode="append",
+    )
+
     delta_table = DeltaTable.forName(spark, full_table_name)
 
     # Act
