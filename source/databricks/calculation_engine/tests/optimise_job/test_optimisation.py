@@ -44,8 +44,8 @@ def test__optimise_is_in_history_of_delta_table() -> None:
 
     schema = StructType(
         [
-            StructField("id", StringType(), False),
             StructField("name", StringType(), False),
+            StructField("row", StringType(), False),
         ]
     )
     df = spark.createDataFrame(
