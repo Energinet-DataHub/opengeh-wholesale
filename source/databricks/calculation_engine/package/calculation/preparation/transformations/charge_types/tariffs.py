@@ -115,40 +115,34 @@ def _join_price_information_periods_and_prices_add_missing_prices(
 def _join_with_charge_link_metering_points(
     tariffs: DataFrame, charge_link_metering_points: ChargeLinkMeteringPointPeriods
 ) -> DataFrame:
-    # Extract the DataFrame from the ChargeLinkMeteringPointPeriods object
     charge_link_metering_point_periods_df = charge_link_metering_points.df
 
-    # Alias the DataFrames
-    tariffs_alias = tariffs.alias("t")
-    charge_link_metering_point_periods_alias = (
-        charge_link_metering_point_periods_df.alias("clmp")
-    )
-
-    # Perform the join operation
-    df = tariffs_alias.join(
-        charge_link_metering_point_periods_alias,
+    df = tariffs.join(
+        charge_link_metering_point_periods_df,
         [
-            f.col("t." + Colname.charge_key) == f.col("clmp." + Colname.charge_key),
-            f.col("t." + Colname.charge_time) >= f.col("clmp." + Colname.from_date),
-            f.col("t." + Colname.charge_time) < f.col("clmp." + Colname.to_date),
+            tariffs[Colname.charge_key]
+            == charge_link_metering_point_periods_df[Colname.charge_key],
+            tariffs[Colname.charge_time]
+            >= charge_link_metering_point_periods_df[Colname.from_date],
+            tariffs[Colname.charge_time]
+            < charge_link_metering_point_periods_df[Colname.to_date],
         ],
         "inner",
     ).select(
-        f.col("t." + Colname.charge_key),
-        f.col("t." + Colname.charge_code),
-        f.col("t." + Colname.charge_type),
-        f.col("t." + Colname.charge_owner),
-        f.col("t." + Colname.charge_tax),
-        f.col("t." + Colname.resolution),
-        f.col("t." + Colname.charge_time),
-        f.col("t." + Colname.charge_price),
-        f.col("clmp." + Colname.metering_point_id),
-        f.col("clmp." + Colname.metering_point_type),
-        f.col("clmp." + Colname.settlement_method),
-        f.col("clmp." + Colname.grid_area_code),
-        f.col("clmp." + Colname.energy_supplier_id),
+        tariffs[Colname.charge_key],
+        tariffs[Colname.charge_code],
+        tariffs[Colname.charge_type],
+        tariffs[Colname.charge_owner],
+        tariffs[Colname.charge_tax],
+        tariffs[Colname.resolution],
+        tariffs[Colname.charge_time],
+        tariffs[Colname.charge_price],
+        Colname.metering_point_id,
+        charge_link_metering_point_periods_df[Colname.metering_point_type],
+        charge_link_metering_point_periods_df[Colname.settlement_method],
+        charge_link_metering_point_periods_df[Colname.grid_area_code],
+        charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
-
     return df
 
 
