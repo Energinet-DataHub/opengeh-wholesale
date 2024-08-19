@@ -79,10 +79,9 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
+        isCompletedOrFailed.Should().BeTrue("because calculation should complete within time limit.");
         calculation.Should().NotBeNull();
-        calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
-        calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
+        calculation!.OrchestrationState.Should().BeOneOf(CalculationOrchestrationStateExtensions.CalculationJobCompletedStates);
     }
 
     [ScenarioStep(4)]

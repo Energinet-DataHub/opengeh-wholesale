@@ -39,18 +39,18 @@ public class Calculation
         if (!IsValid(_gridAreaCodes, calculationType, periodStart, periodEnd, dateTimeZone, out var errorMessages))
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
-        ExecutionState = CalculationExecutionState.Created;
-        _orchestrationState = CalculationOrchestrationState.Scheduled;
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         ScheduledAt = scheduledAt;
-        ExecutionTimeStart = scheduledAt; // TODO: Set execution time start when the calculation is no longer scheduled, but actually running
         CreatedTime = createdTime;
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
         Version = version;
+
+        _orchestrationState = CalculationOrchestrationState.Scheduled;
+        ExecutionState = CalculationExecutionState.Created;
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public class Calculation
     /// <summary>
     /// When the calculation orchestration actually started (after the schedule is met).
     /// </summary>
-    public Instant? ExecutionTimeStart { get; }
+    public Instant? ExecutionTimeStart { get; private set; }
 
     public Instant CreatedTime { get; }
 
@@ -245,7 +245,12 @@ public class Calculation
         };
     }
 
-    public void MarkAsSubmitted(CalculationJobId calculationJobId)
+    /// <summary>
+    /// The calculation job has been submitted to the calculation engine (databricks).
+    /// </summary>
+    /// <param name="calculationJobId">The external identifier from the calculation engine</param>
+    /// <param name="executionTimeStart">When the job was submitted to the calculation engine</param>
+    public void MarkAsCalculationJobSubmitted(CalculationJobId calculationJobId, Instant executionTimeStart)
     {
         ArgumentNullException.ThrowIfNull(calculationJobId);
         if (ExecutionState is CalculationExecutionState.Submitted or CalculationExecutionState.Pending
@@ -255,27 +260,39 @@ public class Calculation
         }
 
         CalculationJobId = calculationJobId;
+        ExecutionTimeStart = executionTimeStart;
         ExecutionState = CalculationExecutionState.Submitted;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
+        OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
-    public void MarkAsScheduled()
-    {
-        if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
-        ExecutionState = CalculationExecutionState.Pending;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
-    }
-
-    public void MarkAsCalculating()
+    /// <summary>
+    /// The calculation job is submitted and pending execution in the calculation engine (databricks).
+    /// </summary>
+    public void MarkAsCalculationJobPending()
     {
         if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
+
+        ExecutionState = CalculationExecutionState.Pending;
+        OrchestrationState = CalculationOrchestrationState.Calculating;
+    }
+
+    /// <summary>
+    /// The calculation orchestration is waiting for the calculation job to complete.
+    /// </summary>
+    public void MarkAsCalculating()
+    {
+        if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
 
         ExecutionState = CalculationExecutionState.Executing;
         OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
+    /// <summary>
+    /// The calculation orchestration is calculated when the calculation job is complete.
+    /// </summary>
+    /// <param name="executionTimeEnd">When the calculation job completed in the calculation engine</param>
     public void MarkAsCalculated(Instant executionTimeEnd)
     {
         if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
@@ -328,39 +345,6 @@ public class Calculation
     {
         OrchestrationState = CalculationOrchestrationState.Completed;
         CompletedTime = completedAt;
-    }
-
-    public void UpdateState(CalculationOrchestrationState newState, IClock clock)
-    {
-        switch (newState)
-        {
-            case CalculationOrchestrationState.Scheduled:
-                MarkAsScheduled();
-                break;
-            case CalculationOrchestrationState.Calculating:
-                MarkAsCalculating();
-                break;
-            case CalculationOrchestrationState.Calculated:
-                MarkAsCalculated(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.CalculationFailed:
-                MarkAsCalculationFailed();
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                MarkAsActorMessagesEnqueuing(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueued:
-                MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
-                MarkAsActorMessagesEnqueuingFailed();
-                break;
-            case CalculationOrchestrationState.Completed:
-                MarkAsCompleted(clock.GetCurrentInstant());
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
-        }
     }
 
     /// <summary>
