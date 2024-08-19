@@ -70,6 +70,11 @@ public sealed class EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract : IAggr
         return EnergyPerBrpGaViewColumnNames.BalanceResponsiblePartyId;
     }
 
+    public string GetResolutionColumnName()
+    {
+        return EnergyPerBrpGaViewColumnNames.Resolution;
+    }
+
     public string[] GetColumnsToProject()
     {
         return

@@ -70,6 +70,11 @@ public sealed class EnergyPerGaAggregatedTimeSeriesDatabricksContract : IAggrega
         throw new InvalidOperationException("Oh dear, there is no balance responsible for ga aggregation");
     }
 
+    public string GetResolutionColumnName()
+    {
+        return EnergyPerGaViewColumnNames.Resolution;
+    }
+
     public string[] GetColumnsToProject()
     {
         return

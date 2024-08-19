@@ -31,7 +31,7 @@ public static class AggregatedTimeSeriesFactory
     {
         var gridArea = databricksSqlRow[databricksContract.GetGridAreaCodeColumnName()];
         var calculationType = databricksSqlRow[databricksContract.GetCalculationTypeColumnName()];
-        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[EnergyResultColumnNames.Resolution]!);
+        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[databricksContract.GetResolutionColumnName()]!);
         var (periodStart, periodEnd) = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
 
         return new AggregatedTimeSeries(

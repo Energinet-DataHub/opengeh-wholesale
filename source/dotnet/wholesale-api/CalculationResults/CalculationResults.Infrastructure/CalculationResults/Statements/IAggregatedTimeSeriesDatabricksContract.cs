@@ -38,6 +38,8 @@ public interface IAggregatedTimeSeriesDatabricksContract
 
     string GetBalanceResponsiblePartyIdColumnName();
 
+    string GetResolutionColumnName();
+
     string[] GetColumnsToProject();
 
     string[] GetColumnsToAggregateBy();
