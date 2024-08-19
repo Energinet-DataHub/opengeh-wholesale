@@ -20,7 +20,7 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
 public class CalculationScheduler(
-    ILogger logger,
+    ILogger<CalculationScheduler> logger,
     IClock clock,
     ICalculationsClient calculationsClient,
     CalculationStarter calculationStarter)
