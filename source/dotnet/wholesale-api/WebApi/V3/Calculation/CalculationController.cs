@@ -78,6 +78,7 @@ public class CalculationController : V3ControllerBase
             periodStart,
             periodEnd).ConfigureAwait(false);
 
-        return Ok(calculations);
+        return Ok(calculations
+            .Select(CalculationDtoMapper.Map));
     }
 }
