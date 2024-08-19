@@ -60,6 +60,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
     /// <summary>
     /// Verifies that:
+    ///  - The calculation trigger can create a new scheduled calculation.
+    ///  - The calculation scheduler can start a new calculation orchestration.
     ///  - The orchestration can complete a full run.
     ///  - The calculation state is updated as expected.
     ///  - The orchestrator completes with the expected output.
