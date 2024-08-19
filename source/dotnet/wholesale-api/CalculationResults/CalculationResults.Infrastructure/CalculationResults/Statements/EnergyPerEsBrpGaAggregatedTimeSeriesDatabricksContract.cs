@@ -40,14 +40,42 @@ public class EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract : IAggregate
         return EnergyPerEsBrpGaViewColumnNames.CalculationVersion;
     }
 
+    public string GetCalculationTypeColumnName()
+    {
+        return EnergyPerEsBrpGaViewColumnNames.CalculationType;
+    }
+
+    public string GetGridAreaCodeColumnName()
+    {
+        return EnergyPerEsBrpGaViewColumnNames.GridAreaCode;
+    }
+
+    public string GetMeteringPointTypeColumnName()
+    {
+        return EnergyPerEsBrpGaViewColumnNames.MeteringPointType;
+    }
+
+    public string GetSettlementMethodColumnName()
+    {
+        return EnergyPerEsBrpGaViewColumnNames.SettlementMethod;
+    }
+
+    public string GetEnergySupplierIdColumnName()
+    {
+        return EnergyPerEsBrpGaViewColumnNames.EnergySupplierId;
+    }
+
+    public string GetBalanceResponsiblePartyIdColumnName()
+    {
+        return EnergyPerEsBrpGaViewColumnNames.BalanceResponsiblePartyId;
+    }
+
     public string[] GetColumnsToProject()
     {
         return
         [
             EnergyPerEsBrpGaViewColumnNames.CalculationId,
             EnergyPerEsBrpGaViewColumnNames.CalculationType,
-            //EnergyPerEsBrpGaViewColumnNames.CalculationPeriodStart,
-            //EnergyPerEsBrpGaViewColumnNames.CalculationPeriodEnd,
             EnergyPerEsBrpGaViewColumnNames.CalculationVersion,
             EnergyPerEsBrpGaViewColumnNames.ResultId,
             EnergyPerEsBrpGaViewColumnNames.GridAreaCode,
@@ -58,7 +86,6 @@ public class EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract : IAggregate
             EnergyPerEsBrpGaViewColumnNames.Resolution,
             EnergyPerEsBrpGaViewColumnNames.Time,
             EnergyPerEsBrpGaViewColumnNames.Quantity,
-            //EnergyPerEsBrpGaViewColumnNames.QuantityUnit,
             EnergyPerEsBrpGaViewColumnNames.QuantityQualities,
         ];
     }

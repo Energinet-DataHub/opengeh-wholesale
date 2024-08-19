@@ -71,7 +71,7 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
         if (_queryParameters.CalculationType is not null)
         {
             return $"""
-                    {prefix}.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
+                    {prefix}.{DatabricksContract.GetCalculationTypeColumnName()} = '{CalculationTypeMapper.ToDeltaTableValue(_queryParameters.CalculationType.Value)}'
                     """;
         }
 
@@ -84,20 +84,17 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
 
         var calculationTypePerGridAreaConstraints = calculationTypeForGridAreas
             .Select(ctpga => $"""
-                              ({prefix}.{EnergyPerEsBrpGaViewColumnNames.GridAreaCode} = '{ctpga.GridArea}' AND {prefix}.{EnergyPerEsBrpGaViewColumnNames.CalculationType} = '{ctpga.CalculationType}')
+                              ({prefix}.{DatabricksContract.GetGridAreaCodeColumnName()} = '{ctpga.GridArea}' AND {prefix}.{DatabricksContract.GetCalculationTypeColumnName()} = '{ctpga.CalculationType}')
                               """);
 
         return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
     }
 
-    private static string TimeSeriesTypeWhereClauseSqlExpression(
+    private string TimeSeriesTypeWhereClauseSqlExpression(
         AggregatedTimeSeriesQueryParameters parameters,
         TimeSeriesType timeSeriesType,
         string table)
     {
-        // var whereClausesSql = $@"
-        //         {table}.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}')
-        //     AND {table}.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'";
         var meteringPointType = MeteringPointTypeMapper.ToDeltaTableValue(
             MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(
                 TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)));
@@ -107,28 +104,28 @@ public class AggregatedTimeSeriesQuerySnippetProvider(
 
         var whereClausesSql =
             $"""
-             {table}.{EnergyPerEsBrpGaViewColumnNames.MeteringPointType} = '{meteringPointType}'
-             {(settlementMethod is not null ? $"AND {table}.{EnergyPerEsBrpGaViewColumnNames.SettlementMethod} = '{settlementMethod}'" : $"AND {table}.{EnergyPerEsBrpGaViewColumnNames.SettlementMethod} is null")} 
-             AND ({table}.{EnergyPerEsBrpGaViewColumnNames.Time} >= '{parameters.Period.Start}'
-                  AND {table}.{EnergyPerEsBrpGaViewColumnNames.Time} < '{parameters.Period.End}')
+             {table}.{DatabricksContract.GetMeteringPointTypeColumnName()} = '{meteringPointType}'
+             {(settlementMethod is not null ? $"AND {table}.{DatabricksContract.GetSettlementMethodColumnName()} = '{settlementMethod}'" : $"AND {table}.{DatabricksContract.GetSettlementMethodColumnName()} is null")} 
+             AND ({table}.{DatabricksContract.GetTimeColumnName()} >= '{parameters.Period.Start}'
+                  AND {table}.{DatabricksContract.GetTimeColumnName()} < '{parameters.Period.End}')
              """;
 
         if (parameters.GridAreaCodes.Count > 0)
         {
             whereClausesSql +=
-                $" AND {table}.{EnergyPerEsBrpGaViewColumnNames.GridAreaCode} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
+                $" AND {table}.{DatabricksContract.GetGridAreaCodeColumnName()} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
         if (parameters.EnergySupplierId is not null)
         {
             whereClausesSql +=
-                $" AND {table}.{EnergyPerEsBrpGaViewColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
+                $" AND {table}.{DatabricksContract.GetEnergySupplierIdColumnName()} = '{parameters.EnergySupplierId}'";
         }
 
         if (parameters.BalanceResponsibleId is not null)
         {
             whereClausesSql +=
-                $" AND {table}.{EnergyPerEsBrpGaViewColumnNames.BalanceResponsiblePartyId} = '{parameters.BalanceResponsibleId}'";
+                $" AND {table}.{DatabricksContract.GetBalanceResponsiblePartyIdColumnName()} = '{parameters.BalanceResponsibleId}'";
         }
 
         return whereClausesSql;

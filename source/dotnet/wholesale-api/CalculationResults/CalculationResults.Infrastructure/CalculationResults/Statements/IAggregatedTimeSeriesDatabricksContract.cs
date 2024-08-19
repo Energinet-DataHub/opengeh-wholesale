@@ -26,6 +26,18 @@ public interface IAggregatedTimeSeriesDatabricksContract
 
     string GetCalculationVersionColumnName();
 
+    string GetCalculationTypeColumnName();
+
+    string GetGridAreaCodeColumnName();
+
+    string GetMeteringPointTypeColumnName();
+
+    string GetSettlementMethodColumnName();
+
+    string GetEnergySupplierIdColumnName();
+
+    string GetBalanceResponsiblePartyIdColumnName();
+
     string[] GetColumnsToProject();
 
     string[] GetColumnsToAggregateBy();
