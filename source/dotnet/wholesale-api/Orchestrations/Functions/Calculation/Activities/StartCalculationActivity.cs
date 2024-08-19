@@ -15,15 +15,19 @@
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Azure.Functions.Worker;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 internal class StartCalculationActivity(
+    IClock clock,
     IUnitOfWork calculationUnitOfWork,
     ICalculationRepository calculationRepository,
     ICalculationEngineClient calculationEngineClient)
 {
+    private readonly IClock _clock = clock;
     private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
     private readonly ICalculationEngineClient _calculationEngineClient = calculationEngineClient;
@@ -37,7 +41,7 @@ internal class StartCalculationActivity(
     {
         var calculation = await _calculationRepository.GetAsync(calculationdId).ConfigureAwait(false);
         var jobId = await _calculationEngineClient.StartAsync(calculation).ConfigureAwait(false);
-        calculation.MarkAsSubmitted(jobId);
+        calculation.MarkAsCalculationJobSubmitted(jobId, _clock.GetCurrentInstant());
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
 
         return jobId;

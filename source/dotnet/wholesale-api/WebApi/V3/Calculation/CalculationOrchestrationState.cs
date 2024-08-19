@@ -17,42 +17,42 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 public enum CalculationOrchestrationState
 {
     /// <summary>
-    /// // The calculation is created but not yet started
+    /// Calculation is scheduled to run at a later time (and not started yet).
     /// </summary>
-    Scheduled,
+    Scheduled = 1,
 
     /// <summary>
-    /// The data calculation is running and the result is not yet available
+    /// The calculation results are being calculated by the calculation engine.
     /// </summary>
-    Calculating,
+    Calculating = 2,
 
     /// <summary>
-    /// The data calculation is completed and data is ready to be consumed
+    /// The calculation has finished running in the calculation engine and the calculation results are ready.
     /// </summary>
-    Calculated,
+    Calculated = 3,
 
     /// <summary>
-    /// The data calculation failed during calculation
+    /// The calculation failed while calculating calculation results in the calculation engine.
     /// </summary>
-    CalculationFailed,
+    CalculationFailed = 4,
 
     /// <summary>
-    /// The completed calculation is sent for enqueuing as actor messages
+    /// Actor messages are being enqueued in the EDI subsystem based on the calculation results.
     /// </summary>
-    ActorMessagesEnqueuing,
+    ActorMessagesEnqueuing = 5,
 
     /// <summary>
-    /// The actor messages for the completed calculation are enqueued and ready to be consumed by actors
+    /// All actor messages has been enqueued in the EDI subsystem, and the actor messages are ready to be consumed by actors.
     /// </summary>
-    ActorMessagesEnqueued,
+    ActorMessagesEnqueued = 6,
 
     /// <summary>
-    /// Enqueuing the completed calculation as actor messages has failed
+    /// Atleast one actor message failed to be enqueued in the EDI subsystem.
     /// </summary>
-    ActorMessagesEnqueuingFailed,
+    ActorMessagesEnqueuingFailed = 7,
 
     /// <summary>
-    /// The calculation orchestration is completed (the calculation is completed and actor messages are enqueued)
+    /// The calculation orchestration is completed
     /// </summary>
-    Completed,
+    Completed = 8,
 }

@@ -28,6 +28,7 @@ public class CalculationFactoryTests
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
     private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T23:00Z");
     private readonly DateTimeOffset _scheduledAt = DateTimeOffset.Parse("2024-08-15T13:37Z");
+    private readonly DateTimeOffset _executionStartedAt = DateTimeOffset.Parse("2024-08-15T13:41Z");
     private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
     private readonly List<string> _someGridAreasIds = ["004", "805"];
 
@@ -81,9 +82,10 @@ public class CalculationFactoryTests
 
         // Act
         var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+        calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), Instant.FromDateTimeOffset(_executionStartedAt));
 
         // Assert
-        calculation.ExecutionTimeStart.Should().Be(Instant.FromDateTimeOffset(_scheduledAt));
+        calculation.ExecutionTimeStart.Should().Be(Instant.FromDateTimeOffset(_executionStartedAt));
     }
 
     [Theory]
