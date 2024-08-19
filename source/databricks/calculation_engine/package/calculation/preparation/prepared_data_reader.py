@@ -31,7 +31,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.codelists import ChargeResolution, CalculationType
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-
 from . import transformations as T
 from .data_structures import ChargePrices, ChargePriceInformation
 from ...constants import Colname
@@ -116,7 +115,7 @@ class PreparedDataReader:
         # The list of charge_links, charge_prices and change information contains data from all metering point periods in all grid areas.
         # This method ensures we only get charge data from metering points in grid areas from the calculation arguments.
         charge_links, charge_price_information, charge_prices = (
-            self._get_changes_filtered_by_grid_area(
+            self._get_charges_filtered_by_grid_area(
                 charge_links,
                 charge_price_information,
                 charge_prices,
@@ -130,7 +129,7 @@ class PreparedDataReader:
             charge_links=charge_links,
         )
 
-    def _get_changes_filtered_by_grid_area(
+    def _get_charges_filtered_by_grid_area(
         self,
         charge_links: DataFrame,
         charge_price_information: ChargePriceInformation,
