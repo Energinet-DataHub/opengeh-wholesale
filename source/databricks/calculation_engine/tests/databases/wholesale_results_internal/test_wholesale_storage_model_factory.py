@@ -39,6 +39,9 @@ from package.codelists import (
     AmountType,
 )
 from package.constants import Colname
+from package.databases.wholesale_results_internal.schemas import (
+    hive_wholesale_results_schema,
+)
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
@@ -266,14 +269,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         TableColumnNames.price,
         TableColumnNames.amount,
         TableColumnNames.is_tax,
-        TableColumnNames.result_id,
-        TableColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
-    all_columns = [
-        getattr(TableColumnNames, attribute_name)
-        for attribute_name in dir(TableColumnNames)
-        if not attribute_name.startswith("__")
-    ]
+    all_columns = [f.name for f in hive_wholesale_results_schema.fields]
 
     all_columns = _map_metering_point_type_column_name(all_columns)
 

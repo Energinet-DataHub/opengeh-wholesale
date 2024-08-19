@@ -33,6 +33,9 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
+from package.databases.wholesale_results_internal.schemas import (
+    hive_energy_results_schema,
+)
 from package.infrastructure.paths import HiveOutputDatabase
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
@@ -368,14 +371,12 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         TableColumnNames.time,
         TableColumnNames.quantity_qualities,
         TableColumnNames.quantity,
-        TableColumnNames.metering_point_type,
         # The field that defines results
         TableColumnNames.calculation_result_id,
-        TableColumnNames.result_id,
         TableColumnNames.metering_point_id,
         TableColumnNames.resolution,
-        TableColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
+
     all_columns = _get_energy_result_column_names()
 
     # Act
@@ -408,8 +409,4 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
 
 
 def _get_energy_result_column_names() -> List[str]:
-    return [
-        getattr(TableColumnNames, key)
-        for key in dir(TableColumnNames)
-        if not key.startswith("__")
-    ]
+    return [f.name for f in hive_energy_results_schema.fields]

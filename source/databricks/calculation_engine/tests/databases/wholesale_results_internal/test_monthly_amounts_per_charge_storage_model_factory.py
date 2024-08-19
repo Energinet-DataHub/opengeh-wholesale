@@ -34,6 +34,9 @@ from package.codelists import (
     CalculationType,
 )
 from package.constants import Colname
+from package.databases.wholesale_results_internal.schemas import (
+    monthly_amounts_schema_uc,
+)
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
@@ -200,21 +203,13 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_execution_time_start,
-        TableColumnNames.calculation_result_id,
+        TableColumnNames.result_id,
         TableColumnNames.quantity_unit,
         TableColumnNames.time,
         TableColumnNames.amount,
         TableColumnNames.is_tax,
-        TableColumnNames.result_id,
-        TableColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
     ]
-    all_columns = [
-        getattr(TableColumnNames, attribute_name)
-        for attribute_name in dir(TableColumnNames)
-        if not attribute_name.startswith("__")
-    ]
+    all_columns = [f.name for f in monthly_amounts_schema_uc.fields]
 
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
