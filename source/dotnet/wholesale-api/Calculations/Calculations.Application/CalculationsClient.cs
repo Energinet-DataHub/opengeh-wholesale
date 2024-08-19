@@ -109,7 +109,6 @@ public class CalculationsClient(
             .ConfigureAwait(false);
 
         return calculations
-            .Where(c => c.ShouldStartNow(scheduledBefore))
             .Select(c => new CalculationId(c.Id))
             .ToList();
     }
