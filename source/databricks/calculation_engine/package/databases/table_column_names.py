@@ -35,7 +35,7 @@ class TableColumnNames:
     calculation_execution_time_start = "calculation_execution_time_start"
     calculation_succeeded_time = "calculation_succeeded_time"
     calculation_id = "calculation_id"
-    calculation_result_id = "calculation_result_id" # TODO JVM: rename to result_id
+    calculation_result_id = "calculation_result_id"  # TODO JVM: rename to result_id
     calculation_period_start = "calculation_period_start"
     calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"
