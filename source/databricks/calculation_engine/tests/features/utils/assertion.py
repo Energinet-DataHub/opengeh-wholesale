@@ -18,9 +18,7 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput
-from package.databases.wholesale_results_internal.result_column_names import (
-    ResultColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
 from testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
@@ -36,8 +34,8 @@ def assert_output(
     expected_result = _get_expected_for_output(expected_results, output_name)
 
     columns_to_skip = []
-    if ResultColumnNames.calculation_result_id in expected_result.columns:
-        columns_to_skip.append(ResultColumnNames.calculation_result_id)
+    if TableColumnNames.calculation_result_id in expected_result.columns:
+        columns_to_skip.append(TableColumnNames.calculation_result_id)
     if "result_id" in expected_result.columns:
         columns_to_skip.append("result_id")
 

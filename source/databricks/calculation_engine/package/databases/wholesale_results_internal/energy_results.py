@@ -22,9 +22,7 @@ import package.databases.wholesale_results_internal.schemas as schemas
 from package.calculation.calculation_output import EnergyResultsOutput
 from package.codelists import MeteringPointType
 from package.container import Container
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
 )
@@ -98,13 +96,13 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     positive_grid_loss = energy_results_output.positive_grid_loss
     if energy_results_output.positive_grid_loss:
         positive_grid_loss = energy_results_output.positive_grid_loss.withColumn(
-            EnergyResultColumnNames.metering_point_type,
+            TableColumnNames.metering_point_type,
             f.lit(MeteringPointType.CONSUMPTION.value),
         )
     negative_grid_loss = energy_results_output.negative_grid_loss
     if energy_results_output.negative_grid_loss:
         negative_grid_loss = energy_results_output.negative_grid_loss.withColumn(
-            EnergyResultColumnNames.metering_point_type,
+            TableColumnNames.metering_point_type,
             f.lit(MeteringPointType.PRODUCTION.value),
         )
     grid_loss_metering_point_time_series = _union(
@@ -157,12 +155,12 @@ def _write(
         # Adjust to match the schema
         df = (
             df.withColumnRenamed(
-                EnergyResultColumnNames.balance_responsible_id,
-                EnergyResultColumnNames.balance_responsible_party_id,
+                TableColumnNames.balance_responsible_id,
+                TableColumnNames.balance_responsible_party_id,
             )
             .withColumnRenamed(
-                EnergyResultColumnNames.calculation_result_id,
-                EnergyResultColumnNames.result_id,
+                TableColumnNames.calculation_result_id,
+                TableColumnNames.result_id,
             )
             .select(schema.fieldNames())
         )

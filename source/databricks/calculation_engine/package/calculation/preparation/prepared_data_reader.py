@@ -31,8 +31,8 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.codelists import ChargeResolution, CalculationType
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-
 from . import transformations as T
+from .data_structures import ChargePrices, ChargePriceInformation
 from ...constants import Colname
 from ...databases import wholesale_internal
 from ...databases.table_column_names import TableColumnNames
@@ -92,6 +92,7 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
+        metering_point_ids: DataFrame,
     ) -> InputChargesContainer:
         charge_price_information = T.read_charge_price_information(
             self._migrations_wholesale_repository,
@@ -111,10 +112,48 @@ class PreparedDataReader:
             period_end_datetime,
         )
 
+        # The list of charge_links, charge_prices and change information contains data from all metering point periods in all grid areas.
+        # This method ensures we only get charge data from metering points in grid areas from the calculation arguments.
+        charge_links, charge_price_information, charge_prices = (
+            self._get_charges_filtered_by_grid_area(
+                charge_links,
+                charge_price_information,
+                charge_prices,
+                metering_point_ids,
+            )
+        )
+
         return InputChargesContainer(
             charge_price_information=charge_price_information,
             charge_prices=charge_prices,
             charge_links=charge_links,
+        )
+
+    def _get_charges_filtered_by_grid_area(
+        self,
+        charge_links: DataFrame,
+        charge_price_information: ChargePriceInformation,
+        charge_prices: ChargePrices,
+        metering_point_ids: DataFrame,
+    ) -> tuple[DataFrame, ChargePriceInformation, ChargePrices]:
+        charge_links = charge_links.join(
+            metering_point_ids, Colname.metering_point_id, "inner"
+        )
+        change_keys = charge_links.select(Colname.charge_key).distinct()
+        charge_prices_df = charge_prices.df.join(
+            change_keys,
+            Colname.charge_key,
+            "inner",
+        )
+        charge_price_information_df = charge_price_information.df.join(
+            change_keys,
+            Colname.charge_key,
+            "inner",
+        )
+        return (
+            charge_links,
+            ChargePriceInformation(charge_price_information_df),
+            ChargePrices(charge_prices_df),
         )
 
     def get_prepared_charges(
