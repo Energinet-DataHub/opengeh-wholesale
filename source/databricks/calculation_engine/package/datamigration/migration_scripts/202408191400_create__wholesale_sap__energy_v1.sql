@@ -66,7 +66,7 @@ WITH all_energy AS (
            time,
            quantity,
            quantity_qualities
-    FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.exchange_per_neighbor_grid_area
+    FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.exchange_per_neighbor_ga
 )
 SELECT c.calculation_id,
        c.calculation_type,
@@ -82,8 +82,8 @@ SELECT c.calculation_id,
            WHEN time_series_type = 'production' THEN 'production'
            WHEN time_series_type = 'non_profiled_consumption' THEN 'consumption'
            WHEN time_series_type = 'flex_consumption' THEN 'consumption'
-           WHEN time_series_type = 'exchange' THEN 'exchange'
            WHEN time_series_type = 'net_exchange_per_ga' THEN 'exchange'
+           WHEN time_series_type = 'net_exchange_per_neighboring_ga' THEN 'exchange'
            WHEN time_series_type = 'total_consumption' THEN 'consumption'
            WHEN time_series_type = 'grid_loss' THEN NULL
            WHEN time_series_type = 'temp_flex_consumption' THEN 'consumption'
@@ -95,8 +95,8 @@ SELECT c.calculation_id,
            WHEN time_series_type = 'production' THEN NULL
            WHEN time_series_type = 'non_profiled_consumption' THEN 'non_profiled'
            WHEN time_series_type = 'flex_consumption' THEN 'flex'
-           WHEN time_series_type = 'exchange' THEN NULL
            WHEN time_series_type = 'net_exchange_per_ga' THEN NULL
+           WHEN time_series_type = 'net_exchange_per_neighboring_ga' THEN NULL
            WHEN time_series_type = 'total_consumption' THEN NULL
            WHEN time_series_type = 'grid_loss' THEN NULL
            WHEN time_series_type = 'temp_flex_consumption' THEN 'flex'
@@ -106,8 +106,8 @@ SELECT c.calculation_id,
        END as settlement_method,
        time,
        quantity,
-       quantity_qualities,
-       'kWh' as quantity_unit
+       'kWh' as quantity_unit,
+       quantity_qualities
 FROM all_energy as e
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations as c
 WHERE c.calculation_id = e.calculation_id
