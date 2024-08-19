@@ -144,6 +144,9 @@ def _calculate_exchange(
     exchange_per_neighbor = exchange_aggr.aggregate_exchange_per_neighbor(
         metering_point_time_series, args.calculation_grid_areas
     )
+
+    # exchange_per_neighbor is a result for eSett.
+    # And eSett is only interested in the calculation types aggregation and balance fixing.
     if _is_aggregation_or_balance_fixing(args.calculation_type):
         energy_results_output.exchange_per_neighbor = factory.create(
             args,
