@@ -21,42 +21,38 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 hive_energy_results_schema = StructType(
     [
         # The grid area in question. In case of exchange it's the to-grid area.
-        StructField(EnergyResultColumnNames.grid_area_code, StringType(), False),
-        StructField(EnergyResultColumnNames.energy_supplier_id, StringType(), True),
-        StructField(EnergyResultColumnNames.balance_responsible_id, StringType(), True),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), True),
+        StructField(TableColumnNames.balance_responsible_id, StringType(), True),
         # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534
-        StructField(EnergyResultColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
         StructField(
-            EnergyResultColumnNames.quantity_qualities,
+            TableColumnNames.quantity_qualities,
             ArrayType(StringType()),
             False,
         ),
-        StructField(EnergyResultColumnNames.time, TimestampType(), False),
-        StructField(EnergyResultColumnNames.aggregation_level, StringType(), False),
-        StructField(EnergyResultColumnNames.time_series_type, StringType(), False),
-        StructField(EnergyResultColumnNames.calculation_id, StringType(), False),
-        StructField(EnergyResultColumnNames.calculation_type, StringType(), False),
+        StructField(TableColumnNames.time, TimestampType(), False),
+        StructField(TableColumnNames.aggregation_level, StringType(), False),
+        StructField(TableColumnNames.time_series_type, StringType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.calculation_type, StringType(), False),
         StructField(
-            EnergyResultColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             TimestampType(),
             False,
         ),
         # The time when the energy was consumed/produced/exchanged
-        StructField(
-            EnergyResultColumnNames.neighbor_grid_area_code, StringType(), True
-        ),
-        StructField(EnergyResultColumnNames.calculation_result_id, StringType(), False),
-        StructField(EnergyResultColumnNames.metering_point_id, StringType(), True),
-        StructField(EnergyResultColumnNames.resolution, StringType(), True),
+        StructField(TableColumnNames.neighbor_grid_area_code, StringType(), True),
+        StructField(TableColumnNames.calculation_result_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_id, StringType(), True),
+        StructField(TableColumnNames.resolution, StringType(), True),
     ]
 )

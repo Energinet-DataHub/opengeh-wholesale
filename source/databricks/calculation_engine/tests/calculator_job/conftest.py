@@ -26,9 +26,6 @@ from package.codelists.calculation_type import (
 )
 from package.databases import wholesale_internal, migrations_wholesale
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
 from package.infrastructure import paths
 from . import configuration as C
 
@@ -131,8 +128,7 @@ def wholesale_fixing_energy_results_df(
         f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(EnergyResultColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 
