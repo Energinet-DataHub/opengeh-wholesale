@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract : IAggregatedTimeSeriesDatabricksContract
+public sealed class EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract : IAggregatedTimeSeriesDatabricksContract
 {
     public string GetAggregationLevel()
     {

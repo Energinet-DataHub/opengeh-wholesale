@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
     "StyleCop.CSharp.ReadabilityRules",
     "SA1118:Parameter should not span multiple lines",
     Justification = "It looks better this way")]
-public class AggregatedTimeSeriesQuerySnippetProviderFactory(
+public sealed class AggregatedTimeSeriesQuerySnippetProviderFactory(
     IEnumerable<IAggregatedTimeSeriesDatabricksContract> databricksContracts)
 {
     private readonly Dictionary<string, IAggregatedTimeSeriesDatabricksContract> _databricksContracts =

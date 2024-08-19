@@ -20,7 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQuerySnippetProvider(
+public sealed class AggregatedTimeSeriesQuerySnippetProvider(
     AggregatedTimeSeriesQueryParameters queryParameters,
     IAggregatedTimeSeriesDatabricksContract databricksContract)
 {

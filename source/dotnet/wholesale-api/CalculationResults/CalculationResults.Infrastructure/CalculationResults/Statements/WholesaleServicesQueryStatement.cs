@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class WholesaleServicesQueryStatement(
+public sealed class WholesaleServicesQueryStatement(
     WholesaleServicesQueryStatement.StatementType statementType,
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
     WholesaleServicesQuerySnippetProvider querySnippetProvider,

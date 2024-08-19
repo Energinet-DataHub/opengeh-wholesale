@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQueryStatement(
+public sealed class AggregatedTimeSeriesQueryStatement(
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
     AggregatedTimeSeriesQuerySnippetProvider querySnippetProvider,
     TimeSeriesType timeSeriesType,
