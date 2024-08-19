@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
@@ -45,7 +44,6 @@ public static class CalculationsExtensions
 
         services.AddDatabricksJobsForApplication(configuration);
 
-        services.AddSingleton(new CalculationStateMapper());
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();

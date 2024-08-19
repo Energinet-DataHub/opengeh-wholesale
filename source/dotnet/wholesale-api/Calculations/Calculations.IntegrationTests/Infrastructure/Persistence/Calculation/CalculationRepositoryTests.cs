@@ -66,9 +66,10 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
-        calculation.MarkAsCalculating(); // This call will ensure ExecutionTimeStart is set
-        calculation.MarkAsCalculated(
-            calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
+        calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), SystemClock.Instance.GetCurrentInstant());
+        calculation.MarkAsCalculationJobPending();
+        calculation.MarkAsCalculating();
+        calculation.MarkAsCalculated(calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
         calculation.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
         calculation.ExecutionTimeStart.Should().NotBeNull(); // Additional check
 
@@ -104,7 +105,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         actual.Should().BeEquivalentTo(calculation);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ExecutionTimeEnd.Should().BeNull();
-        actual.ExecutionTimeStart.Should().NotBeNull();
+        actual.ExecutionTimeStart.Should().BeNull();
     }
 
     [Fact]
@@ -203,16 +204,18 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
+        var executionTimeStart = Instant.FromUtc(2022, 5, 1, 0, 0);
         var calculation = new Application.Model.Calculations.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
             period.PeriodStart,
             period.PeriodEnd,
-            Instant.FromUtc(2022, 5, 1, 0, 0),
+            Instant.FromUtc(2022, 4, 4, 0, 0),
             period.DateTimeZone,
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+        calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), executionTimeStart); // Sets execution time start
 
         var sut = new CalculationRepository(writeContext);
         await sut.AddAsync(calculation);

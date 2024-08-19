@@ -145,14 +145,15 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             {
                 calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
                 return
-                    calculation?.ExecutionState is CalculationState.Completed
-                    or CalculationState.Failed;
+                    calculation != null && (
+                        calculation.OrchestrationState.IsCalculationJobCompleted() ||
+                        calculation.OrchestrationState is CalculationOrchestrationState.CalculationFailed);
             },
             waitTimeLimit,
             delay);
 
         DiagnosticMessageSink.WriteDiagnosticMessage(
-            $"Wait for calculation with id '{calculationId}' to be completed/failed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
+            $"Wait for calculation with id '{calculationId}' to be completed/failed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
 
         return (isCompletedOrFailed, calculation);
     }

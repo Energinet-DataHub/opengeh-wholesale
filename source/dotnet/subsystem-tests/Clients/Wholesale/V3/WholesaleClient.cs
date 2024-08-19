@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// Returns a calculation matching calculationId.
         /// </summary>
         /// <param name="calculationId">CalculationId</param>
-        /// <returns>Success</returns>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<CalculationDto> GetCalculationAsync(System.Guid calculationId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// <summary>
         /// Get calculations that matches the criteria specified
         /// </summary>
-        /// <returns>Success</returns>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CalculationDto>> SearchCalculationsAsync(System.Collections.Generic.IEnumerable<string> gridAreaCodes = null, CalculationState? executionState = null, System.DateTimeOffset? minExecutionTime = null, System.DateTimeOffset? maxExecutionTime = null, System.DateTimeOffset? periodStart = null, System.DateTimeOffset? periodEnd = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -50,7 +50,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// Returns a subset of calculations that are valid for use with settlement reports.
         /// <br/>Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
         /// </summary>
-        /// <returns>Success</returns>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SettlementReportApplicableCalculationDto>> GetApplicableCalculationsAsync(CalculationType? calculationType = null, System.Collections.Generic.IEnumerable<string> gridAreaCodes = null, System.DateTimeOffset? periodStart = null, System.DateTimeOffset? periodEnd = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -109,7 +109,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// Returns a calculation matching calculationId.
         /// </summary>
         /// <param name="calculationId">CalculationId</param>
-        /// <returns>Success</returns>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<CalculationDto> GetCalculationAsync(System.Guid calculationId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -187,7 +187,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// <summary>
         /// Get calculations that matches the criteria specified
         /// </summary>
-        /// <returns>Success</returns>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CalculationDto>> SearchCalculationsAsync(System.Collections.Generic.IEnumerable<string> gridAreaCodes = null, CalculationState? executionState = null, System.DateTimeOffset? minExecutionTime = null, System.DateTimeOffset? maxExecutionTime = null, System.DateTimeOffset? periodStart = null, System.DateTimeOffset? periodEnd = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -288,7 +288,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// Returns a subset of calculations that are valid for use with settlement reports.
         /// <br/>Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
         /// </summary>
-        /// <returns>Success</returns>
+        /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SettlementReportApplicableCalculationDto>> GetApplicableCalculationsAsync(CalculationType? calculationType = null, System.Collections.Generic.IEnumerable<string> gridAreaCodes = null, System.DateTimeOffset? periodStart = null, System.DateTimeOffset? periodEnd = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -518,10 +518,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         [Newtonsoft.Json.JsonProperty("executionTimeEnd", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset? ExecutionTimeEnd { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("executionState", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public CalculationState ExecutionState { get; set; }
-
         [Newtonsoft.Json.JsonProperty("orchestrationState", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public CalculationOrchestrationState OrchestrationState { get; set; }
@@ -541,6 +537,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         [Newtonsoft.Json.JsonProperty("createdByUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid CreatedByUserId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("completedTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? CompletedTime { get; set; }
 
     }
 
