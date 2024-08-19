@@ -17,9 +17,7 @@ from pyspark.sql import DataFrame
 
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
-from package.databases.wholesale_results_internal.wholesale_result_column_names import (
-    WholesaleResultColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -75,13 +73,13 @@ def _write(
     with logging_configuration.start_span(name):
         df.drop(
             # ToDo JMG: Remove when we are on Unity Catalog
-            WholesaleResultColumnNames.calculation_type,
-            WholesaleResultColumnNames.calculation_execution_time_start,
-            WholesaleResultColumnNames.amount_type,
+            TableColumnNames.calculation_type,
+            TableColumnNames.calculation_execution_time_start,
+            TableColumnNames.amount_type,
         ).withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog
-            WholesaleResultColumnNames.calculation_result_id,
-            WholesaleResultColumnNames.result_id,
+            TableColumnNames.calculation_result_id,
+            TableColumnNames.result_id,
         ).write.format(
             "delta"
         ).mode(
