@@ -63,7 +63,6 @@ var host = new HostBuilder()
         // Calculation scheduler
         services.AddCalculationScheduler();
 
-
         // Modules
         services.AddEdiModule(); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
         services.AddCalculationsModule(context.Configuration);

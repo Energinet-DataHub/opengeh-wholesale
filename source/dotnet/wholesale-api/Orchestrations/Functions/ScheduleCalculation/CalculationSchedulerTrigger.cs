@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask.Client;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
