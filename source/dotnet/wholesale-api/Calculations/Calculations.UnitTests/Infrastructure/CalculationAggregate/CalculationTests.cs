@@ -379,6 +379,16 @@ public class CalculationTests
     }
 
     [Fact]
+    public void MarkAsCalculated_WhenNotStarted_ThrowsException()
+    {
+        var sut = new CalculationBuilder().Build();
+
+        var act = () => sut.MarkAsCalculated(SystemClock.Instance.GetCurrentInstant());
+
+        act.Should().ThrowExactly<BusinessValidationException>();
+    }
+
+    [Fact]
     public void Reset_WhenSubmitted_SetsStateCreated()
     {
         var sut = new CalculationBuilder().WithStateSubmitted().Build();
