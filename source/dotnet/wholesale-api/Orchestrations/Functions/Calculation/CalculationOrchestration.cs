@@ -38,7 +38,7 @@ internal class CalculationOrchestration
         var defaultRetryOptions = CreateDefaultRetryOptions();
 
         // Set instance id on calculation
-        await context.CallActivityAsync<CalculationJobId>(
+        await context.CallActivityAsync(
             nameof(SetCalculationAsStartedActivity),
             new SetCalculationAsStartedInput(input.CalculationId.Id, context.InstanceId),
             defaultRetryOptions);
