@@ -47,8 +47,8 @@ WITH all_energy AS (
                 WHEN metering_point_type = 'consumption' THEN 'flex_consumption'
            END AS time_series_type,
            resolution,
-           NULL as energy_supplier_id,
-           NULL as balance_responsible_party_id,
+           energy_supplier_id,
+           balance_responsible_party_id,
            NULL as neighbor_grid_area_code,
            time,
            quantity,
@@ -106,8 +106,8 @@ SELECT c.calculation_id,
        END as settlement_method,
        time,
        quantity,
-       'kWh' as quantity_unit,
-       quantity_qualities
+       quantity_qualities,
+       'kWh' as quantity_unit
 FROM all_energy as e
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations as c
 WHERE c.calculation_id = e.calculation_id
