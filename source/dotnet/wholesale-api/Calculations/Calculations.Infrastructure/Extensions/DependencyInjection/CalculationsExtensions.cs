@@ -45,7 +45,6 @@ public static class CalculationsExtensions
         services.AddDatabricksJobsForApplication(configuration);
 
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-        services.AddScoped<CalculationEngineClient>();
 
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
