@@ -38,6 +38,13 @@ public sealed class AggregatedTimeSeriesQueryStatement(
 
     protected override string GetSqlStatement()
     {
+        /*
+         * SELECT em.A, em.B, em.C, ...
+         * FROM (SomeQuery) em
+         * INNER JOIN (SomeOtherQuery) pckg
+         * ON em.A = pckg.A AND em.B = pckg.B AND ...
+         * ORDER BY em.A, em.B, ...
+         */
         return $"""
                 SELECT {_querySnippetProvider.GetProjection(EnergyMeasurementTableName)}
                 FROM ({GetEnergyMeasurementsToChooseFrom()}) {EnergyMeasurementTableName}
@@ -49,6 +56,11 @@ public sealed class AggregatedTimeSeriesQueryStatement(
 
     private string GetEnergyMeasurementsToChooseFrom()
     {
+        /*
+         * SELECT er.A, er.B, er.C, ...
+         * FROM Source er
+         * WHERE (SomeConditions) AND (SomeOtherConditions)
+         */
         return $"""
                 SELECT {_querySnippetProvider.GetProjection(EnergyResultTableName)}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
@@ -58,6 +70,12 @@ public sealed class AggregatedTimeSeriesQueryStatement(
 
     private string GetMaxVersionForEachPackage()
     {
+        /*
+         * SELECT max(er.calculation_version) AS max_version, er.time AS max_time, er.A AS max_A, ...
+         * FROM Source er
+         * WHERE (SomeConditions) AND (SomeOtherConditions)
+         * GROUP BY er.time, er.A, ...
+         */
         return $"""
                 SELECT max({EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{EnergyResultTableName}.{ctgb} AS max_{ctgb}"))}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
@@ -68,6 +86,11 @@ public sealed class AggregatedTimeSeriesQueryStatement(
 
     private string MatchEnergyMeasurementsWithPackages(string energyMeasurementPrefix, string packagesPrefix)
     {
+        /*
+         * em.time = pckg.max_time
+         * AND em.calculation_version = pckg.max_version
+         * AND coalesce(em.A, 'is_null_value') = coalesce(pckg.max_A, 'is_null_value') AND ...
+         */
         return $"""
                 {energyMeasurementPrefix}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} = {packagesPrefix}.max_time
                 AND {energyMeasurementPrefix}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
