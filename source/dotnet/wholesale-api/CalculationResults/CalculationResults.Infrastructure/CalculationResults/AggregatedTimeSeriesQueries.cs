@@ -58,7 +58,7 @@ public class AggregatedTimeSeriesQueries(
                 _deltaTableOptions.Value);
 
             await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
-                               (row, points) => AggregatedTimeSeriesFactory.Create(timeSeriesType, row, points),
+                               (row, points) => AggregatedTimeSeriesFactory.Create(querySnippetProvider.DatabricksContract, timeSeriesType, row, points),
                                (currentRow, previousRow) =>
                                    querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column =>
                                        currentRow[column] != previousRow[column])
