@@ -17,9 +17,6 @@ from pyspark.sql import DataFrame
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
-    TotalMonthlyAmountsColumnNames,
-)
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -53,11 +50,11 @@ def _write(
     with logging_configuration.start_span(name):
         df.drop(
             # ToDo JMG: Remove when we are on Unity Catalog
-            TotalMonthlyAmountsColumnNames.calculation_type,
-            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_type,
+            TableColumnNames.calculation_execution_time_start,
         ).withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog
-            TotalMonthlyAmountsColumnNames.calculation_result_id,
+            TableColumnNames.calculation_result_id,
             TableColumnNames.result_id,
         ).write.format(
             "delta"

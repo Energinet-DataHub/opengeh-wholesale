@@ -20,6 +20,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     monthly_amounts_per_charge_storage_model_factory as sut,
 )
@@ -33,8 +34,8 @@ from package.codelists import (
     CalculationType,
 )
 from package.constants import Colname
-from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
-    MonthlyAmountsColumnNames,
+from package.databases.wholesale_results_internal.schemas import (
+    monthly_amounts_schema_uc,
 )
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
@@ -121,21 +122,21 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (MonthlyAmountsColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (MonthlyAmountsColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
+        (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (TableColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (
-            MonthlyAmountsColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (MonthlyAmountsColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
-        (MonthlyAmountsColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (MonthlyAmountsColumnNames.quantity_unit, DEFAULT_UNIT.value),
-        (MonthlyAmountsColumnNames.time, DEFAULT_CHARGE_TIME),
-        (MonthlyAmountsColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
-        (MonthlyAmountsColumnNames.is_tax, DEFAULT_CHARGE_TAX),
-        (MonthlyAmountsColumnNames.charge_code, DEFAULT_CHARGE_CODE),
-        (MonthlyAmountsColumnNames.charge_type, DEFAULT_CHARGE_TYPE.value),
-        (MonthlyAmountsColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
+        (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
+        (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (TableColumnNames.quantity_unit, DEFAULT_UNIT.value),
+        (TableColumnNames.time, DEFAULT_CHARGE_TIME),
+        (TableColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
+        (TableColumnNames.is_tax, DEFAULT_CHARGE_TAX),
+        (TableColumnNames.charge_code, DEFAULT_CHARGE_CODE),
+        (TableColumnNames.charge_type, DEFAULT_CHARGE_TYPE.value),
+        (TableColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
     ],
 )
 def test__create__returns_dataframe_with_column(
@@ -202,21 +203,13 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        MonthlyAmountsColumnNames.calculation_type,
-        MonthlyAmountsColumnNames.calculation_execution_time_start,
-        MonthlyAmountsColumnNames.calculation_result_id,
-        MonthlyAmountsColumnNames.quantity_unit,
-        MonthlyAmountsColumnNames.time,
-        MonthlyAmountsColumnNames.amount,
-        MonthlyAmountsColumnNames.is_tax,
-        MonthlyAmountsColumnNames.result_id,
-        MonthlyAmountsColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
+        TableColumnNames.result_id,
+        TableColumnNames.quantity_unit,
+        TableColumnNames.time,
+        TableColumnNames.amount,
+        TableColumnNames.is_tax,
     ]
-    all_columns = [
-        getattr(MonthlyAmountsColumnNames, attribute_name)
-        for attribute_name in dir(MonthlyAmountsColumnNames)
-        if not attribute_name.startswith("__")
-    ]
+    all_columns = [f.name for f in monthly_amounts_schema_uc.fields]
 
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
