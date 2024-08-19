@@ -102,7 +102,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         calculationIdCallback.SetValue(calculationId);
 
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -211,7 +211,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Assert
         // => Get orchestration status for started orchestration
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Wait for ActorMessagesEnqueuing state
         await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(
