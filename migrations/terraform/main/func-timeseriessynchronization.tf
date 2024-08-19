@@ -18,6 +18,8 @@ module "func_timeseriessynchronization" {
   is_durable_function                    = true
   use_32_bit_worker                      = false
   app_settings                           = local.func_timeseriessynchronization.app_settings
+  pre_warmed_instance_count              = 1
+  elastic_instance_minimum               = 1
   health_check_path                      = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
     action_group_id = module.monitor_action_group_mig[0].id

@@ -8,7 +8,7 @@ module "func_service_plan" {
   resource_group_name            = azurerm_resource_group.this.name
   location                       = azurerm_resource_group.this.location
   sku_name                       = "EP3"
-  maximum_elastic_worker_count   = 4
+  maximum_elastic_worker_count   = 3
   monitor_alerts_action_group_id = length(module.monitor_action_group_mig) != 1 ? null : module.monitor_action_group_mig[0].id
 
   cpu_alert_information = {

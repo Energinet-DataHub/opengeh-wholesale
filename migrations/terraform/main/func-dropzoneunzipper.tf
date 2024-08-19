@@ -14,10 +14,10 @@ module "func_dropzoneunzipper" {
   app_service_plan_id                    = module.func_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   use_32_bit_worker                      = false
-  health_check_path                      = "/api/monitor/ready"
+  app_settings                           = local.func_dropzoneunzipper.app_settings
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
-  app_settings                           = local.func_dropzoneunzipper.app_settings
+  health_check_path                      = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
     action_group_id = module.monitor_action_group_mig[0].id
     enabled         = var.enable_health_check_alerts
