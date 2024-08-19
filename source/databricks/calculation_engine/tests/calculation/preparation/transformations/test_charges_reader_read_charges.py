@@ -90,16 +90,16 @@ def _create_charges_price_points_row(
 class TestWhenValidInput:
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test_read_charge_price_information_returns_expected_row_values(
-        self, table_reader_mock: MigrationsWholesaleRepository, spark: SparkSession
+        self, repository_mock: MigrationsWholesaleRepository, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_price_information_periods.return_value = (
+        repository_mock.read_charge_price_information_periods.return_value = (
             spark.createDataFrame(data=[_create_charge_price_information_row()])
         )
 
         # Act
         actual = read_charge_price_information(
-            table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
+            repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
         ).df
 
         # Assert
@@ -116,16 +116,16 @@ class TestWhenValidInput:
 
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test_read_charge_prices_returns_expected_row_values(
-        self, table_reader_mock: MigrationsWholesaleRepository, spark: SparkSession
+        self, repository_mock: MigrationsWholesaleRepository, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        repository_mock.read_charge_price_points.return_value = spark.createDataFrame(
             data=[_create_charges_price_points_row()]
         )
 
         # Act
         actual = read_charge_prices(
-            table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
+            repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
         ).df
 
         # Assert
@@ -163,19 +163,19 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test__returns_empty_result(
         self,
-        table_reader_mock: MigrationsWholesaleRepository,
+        repository_mock: MigrationsWholesaleRepository,
         spark: SparkSession,
         from_date,
         to_date,
         charge_time,
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        repository_mock.read_charge_price_points.return_value = spark.createDataFrame(
             data=[_create_charges_price_points_row(charge_time=charge_time)]
         )
 
         # Act
-        actual = read_charge_prices(table_reader_mock, from_date, to_date).df
+        actual = read_charge_prices(repository_mock, from_date, to_date).df
 
         # Assert
         assert actual.isEmpty()
@@ -200,19 +200,19 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test__returns_charge(
         self,
-        table_reader_mock: MigrationsWholesaleRepository,
+        repository_mock: MigrationsWholesaleRepository,
         spark: SparkSession,
         from_date,
         to_date,
         charge_time,
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        repository_mock.read_charge_price_points.return_value = spark.createDataFrame(
             data=[_create_charges_price_points_row(charge_time=charge_time)]
         )
 
         # Act
-        actual = read_charge_prices(table_reader_mock, from_date, to_date).df
+        actual = read_charge_prices(repository_mock, from_date, to_date).df
 
         # Assert
         assert actual.count() == 1
@@ -251,7 +251,7 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test__returns_expected_to_and_from_date(
         self,
-        table_reader_mock: MigrationsWholesaleRepository,
+        repository_mock: MigrationsWholesaleRepository,
         spark: SparkSession,
         charge_from_date: datetime,
         charge_to_date: datetime,
@@ -261,7 +261,7 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         # Arrange
         calculation_from_date = datetime(2020, 1, 2, 0, 0)
         calculation_to_date = datetime(2020, 1, 3, 0, 0)
-        table_reader_mock.read_charge_price_information_periods.return_value = (
+        repository_mock.read_charge_price_information_periods.return_value = (
             spark.createDataFrame(
                 data=[
                     _create_charge_price_information_row(
@@ -275,7 +275,7 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
 
         # Act
         actual = read_charge_price_information(
-            table_reader_mock, calculation_from_date, calculation_to_date
+            repository_mock, calculation_from_date, calculation_to_date
         ).df
 
         # Assert

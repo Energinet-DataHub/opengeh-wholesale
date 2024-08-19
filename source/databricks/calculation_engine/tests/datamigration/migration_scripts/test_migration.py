@@ -78,6 +78,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
             paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
             paths.WholesaleResultsDatabase.DATABASE_NAME,
             paths.MigrationsWholesaleDatabase.DATABASE_NAME,
+            paths.WholesaleSapDatabase.DATABASE_NAME,
         ]:
             continue
 

@@ -64,21 +64,19 @@ wholesaleSubsystem = group "Wholesale" {
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
+
     wholesaleApi = container "Wholesale API" {
         description "Backend server providing external web API for Wholesale subsystem"
         technology "Asp.Net Core Web API"
         tags "Microsoft Azure - App Services" "Mandalorian" "MarketParticipant Subscriber"
 
         # Base model relationships
-        dh3.sharedServiceBus -> this "Subscribes to Integration Events" "integration event/amqp"
-        this -> dh3.sharedServiceBus "Sends to EDI Inbox" "message/amqp"
+        this -> dh3.sharedServiceBus "Subscribes to integration events" "integration event/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleRuntimeWarehouse "Retrieves results from"
-
-        # Subsystem-to-Subsystem relationships
-        markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+        this -> wholesaleDataLake "Retrieves results from" {
             tags "Simple View"
         }
     }
@@ -88,11 +86,14 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Function Apps" "Mandalorian"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "Publish calculation completed and grid loss" "integration event/amqp"
+        this -> dh3.sharedServiceBus "Listens on Wholesale Inbox queue" "message/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleCalculatorJob "Invokes"
         this -> wholesaleRuntimeWarehouse "Retrieves results from"
+        this -> wholesaleDataLake "Retrieves results from" {
+            tags "Simple View"
+        }
     }
 }

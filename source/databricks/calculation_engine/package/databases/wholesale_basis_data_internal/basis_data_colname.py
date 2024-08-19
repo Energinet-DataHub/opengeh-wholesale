@@ -108,5 +108,5 @@ class CalculationsColumnName:
     execution_time_start = "execution_time_start"
     created_by_user_id = "created_by_user_id"
     version = "version"
-    is_control_calculation = "is_control_calculation"
-    """True if the calculation is a control calculation, False otherwise."""
+    is_internal_calculation = "is_internal_calculation"
+    """True if the calculation is an internal calculation, False otherwise."""

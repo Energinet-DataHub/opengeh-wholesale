@@ -433,7 +433,7 @@ class TestWhenIsControlCalculationFlagPresent:
                 actual_args, actual_settings = parse_job_arguments(command_line_args)
 
         # Assert
-        assert actual_args.is_control_calculation
+        assert actual_args.is_internal_calculation
 
 
 class TestWhenIsControlCalculationFlagNotPresent:
@@ -443,7 +443,7 @@ class TestWhenIsControlCalculationFlagNotPresent:
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        sys_argv_from_contract.remove("--is-control-calculation")
+        sys_argv_from_contract.remove("--is-internal-calculation")
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
@@ -452,7 +452,7 @@ class TestWhenIsControlCalculationFlagNotPresent:
                 actual_args, actual_settings = parse_job_arguments(command_line_args)
 
         # Assert
-        assert not actual_args.is_control_calculation
+        assert not actual_args.is_internal_calculation
 
 
 class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
