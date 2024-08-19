@@ -21,9 +21,6 @@ from pyspark.sql.types import (
 )
 
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
-    TotalMonthlyAmountsColumnNames,
-)
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 total_monthly_amounts_schema_uc = StructType(
@@ -41,24 +38,18 @@ total_monthly_amounts_schema_uc = StructType(
 # ToDo JMG: Remove when we are on Unity Catalog
 hive_total_monthly_amounts_schema = StructType(
     [
-        StructField(TotalMonthlyAmountsColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.calculation_type, StringType(), False),
         StructField(
-            TotalMonthlyAmountsColumnNames.calculation_type, StringType(), False
-        ),
-        StructField(
-            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             TimestampType(),
             False,
         ),
-        StructField(
-            TotalMonthlyAmountsColumnNames.calculation_result_id, StringType(), False
-        ),
-        StructField(TotalMonthlyAmountsColumnNames.grid_area_code, StringType(), False),
-        StructField(
-            TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), True
-        ),
-        StructField(TotalMonthlyAmountsColumnNames.time, TimestampType(), False),
-        StructField(TotalMonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
-        StructField(TotalMonthlyAmountsColumnNames.charge_owner_id, StringType(), True),
+        StructField(TableColumnNames.calculation_result_id, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), True),
+        StructField(TableColumnNames.time, TimestampType(), False),
+        StructField(TableColumnNames.amount, DecimalType(18, 6), True),
+        StructField(TableColumnNames.charge_owner_id, StringType(), True),
     ]
 )
