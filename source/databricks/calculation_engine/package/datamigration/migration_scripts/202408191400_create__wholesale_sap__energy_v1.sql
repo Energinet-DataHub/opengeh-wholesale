@@ -1,7 +1,6 @@
 CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.energy_v1 AS
 WITH all_energy AS (
     SELECT calculation_id,
-           calculation_type,
            'total' AS aggregation_level,
            grid_area_code,
            time_series_type,
@@ -15,7 +14,6 @@ WITH all_energy AS (
     FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy
     UNION ALL
     SELECT calculation_id,
-           calculation_type,
            'es' AS aggregation_level,
            grid_area_code,
            time_series_type,
@@ -29,7 +27,6 @@ WITH all_energy AS (
     FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es
     UNION ALL
     SELECT calculation_id,
-           calculation_type,
            'brp' AS aggregation_level,
            grid_area_code,
            time_series_type,
@@ -43,10 +40,12 @@ WITH all_energy AS (
     FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_brp
     UNION ALL
     SELECT calculation_id,
-           calculation_type,
            'total' AS aggregation_level,
            grid_area_code,
-           time_series_type,
+           CASE
+                WHEN metering_point_type = 'production' THEN 'production'
+                WHEN metering_point_type = 'consumption' THEN 'flex_consumption'
+           END AS time_series_type,
            resolution,
            NULL as energy_supplier_id,
            NULL as balance_responsible_party_id,
@@ -57,10 +56,9 @@ WITH all_energy AS (
     FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.grid_loss_metering_point_time_series
     UNION ALL
     SELECT calculation_id,
-           calculation_type,
            'total' AS aggregation_level,
            grid_area_code,
-           time_series_type,
+           'net_exchange_per_ga' AS time_series_type,
            resolution,
            NULL as energy_supplier_id,
            NULL as balance_responsible_party_id,
