@@ -312,7 +312,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var sut = new CalculationRepository(readContext);
 
         // Act
-        var scheduledCalculations = await sut.GetScheduledCalculationsAsync(scheduledBefore: now);
+        var scheduledCalculations = await sut.GetScheduledCalculationsAsync(scheduledToRunBefore: now);
 
         // Assert
         using var assertionScope = new AssertionScope();

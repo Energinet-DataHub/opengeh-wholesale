@@ -102,10 +102,10 @@ public class CalculationsClient(
         return new CalculationId(calculation.Id);
     }
 
-    public async Task<IReadOnlyCollection<CalculationId>> GetScheduledCalculationsToStartAsync(Instant scheduledBefore)
+    public async Task<IReadOnlyCollection<CalculationId>> GetScheduledCalculationsToRunAsync(Instant scheduledToRunBefore)
     {
         var calculations = await _calculationRepository
-            .GetScheduledCalculationsAsync(scheduledBefore)
+            .GetScheduledCalculationsAsync(scheduledToRunBefore)
             .ConfigureAwait(false);
 
         return calculations
