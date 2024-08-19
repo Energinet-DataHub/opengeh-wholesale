@@ -22,20 +22,20 @@ energy_v1 = t.StructType(
         t.StructField("resolution", t.StringType(), not nullable),
         #
         # EIC or GLN number
-        t.StructField("energy_supplier_id", t.StringType(), not nullable),
+        t.StructField("energy_supplier_id", t.StringType(), nullable),
         #
         # EIC or GLN number
-        t.StructField("balance_responsible_party_id", t.StringType(), not nullable),
+        t.StructField("balance_responsible_party_id", t.StringType(), nullable),
         #
-        t.StructField("neighbor_grid_area_code", t.StringType(), not nullable),
+        t.StructField("neighbor_grid_area_code", t.StringType(), nullable),
         #
         # 'production' | 'non_profiled_consumption' | 'flex_consumption' | 'net_exchange_per_ga' |
         # 'net_exchange_per_neighboring_ga' | 'total_consumption' | 'grid_loss' | 'temp_flex_consumption' |
         # 'temp_production' | 'negative_grid_loss' | 'positive_grid_loss'
         t.StructField("time_series_type", t.StringType(), not nullable),
         #
-        # 'consumption' | 'production' | 'exchange'
-        t.StructField("metering_point_type", t.StringType(), not nullable),
+        # 'consumption' | 'production' | 'exchange' | NULL
+        t.StructField("metering_point_type", t.StringType(), nullable),
         #
         # 'flex' | 'non_profiled' | NULL
         t.StructField("settlement_method", t.StringType(), nullable),
