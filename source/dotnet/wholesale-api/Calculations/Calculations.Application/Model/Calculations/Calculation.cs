@@ -384,7 +384,7 @@ public class Calculation
     public bool ShouldStartNow(Instant scheduledBefore)
     {
         var isScheduled = OrchestrationState == CalculationOrchestrationState.Scheduled;
-        var hasNoOrchestration = OrchestrationInstanceId != null;
+        var hasNoOrchestration = OrchestrationInstanceId == null;
         var scheduleIsMet = ScheduledAt <= scheduledBefore;
 
         return

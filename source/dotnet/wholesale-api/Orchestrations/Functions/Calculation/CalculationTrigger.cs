@@ -54,7 +54,6 @@ internal class CalculationTrigger
     public async Task<IActionResult> StartCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest httpRequest,
         [FromBody] StartCalculationRequestDto startCalculationRequestDto,
-        [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
         var calculationId = await _calculationsClient.CreateAndCommitAsync(
