@@ -47,3 +47,8 @@ data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
   name         = "sbt-shres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "dbw_wholesale_workspace_token" {
+  name         = "dbw-wholesale-workspace-token"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
