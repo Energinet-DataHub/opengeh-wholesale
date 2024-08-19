@@ -36,7 +36,7 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
     internal string GetOrdering(string prefix)
     {
         return $"""
-                {string.Join(", ", DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{prefix}.{ctab}"))}, {prefix}.{EnergyResultColumnNames.Time}
+                {string.Join(", ", DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{prefix}.{ctab}"))}, {prefix}.{DatabricksContract.GetTimeColumnName()}
                 """;
     }
 
