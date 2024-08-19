@@ -59,12 +59,13 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202405221137_Rename_MessagesEnqueuingTimeEnd_to_ActorMessagesEnqueuedTimeEnd.sql" />
     <EmbeddedResource Include="Scripts\202405221137_Rename_MessagesEnqueuingTimeStart_to_ActorMessagesEnqueuingTimeStart.sql" />
     <EmbeddedResource Include="Scripts\202406210900_Add_IsHiddenFromActor_to_SettlementReport.sql" />
+    <EmbeddedResource Include="Scripts\202408151222_Add_ScheduledAt_to_Calculation.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dbup-sqlserver" Version="5.0.40" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.10.48">
+    <PackageReference Include="dbup-sqlserver" Version="5.0.41" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

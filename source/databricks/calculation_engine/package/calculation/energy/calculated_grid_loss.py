@@ -14,7 +14,9 @@
 import pyspark.sql.functions as f
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResults,
+)
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
@@ -68,7 +70,7 @@ def add_calculated_grid_loss_to_metering_point_times_series(
             f.col(Colname.quantity).alias(Colname.quantity),
             f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
             f.col(Colname.energy_supplier_id),
-            f.col(Colname.balance_responsible_id),
+            f.col(Colname.balance_responsible_party_id),
             f.col(Colname.settlement_method),
         )
         .union(metering_point_time_series.df)

@@ -24,7 +24,10 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
-from package.databases.wholesale_basis_data_internal import basis_data_factory
+from package.databases.wholesale_basis_data_internal import (
+    basis_data_factory,
+    internal_data_factory,
+)
 from package.databases.wholesale_basis_data_internal.basis_data_results import (
     write_basis_data,
 )
@@ -40,14 +43,15 @@ from package.databases.wholesale_results_internal.calculations_storage_model_fac
     create_calculation,
 )
 from package.infrastructure import logging_configuration
-from .calculation_results import (
-    CalculationResultsContainer,
+from .calculation_output import (
+    CalculationOutput,
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..constants import Colname
 from ..databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
@@ -63,8 +67,8 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 def _execute(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
-) -> CalculationResultsContainer:
-    results = CalculationResultsContainer()
+) -> CalculationOutput:
+    calculation_output = CalculationOutput()
 
     with logging_configuration.start_span("calculation.prepare"):
         calculations = create_calculation(args, prepared_data_reader)
@@ -101,7 +105,7 @@ def _execute(
         metering_point_time_series.cache_internal()
 
     (
-        results.energy_results,
+        calculation_output.energy_results_output,
         positive_grid_loss,
         negative_grid_loss,
     ) = energy_calculation.execute(
@@ -123,9 +127,17 @@ def _execute(
 
     if is_wholesale_calculation_type(args.calculation_type):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
+
+            # Extract metering point ids from all metering point periods in
+            # the grid areas specified in the calculation arguments.
+            metering_point_period_ids = all_metering_point_periods.select(
+                Colname.metering_point_id
+            ).distinct()
+
             input_charges = prepared_data_reader.get_input_charges(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
+                metering_point_period_ids,
             )
 
             metering_point_periods_for_basis_data = (
@@ -147,7 +159,7 @@ def _execute(
                 args.time_zone,
             )
 
-        results.wholesale_results = wholesale_calculation.execute(
+        calculation_output.wholesale_results_output = wholesale_calculation.execute(
             args,
             prepared_charges,
         )
@@ -159,35 +171,40 @@ def _execute(
         input_charges = None
 
     # Add basis data to results
-    results.basis_data = basis_data_factory.create(
+    calculation_output.basis_data_output = basis_data_factory.create(
         args,
-        calculations,
-        calculation_grid_areas,
         metering_point_periods_for_basis_data,
         metering_point_time_series,
         input_charges,
         grid_loss_metering_points_df,
     )
 
-    return results
+    calculation_output.internal_data_output = internal_data_factory.create(
+        calculations,
+        calculation_grid_areas,
+    )
+
+    return calculation_output
 
 
 @logging_configuration.use_span("calculation.write")
 def _write_output(
-    results: CalculationResultsContainer,
+    calculation_output: CalculationOutput,
 ) -> None:
-    write_energy_results(results.energy_results)
-    if results.wholesale_results is not None:
-        write_wholesale_results(results.wholesale_results)
-        write_monthly_amounts_per_charge(results.wholesale_results)
-        write_total_monthly_amounts(results.wholesale_results)
+    write_energy_results(calculation_output.energy_results_output)
+    if calculation_output.wholesale_results_output is not None:
+        write_wholesale_results(calculation_output.wholesale_results_output)
+        write_monthly_amounts_per_charge(calculation_output.wholesale_results_output)
+        write_total_monthly_amounts(calculation_output.wholesale_results_output)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
-    write_basis_data(results.basis_data)
+    write_basis_data(calculation_output.basis_data_output)
 
     # Write calculation grid areas to table Wholesale internal table calculation_grid_areas.
-    write_calculation_grid_areas(results.basis_data.calculation_grid_areas)
+    write_calculation_grid_areas(
+        calculation_output.internal_data_output.calculation_grid_areas
+    )
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(results.basis_data.calculations)
+    write_calculation(calculation_output.internal_data_output.calculations)

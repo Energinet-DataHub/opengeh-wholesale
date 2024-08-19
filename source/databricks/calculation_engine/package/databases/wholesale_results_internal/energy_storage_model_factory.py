@@ -17,13 +17,15 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResults,
+)
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
-from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname
+from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
@@ -76,7 +78,7 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     return [
         Colname.grid_area_code,
         Colname.from_grid_area_code,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
     ]
 
@@ -91,7 +93,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.energy_supplier_id).alias(
             EnergyResultColumnNames.energy_supplier_id
         ),
-        f.col(Colname.balance_responsible_id).alias(
+        f.col(Colname.balance_responsible_party_id).alias(
             EnergyResultColumnNames.balance_responsible_id
         ),
         f.col(Colname.quantity)

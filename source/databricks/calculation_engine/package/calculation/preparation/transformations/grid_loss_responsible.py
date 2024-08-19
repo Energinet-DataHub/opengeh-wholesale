@@ -30,10 +30,10 @@ from package.databases import wholesale_internal
 def get_grid_loss_responsible(
     grid_areas: list[str],
     metering_point_periods_df: DataFrame,
-    wholesale_internal_table_reader: wholesale_internal.WholesaleInternalRepository,
+    repository: wholesale_internal.WholesaleInternalRepository,
 ) -> GridLossResponsible:
     grid_loss_responsible = (
-        wholesale_internal_table_reader.read_grid_loss_metering_points()
+        repository.read_grid_loss_metering_points()
         .join(
             metering_point_periods_df,
             Colname.metering_point_id,
@@ -46,7 +46,7 @@ def get_grid_loss_responsible(
             col(Colname.to_date),
             col(Colname.metering_point_type),
             col(Colname.energy_supplier_id),
-            col(Colname.balance_responsible_id),
+            col(Colname.balance_responsible_party_id),
         )
     )
 

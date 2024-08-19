@@ -42,7 +42,8 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             CalculationType: Common.Interfaces.Models.CalculationType.BalanceFixing,
             GridAreaCodes: new List<string> { "543" },
             StartDate: new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
-            EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero));
+            EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
+            ScheduledAt: DateTimeOffset.UtcNow);
     }
 
     [ScenarioStep(1)]
@@ -76,10 +77,10 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
+        isCompletedOrFailed.Should().BeTrue("because calculation should complete within time limit.");
         calculation.Should().NotBeNull();
-        calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
-        calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
+        calculation!.OrchestrationState.Should()
+            .BeOneOf(CalculationOrchestrationStateExtensions.CalculationJobCompletedStates);
     }
 
     [ScenarioStep(4)]
@@ -101,7 +102,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     {
         // Skip waiting if calculation did not complete
         if (Fixture.ScenarioState.Calculation != null
-            && Fixture.ScenarioState.Calculation.ExecutionState == Clients.v3.CalculationState.Completed)
+            && Fixture.ScenarioState.Calculation.OrchestrationState.IsCalculationJobCompleted())
         {
             var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
                 Fixture.ScenarioState.CalculationId,

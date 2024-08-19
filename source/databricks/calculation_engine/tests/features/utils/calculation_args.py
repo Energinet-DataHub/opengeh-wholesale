@@ -61,5 +61,5 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
         created_by_user_id=calculation_args[Colname.created_by_user_id],
         time_zone=time_zone,
         quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
-        is_simulation=False,
+        is_internal_calculation=False,
     )

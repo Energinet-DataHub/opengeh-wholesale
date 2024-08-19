@@ -54,7 +54,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
             .Replace("\r", string.Empty)
             .Split("\n") // Split lines
             .Where(l => !l.StartsWith("#") && l.Length > 0) // Remove empty and comment lines
-            .Where(l => l != "--simulation"); // Ignore optional simulation parameter
+            .Where(l => l != "--is-internal-calculation"); // Ignore optional is-internal-calculation parameter
         var expected = RunParameters.CreatePythonParams(pythonParams);
 
         // Act

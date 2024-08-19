@@ -28,10 +28,10 @@ from package.calculation.energy.data_structures.energy_results import (
     energy_results_schema,
     EnergyResults,
 )
+from package.constants import Colname
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.constants import Colname
 from package.databases.wholesale_results_internal.energy_result_column_names import (
     EnergyResultColumnNames,
 )
@@ -100,7 +100,7 @@ def _create_result_row(
         Colname.grid_area_code: grid_area_code,
         Colname.to_grid_area_code: to_grid_area_code,
         Colname.from_grid_area_code: from_grid_area_code,
-        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.balance_responsible_party_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.observation_time: observation_time,
         Colname.quantity: Decimal(quantity),
@@ -259,7 +259,7 @@ def test__create__with_correct_number_of_calculation_result_ids(
             OTHER_FROM_GRID_AREA_CODE,
         ),
         (
-            Colname.balance_responsible_id,
+            Colname.balance_responsible_party_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
             OTHER_BALANCE_RESPONSIBLE_ID,
         ),
@@ -400,7 +400,7 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
         return EnergyResultColumnNames.grid_area_code
     if field_name == Colname.from_grid_area_code:
         return EnergyResultColumnNames.neighbor_grid_area_code
-    if field_name == Colname.balance_responsible_id:
+    if field_name == Colname.balance_responsible_party_id:
         return EnergyResultColumnNames.balance_responsible_id
     if field_name == Colname.balance_responsible_party_id:
         return EnergyResultColumnNames.balance_responsible_party_id

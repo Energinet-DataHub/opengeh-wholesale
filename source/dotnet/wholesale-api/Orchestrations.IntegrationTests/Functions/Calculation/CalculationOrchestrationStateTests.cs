@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
-using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
@@ -88,10 +87,20 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
-        calculationIdCallback.SetValue(calculationId);
+        var calculationId = await Fixture.StartCalculationAsync();
 
         // Assert
+        // => Calculation job hasn't started yet, state should be Scheduled
+        // The state changes from Scheduled to Calculating immediately, so we need to check for both states.
+        var isScheduledState = await dbContext.WaitForCalculationWithOneOfStatesAsync(
+            calculationId,
+            [CalculationOrchestrationState.Scheduled, CalculationOrchestrationState.Calculating],
+            Fixture.TestLogger);
+        isScheduledState.ActualState.Should().BeOneOf(CalculationOrchestrationState.Scheduled, CalculationOrchestrationState.Calculating);
+
+        // => Set calculation id, which makes the databricks mock server start responding to requests
+        calculationIdCallback.SetValue(calculationId);
+
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
@@ -99,21 +108,21 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
 
-        // => Calculation job hasn't started yet, state should be Scheduled
-        var isScheduledState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
-        isScheduledState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
+        // => Calculation job is "CREATED", orchestration state should be Calculating
+        var isCalculationJobCreatedState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
+        isCalculationJobCreatedState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
-        // => Calculation job is "PENDING", state should be Calculating
+        // => Calculation job is "PENDING", orchestration state should still be Calculating
         calculationJobStateCallback.SetValue(RunLifeCycleState.PENDING);
-        var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
-        isStillScheduledCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
+        var isCalculationJobPendingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
+        isCalculationJobPendingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
-        // => Calculation job is "RUNNING", state should be Calculating
+        // => Calculation job is "RUNNING", orchestration state should still be Calculating
         calculationJobStateCallback.SetValue(RunLifeCycleState.RUNNING);
         var isCalculatingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
-        // => Calculation job is "TERMINATED" (success), state should be Calculated or ActorMessagesEnqueuing
+        // => Calculation job is "TERMINATED" (success), orchestration state should be Calculated or ActorMessagesEnqueuing
         // The state changes from Calculated to ActorMessagesEnqueuing immediately, so we need to check for both states.
         calculationJobStateCallback.SetValue(RunLifeCycleState.TERMINATED);
         var isCalculatedState = await dbContext.WaitForCalculationWithOneOfStatesAsync(
@@ -197,7 +206,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        var calculationId = await Fixture.StartCalculationAsync();
         calculationIdCallback.SetValue(calculationId);
 
         // Assert

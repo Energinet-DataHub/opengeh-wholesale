@@ -8,50 +8,92 @@
 # deployment diagram files.
 
 workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-arch-diagrams/main/docs/diagrams/c4-model/dh-base-model.dsl {
-
     model {
         #
         # DataHub 3.0 (extends)
         #
         !ref dh3 {
 
-            # IMPORTANT:
-            # The order by which models are included is important for how the subsystem-to-subsystem relationships are specified.
-            # A subsystem-to-subsystem relationship should be specified in the "client" of a "client->server" dependency, and
-            # hence subsystems that doesn't depend on others, should be listed first.
-
-            # Include Market Participant model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
-
-            # Include EDI model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-edi/main/docs/diagrams/c4-model/model.dsl
-
             # Include Wholesale model
             !include model.dsl
 
-            # Include Frontend model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
+            # Include related subsystems.
+            # Include them as placeholders instead of referencing the models to avoid having them break this model when they change.
+            relatedSubsystems = group "Related Subsystems" {
+                markpartSubsystem = container "Market Participant" {
+                    tags "Subsystem"
 
-            # Include Migration model - placeholders
-            migrationSubsystem = group "Migration" {
-                migrationDatabricks = container "Data Migration" {
-                    description "Extract migrated JSON files. Load and transform data using Notebooks"
-                    technology "Azure Databricks"
-                    tags "Microsoft Azure - Azure Databricks"
-
-                    # Subsystem-to-subsystem relationships.
-                    this -> wholesaleDataLake "Deliver calculation inputs"
+                    wholesaleApi -> this "Subscribes to integration event Grid Area Ownership Assigned" "integration event/amqp" {
+                        tags "Simple View"
+                    }
+                    this -> dh3.sharedServiceBus "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+                        tags "Detailed View"
+                    }
                 }
+
+                bffSubsystem = container "BFF" {
+                    description "Backend for Frontend. Partnership relationship"
+                    tags "Subsystem"
+
+                    this -> wholesaleApi "Uses HTTP API"
+                }
+
+                migrationSubsystem = container "Data Migration" {
+                    description "Delivers DataHub 2.0 data to DataHub 3.0"
+                    tags "Subsystem"
+
+                    this -> dh3.sharedUnityCatalog "Deliver calculation inputs" {
+                        tags "Detailed View"
+                    }
+                    wholesaleCalculatorJob -> this "Read DataHub 2.0 data" {
+                        tags "Simple View"
+                    }
+                }
+
+                downstreamReaderSubsystems = container "Downstream Readers" {
+                    description "Downstream subsystems reading data from wholesale"
+                    tags "Subsystem"
+
+                    this -> wholesaleDataLake "Read calculation output data" {
+                        tags "Simple View"
+                    }
+                    this -> dh3.sharedUnityCatalog "Read calculation output data" {
+                        tags "Detailed View"
+                    }
+                }
+
+                downstreamSubscriberSubsystems = container "Downstream Subscribers" {
+                    description "Downstream subsystems subscribing to integration events from wholesale"
+                    tags "Subsystem"
+
+                    this -> wholesaleApi "Subscribes to calculation_completed_v1 integration events" "integration event/amqp" {
+                        tags "Simple View"
+                    }
+                    this -> dh3.sharedServiceBus "Subscribes to integration events" "integration event/amqp" {
+                        tags "Detailed View"
+                    }
+                }
+
             }
         }
     }
 
     views {
+        # TODO BJM: Move these styles to the base model?
+        styles {
+            # Use to mark a related subsystem.
+            element "Subsystem" {
+                background #6ec1f8
+                color #ffffff
+            }
+        }
+        
         container dh3 "Wholesale" {
             title "[Container] DataHub 3.0 - Wholesale (Simplified)"
             include ->wholesaleSubsystem->
             exclude "relationship.tag==OAuth"
             exclude "element.tag==Intermediate Technology"
+            exclude "relationship.tag==Detailed View"
         }
 
         container dh3 "WholesaleDetailed" {

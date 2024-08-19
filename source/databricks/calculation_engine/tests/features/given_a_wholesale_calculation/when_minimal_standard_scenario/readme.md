@@ -6,6 +6,8 @@ The purpose of this test is to check a minimal, but representative sample of all
 
 - All types of wholesale calculations - fee, subscription, hourly and daily tariffs - are included.
 - A small set of energy time series is included in order to test tariffs.
+- Added two MP which are in another grid area and have the same energy supplier/balance responsible as Grid Loss/System
+  Correction MP in the grid area for the calculation.
 
 ### Fees
 
