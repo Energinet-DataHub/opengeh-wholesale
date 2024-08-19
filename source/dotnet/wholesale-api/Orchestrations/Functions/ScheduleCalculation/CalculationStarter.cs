@@ -55,7 +55,7 @@ public class CalculationStarter(
             calculationIdToStart,
             orchestrationInstanceId);
 
-        // Ensure calculation is started succesfully by waiting for orchestration instance to start
+        // Ensure calculation is started successfully by waiting for orchestration instance to start
         var calculationIsStarted = await WaitForCalculationOrchestrationStartedAsync(
                 durableTaskClient,
                 orchestrationInstanceId,
