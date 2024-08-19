@@ -351,6 +351,44 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     )
 
 
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
+    contracts_path: str,
+) -> None:
+    # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
+
+    # Arrange
+    expected_other_columns = [
+        # Data that doesn't vary for rows in a data frame
+        TableColumnNames.calculation_id,
+        TableColumnNames.calculation_type,
+        TableColumnNames.calculation_execution_time_start,
+        TableColumnNames.time_series_type,
+        TableColumnNames.aggregation_level,
+        # Data that does vary but does not define distinct results
+        TableColumnNames.time,
+        TableColumnNames.quantity_qualities,
+        TableColumnNames.quantity,
+        TableColumnNames.metering_point_type,
+        # The field that defines results
+        TableColumnNames.calculation_result_id,
+        TableColumnNames.result_id,
+        TableColumnNames.metering_point_id,
+        TableColumnNames.resolution,
+        TableColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
+    ]
+    all_columns = _get_energy_result_column_names()
+
+    # Act
+    included_columns = sut._get_column_group_for_calculation_result_id()
+
+    # Assert
+    included_columns = list(
+        map(_map_colname_to_energy_result_column_name, included_columns)
+    )
+    actual_other_columns = set(all_columns) - set(included_columns)
+    assert set(actual_other_columns) == set(expected_other_columns)
+
+
 def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     """
     Test workaround as the contract specifies the Delta table column names

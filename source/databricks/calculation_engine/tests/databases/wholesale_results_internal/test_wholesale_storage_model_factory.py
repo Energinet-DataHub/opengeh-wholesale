@@ -247,6 +247,44 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     assert actual == expected_column_names
 
 
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> (
+    None
+):
+    # This class is a guard against adding new columns without considering how the column affects the generation of
+    # calculation result IDs
+
+    # Arrange
+    expected_excluded_columns = [
+        TableColumnNames.calculation_type,
+        TableColumnNames.calculation_execution_time_start,
+        TableColumnNames.calculation_result_id,
+        TableColumnNames.amount_type,
+        TableColumnNames.quantity,
+        TableColumnNames.quantity_unit,
+        TableColumnNames.quantity_qualities,
+        TableColumnNames.time,
+        TableColumnNames.price,
+        TableColumnNames.amount,
+        TableColumnNames.is_tax,
+        TableColumnNames.result_id,
+        TableColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
+    ]
+    all_columns = [
+        getattr(TableColumnNames, attribute_name)
+        for attribute_name in dir(TableColumnNames)
+        if not attribute_name.startswith("__")
+    ]
+
+    all_columns = _map_metering_point_type_column_name(all_columns)
+
+    # Act
+    included_columns = sut._get_column_group_for_calculation_result_id()
+
+    # Assert
+    excluded_columns = set(all_columns) - set(included_columns)
+    assert set(excluded_columns) == set(expected_excluded_columns)
+
+
 def _map_metering_point_type_column_name(column_names: list[str]) -> list[str]:
     # this is a simple pragmatic workaround to deal with the fact that the column name for metering point type is not
     # the same in 'Colname' as it is in 'WholesaleResultColumnNames'
