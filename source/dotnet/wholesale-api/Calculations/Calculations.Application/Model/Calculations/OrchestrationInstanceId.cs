@@ -14,4 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public sealed record OrchestrationInstanceId(string Id);
+public sealed record OrchestrationInstanceId(string Id)
+{
+    public string Id { get; } = !string.IsNullOrEmpty(Id)
+        ? Id
+        : throw new ArgumentNullException(nameof(Id));
+}
