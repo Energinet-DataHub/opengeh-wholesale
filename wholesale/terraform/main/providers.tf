@@ -6,6 +6,11 @@ terraform {
     }
     # It is recommended to pin to a given version of the Azure provider
     azurerm = "3.113.0"
+
+    shell = {
+      source  = "scottwinkler/shell"
+      version = "1.7.10"
+    }
   }
 }
 

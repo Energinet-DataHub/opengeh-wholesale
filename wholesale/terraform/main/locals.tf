@@ -27,6 +27,7 @@ locals {
   # IP restrictions
   ip_restrictions_as_string = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 
+  resource_suffix_with_dash          = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   tags = {
     "BusinessServiceName"   = "Datahub",
     "BusinessServiceNumber" = "BSN10136"

@@ -1,6 +1,7 @@
 data "azuread_client_config" "current" {}
 
 resource "azuread_application" "app_databricks" {
+  # TODO: Use local.resource_suffix_with_dash if possible --> local.resource_suffix_with_dash has 'we' in it, meaning that name of SPN will change, don't know if it will have any impact
   display_name = "sp-databricks-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   owners = [
     data.azuread_client_config.current.object_id
