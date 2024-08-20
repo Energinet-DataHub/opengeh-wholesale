@@ -295,6 +295,9 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         finishedCalculation.MarkAsActorMessagesEnqueued(enqueuedTimeEnd: inThePast);
         finishedCalculation.MarkAsCompleted(completedAt: inThePast);
 
+        var canceledCalculation = CreateCalculation(scheduledAt: inThePast);
+        canceledCalculation.MarkAsCanceled(Guid.NewGuid());
+
         await using var writeContext = _databaseManager.CreateDbContext();
         {
             var repository = new CalculationRepository(writeContext);
@@ -305,6 +308,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             await repository.AddAsync(startedCalculation1);
             await repository.AddAsync(startedCalculation2);
             await repository.AddAsync(finishedCalculation);
+            await repository.AddAsync(canceledCalculation);
 
             await writeContext.SaveChangesAsync();
         }
@@ -322,6 +326,34 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
                   sc.OrchestrationInstanceId == expectedCalculation1.OrchestrationInstanceId,
             sc => sc.CalculationId.Id == expectedCalculation2.Id &&
                   sc.OrchestrationInstanceId == expectedCalculation2.OrchestrationInstanceId);
+    }
+
+    [Fact]
+    public async Task GetScheduledCalculationsAsync_WhenCalculationIsCanceled_ReturnsNoScheduledCalculations()
+    {
+        // Arrange
+        var now = Instant.FromUtc(2024, 08, 16, 13, 37);
+        var inThePast = now.Minus(Duration.FromMilliseconds(1));
+
+        var canceledCalculation = CreateCalculation(scheduledAt: inThePast);
+        canceledCalculation.MarkAsCanceled(Guid.NewGuid());
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        {
+            var repository = new CalculationRepository(writeContext);
+            await repository.AddAsync(canceledCalculation);
+            await writeContext.SaveChangesAsync();
+        }
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new CalculationRepository(readContext);
+
+        // Act
+        var scheduledCalculations = await sut.GetScheduledCalculationsAsync(scheduledToRunBefore: now);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        scheduledCalculations.Should().BeEmpty();
     }
 
     private static Application.Model.Calculations.Calculation CreateCalculation(List<GridAreaCode> someGridAreasIds)

@@ -302,6 +302,60 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
 
     [Theory]
     [InlineAutoMoqData]
+    public async Task Given_CanceledCalculation_When_StartScheduledCalculationsAsync_Then_CalculationNotStarted(
+        Mock<DurableTaskClient> durableTaskClient,
+        Mock<IClock> clock,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
+    {
+        // Arrange
+        var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
+
+        // => Setup clock to return the "scheduledToRunAt" value, which means that the expectedCalculation should start now
+        clock.Setup(c => c.GetCurrentInstant())
+            .Returns(scheduledToRunAt);
+
+        var canceledCalculation = CreateCalculation(scheduledToRunAt);
+        canceledCalculation.MarkAsCanceled(Guid.NewGuid());
+
+        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
+        {
+            var repository = new CalculationRepository(writeDbContext);
+            await repository.AddAsync(canceledCalculation);
+            await writeDbContext.SaveChangesAsync();
+        }
+
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+
+        // => Setup (and verify later) that ScheduleNewOrchestrationInstanceAsync is never called
+        durableTaskClient
+            .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
+                It.IsAny<TaskName>(),
+                It.IsAny<CalculationOrchestrationInput>(),
+                It.IsAny<StartOrchestrationOptions?>(),
+                It.IsAny<CancellationToken>()))
+            .Verifiable(Times.Never);
+
+        var calculationSchedulerHandler = new CalculationSchedulerHandler(
+            schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
+            clock.Object,
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
+
+        // Act
+        await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
+
+        // Assert
+        // => Verify the durableTaskClient setups in the Arrange section
+        durableTaskClient.Verify();
+        durableTaskClient.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public async Task Given_ScheduledCalculation_When_CancelScheduledCalculationAsync_ThenCalculationIsCanceled(
         Mock<DurableTaskClient> durableTaskClient,
         Mock<IClock> clock,
