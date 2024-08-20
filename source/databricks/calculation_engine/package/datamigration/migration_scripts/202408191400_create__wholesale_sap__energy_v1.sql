@@ -43,8 +43,8 @@ WITH all_energy AS (
            'total' AS aggregation_level,
            grid_area_code,
            CASE
-                WHEN metering_point_type = 'production' THEN 'production'
-                WHEN metering_point_type = 'consumption' THEN 'flex_consumption'
+                WHEN metering_point_type = 'production' THEN 'negative_grid_loss'
+                WHEN metering_point_type = 'consumption' THEN 'positive_grid_loss'
            END AS time_series_type,
            resolution,
            energy_supplier_id,
@@ -58,7 +58,7 @@ WITH all_energy AS (
     SELECT calculation_id,
            'total' AS aggregation_level,
            grid_area_code,
-           'net_exchange_per_ga' AS time_series_type,
+           'net_exchange_per_neighboring_ga' AS time_series_type,
            resolution,
            NULL as energy_supplier_id,
            NULL as balance_responsible_party_id,
