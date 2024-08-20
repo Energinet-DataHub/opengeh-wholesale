@@ -104,10 +104,23 @@ jobs:
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
 
-            ### All CalculationResults integration tests that are not AggregatedTimeSeriesQueriesCsvTests or WholesaleServicesQueriesCsvTests
-          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests or WholesaleServicesQueriesCsvTests
+
+            ### SettlemtReports_v2 tests is split into multiple parts for performance reasons
+          - name: Calculation Results - SettlemtReports SettlementReportMeteringPoint or SettlementReportMonthlyAmount
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName!~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName!~WholesaleServicesQueriesCsvTests)
+            filter: (DisplayName~SettlementReportMeteringPoint)|(DisplayName~SettlementReportMonthlyAmount)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+          - name: Calculation Results - SettlementReports not SettlementReportMeteringPoint or SettlementReportMonthlyAmount
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: (DisplayName~SettlementReport)&(DisplayName!~SettlementReportMeteringPoint)&(DisplayName!~SettlementReportMonthlyAmount)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+
+            ### All CalculationResults integration tests that are not AggregatedTimeSeriesQueriesCsvTests, WholesaleServicesQueriesCsvTests or SettlementReport
+          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests, WholesaleServicesQueriesCsvTests or SettlementReport
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: (DisplayName!~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName!~WholesaleServicesQueriesCsvTests)&(DisplayName!~SettlementReport)
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
 
