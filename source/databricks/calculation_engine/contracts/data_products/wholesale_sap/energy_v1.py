@@ -14,7 +14,7 @@ energy_v1 = t.StructType(
         t.StructField("calculation_version", t.LongType(), not nullable),
         #
         # 'total' | 'es' | 'brp'
-        t.StructField("aggregation_level", t.LongType(), not nullable),
+        t.StructField("aggregation_level", t.StringType(), not nullable),
         #
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
