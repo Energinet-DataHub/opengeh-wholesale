@@ -42,8 +42,8 @@ public class AggregatedTimeSeriesQueries(
 
             var calculationTypePerGridAreas =
                 await GetCalculationTypeForGridAreasAsync(
-                        EnergyResultColumnNames.GridArea,
-                        EnergyResultColumnNames.CalculationType,
+                        querySnippetProvider.DatabricksContract.GetGridAreaCodeColumnName(),
+                        querySnippetProvider.DatabricksContract.GetCalculationTypeColumnName(),
                         new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
                             _deltaTableOptions.Value,
                             querySnippetProvider),
@@ -56,13 +56,18 @@ public class AggregatedTimeSeriesQueries(
                 timeSeriesType,
                 _deltaTableOptions.Value);
 
+            var calculationIdColumnName = querySnippetProvider.DatabricksContract.GetCalculationIdColumnName();
+
             await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
-                               (row, points) => AggregatedTimeSeriesFactory.Create(querySnippetProvider.DatabricksContract, timeSeriesType, row, points),
+                               (row, points) => AggregatedTimeSeriesFactory.Create(
+                                   querySnippetProvider.DatabricksContract,
+                                   timeSeriesType,
+                                   row,
+                                   points),
                                (currentRow, previousRow) =>
-                                   querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column =>
-                                       currentRow[column] != previousRow[column])
-                                   || currentRow[EnergyResultColumnNames.CalculationId] !=
-                                   previousRow[EnergyResultColumnNames.CalculationId],
+                                   querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy()
+                                       .Any(column => currentRow[column] != previousRow[column])
+                                   || currentRow[calculationIdColumnName] != previousRow[calculationIdColumnName],
                                EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
                                sqlStatement))
             {

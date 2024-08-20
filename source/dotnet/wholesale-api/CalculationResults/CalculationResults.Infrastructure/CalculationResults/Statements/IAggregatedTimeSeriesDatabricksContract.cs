@@ -40,6 +40,8 @@ public interface IAggregatedTimeSeriesDatabricksContract
 
     string GetResolutionColumnName();
 
+    string GetCalculationIdColumnName();
+
     string[] GetColumnsToProject();
 
     string[] GetColumnsToAggregateBy();

@@ -75,6 +75,11 @@ public sealed class EnergyPerGaAggregatedTimeSeriesDatabricksContract : IAggrega
         return EnergyPerGaViewColumnNames.Resolution;
     }
 
+    public string GetCalculationIdColumnName()
+    {
+        return EnergyPerGaViewColumnNames.CalculationId;
+    }
+
     public string[] GetColumnsToProject()
     {
         return
