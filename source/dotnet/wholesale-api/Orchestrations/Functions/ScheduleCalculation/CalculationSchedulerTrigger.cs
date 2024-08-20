@@ -17,9 +17,9 @@ using Microsoft.DurableTask.Client;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
-internal class CalculationSchedulerTrigger(CalculationScheduler calculationScheduler)
+internal class CalculationSchedulerTrigger(CalculationSchedulerHandler calculationSchedulerHandler)
 {
-    private readonly CalculationScheduler _calculationScheduler = calculationScheduler;
+    private readonly CalculationSchedulerHandler _calculationSchedulerHandler = calculationSchedulerHandler;
 
     [Function(nameof(RunScheduledCalculations))]
     public Task RunScheduledCalculations(
@@ -27,7 +27,7 @@ internal class CalculationSchedulerTrigger(CalculationScheduler calculationSched
         [DurableClient] DurableTaskClient durableTaskClient,
         FunctionContext context)
     {
-        return _calculationScheduler
+        return _calculationSchedulerHandler
             .StartScheduledCalculationsAsync(durableTaskClient);
     }
 }

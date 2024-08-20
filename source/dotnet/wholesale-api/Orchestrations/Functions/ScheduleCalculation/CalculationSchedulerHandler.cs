@@ -22,8 +22,8 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
-public class CalculationScheduler(
-    ILogger<CalculationScheduler> logger,
+public class CalculationSchedulerHandler(
+    ILogger<CalculationSchedulerHandler> logger,
     IOptions<CalculationOrchestrationMonitorOptions> orchestrationMonitorOptions,
     IClock clock,
     ICalculationRepository calculationRepository)

@@ -21,7 +21,7 @@ public static class CalculationSchedulerExtensions
 {
     public static IServiceCollection AddCalculationScheduler(this IServiceCollection services)
     {
-        services.AddScoped<CalculationScheduler>();
+        services.AddScoped<CalculationSchedulerHandler>();
 
         return services;
     }

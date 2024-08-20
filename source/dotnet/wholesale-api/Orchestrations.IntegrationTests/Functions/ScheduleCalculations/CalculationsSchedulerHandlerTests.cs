@@ -30,9 +30,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.ScheduleCalculations;
 
-public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixture>, IAsyncLifetime
+public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedulerFixture>, IAsyncLifetime
 {
-    public CalculationsSchedulerTests(CalculationSchedulerFixture fixture)
+    public CalculationsSchedulerHandlerTests(CalculationSchedulerFixture fixture)
     {
         Fixture = fixture;
     }
@@ -57,7 +57,7 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
     public async Task Given_MultipleCalculationsWithOneReadyToStart_When_StartScheduledCalculationsAsync_Then_TheCorrectCalculationIsStarted(
         Mock<DurableTaskClient> durableTaskClient,
         Mock<IClock> clock,
-        Mock<ILogger<CalculationScheduler>> schedulerLogger,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
         Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
     {
         // Arrange
@@ -67,19 +67,19 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
         clock.Setup(c => c.GetCurrentInstant())
             .Returns(scheduledToRunAt);
 
-        Calculations.Application.Model.Calculations.Calculation expectedCalculation;
+        var expectedCalculation = CreateCalculation(scheduledToRunAt);
+
+        var futureCalculation = CreateCalculation(scheduledToRunAt.Plus(Duration.FromMilliseconds(1)));
+
+        var alreadyStartedCalculation = CreateCalculation(scheduledToRunAt);
+        alreadyStartedCalculation.MarkAsStarted();
+
         await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
         {
             var repository = new CalculationRepository(writeDbContext);
 
-            expectedCalculation = CreateCalculation(scheduledToRunAt);
             await repository.AddAsync(expectedCalculation);
-
-            var futureCalculation = CreateCalculation(scheduledToRunAt.Plus(Duration.FromMilliseconds(1)));
             await repository.AddAsync(futureCalculation);
-
-            var alreadyStartedCalculation = CreateCalculation(scheduledToRunAt);
-            alreadyStartedCalculation.MarkAsStarted();
             await repository.AddAsync(alreadyStartedCalculation);
 
             await writeDbContext.SaveChangesAsync();
@@ -110,16 +110,17 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
             .ReturnsAsync(expectedInstanceId.Id)
             .Verifiable(Times.Exactly(1));
 
-        var calculationScheduler = new CalculationScheduler(
+        var calculationSchedulerHandler = new CalculationSchedulerHandler(
             schedulerLogger.Object,
             calculationOrchestrationMonitorOptions.Object,
             clock.Object,
             new CalculationRepository(dbContext));
 
         // Act
-        await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
+        await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
         // Assert
+        // => Verify the durableTaskClient setups in the Arrange section
         durableTaskClient.Verify();
         durableTaskClient.VerifyNoOtherCalls();
 
@@ -139,7 +140,7 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
     public async Task Given_CalculationScheduledInFuture_When_CurrentTimeReachesScheduledTime_Then_CalculationIsStartedWithoutErrors(
         Mock<DurableTaskClient> durableTaskClient,
         Mock<IClock> clock,
-        Mock<ILogger<CalculationScheduler>> schedulerLogger,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
         Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
     {
         // Arrange
@@ -153,14 +154,11 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
             .Returns(now)
             .Returns(scheduledToRunAt);
 
-        Calculations.Application.Model.Calculations.Calculation expectedCalculation;
+        var expectedCalculation = CreateCalculation(scheduledToRunAt);
         await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
         {
             var repository = new CalculationRepository(writeDbContext);
-
-            expectedCalculation = CreateCalculation(scheduledToRunAt);
             await repository.AddAsync(expectedCalculation);
-
             await writeDbContext.SaveChangesAsync();
         }
 
@@ -188,20 +186,21 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
             .ReturnsAsync(expectedInstanceId.Id)
             .Verifiable(Times.Exactly(1));
 
-        var calculationScheduler = new CalculationScheduler(
+        var calculationScheduler = new CalculationSchedulerHandler(
             schedulerLogger.Object,
             calculationOrchestrationMonitorOptions.Object,
             clock.Object,
             new CalculationRepository(dbContext));
 
         // Act
-        // => First run of StartScheduledCalculationsAsync should not start the calculation since "now" is before the scheduled time
+        // => First run of StartScheduledCalculationsAsync should not start the calculation since clock is before the scheduled time
         await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
-        // => Second run of StartScheduledCalculationsAsync should start the calculation since "now" is equal to the scheduled time
+        // => Second run of StartScheduledCalculationsAsync should start the calculation since clock is now equal to the scheduled time
         await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
         // Assert
+        // => Verify the durableTaskClient setups in the Arrange section
         durableTaskClient.Verify();
         durableTaskClient.VerifyNoOtherCalls();
 
