@@ -22,13 +22,12 @@ internal class CalculationSchedulerTrigger(CalculationScheduler calculationSched
     private readonly CalculationScheduler _calculationScheduler = calculationScheduler;
 
     [Function(nameof(RunScheduledCalculations))]
-    public async Task RunScheduledCalculations(
+    public Task RunScheduledCalculations(
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerTimerInfo, // Runs every 10 seconds
         [DurableClient] DurableTaskClient durableTaskClient,
         FunctionContext context)
     {
-        await _calculationScheduler
-            .StartScheduledCalculationsAsync(durableTaskClient)
-            .ConfigureAwait(false);
+        return _calculationScheduler
+            .StartScheduledCalculationsAsync(durableTaskClient);
     }
 }
