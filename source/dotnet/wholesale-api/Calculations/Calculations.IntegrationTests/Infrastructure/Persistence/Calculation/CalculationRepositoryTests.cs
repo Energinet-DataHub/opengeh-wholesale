@@ -295,9 +295,6 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         finishedCalculation.MarkAsActorMessagesEnqueued(enqueuedTimeEnd: inThePast);
         finishedCalculation.MarkAsCompleted(completedAt: inThePast);
 
-        var canceledCalculation = CreateCalculation(scheduledAt: inThePast);
-        canceledCalculation.MarkAsCanceled(Guid.NewGuid());
-
         await using var writeContext = _databaseManager.CreateDbContext();
         {
             var repository = new CalculationRepository(writeContext);
@@ -308,7 +305,6 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             await repository.AddAsync(startedCalculation1);
             await repository.AddAsync(startedCalculation2);
             await repository.AddAsync(finishedCalculation);
-            await repository.AddAsync(canceledCalculation);
 
             await writeContext.SaveChangesAsync();
         }
