@@ -33,8 +33,7 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeriesQueries>,
-    IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+public class AggregatedTimeSeriesQueriesCsvTests
 {
     private const string EnergySupplierOne = "5790002617263";
     private const string EnergySupplierTwo = "5790000701414";
@@ -70,7 +69,6 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
             if (!_fixture.DataIsInitialized)
             {
                 await ClearAndAddDatabricksDataAsync(_fixture.DatabricksSchemaManager, _testOutputHelper);
-
                 _fixture.DataIsInitialized = true;
             }
         }
@@ -445,8 +443,8 @@ public class AggregatedTimeSeriesQueriesCsvTests : TestBase<AggregatedTimeSeries
     /// <summary>
     /// Tests that each clear/create their needed databricks data
     /// </summary>
-    public class AggregatedTimeSeriesQueriesCsvTestsWithIndividualData : TestBase<AggregatedTimeSeriesQueries>,
-        IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
+    public class AggregatedTimeSeriesQueriesCsvTestsWithIndividualData
+        : TestBase<AggregatedTimeSeriesQueries>, IClassFixture<MigrationsFreeDatabricksSqlStatementApiFixture>
     {
         private readonly MigrationsFreeDatabricksSqlStatementApiFixture _fixture;
         private readonly ITestOutputHelper _testOutputHelper;

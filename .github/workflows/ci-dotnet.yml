@@ -69,6 +69,8 @@ jobs:
             filter: empty # Means skip
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
+
+            ### AggregatedTimeSeriesQueriesCsvTests is split into multiple parts for performance reasons
           - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithSharedData
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
             filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithSharedData)
@@ -84,11 +86,31 @@ jobs:
             filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithIndividualData)&(DisplayName!~BalanceResponsible)
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests
+
+            ### WholesaleServicesQueriesCsvTests is split into multiple parts for performance reasons
+          - name: Calculation Results - WholesaleServicesQueriesCsvTestsWithSharedData
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: DisplayName!~AggregatedTimeSeriesQueriesCsvTests
+            filter: (DisplayName~WholesaleServicesQueriesCsvTestsWithSharedData)
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
+          - name: Calculation Results - WholesaleServicesQueriesCsvTestsWithIndividualData split 1
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: (DisplayName~WholesaleServicesQueriesCsvTestsWithIndividualData)&(DisplayName~WithLatestCorrection)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+          - name: Calculation Results - WholesaleServicesQueriesCsvTestsWithIndividualData split 2
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: (DisplayName~WholesaleServicesQueriesCsvTestsWithIndividualData)&(DisplayName!~WithLatestCorrection)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+
+            ### All CalculationResults integration tests that are not AggregatedTimeSeriesQueriesCsvTests or WholesaleServicesQueriesCsvTests
+          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests or WholesaleServicesQueriesCsvTests
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: (DisplayName!~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName!~WholesaleServicesQueriesCsvTests)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+
           - name: Events
             paths: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
             filter: empty # Means skip
