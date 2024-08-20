@@ -139,7 +139,9 @@ resource "databricks_permissions" "token_access" {
 
 
 # Databricks token for Datahub BI Service principal
-resource "time_rotating" "this" {
+resource "time_rotating" "datahub_bi_token" {
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
+
   rotation_days = 365 #  --> Rotate once per year
 }
 
@@ -149,6 +151,8 @@ resource "time_rotating" "this" {
 # It's not pretty at all, but it's the best we can do with the current setup
 # Bonusinfo: I kind of like the fact that CoPilot finished the previous sentence for me after typing 'It's not pretty'....
 resource "shell_script" "create_datahub_bi_token" {
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
+
   lifecycle_commands {
     create = file("${path.root}/scripts/create-databricks-token.sh")
     delete = "echo 'New token to be created'"
@@ -167,7 +171,7 @@ resource "shell_script" "create_datahub_bi_token" {
   interpreter = ["/bin/bash", "-c"]
 
   triggers = {
-    rotation       = time_rotating.this.rfc3339
+    rotation       = time_rotating.datahub_bi_token[0].rfc3339
     workspace      = module.dbw.workspace_url,
     clientId       = azuread_application.app_datahub_bi[0].client_id,
     clientSecret   = resource.azuread_application_password.spn_secret[0].value
@@ -176,7 +180,7 @@ resource "shell_script" "create_datahub_bi_token" {
   // One has to manually maintain dependencies as Terraform has no idea what the script does.
   // Which is why scripts in a DSL like Terraform is very much an antipattern and should be avoided if possible
   depends_on = [
-    time_rotating.this,
+    time_rotating.datahub_bi_token,
     module.dbw,
     module.kv_internal,
     databricks_permissions.databricks_permissions_datahub_bi_endpoint,
