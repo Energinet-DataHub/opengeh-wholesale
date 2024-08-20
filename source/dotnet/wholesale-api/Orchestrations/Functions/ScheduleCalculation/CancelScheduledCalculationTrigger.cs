@@ -33,7 +33,7 @@ internal class CancelScheduledCalculationTrigger(
     private readonly ILogger<CancelScheduledCalculationTrigger> _logger = logger;
     private readonly CalculationSchedulerHandler _calculationSchedulerHandler = calculationSchedulerHandler;
 
-    [Function(nameof(CancelScheduledCalculationTrigger))]
+    [Function(nameof(CancelScheduledCalculation))]
     [Authorize(Roles = PermissionCalculationsManage)]
     public async Task<IActionResult> CancelScheduledCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest httpRequest,

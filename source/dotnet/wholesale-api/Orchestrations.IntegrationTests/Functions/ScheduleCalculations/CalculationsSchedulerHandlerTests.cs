@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+using FluentAssertions;
 using Microsoft.DurableTask;
 using Microsoft.DurableTask.Client;
 using Microsoft.EntityFrameworkCore;
@@ -297,6 +298,179 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.IsAny<InvalidOperationException>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Exactly(1));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task Given_ScheduledCalculation_When_CancelScheduledCalculationAsync_ThenCalculationIsCanceled(
+        Mock<DurableTaskClient> durableTaskClient,
+        Mock<IClock> clock,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
+    {
+        // Arrange
+        var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
+        var expectedCanceledByUserId = Guid.NewGuid();
+
+        userContext
+            .Setup(u => u.CurrentUser)
+            .Returns(new FrontendUser(
+                expectedCanceledByUserId,
+                true,
+                new FrontendActor(
+                    Guid.NewGuid(),
+                    "1",
+                    FrontendActorMarketRole.DataHubAdministrator)));
+
+        var scheduledCalculation = CreateCalculation(scheduledToRunAt);
+        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
+        {
+            var repository = new CalculationRepository(writeDbContext);
+            await repository.AddAsync(scheduledCalculation);
+            await writeDbContext.SaveChangesAsync();
+        }
+
+        var orchestrationInstanceId = scheduledCalculation.OrchestrationInstanceId;
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationSchedulerHandler = new CalculationSchedulerHandler(
+            schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
+            clock.Object,
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
+
+        // => Setup that the CalculationSchedulerHandler's call to GetInstanceAsync() returns null
+        // which indicates that an orchestration has not yet been started for the calculation
+        durableTaskClient
+            .Setup(c => c.GetInstanceAsync(
+                It.Is<string>(id => id == orchestrationInstanceId.Id),
+                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((OrchestrationMetadata?)null)
+            .Verifiable(Times.Exactly(1));
+
+        // Act
+        await calculationSchedulerHandler.CancelScheduledCalculationAsync(
+            durableTaskClient.Object,
+            new CalculationId(scheduledCalculation.Id));
+
+        // Assert
+
+        // => Assert that the calculation is canceled in the database
+        await using var assertDbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationRepository = new CalculationRepository(assertDbContext);
+        var canceledCalculation = await calculationRepository.GetAsync(scheduledCalculation.Id);
+        canceledCalculation.OrchestrationState.Should().Be(CalculationOrchestrationState.Canceled);
+        canceledCalculation.CanceledByUserId.Should().Be(expectedCanceledByUserId);
+
+        // => Verify the durableTaskClient setups in the Arrange section
+        durableTaskClient.Verify();
+        durableTaskClient.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task Given_AlreadyStartedCalculation_When_CancelScheduledCalculationAsync_ThenExceptionIsThrown(
+        Mock<DurableTaskClient> durableTaskClient,
+        Mock<IClock> clock,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
+    {
+        // Arrange
+        var alreadyStartedCalculation = CreateCalculation(Instant.FromUtc(2024, 08, 19, 13, 37));
+        alreadyStartedCalculation.MarkAsStarted();
+        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
+        {
+            var repository = new CalculationRepository(writeDbContext);
+            await repository.AddAsync(alreadyStartedCalculation);
+            await writeDbContext.SaveChangesAsync();
+        }
+
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationSchedulerHandler = new CalculationSchedulerHandler(
+            schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
+            clock.Object,
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
+
+        // Act
+        var act = () => calculationSchedulerHandler.CancelScheduledCalculationAsync(
+            durableTaskClient.Object,
+            new CalculationId(alreadyStartedCalculation.Id));
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        // => Assert that the calculation is not canceled in the database
+        await using var assertDbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationRepository = new CalculationRepository(assertDbContext);
+        var canceledCalculation = await calculationRepository.GetAsync(alreadyStartedCalculation.Id);
+        canceledCalculation.OrchestrationState.Should().Be(CalculationOrchestrationState.Started);
+        canceledCalculation.CanceledByUserId.Should().Be(null);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task Given_ScheduledCalculationWithAlreadyStartedOrchestration_When_CancelScheduledCalculationAsync_ThenExceptionIsThrown(
+        Mock<DurableTaskClient> durableTaskClient,
+        Mock<IClock> clock,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
+    {
+        // Arrange
+        var scheduledCalculation = CreateCalculation(Instant.FromUtc(2024, 08, 19, 13, 37));
+        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
+        {
+            var repository = new CalculationRepository(writeDbContext);
+            await repository.AddAsync(scheduledCalculation);
+            await writeDbContext.SaveChangesAsync();
+        }
+
+        var alreadyStartedOrchestrationInstanceId = scheduledCalculation.OrchestrationInstanceId;
+
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationSchedulerHandler = new CalculationSchedulerHandler(
+            schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
+            clock.Object,
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
+
+        // => Setup that the CalculationSchedulerHandler's call to GetInstanceAsync() returns an OrchestrationMetadata object
+        // which indicates that an orchestration has already been started for the calculation
+        durableTaskClient.Setup(c => c
+            .GetInstanceAsync(
+                It.Is<string>(instanceId => instanceId == alreadyStartedOrchestrationInstanceId.Id),
+                It.IsAny<bool>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty))
+            .Verifiable(Times.Exactly(1));
+
+        // Act
+        var act = () => calculationSchedulerHandler.CancelScheduledCalculationAsync(
+            durableTaskClient.Object,
+            new CalculationId(scheduledCalculation.Id));
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        // => Assert that the calculation is not canceled in the database
+        await using var assertDbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationRepository = new CalculationRepository(assertDbContext);
+        var canceledCalculation = await calculationRepository.GetAsync(scheduledCalculation.Id);
+        canceledCalculation.OrchestrationState.Should().Be(CalculationOrchestrationState.Scheduled);
+        canceledCalculation.CanceledByUserId.Should().Be(null);
+
+        // => Verify the durableTaskClient setups in the Arrange section
+        durableTaskClient.Verify();
+        durableTaskClient.VerifyNoOtherCalls();
     }
 
     private Calculations.Application.Model.Calculations.Calculation CreateCalculation(Instant scheduledToRunAt)
