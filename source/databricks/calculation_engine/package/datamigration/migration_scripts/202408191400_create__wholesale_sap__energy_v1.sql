@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.energy_v1 AS
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.energy_v1 AS
 WITH all_energy AS (
     SELECT calculation_id,
            'total' AS aggregation_level,
