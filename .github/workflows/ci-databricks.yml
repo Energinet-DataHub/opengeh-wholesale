@@ -339,8 +339,8 @@ jobs:
           filter="calculator_job/test_energy_calculation.py
           calculator_job/test_wholesale_calculation.py
           calculator_job/test_start.py
-          features/given_an_energy_calculation
-          features/given_a_wholesale_calculation
+          features/energy_calculation
+          features/wholesale_calculation
           features/data_products
           calculation/
           codelists/
