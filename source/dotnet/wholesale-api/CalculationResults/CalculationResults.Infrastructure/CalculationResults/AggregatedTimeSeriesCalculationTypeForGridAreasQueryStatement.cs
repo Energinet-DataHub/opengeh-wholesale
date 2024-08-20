@@ -30,5 +30,5 @@ internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
 
     protected override string GetSource() => _querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions);
 
-    protected override string GetSelection(string table) => _querySnippetProvider.GetWhereClauseSqlExpression(table, null);
+    protected override string GetSelection(string table) => _querySnippetProvider.GetSelection(table, null);
 }

@@ -54,14 +54,14 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         }
 
         sql = _queryParameters.AmountType != AmountType.TotalMonthlyAmount
-            ? GenerateConstraintForActorsForNonTotalAmounts(table, sql)
-            : GenerateConstraintForActorsForTotalAmounts(table, sql);
+            ? GetActorsForNonTotalAmountsSelection(table, sql)
+            : GetActorsForTotalAmountsSelection(table, sql);
 
         if (_queryParameters.ChargeTypes.Count != 0)
         {
             var chargeTypesSql = _queryParameters.ChargeTypes
                 .Select<(string? ChargeCode, ChargeType? ChargeType), string>(c =>
-                    GenerateConstraintForChargeType(c.ChargeCode, c.ChargeType, table))
+                    GetChargeTypeSelection(c.ChargeCode, c.ChargeType, table))
                 .ToList();
 
             sql += $"""
@@ -100,7 +100,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
                 """;
     }
 
-    private string GenerateConstraintForActorsForTotalAmounts(string table, string sql)
+    private string GetActorsForTotalAmountsSelection(string table, string sql)
     {
         if (_queryParameters.EnergySupplierId is not null)
         {
@@ -125,7 +125,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         return sql;
     }
 
-    private string GenerateConstraintForActorsForNonTotalAmounts(string table, string sql)
+    private string GetActorsForNonTotalAmountsSelection(string table, string sql)
     {
         if (_queryParameters.EnergySupplierId is not null)
         {
@@ -156,7 +156,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         return sql;
     }
 
-    private string GenerateConstraintForChargeType(
+    private string GetChargeTypeSelection(
         string? chargeCode,
         ChargeType? chargeType,
         string table)

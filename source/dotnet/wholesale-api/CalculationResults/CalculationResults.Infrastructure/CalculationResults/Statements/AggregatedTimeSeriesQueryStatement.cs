@@ -64,7 +64,7 @@ public sealed class AggregatedTimeSeriesQueryStatement(
         return $"""
                 SELECT {_querySnippetProvider.GetProjection(EnergyResultTableName)}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
-                WHERE {_querySnippetProvider.GetWhereClauseSqlExpression(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(EnergyResultTableName, _calculationTypePerGridAreas)}
+                WHERE {_querySnippetProvider.GetSelection(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GetLatestOrFixedCalculationTypeSelection(EnergyResultTableName, _calculationTypePerGridAreas)}
                 """;
     }
 
@@ -79,7 +79,7 @@ public sealed class AggregatedTimeSeriesQueryStatement(
         return $"""
                 SELECT max({EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{EnergyResultTableName}.{ctgb} AS max_{ctgb}"))}
                 FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
-                WHERE {_querySnippetProvider.GetWhereClauseSqlExpression(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GenerateLatestOrFixedCalculationTypeWhereClause(EnergyResultTableName, _calculationTypePerGridAreas)}
+                WHERE {_querySnippetProvider.GetSelection(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GetLatestOrFixedCalculationTypeSelection(EnergyResultTableName, _calculationTypePerGridAreas)}
                 GROUP BY {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{EnergyResultTableName}.{ctab}"))}
                 """;
     }

@@ -40,12 +40,12 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
                 """;
     }
 
-    internal string GetWhereClauseSqlExpression(string table, TimeSeriesType? timeSeriesType)
+    internal string GetSelection(string table, TimeSeriesType? timeSeriesType)
     {
         if (timeSeriesType is not null)
         {
             return $"""
-                    ({TimeSeriesTypeWhereClauseSqlExpression(
+                    ({GetTimeSeriesTypeSelection(
                         _queryParameters,
                         timeSeriesType.Value,
                         table)})
@@ -56,7 +56,7 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
                 ({string.Join(
                     " OR ",
                     _queryParameters.TimeSeriesTypes
-                        .Select(tst => TimeSeriesTypeWhereClauseSqlExpression(
+                        .Select(tst => GetTimeSeriesTypeSelection(
                             _queryParameters,
                             tst,
                             table))
@@ -64,7 +64,7 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
                 """;
     }
 
-    internal string GenerateLatestOrFixedCalculationTypeWhereClause(
+    internal string GetLatestOrFixedCalculationTypeSelection(
         string prefix,
         IReadOnlyCollection<CalculationTypeForGridArea> calculationTypeForGridAreas)
     {
@@ -90,7 +90,7 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
         return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
     }
 
-    private string TimeSeriesTypeWhereClauseSqlExpression(
+    private string GetTimeSeriesTypeSelection(
         AggregatedTimeSeriesQueryParameters parameters,
         TimeSeriesType timeSeriesType,
         string table)
@@ -102,7 +102,7 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
             SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(
                 TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)));
 
-        var whereClausesSql =
+        var sqlConstraint =
             $"""
              {table}.{DatabricksContract.GetMeteringPointTypeColumnName()} = '{meteringPointType}'
              {(settlementMethod is not null ? $"AND {table}.{DatabricksContract.GetSettlementMethodColumnName()} = '{settlementMethod}'" : $"AND {table}.{DatabricksContract.GetSettlementMethodColumnName()} is null")} 
@@ -112,22 +112,22 @@ public sealed class AggregatedTimeSeriesQuerySnippetProvider(
 
         if (parameters.GridAreaCodes.Count > 0)
         {
-            whereClausesSql +=
+            sqlConstraint +=
                 $" AND {table}.{DatabricksContract.GetGridAreaCodeColumnName()} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
         if (parameters.EnergySupplierId is not null)
         {
-            whereClausesSql +=
+            sqlConstraint +=
                 $" AND {table}.{DatabricksContract.GetEnergySupplierIdColumnName()} = '{parameters.EnergySupplierId}'";
         }
 
         if (parameters.BalanceResponsibleId is not null)
         {
-            whereClausesSql +=
+            sqlConstraint +=
                 $" AND {table}.{DatabricksContract.GetBalanceResponsiblePartyIdColumnName()} = '{parameters.BalanceResponsibleId}'";
         }
 
-        return whereClausesSql;
+        return sqlConstraint;
     }
 }
