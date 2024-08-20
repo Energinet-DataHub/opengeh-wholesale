@@ -20,6 +20,7 @@ public class EnergyPerBrpGaViewSchemaDefinition
 {
     /// <summary>
     /// The schema definition of the table expressed as (Column name, Data type, Is nullable).
+    /// See https://energinet.atlassian.net/wiki/spaces/D3/pages/1014202369/Wholesale+Results for more details.
     /// </summary>
     public static Dictionary<string, (string DataType, bool IsNullable)> SchemaDefinition => new()
     {
