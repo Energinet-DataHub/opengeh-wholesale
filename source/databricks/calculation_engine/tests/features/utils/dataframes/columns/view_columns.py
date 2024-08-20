@@ -113,6 +113,7 @@ class ViewColumns:
     settlement_method = Column("settlement_method", StringType())
     start_date_time = Column("start_date_time", TimestampType())
     time = Column("time", TimestampType())
+    time_series_type = Column("time_series_type", StringType())
     to_date = Column("to_date", TimestampType())
     to_grid_area_code = Column("to_grid_area_code", StringType())
     unit = Column("unit", StringType())
