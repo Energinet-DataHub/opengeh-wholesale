@@ -36,6 +36,15 @@ public class AggregatedTimeSeriesQueries(
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
+        /*
+         * We retain the usage of 'TimeSeriesType' here, to reduce the number of changes required.
+         * However, it is worth noting that the 'TimeSeriesType' is not used in the query per se,
+         * but rather translated to 'MeteringPointType' and 'SettlementMethod',
+         * as these are the proper values used in the raw data (and from the request from EDI).
+         * The reason for this is the existence of logic wrt validation and determination of "all types for an actor role"
+         * in the reception of the request from EDI that would have to be reimplemented to avoid using 'TimeSeriesType'.
+         * Once requests are brought back home to EDI, we should leave TimeSeriesType behind.
+         */
         foreach (var timeSeriesType in parameters.TimeSeriesTypes)
         {
             var querySnippetProvider = _querySnippetProviderFactory.Create(parameters, timeSeriesType);
