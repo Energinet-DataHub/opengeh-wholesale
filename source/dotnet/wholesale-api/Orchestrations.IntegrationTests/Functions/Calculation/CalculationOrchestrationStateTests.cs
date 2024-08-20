@@ -60,6 +60,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
     /// <summary>
     /// Verifies that:
+    ///  - The calculation trigger can create a new scheduled calculation.
+    ///  - The calculation scheduler can start a new calculation orchestration.
     ///  - The orchestration can complete a full run.
     ///  - The calculation state is updated as expected.
     ///  - The orchestrator completes with the expected output.
@@ -102,7 +104,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         calculationIdCallback.SetValue(calculationId);
 
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -211,7 +213,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Assert
         // => Get orchestration status for started orchestration
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Wait for ActorMessagesEnqueuing state
         await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(
