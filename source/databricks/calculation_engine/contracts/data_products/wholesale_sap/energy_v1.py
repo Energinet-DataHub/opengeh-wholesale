@@ -45,11 +45,11 @@ energy_v1 = t.StructType(
         #
         t.StructField("quantity", t.DecimalType(18, 3), not nullable),
         #
-        # 'kWh'
-        t.StructField("quantity_unit", t.StringType(), not nullable),
-        #
         # [ 'measured' | 'missing' | 'calculated' | 'estimated' ]
         # There is at least one element, and no element is included more than once.
         t.StructField("quantity_qualities", t.ArrayType(t.StringType()), not nullable),
+        #
+        # 'kWh'
+        t.StructField("quantity_unit", t.StringType(), not nullable),
     ]
 )
