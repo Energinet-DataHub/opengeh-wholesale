@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
@@ -58,7 +61,8 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         Mock<DurableTaskClient> durableTaskClient,
         Mock<IClock> clock,
         Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
-        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
     {
         // Arrange
         var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
@@ -114,7 +118,9 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             schedulerLogger.Object,
             calculationOrchestrationMonitorOptions.Object,
             clock.Object,
-            new CalculationRepository(dbContext));
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
 
         // Act
         await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
@@ -129,9 +135,9 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Error),
                 It.IsAny<EventId>(),
-                It.IsAny<object>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<object, Exception?, string>>()),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<InvalidOperationException>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Never);
     }
 
@@ -141,7 +147,8 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         Mock<DurableTaskClient> durableTaskClient,
         Mock<IClock> clock,
         Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
-        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
     {
         // Arrange
         var now = Instant.FromUtc(2024, 08, 19, 13, 37);
@@ -190,7 +197,9 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             schedulerLogger.Object,
             calculationOrchestrationMonitorOptions.Object,
             clock.Object,
-            new CalculationRepository(dbContext));
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
 
         // Act
         // => First run of StartScheduledCalculationsAsync should not start the calculation since clock is before the scheduled time
@@ -209,10 +218,85 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Error),
                 It.IsAny<EventId>(),
-                It.IsAny<object>(),
+                It.IsAny<It.IsAnyType>(),
                 It.IsAny<Exception>(),
-                It.IsAny<Func<object, Exception?, string>>()),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Never);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task Given_ScheduledCalculationAlreadyStarted_When_StartScheduledCalculationsAsync_Then_AnErrorIsLogged(
+        Mock<DurableTaskClient> durableTaskClient,
+        Mock<IClock> clock,
+        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
+        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
+        Mock<IUserContext<FrontendUser>> userContext)
+    {
+        // Arrange
+        var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
+
+        // => Setup clock to return the "scheduledToRunAt" value, which means that the expectedCalculation should start now
+        clock.Setup(c => c.GetCurrentInstant())
+            .Returns(scheduledToRunAt);
+
+        var alreadyRunningCalculation = CreateCalculation(scheduledToRunAt);
+
+        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
+        {
+            var repository = new CalculationRepository(writeDbContext);
+            await repository.AddAsync(alreadyRunningCalculation);
+            await writeDbContext.SaveChangesAsync();
+        }
+
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+
+        var alreadyRunningInstanceId = alreadyRunningCalculation.OrchestrationInstanceId;
+
+        // => Setup that the CalculationStarter's call to GetInstanceAsync() returns an OrchestrationMetadata object
+        // which indicates that an orchestration has already been started for the calculation
+        durableTaskClient
+            .Setup(c => c.GetInstanceAsync(
+                It.Is<string>(id => id == alreadyRunningInstanceId.Id),
+                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty))
+            .Verifiable(Times.Exactly(1));
+
+        // => Setup (and verify later) that ScheduleNewOrchestrationInstanceAsync is never called
+        durableTaskClient
+            .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
+                It.IsAny<TaskName>(),
+                It.IsAny<CalculationOrchestrationInput>(),
+                It.IsAny<StartOrchestrationOptions?>(),
+                It.IsAny<CancellationToken>()))
+            .Verifiable(Times.Never);
+
+        var calculationSchedulerHandler = new CalculationSchedulerHandler(
+            schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
+            clock.Object,
+            userContext.Object,
+            new CalculationRepository(dbContext),
+            new UnitOfWork(dbContext));
+
+        // Act
+        await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
+
+        // Assert
+        // => Verify the durableTaskClient setups in the Arrange section
+        durableTaskClient.Verify();
+        durableTaskClient.VerifyNoOtherCalls();
+
+        // => Verify that the scheduler logs an error (since the calculation should not be started)
+        schedulerLogger.Verify(
+            l => l.Log(
+                It.Is<LogLevel>(level => level == LogLevel.Error),
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<InvalidOperationException>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Exactly(1));
     }
 
     private Calculations.Application.Model.Calculations.Calculation CreateCalculation(Instant scheduledToRunAt)
