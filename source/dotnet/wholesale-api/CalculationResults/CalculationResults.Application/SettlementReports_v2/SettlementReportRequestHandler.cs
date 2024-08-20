@@ -20,14 +20,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
-    private readonly ISettlementReportFileGeneratorFactory _fileGeneratorFactory;
     private readonly ILatestCalculationVersionRepository _latestCalculationVersionRepository;
 
     public SettlementReportRequestHandler(
-        ISettlementReportFileGeneratorFactory fileGeneratorFactory,
         ILatestCalculationVersionRepository latestCalculationVersionRepository)
     {
-        _fileGeneratorFactory = fileGeneratorFactory;
         _latestCalculationVersionRepository = latestCalculationVersionRepository;
     }
 
@@ -99,58 +96,39 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
         var maxCalculationVersion = await GetLatestCalculationVersionAsync(reportRequest.Filter.CalculationType).ConfigureAwait(false);
 
-        var tasks = filesInReport
-            .Select(file =>
-                ScatterFileAsync(
-                    requestId,
-                    reportRequest,
-                    actorInfo,
-                    file.Content,
-                    file.Name,
-                    file.SplitReportPerGridArea,
-                    maxCalculationVersion));
-
-        var filesToRequest = await Task.WhenAll(tasks).ConfigureAwait(false);
-        return filesToRequest.SelectMany(files => files);
-    }
-
-    private async Task<IReadOnlyCollection<SettlementReportFileRequestDto>> ScatterFileAsync(
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest,
-        SettlementReportRequestedByActor actorInfo,
-        SettlementReportFileContent fileContent,
-        string fileName,
-        bool splitReportPerGridArea,
-        long maxCalculationVersion)
-    {
-        var fileRequest = new SettlementReportFileRequestDto(
-            requestId,
-            fileContent,
-            new SettlementReportPartialFileInfo(fileName, reportRequest.PreventLargeTextFiles),
-            reportRequest.Filter,
-            maxCalculationVersion);
-
-        if (fileContent == SettlementReportFileContent.MonthlyAmountTotal)
+        var filesToRequest = new List<SettlementReportFileRequestDto>();
+        foreach (var file in filesInReport)
         {
-            fileRequest = new SettlementReportFileRequestDto(
+            var fileRequest = new SettlementReportFileRequestDto(
                 requestId,
-                fileContent,
-                new SettlementReportPartialFileInfo(fileName, reportRequest.PreventLargeTextFiles) { FileOffset = int.MaxValue },
+                file.Content,
+                new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles),
                 reportRequest.Filter,
                 maxCalculationVersion);
-        }
 
-        var filesToRequest = new List<SettlementReportFileRequestDto>();
+            if (file.Content == SettlementReportFileContent.MonthlyAmountTotal)
+            {
+                fileRequest = new SettlementReportFileRequestDto(
+                    requestId,
+                    file.Content,
+                    new SettlementReportPartialFileInfo(file.Name, reportRequest.PreventLargeTextFiles)
+                    {
+                        FileOffset = int.MaxValue,
+                    },
+                    reportRequest.Filter,
+                    maxCalculationVersion);
+            }
 
-        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(fileRequest, actorInfo, splitReportPerGridArea).ConfigureAwait(false))
-        {
-            filesToRequest.Add(splitFileRequest);
+            filesToRequest.AddRange(SplitFileRequestPerGridArea(
+                fileRequest,
+                actorInfo,
+                file.SplitReportPerGridArea));
         }
 
         return filesToRequest;
     }
 
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridAreaAsync(
+    private IEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridArea(
         SettlementReportFileRequestDto fileRequest,
         SettlementReportRequestedByActor actorInfo,
         bool splitReportPerGridArea)
@@ -174,37 +152,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 // Create a request with a single grid area.
                 RequestFilter = fileRequest.RequestFilter with { GridAreas = new Dictionary<string, CalculationId?> { { gridAreaCode, calculationId } } },
             };
-
-            // Split the single grid area request into further chunks.
-            await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestForSingleGridArea, actorInfo).ConfigureAwait(false))
+            yield return requestForSingleGridArea;
+            partialFileInfo = requestForSingleGridArea.PartialFileInfo with
             {
-                yield return splitFileRequest;
-
-                partialFileInfo = splitFileRequest.PartialFileInfo with
-                {
-                    FileOffset = splitFileRequest.PartialFileInfo.FileOffset + 1,
-                    ChunkOffset = 0,
-                };
-            }
-        }
-    }
-
-    private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestIntoChunksAsync(
-        SettlementReportFileRequestDto fileRequest,
-        SettlementReportRequestedByActor actorInfo)
-    {
-        var partialFileInfo = fileRequest.PartialFileInfo;
-
-        var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
-        var chunks = await fileGenerator
-            .CountChunksAsync(fileRequest.RequestFilter, actorInfo, fileRequest.MaximumCalculationVersion)
-            .ConfigureAwait(false);
-
-        for (var i = 0; i < chunks; i++)
-        {
-            yield return fileRequest with
-            {
-                PartialFileInfo = partialFileInfo with { ChunkOffset = partialFileInfo.ChunkOffset + i },
+                FileOffset = requestForSingleGridArea.PartialFileInfo.FileOffset + 1,
+                ChunkOffset = 0,
             };
         }
     }

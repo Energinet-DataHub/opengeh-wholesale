@@ -85,7 +85,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             .Setup(factory => factory.Create(It.IsAny<SettlementReportFileContent>()))
             .Returns(mockedGenerator.Object);
 
-        var sut = new SettlementReportRequestHandler(mockedFactory.Object, mockedRepository.Object);
+        var sut = new SettlementReportRequestHandler(mockedRepository.Object);
 
         // Act
         var actual = (await sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
