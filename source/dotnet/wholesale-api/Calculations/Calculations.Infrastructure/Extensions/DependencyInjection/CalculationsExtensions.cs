@@ -36,9 +36,9 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.Dep
 public static class CalculationsExtensions
 {
     /// <summary>
-    /// Dependencies solely needed for the orchestration of calculations.
+    /// Dependencies solely needed for running calculations in the calculation engine.
     /// </summary>
-    public static IServiceCollection AddCalculationsOrchestrationModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCalculationEngineModule(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
 

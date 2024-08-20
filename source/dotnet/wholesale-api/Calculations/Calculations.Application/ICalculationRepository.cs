@@ -33,4 +33,6 @@ public interface ICalculationRepository
         Instant? periodStart,
         Instant? periodEnd,
         CalculationType? calculationType);
+
+    Task<IReadOnlyCollection<ScheduledCalculation>> GetScheduledCalculationsAsync(Instant scheduledToRunBefore);
 }

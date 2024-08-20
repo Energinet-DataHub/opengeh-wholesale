@@ -82,7 +82,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Assert
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -110,6 +110,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         activities.Should().NotBeNull().And.Equal(
         [
             new OrchestrationHistoryItem("ExecutionStarted", FunctionName: "CalculationOrchestration"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SetCalculationAsStartedActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "StartCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "GetJobStatusActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationStateFromJobStatusActivity"),
@@ -149,7 +150,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Assert
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Expect calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -197,7 +198,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Assert
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+        var orchestrationStatus = await Fixture.DurableClient.WaitForOrchestationStartedAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Expect calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
