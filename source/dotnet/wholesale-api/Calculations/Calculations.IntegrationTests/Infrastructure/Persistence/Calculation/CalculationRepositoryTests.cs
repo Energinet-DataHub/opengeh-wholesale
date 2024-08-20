@@ -269,6 +269,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
     [Fact]
     public async Task GetScheduledCalculationsAsync_ReturnsScheduledCalculations()
     {
+        // Arrange
         var now = Instant.FromUtc(2024, 08, 16, 13, 37);
         var inThePast = now.Minus(Duration.FromMilliseconds(1));
         var inTheFuture = now.Plus(Duration.FromMilliseconds(1));
