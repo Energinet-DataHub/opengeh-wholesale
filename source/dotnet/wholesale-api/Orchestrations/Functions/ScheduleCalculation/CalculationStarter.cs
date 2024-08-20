@@ -34,11 +34,12 @@ public class CalculationStarter(
     private readonly DurableTaskClient _durableTaskClient = durableTaskClient;
 
     /// <summary>
-    /// Start a calculation orchestration for the given calculation ID. Starting an orchestration is an asynchronous,
-    /// so the method will wait for the orchestration to start before returning, within the given timeout.
+    /// Start a calculation orchestration for the given calculation id with the given orchestration instance id.
+    /// If an orchestration already exists for the given calculation, then an exception is thrown.
     /// </summary>
-    /// <param name="calculationToStart">The calculation to start.</param>
-    /// <returns>Returns true if the calculation was started, false if it failed to start within the given timeout</returns>
+    /// <param name="calculationToStart">The calculation to start (calculation id and orchestration instance id).</param>
+    /// <exception cref="InvalidOperationException">Throws an InvalidOperationException if an orchestration with
+    /// the given orchestration instance id already exists</exception>
     public async Task StartCalculationAsync(ScheduledCalculation calculationToStart)
     {
         var orchestrationInput = new CalculationOrchestrationInput(
