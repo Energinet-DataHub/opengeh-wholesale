@@ -145,7 +145,7 @@ public class Calculation
 
             CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
             {
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started],
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started, CalculationOrchestrationState.Canceled],
                 // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
                 CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
@@ -155,6 +155,7 @@ public class Calculation
                 CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
                 CalculationOrchestrationState.ActorMessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
                 CalculationOrchestrationState.Completed => [],
+                CalculationOrchestrationState.Canceled => [],
                 _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
             };
 
@@ -178,6 +179,11 @@ public class Calculation
     public Instant CreatedTime { get; }
 
     public Guid CreatedByUserId { get; }
+
+    /// <summary>
+    /// The user who canceled the scheduled calculation.
+    /// </summary>
+    public Guid? CanceledByUserId { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
@@ -366,6 +372,12 @@ public class Calculation
         CompletedTime = completedAt;
     }
 
+    public void MarkAsCanceled(Guid canceledByUserId)
+    {
+        CanceledByUserId = canceledByUserId;
+        OrchestrationState = CalculationOrchestrationState.Canceled;
+    }
+
     /// <summary>
     /// Reset a <see cref="Calculation"/>. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
@@ -376,6 +388,11 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Scheduled;
+    }
+
+    public bool CanCancel()
+    {
+        return OrchestrationState is CalculationOrchestrationState.Scheduled;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
