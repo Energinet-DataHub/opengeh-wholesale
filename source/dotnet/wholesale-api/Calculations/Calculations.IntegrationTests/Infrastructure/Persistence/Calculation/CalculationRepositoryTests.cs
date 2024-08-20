@@ -272,8 +272,9 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var now = Instant.FromUtc(2024, 08, 16, 13, 37);
         var inThePast = now.Minus(Duration.FromMilliseconds(1));
         var inTheFuture = now.Plus(Duration.FromMilliseconds(1));
-        var expectedCalculation1 = CreateCalculation(scheduledAt: now); // Scheduled at == now, so it should start now
-        var expectedCalculation2 = CreateCalculation(scheduledAt: inThePast); // Scheduled at == now - 1 millisecond, so it should start now
+
+        var expectedCalculation1 = CreateCalculation(scheduledAt: now);
+        var expectedCalculation2 = CreateCalculation(scheduledAt: inThePast);
 
         var futureCalculation = CreateCalculation(scheduledAt: inTheFuture);
 
