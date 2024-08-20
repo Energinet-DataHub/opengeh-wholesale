@@ -69,14 +69,19 @@ jobs:
             filter: empty # Means skip
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTests split 1
+          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithSharedData
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName~BalanceResponsible)
+            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithSharedData)
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTests split 2
+          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithIndividualData split 1
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName!~BalanceResponsible)
+            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithIndividualData)&(DisplayName~BalanceResponsible)
+            use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
+          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithIndividualData split 2
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
+            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithIndividualData)&(DisplayName!~BalanceResponsible)
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
           - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests
