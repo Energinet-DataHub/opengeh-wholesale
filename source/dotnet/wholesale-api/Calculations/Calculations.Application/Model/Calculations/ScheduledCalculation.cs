@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
-using Microsoft.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public static class CalculationSchedulerExtensions
-{
-    public static IServiceCollection AddCalculationScheduler(this IServiceCollection services)
-    {
-        services.AddScoped<CalculationScheduler>();
-
-        return services;
-    }
-}
+public sealed record ScheduledCalculation(CalculationId CalculationId, OrchestrationInstanceId OrchestrationInstanceId);

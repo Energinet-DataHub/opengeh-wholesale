@@ -35,7 +35,11 @@ internal class SetCalculationAsStartedActivity(
         [ActivityTrigger] SetCalculationAsStartedInput input)
     {
         var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
-        calculation.MarkAsStarted(new OrchestrationInstanceId(input.OrchestrationInstanceId));
+
+        if (calculation.OrchestrationInstanceId.Id != input.OrchestrationInstanceId)
+            throw new InvalidOperationException($"Cannot set calculation {calculation.Id} as started. Orchestration instance id does not match the given orchestration instance id ({input.OrchestrationInstanceId}).");
+
+        calculation.MarkAsStarted();
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

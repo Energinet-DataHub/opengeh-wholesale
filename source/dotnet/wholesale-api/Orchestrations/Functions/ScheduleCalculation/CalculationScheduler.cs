@@ -12,44 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
 public class CalculationScheduler(
     ILogger<CalculationScheduler> logger,
+    IOptions<CalculationOrchestrationMonitorOptions> orchestrationMonitorOptions,
     IClock clock,
-    ICalculationsClient calculationsClient,
-    CalculationStarter calculationStarter)
+    ICalculationRepository calculationRepository)
 {
     private readonly ILogger _logger = logger;
+    private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions = orchestrationMonitorOptions.Value;
     private readonly IClock _clock = clock;
-    private readonly ICalculationsClient _calculationsClient = calculationsClient;
-    private readonly CalculationStarter _calculationStarter = calculationStarter;
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
 
     public async Task StartScheduledCalculationsAsync(DurableTaskClient durableTaskClient)
     {
         var now = _clock.GetCurrentInstant();
-        var scheduledCalculationIds = await _calculationsClient
-            .GetScheduledCalculationsToRunAsync(scheduledToRunBefore: now)
+        var scheduledCalculationIds = await _calculationRepository
+            .GetScheduledCalculationsAsync(scheduledToRunBefore: now)
             .ConfigureAwait(false);
 
-        foreach (var calculationIdToStart in scheduledCalculationIds)
-        {
-            var calculationIsStarted = await _calculationStarter
-                .StartCalculationAsync(durableTaskClient, calculationIdToStart)
-                .ConfigureAwait(false);
+        var calculationStarter = new CalculationStarter(
+            _logger,
+            _orchestrationMonitorOptions,
+            durableTaskClient);
 
-            if (!calculationIsStarted)
+        foreach (var calculationToStart in scheduledCalculationIds)
+        {
+            try
             {
-                // Log error if orchestration did not start within the timeout. Does not throw exception since we
-                // want to continue processing the next scheduled calculations.
+                await calculationStarter
+                    .StartCalculationAsync(calculationToStart)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                // Log error if orchestration did not start successfully.
+                // Does not throw exception since we want to continue processing the next scheduled calculations.
                 _logger.LogError(
-                    "Calculation with id = {calculationId} did not start within the timeout",
-                    calculationIdToStart.Id);
+                    e,
+                    "Failed to start calculation with id = {CalculationId} and orchestration instance id = {OrchestrationInstanceId}",
+                    calculationToStart.CalculationId.Id,
+                    calculationToStart.OrchestrationInstanceId.Id);
             }
         }
     }

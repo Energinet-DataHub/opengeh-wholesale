@@ -65,17 +65,18 @@ public class CalculationRepository : ICalculationRepository
             .ToList();
     }
 
-    public async Task<IReadOnlyCollection<Calculation>> GetScheduledCalculationsAsync(Instant scheduledToRunBefore)
+    public async Task<IReadOnlyCollection<ScheduledCalculation>> GetScheduledCalculationsAsync(Instant scheduledToRunBefore)
     {
-        var foundCalculations = await _context
+        var scheduledCalculations = await _context
             .Calculations
             .Where(c => c.OrchestrationState == CalculationOrchestrationState.Scheduled)
             .Where(c => c.ScheduledAt <= scheduledToRunBefore)
+            .Select(c => new ScheduledCalculation(
+                new CalculationId(c.Id),
+                c.OrchestrationInstanceId))
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return foundCalculations
-            .Where(c => c.ShouldStartNow(scheduledToRunBefore))
-            .ToList();
+        return scheduledCalculations;
     }
 }

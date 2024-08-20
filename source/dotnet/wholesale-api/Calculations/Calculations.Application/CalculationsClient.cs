@@ -102,17 +102,6 @@ public class CalculationsClient(
         return new CalculationId(calculation.Id);
     }
 
-    public async Task<IReadOnlyCollection<CalculationId>> GetScheduledCalculationsToRunAsync(Instant scheduledToRunBefore)
-    {
-        var calculations = await _calculationRepository
-            .GetScheduledCalculationsAsync(scheduledToRunBefore)
-            .ConfigureAwait(false);
-
-        return calculations
-            .Select(c => new CalculationId(c.Id))
-            .ToList();
-    }
-
     private async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         CalculationState? filterByExecutionState,

@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Microsoft.DurableTask;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,72 +25,54 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
 public class CalculationStarter(
-    ILogger<CalculationStarter> logger,
-    IClock clock,
-    IOptions<CalculationOrchestrationMonitorOptions> orchestrationMonitorOptions)
+    ILogger logger,
+    CalculationOrchestrationMonitorOptions orchestrationMonitorOptions,
+    DurableTaskClient durableTaskClient)
 {
     private readonly ILogger _logger = logger;
-    private readonly IClock _clock = clock;
-    private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions = orchestrationMonitorOptions.Value;
+    private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions = orchestrationMonitorOptions;
+    private readonly DurableTaskClient _durableTaskClient = durableTaskClient;
 
     /// <summary>
     /// Start a calculation orchestration for the given calculation ID. Starting an orchestration is an asynchronous,
     /// so the method will wait for the orchestration to start before returning, within the given timeout.
     /// </summary>
-    /// <param name="durableTaskClient">The durable task client used to communicate with orchestrator.</param>
-    /// <param name="calculationIdToStart">The calculation id to start.</param>
-    /// <param name="timeoutAfter">Optional amount of time to wait for the orchestration to start. Will time out after a default value if not provided.</param>
+    /// <param name="calculationToStart">The calculation to start.</param>
     /// <returns>Returns true if the calculation was started, false if it failed to start within the given timeout</returns>
-    public async Task<bool> StartCalculationAsync(
-        DurableTaskClient durableTaskClient,
-        CalculationId calculationIdToStart,
-        Instant? timeoutAfter = null)
+    public async Task StartCalculationAsync(ScheduledCalculation calculationToStart)
     {
         var orchestrationInput = new CalculationOrchestrationInput(
             _orchestrationMonitorOptions,
-            calculationIdToStart);
+            calculationToStart.CalculationId);
 
-        var orchestrationInstanceId = await durableTaskClient.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration), orchestrationInput).ConfigureAwait(false);
-        _logger.LogInformation(
-            "Started new orchestration for calculation ID = {calculationId} with instance ID = {instanceId}",
-            calculationIdToStart,
-            orchestrationInstanceId);
-
-        // Ensure calculation is started successfully by waiting for orchestration instance to start
-        var calculationIsStarted = await WaitForCalculationOrchestrationStartedAsync(
-                durableTaskClient,
-                orchestrationInstanceId,
-                timeoutAt: timeoutAfter ?? _clock.GetCurrentInstant().Plus(Duration.FromMinutes(5)))
+        var alreadyStarted = await OrchestrationIsAlreadyStartedAsync(calculationToStart.OrchestrationInstanceId)
             .ConfigureAwait(false);
 
-        return calculationIsStarted;
-    }
-
-    private async Task<bool> WaitForCalculationOrchestrationStartedAsync(
-        DurableTaskClient durableTaskClient,
-        string orchestrationInstanceId,
-        Instant timeoutAt)
-    {
-        while (_clock.GetCurrentInstant() < timeoutAt)
+        if (alreadyStarted)
         {
-            await Task.Delay(200).ConfigureAwait(false);
-
-            var orchestrationMetadata = await durableTaskClient.GetInstanceAsync(
-                    orchestrationInstanceId,
-                    getInputsAndOutputs: true) // getInputsAndOutputs is required to get custom status
-                .ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(orchestrationMetadata?.SerializedCustomStatus))
-                continue;
-
-            var calculationMetadata = orchestrationMetadata.ReadCustomStatusAs<CalculationMetadata>();
-            if (calculationMetadata == null)
-                continue;
-
-            if (calculationMetadata.IsStarted)
-                return true;
+            throw new InvalidOperationException($"Cannot start already existing calculation orchestration " +
+                                                $"(calculation id = {calculationToStart.CalculationId.Id}, " +
+                                                $"orchestration instance id = {calculationToStart.OrchestrationInstanceId.Id})");
         }
 
-        return false;
+        var orchestrationInstanceId = await _durableTaskClient
+            .ScheduleNewOrchestrationInstanceAsync(
+                nameof(CalculationOrchestration),
+                orchestrationInput,
+                new StartOrchestrationOptions(calculationToStart.OrchestrationInstanceId.Id))
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Started new orchestration for calculation id = {calculationId} with instance id = {instanceId}",
+            calculationToStart.CalculationId.Id,
+            orchestrationInstanceId);
+    }
+
+    private async Task<bool> OrchestrationIsAlreadyStartedAsync(OrchestrationInstanceId orchestrationInstanceId)
+    {
+        var existingInstance = await _durableTaskClient.GetInstanceAsync(orchestrationInstanceId.Id)
+            .ConfigureAwait(false);
+
+        return existingInstance != null;
     }
 }

@@ -44,6 +44,4 @@ public interface ICalculationsClient
         DateTimeOffset endDate,
         DateTimeOffset scheduledAt,
         Guid currentUserId);
-
-    Task<IReadOnlyCollection<CalculationId>> GetScheduledCalculationsToRunAsync(Instant scheduledToRunBefore);
 }

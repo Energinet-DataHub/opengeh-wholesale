@@ -51,6 +51,7 @@ public class Calculation
 
         _orchestrationState = CalculationOrchestrationState.Scheduled;
         ExecutionState = CalculationExecutionState.Created;
+        OrchestrationInstanceId = new OrchestrationInstanceId(Guid.NewGuid().ToString("N"));
     }
 
     /// <summary>
@@ -118,6 +119,7 @@ public class Calculation
         Id = Guid.NewGuid();
         _gridAreaCodes = [];
         Version = 0;
+        OrchestrationInstanceId = null!;
     }
 
     // Private setter is used implicitly by tests
@@ -187,7 +189,7 @@ public class Calculation
 
     public CalculationJobId? CalculationJobId { get; private set; }
 
-    public OrchestrationInstanceId? OrchestrationInstanceId { get; private set; }
+    public OrchestrationInstanceId OrchestrationInstanceId { get; }
 
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
@@ -251,19 +253,14 @@ public class Calculation
     /// <summary>
     /// The calculation orchestration has started (after the schedule has been met)
     /// </summary>
-    /// <param name="orchestrationInstanceId"></param>
-    public void MarkAsStarted(OrchestrationInstanceId orchestrationInstanceId)
+    public void MarkAsStarted()
     {
-        ArgumentNullException.ThrowIfNull(orchestrationInstanceId);
-
         if (ExecutionState is not CalculationExecutionState.Created)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
-        if (OrchestrationInstanceId != null)
-            throw new BusinessValidationException("Cannot mark calculation as started when orchestration instance id is already set (a calculation orchestration is already running)");
+        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Started);
 
-        OrchestrationInstanceId = orchestrationInstanceId;
-        ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Started;
     }
 
@@ -379,18 +376,6 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Scheduled;
-    }
-
-    public bool ShouldStartNow(Instant scheduledBefore)
-    {
-        var isScheduled = OrchestrationState == CalculationOrchestrationState.Scheduled;
-        var hasNoOrchestration = OrchestrationInstanceId == null;
-        var scheduleIsMet = ScheduledAt <= scheduledBefore;
-
-        return
-            isScheduled &&
-            hasNoOrchestration &&
-            scheduleIsMet;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)

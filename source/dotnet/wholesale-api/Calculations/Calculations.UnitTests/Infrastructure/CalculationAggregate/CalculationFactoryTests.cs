@@ -82,7 +82,7 @@ public class CalculationFactoryTests
 
         // Act
         var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
-        calculation.MarkAsStarted(new OrchestrationInstanceId("orchestration-id"));
+        calculation.MarkAsStarted();
         calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), Instant.FromDateTimeOffset(_executionStartedAt));
 
         // Assert

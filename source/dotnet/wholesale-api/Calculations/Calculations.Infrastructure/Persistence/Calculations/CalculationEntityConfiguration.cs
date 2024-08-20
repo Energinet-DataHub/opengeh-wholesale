@@ -46,8 +46,8 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
             calculationJobId => calculationJobId == null ? (long?)null : calculationJobId.Id,
             calculationJobId => calculationJobId == null ? null : new CalculationJobId(calculationJobId.Value));
         builder.Property(b => b.OrchestrationInstanceId).HasConversion(
-            id => id != null ? id.Id : (string?)null,
-            dbValue => dbValue != null ? new OrchestrationInstanceId(dbValue) : null);
+            id => id.Id,
+            dbValue => new OrchestrationInstanceId(dbValue));
         builder.Property(b => b.CalculationType);
         builder.Property(b => b.CreatedTime);
         builder.Property(b => b.CreatedByUserId);

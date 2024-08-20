@@ -126,25 +126,25 @@ public class CalculationBuilder
         }
         else if (_state == CalculationExecutionState.Submitted)
         {
-            calculation.MarkAsStarted(orchestrationInstanceId);
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state == CalculationExecutionState.Pending)
         {
-            calculation.MarkAsStarted(orchestrationInstanceId);
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
         }
         else if (_state == CalculationExecutionState.Executing)
         {
-            calculation.MarkAsStarted(orchestrationInstanceId);
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
             calculation.MarkAsCalculating();
         }
         else if (_state == CalculationExecutionState.Completed)
         {
-            calculation.MarkAsStarted(orchestrationInstanceId);
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
             calculation.MarkAsCalculating();
@@ -152,7 +152,7 @@ public class CalculationBuilder
         }
         else if (_state == CalculationExecutionState.Failed)
         {
-            calculation.MarkAsStarted(orchestrationInstanceId);
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
             calculation.MarkAsCalculating();

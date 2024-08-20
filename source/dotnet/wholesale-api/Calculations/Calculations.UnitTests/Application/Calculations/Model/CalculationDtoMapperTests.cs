@@ -62,7 +62,7 @@ public class CalculationDtoMapperTests
     {
         // Arrange
         var calculation = new CalculationBuilder().Build();
-        calculation.MarkAsStarted(new OrchestrationInstanceId("orchestration-id"));
+        calculation.MarkAsStarted();
         calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), executionTimeStart: SystemClock.Instance.GetCurrentInstant());
         calculation.MarkAsCalculationJobPending();
         calculation.MarkAsCalculating();
@@ -84,7 +84,7 @@ public class CalculationDtoMapperTests
         // Arrange
         var calculation = new CalculationBuilder().Build();
         var expectedRunId = new CalculationJobId(111);
-        calculation.MarkAsStarted(new OrchestrationInstanceId("orchestration-id"));
+        calculation.MarkAsStarted();
         calculation.MarkAsCalculationJobSubmitted(expectedRunId, SystemClock.Instance.GetCurrentInstant());
 
         // Act

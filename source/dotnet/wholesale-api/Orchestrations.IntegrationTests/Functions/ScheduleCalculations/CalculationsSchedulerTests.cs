@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
@@ -59,19 +56,14 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
     [InlineAutoMoqData]
     public async Task Given_MultipleCalculationsWithOneReadyToStart_When_StartScheduledCalculationsAsync_Then_TheCorrectCalculationIsStarted(
         Mock<DurableTaskClient> durableTaskClient,
-        Mock<DataConverter> dataConverter,
         Mock<IClock> clock,
         Mock<ILogger<CalculationScheduler>> schedulerLogger,
-        Mock<ILogger<CalculationStarter>> starterLogger,
         Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
     {
         // Arrange
-        var dateTimeZone = DateTimeZone.Utc;
         var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
 
-        // => Setup clock to return the "now" value first, and then the scheduledToRunAt value next
-        // This means that we have to call StartScheduledCalculationsAsync twice to get to the point where
-        // the calculation should be started
+        // => Setup clock to return the "scheduledToRunAt" value, which means that the expectedCalculation should start now
         clock.Setup(c => c.GetCurrentInstant())
             .Returns(scheduledToRunAt);
 
@@ -80,44 +72,14 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
         {
             var repository = new CalculationRepository(writeDbContext);
 
-            var dummyInstant = Instant.FromUtc(2000, 01, 01, 00, 00);
-
-            expectedCalculation = new Calculations.Application.Model.Calculations.Calculation(
-                dummyInstant,
-                CalculationType.BalanceFixing,
-                [new GridAreaCode("100")],
-                dummyInstant,
-                dummyInstant.Plus(Duration.FromDays(1)),
-                scheduledToRunAt,
-                dateTimeZone,
-                Guid.Empty,
-                1);
-
-            var futureCalculation = new Calculations.Application.Model.Calculations.Calculation(
-                dummyInstant,
-                CalculationType.BalanceFixing,
-                [new GridAreaCode("100")],
-                dummyInstant,
-                dummyInstant.Plus(Duration.FromDays(1)),
-                scheduledToRunAt.Plus(Duration.FromMilliseconds(1)),
-                dateTimeZone,
-                Guid.Empty,
-                1);
-
-            var alreadyStartedCalculation = new Calculations.Application.Model.Calculations.Calculation(
-                dummyInstant,
-                CalculationType.BalanceFixing,
-                [new GridAreaCode("100")],
-                dummyInstant,
-                dummyInstant.Plus(Duration.FromDays(1)),
-                scheduledToRunAt.Plus(Duration.FromMilliseconds(1)),
-                dateTimeZone,
-                Guid.Empty,
-                1);
-            alreadyStartedCalculation.MarkAsStarted(new OrchestrationInstanceId("dummy-instance-id"));
-
+            expectedCalculation = CreateCalculation(scheduledToRunAt);
             await repository.AddAsync(expectedCalculation);
+
+            var futureCalculation = CreateCalculation(scheduledToRunAt.Plus(Duration.FromMilliseconds(1)));
             await repository.AddAsync(futureCalculation);
+
+            var alreadyStartedCalculation = CreateCalculation(scheduledToRunAt);
+            alreadyStartedCalculation.MarkAsStarted();
             await repository.AddAsync(alreadyStartedCalculation);
 
             await writeDbContext.SaveChangesAsync();
@@ -125,51 +87,34 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
 
         await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
 
-        var expectedInstanceId = "instance-id-1";
-        var serializedMetadataObject = "serialized-metadata-object";
+        var expectedInstanceId = expectedCalculation.OrchestrationInstanceId;
 
-        // => Setup that the CalculationStarter can call GetInstanceAsync() to get the CalculationMetadata object
+        // => Setup that the CalculationStarter's call to GetInstanceAsync() returns null
+        // which indicates that an orchestration has not already been started for the calculation
         durableTaskClient
             .Setup(c => c.GetInstanceAsync(
-                It.Is<string>(id => id == expectedInstanceId),
-                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == true),
+                It.Is<string>(id => id == expectedInstanceId.Id),
+                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty)
-            {
-                DataConverter = dataConverter.Object,
-                SerializedCustomStatus = serializedMetadataObject,
-            })
+            .ReturnsAsync((OrchestrationMetadata?)null)
             .Verifiable(Times.Exactly(1));
 
-        // => Setup that the CalculationStarter can call get custom status from the CalculationMetadata.ReadCustomStatusAs<>() (which uses .Deserialize())
-        dataConverter.Setup(dc => dc.Deserialize(
-                It.Is<string?>(s => s == serializedMetadataObject),
-                It.IsAny<Type>()))
-            .Returns(new CalculationMetadata { IsStarted = true, });
-
         // => Setup and verify that ScheduleNewOrchestrationInstanceAsync is called only once with
-        // the expected calculation id
+        // the expected calculation id and instance id
         durableTaskClient
             .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
                 It.Is<TaskName>(taskName => taskName == "CalculationOrchestration"),
                 It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == expectedCalculation.Id),
-                null,
+                It.Is<StartOrchestrationOptions>(o => o.InstanceId == expectedInstanceId.Id),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedInstanceId)
+            .ReturnsAsync(expectedInstanceId.Id)
             .Verifiable(Times.Exactly(1));
 
         var calculationScheduler = new CalculationScheduler(
             schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
             clock.Object,
-            new CalculationsClient(
-                new CalculationRepository(dbContext),
-                new CalculationDtoMapper(),
-                new CalculationFactory(clock.Object, dateTimeZone),
-                new UnitOfWork(dbContext)),
-            new CalculationStarter(
-                starterLogger.Object,
-                clock.Object,
-                calculationOrchestrationMonitorOptions.Object));
+            new CalculationRepository(dbContext));
 
         // Act
         await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
@@ -177,20 +122,27 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
         // Assert
         durableTaskClient.Verify();
         durableTaskClient.VerifyNoOtherCalls();
+
+        // => Verify that the scheduler never logs an error (since the calculation should be started successfully)
+        schedulerLogger.Verify(
+            l => l.Log(
+                It.Is<LogLevel>(level => level == LogLevel.Error),
+                It.IsAny<EventId>(),
+                It.IsAny<object>(),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<object, Exception?, string>>()),
+            Times.Never);
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task Given_CalculationScheduledInFuture_When_CurrentTimeReachesScheduledTime_Then_CalculationIsStartedWithoutErrors(
         Mock<DurableTaskClient> durableTaskClient,
-        Mock<DataConverter> dataConverter,
         Mock<IClock> clock,
         Mock<ILogger<CalculationScheduler>> schedulerLogger,
-        Mock<ILogger<CalculationStarter>> starterLogger,
         Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
     {
         // Arrange
-        var dateTimeZone = DateTimeZone.Utc;
         var now = Instant.FromUtc(2024, 08, 19, 13, 37);
         var scheduledToRunAt = now.Plus(Duration.FromSeconds(1));
 
@@ -201,86 +153,59 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
             .Returns(now)
             .Returns(scheduledToRunAt);
 
-        Calculations.Application.Model.Calculations.Calculation scheduledCalculation;
+        Calculations.Application.Model.Calculations.Calculation expectedCalculation;
         await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
         {
             var repository = new CalculationRepository(writeDbContext);
 
-            var dummyInstant = Instant.FromUtc(2000, 01, 01, 00, 00);
-
-            scheduledCalculation = new Calculations.Application.Model.Calculations.Calculation(
-                dummyInstant,
-                CalculationType.BalanceFixing,
-                [new GridAreaCode("100")],
-                dummyInstant,
-                dummyInstant.Plus(Duration.FromDays(1)),
-                scheduledToRunAt,
-                dateTimeZone,
-                Guid.Empty,
-                1);
-
-            await repository.AddAsync(scheduledCalculation);
+            expectedCalculation = CreateCalculation(scheduledToRunAt);
+            await repository.AddAsync(expectedCalculation);
 
             await writeDbContext.SaveChangesAsync();
         }
 
         await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
 
-        var expectedInstanceId = "instance-id-1";
-        var serializedMetadataObject = "serialized-metadata-object";
+        var expectedInstanceId = expectedCalculation.OrchestrationInstanceId;
 
         // => Setup (and verify later) that the CalculationStarter calls GetInstanceAsync() only once
         durableTaskClient
             .Setup(c => c.GetInstanceAsync(
-                It.Is<string>(id => id == expectedInstanceId),
-                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == true),
+                It.Is<string>(id => id == expectedInstanceId.Id),
+                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty)
-            {
-                DataConverter = dataConverter.Object,
-                SerializedCustomStatus = serializedMetadataObject,
-            })
+            .ReturnsAsync((OrchestrationMetadata?)null)
             .Verifiable(Times.Exactly(1));
-
-        // => Setup (and verify later) that the CalculationStarter calls ReadCustomStatusAs() (which uses Deserialize()) only once
-        dataConverter.Setup(dc => dc.Deserialize(
-                It.Is<string?>(s => s == serializedMetadataObject),
-                It.IsAny<Type>()))
-            .Returns(new CalculationMetadata { IsStarted = true, });
 
         // => Setup and verify that ScheduleNewOrchestrationInstanceAsync is called only once with
         // the expected calculation id
         durableTaskClient
             .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
                 It.Is<TaskName>(taskName => taskName == "CalculationOrchestration"),
-                It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == scheduledCalculation.Id),
-                null,
+                It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == expectedCalculation.Id),
+                It.Is<StartOrchestrationOptions>(o => o.InstanceId == expectedInstanceId.Id),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedInstanceId)
+            .ReturnsAsync(expectedInstanceId.Id)
             .Verifiable(Times.Exactly(1));
 
         var calculationScheduler = new CalculationScheduler(
             schedulerLogger.Object,
+            calculationOrchestrationMonitorOptions.Object,
             clock.Object,
-            new CalculationsClient(
-                new CalculationRepository(dbContext),
-                new CalculationDtoMapper(),
-                new CalculationFactory(clock.Object, dateTimeZone),
-                new UnitOfWork(dbContext)),
-            new CalculationStarter(
-                starterLogger.Object,
-                clock.Object,
-                calculationOrchestrationMonitorOptions.Object));
+            new CalculationRepository(dbContext));
 
         // Act
+        // => First run of StartScheduledCalculationsAsync should not start the calculation since "now" is before the scheduled time
         await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
+
+        // => Second run of StartScheduledCalculationsAsync should start the calculation since "now" is equal to the scheduled time
         await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
         // Assert
         durableTaskClient.Verify();
         durableTaskClient.VerifyNoOtherCalls();
 
-        // => Verify that the scheduler never logs an error (since the calculation is started successfully)
+        // => Verify that the scheduler never logs an error (since the calculation should be started successfully)
         schedulerLogger.Verify(
             l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Error),
@@ -289,140 +214,20 @@ public class CalculationsSchedulerTests : IClassFixture<CalculationSchedulerFixt
                 It.IsAny<Exception>(),
                 It.IsAny<Func<object, Exception?, string>>()),
             Times.Never);
-        schedulerLogger.VerifyNoOtherCalls();
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task Given_ScheduledCalculation_WhenMetadataIsNotAvailableImmediately_ThenTryAgainUntilAvailable(
-        Mock<DurableTaskClient> durableTaskClient,
-        Mock<DataConverter> dataConverter,
-        Mock<IClock> clock,
-        Mock<ILogger<CalculationScheduler>> schedulerLogger,
-        Mock<ILogger<CalculationStarter>> starterLogger,
-        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions)
+    private Calculations.Application.Model.Calculations.Calculation CreateCalculation(Instant scheduledToRunAt)
     {
-        // Arrange
-        var dateTimeZone = DateTimeZone.Utc;
-        var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
-
-        // => Setup clock to return the "now" value first, and then the scheduledToRunAt value next
-        // This means that we have to call StartScheduledCalculationsAsync twice to get to the point where
-        // the calculation should be started
-        clock.Setup(c => c.GetCurrentInstant())
-            .Returns(scheduledToRunAt);
-
-        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
-        {
-            var repository = new CalculationRepository(writeDbContext);
-
-            var dummyInstant = Instant.FromUtc(2000, 01, 01, 00, 00);
-
-            var expectedCalculation = new Calculations.Application.Model.Calculations.Calculation(
-                dummyInstant,
-                CalculationType.BalanceFixing,
-                [new GridAreaCode("100")],
-                dummyInstant,
-                dummyInstant.Plus(Duration.FromDays(1)),
-                scheduledToRunAt,
-                dateTimeZone,
-                Guid.Empty,
-                1);
-
-            await repository.AddAsync(expectedCalculation);
-
-            await writeDbContext.SaveChangesAsync();
-        }
-
-        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
-
-        var expectedInstanceId = "instance-id-1";
-
-        durableTaskClient
-            .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
-                It.Is<TaskName>(taskName => taskName == "CalculationOrchestration"),
-                It.IsAny<CalculationOrchestrationInput>(),
-                null,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedInstanceId)
-            .Verifiable(Times.Exactly(1));
-
-        // => Setup (and verify later) that the CalculationStarter can handle that a custom status (the CalculationMetadata object) is not always available
-        // The first call to Deserialize will return null, then expected calls after returns a CalculationMetadata object
-        // with IsStarted set to false, then true
-        var serializedMetadataObject = "serialized-metadata-object";
-        dataConverter.SetupSequence(dc => dc.Deserialize(
-                It.Is<string?>(s => s == serializedMetadataObject),
-                It.IsAny<Type>()))
-            .Returns((CalculationMetadata?)null)
-            .Returns(new CalculationMetadata { IsStarted = false, })
-            .Returns(new CalculationMetadata { IsStarted = true, });
-
-        // => Setup (and verify later) that the CalculationStarter can handle that OrchestrationMetadata might not be available immediately
-        // The first call to GetInstanceAsync will return null, then expected calls after that uses the
-        // dataConverter to return a CalculationMetadata object
-        durableTaskClient
-            .SetupSequence(c => c.GetInstanceAsync(
-                It.Is<string>(id => id == expectedInstanceId),
-                It.IsAny<bool>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((OrchestrationMetadata?)null)
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty)
-            {
-                DataConverter = dataConverter.Object,
-                SerializedCustomStatus = null,
-            })
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty)
-            {
-                DataConverter = dataConverter.Object,
-                SerializedCustomStatus = serializedMetadataObject,
-            })
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty)
-            {
-                DataConverter = dataConverter.Object,
-                SerializedCustomStatus = serializedMetadataObject,
-            })
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty)
-            {
-                DataConverter = dataConverter.Object,
-                SerializedCustomStatus = serializedMetadataObject,
-            });
-
-        var calculationScheduler = new CalculationScheduler(
-            schedulerLogger.Object,
-            clock.Object,
-            new CalculationsClient(
-                new CalculationRepository(dbContext),
-                new CalculationDtoMapper(),
-                new CalculationFactory(clock.Object, dateTimeZone),
-                new UnitOfWork(dbContext)),
-            new CalculationStarter(
-                starterLogger.Object,
-                clock.Object,
-                calculationOrchestrationMonitorOptions.Object));
-
-        // Act
-        await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
-
-        // Assert
-        durableTaskClient.Verify();
-        durableTaskClient.Verify(
-            c => c.GetInstanceAsync(
-                It.Is<string>(id => id == expectedInstanceId),
-                It.Is<bool>(includeInputsAndOutputs => includeInputsAndOutputs == true),
-                It.IsAny<CancellationToken>()),
-            Times.Exactly(5));
-        durableTaskClient.VerifyNoOtherCalls();
-
-        dataConverter.Verify(
-            dc => dc.Deserialize(
-                It.Is<string?>(d => d == serializedMetadataObject),
-                It.IsAny<Type>()),
-            Times.Exactly(3));
-        dataConverter.Verify(
-            dc => dc.Deserialize<CalculationMetadata>(
-                It.Is<string?>(d => d == serializedMetadataObject)),
-            Times.Exactly(3));
-        dataConverter.VerifyNoOtherCalls();
+        var dummyInstant = Instant.FromUtc(2000, 01, 01, 00, 00);
+        return new Calculations.Application.Model.Calculations.Calculation(
+            dummyInstant,
+            CalculationType.BalanceFixing,
+            [new GridAreaCode("100")],
+            dummyInstant,
+            dummyInstant.Plus(Duration.FromDays(1)),
+            scheduledToRunAt,
+            DateTimeZone.Utc,
+            Guid.Empty,
+            1);
     }
 }
