@@ -74,4 +74,15 @@ public static class MeteringPointTypeMapper
                 actualValue: timeSeriesType,
                 "Value cannot be mapped to a metering point type."),
         };
+
+    public static string ToDeltaTableValue(MeteringPointType meteringPointType)
+    {
+        return meteringPointType switch
+        {
+            MeteringPointType.Consumption => "consumption",
+            MeteringPointType.Production => "production",
+            MeteringPointType.Exchange => "exchange",
+            _ => throw new ArgumentOutOfRangeException(nameof(meteringPointType), meteringPointType, null),
+        };
+    }
 }
