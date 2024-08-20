@@ -315,8 +315,11 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         using var assertionScope = new AssertionScope();
-        scheduledCalculations.Should().HaveCount(2);
-        // scheduledCalculations.Should().(expectedCalculation1); // TODO: FIX
+        scheduledCalculations.Should().Satisfy(
+            sc => sc.CalculationId.Id == expectedCalculation1.Id &&
+                  sc.OrchestrationInstanceId == expectedCalculation1.OrchestrationInstanceId,
+            sc => sc.CalculationId.Id == expectedCalculation2.Id &&
+                  sc.OrchestrationInstanceId == expectedCalculation2.OrchestrationInstanceId);
     }
 
     private static Application.Model.Calculations.Calculation CreateCalculation(List<GridAreaCode> someGridAreasIds)
