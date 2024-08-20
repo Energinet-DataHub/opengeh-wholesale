@@ -14,6 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
+/// <summary>
+/// The columns are defined in https://energinet.atlassian.net/wiki/spaces/D3/pages/1014202369/Wholesale+Results
+/// </summary>
 public class EnergyPerGaViewColumnNames
 {
     public const string CalculationId = "calculation_id";
