@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Databricks;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -59,6 +60,10 @@ public class AggregatedTimeSeriesQueriesCsvTests
         {
             Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
             Fixture.Inject(fixture.GetDatabricksExecutor());
+            Fixture.Inject(new AggregatedTimeSeriesQuerySnippetProviderFactory([
+                new EnergyPerGaAggregatedTimeSeriesDatabricksContract(),
+                new EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract(),
+                new EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract()]));
 
             _fixture = fixture;
             _testOutputHelper = testOutputHelper;
@@ -155,7 +160,6 @@ public class AggregatedTimeSeriesQueriesCsvTests
             var actual = await Sut.GetAsync(parameters).ToListAsync();
 
             using var assertionScope = new AssertionScope();
-            actual.Should().HaveCount(12);
             actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.Version))
                 .Should()
                 .BeEquivalentTo([
@@ -207,16 +211,15 @@ public class AggregatedTimeSeriesQueriesCsvTests
             var actual = await Sut.GetAsync(parameters).ToListAsync();
 
             using var assertionScope = new AssertionScope();
-            actual.Should().HaveCount(6);
             actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.Version))
                 .Should()
                 .BeEquivalentTo([
-                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 5, 23, 0), Instant.FromUtc(2022, 1, 6, 23, 0), 6),
-                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 7, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), 6),
-                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 1, 23, 0), Instant.FromUtc(2022, 1, 3, 23, 0), 8),
-                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 6, 23, 0), Instant.FromUtc(2022, 1, 7, 23, 0), 8),
-                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 3, 23, 0), Instant.FromUtc(2022, 1, 5, 23, 0), 8),
                     ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 1, 23, 0), 7),
+                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 1, 23, 0), Instant.FromUtc(2022, 1, 3, 23, 0), 8),
+                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 3, 23, 0), Instant.FromUtc(2022, 1, 5, 23, 0), 8),
+                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 5, 23, 0), Instant.FromUtc(2022, 1, 6, 23, 0), 6),
+                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 6, 23, 0), Instant.FromUtc(2022, 1, 7, 23, 0), 8),
+                    ("804", TimeSeriesType.FlexConsumption, Instant.FromUtc(2022, 1, 7, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), 6),
                 ]);
 
             actual.Should().AllSatisfy(ats =>
@@ -392,7 +395,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
             actual.Select(ats => (ats.GridArea, ats.TimeSeriesType, ats.PeriodStart, ats.PeriodEnd, ats.CalculationType, ats.Version))
                 .Should()
                 .BeEquivalentTo([
-                    ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 3),
+                    ("543", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.SecondCorrectionSettlement, 4),
                     ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.ThirdCorrectionSettlement, 2),
                 ]);
 
@@ -455,6 +458,10 @@ public class AggregatedTimeSeriesQueriesCsvTests
         {
             Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
             Fixture.Inject(fixture.GetDatabricksExecutor());
+            Fixture.Inject(new AggregatedTimeSeriesQuerySnippetProviderFactory([
+                new EnergyPerGaAggregatedTimeSeriesDatabricksContract(),
+                new EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract(),
+                new EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract()]));
             _fixture = fixture;
             _testOutputHelper = testOutputHelper;
         }
@@ -630,29 +637,37 @@ public class AggregatedTimeSeriesQueriesCsvTests
                 await databricksSchemaManager.CreateSchemaAsync();
             }
 
-            const string basisDataCalculationsCsv = "basis_data.calculations.csv";
-            var basisDataTestFile = Path.Combine("TestData", basisDataCalculationsCsv);
+            const string view1 = "wholesale_calculation_results.energy_per_ga_v1.csv";
+            var view1File = Path.Combine("TestData", view1);
 
-            using (new PerformanceLogger(testOutputHelper, "Insert basis data in databricks"))
+            const string view2 = "wholesale_calculation_results.energy_per_brp_ga_v1.csv";
+            var view2File = Path.Combine("TestData", view2);
+
+            const string view3 = "wholesale_calculation_results.energy_per_es_brp_ga_v1.csv";
+            var view3File = Path.Combine("TestData", view3);
+
+            using (new PerformanceLogger(testOutputHelper, "Insert ENERGY_PER_GA in databricks"))
             {
                 await databricksSchemaManager.InsertFromCsvFileAsync(
-                    databricksSchemaManager.DeltaTableOptions.Value.CALCULATIONS_TABLE_NAME,
-                    BasisDataCalculationsTableSchemaDefinition.SchemaDefinition,
-                    basisDataTestFile);
+                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_GA_V1_VIEW_NAME,
+                    EnergyPerGaViewSchemaDefinition.SchemaDefinition,
+                    view1File);
             }
 
-            foreach (var index in new[] { 0, 1, 2 })
+            using (new PerformanceLogger(testOutputHelper, "Insert ENERGY_PER_BRP_GA in databricks"))
             {
-                var wholesaleOutputEnergyResultsCsv = $"wholesale_output.energy_results_{index}.csv";
-                var energyTestFile = Path.Combine("TestData", wholesaleOutputEnergyResultsCsv);
+                await databricksSchemaManager.InsertFromCsvFileAsync(
+                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_BRP_GA_V1_VIEW_NAME,
+                    EnergyPerBrpGaViewSchemaDefinition.SchemaDefinition,
+                    view2File);
+            }
 
-                using (new PerformanceLogger(testOutputHelper, $"Insert energy results {index} in databricks"))
-                {
-                    await databricksSchemaManager.InsertFromCsvFileAsync(
-                        databricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
-                        EnergyResultsTableSchemaDefinition.SchemaDefinition,
-                        energyTestFile);
-                }
+            using (new PerformanceLogger(testOutputHelper, "Insert ENERGY_PER_ES_BRP_GA in databricks"))
+            {
+                await databricksSchemaManager.InsertFromCsvFileAsync(
+                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME,
+                    EnergyPerEsBrpGaViewSchemaDefinition.SchemaDefinition,
+                    view3File);
             }
         }
     }
@@ -681,13 +696,23 @@ public class AggregatedTimeSeriesQueriesCsvTests
         ITestOutputHelper testOutputHelper,
         IReadOnlyCollection<string> gridAreasToRemoveFrom)
     {
-        var statement = new DeleteCorrectionsStatement(
-            fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
-            gridAreasToRemoveFrom);
-
-        using (new PerformanceLogger(testOutputHelper, "Execute DeleteCorrectionsStatement"))
+        foreach (var aggregationLevel in (IReadOnlyCollection<string>)[
+                     DeltaTableAggregationLevel.GridArea,
+                     DeltaTableAggregationLevel.BalanceResponsibleAndGridArea,
+                     DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea
+                 ])
         {
-            await fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            var statement = new DeleteCorrectionsStatement(
+                fixture.DatabricksSchemaManager.DeltaTableOptions.Value,
+                aggregationLevel,
+                gridAreasToRemoveFrom);
+
+            using (new PerformanceLogger(
+                       testOutputHelper,
+                       $"Execute DeleteCorrectionsStatement for aggregationLevel {aggregationLevel}"))
+            {
+                await fixture.GetDatabricksExecutor().ExecuteStatementAsync(statement, Format.JsonArray).ToListAsync();
+            }
         }
     }
 
@@ -705,7 +730,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+                    DELETE FROM {_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME}
                     WHERE {EnergyResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
                     AND {EnergyResultColumnNames.Time} <= '{_before}'
                     {(_after is not null ? $"AND {EnergyResultColumnNames.Time} > '{_after}'" : string.Empty)}
@@ -715,6 +740,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
 
     private class DeleteCorrectionsStatement(
         DeltaTableOptions deltaTableOptions,
+        string aggregationLevel,
         IReadOnlyCollection<string> gridAreasToRemoveFrom) : DatabricksStatement
     {
         private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
@@ -722,8 +748,18 @@ public class AggregatedTimeSeriesQueriesCsvTests
 
         protected override string GetSqlStatement()
         {
+            var tableToDeleteFrom = aggregationLevel switch
+            {
+                DeltaTableAggregationLevel.GridArea => _deltaTableOptions.ENERGY_PER_GA_V1_VIEW_NAME,
+                DeltaTableAggregationLevel.BalanceResponsibleAndGridArea => _deltaTableOptions
+                    .ENERGY_PER_BRP_GA_V1_VIEW_NAME,
+                DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea => _deltaTableOptions
+                    .ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME,
+                _ => throw new InvalidOperationException(),
+            };
+
             return $"""
-                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+                    DELETE FROM {_deltaTableOptions.SCHEMA_NAME}.{tableToDeleteFrom}
                     WHERE ({EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.FirstCorrectionSettlement}'
                     OR {EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.SecondCorrectionSettlement}'
                     OR {EnergyResultColumnNames.CalculationType} = '{DeltaTableCalculationType.ThirdCorrectionSettlement}')
