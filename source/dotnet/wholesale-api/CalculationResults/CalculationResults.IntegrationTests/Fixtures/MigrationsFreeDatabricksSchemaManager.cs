@@ -72,6 +72,10 @@ public class MigrationsFreeDatabricksSchemaManager
         await CreateTableAsync(DeltaTableOptions.Value.AMOUNTS_PER_CHARGE_V1_VIEW_NAME, AmountsPerChargeViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME, MonthlyAmountsPerChargeViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME, TotalMonthlyAmountsViewSchemaDefinition.SchemaDefinition);
+
+        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_GA_V1_VIEW_NAME, EnergyPerGaViewSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_BRP_GA_V1_VIEW_NAME, EnergyPerBrpGaViewSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME, EnergyPerEsBrpGaViewSchemaDefinition.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()

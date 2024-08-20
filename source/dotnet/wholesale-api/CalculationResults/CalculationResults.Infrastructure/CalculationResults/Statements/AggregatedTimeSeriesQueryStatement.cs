@@ -13,102 +13,88 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AggregatedTimeSeriesQueryStatement(
-    AggregatedTimeSeriesQueryParameters parameters,
+public sealed class AggregatedTimeSeriesQueryStatement(
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
-    AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
+    AggregatedTimeSeriesQuerySnippetProvider querySnippetProvider,
+    TimeSeriesType timeSeriesType,
     DeltaTableOptions deltaTableOptions)
     : DatabricksStatement
 {
-    private readonly AggregatedTimeSeriesQueryParameters _parameters = parameters;
-    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas = calculationTypePerGridAreas;
-    private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
+    private const string EnergyResultTableName = "er";
+    private const string EnergyMeasurementTableName = "em";
+    private const string PackagesWithVersionTableName = "pckg";
+
+    private readonly IReadOnlyCollection<CalculationTypeForGridArea> _calculationTypePerGridAreas =
+        calculationTypePerGridAreas;
+
+    private readonly AggregatedTimeSeriesQuerySnippetProvider _querySnippetProvider = querySnippetProvider;
+    private readonly TimeSeriesType _timeSeriesType = timeSeriesType;
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
 
     protected override string GetSqlStatement()
     {
-        var sql = $"""
-                   SELECT {string.Join(", ", SqlColumnNames.Select(scn => $"`erv`.`{scn}`"))}, `erv`.`{BasisDataCalculationsColumnNames.Version}`
-                   FROM (SELECT {string.Join(", ", SqlColumnNames.Select(scn => $"`er`.`{scn}`"))}, `er`.`{EnergyResultColumnNames.AggregationLevel}`, `cs`.`{BasisDataCalculationsColumnNames.Version}`
-                   FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} er
-                   INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                   ON er.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                   WHERE {GenerateLatestOrFixedCalculationTypeWhereClause()}) erv
-                   INNER JOIN (SELECT max({BasisDataCalculationsColumnNames.Version}) AS max_version, {EnergyResultColumnNames.Time} AS max_time, {string.Join(", ", ColumnsToGroupBy.Select(ctgb => $"{ctgb} AS max_{ctgb}"))}
-                   FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} er
-                   INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-                   ON er.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId}
-                   {_whereClauseProvider.GetWhereClauseSqlExpression(_parameters, "er")} AND {GenerateLatestOrFixedCalculationTypeWhereClause()}
-                   GROUP BY {EnergyResultColumnNames.Time}, {string.Join(", ", ColumnsToGroupBy)}) maxver
-                   ON erv.{EnergyResultColumnNames.Time} = maxver.max_time AND erv.{BasisDataCalculationsColumnNames.Version} = maxver.max_version AND {string.Join(" AND ", ColumnsToGroupBy.Select(ctgb => $"coalesce(erv.{ctgb}, 'is_null_value') = coalesce(maxver.max_{ctgb}, 'is_null_value')"))}
-                   {_whereClauseProvider.GetWhereClauseSqlExpression(_parameters, "erv")}
-                   """;
-
-        // The order is important for combining the rows into packages, since the sql rows are streamed and packages
-        // are created on-the-fly each time a new row is received.
-        sql += $"""
-                ORDER BY {string.Join(", ", ColumnsToGroupBy)}, {EnergyResultColumnNames.Time};
+        /*
+         * SELECT em.A, em.B, em.C, ...
+         * FROM (SomeQuery) em
+         * INNER JOIN (SomeOtherQuery) pckg
+         * ON em.A = pckg.A AND em.B = pckg.B AND ...
+         * ORDER BY em.A, em.B, ...
+         */
+        return $"""
+                SELECT {_querySnippetProvider.GetProjection(EnergyMeasurementTableName)}
+                FROM ({GetEnergyMeasurementsToChooseFrom()}) {EnergyMeasurementTableName}
+                INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
+                ON {MatchEnergyMeasurementsWithPackages(EnergyMeasurementTableName, PackagesWithVersionTableName)}
+                ORDER BY {_querySnippetProvider.GetOrdering(EnergyMeasurementTableName)}
                 """;
-
-        return sql;
     }
 
-    private string GenerateLatestOrFixedCalculationTypeWhereClause()
+    private string GetEnergyMeasurementsToChooseFrom()
     {
-        if (_parameters.CalculationType is not null)
-        {
-            return $"""
-                    er.{WholesaleResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_parameters.CalculationType.Value)}'
-                    """;
-        }
-
-        if (_calculationTypePerGridAreas.IsNullOrEmpty())
-        {
-            return """
-                   FALSE
-                   """;
-        }
-
-        var calculationTypePerGridAreaConstraints = _calculationTypePerGridAreas
-            .Select(ctpga => $"""
-                              (er.{WholesaleResultColumnNames.GridArea} = '{ctpga.GridArea}' AND er.{WholesaleResultColumnNames.CalculationType} = '{ctpga.CalculationType}')
-                              """);
-
-        return $"({string.Join(" OR ", calculationTypePerGridAreaConstraints)})";
+        /*
+         * SELECT er.A, er.B, er.C, ...
+         * FROM Source er
+         * WHERE (SomeConditions) AND (SomeOtherConditions)
+         */
+        return $"""
+                SELECT {_querySnippetProvider.GetProjection(EnergyResultTableName)}
+                FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
+                WHERE {_querySnippetProvider.GetSelection(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GetLatestOrFixedCalculationTypeSelection(EnergyResultTableName, _calculationTypePerGridAreas)}
+                """;
     }
 
-    /// <summary>
-    /// Since results are streamed and packages are created on-the-fly, the data need to be ordered so that
-    ///     all rows belonging to one package are ordered directly after one another.
-    /// </summary>
-    public static string[] ColumnsToGroupBy =>
-    [
-        EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.TimeSeriesType,
-    ];
+    private string GetMaxVersionForEachPackage()
+    {
+        /*
+         * SELECT max(er.calculation_version) AS max_version, er.time AS max_time, er.A AS max_A, ...
+         * FROM Source er
+         * WHERE (SomeConditions) AND (SomeOtherConditions)
+         * GROUP BY er.time, er.A, ...
+         */
+        return $"""
+                SELECT max({EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()}) AS max_version, {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} AS max_time, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctgb => $"{EnergyResultTableName}.{ctgb} AS max_{ctgb}"))}
+                FROM {_querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions)} {EnergyResultTableName}
+                WHERE {_querySnippetProvider.GetSelection(EnergyResultTableName, _timeSeriesType)} AND {_querySnippetProvider.GetLatestOrFixedCalculationTypeSelection(EnergyResultTableName, _calculationTypePerGridAreas)}
+                GROUP BY {EnergyResultTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}, {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{EnergyResultTableName}.{ctab}"))}
+                """;
+    }
 
-    private static string[] SqlColumnNames { get; } =
-    [
-        EnergyResultColumnNames.CalculationId,
-        EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.NeighborGridArea,
-        EnergyResultColumnNames.TimeSeriesType,
-        EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId,
-        EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity,
-        EnergyResultColumnNames.QuantityQualities,
-        EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.CalculationType,
-        EnergyResultColumnNames.Resolution,
-    ];
+    private string MatchEnergyMeasurementsWithPackages(string energyMeasurementPrefix, string packagesPrefix)
+    {
+        /*
+         * em.time = pckg.max_time
+         * AND em.calculation_version = pckg.max_version
+         * AND coalesce(em.A, 'is_null_value') = coalesce(pckg.max_A, 'is_null_value') AND ...
+         */
+        return $"""
+                {energyMeasurementPrefix}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()} = {packagesPrefix}.max_time
+                AND {energyMeasurementPrefix}.{_querySnippetProvider.DatabricksContract.GetCalculationVersionColumnName()} = {packagesPrefix}.max_version
+                AND {string.Join(" AND ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"coalesce({energyMeasurementPrefix}.{ctab}, 'is_null_value') = coalesce({packagesPrefix}.max_{ctab}, 'is_null_value')"))}
+                """;
+    }
 }
