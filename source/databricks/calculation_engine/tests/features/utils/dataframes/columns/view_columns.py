@@ -55,6 +55,7 @@ class ViewColumns:
         return ViewColumns.columns.get(column_name)
 
     # Column names and types in alphabetical order
+    aggregation_level = Column("aggregation_level", StringType())
     amount = Column("amount", DecimalType(18, 6))
     balance_responsible_party_id = Column("balance_responsible_party_id", StringType())
     calculation_id = Column("calculation_id", StringType())
