@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -76,12 +77,44 @@ public class AggregatedTimeSeriesQueries(
                                (currentRow, previousRow) =>
                                    querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy()
                                        .Any(column => currentRow[column] != previousRow[column])
-                                   || currentRow[calculationIdColumnName] != previousRow[calculationIdColumnName],
+                                   || currentRow[calculationIdColumnName] != previousRow[calculationIdColumnName]
+                                   || !ResultStartEqualsPreviousResultEnd(currentRow, previousRow, querySnippetProvider.DatabricksContract),
                                EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
                                sqlStatement))
             {
                 yield return aggregatedTimeSeries;
             }
         }
+    }
+
+    /// <summary>
+    /// Checks if the current result follows the previous result based on time and resolution.
+    /// </summary>
+    private bool ResultStartEqualsPreviousResultEnd(
+        DatabricksSqlRow currentResult,
+        DatabricksSqlRow previousResult,
+        IAggregatedTimeSeriesDatabricksContract databricksContract)
+    {
+        var endTimeFromPreviousResult = GetEndTimeOfPreviousResult(previousResult, databricksContract);
+        var startTimeFromCurrentResult = SqlResultValueConverters
+            .ToDateTimeOffset(currentResult[databricksContract.GetTimeColumnName()])!.Value;
+
+        // The start time of the current result should be the same as the end time of the previous result if the result is in sequence with the previous result.
+        return endTimeFromPreviousResult == startTimeFromCurrentResult;
+    }
+
+    private DateTimeOffset GetEndTimeOfPreviousResult(
+        DatabricksSqlRow previousResult,
+        IAggregatedTimeSeriesDatabricksContract databricksContract)
+    {
+        var resolutionOfPreviousResult = ResolutionMapper
+            .FromDeltaTableValue(previousResult[databricksContract.GetResolutionColumnName()]!);
+
+        var startTimeOfPreviousResult = SqlResultValueConverters
+            .ToDateTimeOffset(previousResult[databricksContract.GetTimeColumnName()])!.Value;
+
+        return PeriodHelper.GetDateTimeWithResolutionOffset(
+            resolutionOfPreviousResult,
+            startTimeOfPreviousResult);
     }
 }
