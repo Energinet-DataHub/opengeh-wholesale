@@ -22,23 +22,10 @@ import pytest
 from package.common.logger import Logger
 
 
-def get_spark_session() -> SparkSession:
-    session = (
-        SparkSession.builder.master("local")
-        .appName("test_optimisation")
-        .config("spark.default.parallelism", 1)
-        .config("spark.driver.memory", "2g")
-        .config("spark.executor.memory", "2g")
-        .config("hive.metastore.disallow.incompatible.col.type.changes", "false")
-        .getOrCreate()
-    )
-
-    return session
-
-
-def test__optimize_is_in_history_of_delta_table(spark: SparkSession) -> None:
+def test__optimize_table_optimize_is_in_history_of_delta_table(
+    spark: SparkSession,
+) -> None:
     # Arrange
-    # spark = get_spark_session()
     database_name = "test_database"
     table_name = "test_table"
     table_location = "/tmp/test"
