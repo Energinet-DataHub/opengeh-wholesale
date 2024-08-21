@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
@@ -83,7 +82,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
                     """;
         }
 
-        if (calculationTypePerGridAreas.IsNullOrEmpty())
+        if (calculationTypePerGridAreas.Count <= 0)
         {
             return """
                    FALSE
