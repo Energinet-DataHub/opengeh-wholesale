@@ -75,7 +75,7 @@ def test__optimize_is_in_history_of_delta_table(spark: SparkSession) -> None:
     )
 
     # Act
-    optimize_table(spark, database_name, table_name, logger)
+    _optimize_table(spark, database_name, table_name, logger)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
