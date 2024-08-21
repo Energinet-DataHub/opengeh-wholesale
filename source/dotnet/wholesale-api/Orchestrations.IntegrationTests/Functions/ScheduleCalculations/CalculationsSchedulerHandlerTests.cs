@@ -79,6 +79,9 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         var alreadyStartedCalculation = CreateCalculation(scheduledToRunAt);
         alreadyStartedCalculation.MarkAsStarted();
 
+        var canceledCalculation = CreateCalculation(scheduledToRunAt);
+        canceledCalculation.MarkAsCanceled(Guid.NewGuid());
+
         await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
         {
             var repository = new CalculationRepository(writeDbContext);
@@ -86,6 +89,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             await repository.AddAsync(expectedCalculation);
             await repository.AddAsync(futureCalculation);
             await repository.AddAsync(alreadyStartedCalculation);
+            await repository.AddAsync(canceledCalculation);
 
             await writeDbContext.SaveChangesAsync();
         }
@@ -101,10 +105,9 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.Is<string>(id => id == expectedInstanceId.Id),
                 It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((OrchestrationMetadata?)null)
-            .Verifiable(Times.Exactly(1));
+            .ReturnsAsync((OrchestrationMetadata?)null);
 
-        // => Setup and verify that ScheduleNewOrchestrationInstanceAsync is called only once with
+        // => Setup that ScheduleNewOrchestrationInstanceAsync can be called with
         // the expected calculation id and instance id
         durableTaskClient
             .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
@@ -112,8 +115,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == expectedCalculation.Id),
                 It.Is<StartOrchestrationOptions>(o => o.InstanceId == expectedInstanceId.Id),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedInstanceId.Id)
-            .Verifiable(Times.Exactly(1));
+            .ReturnsAsync(expectedInstanceId.Id);
 
         var calculationSchedulerHandler = new CalculationSchedulerHandler(
             schedulerLogger.Object,
@@ -127,8 +129,25 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
         // Assert
-        // => Verify the durableTaskClient setups in the Arrange section
-        durableTaskClient.Verify();
+        // => Verify that GetInstanceAsync was called once to check if the calculation was already started
+        durableTaskClient.Verify(
+            c => c.GetInstanceAsync(
+                It.Is<string>(id => id == expectedInstanceId.Id),
+                It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
+                It.IsAny<CancellationToken>()),
+            Times.Exactly(1));
+
+        // => Verify that ScheduleNewOrchestrationInstanceAsync was called once to start the calculation
+        durableTaskClient
+            .Verify(
+                c => c.ScheduleNewOrchestrationInstanceAsync(
+                    It.Is<TaskName>(taskName => taskName == "CalculationOrchestration"),
+                    It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == expectedCalculation.Id),
+                    It.Is<StartOrchestrationOptions>(o => o.InstanceId == expectedInstanceId.Id),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(1));
+
+        // => Verify that no other calls were made to the durable task client, to ensure no other calculations were started
         durableTaskClient.VerifyNoOtherCalls();
 
         // => Verify that the scheduler never logs an error (since the calculation should be started successfully)
@@ -180,8 +199,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.Is<string>(id => id == expectedInstanceId.Id),
                 It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((OrchestrationMetadata?)null)
-            .Verifiable(Times.Exactly(1));
+            .ReturnsAsync((OrchestrationMetadata?)null);
 
         // => Setup and verify that ScheduleNewOrchestrationInstanceAsync is called only once with
         // the expected calculation id
@@ -191,8 +209,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == expectedCalculation.Id),
                 It.Is<StartOrchestrationOptions>(o => o.InstanceId == expectedInstanceId.Id),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedInstanceId.Id)
-            .Verifiable(Times.Exactly(1));
+            .ReturnsAsync(expectedInstanceId.Id);
 
         var calculationScheduler = new CalculationSchedulerHandler(
             schedulerLogger.Object,
@@ -210,8 +227,26 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         await calculationScheduler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
         // Assert
-        // => Verify the durableTaskClient setups in the Arrange section
-        durableTaskClient.Verify();
+        // => Verify that GetInstanceAsync was called once to check if the calculation was already started
+        durableTaskClient
+            .Verify(
+                c => c.GetInstanceAsync(
+                    It.Is<string>(id => id == expectedInstanceId.Id),
+                    It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(1));
+
+        // => Verify that ScheduleNewOrchestrationInstanceAsync was called once to start the calculation
+        durableTaskClient
+            .Verify(
+                c => c.ScheduleNewOrchestrationInstanceAsync(
+                    It.Is<TaskName>(taskName => taskName == "CalculationOrchestration"),
+                    It.Is<CalculationOrchestrationInput>(i => i.CalculationId.Id == expectedCalculation.Id),
+                    It.Is<StartOrchestrationOptions>(o => o.InstanceId == expectedInstanceId.Id),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(1));
+
+        // => Verify that no other calls were made to the durable task client
         durableTaskClient.VerifyNoOtherCalls();
 
         // => Verify that the scheduler never logs an error (since the calculation should be started successfully)
@@ -252,6 +287,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
 
         await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
 
+        var calculationId = alreadyRunningCalculation.Id;
         var alreadyRunningInstanceId = alreadyRunningCalculation.OrchestrationInstanceId;
 
         // => Setup that the CalculationStarter's call to GetInstanceAsync() returns an OrchestrationMetadata object
@@ -261,17 +297,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.Is<string>(id => id == alreadyRunningInstanceId.Id),
                 It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty))
-            .Verifiable(Times.Exactly(1));
-
-        // => Setup (and verify later) that ScheduleNewOrchestrationInstanceAsync is never called
-        durableTaskClient
-            .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
-                It.IsAny<TaskName>(),
-                It.IsAny<CalculationOrchestrationInput>(),
-                It.IsAny<StartOrchestrationOptions?>(),
-                It.IsAny<CancellationToken>()))
-            .Verifiable(Times.Never);
+            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty));
 
         var calculationSchedulerHandler = new CalculationSchedulerHandler(
             schedulerLogger.Object,
@@ -285,8 +311,16 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
 
         // Assert
-        // => Verify the durableTaskClient setups in the Arrange section
-        durableTaskClient.Verify();
+        // => Verify that GetInstanceAsync was called once to check if the calculation was already started
+        durableTaskClient
+            .Verify(
+                c => c.GetInstanceAsync(
+                    It.Is<string>(id => id == alreadyRunningInstanceId.Id),
+                    It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(1));
+
+        // => Verify that no other calls were made to the durable task client (since the calculation should not be started)
         durableTaskClient.VerifyNoOtherCalls();
 
         // => Verify that the scheduler logs an error (since the calculation should not be started)
@@ -294,64 +328,12 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Error),
                 It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
+                It.Is<It.IsAnyType>((message, type) =>
+                    message.ToString()!.Contains($"Failed to start calculation with id = {calculationId} " +
+                                                 $"and orchestration instance id = {alreadyRunningInstanceId.Id}")),
                 It.IsAny<InvalidOperationException>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Exactly(1));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task Given_CanceledCalculation_When_StartScheduledCalculationsAsync_Then_CalculationNotStarted(
-        Mock<DurableTaskClient> durableTaskClient,
-        Mock<IClock> clock,
-        Mock<ILogger<CalculationSchedulerHandler>> schedulerLogger,
-        Mock<IOptions<CalculationOrchestrationMonitorOptions>> calculationOrchestrationMonitorOptions,
-        Mock<IUserContext<FrontendUser>> userContext)
-    {
-        // Arrange
-        var scheduledToRunAt = Instant.FromUtc(2024, 08, 19, 13, 37);
-
-        // => Setup clock to return the "scheduledToRunAt" value, which means that the expectedCalculation should start now
-        clock.Setup(c => c.GetCurrentInstant())
-            .Returns(scheduledToRunAt);
-
-        var canceledCalculation = CreateCalculation(scheduledToRunAt);
-        canceledCalculation.MarkAsCanceled(Guid.NewGuid());
-
-        await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())
-        {
-            var repository = new CalculationRepository(writeDbContext);
-            await repository.AddAsync(canceledCalculation);
-            await writeDbContext.SaveChangesAsync();
-        }
-
-        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
-
-        // => Setup (and verify later) that ScheduleNewOrchestrationInstanceAsync is never called
-        durableTaskClient
-            .Setup(c => c.ScheduleNewOrchestrationInstanceAsync(
-                It.IsAny<TaskName>(),
-                It.IsAny<CalculationOrchestrationInput>(),
-                It.IsAny<StartOrchestrationOptions?>(),
-                It.IsAny<CancellationToken>()))
-            .Verifiable(Times.Never);
-
-        var calculationSchedulerHandler = new CalculationSchedulerHandler(
-            schedulerLogger.Object,
-            calculationOrchestrationMonitorOptions.Object,
-            clock.Object,
-            userContext.Object,
-            new CalculationRepository(dbContext),
-            new UnitOfWork(dbContext));
-
-        // Act
-        await calculationSchedulerHandler.StartScheduledCalculationsAsync(durableTaskClient.Object);
-
-        // Assert
-        // => Verify the durableTaskClient setups in the Arrange section
-        durableTaskClient.Verify();
-        durableTaskClient.VerifyNoOtherCalls();
     }
 
     [Theory]
@@ -402,8 +384,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 It.Is<string>(id => id == orchestrationInstanceId.Id),
                 It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((OrchestrationMetadata?)null)
-            .Verifiable(Times.Exactly(1));
+            .ReturnsAsync((OrchestrationMetadata?)null);
 
         // Act
         await calculationSchedulerHandler.CancelScheduledCalculationAsync(
@@ -419,8 +400,16 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         canceledCalculation.OrchestrationState.Should().Be(CalculationOrchestrationState.Canceled);
         canceledCalculation.CanceledByUserId.Should().Be(expectedCanceledByUserId);
 
-        // => Verify the durableTaskClient setups in the Arrange section
-        durableTaskClient.Verify();
+        // => Verify that GetInstanceAsync was called once to check if the calculation was already started
+        durableTaskClient
+            .Verify(
+                c => c.GetInstanceAsync(
+                    It.Is<string>(id => id == orchestrationInstanceId.Id),
+                    It.Is<bool>(getInputsAndOutputs => getInputsAndOutputs == false),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(1));
+
+        // => Verify that no other calls were made to the durable task client
         durableTaskClient.VerifyNoOtherCalls();
     }
 
@@ -500,12 +489,11 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         // => Setup that the CalculationSchedulerHandler's call to GetInstanceAsync() returns an OrchestrationMetadata object
         // which indicates that an orchestration has already been started for the calculation
         durableTaskClient.Setup(c => c
-            .GetInstanceAsync(
-                It.Is<string>(instanceId => instanceId == alreadyStartedOrchestrationInstanceId.Id),
-                It.IsAny<bool>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty))
-            .Verifiable(Times.Exactly(1));
+                .GetInstanceAsync(
+                    It.Is<string>(instanceId => instanceId == alreadyStartedOrchestrationInstanceId.Id),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new OrchestrationMetadata(string.Empty, string.Empty));
 
         // Act
         var act = () => calculationSchedulerHandler.CancelScheduledCalculationAsync(
@@ -522,8 +510,16 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
         canceledCalculation.OrchestrationState.Should().Be(CalculationOrchestrationState.Scheduled);
         canceledCalculation.CanceledByUserId.Should().Be(null);
 
-        // => Verify the durableTaskClient setups in the Arrange section
-        durableTaskClient.Verify();
+        // => Verify that GetInstanceAsync was called once to check if the calculation was already started
+        durableTaskClient
+            .Verify(
+                c => c.GetInstanceAsync(
+                    It.Is<string>(instanceId => instanceId == alreadyStartedOrchestrationInstanceId.Id),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(1));
+
+        // => Verify that no other calls were made to the durable task client
         durableTaskClient.VerifyNoOtherCalls();
     }
 
