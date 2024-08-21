@@ -59,7 +59,7 @@ public class WholesaleServicesQueries(
                            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
                            (currentRow, previousRow) => querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
                                                         || currentRow[calculationIdColumn] != previousRow[calculationIdColumn]
-                                                        || !IsNextInSequence(currentRow, previousRow, querySnippetsProvider.DatabricksContract),
+                                                        || !ResultStartEqualsPreviousResultEnd(currentRow, previousRow, querySnippetsProvider.DatabricksContract),
                            WholesaleTimeSeriesPointFactory.Create,
                            sqlStatement))
         {
@@ -94,16 +94,17 @@ public class WholesaleServicesQueries(
     /// <summary>
     /// Checks if the current result follows the previous result based on time and resolution.
     /// </summary>
-    private bool IsNextInSequence(
+    private bool ResultStartEqualsPreviousResultEnd(
         DatabricksSqlRow currentResult,
         DatabricksSqlRow previousResult,
         IWholesaleServicesDatabricksContract databricksContract)
     {
-        var endTimeOfPreviousResult = GetEndTimeOfPreviousResult(previousResult, databricksContract);
-        var timeOfCurrentResult = SqlResultValueConverters
+        var endTimeFromPreviousResult = GetEndTimeOfPreviousResult(previousResult, databricksContract);
+        var startTimeFromCurrentResult = SqlResultValueConverters
             .ToDateTimeOffset(currentResult[databricksContract.GetTimeColumnName()])!.Value;
 
-        return endTimeOfPreviousResult == timeOfCurrentResult;
+        // The start time of the current result should be the same as the end time of the previous result if the result is in sequence with the previous result.
+        return endTimeFromPreviousResult == startTimeFromCurrentResult;
     }
 
     private DateTimeOffset GetEndTimeOfPreviousResult(
