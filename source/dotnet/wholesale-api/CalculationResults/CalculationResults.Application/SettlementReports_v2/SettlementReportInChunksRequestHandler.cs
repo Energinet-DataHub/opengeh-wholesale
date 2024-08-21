@@ -31,10 +31,9 @@ public sealed class SettlementReportInChunksRequestHandler : ISettlementReportIn
         SettlementReportRequestedByActor actorInfo)
     {
         var filesToRequest = new List<SettlementReportFileRequestDto>();
-        foreach (var requestForSingleGridArea in settlementReportFileRequest)
+        foreach (var settlementReportFile in settlementReportFileRequest)
         {
-            // Split the single grid area request into further chunks.
-            await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestForSingleGridArea, actorInfo)
+            await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(settlementReportFile, actorInfo)
                                .ConfigureAwait(false))
             {
                 filesToRequest.Add(splitFileRequest);

@@ -28,7 +28,7 @@ public sealed class ScatterSettlementReportFilesInChunksActivity
         _settlementReportInChunksRequestHandler = settlementReportInChunksRequestHandler;
     }
 
-    [Function(nameof(ScatterSettlementReportFilesActivity))]
+    [Function(nameof(ScatterSettlementReportFilesInChunksActivity))]
     public Task<IEnumerable<SettlementReportFileRequestDto>> Run([ActivityTrigger] ScatterSettlementReportFilesInChunksInput input)
     {
         return _settlementReportInChunksRequestHandler.RequestReportInChunksAsync(input.SettlementReportFileRequest, input.ActorInfo);
