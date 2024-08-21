@@ -24,6 +24,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class PeriodHelper
 {
+    private static readonly DateTimeZone _dkTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+
     public static (Instant Start, Instant End) GetPeriod(IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints, EnergyResultsResolution resolution)
     {
         var start = timeSeriesPoints.Min(x => x.Time);
@@ -52,6 +54,14 @@ public static class PeriodHelper
     {
         WholesaleResolution.Hour => dateTime.AddMinutes(60),
         WholesaleResolution.Day => dateTime.AddDays(1),
-        _ => dateTime.AddMonths(1),
+        _ => AddMonths(dateTime.ToInstant()),
     };
+
+    private static DateTimeOffset AddMonths(Instant dateTime)
+    {
+        var timeForLatestPointInLocalTime = dateTime.InZone(_dkTimeZone).LocalDateTime;
+        var endAtMidnightInLocalTime = timeForLatestPointInLocalTime.PlusMonths(1).Date.AtMidnight();
+        var endAtMidnightInUtc = endAtMidnightInLocalTime.InZoneStrictly(_dkTimeZone);
+        return endAtMidnightInUtc.ToDateTimeOffset();
+    }
 }
