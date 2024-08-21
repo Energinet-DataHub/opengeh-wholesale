@@ -25,6 +25,7 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
+    WHOLESALE_SAP = "wholesale_sap"
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -47,11 +48,23 @@ class InputDatabase:
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 
+class MigrationsWholesaleDatabase:
+    DATABASE_NAME = "shared_wholesale_input"
+    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_view_v1"
+    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_view_v1"
+    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods_view_v1"
+    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = (
+        "charge_price_information_periods_view_v1"
+    )
+    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points_view_v1"
+
+
 class WholesaleInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
     CALCULATIONS_TABLE_NAME = "calculations"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+    CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
 
 
 class WholesaleResultsInternalDatabase:
@@ -70,6 +83,7 @@ class WholesaleResultsInternalDatabase:
 
 class WholesaleResultsDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
+    CALCULATIONS_V1_VIEW_NAME = "calculations_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
@@ -93,6 +107,12 @@ class WholesaleSettlementReportsDatabase:
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
+
+
+class WholesaleSapDatabase:
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SAP
+    LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME = "latest_calculations_history_v1"
+    ENERGY_V1_VIEW_NAME = "energy_v1"
 
 
 class HiveOutputDatabase:

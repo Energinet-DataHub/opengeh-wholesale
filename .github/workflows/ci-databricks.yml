@@ -244,9 +244,9 @@ jobs:
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
           - name: Energy logic
-            paths: features/given_an_energy_calculation
+            paths: features/energy_calculation
           - name: Wholesale logic
-            paths: features/given_a_wholesale_calculation
+            paths: features/wholesale_calculation
           - name: Data products
             paths: features/data_products contracts
           - name: Unit tests
@@ -294,8 +294,6 @@ jobs:
             paths: datamigration/all_hive_scripts
           - name: Current State Scripts
             paths: datamigration/current_state
-          - name: Migration subsystem
-            paths: datamigration/subsystem
           - name: Test Migration scripts
             paths: datamigration/migration_scripts
           - name: Test Unity Catalog
@@ -341,8 +339,8 @@ jobs:
           filter="calculator_job/test_energy_calculation.py
           calculator_job/test_wholesale_calculation.py
           calculator_job/test_start.py
-          features/given_an_energy_calculation
-          features/given_a_wholesale_calculation
+          features/energy_calculation
+          features/wholesale_calculation
           features/data_products
           calculation/
           codelists/
@@ -353,7 +351,6 @@ jobs:
           entry_points/
           datamigration/all_hive_scripts
           datamigration/current_state
-          datamigration/subsystem
           datamigration/migration_scripts
           datamigration/unity_catalog"
 

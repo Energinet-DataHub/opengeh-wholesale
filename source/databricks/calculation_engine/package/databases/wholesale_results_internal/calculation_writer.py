@@ -13,8 +13,10 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import current_timestamp
 
 from package.container import Container
+from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -31,7 +33,12 @@ def write_calculation(
         Container.infrastructure_settings
     ],
 ) -> None:
-    """Writes the succeeded calculation to the calculations table."""
+    """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
+
+    calculations = calculations.withColumn(
+        TableColumnNames.calculation_succeeded_time, current_timestamp()
+    )
+
     calculations.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(
@@ -43,4 +50,21 @@ def write_calculation(
         "mergeSchema", "false"
     ).insertInto(
         f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+    )
+
+
+@logging_configuration.use_span("calculation.write-calculation-grid-areas")
+@inject
+def write_calculation_grid_areas(
+    calculations_grid_areas: DataFrame,
+    infrastructure_settings: InfrastructureSettings = Provide[
+        Container.infrastructure_settings
+    ],
+) -> None:
+    """Writes the calculation grid areas to the calculation grid areas table."""
+
+    calculations_grid_areas.write.format("delta").mode("append").option(
+        "mergeSchema", "false"
+    ).insertInto(
+        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
     )

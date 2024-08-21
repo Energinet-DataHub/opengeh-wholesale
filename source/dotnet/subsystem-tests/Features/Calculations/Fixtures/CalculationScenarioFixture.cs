@@ -121,6 +121,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             "application/json");
 
         using var actualResponse = await WholesaleOrchestrationsApiClient.SendAsync(request);
+        actualResponse.EnsureSuccessStatusCode();
         var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
@@ -144,14 +145,15 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             {
                 calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
                 return
-                    calculation?.ExecutionState is CalculationState.Completed
-                    or CalculationState.Failed;
+                    calculation != null && (
+                        calculation.OrchestrationState.IsCalculationJobCompleted() ||
+                        calculation.OrchestrationState is CalculationOrchestrationState.CalculationFailed);
             },
             waitTimeLimit,
             delay);
 
         DiagnosticMessageSink.WriteDiagnosticMessage(
-            $"Wait for calculation with id '{calculationId}' to be completed/failed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
+            $"Wait for calculation with id '{calculationId}' to be completed/failed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
 
         return (isCompletedOrFailed, calculation);
     }
@@ -271,7 +273,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         {
             try
             {
-                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {item.ModelName}.{item.TableName} LIMIT 1");
+                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {Configuration.DatabricksCatalogName}.{item.ModelName}.{item.TableName} LIMIT 1");
                 var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
                 var list = await queryResult.ToListAsync();
                 if (list.Count == 0)

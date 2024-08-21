@@ -51,8 +51,8 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementHelperFactory>();
-        services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesQuerySnippetProviderFactory>();
+        services.AddScoped<AggregatedTimeSeriesQuerySnippetProviderFactory>();
         services
             .AddScoped<IWholesaleServicesDatabricksContract,
                 AmountsPerChargeWholesaleServicesDatabricksContract>();
@@ -124,8 +124,8 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<WholesaleServicesQueryStatementHelperFactory>();
-        services.AddScoped<AggregatedTimeSeriesQueryStatementWhereClauseProvider>();
+        services.AddScoped<WholesaleServicesQuerySnippetProviderFactory>();
+        services.AddScoped<AggregatedTimeSeriesQuerySnippetProviderFactory>();
         services
             .AddScoped<IWholesaleServicesDatabricksContract,
                 AmountsPerChargeWholesaleServicesDatabricksContract>();

@@ -71,7 +71,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             Colname.to_grid_area_code: "",
             Colname.parent_metering_point_id: "parent-metering-point-id",
             Colname.energy_supplier_id: "someId",
-            Colname.balance_responsible_id: "someId",
+            Colname.balance_responsible_party_id: "someId",
             Colname.from_date: from_date,
             Colname.to_date: to_date,
         }

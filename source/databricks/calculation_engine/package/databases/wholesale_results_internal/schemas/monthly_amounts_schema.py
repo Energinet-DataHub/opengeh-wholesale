@@ -22,9 +22,6 @@ from pyspark.sql.types import (
 )
 
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.monthly_amounts_column_names import (
-    MonthlyAmountsColumnNames,
-)
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 monthly_amounts_schema_uc = StructType(
@@ -45,24 +42,22 @@ monthly_amounts_schema_uc = StructType(
 
 hive_monthly_amounts_schema = StructType(
     [
-        StructField(MonthlyAmountsColumnNames.calculation_id, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.calculation_type, StringType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.calculation_type, StringType(), False),
         StructField(
-            MonthlyAmountsColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             TimestampType(),
             False,
         ),
-        StructField(
-            MonthlyAmountsColumnNames.calculation_result_id, StringType(), False
-        ),
-        StructField(MonthlyAmountsColumnNames.grid_area_code, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.energy_supplier_id, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.quantity_unit, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.time, TimestampType(), False),
-        StructField(MonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
-        StructField(MonthlyAmountsColumnNames.is_tax, BooleanType(), False),
-        StructField(MonthlyAmountsColumnNames.charge_code, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.charge_type, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.charge_owner_id, StringType(), False),
+        StructField(TableColumnNames.calculation_result_id, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), False),
+        StructField(TableColumnNames.quantity_unit, StringType(), False),
+        StructField(TableColumnNames.time, TimestampType(), False),
+        StructField(TableColumnNames.amount, DecimalType(18, 6), True),
+        StructField(TableColumnNames.is_tax, BooleanType(), False),
+        StructField(TableColumnNames.charge_code, StringType(), False),
+        StructField(TableColumnNames.charge_type, StringType(), False),
+        StructField(TableColumnNames.charge_owner_id, StringType(), False),
     ]
 )

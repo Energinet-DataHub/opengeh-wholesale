@@ -24,14 +24,17 @@ using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults(worker =>
+    .ConfigureFunctionsWebApplication(builder =>
     {
+        // Http => Authorization
+        builder.UseFunctionsAuthorization();
         // Http => Authentication
-        worker.UseUserMiddlewareForIsolatedWorker<FrontendUser>();
+        builder.UseUserMiddlewareForIsolatedWorker<FrontendUser>();
     })
     .ConfigureServices((context, services) =>
     {
@@ -40,7 +43,9 @@ var host = new HostBuilder()
         services.AddHealthChecksForIsolatedWorker();
 
         // Http => Authentication
-        services.AddUserAuthenticationForIsolatedWorker<FrontendUser, FrontendUserProvider>();
+        services
+            .AddJwtBearerAuthenticationForIsolatedWorker(context.Configuration)
+            .AddUserAuthenticationForIsolatedWorker<FrontendUser, FrontendUserProvider>();
 
         // Shared by modules
         services.AddNodaTimeForApplication();
@@ -55,10 +60,13 @@ var host = new HostBuilder()
             .AddInboxSubscription()
             .AddCalculationOrchestrationInboxRequestHandler();
 
+        // Calculation scheduler
+        services.AddCalculationScheduler();
+
         // Modules
         services.AddEdiModule(); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
         services.AddCalculationsModule(context.Configuration);
-        services.AddCalculationsOrchestrationModule(context.Configuration);
+        services.AddCalculationEngineModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);
     })
     .ConfigureLogging((hostingContext, logging) =>

@@ -5,57 +5,78 @@ wholesaleSubsystem = group "Wholesale" {
         description "Calculation inputs and results"
         technology "Azure Data Lake Gen 2"
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
-    }
-    wholesaleBlobStorage = container "Settlement Report Blob Storage" {
-        description "Contains (drafts of) settlement reports"
-        technology "Azure Blob Storage"
-        tags "Data Storage" "Raccoons"
-    }
-    wholesaleCalculator = container "Calculation Engine" {
-        description "Executes calculation job"
-        technology "Azure Databricks"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
-        # Subsystem relationships
-        this -> wholesaleDataLake "Read inputs / write results"
+        # Relations to shared
+        dh3.sharedUnityCatalog -> this "Read data / write data"
     }
-    wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
-        description "Executes delta SQL migrations"
-        technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
-        # Subsystem relationships
-        this -> wholesaleDataLake "Read executed migrations / execute new migrations"
-    }
-    wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
-        description "Executes delta SQL queries"
-        technology "Azure Databricks SQL Warehouse"
-        tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+    wholesaleDatabricksWorkspace = group "Databricks Workspace" {
+        wholesaleCalculatorJob = container "Calculator Job" {
+            description "Executes calculations"
+            technology "Azure Databricks"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
-        # Subsystem relationships
-        this -> wholesaleDataLake "Read basis data and results"
-        edi -> this "Read calculation results and active data"
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read inputs / write results"
+            this -> wholesaleDataLake "Read inputs / write results" {
+                tags "Simple View"
+            }
+        }
+        wholesaleMigrationJob = container "Migration Job" {
+            description "Executes delta migrations (invoked during deployment)"
+            technology "Azure Databricks"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian"
+
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Migrate database objects and data"
+            this -> wholesaleDataLake "Read inputs / write results" {
+                tags "Simple View"
+            }
+        }
+        wholesaleDeploymentWarehouse = container "Deployment Warehouse" {
+            description "Executes delta SQL migrations"
+            technology "Azure Databricks SQL Warehouse"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Intermediate Technology"
+
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read/write executed migrations"
+        }
+        wholesaleRuntimeWarehouse = container "Runtime Warehouse" {
+            description "Executes delta SQL queries (also used by EDI)"
+            technology "Azure Databricks SQL Warehouse"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Mosaic" "Intermediate Technology"
+
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read results"
+        }
+        settlementReportsWarehouse = container "Settlement Reports Warehouse" {
+            description "Executes delta SQL queries"
+            technology "Azure Databricks SQL Warehouse"
+            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Intermediate Technology"
+
+            # Subsystem relationships
+            this -> dh3.sharedUnityCatalog "Read basis data and results"
+        }
     }
+
     wholesaleDb = container "Wholesale Database" {
         description "Meta data of calculations"
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
+
     wholesaleApi = container "Wholesale API" {
         description "Backend server providing external web API for Wholesale subsystem"
         technology "Asp.Net Core Web API"
         tags "Microsoft Azure - App Services" "Mandalorian" "MarketParticipant Subscriber"
 
         # Base model relationships
-        dh3.sharedServiceBus -> this "Subscribes to Integration Events" "integration event/amqp"
-        this -> dh3.sharedServiceBus "Sends to EDI Inbox" "message/amqp"
+        this -> dh3.sharedServiceBus "Subscribes to integration events" "integration event/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleRuntimeWarehouse "Retrieves results from"
-
-        # Subsystem-to-Subsystem relationships
-        markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+        this -> wholesaleDataLake "Retrieves results from" {
             tags "Simple View"
         }
     }
@@ -65,19 +86,13 @@ wholesaleSubsystem = group "Wholesale" {
         tags "Microsoft Azure - Function Apps" "Mandalorian"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "Publish calculation completed and grid loss" "integration event/amqp"
+        this -> dh3.sharedServiceBus "Listens on Wholesale Inbox queue" "message/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
-        this -> wholesaleCalculator "Sends requests to"
+        this -> wholesaleCalculatorJob "Invokes"
         this -> wholesaleRuntimeWarehouse "Retrieves results from"
-        this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
-
-        # Subsystem-to-Subsystem relationships
-        edi -> this "Sends to Wholesale Inbox" "message/amqp" {
-            tags "Simple View"
-        }
-        this -> edi "Publish calculation completed and sends to EDI Inbox" "message/amqp" {
+        this -> wholesaleDataLake "Retrieves results from" {
             tags "Simple View"
         }
     }

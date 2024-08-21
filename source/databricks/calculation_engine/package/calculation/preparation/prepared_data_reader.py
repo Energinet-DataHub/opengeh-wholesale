@@ -30,24 +30,23 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.codelists import ChargeResolution, CalculationType
-from package.databases.migrations_wholesale import TableReader
-from package.databases.wholesale_internal.calculation_column_names import (
-    CalculationColumnNames,
-)
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from . import transformations as T
+from .data_structures import ChargePrices, ChargePriceInformation
 from ...constants import Colname
 from ...databases import wholesale_internal
+from ...databases.table_column_names import TableColumnNames
 from ...infrastructure import logging_configuration
 
 
 class PreparedDataReader:
     def __init__(
         self,
-        delta_table_reader: TableReader,
-        wholesale_internal_table_reader: wholesale_internal.TableReader,
+        migrations_wholesale_repository: MigrationsWholesaleRepository,
+        wholesale_internal_repository: wholesale_internal.WholesaleInternalRepository,
     ) -> None:
-        self._table_reader = delta_table_reader
-        self._wholesale_internal_table_reader = wholesale_internal_table_reader
+        self._migrations_wholesale_repository = migrations_wholesale_repository
+        self._wholesale_internal_repository = wholesale_internal_repository
 
     @logging_configuration.use_span("get_metering_point_periods")
     def get_metering_point_periods_df(
@@ -57,7 +56,7 @@ class PreparedDataReader:
         grid_areas: list[str],
     ) -> DataFrame:
         return T.get_metering_point_periods_df(
-            self._table_reader,
+            self._migrations_wholesale_repository,
             period_start_datetime,
             period_end_datetime,
             grid_areas,
@@ -68,7 +67,7 @@ class PreparedDataReader:
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
         return T.get_grid_loss_responsible(
-            grid_areas, metering_point_periods_df, self._wholesale_internal_table_reader
+            grid_areas, metering_point_periods_df, self._wholesale_internal_repository
         )
 
     @logging_configuration.use_span("get_metering_point_time_series")
@@ -79,7 +78,9 @@ class PreparedDataReader:
         metering_point_periods_df_without_grid_loss: DataFrame,
     ) -> PreparedMeteringPointTimeSeries:
         time_series_points_df = T.get_time_series_points(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
         return T.get_metering_point_time_series(
             time_series_points_df,
@@ -91,23 +92,68 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
+        metering_point_ids: DataFrame,
     ) -> InputChargesContainer:
         charge_price_information = T.read_charge_price_information(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
 
         charge_prices = T.read_charge_prices(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
         )
 
         charge_links = T.read_charge_links(
-            self._table_reader, period_start_datetime, period_end_datetime
+            self._migrations_wholesale_repository,
+            period_start_datetime,
+            period_end_datetime,
+        )
+
+        # The list of charge_links, charge_prices and change information contains data from all metering point periods in all grid areas.
+        # This method ensures we only get charge data from metering points in grid areas from the calculation arguments.
+        charge_links, charge_price_information, charge_prices = (
+            self._get_charges_filtered_by_grid_area(
+                charge_links,
+                charge_price_information,
+                charge_prices,
+                metering_point_ids,
+            )
         )
 
         return InputChargesContainer(
             charge_price_information=charge_price_information,
             charge_prices=charge_prices,
             charge_links=charge_links,
+        )
+
+    def _get_charges_filtered_by_grid_area(
+        self,
+        charge_links: DataFrame,
+        charge_price_information: ChargePriceInformation,
+        charge_prices: ChargePrices,
+        metering_point_ids: DataFrame,
+    ) -> tuple[DataFrame, ChargePriceInformation, ChargePrices]:
+        charge_links = charge_links.join(
+            metering_point_ids, Colname.metering_point_id, "inner"
+        )
+        change_keys = charge_links.select(Colname.charge_key).distinct()
+        charge_prices_df = charge_prices.df.join(
+            change_keys,
+            Colname.charge_key,
+            "inner",
+        )
+        charge_price_information_df = charge_price_information.df.join(
+            change_keys,
+            Colname.charge_key,
+            "inner",
+        )
+        return (
+            charge_links,
+            ChargePriceInformation(charge_price_information_df),
+            ChargePrices(charge_prices_df),
         )
 
     def get_prepared_charges(
@@ -165,7 +211,7 @@ class PreparedDataReader:
     ) -> DataFrame:
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
-            self._wholesale_internal_table_reader.read_grid_loss_metering_points(),
+            self._wholesale_internal_repository.read_grid_loss_metering_points(),
             Colname.metering_point_id,
             "left_anti",
         )
@@ -175,14 +221,18 @@ class PreparedDataReader:
     ) -> int | None:
         """Returns the latest used version for the selected calculation type or None."""
 
-        calculations = self._wholesale_internal_table_reader.read_calculations()
+        calculations = self._wholesale_internal_repository.read_calculations()
 
         latest_version = (
             calculations.where(
-                f.col(CalculationColumnNames.calculation_type) == calculation_type.value
+                f.col(TableColumnNames.calculation_type) == calculation_type.value
             )
-            .agg(f.max(CalculationColumnNames.version).alias("version"))
-            .collect()[0]["version"]
+            .agg(
+                f.max(TableColumnNames.calculation_version).alias(
+                    TableColumnNames.calculation_version
+                )
+            )
+            .collect()[0][TableColumnNames.calculation_version]
         )
 
         return latest_version

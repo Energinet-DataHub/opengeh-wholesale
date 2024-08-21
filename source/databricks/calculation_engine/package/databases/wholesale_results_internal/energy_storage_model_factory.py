@@ -17,16 +17,16 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResults,
+)
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
-from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 
 
 def create(
@@ -56,11 +56,9 @@ def _add_aggregation_level_and_time_series_type(
     time_series_type: TimeSeriesType,
 ) -> DataFrame:
     return results.withColumn(
-        EnergyResultColumnNames.aggregation_level,
+        TableColumnNames.aggregation_level,
         f.lit(aggregation_level.value),
-    ).withColumn(
-        EnergyResultColumnNames.time_series_type, f.lit(time_series_type.value)
-    )
+    ).withColumn(TableColumnNames.time_series_type, f.lit(time_series_type.value))
 
 
 def _get_column_group_for_calculation_result_id() -> list[str]:
@@ -76,7 +74,7 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     return [
         Colname.grid_area_code,
         Colname.from_grid_area_code,
-        Colname.balance_responsible_id,
+        Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
     ]
 
@@ -87,27 +85,25 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
     Note: The order of the columns must match the order of the columns in the Delta table
     """
     return results.select(
-        f.col(Colname.grid_area_code).alias(EnergyResultColumnNames.grid_area_code),
-        f.col(Colname.energy_supplier_id).alias(
-            EnergyResultColumnNames.energy_supplier_id
-        ),
-        f.col(Colname.balance_responsible_id).alias(
-            EnergyResultColumnNames.balance_responsible_id
+        f.col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
+        f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
+        f.col(Colname.balance_responsible_party_id).alias(
+            TableColumnNames.balance_responsible_id
         ),
         f.col(Colname.quantity)
-        .alias(EnergyResultColumnNames.quantity)
+        .alias(TableColumnNames.quantity)
         .cast(DecimalType(18, 3)),
-        f.col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
-        f.col(Colname.observation_time).alias(EnergyResultColumnNames.time),
-        f.col(EnergyResultColumnNames.aggregation_level),
-        f.col(EnergyResultColumnNames.time_series_type),
-        f.col(EnergyResultColumnNames.calculation_id),
-        f.col(EnergyResultColumnNames.calculation_type),
-        f.col(EnergyResultColumnNames.calculation_execution_time_start),
+        f.col(Colname.qualities).alias(TableColumnNames.quantity_qualities),
+        f.col(Colname.observation_time).alias(TableColumnNames.time),
+        f.col(TableColumnNames.aggregation_level),
+        f.col(TableColumnNames.time_series_type),
+        f.col(TableColumnNames.calculation_id),
+        f.col(TableColumnNames.calculation_type),
+        f.col(TableColumnNames.calculation_execution_time_start),
         f.col(Colname.from_grid_area_code).alias(
-            EnergyResultColumnNames.neighbor_grid_area_code
+            TableColumnNames.neighbor_grid_area_code
         ),
-        f.col(EnergyResultColumnNames.calculation_result_id),
-        f.col(EnergyResultColumnNames.metering_point_id),
-        f.col(EnergyResultColumnNames.resolution),
+        f.col(TableColumnNames.calculation_result_id),
+        f.col(TableColumnNames.metering_point_id),
+        f.col(TableColumnNames.resolution),
     )

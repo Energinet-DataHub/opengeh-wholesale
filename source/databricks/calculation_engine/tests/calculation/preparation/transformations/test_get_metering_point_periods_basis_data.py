@@ -15,12 +15,11 @@
 from pyspark.sql import SparkSession, Row
 
 from calculation.preparation.transformations import metering_point_periods_factory
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal import (
     get_metering_point_periods_basis_data,
 )
-from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    MeteringPointPeriodColname,
-)
+
 from package.databases.wholesale_basis_data_internal.schemas import (
     hive_metering_point_period_schema,
 )
@@ -70,19 +69,19 @@ def test__each_metering_point_has_a_row(spark: SparkSession) -> None:
 def test__columns_have_expected_values(spark: SparkSession) -> None:
     # Arrange
     expected_dict = {
-        MeteringPointPeriodColname.calculation_id: "some-calculation-id",
-        MeteringPointPeriodColname.metering_point_id: metering_point_periods_factory.DEFAULT_METERING_POINT_ID,
-        MeteringPointPeriodColname.metering_point_type: metering_point_periods_factory.DEFAULT_METERING_POINT_TYPE.value,
-        MeteringPointPeriodColname.settlement_method: metering_point_periods_factory.DEFAULT_SETTLEMENT_METHOD.value,
-        MeteringPointPeriodColname.grid_area_code: metering_point_periods_factory.DEFAULT_GRID_AREA,
-        MeteringPointPeriodColname.resolution: metering_point_periods_factory.DEFAULT_RESOLUTION.value,
-        MeteringPointPeriodColname.from_grid_area_code: metering_point_periods_factory.DEFAULT_FROM_GRID_AREA,
-        MeteringPointPeriodColname.to_grid_area_code: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
-        MeteringPointPeriodColname.parent_metering_point_id: metering_point_periods_factory.DEFAULT_PARENT_METERING_POINT_ID,
-        MeteringPointPeriodColname.energy_supplier_id: metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
-        MeteringPointPeriodColname.balance_responsible_id: metering_point_periods_factory.DEFAULT_BALANCE_RESPONSIBLE_ID,
-        MeteringPointPeriodColname.from_date: metering_point_periods_factory.DEFAULT_FROM_DATE,
-        MeteringPointPeriodColname.to_date: metering_point_periods_factory.DEFAULT_TO_DATE,
+        TableColumnNames.calculation_id: "some-calculation-id",
+        TableColumnNames.metering_point_id: metering_point_periods_factory.DEFAULT_METERING_POINT_ID,
+        TableColumnNames.metering_point_type: metering_point_periods_factory.DEFAULT_METERING_POINT_TYPE.value,
+        TableColumnNames.settlement_method: metering_point_periods_factory.DEFAULT_SETTLEMENT_METHOD.value,
+        TableColumnNames.grid_area_code: metering_point_periods_factory.DEFAULT_GRID_AREA,
+        TableColumnNames.resolution: metering_point_periods_factory.DEFAULT_RESOLUTION.value,
+        TableColumnNames.from_grid_area_code: metering_point_periods_factory.DEFAULT_FROM_GRID_AREA,
+        TableColumnNames.to_grid_area_code: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
+        TableColumnNames.parent_metering_point_id: metering_point_periods_factory.DEFAULT_PARENT_METERING_POINT_ID,
+        TableColumnNames.energy_supplier_id: metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
+        TableColumnNames.balance_responsible_id: metering_point_periods_factory.DEFAULT_BALANCE_RESPONSIBLE_ID,
+        TableColumnNames.from_date: metering_point_periods_factory.DEFAULT_FROM_DATE,
+        TableColumnNames.to_date: metering_point_periods_factory.DEFAULT_TO_DATE,
     }
     expected = Row(**expected_dict)
 

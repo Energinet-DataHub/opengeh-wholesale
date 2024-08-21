@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -25,66 +27,61 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class AggregatedTimeSeriesQueries(
     DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-    AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
+    AggregatedTimeSeriesQuerySnippetProviderFactory querySnippetProviderFactory,
     IOptions<DeltaTableOptions> deltaTableOptions)
-    : QueriesBaseClass(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
+    : RequestQueriesBase(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
-    private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
+    private readonly AggregatedTimeSeriesQuerySnippetProviderFactory _querySnippetProviderFactory = querySnippetProviderFactory;
     private readonly IOptions<DeltaTableOptions> _deltaTableOptions = deltaTableOptions;
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var calculationTypePerGridAreas =
-            await GetCalculationTypeForGridAreasAsync(
-                    EnergyResultColumnNames.GridArea,
-                    EnergyResultColumnNames.CalculationType,
-                    new AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
-                        _deltaTableOptions.Value,
-                        _whereClauseProvider,
-                        parameters),
-                    parameters.CalculationType)
-                .ConfigureAwait(false);
-
-        var sqlStatement = new AggregatedTimeSeriesQueryStatement(
-            parameters,
-            calculationTypePerGridAreas,
-            _whereClauseProvider,
-            _deltaTableOptions.Value);
-
-        await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
-                           AggregatedTimeSeriesFactory.Create,
-                           (currentRow, previousRow) =>
-                               AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column =>
-                                   currentRow[column] != previousRow[column])
-                               || currentRow[EnergyResultColumnNames.CalculationId] !=
-                               previousRow[EnergyResultColumnNames.CalculationId],
-                           EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
-                           sqlStatement))
+        /*
+         * We retain the usage of 'TimeSeriesType' here, to reduce the number of changes required.
+         * However, it is worth noting that the 'TimeSeriesType' is not used in the query per se,
+         * but rather translated to 'MeteringPointType' and 'SettlementMethod',
+         * as these are the proper values used in the raw data (and from the request from EDI).
+         * The reason for this is the existence of logic wrt validation and determination of "all types for an actor role"
+         * in the reception of the request from EDI that would have to be reimplemented to avoid using 'TimeSeriesType'.
+         * Once requests are brought back home to EDI, we should leave TimeSeriesType behind.
+         */
+        foreach (var timeSeriesType in parameters.TimeSeriesTypes)
         {
-            yield return aggregatedTimeSeries;
+            var querySnippetProvider = _querySnippetProviderFactory.Create(parameters, timeSeriesType);
+
+            var calculationTypePerGridAreas =
+                await GetCalculationTypeForGridAreasAsync(
+                        querySnippetProvider.DatabricksContract.GetGridAreaCodeColumnName(),
+                        querySnippetProvider.DatabricksContract.GetCalculationTypeColumnName(),
+                        new AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
+                            _deltaTableOptions.Value,
+                            querySnippetProvider),
+                        parameters.CalculationType)
+                    .ConfigureAwait(false);
+
+            var sqlStatement = new AggregatedTimeSeriesQueryStatement(
+                calculationTypePerGridAreas,
+                querySnippetProvider,
+                timeSeriesType,
+                _deltaTableOptions.Value);
+
+            var calculationIdColumnName = querySnippetProvider.DatabricksContract.GetCalculationIdColumnName();
+
+            await foreach (var aggregatedTimeSeries in CreateSeriesPackagesAsync(
+                               (row, points) => AggregatedTimeSeriesFactory.Create(
+                                   querySnippetProvider.DatabricksContract,
+                                   timeSeriesType,
+                                   row,
+                                   points),
+                               (currentRow, previousRow) =>
+                                   querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy()
+                                       .Any(column => currentRow[column] != previousRow[column])
+                                   || currentRow[calculationIdColumnName] != previousRow[calculationIdColumnName],
+                               EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
+                               sqlStatement))
+            {
+                yield return aggregatedTimeSeries;
+            }
         }
-    }
-
-    private class AggregatedTimeSeriesCalculationTypeForGridAreasStatement(
-        DeltaTableOptions deltaTableOptions,
-        AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
-        AggregatedTimeSeriesQueryParameters queryParameters)
-        : CalculationTypeForGridAreasStatementBase(
-            EnergyResultColumnNames.GridArea,
-            EnergyResultColumnNames.CalculationType)
-    {
-        private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-        private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
-        private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
-
-        protected override string GetSource() =>
-            $"""
-             (SELECT wr.*
-              FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
-              INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-              ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
-             """;
-
-        protected override string GetSelection() => _whereClauseProvider.GetWhereClauseSqlExpression(_queryParameters, "wrv").Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
     }
 }

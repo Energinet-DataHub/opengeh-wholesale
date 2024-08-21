@@ -27,11 +27,13 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader = wholesale_internal.TableReader(mock.Mock(), mock.Mock())
-        prepared_data_reader = PreparedDataReader(mock.Mock(), table_reader)
+        repository = wholesale_internal.WholesaleInternalRepository(
+            mock.Mock(), mock.Mock()
+        )
+        prepared_data_reader = PreparedDataReader(mock.Mock(), repository)
         with patch.object(
-            table_reader,
-            table_reader.read_calculations.__name__,
+            repository,
+            repository.read_calculations.__name__,
             return_value=factory.create_empty_calculations(spark),
         ):
             # Act
@@ -46,16 +48,18 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader = wholesale_internal.TableReader(mock.Mock(), mock.Mock())
-        prepared_data_reader = PreparedDataReader(mock.Mock(), table_reader)
+        repository = wholesale_internal.WholesaleInternalRepository(
+            mock.Mock(), mock.Mock()
+        )
+        prepared_data_reader = PreparedDataReader(mock.Mock(), repository)
 
         calculation_type = CalculationType.BALANCE_FIXING
         calculation = factory.create_calculation_row(
             version=7, calculation_type=calculation_type
         )
         with patch.object(
-            table_reader,
-            table_reader.read_calculations.__name__,
+            repository,
+            repository.read_calculations.__name__,
             return_value=factory.create_calculations(spark, data=[calculation]),
         ):
             # Act

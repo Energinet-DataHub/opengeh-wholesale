@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
@@ -26,12 +26,12 @@ from package.constants import Colname
 
 
 def read_charge_price_information(
-    table_reader: TableReader,
+    repository: MigrationsWholesaleRepository,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> ChargePriceInformation:
     charge_price_information_periods = (
-        table_reader.read_charge_price_information_periods()
+        repository.read_charge_price_information_periods()
         .where(col(Colname.from_date) < period_end_datetime)
         .where(
             col(Colname.to_date).isNull()
@@ -54,12 +54,12 @@ def read_charge_price_information(
 
 
 def read_charge_prices(
-    table_reader: TableReader,
+    repository: MigrationsWholesaleRepository,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> ChargePrices:
     charge_price_points = (
-        table_reader.read_charge_price_points()
+        repository.read_charge_price_points()
         .where(col(Colname.charge_time) >= period_start_datetime)
         .where(col(Colname.charge_time) < period_end_datetime)
     )
@@ -69,12 +69,12 @@ def read_charge_prices(
 
 
 def read_charge_links(
-    table_reader: TableReader,
+    repository: MigrationsWholesaleRepository,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
     charge_links_df = (
-        table_reader.read_charge_link_periods()
+        repository.read_charge_link_periods()
         .where(col(Colname.from_date) < period_end_datetime)
         .where(
             col(Colname.to_date).isNull()

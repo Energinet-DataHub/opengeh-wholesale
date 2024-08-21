@@ -12,70 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
 internal class CalculationTrigger
 {
+    private const string PermissionCalculationsManage = "calculations:manage";
+
     private readonly IUserContext<FrontendUser> _userContext;
-    private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions;
+    private readonly ICalculationsClient _calculationsClient;
+    private readonly ILogger<CalculationTrigger> _logger;
 
     public CalculationTrigger(
         IUserContext<FrontendUser> userContext,
-        IOptions<CalculationOrchestrationMonitorOptions> jobStatusMonitorOptions)
+        ICalculationsClient calculationsClient,
+        ILogger<CalculationTrigger> logger)
     {
         _userContext = userContext;
-        _orchestrationMonitorOptions = jobStatusMonitorOptions.Value;
+        _calculationsClient = calculationsClient;
+        _logger = logger;
     }
 
     [Function(nameof(StartCalculation))]
-    public async Task<HttpResponseData> StartCalculation(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
+    [Authorize(Roles = PermissionCalculationsManage)]
+    public async Task<IActionResult> StartCalculation(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest httpRequest,
         [FromBody] StartCalculationRequestDto startCalculationRequestDto,
-        [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
-        var logger = executionContext.GetLogger<CalculationTrigger>();
+        var calculationId = await _calculationsClient.CreateAndCommitAsync(
+            startCalculationRequestDto.CalculationType,
+            startCalculationRequestDto.GridAreaCodes,
+            startCalculationRequestDto.StartDate,
+            startCalculationRequestDto.EndDate,
+            startCalculationRequestDto.ScheduledAt,
+            _userContext.CurrentUser.UserId).ConfigureAwait(false);
 
-        var orchestrationInput = new CalculationOrchestrationInput(
-            _orchestrationMonitorOptions,
-            startCalculationRequestDto,
-            _userContext.CurrentUser.UserId);
+        _logger.LogInformation("Calculation created with id {calculationId}", calculationId);
 
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration), orchestrationInput).ConfigureAwait(false);
-        logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
-
-        var orchestrationMetadata = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
-        while (ReadCalculationId(orchestrationMetadata) == Guid.Empty)
-        {
-            await Task.Delay(200).ConfigureAwait(false);
-            orchestrationMetadata = await client.GetInstanceAsync(instanceId, getInputsAndOutputs: true).ConfigureAwait(false);
-        }
-
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        await response.WriteAsJsonAsync(ReadCalculationId(orchestrationMetadata)).ConfigureAwait(false);
-
-        return response;
-    }
-
-    private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetadata)
-    {
-        if (orchestrationMetadata == null || orchestrationMetadata.SerializedCustomStatus == null)
-            return Guid.Empty;
-
-        var calculationMetadata = orchestrationMetadata.ReadCustomStatusAs<CalculationMetadata>();
-        return calculationMetadata == null || calculationMetadata.Id == Guid.Empty
-            ? Guid.Empty
-            : calculationMetadata.Id;
+        return new OkObjectResult(calculationId.Id);
     }
 }

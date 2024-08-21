@@ -20,7 +20,7 @@ from pyspark import Row
 from pyspark.sql import SparkSession
 
 from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import TableReader
+from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import charge_link_periods_schema
 from package.calculation.preparation.transformations import read_charge_links
 from package.codelists import ChargeType
@@ -60,20 +60,18 @@ def _create_charge_link_periods_row(
 
 
 class TestWhenValidInput:
-    @patch.object(migrations_wholesale, TableReader.__name__)
+    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test_returns_expected_joined_row_values(
-        self, table_reader_mock: TableReader, spark: SparkSession
+        self, repository_mock: MigrationsWholesaleRepository, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_link_periods.return_value = spark.createDataFrame(
+        repository_mock.read_charge_link_periods.return_value = spark.createDataFrame(
             data=[_create_charge_link_periods_row()],
             schema=charge_link_periods_schema,
         )
 
         # Act
-        actual = read_charge_links(
-            table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        actual = read_charge_links(repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
         # Assert
         assert actual.count() == 1
@@ -117,10 +115,10 @@ class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
             ),
         ],
     )
-    @patch.object(migrations_wholesale, TableReader.__name__)
+    @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test__returns_expected_to_and_from_date(
         self,
-        table_reader_mock: TableReader,
+        repository_mock: MigrationsWholesaleRepository,
         spark: SparkSession,
         charge_from_date: datetime,
         charge_to_date: datetime,
@@ -130,7 +128,7 @@ class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
         # Arrange
         calculation_from_date = datetime(2020, 1, 2, 0, 0)
         calculation_to_date = datetime(2020, 1, 3, 0, 0)
-        table_reader_mock.read_charge_link_periods.return_value = spark.createDataFrame(
+        repository_mock.read_charge_link_periods.return_value = spark.createDataFrame(
             data=[
                 _create_charge_link_periods_row(
                     from_date=charge_from_date,
@@ -142,7 +140,7 @@ class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
 
         # Act
         actual = read_charge_links(
-            table_reader_mock, calculation_from_date, calculation_to_date
+            repository_mock, calculation_from_date, calculation_to_date
         )
 
         # Assert
