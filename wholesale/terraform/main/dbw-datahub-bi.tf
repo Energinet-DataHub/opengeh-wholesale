@@ -109,6 +109,15 @@ resource "databricks_permissions" "datahub_bi_sql_endpoint" {
   depends_on = [module.dbw, null_resource.scim_developers]
 }
 
+resource "databricks_grant" "databricks_spn_database_grant_select" {
+  count      = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider   = databricks.dbw
+
+  schema     = databricks_schema.results.id
+  principal  = azuread_application.app_datahub_bi[0].client_id
+  privileges = ["USE_SCHEMA", "SELECT"]
+}
+
 //Create a group for external token users and grant CAN_USE permission to the group
 //As there can only be one 'authorization = "tokens"' permissions resource per workspace, it should be attached to a group
 //as it will be much easier to add more SPNs for external access later on rather than applying the role directly to the SPN
