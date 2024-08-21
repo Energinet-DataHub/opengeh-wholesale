@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
+import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import current_timestamp
+from delta.tables import DeltaTable
 
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
@@ -34,11 +36,6 @@ def write_calculation(
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-
-    calculations = calculations.withColumn(
-        TableColumnNames.calculation_succeeded_time, current_timestamp()
-    )
-
     calculations.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(
@@ -67,4 +64,14 @@ def write_calculation_grid_areas(
         "mergeSchema", "false"
     ).insertInto(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
+    )
+
+
+def write_calculation_succeeded_time(calculation_id: str) -> None:
+    """Writes the succeeded time to the calculation table."""
+    DeltaTable.forName(
+        f"{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+    ).update(
+        condition=f.col(TableColumnNames.calculation_id) == calculation_id,
+        set={TableColumnNames.calculation_succeeded_time: current_timestamp()},
     )

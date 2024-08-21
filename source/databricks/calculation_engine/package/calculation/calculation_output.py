@@ -80,17 +80,6 @@ class BasisDataOutput:
 
 
 @dataclass
-class InternalDataOutput:
-    """
-    Contains non-public data used in a calculation.
-    """
-
-    calculations: DataFrame
-    """Data frame containing the calculation id and grid areas used in the calculation."""
-    calculation_grid_areas: DataFrame
-
-
-@dataclass
 class CalculationOutput:
     """
     Contains the output of a calculation.
@@ -103,4 +92,3 @@ class CalculationOutput:
     energy_results_output: EnergyResultsOutput = cast(EnergyResultsOutput, None)
     wholesale_results_output: WholesaleResultsOutput | None = None
     basis_data_output: BasisDataOutput = cast(BasisDataOutput, None)
-    internal_data_output: InternalDataOutput = cast(InternalDataOutput, None)
