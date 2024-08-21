@@ -111,4 +111,3 @@ SELECT c.calculation_id,
 FROM all_energy as e
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1 as c
 WHERE c.calculation_id = e.calculation_id
-AND c.calculation_succeeded_time IS NOT NULL
