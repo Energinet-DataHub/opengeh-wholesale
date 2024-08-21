@@ -75,7 +75,7 @@ public sealed class AmountsPerChargeWholesaleServicesDatabricksContract : IWhole
         return AmountsPerChargeViewColumnNames.CalculationId;
     }
 
-    public string GetResolutionColumnName()
+    public string? GetResolutionColumnName()
     {
         return AmountsPerChargeViewColumnNames.Resolution;
     }

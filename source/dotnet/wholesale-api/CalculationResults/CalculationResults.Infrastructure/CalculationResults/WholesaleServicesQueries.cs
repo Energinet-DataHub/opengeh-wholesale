@@ -111,8 +111,10 @@ public class WholesaleServicesQueries(
         DatabricksSqlRow previousResult,
         IWholesaleServicesDatabricksContract databricksContract)
     {
-        var resolutionOfPreviousResult = ResolutionMapper
-            .FromDeltaTableValue(previousResult[databricksContract.GetResolutionColumnName()]!);
+        var resolutionColumnName = databricksContract.GetResolutionColumnName();
+        var resolutionOfPreviousResult = resolutionColumnName != null
+            ? ResolutionMapper.FromDeltaTableValue(previousResult[resolutionColumnName]!)
+            : Resolution.Month;
 
         var startTimeOfPreviousResult = SqlResultValueConverters
             .ToDateTimeOffset(previousResult[databricksContract.GetTimeColumnName()])!.Value;
