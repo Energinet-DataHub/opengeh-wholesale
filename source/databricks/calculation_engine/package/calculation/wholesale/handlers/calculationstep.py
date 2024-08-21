@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional, TypeVar, Generic
+from typing import TypeVar
 
 from package.calculation.calculation_results import CalculationResultsContainer
 
@@ -24,47 +24,45 @@ RequestType = TypeVar("RequestType")
 ResponseType = TypeVar("ResponseType")
 
 
-class CalculationStep(ABC, Generic[RequestType, ResponseType]):
+class CalculationStep(ABC):
 
     @abstractmethod
-    def set_next(
-        self, handler: "CalculationStep[RequestType, ResponseType]"
-    ) -> "CalculationStep[RequestType, ResponseType]":
+    def set_next(self, handler: CalculationStep) -> CalculationStep:
         pass
 
     @abstractmethod
-    def handle(self) -> Optional[ResponseType]:
+    def handle(
+        self, output: CalculationResultsContainer
+    ) -> CalculationResultsContainer:
         pass
 
 
-class BaseCalculationStep(CalculationStep[RequestType, ResponseType]):
+class BaseCalculationStep(CalculationStep):
     """
     The default chaining behavior can be implemented inside a base handler class.
     """
 
     def __init__(
-            self,
-            bucket: Bucket,
-            calculation_results_container: CalculationResultsContainer,
+        self,
+        bucket: Bucket,
     ):
         #
         self.bucket = bucket
-        self.calculation_results_container = calculation_results_container
 
-    _next_handler: Optional[CalculationStep[RequestType, ResponseType]] = None
+    _next_handler = None
 
-    def set_next(
-        self, handler: "CalculationStep[RequestType, ResponseType]"
-    ) -> "CalculationStep[RequestType, ResponseType]":
+    def set_next(self, handler: CalculationStep) -> CalculationStep:
         self._next_handler = handler
         # Returning a handler from here will let us link handlers in a convenient way like handler1.set_next(handler2).set_next(handler3)
         return handler
 
-    def handle(self) -> Optional[ResponseType]:
+    def handle(
+        self, output: CalculationResultsContainer
+    ) -> CalculationResultsContainer:
         if self._next_handler:
-            return self._next_handler.handle()
-        return None
+            return self._next_handler.handle(output)
+        return output
 
 
 class Bucket:
-
+    pass

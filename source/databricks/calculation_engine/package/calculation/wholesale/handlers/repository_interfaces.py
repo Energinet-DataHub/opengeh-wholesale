@@ -17,7 +17,12 @@ from typing import List
 from pyspark.sql import DataFrame
 
 
-class IMeteringPointPeriodRepository(ABC):
+class MeteringPointPeriodRepositoryInterface(ABC):
     @abstractmethod
-    def get(self, grid_area_codes: List < str > ()) -> DataFrame:
+    def get_by(self, grid_area_codes: List[str]) -> DataFrame:
+        pass
+
+
+class MeteringPointPeriodRepository(MeteringPointPeriodRepositoryInterface):
+    def get_by(self, grid_area_codes: List[str]) -> DataFrame:
         pass

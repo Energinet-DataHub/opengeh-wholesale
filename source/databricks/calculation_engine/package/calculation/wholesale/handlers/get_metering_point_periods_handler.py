@@ -27,6 +27,11 @@ from package.calculation.wholesale.handlers.calculationstep import (
     ResponseType,
     Bucket,
 )
+from package.calculation.wholesale.handlers.interface_repository import (
+    IMeteringPointPeriodRepository,
+)
+
+from package.calculation.wholesale.handlers.repository_interfaces import MeteringPointPeriodRepositoryInterface
 from package.constants import Colname
 from package.databases.migrations_wholesale import TableReader
 
@@ -45,11 +50,10 @@ class CalculateGridLossResponsibleStep(
 
     def __init__(
         self,
-        bucket: Bucket,
         output: CalculationResultsContainer,
         wholesale_internal_table_reader: TableReader,
     ):
-        super().__init__(bucket, output)
+        super().__init__(output)
         self.wholesale_internal_table_reader = wholesale_internal_table_reader
         self.output = output
 
@@ -78,22 +82,20 @@ class CalculateGridLossResponsibleStep(
         self.output = GridLossResponsible(grid_loss_responsible)
 
 
-class AddMeteringPointPeriodsToBucket(BaseCalculationStep[CalculatorArgs, DataFrame]):
+class AddMeteringPointPeriodsToBucket(BaseCalculationStep):
 
-    def __init__(
-        self,
-        container: CalculationResultsContainer,
-        calculation_input_reader: TableReader,
-    ):
-        self.calculation_input_reader = calculation_input_reader
+    def __init__(self, bucket: Bucket, metering_point_period_repository: MeteringPointPeriodRepositoryInterface, )
+        super().__init__(bucket)
+        self.metering_point_period_repository = metering_point_period_repository
 
-    def handle(
-        self,
-        calculator_args: CalculatorArgs,
-    ) -> DataFrame:
+    def handle(self, output: CalculationResultsContainer) -> CalculationResultsContainer:
         metering_point_periods = (
-            self.calculation_input_reader.read_metering_point_periods()
-            .where(
+            self.metering_point_period_repository.get_by(
+                self.bucket.calculator_args.calculation_grid_areas
+            )
+        )
+
+        metering_point_periods.where(
                 col(Colname.grid_area_code).isin(calculator_args.calculation_grid_areas)
                 | col(Colname.from_grid_area_code).isin(
                     calculator_args.calculation_grid_areas

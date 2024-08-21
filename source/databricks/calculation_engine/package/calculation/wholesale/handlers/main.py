@@ -12,23 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.handlers.decorator import BaseDecorator
-from pyspark.sql import DataFrame
-
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.handlers.calculation_parameters_step import (
     CalculationParametersStep,
 )
-from package.calculation.wholesale.handlers.calculationstep import Bucket
+from package.calculation.wholesale.handlers.calculationstep import (
+    Bucket,
+    BaseCalculationStep,
+)
 from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
     AddMeteringPointPeriodsToBucket,
     CalculateGridLossResponsibleStep,
     MeteringPointPeriodsWithGridLossDecorator,
 )
+from package.calculation.wholesale.handlers.repository_interfaces import (
+    MeteringPointPeriodRepositoryInterface,
+)
 
 
-def chain(calculator_args: CalculatorArgs, mpp_repository: DataFrame) -> None:
+def chain(
+    calculator_args: CalculatorArgs,
+    metering_point_period_repository: MeteringPointPeriodRepositoryInterface,
+) -> None:
 
     output = CalculationResultsContainer()
     bucket = Bucket()
@@ -43,14 +49,14 @@ def chain(calculator_args: CalculatorArgs, mpp_repository: DataFrame) -> None:
     # Inject needed dependencies in the constructors
 
     add_metering_point_periods_to_bucket = AddMeteringPointPeriodsToBucket(
-        calculator_args, output, mpp_repository
+        calculator_args, metering_point_period_repository
     )
 
     calculate_grid_loss_responsible_step = CalculateGridLossResponsibleStep(
         bucket, output, mpp_repository
     )
     mpp_with_grid_loss_decorator = MeteringPointPeriodsWithGridLossDecorator()
-    fallback_decorator = BaseDecorator()
+    fallback_decorator = BaseCalculationStep(bucket)
 
     # Set up the chain
     (
