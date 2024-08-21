@@ -21,6 +21,7 @@ public static class CalculationOrchestrationStateMapper
         return calculationOrchestrationState switch
         {
             Common.Interfaces.Models.CalculationOrchestrationState.Scheduled => CalculationOrchestrationState.Scheduled,
+            Common.Interfaces.Models.CalculationOrchestrationState.Started => CalculationOrchestrationState.Started,
             Common.Interfaces.Models.CalculationOrchestrationState.Calculating => CalculationOrchestrationState.Calculating,
             Common.Interfaces.Models.CalculationOrchestrationState.Calculated => CalculationOrchestrationState.Calculated,
             Common.Interfaces.Models.CalculationOrchestrationState.CalculationFailed => CalculationOrchestrationState.CalculationFailed,

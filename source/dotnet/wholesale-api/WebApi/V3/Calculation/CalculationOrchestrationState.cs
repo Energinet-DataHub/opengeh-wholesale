@@ -22,6 +22,11 @@ public enum CalculationOrchestrationState
     Scheduled = 1,
 
     /// <summary>
+    /// The calculation orchestration is started (after the schedule has been met)
+    /// </summary>
+    Started = 11,
+
+    /// <summary>
     /// The calculation results are being calculated by the calculation engine.
     /// </summary>
     Calculating = 2,
