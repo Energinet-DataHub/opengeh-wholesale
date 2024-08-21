@@ -51,8 +51,14 @@ public class CalculationRepository : ICalculationRepository
     {
         var query = _context
             .Calculations
-            .Where(b => minExecutionTimeStart == null || b.ExecutionTimeStart >= minExecutionTimeStart)
-            .Where(b => maxExecutionTimeStart == null || b.ExecutionTimeStart <= maxExecutionTimeStart)
+            // If the calculation's ExecutionTimeStart is null the calculation is not yet started,
+            // and we need to use the ScheduledAt property to filter for instead.
+            .Where(b => minExecutionTimeStart == null
+                        || (b.ExecutionTimeStart == null && b.ScheduledAt >= minExecutionTimeStart)
+                        || b.ExecutionTimeStart >= minExecutionTimeStart)
+            .Where(b => maxExecutionTimeStart == null
+                        || (b.ExecutionTimeStart == null && b.ScheduledAt <= maxExecutionTimeStart)
+                        || b.ExecutionTimeStart <= maxExecutionTimeStart)
             .Where(b => periodEnd == null || b.PeriodStart < periodEnd)
             .Where(b => periodStart == null || b.PeriodEnd > periodStart)
             .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState))

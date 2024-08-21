@@ -27,13 +27,26 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Infrastructure.Persistence.Calculation;
 
-public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
+public class CalculationRepositoryTests
+    : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>, IAsyncLifetime
 {
     private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
 
     public CalculationRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Clear existing calculations from db
+        await using var dbContext = _databaseManager.CreateDbContext();
+        await dbContext.Calculations.ExecuteDeleteAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     [Fact]
@@ -264,6 +277,84 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         actual.Should().Contain(calculation);
+    }
+
+    /// <summary>
+    /// When a calculation is scheduled to run later, the execution time start is not set before the calculation
+    /// is started. In this case the filter looks at when the calculation is scheduled to run instead.
+    /// </summary>
+    [Fact]
+    public async Task SearchAsync_WhenNoExecutionTimeStartButScheduledAtIsInFilterRange_CalculationIsReturned()
+    {
+        // Arrange
+        var now = Instant.FromUtc(2024, 08, 21, 13, 37);
+        var tomorrow = now.Plus(Duration.FromDays(1));
+        var nextMonth = now.Plus(Duration.FromDays(31));
+        var scheduledCalculation = CreateCalculation(scheduledAt: tomorrow);
+        await using (var writeContext = _databaseManager.CreateDbContext())
+        {
+            var calculationRepository = new CalculationRepository(writeContext);
+            await calculationRepository.AddAsync(scheduledCalculation);
+            await writeContext.SaveChangesAsync();
+        }
+
+        var dbContext = _databaseManager.CreateDbContext();
+        var sut = new CalculationRepository(dbContext);
+
+        // Act
+        var actual = await sut.SearchAsync(
+            Array.Empty<GridAreaCode>(),
+            Array.Empty<CalculationExecutionState>(),
+            minExecutionTimeStart: now,
+            maxExecutionTimeStart: nextMonth,
+            null,
+            null,
+            null);
+
+        // Assert
+        // => Since the calculation is scheduled to run tomorrow, we expect the calculation to be returned
+        actual.Should().BeEquivalentTo([scheduledCalculation]);
+    }
+
+    /// <summary>
+    /// When a calculation is scheduled to run later, the execution time start is not set before the calculation
+    /// is started. In this case the filter looks at when the calculation is scheduled to run instead.
+    /// </summary>
+    [Fact]
+    public async Task SearchAsync_WhenNoExecutionTimeStartButScheduledAtIsOutsideFilterRange_NoCalculationsReturned()
+    {
+        // Arrange
+        var today = Instant.FromUtc(2024, 08, 21, 13, 37);
+        var yesterday = today.Minus(Duration.FromDays(1));
+        var tomorrow = today.Plus(Duration.FromDays(1));
+        var nextMonth = today.Plus(Duration.FromDays(31));
+        var calculationScheduledYesterday = CreateCalculation(scheduledAt: yesterday);
+        var calculationScheduledNextMonth = CreateCalculation(scheduledAt: nextMonth);
+        await using (var writeContext = _databaseManager.CreateDbContext())
+        {
+            var calculationRepository = new CalculationRepository(writeContext);
+            await calculationRepository.AddAsync(calculationScheduledYesterday);
+            await calculationRepository.AddAsync(calculationScheduledNextMonth);
+            await writeContext.SaveChangesAsync();
+        }
+
+        var dbContext = _databaseManager.CreateDbContext();
+        var sut = new CalculationRepository(dbContext);
+
+        // Act
+        var actual = await sut.SearchAsync(
+            Array.Empty<GridAreaCode>(),
+            Array.Empty<CalculationExecutionState>(),
+            minExecutionTimeStart: today,
+            maxExecutionTimeStart: tomorrow,
+            null,
+            null,
+            null);
+
+        // Assert
+        // => Since the filter is from today to tomorrow, we don't expect
+        // the calculations scheduled yesterday or next month to be returned
+        actual.Should().BeEmpty();
     }
 
     [Fact]
