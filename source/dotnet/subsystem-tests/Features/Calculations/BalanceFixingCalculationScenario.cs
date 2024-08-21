@@ -73,7 +73,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         var scheduledAt = Fixture.ScenarioState.CalculationInput!.ScheduledAt;
         var maxWaitTime = scheduledAt - DateTimeOffset.UtcNow + allowedTimeDifference;
 
-        var (isStarted, _) = await Fixture.WaitForCalculationStartedAsync(
+        var (isStarted, _) = await Fixture.WaitForScheduledCalculationToStartAsync(
             Fixture.ScenarioState.CalculationId,
             waitTimeLimit: maxWaitTime,
             checkInterval: TimeSpan.FromSeconds(10));

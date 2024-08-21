@@ -162,7 +162,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     /// Wait for the calculation to be started
     /// </summary>
     /// <returns>isStarted: True if the calculation was started within the time limit; otherwise false.</returns>
-    public async Task<(bool IsStarted, CalculationDto? Calculation)> WaitForCalculationStartedAsync(
+    public async Task<(bool IsStarted, CalculationDto? Calculation)> WaitForScheduledCalculationToStartAsync(
         Guid calculationId,
         TimeSpan waitTimeLimit,
         TimeSpan checkInterval)
@@ -174,6 +174,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                 calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
                 return calculation is
                 {
+                    // We cannot check for CalculationOrchestrationState.Started since the calculation might already be later in the orchestration
                     OrchestrationState: not CalculationOrchestrationState.Scheduled and
                                         not CalculationOrchestrationState.Canceled
                 };
