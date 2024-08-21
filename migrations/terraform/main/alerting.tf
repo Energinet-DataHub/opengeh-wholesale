@@ -15,5 +15,12 @@ module "monitor_action_group_mig" {
   email_receiver_address     = var.alert_email_address
   custom_dimension_subsystem = ["Migration"]
 
+  default_query_exceptions_errors = {
+    enabled = false
+  }
+  default_query_request_errors = {
+    enabled = false
+  }
+
   application_insights_id = data.azurerm_key_vault_secret.appi_id.value
 }
