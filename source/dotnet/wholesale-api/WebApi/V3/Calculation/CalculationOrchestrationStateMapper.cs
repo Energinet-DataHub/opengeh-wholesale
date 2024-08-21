@@ -29,6 +29,7 @@ public static class CalculationOrchestrationStateMapper
             Common.Interfaces.Models.CalculationOrchestrationState.ActorMessagesEnqueued => CalculationOrchestrationState.ActorMessagesEnqueued,
             Common.Interfaces.Models.CalculationOrchestrationState.ActorMessagesEnqueuingFailed => CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
             Common.Interfaces.Models.CalculationOrchestrationState.Completed => CalculationOrchestrationState.Completed,
+            Common.Interfaces.Models.CalculationOrchestrationState.Canceled => CalculationOrchestrationState.Canceled,
             _ => throw new ArgumentOutOfRangeException(nameof(calculationOrchestrationState), calculationOrchestrationState, $"Unknown {typeof(Common.Interfaces.Models.CalculationOrchestrationState).FullName}"),
         };
     }

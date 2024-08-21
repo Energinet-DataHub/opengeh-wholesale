@@ -60,4 +60,9 @@ public enum CalculationOrchestrationState
     /// The calculation orchestration is completed
     /// </summary>
     Completed = 8,
+
+    /// <summary>
+    /// The calculation orchestration is canceled (it can only be canceled if it is scheduled and not started yet)
+    /// </summary>
+    Canceled = 9,
 }
