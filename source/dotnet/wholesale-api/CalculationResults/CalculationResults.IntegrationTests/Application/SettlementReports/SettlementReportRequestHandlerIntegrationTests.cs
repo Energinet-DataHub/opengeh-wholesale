@@ -68,7 +68,6 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
         mockedRepository
@@ -88,7 +87,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var sut = new SettlementReportRequestHandler(mockedRepository.Object);
 
         // Act
-        var actual = (await sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var chunkA = actual[0];
@@ -127,10 +126,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResult = actual.Single();
@@ -164,10 +162,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -202,10 +199,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResult = actual[0];
@@ -241,10 +237,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, false, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResultA = actual[0];
@@ -294,10 +289,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, true, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -372,10 +366,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(false, false, true, true, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResult = actual.FirstOrDefault(x => x.FileContent == SettlementReportFileContent.EnergyResult);
@@ -463,10 +456,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, true, false, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResultA = actual.
@@ -645,10 +637,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(true, false, true, true, filter);
-        var actorInfo = new SettlementReportRequestedByActor(MarketRole.GridAccessProvider, null);
 
         // Act
-        var actual = (await Sut.RequestReportAsync(requestId, reportRequest, actorInfo)).ToList();
+        var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
 
         // Assert
         var energyResultA = actual.

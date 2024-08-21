@@ -38,7 +38,7 @@ internal sealed class SettlementReportOrchestration
         }
 
         var requestId = new SettlementReportRequestId(context.InstanceId);
-        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest.Request, settlementReportRequest.ActorInfo);
+        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest.Request);
 
         var dataSourceExceptionHandler = TaskOptions.FromRetryHandler(retryContext => HandleDataSourceExceptions(
                 retryContext,
@@ -54,16 +54,18 @@ internal sealed class SettlementReportOrchestration
 
         context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 5 });
 
+        var scatterInChunksInput = new ScatterSettlementReportFilesInChunksInput(scatterResults, settlementReportRequest.ActorInfo);
+
         var scatterResultsInChunks = await context
             .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(
                 nameof(ScatterSettlementReportFilesInChunksActivity),
-                scatterResults,
+                scatterInChunksInput,
                 dataSourceExceptionHandler);
 
         context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 5 });
 
         var generatedFiles = new List<GeneratedSettlementReportFileDto>();
-        var orderedResults = scatterResults
+        var orderedResults = scatterResultsInChunks
             .OrderBy(x => x.PartialFileInfo.FileOffset)
             .ThenBy(x => x.PartialFileInfo.ChunkOffset)
             .ToList();

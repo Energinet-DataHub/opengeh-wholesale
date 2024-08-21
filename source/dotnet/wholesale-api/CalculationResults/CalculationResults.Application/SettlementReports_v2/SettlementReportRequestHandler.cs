@@ -22,16 +22,14 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 {
     private readonly ILatestCalculationVersionRepository _latestCalculationVersionRepository;
 
-    public SettlementReportRequestHandler(
-        ILatestCalculationVersionRepository latestCalculationVersionRepository)
+    public SettlementReportRequestHandler(ILatestCalculationVersionRepository latestCalculationVersionRepository)
     {
         _latestCalculationVersionRepository = latestCalculationVersionRepository;
     }
 
     public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest,
-        SettlementReportRequestedByActor actorInfo)
+        SettlementReportRequestDto reportRequest)
     {
         const string energyResultFileName = "RESULTENERGY";
         const string wholesaleResultFileName = "RESULTWHOLESALE";
@@ -121,7 +119,6 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
             filesToRequest.AddRange(SplitFileRequestPerGridArea(
                 fileRequest,
-                actorInfo,
                 file.SplitReportPerGridArea));
         }
 
@@ -130,7 +127,6 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
     private IEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridArea(
         SettlementReportFileRequestDto fileRequest,
-        SettlementReportRequestedByActor actorInfo,
         bool splitReportPerGridArea)
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
