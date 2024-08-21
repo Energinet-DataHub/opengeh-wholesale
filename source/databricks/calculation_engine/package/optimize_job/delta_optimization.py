@@ -24,11 +24,15 @@ from package.common.logger import Logger
 import package.infrastructure.environment_variables as env_vars
 
 
-def optimize_tables() -> None:
+def optimize_tables(catalog_name: str | None = None) -> None:
+    """
+    Optimize all tables in the internal databases.
+    OPTIMIZE documentation: https://docs.delta.io/latest/optimizations-oss.html
+    """
     logger = Logger(__name__)
 
     spark = initialize_spark()
-    catalog_name = env_vars.get_catalog_name()
+    catalog_name = catalog_name or env_vars.get_catalog_name()
 
     database_table_dicts = {
         f"{catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}": WholesaleResultsInternalDatabase.TABLE_NAMES,
