@@ -32,7 +32,7 @@ module "message_retriever_service_plan" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_4.1.0"
 
   type                           = "func"
-  name                           = "message-retriever"
+  name                           = "messageretriever"
   project_name                   = var.domain_name_short
   environment_short              = var.environment_short
   environment_instance           = var.environment_instance
