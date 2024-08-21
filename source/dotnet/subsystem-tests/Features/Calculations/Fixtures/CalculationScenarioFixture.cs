@@ -204,7 +204,8 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             async () =>
             {
                 calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
-                return calculation != null && states.Contains(calculation.OrchestrationState);
+                return calculation != null
+                       && states.Contains(calculation.OrchestrationState);
             },
             waitTimeLimit,
             delay);
