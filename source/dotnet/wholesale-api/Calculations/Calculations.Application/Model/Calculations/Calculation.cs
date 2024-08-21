@@ -383,7 +383,7 @@ public class Calculation
     /// <summary>
     /// Reset a <see cref="Calculation"/>. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
-    public void Reset()
+    public void Restart()
     {
         if (ExecutionState is CalculationExecutionState.Completed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
