@@ -50,7 +50,7 @@ public static class PeriodHelper
         _ => dateTime.AddMinutes(60),
     };
 
-    private static DateTimeOffset GetDateTimeWithResolutionOffset(WholesaleResolution resolution, DateTimeOffset dateTime) => resolution switch
+    public static DateTimeOffset GetDateTimeWithResolutionOffset(WholesaleResolution resolution, DateTimeOffset dateTime) => resolution switch
     {
         WholesaleResolution.Hour => dateTime.AddMinutes(60),
         WholesaleResolution.Day => dateTime.AddDays(1),
