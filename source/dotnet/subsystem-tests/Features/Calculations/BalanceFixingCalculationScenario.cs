@@ -43,7 +43,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             GridAreaCodes: ["543"],
             StartDate: new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
             EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
-            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(5)));
+            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(3)));
     }
 
     [ScenarioStep(1)]
@@ -87,7 +87,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         now.Should().BeCloseTo(
             scheduledAt,
             precision: allowedTimeDifference,
-            $"because the calculation should be started within {allowedTimeDifference.TotalSeconds} of the scheduled time");
+            $"because the scheduled calculation should be started within {allowedTimeDifference.TotalSeconds} seconds of the scheduled time");
     }
 
     [ScenarioStep(4)]
