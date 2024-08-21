@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class WholesaleServicesQueryStatement(
+public sealed class WholesaleServicesQueryStatement(
     WholesaleServicesQueryStatement.StatementType statementType,
     IReadOnlyCollection<CalculationTypeForGridArea> calculationTypePerGridAreas,
     WholesaleServicesQuerySnippetProvider querySnippetProvider,
@@ -62,7 +62,7 @@ public class WholesaleServicesQueryStatement(
                 FROM ({GetChargesToChooseFrom()}) {ChargesTableName}
                 INNER JOIN ({GetMaxVersionForEachPackage()}) {PackagesWithVersionTableName}
                 ON {MatchChargesWithPackages(ChargesTableName, PackagesWithVersionTableName)}
-                ORDER BY {string.Join(", ", _querySnippetProvider.DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{ChargesTableName}.{ctab}"))}, {ChargesTableName}.{_querySnippetProvider.DatabricksContract.GetTimeColumnName()}
+                ORDER BY {_querySnippetProvider.GetOrdering(ChargesTableName)}
                 """;
     }
 

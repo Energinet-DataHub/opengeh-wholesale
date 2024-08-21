@@ -57,7 +57,7 @@ class ScenarioExecutor:
         return actual, expected
 
     def _setup(self, scenario_path: str) -> None:
-        self.input_path = scenario_path + "/input/"
+        self.input_path = scenario_path + "/when/"
         self.output_path = scenario_path + "/then/"
 
         correlations = get_data_input_specifications(

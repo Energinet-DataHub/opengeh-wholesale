@@ -51,6 +51,7 @@ public class Calculation
 
         _orchestrationState = CalculationOrchestrationState.Scheduled;
         ExecutionState = CalculationExecutionState.Created;
+        OrchestrationInstanceId = new OrchestrationInstanceId(Guid.NewGuid().ToString("N"));
     }
 
     /// <summary>
@@ -118,6 +119,7 @@ public class Calculation
         Id = Guid.NewGuid();
         _gridAreaCodes = [];
         Version = 0;
+        OrchestrationInstanceId = null!;
     }
 
     // Private setter is used implicitly by tests
@@ -143,8 +145,9 @@ public class Calculation
 
             CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
             {
-                // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started],
+                // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
+                CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
@@ -185,6 +188,8 @@ public class Calculation
     public Instant? CompletedTime { get; private set; }
 
     public CalculationJobId? CalculationJobId { get; private set; }
+
+    public OrchestrationInstanceId OrchestrationInstanceId { get; }
 
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
@@ -243,6 +248,20 @@ public class Calculation
 
             _ => throw new NotImplementedException(),
         };
+    }
+
+    /// <summary>
+    /// The calculation orchestration has started (after the schedule has been met)
+    /// </summary>
+    public void MarkAsStarted()
+    {
+        if (ExecutionState is not CalculationExecutionState.Created)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
+
+        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Started);
+
+        OrchestrationState = CalculationOrchestrationState.Started;
     }
 
     /// <summary>

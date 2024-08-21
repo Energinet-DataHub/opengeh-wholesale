@@ -117,6 +117,7 @@ public class CalculationBuilder
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+        var orchestrationInstanceId = new OrchestrationInstanceId("instance-id");
         var jobRunId = new CalculationJobId(new Random().Next(1, 1000));
 
         if (_state == CalculationExecutionState.Created)
@@ -125,21 +126,25 @@ public class CalculationBuilder
         }
         else if (_state == CalculationExecutionState.Submitted)
         {
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state == CalculationExecutionState.Pending)
         {
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
         }
         else if (_state == CalculationExecutionState.Executing)
         {
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
             calculation.MarkAsCalculating();
         }
         else if (_state == CalculationExecutionState.Completed)
         {
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
             calculation.MarkAsCalculating();
@@ -147,6 +152,7 @@ public class CalculationBuilder
         }
         else if (_state == CalculationExecutionState.Failed)
         {
+            calculation.MarkAsStarted();
             calculation.MarkAsCalculationJobSubmitted(jobRunId, SystemClock.Instance.GetCurrentInstant());
             calculation.MarkAsCalculationJobPending();
             calculation.MarkAsCalculating();
