@@ -11,10 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from delta.tables import DeltaTable
-from source.databricks.calculation_engine.package.optimize_job.optimization import (
-    optimize_table,
+from package.optimize_job.delta_optimization import (
+    _optimize_table,
 )
 from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
