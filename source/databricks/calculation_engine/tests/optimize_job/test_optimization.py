@@ -13,7 +13,9 @@
 # limitations under the License.
 import os
 from delta.tables import DeltaTable
-from package.optimise_job.optimisation import optimise_table
+from source.databricks.calculation_engine.package.optimize_job.optimization import (
+    optimize_table,
+)
 from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from pyspark.sql.types import StructType, StructField, StringType
@@ -35,13 +37,13 @@ def get_spark_session() -> SparkSession:
     return session
 
 
-def test__optimise_is_in_history_of_delta_table() -> None:
+def test__optimize_is_in_history_of_delta_table(spark: SparkSession) -> None:
     # Arrange
-    spark = get_spark_session()
-    mock_database_name = "test_database"
-    mock_table_name = "test_table"
+    # spark = get_spark_session()
+    database_name = "test_database"
+    table_name = "test_table"
     table_location = "/tmp/test"
-    full_table_name = f"{mock_database_name}.{mock_table_name}"
+    full_table_name = f"{database_name}.{table_name}"
     logger = Logger("test_logger")
 
     schema = StructType(
@@ -57,8 +59,8 @@ def test__optimise_is_in_history_of_delta_table() -> None:
     write_dataframe_to_table(
         spark,
         df,
-        mock_database_name,
-        mock_table_name,
+        database_name,
+        table_name,
         table_location,
         schema,
     )
@@ -66,15 +68,15 @@ def test__optimise_is_in_history_of_delta_table() -> None:
     write_dataframe_to_table(
         spark,
         df,
-        mock_database_name,
-        mock_table_name,
+        database_name,
+        table_name,
         table_location,
         schema,
         mode="append",
     )
 
     # Act
-    optimise_table(spark, mock_database_name, mock_table_name, logger)
+    optimize_table(spark, database_name, table_name, logger)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)

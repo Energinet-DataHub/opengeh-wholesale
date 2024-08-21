@@ -24,34 +24,36 @@ from package.common.logger import Logger
 import package.infrastructure.environment_variables as env_vars
 
 
-def optimise_tables() -> None:
+def optimize_tables() -> None:
     logger = Logger(__name__)
 
     spark = initialize_spark()
     catalog_name = env_vars.get_catalog_name()
 
-    schema_table_dicts = {
+    database_table_dicts = {
         f"{catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}": WholesaleResultsInternalDatabase.TABLE_NAMES,
         f"{catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}": WholesaleBasisDataInternalDatabase.TABLE_NAMES,
         f"{catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}": WholesaleInternalDatabase.TABLE_NAMES,
     }
 
-    total_tables = sum(len(table_names) for table_names in schema_table_dicts.values())
-    logger.info(f"Total number of tables to optimise: {total_tables}")
-    for schema_name, table_names in schema_table_dicts.items():
-        logger.info(f"Running optimise for tables in schema: {schema_name}")
+    total_tables = sum(
+        len(table_names) for table_names in database_table_dicts.values()
+    )
+    logger.info(f"Total number of tables to optimize: {total_tables}")
+    for database_name, table_names in database_table_dicts.items():
+        logger.info(f"Running optimize for tables in database: {database_name}")
         for table_name in table_names:
-            optimise_table(spark, schema_name, table_name, logger)
+            optimize_table(spark, database_name, table_name, logger)
 
 
-def optimise_table(
-    spark: SparkSession, schema_name: str, table_name: str, logger: Logger
+def optimize_table(
+    spark: SparkSession, database_name: str, table_name: str, logger: Logger
 ) -> None:
-    full_table_name = f"{schema_name}.{table_name}"
+    full_table_name = f"{database_name}.{table_name}"
     try:
-        logger.info(f"Starting to optimise table: {full_table_name}")
+        logger.info(f"Starting to optimize table: {full_table_name}")
         delta_table = DeltaTable.forName(spark, f"{full_table_name}")
         delta_table.optimize().executeCompaction()
-        logger.info(f"Finished optimising table: {full_table_name}")
+        logger.info(f"Finished optimizing table: {full_table_name}")
     except Exception as e:
-        logger.error(f"Failed to optimise table: {full_table_name}. Error: {e}")
+        logger.error(f"Failed to optimize table: {full_table_name}. Error: {e}")

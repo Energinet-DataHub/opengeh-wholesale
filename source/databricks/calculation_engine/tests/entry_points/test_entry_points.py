@@ -40,10 +40,10 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
     [
         "start_calculator",
         "migrate_data_lake",
-        "optimise_tables",
+        "optimize_delta_tables",
     ],
 )
-def test__entry_point__start_calculator__can_load_entry_point(
+def test__installed_package__can_load_entry_point(
     installed_package: None,
     entry_point_name: str,
 ) -> None:
