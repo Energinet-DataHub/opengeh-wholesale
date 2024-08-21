@@ -99,5 +99,9 @@ public class CalculationSchedulerHandler(
 
         await _unitOfWork.CommitAsync()
             .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Calculation with id {calculationId} was cancelled",
+            calculationId.Id);
     }
 }

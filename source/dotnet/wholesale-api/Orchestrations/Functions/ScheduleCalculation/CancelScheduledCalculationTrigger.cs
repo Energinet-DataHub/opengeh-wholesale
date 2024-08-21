@@ -46,10 +46,6 @@ internal class CancelScheduledCalculationTrigger(
                 new CalculationId(cancelScheduledCalculationRequestDto.CalculationId))
             .ConfigureAwait(false);
 
-        _logger.LogInformation(
-            "Calculation with id {calculationId} was cancelled",
-            cancelScheduledCalculationRequestDto.CalculationId);
-
         return new OkResult();
     }
 }
