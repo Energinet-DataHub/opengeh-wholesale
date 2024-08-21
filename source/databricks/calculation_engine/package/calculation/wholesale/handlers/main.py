@@ -12,44 +12,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from package.calculation.wholesale.handlers.decorator import BaseDecorator
+from pyspark.sql import DataFrame
+
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.handlers.decorator import BaseDecorator
-from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
-    GetMeteringPointPeriodsDecorator,
-    GetGridLossResponsibleDecorator,
-    MeteringPointPeriodsWithGridLossDecorator,
-    CalculationDecorator,
+from package.calculation.wholesale.handlers.calculation_parameters_step import (
+    CalculationParametersStep,
 )
-from package.databases.migrations_wholesale import TableReader
+from package.calculation.wholesale.handlers.calculationstep import Bucket
+from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
+    AddMeteringPointPeriodsToBucket,
+    CalculateGridLossResponsibleStep,
+    MeteringPointPeriodsWithGridLossDecorator,
+)
 
 
-def chain():
+def chain(calculator_args: CalculatorArgs, mpp_repository: DataFrame) -> None:
 
-    # Dependency injection
-    mpp_repository = TableReader()
-    calculator_args = CalculatorArgs()
-    container = CalculationResultsContainer()
+    output = CalculationResultsContainer()
+    bucket = Bucket()
 
-    # DI for decorators
-    calculation_decorator = CalculationDecorator(calculator_args)
-    get_mpp_decorator = GetMeteringPointPeriodsDecorator(
-        calculator_args, container, mpp_repository
+    calculation_parameters_step = CalculationParametersStep(
+        calculator_args,
+        output,
     )
-    grid_loss_responsible_decorator = GetGridLossResponsibleDecorator(
-        calculator_args.calculation_grid_areas,
-        container.metering_point_periods_df,
-        mpp_repository,
+
+    # Chain steps
+    # Pass output to next step automatically in handle method
+    # Inject needed dependencies in the constructors
+
+    add_metering_point_periods_to_bucket = AddMeteringPointPeriodsToBucket(
+        calculator_args, output, mpp_repository
+    )
+
+    calculate_grid_loss_responsible_step = CalculateGridLossResponsibleStep(
+        bucket, output, mpp_repository
     )
     mpp_with_grid_loss_decorator = MeteringPointPeriodsWithGridLossDecorator()
     fallback_decorator = BaseDecorator()
 
     # Set up the chain
-    calculation_decorator.set_next(get_mpp_decorator)
-    get_mpp_decorator.set_next(grid_loss_responsible_decorator)
-    get_mpp_decorator.handle()
-    grid_loss_responsible_decorator.set_next(mpp_with_grid_loss_decorator)
-    mpp_with_grid_loss_decorator.set_next(fallback_decorator)
+    (
+        calculation_parameters_step.set_next(add_metering_point_periods_to_bucket)
+        .set_next(calculate_grid_loss_responsible_step)
+        .set_next(mpp_with_grid_loss_decorator)
+        .set_next(fallback_decorator)
+    )
 
     # Execute calculation
-    calculation_decorator.handle()
+    calculation_parameters_step.handle(bucket)

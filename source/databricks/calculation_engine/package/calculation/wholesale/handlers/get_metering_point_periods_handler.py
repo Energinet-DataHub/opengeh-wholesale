@@ -22,36 +22,38 @@ from package.calculation.preparation.data_structures import GridLossResponsible
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     _throw_if_no_grid_loss_responsible,
 )
-from package.calculation.wholesale.handlers.decorator import (
-    BaseDecorator,
+from package.calculation.wholesale.handlers.calculationstep import (
+    BaseCalculationStep,
     ResponseType,
-    RequestType,
+    Bucket,
 )
 from package.constants import Colname
-from package.databases import wholesale_internal
 from package.databases.migrations_wholesale import TableReader
 
 
-class MeteringPointPeriodsWithGridLossDecorator(BaseDecorator[DataFrame, DataFrame]):
+class MeteringPointPeriodsWithGridLossDecorator(
+    BaseCalculationStep[DataFrame, DataFrame]
+):
 
     def handle(self, df: DataFrame) -> Optional[ResponseType]:
         pass
 
 
-class GetGridLossResponsibleDecorator(BaseDecorator[DataFrame, GridLossResponsible]):
+class CalculateGridLossResponsibleStep(
+    BaseCalculationStep[DataFrame, GridLossResponsible]
+):
 
     def __init__(
         self,
-        grid_areas: list[str],
-        metering_point_periods_df: DataFrame,
-        wholesale_internal_table_reader: wholesale_internal.TableReader,
+        bucket: Bucket,
+        output: CalculationResultsContainer,
+        wholesale_internal_table_reader: TableReader,
     ):
-
-        self.grid_areas = grid_areas
-        self.metering_point_periods_df = metering_point_periods_df
+        super().__init__(bucket, output)
         self.wholesale_internal_table_reader = wholesale_internal_table_reader
+        self.output = output
 
-    def handle(self, df: DataFrame) -> GridLossResponsible:
+    def handle(self, df: DataFrame) -> None:
 
         grid_loss_responsible = (
             self.wholesale_internal_table_reader.read_grid_loss_metering_points()
@@ -73,22 +75,10 @@ class GetGridLossResponsibleDecorator(BaseDecorator[DataFrame, GridLossResponsib
 
         _throw_if_no_grid_loss_responsible(self.grid_areas, grid_loss_responsible)
 
-        return GridLossResponsible(grid_loss_responsible)
+        self.output = GridLossResponsible(grid_loss_responsible)
 
 
-class CalculationDecorator(BaseDecorator[DataFrame, None]):
-
-    def handle(self, request: RequestType) -> Optional[ResponseType]:
-        return super().handle(request)
-
-    def __init__(
-        self,
-        calculator_args: CalculatorArgs,
-    ):
-        self.calculator_args = calculator_args
-
-
-class GetMeteringPointPeriodsDecorator(BaseDecorator[CalculatorArgs, DataFrame]):
+class AddMeteringPointPeriodsToBucket(BaseCalculationStep[CalculatorArgs, DataFrame]):
 
     def __init__(
         self,

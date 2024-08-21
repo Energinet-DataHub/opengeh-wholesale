@@ -17,39 +17,54 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional, TypeVar, Generic
 
+from package.calculation.calculation_results import CalculationResultsContainer
+
 # Define generic type variables
 RequestType = TypeVar("RequestType")
 ResponseType = TypeVar("ResponseType")
 
 
-class Decorator(ABC, Generic[RequestType, ResponseType]):
+class CalculationStep(ABC, Generic[RequestType, ResponseType]):
 
     @abstractmethod
     def set_next(
-        self, handler: "Decorator[RequestType, ResponseType]"
-    ) -> "Decorator[RequestType, ResponseType]":
+        self, handler: "CalculationStep[RequestType, ResponseType]"
+    ) -> "CalculationStep[RequestType, ResponseType]":
         pass
 
     @abstractmethod
-    def handle(self, request: RequestType) -> Optional[ResponseType]:
+    def handle(self) -> Optional[ResponseType]:
         pass
 
 
-class BaseDecorator(Decorator[RequestType, ResponseType]):
+class BaseCalculationStep(CalculationStep[RequestType, ResponseType]):
     """
     The default chaining behavior can be implemented inside a base handler class.
     """
 
-    _next_handler: Optional[Decorator[RequestType, ResponseType]] = None
+    def __init__(
+            self,
+            bucket: Bucket,
+            calculation_results_container: CalculationResultsContainer,
+    ):
+        #
+        self.bucket = bucket
+        self.calculation_results_container = calculation_results_container
+
+    _next_handler: Optional[CalculationStep[RequestType, ResponseType]] = None
 
     def set_next(
-        self, handler: "Decorator[RequestType, ResponseType]"
-    ) -> "Decorator[RequestType, ResponseType]":
+        self, handler: "CalculationStep[RequestType, ResponseType]"
+    ) -> "CalculationStep[RequestType, ResponseType]":
         self._next_handler = handler
         # Returning a handler from here will let us link handlers in a convenient way like handler1.set_next(handler2).set_next(handler3)
         return handler
 
-    def handle(self, request: RequestType) -> Optional[ResponseType]:
+    def handle(self) -> Optional[ResponseType]:
         if self._next_handler:
-            return self._next_handler.handle(request)
+            return self._next_handler.handle()
         return None
+
+
+class Bucket:
+
