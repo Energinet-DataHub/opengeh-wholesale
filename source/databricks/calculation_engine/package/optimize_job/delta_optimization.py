@@ -47,10 +47,10 @@ def optimize_tables(catalog_name: str | None = None) -> None:
     for database_name, table_names in database_table_dicts.items():
         logger.info(f"Running optimize for tables in database: {database_name}")
         for table_name in table_names:
-            optimize_table(spark, database_name, table_name, logger)
+            _optimize_table(spark, database_name, table_name, logger)
 
 
-def optimize_table(
+def _optimize_table(
     spark: SparkSession, database_name: str, table_name: str, logger: Logger
 ) -> None:
     full_table_name = f"{database_name}.{table_name}"
