@@ -28,6 +28,7 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.PeriodEnd.ToDateTimeOffset(),
             calculation.GetResolution(),
             calculation.GetQuantityUnit().ToString(),
+            calculation.ScheduledAt.ToDateTimeOffset(),
             calculation.ExecutionTimeStart?.ToDateTimeOffset(),
             calculation.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(calculation.ExecutionState),
