@@ -20,8 +20,6 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
 public class CalculationOrchestrationStateMapperTests
 {
-    // Create test that check that all values in CalculationOrchestrationState are mapped
-    // to the corresponding values in Common.Interfaces.Models.CalculationOrchestrationState
     public static IEnumerable<object[]> AllCalculationOrchestrationStateInputs()
     {
         var allValues = Enum
