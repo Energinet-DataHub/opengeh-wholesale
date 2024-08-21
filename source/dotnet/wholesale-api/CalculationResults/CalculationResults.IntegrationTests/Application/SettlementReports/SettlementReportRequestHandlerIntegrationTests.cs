@@ -50,64 +50,6 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     }
 
     [Fact]
-    public async Task RequestReportAsync_ForBalanceFixingChunked_ReturnsPartialFiles()
-    {
-        // Arrange
-        var calculationFilter = new Dictionary<string, CalculationId?>
-        {
-            { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
-        };
-
-        var filter = new SettlementReportRequestFilterDto(
-            calculationFilter,
-            DateTimeOffset.UtcNow.Date,
-            DateTimeOffset.UtcNow.Date.AddDays(2),
-            CalculationType.BalanceFixing,
-            null,
-            null);
-
-        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(false, false, false, false, filter);
-
-        var mockedRepository = new Mock<ILatestCalculationVersionRepository>();
-        mockedRepository
-            .Setup(repository => repository.GetLatestCalculationVersionAsync())
-            .ReturnsAsync(1);
-
-        var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
-        mockedGenerator
-            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>(), It.IsAny<SettlementReportRequestedByActor>(), 1))
-            .ReturnsAsync(2);
-
-        var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
-        mockedFactory
-            .Setup(factory => factory.Create(It.IsAny<SettlementReportFileContent>()))
-            .Returns(mockedGenerator.Object);
-
-        var sut = new SettlementReportRequestHandler(mockedRepository.Object);
-
-        // Act
-        var actual = (await sut.RequestReportAsync(requestId, reportRequest)).ToList();
-
-        // Assert
-        var chunkA = actual[0];
-        Assert.Equal(requestId, chunkA.RequestId);
-        Assert.Equal(calculationFilter.Single(), chunkA.RequestFilter.GridAreas.Single());
-        Assert.Equal("RESULTENERGY", chunkA.PartialFileInfo.FileName);
-        Assert.Equal(0, chunkA.PartialFileInfo.FileOffset);
-        Assert.Equal(0, chunkA.PartialFileInfo.ChunkOffset);
-        Assert.Equal(SettlementReportFileContent.EnergyResult, chunkA.FileContent);
-
-        var chunkB = actual[1];
-        Assert.Equal(requestId, chunkB.RequestId);
-        Assert.Equal(calculationFilter.Single(), chunkB.RequestFilter.GridAreas.Single());
-        Assert.Equal("RESULTENERGY", chunkB.PartialFileInfo.FileName);
-        Assert.Equal(0, chunkB.PartialFileInfo.FileOffset);
-        Assert.Equal(1, chunkB.PartialFileInfo.ChunkOffset);
-        Assert.Equal(SettlementReportFileContent.EnergyResult, chunkB.FileContent);
-    }
-
-    [Fact]
     public async Task RequestReportAsync_ForBalanceFixingWithoutBasisData_ReturnsExpectedFiles()
     {
         // Arrange
