@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.WebApi.V3;
 using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.IdentityModel.Tokens;
+
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
@@ -49,7 +49,7 @@ public class ControllerAuthorizeAttributeTests
                             action.GetCustomAttribute<AllowAnonymousAttribute>() == null)
                     .ToList();
 
-            if (!methods.IsNullOrEmpty())
+            if (methods.Count > 0)
             {
                 methods.ForEach(x => methodsWithoutAuthorizeAttribute.Add($"{x.Name} in {controller.Name}."));
             }
