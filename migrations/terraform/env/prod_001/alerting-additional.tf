@@ -155,7 +155,7 @@ resource "azurerm_monitor_metric_alert" "timeseriessynchronization_deadletter_qu
     dimension {
       name     = "EntityName"
       operator = "Include"
-      values   = [module.sbtsub_time_series_sync_processing.name]
+      values   = [azurerm_servicebus_topic.time_series_imported_messages_topic.name]
     }
   }
 
