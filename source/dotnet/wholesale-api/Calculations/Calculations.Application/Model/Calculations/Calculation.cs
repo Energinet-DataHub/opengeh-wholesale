@@ -29,7 +29,7 @@ public class Calculation
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
-        Instant executionTimeStart,
+        Instant scheduledAt,
         DateTimeZone dateTimeZone,
         Guid createdByUserId,
         long version)
@@ -39,17 +39,19 @@ public class Calculation
         if (!IsValid(_gridAreaCodes, calculationType, periodStart, periodEnd, dateTimeZone, out var errorMessages))
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
-        ExecutionState = CalculationExecutionState.Created;
-        _orchestrationState = CalculationOrchestrationState.Scheduled;
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
-        ExecutionTimeStart = executionTimeStart;
+        ScheduledAt = scheduledAt;
         CreatedTime = createdTime;
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
         Version = version;
+
+        _orchestrationState = CalculationOrchestrationState.Scheduled;
+        ExecutionState = CalculationExecutionState.Created;
+        OrchestrationInstanceId = new OrchestrationInstanceId(Guid.NewGuid().ToString("N"));
     }
 
     /// <summary>
@@ -117,6 +119,7 @@ public class Calculation
         Id = Guid.NewGuid();
         _gridAreaCodes = [];
         Version = 0;
+        OrchestrationInstanceId = null!;
     }
 
     // Private setter is used implicitly by tests
@@ -142,8 +145,9 @@ public class Calculation
 
             CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
             {
-                // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started],
+                // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
+                CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
@@ -162,11 +166,14 @@ public class Calculation
     }
 
     /// <summary>
-    /// The calculation engine registers its own perception of the start time.
-    /// So the values will most likely differ and depend on from which data source
-    /// it's being read.
+    /// When they calculation is scheduled to run.
     /// </summary>
-    public Instant? ExecutionTimeStart { get; }
+    public Instant ScheduledAt { get; }
+
+    /// <summary>
+    /// When the calculation orchestration actually started (after the schedule is met).
+    /// </summary>
+    public Instant? ExecutionTimeStart { get; private set; }
 
     public Instant CreatedTime { get; }
 
@@ -181,6 +188,8 @@ public class Calculation
     public Instant? CompletedTime { get; private set; }
 
     public CalculationJobId? CalculationJobId { get; private set; }
+
+    public OrchestrationInstanceId OrchestrationInstanceId { get; }
 
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
@@ -241,7 +250,26 @@ public class Calculation
         };
     }
 
-    public void MarkAsSubmitted(CalculationJobId calculationJobId)
+    /// <summary>
+    /// The calculation orchestration has started (after the schedule has been met)
+    /// </summary>
+    public void MarkAsStarted()
+    {
+        if (ExecutionState is not CalculationExecutionState.Created)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
+
+        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Started);
+
+        OrchestrationState = CalculationOrchestrationState.Started;
+    }
+
+    /// <summary>
+    /// The calculation job has been submitted to the calculation engine (databricks).
+    /// </summary>
+    /// <param name="calculationJobId">The external identifier from the calculation engine</param>
+    /// <param name="executionTimeStart">When the job was submitted to the calculation engine</param>
+    public void MarkAsCalculationJobSubmitted(CalculationJobId calculationJobId, Instant executionTimeStart)
     {
         ArgumentNullException.ThrowIfNull(calculationJobId);
         if (ExecutionState is CalculationExecutionState.Submitted or CalculationExecutionState.Pending
@@ -251,27 +279,39 @@ public class Calculation
         }
 
         CalculationJobId = calculationJobId;
+        ExecutionTimeStart = executionTimeStart;
         ExecutionState = CalculationExecutionState.Submitted;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
+        OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
-    public void MarkAsScheduled()
-    {
-        if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
-        ExecutionState = CalculationExecutionState.Pending;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
-    }
-
-    public void MarkAsCalculating()
+    /// <summary>
+    /// The calculation job is submitted and pending execution in the calculation engine (databricks).
+    /// </summary>
+    public void MarkAsCalculationJobPending()
     {
         if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
+
+        ExecutionState = CalculationExecutionState.Pending;
+        OrchestrationState = CalculationOrchestrationState.Calculating;
+    }
+
+    /// <summary>
+    /// The calculation orchestration is waiting for the calculation job to complete.
+    /// </summary>
+    public void MarkAsCalculating()
+    {
+        if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
 
         ExecutionState = CalculationExecutionState.Executing;
         OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
+    /// <summary>
+    /// The calculation orchestration is calculated when the calculation job is complete.
+    /// </summary>
+    /// <param name="executionTimeEnd">When the calculation job completed in the calculation engine</param>
     public void MarkAsCalculated(Instant executionTimeEnd)
     {
         if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
@@ -324,39 +364,6 @@ public class Calculation
     {
         OrchestrationState = CalculationOrchestrationState.Completed;
         CompletedTime = completedAt;
-    }
-
-    public void UpdateState(CalculationOrchestrationState newState, IClock clock)
-    {
-        switch (newState)
-        {
-            case CalculationOrchestrationState.Scheduled:
-                MarkAsScheduled();
-                break;
-            case CalculationOrchestrationState.Calculating:
-                MarkAsCalculating();
-                break;
-            case CalculationOrchestrationState.Calculated:
-                MarkAsCalculated(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.CalculationFailed:
-                MarkAsCalculationFailed();
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                MarkAsActorMessagesEnqueuing(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueued:
-                MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
-                MarkAsActorMessagesEnqueuingFailed();
-                break;
-            case CalculationOrchestrationState.Completed:
-                MarkAsCompleted(clock.GetCurrentInstant());
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
-        }
     }
 
     /// <summary>

@@ -29,22 +29,30 @@ public static class DurableClientExtensions
     ///
     /// If more than one orchestration exists an exception is thrown.
     /// </summary>
-    public static async Task<DurableOrchestrationStatus> FindOrchestationStatusAsync(
+    public static async Task<DurableOrchestrationStatus> WaitForOrchestationStartedAsync(
         this IDurableClient client,
-        DateTime createdTimeFrom)
+        DateTime createdTimeFrom,
+        TimeSpan? waitTimeLimit = null)
     {
-        var filter = new OrchestrationStatusQueryCondition()
-        {
-            CreatedTimeFrom = createdTimeFrom,
-            RuntimeStatus =
-            [
-                OrchestrationRuntimeStatus.Running,
-                OrchestrationRuntimeStatus.Completed,
-            ],
-        };
-        var queryResult = await client.ListInstancesAsync(filter, CancellationToken.None);
+        IReadOnlyCollection<DurableOrchestrationStatus> orchestrationInstances = [];
+        var orchestrationFound = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                var orchestrationsQueryResult = await GetOrchestrationInstancesAsync(client, createdTimeFrom);
+                orchestrationInstances = orchestrationsQueryResult.DurableOrchestrationState.ToList();
 
-        return queryResult.DurableOrchestrationState.Single();
+                return orchestrationInstances.Count > 0;
+            },
+            timeLimit: waitTimeLimit ?? TimeSpan.FromSeconds(60),
+            delay: TimeSpan.FromSeconds(5));
+
+        if (!orchestrationFound)
+            throw new Exception($"No orchestration instance found within configured wait time limit.");
+
+        if (orchestrationInstances.Count > 1)
+            throw new Exception($"More than one orchestration instance found. Expected 1, but found {orchestrationInstances.Count}");
+
+        return orchestrationInstances.Single();
     }
 
     /// <summary>
@@ -106,5 +114,20 @@ public static class DurableClientExtensions
         return matchesCustomStatus
             ? actualStatus
             : throw new Exception($"Orchestration instance '{instanceId}' did not match custom status within configured wait time limit. Actual status: {actualStatus.CustomStatus.ToString(Formatting.Indented)}");
+    }
+
+    private static async Task<OrchestrationStatusQueryResult> GetOrchestrationInstancesAsync(IDurableClient client, DateTime createdTimeFrom)
+    {
+        var filter = new OrchestrationStatusQueryCondition()
+        {
+            CreatedTimeFrom = createdTimeFrom,
+            RuntimeStatus =
+            [
+                OrchestrationRuntimeStatus.Running,
+                OrchestrationRuntimeStatus.Completed,
+            ],
+        };
+        var queryResult = await client.ListInstancesAsync(filter, CancellationToken.None);
+        return queryResult;
     }
 }

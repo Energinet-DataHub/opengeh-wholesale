@@ -115,6 +115,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        // Clean up old Azurite storage
+        CleanupAzuriteStorage();
+
         // Storage emulator
         AzuriteManager.StartAzurite();
 
@@ -238,7 +241,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             CalculationType.Aggregation,
             GridAreaCodes: ["256", "512"],
             StartDate: dateAtMidnight,
-            EndDate: dateAtMidnight.AddDays(2));
+            EndDate: dateAtMidnight.AddDays(2),
+            ScheduledAt: DateTimeOffset.UtcNow);
 
         request.Content = new StringContent(
             JsonConvert.SerializeObject(requestDto),
@@ -385,6 +389,41 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         var containerExists = await blobContainerClient.ExistsAsync();
         if (!containerExists)
             await blobContainerClient.CreateAsync();
+    }
+
+    /// <summary>
+    /// Cleanup Azurite storage to avoid situations where Durable Functions
+    /// would otherwise continue working on old orchestrations that e.g. failed in
+    /// previous runs.
+    /// </summary>
+    private void CleanupAzuriteStorage()
+    {
+        if (Directory.Exists("__blobstorage__"))
+            Directory.Delete("__blobstorage__", true);
+
+        if (Directory.Exists("__queuestorage__"))
+            Directory.Delete("__queuestorage__", true);
+
+        if (Directory.Exists("__tablestorage__"))
+            Directory.Delete("__tablestorage__", true);
+
+        if (File.Exists("__azurite_db_blob__.json"))
+            File.Delete("__azurite_db_blob__.json");
+
+        if (File.Exists("__azurite_db_blob_extent__.json"))
+            File.Delete("__azurite_db_blob_extent__.json");
+
+        if (File.Exists("__azurite_db_queue__.json"))
+            File.Delete("__azurite_db_queue__.json");
+
+        if (File.Exists("__azurite_db_queue_extent__.json"))
+            File.Delete("__azurite_db_queue_extent__.json");
+
+        if (File.Exists("__azurite_db_table__.json"))
+            File.Delete("__azurite_db_table__.json");
+
+        if (File.Exists("__azurite_db_table_extent__.json"))
+            File.Delete("__azurite_db_table_extent__.json");
     }
 
     private static void StartHost(FunctionAppHostManager hostManager)

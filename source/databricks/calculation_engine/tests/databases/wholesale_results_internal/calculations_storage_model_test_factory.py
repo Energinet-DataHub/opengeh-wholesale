@@ -16,11 +16,9 @@ from datetime import datetime
 from pyspark.sql import DataFrame, Row, SparkSession
 
 from package.codelists import CalculationType
-from package.databases.wholesale_internal.calculation_column_names import (
-    CalculationColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
+
 from package.databases.wholesale_internal.schemas import (
-    hive_calculations_schema,
     calculations_schema,
 )
 
@@ -45,14 +43,15 @@ def create_calculation_row(
     version: int = DefaultValues.VERSION,
 ) -> Row:
     calculation = {
-        CalculationColumnNames.calculation_id: calculation_id,
-        CalculationColumnNames.calculation_type: calculation_type.value,
-        CalculationColumnNames.period_start: calculation_period_start_datetime,
-        CalculationColumnNames.period_end: calculation_period_end_datetime,
-        CalculationColumnNames.execution_time_start: calculation_execution_time_start,
-        CalculationColumnNames.created_by_user_id: created_by_user_id,
-        CalculationColumnNames.version: version,
-        CalculationColumnNames.is_control_calculation: False,
+        TableColumnNames.calculation_id: calculation_id,
+        TableColumnNames.calculation_type: calculation_type.value,
+        TableColumnNames.calculation_period_start: calculation_period_start_datetime,
+        TableColumnNames.calculation_period_end: calculation_period_end_datetime,
+        TableColumnNames.calculation_execution_time_start: calculation_execution_time_start,
+        TableColumnNames.created_by_user_id: created_by_user_id,
+        TableColumnNames.calculation_version: version,
+        TableColumnNames.is_internal_calculation: False,
+        TableColumnNames.calculation_succeeded_time: None,
     }
 
     return Row(**calculation)
@@ -69,4 +68,4 @@ def create_calculations(
 
 
 def create_empty_calculations(spark: SparkSession) -> DataFrame:
-    return spark.createDataFrame(data=[], schema=hive_calculations_schema)
+    return spark.createDataFrame(data=[], schema=calculations_schema)

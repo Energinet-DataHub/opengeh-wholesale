@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class EnergyResultQueryStatement : DatabricksStatement
+public sealed class EnergyResultQueryStatement : DatabricksStatement
 {
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly Guid _calculationId;

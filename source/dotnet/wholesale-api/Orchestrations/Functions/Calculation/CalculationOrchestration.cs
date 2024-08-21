@@ -37,12 +37,20 @@ internal class CalculationOrchestration
 
         var defaultRetryOptions = CreateDefaultRetryOptions();
 
-        // Create calculation (SQL)
-        var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
-            nameof(CreateCalculationRecordActivity),
-            input,
+        // Set instance id on calculation
+        await context.CallActivityAsync(
+            nameof(SetCalculationAsStartedActivity),
+            new SetCalculationAsStartedInput(input.CalculationId.Id, context.InstanceId),
             defaultRetryOptions);
-        calculationMetadata.OrchestrationProgress = "CalculationCreated";
+
+        // Set custom calculation. This is being waited for in the ScheduledCalculationTrigger to ensure that the calculation is started.
+        var calculationMetadata = new CalculationMetadata
+        {
+            IsStarted = true,
+            Id = input.CalculationId.Id,
+            Input = input,
+            OrchestrationProgress = "OrchestrationStarted",
+        };
         context.SetCustomStatus(calculationMetadata);
 
         // Start calculation (Databricks)
@@ -110,6 +118,13 @@ internal class CalculationOrchestration
                 nameof(SendCalculationResultsActivity),
                 new SendCalculationResultsInput(calculationMetadata.Id, context.InstanceId),
                 defaultRetryOptions);
+
+            await UpdateCalculationOrchestrationStateAsync(
+                context,
+                calculationMetadata.Id,
+                CalculationOrchestrationState.ActorMessagesEnqueuing,
+                defaultRetryOptions);
+
             calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
             context.SetCustomStatus(calculationMetadata);
