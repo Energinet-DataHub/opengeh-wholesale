@@ -1,4 +1,4 @@
-# Minimal Standard Settlement Report Views Scenario
+# Given Minimal Standard Settlement Report Views Scenario
 
 The purpose is checking all current views used for settlement reports.
 
@@ -15,3 +15,7 @@ Two small corner cases are included:
 - Verify that multiple metering point periods with the same id, metering point type, grid area code, calculation id and energy supplier id (but period start/stop) only have one entry in charge prices.
 - One extra row with a different calculation_id is added to the basis data. This calculation_id is not part of the 'calculations' table. The purpose is
   to test that the view does not include this row.
+
+## Coverage
+ - Generate data for settlement report when input data is from minimal standard wholesale scenario
+ - Generate data for settlement report that only includes rows with correct calculation_id

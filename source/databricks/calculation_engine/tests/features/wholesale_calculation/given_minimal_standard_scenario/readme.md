@@ -1,13 +1,6 @@
-# When Minimal Standard Scenario for wholesale calculations
+# Given Minimal Standard Scenario for wholesale calculations
 
 The purpose of this test is to check a minimal, but representative sample of all wholesale calculation results.
-
-## Coverage
-
-- All types of wholesale calculations - fee, subscription, hourly and daily tariffs - are included.
-- A small set of energy time series is included in order to test tariffs.
-- Added two MP which are in another grid area and have the same energy supplier/balance responsible as Grid Loss/System
-  Correction MP in the grid area for the calculation.
 
 ### Fees
 
@@ -72,3 +65,7 @@ The purpose of this test is to check a minimal, but representative sample of all
     - System Correction MP has a tariff.
     - A tariff that ends before end of calculation period.
     - A tariff that starts before end of calculation period, but not at beginning.
+
+## Coverage
+
+- Standard scenario for a wholesale calculation

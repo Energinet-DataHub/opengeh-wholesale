@@ -1,11 +1,10 @@
-# When Minimal Standard Scenario
+# Given Minimal Standard Scenario
 
 The purpose of this test is to test every energy result calculation (along with basis data) with the smallest meaningful
 time period (one hour).
 
 ## Design considerations
 
-- Input period is post May 2023 so that results are quarterly
 - Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
   metering point type
 - Input quantities have been set so production, flex, and nonprofiled do not produce the same result.
@@ -19,18 +18,4 @@ time period (one hour).
     - Example - flex metering point with resolution 15M: '**17**000000**15**00000**2**01'
 
 ## Coverage
-
-All metering point types relevant for energy calculations
-
-- Exchange (energy in)
-- Exchange (energy out)
-- Consumption (flex)
-- Consumption (nonprofiled)
-- Production
-- Grid Loss MP
-- System Correction MP
-
-Each of the metering point types both have a metering point with resolution 15M and 1H.
-
-Added two MP which are in another grid area and have the same energy supplier/balance responsible as Grid Loss/System
-Correction MP in the grid area for the calculation.
+ - Standard scenario for energy results

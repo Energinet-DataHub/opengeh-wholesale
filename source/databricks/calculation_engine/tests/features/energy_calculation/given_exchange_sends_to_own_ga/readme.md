@@ -1,4 +1,4 @@
-# When exchange MP sends to own GA
+# Given exchange MP sends to own GA
 
 The purpose is to test a scenario where there are exchange MPs where from and to grid area is the same.
 
@@ -12,15 +12,4 @@ The purpose is to test a scenario where there are exchange MPs where from and to
 - Expected behaviour is that the measurements from the former are included in the calculation, but not from the latter.
 
 ## Coverage
-
-All metering point types relevant for energy calculations
-
-- Exchange (energy in)
-- Exchange (energy out)
-- Consumption (flex)
-- Consumption (nonprofiled)
-- Production
-- Grid Loss MP
-- System Correction MP
-
-Each of the metering point types both have a metering point with resolution 15M and 1H.
+ - Exchange MP where from and to is the same grid area
