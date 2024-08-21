@@ -90,7 +90,7 @@ resource "databricks_service_principal" "sp_datahub_bi" {
   databricks_sql_access = true
 }
 
-resource "databricks_permissions" "databricks_permissions_datahub_bi_endpoint" {
+resource "databricks_permissions" "datahub_bi_sql_endpoint" {
   count            = var.datahub_bi_endpoint_enabled ? 1 : 0
 
   provider        = databricks.dbw
@@ -99,6 +99,11 @@ resource "databricks_permissions" "databricks_permissions_datahub_bi_endpoint" {
   access_control {
     group_name       = "SEC-G-Datahub-DevelopersAzure"  //Allow devs read/monitor access in UI
     permission_level = "CAN_MONITOR"
+  }
+
+  access_control {
+    service_principal_name = azuread_application.app_datahub_bi[0].client_id  //Allow the SPN to use the SQL endpoint
+    permission_level       = "CAN_USE"
   }
 
   depends_on = [module.dbw, null_resource.scim_developers]
@@ -183,7 +188,7 @@ resource "shell_script" "create_datahub_bi_token" {
     time_rotating.datahub_bi_token,
     module.dbw,
     module.kv_internal,
-    databricks_permissions.databricks_permissions_datahub_bi_endpoint,
+    databricks_permissions.datahub_bi_sql_endpoint,
     databricks_group_member.sp_datahub_bi_exttokenusers_membership,
     azurerm_role_assignment.spn_datahub_bi_workspace_access,
     databricks_service_principal.sp_datahub_bi,
