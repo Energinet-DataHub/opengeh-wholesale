@@ -197,6 +197,8 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         CalculationOrchestrationState[] states,
         TimeSpan waitTimeLimit)
     {
+        var delay = TimeSpan.FromSeconds(30);
+
         CalculationDto? calculation = null;
         var isSuccess = await Awaiter.TryWaitUntilConditionAsync(
             async () =>
@@ -205,7 +207,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                 return calculation != null && states.Contains(calculation.OrchestrationState);
             },
             waitTimeLimit,
-            TimeSpan.FromSeconds(30));
+            delay);
 
         var stateNames = string.Join(",", states);
         DiagnosticMessageSink.WriteDiagnosticMessage(
