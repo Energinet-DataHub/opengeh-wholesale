@@ -54,10 +54,10 @@ public static class PeriodHelper
     {
         WholesaleResolution.Hour => dateTime.AddMinutes(60),
         WholesaleResolution.Day => dateTime.AddDays(1),
-        _ => AddMonths(dateTime.ToInstant()),
+        _ => AddAMonth(dateTime.ToInstant()),
     };
 
-    private static DateTimeOffset AddMonths(Instant dateTime)
+    private static DateTimeOffset AddAMonth(Instant dateTime)
     {
         var timeForLatestPointInLocalTime = dateTime.InZone(_dkTimeZone).LocalDateTime;
         var endAtMidnightInLocalTime = timeForLatestPointInLocalTime.PlusMonths(1).Date.AtMidnight();
