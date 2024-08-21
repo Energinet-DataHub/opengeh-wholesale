@@ -42,16 +42,16 @@ public static class PeriodHelper
         return new InternalPeriod(start.ToInstant(), endWithResolutionOffset.ToInstant());
     }
 
-    private static DateTimeOffset GetDateTimeWithResolutionOffset(EnergyResultsResolution resolution, DateTimeOffset dateTime) => resolution switch
-    {
-        EnergyResultsResolution.Quarter => dateTime.AddMinutes(15),
-        _ => dateTime.AddMinutes(60),
-    };
-
-    private static DateTimeOffset GetDateTimeWithResolutionOffset(WholesaleResolution resolution, DateTimeOffset dateTime) => resolution switch
+    public static DateTimeOffset GetDateTimeWithResolutionOffset(WholesaleResolution resolution, DateTimeOffset dateTime) => resolution switch
     {
         WholesaleResolution.Hour => dateTime.AddMinutes(60),
         WholesaleResolution.Day => dateTime.AddDays(1),
         _ => dateTime.AddMonths(1),
+    };
+
+    private static DateTimeOffset GetDateTimeWithResolutionOffset(EnergyResultsResolution resolution, DateTimeOffset dateTime) => resolution switch
+    {
+        EnergyResultsResolution.Quarter => dateTime.AddMinutes(15),
+        _ => dateTime.AddMinutes(60),
     };
 }
