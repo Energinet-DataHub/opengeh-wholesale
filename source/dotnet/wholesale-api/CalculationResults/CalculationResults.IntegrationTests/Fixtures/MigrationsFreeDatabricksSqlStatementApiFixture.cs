@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,8 @@ public class MigrationsFreeDatabricksSqlStatementApiFixture : IAsyncLifetime
     }
 
     public MigrationsFreeDatabricksSchemaManager DatabricksSchemaManager { get; }
+
+    public bool DataIsInitialized { get; set; } = false;
 
     public async Task InitializeAsync()
     {

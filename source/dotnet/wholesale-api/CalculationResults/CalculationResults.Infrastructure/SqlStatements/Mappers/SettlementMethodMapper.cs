@@ -53,4 +53,19 @@ public static class SettlementMethodMapper
                 actualValue: timeSeriesType,
                 "Value cannot be mapped to a settlement method."),
         };
+
+    public static string? ToDeltaTableValue(SettlementMethod? settlementMethod)
+    {
+        return settlementMethod switch
+        {
+            null => null,
+            SettlementMethod.Flex => "flex",
+            SettlementMethod.NonProfiled => "non_profiled",
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(settlementMethod),
+                actualValue: settlementMethod,
+                "Value does not contain a valid string representation of a settlement method."),
+        };
+    }
 }

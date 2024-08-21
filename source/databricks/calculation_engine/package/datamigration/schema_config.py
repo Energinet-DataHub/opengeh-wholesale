@@ -103,6 +103,9 @@ schema_config = [
         tables=[],
         views=[
             View(
+                name=paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME,
+            ),
+            View(
                 name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
             ),
             View(
@@ -152,6 +155,15 @@ schema_config = [
             ),
             View(
                 name=paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            ),
+        ],
+    ),
+    Schema(
+        name=paths.WholesaleSapDatabase.DATABASE_NAME,
+        tables=[],
+        views=[
+            View(
+                name=paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
             ),
         ],
     ),

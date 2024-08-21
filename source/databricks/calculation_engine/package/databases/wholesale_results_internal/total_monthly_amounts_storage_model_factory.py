@@ -16,12 +16,10 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
 from package.constants import Colname
-from package.databases.wholesale_results_internal.total_monthly_amounts_column_names import (
-    TotalMonthlyAmountsColumnNames,
-)
 
 
 def create(
@@ -39,25 +37,17 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
     # Map column names to the Delta table field names
     # Note: The order of the columns must match the order of the columns in the Delta table
     return df.select(
-        col(Colname.calculation_id).alias(
-            TotalMonthlyAmountsColumnNames.calculation_id
-        ),
-        col(Colname.calculation_type).alias(
-            TotalMonthlyAmountsColumnNames.calculation_type
-        ),
+        col(Colname.calculation_id).alias(TableColumnNames.calculation_id),
+        col(Colname.calculation_type).alias(TableColumnNames.calculation_type),
         col(Colname.calculation_execution_time_start).alias(
-            TotalMonthlyAmountsColumnNames.calculation_execution_time_start
+            TableColumnNames.calculation_execution_time_start
         ),
-        col(TotalMonthlyAmountsColumnNames.calculation_result_id),
-        col(Colname.grid_area_code).alias(
-            TotalMonthlyAmountsColumnNames.grid_area_code
-        ),
-        col(Colname.energy_supplier_id).alias(
-            TotalMonthlyAmountsColumnNames.energy_supplier_id
-        ),
-        col(Colname.charge_time).alias(TotalMonthlyAmountsColumnNames.time),
-        col(Colname.total_amount).alias(TotalMonthlyAmountsColumnNames.amount),
-        col(Colname.charge_owner).alias(TotalMonthlyAmountsColumnNames.charge_owner_id),
+        col(TableColumnNames.calculation_result_id),
+        col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
+        col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
+        col(Colname.charge_time).alias(TableColumnNames.time),
+        col(Colname.total_amount).alias(TableColumnNames.amount),
+        col(Colname.charge_owner).alias(TableColumnNames.charge_owner_id),
     )
 
 

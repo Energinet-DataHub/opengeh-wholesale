@@ -32,7 +32,7 @@ class ViewScenarioExecutor:
     ) -> Tuple[list[DataframeWrapper], list[DataframeWrapper]]:
 
         input_dataframes_wrappers = self.parser.parse_csv_files_concurrently(
-            f"{scenario_folder_path}/input"
+            f"{scenario_folder_path}/when"
         )
 
         input_dataframes_wrappers = self.correct_dataframe_types(

@@ -26,9 +26,6 @@ from package.codelists.calculation_type import (
 )
 from package.databases import wholesale_internal, migrations_wholesale
 from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.energy_result_column_names import (
-    EnergyResultColumnNames,
-)
 from package.infrastructure import paths
 from . import configuration as C
 
@@ -45,7 +42,7 @@ def calculator_args_balance_fixing() -> CalculatorArgs:
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_control_calculation=False,
+        is_internal_calculation=False,
     )
 
 
@@ -131,8 +128,7 @@ def wholesale_fixing_energy_results_df(
         f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(EnergyResultColumnNames.calculation_id)
-        == C.executed_wholesale_calculation_id
+        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 

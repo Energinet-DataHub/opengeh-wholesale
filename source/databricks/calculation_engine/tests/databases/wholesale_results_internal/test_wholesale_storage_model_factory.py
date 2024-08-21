@@ -20,6 +20,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     wholesale_storage_model_factory as sut,
 )
@@ -38,8 +39,8 @@ from package.codelists import (
     AmountType,
 )
 from package.constants import Colname
-from package.databases.wholesale_results_internal.wholesale_result_column_names import (
-    WholesaleResultColumnNames,
+from package.databases.wholesale_results_internal.schemas import (
+    hive_wholesale_results_schema,
 )
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
@@ -149,30 +150,30 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (WholesaleResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (WholesaleResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
+        (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (TableColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (
-            WholesaleResultColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (WholesaleResultColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
-        (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (WholesaleResultColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
-        (WholesaleResultColumnNames.quantity_unit, DEFAULT_UNIT.value),
-        (WholesaleResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
-        (WholesaleResultColumnNames.time, DEFAULT_CHARGE_TIME),
-        (WholesaleResultColumnNames.resolution, DEFAULT_RESOLUTION.value),
+        (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
+        (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (TableColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
+        (TableColumnNames.quantity_unit, DEFAULT_UNIT.value),
+        (TableColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
+        (TableColumnNames.time, DEFAULT_CHARGE_TIME),
+        (TableColumnNames.resolution, DEFAULT_RESOLUTION.value),
         (
-            WholesaleResultColumnNames.metering_point_type,
+            TableColumnNames.metering_point_type,
             DEFAULT_METERING_POINT_TYPE.value,
         ),
-        (WholesaleResultColumnNames.settlement_method, DEFAULT_SETTLEMENT_METHOD.value),
-        (WholesaleResultColumnNames.price, DEFAULT_CHARGE_PRICE),
-        (WholesaleResultColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
-        (WholesaleResultColumnNames.is_tax, DEFAULT_CHARGE_TAX),
-        (WholesaleResultColumnNames.charge_code, DEFAULT_CHARGE_CODE),
-        (WholesaleResultColumnNames.charge_type, DEFAULT_CHARGE_TYPE.value),
-        (WholesaleResultColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
+        (TableColumnNames.settlement_method, DEFAULT_SETTLEMENT_METHOD.value),
+        (TableColumnNames.price, DEFAULT_CHARGE_PRICE),
+        (TableColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
+        (TableColumnNames.is_tax, DEFAULT_CHARGE_TAX),
+        (TableColumnNames.charge_code, DEFAULT_CHARGE_CODE),
+        (TableColumnNames.charge_type, DEFAULT_CHARGE_TYPE.value),
+        (TableColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
     ],
 )
 def test__create__returns_dataframe_with_column(
@@ -223,9 +224,7 @@ def test__create__returns_dataframe_with_amount_type(
 
     # Assert
     actual_row = actual_df.collect()[0]
-    assert (
-        actual_row[WholesaleResultColumnNames.amount_type] == DEFAULT_AMOUNT_TYPE.value
-    )
+    assert actual_row[TableColumnNames.amount_type] == DEFAULT_AMOUNT_TYPE.value
 
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
@@ -259,25 +258,19 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        WholesaleResultColumnNames.calculation_type,
-        WholesaleResultColumnNames.calculation_execution_time_start,
-        WholesaleResultColumnNames.calculation_result_id,
-        WholesaleResultColumnNames.amount_type,
-        WholesaleResultColumnNames.quantity,
-        WholesaleResultColumnNames.quantity_unit,
-        WholesaleResultColumnNames.quantity_qualities,
-        WholesaleResultColumnNames.time,
-        WholesaleResultColumnNames.price,
-        WholesaleResultColumnNames.amount,
-        WholesaleResultColumnNames.is_tax,
-        WholesaleResultColumnNames.result_id,
-        WholesaleResultColumnNames.balance_responsible_party_id,  # Remove from this list when switching to this from balance_responsible_id
+        TableColumnNames.calculation_type,
+        TableColumnNames.calculation_execution_time_start,
+        TableColumnNames.calculation_result_id,
+        TableColumnNames.amount_type,
+        TableColumnNames.quantity,
+        TableColumnNames.quantity_unit,
+        TableColumnNames.quantity_qualities,
+        TableColumnNames.time,
+        TableColumnNames.price,
+        TableColumnNames.amount,
+        TableColumnNames.is_tax,
     ]
-    all_columns = [
-        getattr(WholesaleResultColumnNames, attribute_name)
-        for attribute_name in dir(WholesaleResultColumnNames)
-        if not attribute_name.startswith("__")
-    ]
+    all_columns = [f.name for f in hive_wholesale_results_schema.fields]
 
     all_columns = _map_metering_point_type_column_name(all_columns)
 
@@ -295,7 +288,7 @@ def _map_metering_point_type_column_name(column_names: list[str]) -> list[str]:
     return list(
         map(
             lambda x: x.replace(
-                WholesaleResultColumnNames.metering_point_type,
+                TableColumnNames.metering_point_type,
                 Colname.metering_point_type,
             ),
             column_names,

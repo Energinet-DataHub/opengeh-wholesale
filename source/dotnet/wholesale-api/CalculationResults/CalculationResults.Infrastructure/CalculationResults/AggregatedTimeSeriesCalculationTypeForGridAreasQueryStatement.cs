@@ -14,32 +14,21 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
 internal class AggregatedTimeSeriesCalculationTypeForGridAreasQueryStatement(
     DeltaTableOptions deltaTableOptions,
-    AggregatedTimeSeriesQueryStatementWhereClauseProvider whereClauseProvider,
-    AggregatedTimeSeriesQueryParameters queryParameters)
+    AggregatedTimeSeriesQuerySnippetProvider querySnippetProvider)
     : CalculationTypeForGridAreasQueryStatementBase(
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.CalculationType)
 {
     private readonly DeltaTableOptions _deltaTableOptions = deltaTableOptions;
-    private readonly AggregatedTimeSeriesQueryStatementWhereClauseProvider _whereClauseProvider = whereClauseProvider;
-    private readonly AggregatedTimeSeriesQueryParameters _queryParameters = queryParameters;
+    private readonly AggregatedTimeSeriesQuerySnippetProvider _querySnippetProvider = querySnippetProvider;
 
-    protected override string GetSource() =>
-        $"""
-         (SELECT wr.*
-          FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} wr
-          INNER JOIN {_deltaTableOptions.BasisDataSchemaName}.{_deltaTableOptions.CALCULATIONS_TABLE_NAME} cs
-          ON wr.{EnergyResultColumnNames.CalculationId} = cs.{BasisDataCalculationsColumnNames.CalculationId})
-         """;
+    protected override string GetSource() => _querySnippetProvider.DatabricksContract.GetSource(_deltaTableOptions);
 
-    protected override string GetSelection(string table) => _whereClauseProvider
-        .GetWhereClauseSqlExpression(_queryParameters, table)
-        .Replace("WHERE", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+    protected override string GetSelection(string table) => _querySnippetProvider.GetSelection(table, null);
 }
