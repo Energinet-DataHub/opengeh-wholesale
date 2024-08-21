@@ -76,9 +76,9 @@ public sealed class TotalMonthlyAmountWholesaleServicesDatabricksContract : IWho
         return TotalMonthlyAmountsViewColumnNames.CalculationId;
     }
 
-    public string? GetResolutionColumnName()
+    public string GetResolutionColumnName()
     {
-        return null;
+        throw new InvalidOperationException("There is no resolution for total monthly amounts");
     }
 
     public string GetIsTaxColumnName()

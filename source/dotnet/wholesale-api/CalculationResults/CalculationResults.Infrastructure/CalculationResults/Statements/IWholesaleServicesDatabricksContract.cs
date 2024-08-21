@@ -42,7 +42,7 @@ public interface IWholesaleServicesDatabricksContract
 
     string GetCalculationIdColumnName();
 
-    string? GetResolutionColumnName();
+    string GetResolutionColumnName();
 
     string GetIsTaxColumnName();
 

@@ -59,7 +59,10 @@ public class WholesaleServicesQueries(
                            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
                            (currentRow, previousRow) => querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
                                                         || currentRow[calculationIdColumn] != previousRow[calculationIdColumn]
-                                                        || !ResultStartEqualsPreviousResultEnd(currentRow, previousRow, querySnippetsProvider.DatabricksContract),
+                                                        || !ResultStartEqualsPreviousResultEnd(
+                                                            currentRow,
+                                                            previousRow,
+                                                            querySnippetsProvider.DatabricksContract),
                            WholesaleTimeSeriesPointFactory.Create,
                            sqlStatement))
         {
@@ -111,10 +114,10 @@ public class WholesaleServicesQueries(
         DatabricksSqlRow previousResult,
         IWholesaleServicesDatabricksContract databricksContract)
     {
-        var resolutionColumnName = databricksContract.GetResolutionColumnName();
-        var resolutionOfPreviousResult = resolutionColumnName != null
-            ? ResolutionMapper.FromDeltaTableValue(previousResult[resolutionColumnName]!)
-            : Resolution.Month;
+        var isMonthlyAmount = databricksContract.GetAmountType() is AmountType.MonthlyAmountPerCharge or AmountType.TotalMonthlyAmount;
+        var resolutionOfPreviousResult = isMonthlyAmount
+            ? Resolution.Month
+            : ResolutionMapper.FromDeltaTableValue(previousResult[databricksContract.GetResolutionColumnName()]!);
 
         var startTimeOfPreviousResult = SqlResultValueConverters
             .ToDateTimeOffset(previousResult[databricksContract.GetTimeColumnName()])!.Value;
