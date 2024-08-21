@@ -77,6 +77,11 @@ public sealed class
         return MonthlyAmountsPerChargeViewColumnNames.CalculationId;
     }
 
+    public string GetResolutionColumnName()
+    {
+        throw new InvalidOperationException("There is no resolution for monthly amounts");
+    }
+
     public string GetIsTaxColumnName()
     {
         return MonthlyAmountsPerChargeViewColumnNames.IsTax;

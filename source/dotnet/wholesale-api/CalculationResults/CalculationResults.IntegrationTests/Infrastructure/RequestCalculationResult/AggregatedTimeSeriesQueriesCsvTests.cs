@@ -521,7 +521,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
         }
 
         [Fact]
-        public async Task Given_EnergySupplierWithAHoleInData_Then_DataReturnedInOneChunkWithAHole()
+        public async Task Given_EnergySupplierWithAHoleInData_Then_DataReturnedInTwoChunkWithoutAHole()
         {
             await ClearAndAddDatabricksDataAsync(_fixture.DatabricksSchemaManager, _testOutputHelper);
             await RemoveDataForEnergySupplierInTimespan(
@@ -551,7 +551,8 @@ public class AggregatedTimeSeriesQueriesCsvTests
                     ats.Version))
                 .Should()
                 .BeEquivalentTo([
-                    ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.ThirdCorrectionSettlement, 2),
+                    ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 3, 1, 0), CalculationType.ThirdCorrectionSettlement, 2),
+                    ("804", TimeSeriesType.NonProfiledConsumption, Instant.FromUtc(2022, 1, 5, 1, 0), Instant.FromUtc(2022, 1, 8, 23, 0), CalculationType.ThirdCorrectionSettlement, 2),
                 ]);
 
             actual.Should().AllSatisfy(ats =>
