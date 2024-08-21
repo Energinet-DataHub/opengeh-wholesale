@@ -62,7 +62,10 @@ public class CalculationDtoMapperTests
     {
         // Arrange
         var calculation = new CalculationBuilder().Build();
-        calculation.MarkAsCalculating(); // this sets ExecutionTimeStart
+        calculation.MarkAsStarted();
+        calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), executionTimeStart: SystemClock.Instance.GetCurrentInstant());
+        calculation.MarkAsCalculationJobPending();
+        calculation.MarkAsCalculating();
         calculation.MarkAsCalculated(calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
 
         // Act
@@ -81,7 +84,8 @@ public class CalculationDtoMapperTests
         // Arrange
         var calculation = new CalculationBuilder().Build();
         var expectedRunId = new CalculationJobId(111);
-        calculation.MarkAsSubmitted(expectedRunId);
+        calculation.MarkAsStarted();
+        calculation.MarkAsCalculationJobSubmitted(expectedRunId, SystemClock.Instance.GetCurrentInstant());
 
         // Act
         var calculationDto = sut.Map(calculation);

@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class
+public sealed class
     MonthlyAmountsPerChargeWholesaleServicesDatabricksContract : IWholesaleServicesDatabricksContract
 {
     public AmountType GetAmountType()
@@ -75,6 +75,11 @@ public class
     public string GetCalculationIdColumnName()
     {
         return MonthlyAmountsPerChargeViewColumnNames.CalculationId;
+    }
+
+    public string GetResolutionColumnName()
+    {
+        throw new InvalidOperationException("There is no resolution for monthly amounts");
     }
 
     public string GetIsTaxColumnName()

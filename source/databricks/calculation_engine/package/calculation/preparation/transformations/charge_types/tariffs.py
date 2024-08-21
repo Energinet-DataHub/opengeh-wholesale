@@ -137,7 +137,7 @@ def _join_with_charge_link_metering_points(
         tariffs[Colname.resolution],
         tariffs[Colname.charge_time],
         tariffs[Colname.charge_price],
-        charge_link_metering_point_periods_df[Colname.metering_point_id],
+        Colname.metering_point_id,
         charge_link_metering_point_periods_df[Colname.metering_point_type],
         charge_link_metering_point_periods_df[Colname.settlement_method],
         charge_link_metering_point_periods_df[Colname.grid_area_code],

@@ -27,9 +27,7 @@ from pyspark.sql.types import (
     LongType,
 )
 
-from package.databases.wholesale_basis_data_internal.basis_data_colname import (
-    TimeSeriesColname,
-)
+from package.databases.table_column_names import TableColumnNames
 
 
 def cast_column_types(df: DataFrame, table_or_view_name: str = "") -> DataFrame:
@@ -103,8 +101,8 @@ def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> Da
 # TODO BJM: Replace these by recursive type casting
 _settlement_report_quantity_schema = StructType(
     [
-        StructField(TimeSeriesColname.observation_time, TimestampType(), False),
-        StructField(TimeSeriesColname.quantity, DecimalType(18, 3), False),
+        StructField(TableColumnNames.observation_time, TimestampType(), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
     ]
 )
 

@@ -22,43 +22,39 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.databases.wholesale_results_internal.wholesale_result_column_names import (
-    WholesaleResultColumnNames,
-)
+from package.databases.table_column_names import TableColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 hive_wholesale_results_schema = StructType(
     [
-        StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.calculation_type, StringType(), False),
         StructField(
-            WholesaleResultColumnNames.calculation_execution_time_start,
+            TableColumnNames.calculation_execution_time_start,
             TimestampType(),
             False,
         ),
-        StructField(
-            WholesaleResultColumnNames.calculation_result_id, StringType(), False
-        ),
-        StructField(WholesaleResultColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.calculation_result_id, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
         # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
-        StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
-        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), True),
+        StructField(TableColumnNames.quantity_unit, StringType(), False),
         StructField(
-            WholesaleResultColumnNames.quantity_qualities,
+            TableColumnNames.quantity_qualities,
             ArrayType(StringType()),
             True,
         ),
-        StructField(WholesaleResultColumnNames.time, TimestampType(), False),
-        StructField(WholesaleResultColumnNames.resolution, StringType(), False),
-        StructField(WholesaleResultColumnNames.metering_point_type, StringType(), True),
-        StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
-        StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), True),
-        StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), True),
-        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), True),
-        StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
-        StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
-        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
-        StructField(WholesaleResultColumnNames.amount_type, StringType(), False),
+        StructField(TableColumnNames.time, TimestampType(), False),
+        StructField(TableColumnNames.resolution, StringType(), False),
+        StructField(TableColumnNames.metering_point_type, StringType(), True),
+        StructField(TableColumnNames.settlement_method, StringType(), True),
+        StructField(TableColumnNames.price, DecimalType(18, 6), True),
+        StructField(TableColumnNames.amount, DecimalType(18, 6), True),
+        StructField(TableColumnNames.is_tax, BooleanType(), True),
+        StructField(TableColumnNames.charge_code, StringType(), True),
+        StructField(TableColumnNames.charge_type, StringType(), True),
+        StructField(TableColumnNames.charge_owner_id, StringType(), True),
+        StructField(TableColumnNames.amount_type, StringType(), False),
     ]
 )

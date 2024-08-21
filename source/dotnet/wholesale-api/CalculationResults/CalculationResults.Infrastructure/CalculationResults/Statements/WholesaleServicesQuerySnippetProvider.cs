@@ -15,11 +15,10 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class WholesaleServicesQuerySnippetProvider(
+public sealed class WholesaleServicesQuerySnippetProvider(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {
@@ -29,7 +28,14 @@ public class WholesaleServicesQuerySnippetProvider(
 
     internal string GetProjection(string prefix)
     {
-        return string.Join(", ", DatabricksContract.GetColumnsToProject().Select(cts => $"`{prefix}`.`{cts}`"));
+        return string.Join(", ", DatabricksContract.GetColumnsToProject().Select(ctp => $"`{prefix}`.`{ctp}`"));
+    }
+
+    internal string GetOrdering(string prefix)
+    {
+        return $"""
+                {string.Join(", ", DatabricksContract.GetColumnsToAggregateBy().Select(ctab => $"{prefix}.{ctab}"))}, {prefix}.{DatabricksContract.GetTimeColumnName()}
+                """;
     }
 
     internal string GetSelection(string table = "wrv")
@@ -47,14 +53,14 @@ public class WholesaleServicesQuerySnippetProvider(
         }
 
         sql = _queryParameters.AmountType != AmountType.TotalMonthlyAmount
-            ? GenerateConstraintForActorsForNonTotalAmounts(table, sql)
-            : GenerateConstraintForActorsForTotalAmounts(table, sql);
+            ? GetActorsForNonTotalAmountsSelection(table, sql)
+            : GetActorsForTotalAmountsSelection(table, sql);
 
         if (_queryParameters.ChargeTypes.Count != 0)
         {
             var chargeTypesSql = _queryParameters.ChargeTypes
                 .Select<(string? ChargeCode, ChargeType? ChargeType), string>(c =>
-                    GenerateConstraintForChargeType(c.ChargeCode, c.ChargeType, table))
+                    GetChargeTypeSelection(c.ChargeCode, c.ChargeType, table))
                 .ToList();
 
             sql += $"""
@@ -76,7 +82,7 @@ public class WholesaleServicesQuerySnippetProvider(
                     """;
         }
 
-        if (calculationTypePerGridAreas.IsNullOrEmpty())
+        if (calculationTypePerGridAreas.Count <= 0)
         {
             return """
                    FALSE
@@ -93,7 +99,7 @@ public class WholesaleServicesQuerySnippetProvider(
                 """;
     }
 
-    private string GenerateConstraintForActorsForTotalAmounts(string table, string sql)
+    private string GetActorsForTotalAmountsSelection(string table, string sql)
     {
         if (_queryParameters.EnergySupplierId is not null)
         {
@@ -118,7 +124,7 @@ public class WholesaleServicesQuerySnippetProvider(
         return sql;
     }
 
-    private string GenerateConstraintForActorsForNonTotalAmounts(string table, string sql)
+    private string GetActorsForNonTotalAmountsSelection(string table, string sql)
     {
         if (_queryParameters.EnergySupplierId is not null)
         {
@@ -149,7 +155,7 @@ public class WholesaleServicesQuerySnippetProvider(
         return sql;
     }
 
-    private string GenerateConstraintForChargeType(
+    private string GetChargeTypeSelection(
         string? chargeCode,
         ChargeType? chargeType,
         string table)

@@ -130,6 +130,7 @@ class WholesaleSettlementReportsDatabase:
 class WholesaleSapDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SAP
     LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME = "latest_calculations_history_v1"
+    ENERGY_V1_VIEW_NAME = "energy_v1"
 
 
 class HiveOutputDatabase:

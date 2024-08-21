@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class AmountsPerChargeWholesaleServicesDatabricksContract : IWholesaleServicesDatabricksContract
+public sealed class AmountsPerChargeWholesaleServicesDatabricksContract : IWholesaleServicesDatabricksContract
 {
     public AmountType GetAmountType()
     {
@@ -73,6 +73,11 @@ public class AmountsPerChargeWholesaleServicesDatabricksContract : IWholesaleSer
     public string GetCalculationIdColumnName()
     {
         return AmountsPerChargeViewColumnNames.CalculationId;
+    }
+
+    public string GetResolutionColumnName()
+    {
+        return AmountsPerChargeViewColumnNames.Resolution;
     }
 
     public string GetIsTaxColumnName()
