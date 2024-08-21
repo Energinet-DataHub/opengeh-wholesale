@@ -25,6 +25,7 @@ public static class CalculationDtoMapper
             calculation.PeriodEnd,
             calculation.Resolution,
             calculation.Unit,
+            calculation.ScheduledAt,
             calculation.ExecutionTimeStart,
             calculation.ExecutionTimeEnd,
             CalculationOrchestrationStateMapper.MapState(calculation.OrchestrationState),

@@ -24,6 +24,7 @@ public sealed record CalculationDto(
     DateTimeOffset PeriodEnd,
     string Resolution,
     string Unit,
+    DateTimeOffset ScheduledAt,
     DateTimeOffset? ExecutionTimeStart,
     DateTimeOffset? ExecutionTimeEnd,
     CalculationOrchestrationState OrchestrationState,
