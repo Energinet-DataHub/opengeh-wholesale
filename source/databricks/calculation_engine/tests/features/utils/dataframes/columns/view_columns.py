@@ -55,6 +55,7 @@ class ViewColumns:
         return ViewColumns.columns.get(column_name)
 
     # Column names and types in alphabetical order
+    aggregation_level = Column("aggregation_level", StringType())
     amount = Column("amount", DecimalType(18, 6))
     balance_responsible_party_id = Column("balance_responsible_party_id", StringType())
     calculation_id = Column("calculation_id", StringType())
@@ -112,6 +113,7 @@ class ViewColumns:
     settlement_method = Column("settlement_method", StringType())
     start_date_time = Column("start_date_time", TimestampType())
     time = Column("time", TimestampType())
+    time_series_type = Column("time_series_type", StringType())
     to_date = Column("to_date", TimestampType())
     to_grid_area_code = Column("to_grid_area_code", StringType())
     unit = Column("unit", StringType())
