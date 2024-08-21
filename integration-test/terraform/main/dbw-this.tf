@@ -13,6 +13,21 @@ resource "azurerm_databricks_workspace" "this" {
   tags = local.tags
 }
 
+resource "databricks_permission_assignment" "developers" {
+  principal_id = "729028915538231" # Databricks Group ID for the developer group
+  permissions  = ["USER"]
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
+}
+
+resource "databricks_grant" "developer_access_catalog" {
+  catalog    = local.databricks_unity_catalog_name
+  principal  = "SEC-G-Datahub-DevelopersAzure"
+  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.developers, databricks_token.pat]
+}
+
 resource "databricks_sql_global_config" "sql_global_config_integration_test" {
   security_policy = "DATA_ACCESS_CONTROL"
   data_access_config = {
@@ -203,6 +218,17 @@ resource "databricks_job" "migration_workflow" {
   ]
 }
 
+resource "databricks_permissions" "jobs" {
+  job_id = databricks_job.migration_workflow.id
+
+  access_control {
+    group_name       = "SEC-G-Datahub-DevelopersAzure"
+    permission_level = "CAN_MANAGE_RUN"
+  }
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.developers]
+}
+
 resource "databricks_sql_endpoint" "sql_endpoint_integration_test" {
   name                      = "SQL Endpoint for Testing"
   cluster_size              = "Medium"
@@ -219,11 +245,22 @@ resource "databricks_sql_endpoint" "sql_endpoint_integration_test" {
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
+resource "databricks_permissions" "databricks_sql_endpoint" {
+  sql_endpoint_id = databricks_sql_endpoint.sql_endpoint_integration_test.id
+
+  access_control {
+    group_name       = "SEC-G-Datahub-DevelopersAzure"
+    permission_level = "CAN_MANAGE"
+  }
+  depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.developers]
+}
+
+
 resource "databricks_cluster" "shared_all_purpose_integration_test" {
-  cluster_name     = "Shared all-purpose"
-  num_workers      = 1
-  instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
-  spark_version    = local.databricks_runtime_version
+  cluster_name       = "Shared all-purpose"
+  num_workers        = 1
+  instance_pool_id   = databricks_instance_pool.migration_pool_integration_test.id
+  spark_version      = local.databricks_runtime_version
   data_security_mode = "USER_ISOLATION"
   spark_conf = {
     "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
@@ -246,6 +283,16 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
   }
 
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
+}
+
+resource "databricks_permissions" "cluster" {
+  cluster_id = databricks_cluster.shared_all_purpose_integration_test.id
+  access_control {
+    group_name       = "SEC-G-Datahub-DevelopersAzure"
+    permission_level = "CAN_ATTACH_TO"
+  }
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.developers]
 }
 
 resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
