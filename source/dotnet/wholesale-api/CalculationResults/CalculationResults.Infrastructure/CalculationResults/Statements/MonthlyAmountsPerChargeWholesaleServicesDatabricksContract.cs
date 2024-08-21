@@ -77,6 +77,11 @@ public sealed class
         return MonthlyAmountsPerChargeViewColumnNames.CalculationId;
     }
 
+    public string GetResolutionColumnName()
+    {
+        return AmountsPerChargeViewColumnNames.Resolution;
+    }
+
     public string GetIsTaxColumnName()
     {
         return MonthlyAmountsPerChargeViewColumnNames.IsTax;

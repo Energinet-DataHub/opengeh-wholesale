@@ -15,6 +15,9 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -55,7 +58,8 @@ public class WholesaleServicesQueries(
         await foreach (var wholesaleServices in CreateSeriesPackagesAsync(
                            (row, points) => WholesaleServicesFactory.Create(row, queryParameters.AmountType, points),
                            (currentRow, previousRow) => querySnippetsProvider.DatabricksContract.GetColumnsToAggregateBy().Any(column => currentRow[column] != previousRow[column])
-                                                        || currentRow[calculationIdColumn] != previousRow[calculationIdColumn],
+                                                        || currentRow[calculationIdColumn] != previousRow[calculationIdColumn]
+                                                        || !IsNextInSequence(currentRow, previousRow, querySnippetsProvider.DatabricksContract),
                            WholesaleTimeSeriesPointFactory.Create,
                            sqlStatement))
         {
@@ -85,5 +89,35 @@ public class WholesaleServicesQueries(
             .ExecuteStatementAsync(sqlStatement)
             .AnyAsync()
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Checks if the current result follows the previous result based on time and resolution.
+    /// </summary>
+    private bool IsNextInSequence(
+        DatabricksSqlRow currentResult,
+        DatabricksSqlRow previousResult,
+        IWholesaleServicesDatabricksContract databricksContract)
+    {
+        var endTimeOfPreviousResult = GetEndTimeOfPreviousResult(previousResult, databricksContract);
+        var timeOfCurrentResult = SqlResultValueConverters
+            .ToDateTimeOffset(currentResult[databricksContract.GetTimeColumnName()])!.Value;
+
+        return endTimeOfPreviousResult == timeOfCurrentResult;
+    }
+
+    private DateTimeOffset GetEndTimeOfPreviousResult(
+        DatabricksSqlRow previousResult,
+        IWholesaleServicesDatabricksContract databricksContract)
+    {
+        var resolutionOfPreviousResult = ResolutionMapper
+            .FromDeltaTableValue(previousResult[databricksContract.GetResolutionColumnName()]!);
+
+        var startTimeOfPreviousResult = SqlResultValueConverters
+            .ToDateTimeOffset(previousResult[databricksContract.GetTimeColumnName()])!.Value;
+
+        return PeriodHelper.GetDateTimeWithResolutionOffset(
+            resolutionOfPreviousResult,
+            startTimeOfPreviousResult);
     }
 }
