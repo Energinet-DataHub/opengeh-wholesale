@@ -83,7 +83,7 @@ class BasisDataOutput:
 class CalculationOutput:
     """
     Contains the output of a calculation.
-    The output consists of energy and wholesale results, basis data and internal data.
+    The output consists of energy and wholesale results and basis data.
 
     The usage of `cast(x, None)` is a workaround to prevent the type checker from complaining.
     It's a consequence of the current code design where props are set after creation of the container.
