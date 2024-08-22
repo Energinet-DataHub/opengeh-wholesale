@@ -22,7 +22,7 @@ import pytest
 from package.common.logger import Logger
 
 
-def test__optimize_table_optimize_is_in_history_of_delta_table(
+def test__optimize_table__optimize_is_in_history_of_delta_table(
     spark: SparkSession,
 ) -> None:
     # Arrange
