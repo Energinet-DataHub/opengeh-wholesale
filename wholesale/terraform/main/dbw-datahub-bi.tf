@@ -109,16 +109,25 @@ resource "databricks_permissions" "datahub_bi_sql_endpoint" {
   depends_on = [module.dbw, null_resource.scim_developers]
 }
 
-resource "databricks_grant" "databricks_spn_database_grant_select" {
+resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_results" {
   count      = var.datahub_bi_endpoint_enabled ? 1 : 0
   provider   = databricks.dbw
 
-  schema     = databricks_schema.results.id
+  schema     = databricks_schema.results.id  //wholesale_results
   principal  = azuread_application.app_datahub_bi[0].client_id
   privileges = ["USE_SCHEMA", "SELECT"]
 }
 
-//Needed to interact with objects in schema
+resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_sap" {
+  count      = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider   = databricks.dbw
+
+  schema     = databricks_schema.sap.id  //wholesale_sap
+  principal  = azuread_application.app_datahub_bi[0].client_id
+  privileges = ["USE_SCHEMA", "SELECT"]
+}
+
+//Needed to interact with objects in schemas
 //See https://docs.databricks.com/en/data-governance/unity-catalog/manage-privileges/privileges.html#use-catalog for details
 resource "databricks_grant" "databricks_spn_database_grant_use_catalog" {
   count      = var.datahub_bi_endpoint_enabled ? 1 : 0
