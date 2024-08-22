@@ -59,11 +59,11 @@ from ..databases.wholesale_results_internal.calculations_grid_areas_storage_mode
 
 @logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    _write_calculation(args, prepared_data_reader)
+    _write_calculation_metadata(args, prepared_data_reader)
 
     results = _execute(args, prepared_data_reader)
 
-    _write_output(results)
+    _write_calculation_output(results)
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
@@ -186,7 +186,7 @@ def _execute(
     return calculation_output
 
 
-def _write_calculation(
+def _write_calculation_metadata(
     args: CalculatorArgs, prepared_data_reader: PreparedDataReader
 ) -> None:
     calculations = create_calculation(args, prepared_data_reader)
@@ -197,7 +197,7 @@ def _write_calculation(
 
 
 @logging_configuration.use_span("calculation.write")
-def _write_output(
+def _write_calculation_output(
     calculation_output: CalculationOutput,
 ) -> None:
     write_energy_results(calculation_output.energy_results_output)
