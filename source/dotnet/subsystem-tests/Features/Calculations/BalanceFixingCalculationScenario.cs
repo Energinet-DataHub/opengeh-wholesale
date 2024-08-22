@@ -40,10 +40,10 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     {
         Fixture.ScenarioState.CalculationInput = new StartCalculationRequestDto(
             CalculationType: Common.Interfaces.Models.CalculationType.BalanceFixing,
-            GridAreaCodes: new List<string> { "543" },
+            GridAreaCodes: ["543"],
             StartDate: new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
             EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
-            ScheduledAt: DateTimeOffset.UtcNow);
+            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(4)));
     }
 
     [ScenarioStep(1)]
@@ -56,7 +56,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
     [ScenarioStep(2)]
     [SubsystemFact]
-    public async Task When_CalculationIsStarted()
+    public async Task When_CalculationIsScheduledToStartLater()
     {
         Fixture.ScenarioState.CalculationId =
             await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput!);
@@ -67,7 +67,32 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
     [ScenarioStep(3)]
     [SubsystemFact]
-    public async Task Then_CalculationIsCompletedWithinWaitTime()
+    public async Task Then_CalculationIsStartedAtScheduledTime()
+    {
+        var allowedTimeDifference = TimeSpan.FromMinutes(1);
+        var scheduledAt = Fixture.ScenarioState.CalculationInput!.ScheduledAt;
+        var maxWaitTime = scheduledAt - DateTimeOffset.UtcNow + allowedTimeDifference;
+
+        var (isStarted, _) = await Fixture.WaitForScheduledCalculationToStartAsync(
+            Fixture.ScenarioState.CalculationId,
+            waitTimeLimit: maxWaitTime,
+            checkInterval: TimeSpan.FromSeconds(10));
+
+        var now = DateTimeOffset.UtcNow;
+
+        using var assertionScope = new AssertionScope();
+
+        // => Verify the calculation was actually started within the tolerated time
+        isStarted.Should().BeTrue($"because the calculation should be started within {maxWaitTime.TotalSeconds} seconds");
+        now.Should().BeCloseTo(
+            scheduledAt,
+            precision: allowedTimeDifference,
+            $"because the scheduled calculation should be started within {allowedTimeDifference.TotalSeconds} seconds of the scheduled time");
+    }
+
+    [ScenarioStep(4)]
+    [SubsystemFact]
+    public async Task AndThen_CalculationIsCompletedWithinWaitTime()
     {
         var (isCompletedOrFailed, calculation) = await Fixture.WaitForCalculationCompletedOrFailedAsync(
             Fixture.ScenarioState.CalculationId,
@@ -83,7 +108,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             .BeOneOf(CalculationOrchestrationStateExtensions.CalculationJobCompletedStates);
     }
 
-    [ScenarioStep(4)]
+    [ScenarioStep(5)]
     [SubsystemFact]
     public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
     {
@@ -96,7 +121,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
     }
 
-    [ScenarioStep(5)]
+    [ScenarioStep(6)]
     [SubsystemFact]
     public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
     {
@@ -122,7 +147,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
     }
 
-    [ScenarioStep(6)]
+    [ScenarioStep(7)]
     [SubsystemFact]
     public void AndThen_ReceivedGridLossProducedEventsCountIsEqualToExpected()
     {
@@ -133,7 +158,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(expected);
     }
 
-    [ScenarioStep(7)]
+    [ScenarioStep(8)]
     [SubsystemFact]
     public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
     {
@@ -147,7 +172,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
     }
 
-    [ScenarioStep(8)]
+    [ScenarioStep(9)]
     [SubsystemFact]
     public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
     {
@@ -164,7 +189,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
     }
 
-    [ScenarioStep(9)]
+    [ScenarioStep(10)]
     [SubsystemFact]
     public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
     {
@@ -176,7 +201,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 
-    [ScenarioStep(10)]
+    [ScenarioStep(11)]
     [SubsystemFact]
     public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
     {
@@ -205,7 +230,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             "because calculation should be in ActorMessagesEnqueuing state or later");
     }
 
-    [ScenarioStep(11)]
+    [ScenarioStep(12)]
     [SubsystemFact]
     public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
     {
@@ -216,7 +241,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             Fixture.ScenarioState.OrchestrationInstanceId);
     }
 
-    [ScenarioStep(12)]
+    [ScenarioStep(13)]
     [SubsystemFact]
     public async Task AndThen_CalculationOrchestrationIsCompleted()
     {

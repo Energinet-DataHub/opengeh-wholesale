@@ -22,6 +22,11 @@ public enum CalculationOrchestrationState
     Scheduled = 1,
 
     /// <summary>
+    /// The calculation orchestration is started (after the schedule has been met)
+    /// </summary>
+    Started = 11,
+
+    /// <summary>
     /// The calculation results are being calculated by the calculation engine.
     /// </summary>
     Calculating = 2,
@@ -55,4 +60,9 @@ public enum CalculationOrchestrationState
     /// The calculation orchestration is completed
     /// </summary>
     Completed = 8,
+
+    /// <summary>
+    /// The calculation orchestration is canceled (it can only be canceled if it is scheduled and not started yet)
+    /// </summary>
+    Canceled = 9,
 }
