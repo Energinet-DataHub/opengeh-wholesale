@@ -159,6 +159,36 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     }
 
     /// <summary>
+    /// Wait for the calculation to be started
+    /// </summary>
+    /// <returns>isStarted: True if the calculation was started within the time limit; otherwise false.</returns>
+    public async Task<(bool IsStarted, CalculationDto? Calculation)> WaitForScheduledCalculationToStartAsync(
+        Guid calculationId,
+        TimeSpan waitTimeLimit,
+        TimeSpan checkInterval)
+    {
+        CalculationDto? calculation = null;
+        var isStarted = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
+                return calculation is
+                {
+                    // We cannot check for CalculationOrchestrationState.Started since the calculation might already be later in the orchestration
+                    OrchestrationState: not CalculationOrchestrationState.Scheduled and
+                                        not CalculationOrchestrationState.Canceled
+                };
+            },
+            waitTimeLimit,
+            checkInterval);
+
+        DiagnosticMessageSink.WriteDiagnosticMessage(
+            $"Wait for calculation with id '{calculationId}' to be started finished with '{nameof(isStarted)}={isStarted}', '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
+
+        return (isStarted, calculation);
+    }
+
+    /// <summary>
     /// Wait for the calculation orchestration state to be one of the given states
     /// </summary>
     /// <returns>IsSuccess: true if the calculation is in one of the given states; otherwise false.</returns>

@@ -218,6 +218,10 @@
           "unit": {
             "type": "string"
           },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          },
           "executionTimeStart": {
             "type": "string",
             "format": "date-time",
@@ -273,7 +277,9 @@
           "ActorMessagesEnqueuing",
           "ActorMessagesEnqueued",
           "ActorMessagesEnqueuingFailed",
-          "Completed"
+          "Completed",
+          "Canceled",
+          "Started"
         ]
       },
       "CalculationState": {
