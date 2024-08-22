@@ -32,12 +32,22 @@ public class Calculation
         Instant scheduledAt,
         DateTimeZone dateTimeZone,
         Guid createdByUserId,
-        long version)
+        long version,
+        bool isInternalCalculation)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
-        if (!IsValid(_gridAreaCodes, calculationType, periodStart, periodEnd, dateTimeZone, out var errorMessages))
+        if (!IsValid(
+                _gridAreaCodes,
+                calculationType,
+                periodStart,
+                periodEnd,
+                dateTimeZone,
+                isInternalCalculation,
+                out var errorMessages))
+        {
             throw new BusinessValidationException(string.Join(" ", errorMessages));
+        }
 
         CalculationType = calculationType;
         PeriodStart = periodStart;
@@ -48,6 +58,7 @@ public class Calculation
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
         Version = version;
+        IsInternalCalculation = isInternalCalculation;
 
         _orchestrationState = CalculationOrchestrationState.Scheduled;
         ExecutionState = CalculationExecutionState.Created;
@@ -62,6 +73,7 @@ public class Calculation
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
     /// <param name="dateTimeZone"></param>
+    /// <param name="isInternalCalculation"></param>
     /// <param name="validationErrors"></param>
     /// <returns>If the parameters are valid for a <see cref="Calculation"/></returns>
     private static bool IsValid(
@@ -70,6 +82,7 @@ public class Calculation
         Instant periodStart,
         Instant periodEnd,
         DateTimeZone dateTimeZone,
+        bool isInternalCalculation,
         out IEnumerable<string> validationErrors)
     {
         var errors = new List<string>();
@@ -100,6 +113,9 @@ public class Calculation
                 errors.Add($"The period (start: {periodStart} end: {periodEnd}) has to be an entire month when using calculation type {calculationType}.");
             }
         }
+
+        if (isInternalCalculation && calculationType is not CalculationType.Aggregation)
+            errors.Add($"Internal calculations is not allowed for {calculationType}.");
 
         validationErrors = errors;
         return !errors.Any();
@@ -219,6 +235,12 @@ public class Calculation
     /// The version is created with the calculation.
     /// </summary>
     public long Version { get; private set; }
+
+    /// <summary>
+    /// When calculation is internal, the calculation result is for internal use only
+    /// and should not be exposed to external user.
+    /// </summary>
+    public bool IsInternalCalculation { get; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given calculation type.

@@ -43,5 +43,6 @@ public interface ICalculationsClient
         DateTimeOffset startDate,
         DateTimeOffset endDate,
         DateTimeOffset scheduledAt,
-        Guid currentUserId);
+        Guid currentUserId,
+        bool isInternalCalculation);
 }
