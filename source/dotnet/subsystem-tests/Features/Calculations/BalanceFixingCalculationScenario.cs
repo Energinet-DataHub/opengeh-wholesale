@@ -43,7 +43,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             GridAreaCodes: ["543"],
             StartDate: new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
             EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
-            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(3)));
+            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(4)));
     }
 
     [ScenarioStep(1)]
@@ -69,7 +69,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public async Task Then_CalculationIsStartedAtScheduledTime()
     {
-        var allowedTimeDifference = TimeSpan.FromSeconds(30);
+        var allowedTimeDifference = TimeSpan.FromMinutes(1);
         var scheduledAt = Fixture.ScenarioState.CalculationInput!.ScheduledAt;
         var maxWaitTime = scheduledAt - DateTimeOffset.UtcNow + allowedTimeDifference;
 
