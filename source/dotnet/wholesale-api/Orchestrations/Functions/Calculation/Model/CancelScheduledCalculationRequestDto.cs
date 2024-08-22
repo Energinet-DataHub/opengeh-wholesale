@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-public sealed record OrchestrationInstanceId(string Id)
-{
-    public string Id { get; } = !string.IsNullOrWhiteSpace(Id)
-        ? Id
-        : throw new ArgumentException($"Id was null or whitespace (value: \"{Id}\")", nameof(Id));
-}
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+
+/// <summary>
+/// An immutable request to cancel a scheduled calculation.
+/// </summary>
+public sealed record CancelScheduledCalculationRequestDto(
+    Guid CalculationId);

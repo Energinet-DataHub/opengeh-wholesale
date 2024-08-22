@@ -51,7 +51,7 @@ internal class UpdateCalculationStateFromJobStatusActivity(
         {
             // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
             // Setting calculation state back to "created" ensure they will be picked up and started again
-            calculation.Reset();
+            calculation.Restart();
         }
         else
         {

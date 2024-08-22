@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
@@ -26,12 +29,16 @@ public class CalculationSchedulerHandler(
     ILogger<CalculationSchedulerHandler> logger,
     IOptions<CalculationOrchestrationMonitorOptions> orchestrationMonitorOptions,
     IClock clock,
-    ICalculationRepository calculationRepository)
+    IUserContext<FrontendUser> userContext,
+    ICalculationRepository calculationRepository,
+    IUnitOfWork unitOfWork)
 {
     private readonly ILogger _logger = logger;
     private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions = orchestrationMonitorOptions.Value;
     private readonly IClock _clock = clock;
+    private readonly IUserContext<FrontendUser> _userContext = userContext;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task StartScheduledCalculationsAsync(DurableTaskClient durableTaskClient)
     {
@@ -64,5 +71,37 @@ public class CalculationSchedulerHandler(
                     calculationToStart.OrchestrationInstanceId.Id);
             }
         }
+    }
+
+    public async Task CancelScheduledCalculationAsync(DurableTaskClient durableTaskClient, CalculationId calculationId)
+    {
+        var scheduledCalculation = await _calculationRepository.GetAsync(calculationId.Id)
+            .ConfigureAwait(false);
+
+        if (!scheduledCalculation.CanCancel())
+        {
+            throw new InvalidOperationException($"Unable to cancel calculation with id = {scheduledCalculation.Id} " +
+                                                $"and status = {scheduledCalculation.OrchestrationState}");
+        }
+
+        var existingOrchestration = await durableTaskClient
+            .GetInstanceAsync(scheduledCalculation.OrchestrationInstanceId.Id)
+            .ConfigureAwait(false);
+
+        if (existingOrchestration != null)
+        {
+            throw new InvalidOperationException($"Unable to cancel calculation with id = {scheduledCalculation.Id} " +
+                                                $"and orchestration id = {scheduledCalculation.OrchestrationInstanceId.Id} " +
+                                                $"since the orchestration is already started");
+        }
+
+        scheduledCalculation.MarkAsCanceled(_userContext.CurrentUser.UserId);
+
+        await _unitOfWork.CommitAsync()
+            .ConfigureAwait(false);
+
+        _logger.LogInformation(
+            "Calculation with id {calculationId} was cancelled",
+            calculationId.Id);
     }
 }
