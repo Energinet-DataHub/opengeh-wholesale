@@ -38,8 +38,6 @@ resource "databricks_sql_global_config" "sql_global_config_integration_test" {
     "spark.hadoop.fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
   }
 
-  enable_serverless_compute = true # Will be removed in v1.14.0 of the databricks provider
-
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 

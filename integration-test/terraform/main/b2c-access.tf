@@ -83,7 +83,7 @@ resource "azuread_application_federated_identity_credential" "sp" {
 
 resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbff_app_id" {
   name         = "AZURE-B2C-TESTBFF-APP-ID"
-  value        = azuread_application.bff.application_id
+  value        = azuread_application.bff.client_id
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
@@ -93,7 +93,7 @@ resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbff_app_id" {
 
 resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbackend_app_id" {
   name         = "AZURE-B2C-TESTBACKEND-APP-ID"
-  value        = azuread_application.backend.application_id
+  value        = azuread_application.backend.client_id
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
