@@ -145,16 +145,19 @@ public class Calculation
 
             CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
             {
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started],
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started, CalculationOrchestrationState.Canceled],
                 // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
                 CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
-                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
+
+                // The state can move from Calculating  -> Started if the databricks job is canceled and the calculation is reset and started again
+                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Started],
                 CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.ActorMessagesEnqueuingFailed],
                 CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
                 CalculationOrchestrationState.ActorMessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
                 CalculationOrchestrationState.Completed => [],
+                CalculationOrchestrationState.Canceled => [],
                 _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
             };
 
@@ -178,6 +181,11 @@ public class Calculation
     public Instant CreatedTime { get; }
 
     public Guid CreatedByUserId { get; }
+
+    /// <summary>
+    /// The user who canceled the scheduled calculation.
+    /// </summary>
+    public Guid? CanceledByUserId { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
@@ -366,16 +374,27 @@ public class Calculation
         CompletedTime = completedAt;
     }
 
+    public void MarkAsCanceled(Guid canceledByUserId)
+    {
+        CanceledByUserId = canceledByUserId;
+        OrchestrationState = CalculationOrchestrationState.Canceled;
+    }
+
     /// <summary>
     /// Reset a <see cref="Calculation"/>. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
-    public void Reset()
+    public void Restart()
     {
         if (ExecutionState is CalculationExecutionState.Completed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
         ExecutionState = CalculationExecutionState.Created;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
+        OrchestrationState = CalculationOrchestrationState.Started;
+    }
+
+    public bool CanCancel()
+    {
+        return OrchestrationState is CalculationOrchestrationState.Scheduled;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)

@@ -512,6 +512,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         [Newtonsoft.Json.JsonProperty("unit", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Unit { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("scheduledAt", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset ScheduledAt { get; set; }
+
         [Newtonsoft.Json.JsonProperty("executionTimeStart", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset? ExecutionTimeStart { get; set; }
 
@@ -570,6 +573,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
         [System.Runtime.Serialization.EnumMember(Value = @"Completed")]
         Completed = 7,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Canceled")]
+        Canceled = 8,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Started")]
+        Started = 9,
 
     }
 

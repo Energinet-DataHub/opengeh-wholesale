@@ -62,6 +62,15 @@ public static class CalculationResultsExtensions
         services
             .AddScoped<IWholesaleServicesDatabricksContract,
                 TotalMonthlyAmountWholesaleServicesDatabricksContract>();
+        services
+            .AddScoped<IAggregatedTimeSeriesDatabricksContract,
+                EnergyPerBrpGaAggregatedTimeSeriesDatabricksContract>();
+        services
+            .AddScoped<IAggregatedTimeSeriesDatabricksContract,
+                EnergyPerEsBrpGaAggregatedTimeSeriesDatabricksContract>();
+        services
+            .AddScoped<IAggregatedTimeSeriesDatabricksContract,
+                EnergyPerGaAggregatedTimeSeriesDatabricksContract>();
 
         return services;
     }
