@@ -26,6 +26,26 @@ foreach ($givenFolder in $givenFolders) {
     $thenFolder = Get-ChildItem -Path $givenFolder.FullName -Directory | Where-Object { $_.Name -eq "then" }
 
     if ($thenFolder) {
+        # Get all CSV files directly under the 'then' folder
+        $resultFiles = Get-ChildItem -Path $thenFolder.FullName -File | Where-Object { $_.Extension -eq ".csv" }
+
+        # Loop through each file directly in the 'then' folder
+        foreach ($file in $resultFiles) {
+            $fileNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+
+            # Create a row for each file found
+            $row = [PSCustomObject]@{
+                Test = $relativePath
+                Type = "Calculation Result"
+                Data = $fileNameWithoutExtension
+            }
+
+            # Add the row to the array
+            $rows += $row
+
+            Write-Host "Adding row: $relativePath | Calculation Result | $fileNameWithoutExtension"
+        }
+
         # Look for all folders ending with "_results" inside the 'then' folder
         $resultsFolders = Get-ChildItem -Path $thenFolder.FullName -Directory | Where-Object { $_.Name -like "*_results" }
 
