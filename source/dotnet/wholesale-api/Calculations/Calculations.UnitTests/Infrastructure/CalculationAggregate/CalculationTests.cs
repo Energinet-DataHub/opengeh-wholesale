@@ -388,34 +388,41 @@ public class CalculationTests
     }
 
     [Fact]
-    public void Reset_WhenSubmitted_SetsStateCreated()
+    public void Restart_WhenSubmitted_SetsStateCreated()
     {
         var sut = new CalculationBuilder().WithStateSubmitted().Build();
-        sut.Reset();
+        sut.Restart();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]
-    public void Reset_WhenPending_SetsStateCreated()
+    public void Restart_WhenPending_SetsStateCreated()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
-        sut.Reset();
+        sut.Restart();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]
-    public void Reset_WhenExecuting_SetsStateCreated()
+    public void Restart_WhenExecuting_SetsStateCreated()
     {
         var sut = new CalculationBuilder().WithStateExecuting().Build();
-        sut.Reset();
+        sut.Restart();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]
-    public void Reset_WhenCompleted_ThrowsBusinessValidationException()
+    public void Restart_WhenFailed_ThrowsBusinessValidationException()
+    {
+        var sut = new CalculationBuilder().WithStateFailed().Build();
+        Assert.Throws<BusinessValidationException>(() => sut.Restart());
+    }
+
+    [Fact]
+    public void Restart_WhenCompleted_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.Reset());
+        Assert.Throws<BusinessValidationException>(() => sut.Restart());
     }
 
     [Theory]
@@ -423,16 +430,15 @@ public class CalculationTests
     [InlineData(CalculationExecutionState.Submitted)]
     [InlineData(CalculationExecutionState.Pending)]
     [InlineData(CalculationExecutionState.Executing)]
-    [InlineData(CalculationExecutionState.Failed)]
-    public void Reset_WhenGivenExecutionState_SetsOrchestrationStateScheduled(CalculationExecutionState givenExecutionState)
+    public void Restart_WhenGivenExecutionState_SetsOrchestrationStateStarted(CalculationExecutionState givenExecutionState)
     {
         var sut = new CalculationBuilder()
             .WithState(givenExecutionState)
             .Build();
 
-        sut.Reset();
+        sut.Restart();
 
-        sut.OrchestrationState.Should().Be(CalculationOrchestrationState.Scheduled);
+        sut.OrchestrationState.Should().Be(CalculationOrchestrationState.Started);
     }
 
     [Theory]
