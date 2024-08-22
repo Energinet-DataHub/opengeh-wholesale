@@ -13,7 +13,7 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import current_timestamp
 from delta.tables import DeltaTable
 
@@ -67,10 +67,14 @@ def write_calculation_grid_areas(
     )
 
 
-def write_calculation_succeeded_time(calculation_id: str) -> None:
+def write_calculation_succeeded_time(
+    calculation_id: str,
+    spark: SparkSession = Provide[Container.spark],
+) -> None:
     """Writes the succeeded time to the calculation table."""
     DeltaTable.forName(
-        f"{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        spark,
+        f"{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}",
     ).update(
         condition=f.col(TableColumnNames.calculation_id) == calculation_id,
         set={TableColumnNames.calculation_succeeded_time: current_timestamp()},
