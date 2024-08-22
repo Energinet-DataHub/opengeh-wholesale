@@ -118,6 +118,17 @@ resource "databricks_grant" "databricks_spn_database_grant_select" {
   privileges = ["USE_SCHEMA", "SELECT"]
 }
 
+//Needed to interact with objects in schema
+//See https://docs.databricks.com/en/data-governance/unity-catalog/manage-privileges/privileges.html#use-catalog for details
+resource "databricks_grant" "databricks_spn_database_grant_use_catalog" {
+  count      = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider   = databricks.dbw
+
+  catalog    = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  principal  = azuread_application.app_datahub_bi[0].client_id
+  privileges = ["USE_CATALOG"]
+}
+
 //Create a group for external token users and grant CAN_USE permission to the group
 //As there can only be one 'authorization = "tokens"' permissions resource per workspace, it should be attached to a group
 //as it will be much easier to add more SPNs for external access later on rather than applying the role directly to the SPN
