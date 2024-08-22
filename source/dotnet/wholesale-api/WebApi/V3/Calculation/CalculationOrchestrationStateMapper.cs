@@ -21,6 +21,7 @@ public static class CalculationOrchestrationStateMapper
         return calculationOrchestrationState switch
         {
             Common.Interfaces.Models.CalculationOrchestrationState.Scheduled => CalculationOrchestrationState.Scheduled,
+            Common.Interfaces.Models.CalculationOrchestrationState.Started => CalculationOrchestrationState.Started,
             Common.Interfaces.Models.CalculationOrchestrationState.Calculating => CalculationOrchestrationState.Calculating,
             Common.Interfaces.Models.CalculationOrchestrationState.Calculated => CalculationOrchestrationState.Calculated,
             Common.Interfaces.Models.CalculationOrchestrationState.CalculationFailed => CalculationOrchestrationState.CalculationFailed,
@@ -28,6 +29,7 @@ public static class CalculationOrchestrationStateMapper
             Common.Interfaces.Models.CalculationOrchestrationState.ActorMessagesEnqueued => CalculationOrchestrationState.ActorMessagesEnqueued,
             Common.Interfaces.Models.CalculationOrchestrationState.ActorMessagesEnqueuingFailed => CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
             Common.Interfaces.Models.CalculationOrchestrationState.Completed => CalculationOrchestrationState.Completed,
+            Common.Interfaces.Models.CalculationOrchestrationState.Canceled => CalculationOrchestrationState.Canceled,
             _ => throw new ArgumentOutOfRangeException(nameof(calculationOrchestrationState), calculationOrchestrationState, $"Unknown {typeof(Common.Interfaces.Models.CalculationOrchestrationState).FullName}"),
         };
     }
