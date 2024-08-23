@@ -24,5 +24,6 @@ public interface ICalculationFactory
         DateTimeOffset startDate,
         DateTimeOffset endDate,
         DateTimeOffset scheduledAt,
-        Guid createdByUserId);
+        Guid createdByUserId,
+        bool isInternalCalculation);
 }
