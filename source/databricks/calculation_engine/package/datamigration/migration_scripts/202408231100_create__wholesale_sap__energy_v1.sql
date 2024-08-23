@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.energy_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.energy_v1 AS
 WITH all_energy AS (
     SELECT calculation_id,
@@ -71,6 +74,7 @@ WITH all_energy AS (
 SELECT c.calculation_id,
        c.calculation_type,
        c.calculation_version,
+       c.calculation_succeeded_time,
        aggregation_level,
        grid_area_code,
        resolution,
@@ -109,5 +113,6 @@ SELECT c.calculation_id,
        quantity_qualities,
        'kWh' as quantity_unit
 FROM all_energy as e
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1 as c
-WHERE c.calculation_id = e.calculation_id
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations as c
+ON c.calculation_id = e.calculation_id
+WHERE c.calculation_succeeded_time IS NOT NULL
