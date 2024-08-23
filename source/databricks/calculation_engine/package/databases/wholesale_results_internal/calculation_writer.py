@@ -70,11 +70,14 @@ def write_calculation_grid_areas(
 def write_calculation_succeeded_time(
     calculation_id: str,
     spark: SparkSession = Provide[Container.spark],
+    infrastructure_settings: InfrastructureSettings = Provide[
+        Container.infrastructure_settings
+    ],
 ) -> None:
     """Writes the succeeded time to the calculation table."""
     DeltaTable.forName(
         spark,
-        f"{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}",
+        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}",
     ).update(
         condition=f.col(TableColumnNames.calculation_id) == calculation_id,
         set={TableColumnNames.calculation_succeeded_time: current_timestamp()},
