@@ -34,7 +34,7 @@ public class DeltaTableOptions
     /// <summary>
     /// Name of the schema/database to which the calculation result views belong.
     /// </summary>
-    public string WholesaleCalculationResultsSchemaName { get; set; } = "wholesale_calculation_results";
+    public string WholesaleCalculationResultsSchemaName { get; set; } = "wholesale_results";
 
     /// <summary>
     /// Name of the energy results delta table.
