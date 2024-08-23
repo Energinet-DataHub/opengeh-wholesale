@@ -73,8 +73,24 @@ def contract_parameters(contracts_path: str) -> list[str]:
 
 
 @pytest.fixture(scope="session")
+def contract_parameters_of_internal_calculation(contracts_path: str) -> list[str]:
+    job_parameters = _get_contract_parameters(
+        f"{contracts_path}/internal-calculation-job-parameters-reference.txt"
+    )
+
+    return job_parameters
+
+
+@pytest.fixture(scope="session")
 def sys_argv_from_contract(contract_parameters) -> list[str]:
     return ["dummy_script_name"] + contract_parameters
+
+
+@pytest.fixture(scope="session")
+def sys_argv_from_internal_contract(
+    contract_parameters_of_internal_calculation,
+) -> list[str]:
+    return ["dummy_script_name_internal"] + contract_parameters_of_internal_calculation
 
 
 @pytest.fixture(scope="session")
@@ -422,10 +438,10 @@ class TestWhenIsControlCalculationFlagPresent:
     def test_flag_is_true(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract: list[str],
+        sys_argv_from_internal_contract: list[str],
     ) -> None:
         # Arrange
-        with patch("sys.argv", sys_argv_from_contract):
+        with patch("sys.argv", sys_argv_from_internal_contract):
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
 
@@ -443,7 +459,6 @@ class TestWhenIsControlCalculationFlagNotPresent:
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        sys_argv_from_contract.remove("--is-internal-calculation")
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
