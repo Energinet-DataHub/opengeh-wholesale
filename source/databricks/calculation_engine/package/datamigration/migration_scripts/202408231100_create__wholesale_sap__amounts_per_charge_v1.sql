@@ -2,7 +2,7 @@ CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.amounts_p
 SELECT c.calculation_id,
        c.calculation_type,
        c.calculation_version,
-       apc.result_id,
+       c.calculation_succeded_time,
        apc.grid_area_code,
        apc.energy_supplier_id,
        apc.charge_code,
@@ -20,4 +20,6 @@ SELECT c.calculation_id,
        apc.price,
        apc.amount
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.amounts_per_charge as apc
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS c ON c.calculation_id = apc.calculation_id
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.calculations as c
+ON c.calculation_id = e.calculation_id
+WHERE c.calculation_succeeded_time IS NOT NULL

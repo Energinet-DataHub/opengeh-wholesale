@@ -13,8 +13,8 @@ amounts_per_charge_v1 = t.StructType(
         #
         t.StructField("calculation_version", t.LongType(), not nullable),
         #
-        # UUID
-        t.StructField("result_id", t.StringType(), not nullable),
+        # UTC time
+        t.StructField("calculation_succeeded_time", t.TimestampType(), not nullable),
         #
         t.StructField("grid_area_code", t.StringType(), not nullable),
         #
