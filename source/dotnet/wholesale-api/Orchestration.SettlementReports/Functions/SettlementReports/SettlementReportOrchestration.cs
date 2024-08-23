@@ -62,7 +62,7 @@ internal sealed class SettlementReportOrchestration
                 scatterInChunksInput,
                 dataSourceExceptionHandler);
 
-        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 5 });
+        context.SetCustomStatus(new OrchestrateSettlementReportMetadata { OrchestrationProgress = 10 });
 
         var generatedFiles = new List<GeneratedSettlementReportFileDto>();
         var orderedResults = scatterResultsInChunks
