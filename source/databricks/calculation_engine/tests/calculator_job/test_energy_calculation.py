@@ -268,6 +268,10 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
             f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.ENERGY_V1_VIEW_NAME}",
             True,
         ),
+        (
+            f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
+            True,
+        ),
     ],
 )
 def test__when_balance_fixing__view_has_data_if_expected(
