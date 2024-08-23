@@ -63,7 +63,7 @@ public class CalculationCompletedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 1;
+    private const int LastKnownMinorEventVersion = 2;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -110,6 +110,12 @@ message CalculationCompletedV1 {
   * Is the version number corresponding to the calculation for the given type and period.
   */
   int64 calculation_version = 4;
+
+  /*
+   * When a calculation is internal, the calculation result is for internal use only.
+   * Results should not be exposed to external users/actors.
+   */
+  bool is_internal_calculation = 5;
   
   enum CalculationType {
   /*

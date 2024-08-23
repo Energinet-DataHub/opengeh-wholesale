@@ -50,13 +50,17 @@ internal class CalculationTrigger
         [FromBody] StartCalculationRequestDto startCalculationRequestDto,
         FunctionContext executionContext)
     {
+        // consumers of the API should not be able to trigger internal calculations yet.
+        var isInternalCalculation = false;
+
         var calculationId = await _calculationsClient.CreateAndCommitAsync(
             startCalculationRequestDto.CalculationType,
             startCalculationRequestDto.GridAreaCodes,
             startCalculationRequestDto.StartDate,
             startCalculationRequestDto.EndDate,
             startCalculationRequestDto.ScheduledAt,
-            _userContext.CurrentUser.UserId).ConfigureAwait(false);
+            _userContext.CurrentUser.UserId,
+            isInternalCalculation).ConfigureAwait(false);
 
         _logger.LogInformation("Calculation created with id {calculationId}", calculationId);
 

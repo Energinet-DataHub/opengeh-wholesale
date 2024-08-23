@@ -51,6 +51,7 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
         builder.Property(b => b.CalculationType);
         builder.Property(b => b.CreatedTime);
         builder.Property(b => b.CreatedByUserId);
+        builder.Property(b => b.IsInternalCalculation);
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata

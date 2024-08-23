@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -53,6 +54,24 @@ public class CalculationDtoMapperTests
         // Assert
         calculationDto.PeriodStart.Should().Be(calculation.PeriodStart.ToDateTimeOffset());
         calculationDto.PeriodEnd.Should().Be(calculation.PeriodEnd.ToDateTimeOffset());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Map_Returns_AsInternalCalculation(
+        CalculationDtoMapper sut)
+    {
+        // Arrange
+        var calculation = new CalculationBuilder()
+            .WithCalculationType(CalculationType.Aggregation)
+            .AsInternalCalculation()
+            .Build();
+
+        // Act
+        var calculationDto = sut.Map(calculation);
+
+        // Assert
+        calculationDto.IsInternalCalculation.Should().BeTrue();
     }
 
     [Theory]

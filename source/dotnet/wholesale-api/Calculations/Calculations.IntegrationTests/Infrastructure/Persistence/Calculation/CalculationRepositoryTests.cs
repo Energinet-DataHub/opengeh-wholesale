@@ -70,6 +70,7 @@ public class CalculationRepositoryTests
         actual.Should().BeEquivalentTo(expectedCalculation);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.CalculationType.Should().Be(CalculationType.Aggregation);
+        actual.IsInternalCalculation.Should().BeFalse();
     }
 
     [Fact]
@@ -229,7 +230,8 @@ public class CalculationRepositoryTests
             Instant.FromUtc(2022, 4, 4, 0, 0),
             period.DateTimeZone,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            false);
         calculation.MarkAsStarted();
         calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), executionTimeStart); // Sets execution time start
 
@@ -463,7 +465,8 @@ public class CalculationRepositoryTests
             scheduledAt ?? SystemClock.Instance.GetCurrentInstant(),
             period.DateTimeZone,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            false);
     }
 
     private static Application.Model.Calculations.Calculation CreateCalculation(Instant scheduledAt)

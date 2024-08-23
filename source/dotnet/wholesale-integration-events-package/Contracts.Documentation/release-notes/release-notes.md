@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 10.1.0
+
+Added `IsInternalCalculation` property to `CalculationCompletedV1`
+
 ## Version 10.0.0
 
 - Removed the following contracts:
