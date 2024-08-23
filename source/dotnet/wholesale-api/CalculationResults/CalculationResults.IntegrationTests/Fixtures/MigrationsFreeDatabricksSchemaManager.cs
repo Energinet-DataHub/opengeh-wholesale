@@ -44,6 +44,7 @@ public class MigrationsFreeDatabricksSchemaManager
 
         DeltaTableOptions = Options.Create(new DeltaTableOptions
         {
+            DatabricksCatalogName = "hive_metastore",
             SCHEMA_NAME = $"{schemaPrefix}_view_{postfix}",
             BasisDataSchemaName = $"{schemaPrefix}_view_{postfix}",
             WholesaleCalculationResultsSchemaName = $"{schemaPrefix}_view_{postfix}",
@@ -52,7 +53,7 @@ public class MigrationsFreeDatabricksSchemaManager
 
     public DatabricksSettings Settings { get; }
 
-    public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
+    public string SchemaName => $"{DeltaTableOptions.Value.DatabricksCatalogName}.{DeltaTableOptions.Value.SCHEMA_NAME}";
 
     public async Task CreateSchemaAsync()
     {
