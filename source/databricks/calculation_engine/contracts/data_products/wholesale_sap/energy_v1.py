@@ -13,6 +13,8 @@ energy_v1 = t.StructType(
         #
         t.StructField("calculation_version", t.LongType(), not nullable),
         #
+        t.StructField("calculation_succeeded_time", t.StringType(), not nullable),
+        #
         # 'total' | 'es' | 'brp'
         t.StructField("aggregation_level", t.StringType(), not nullable),
         #
