@@ -113,11 +113,11 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
                 });
 
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
+                .Name("CHARGEID")
                 .Index(10);
 
             Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
+                .Name("CHARGEOWNER")
                 .Index(11);
         }
     }
