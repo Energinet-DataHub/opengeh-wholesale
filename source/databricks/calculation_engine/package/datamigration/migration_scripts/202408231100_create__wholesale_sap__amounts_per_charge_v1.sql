@@ -20,6 +20,6 @@ SELECT c.calculation_id,
        apc.price,
        apc.amount
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.amounts_per_charge as apc
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.calculations as c
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations as c
 ON c.calculation_id = e.calculation_id
 WHERE c.calculation_succeeded_time IS NOT NULL
