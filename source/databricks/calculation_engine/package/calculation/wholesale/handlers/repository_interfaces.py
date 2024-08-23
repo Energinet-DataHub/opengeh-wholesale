@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import List
 
 from pyspark.sql import DataFrame
+
+from package.calculation.calculator_args import CalculatorArgs
 
 
 class MeteringPointPeriodRepositoryInterface(ABC):
@@ -25,4 +28,33 @@ class MeteringPointPeriodRepositoryInterface(ABC):
 
 class MeteringPointPeriodRepository(MeteringPointPeriodRepositoryInterface):
     def get_by(self, grid_area_codes: List[str]) -> DataFrame:
-        pass
+        metering_point_periods.where(
+            col(Colname.grid_area_code).isin(bucket.calculator_args.calculation_grid_areas)
+            | col(Colname.from_grid_area_code).isin(
+                calculator_args.calculation_grid_areas
+            )
+            | col(Colname.to_grid_area_code).isin(
+                calculator_args.calculation_grid_areas
+            )
+        )
+        .where(
+            col(Colname.from_date) < calculator_args.calculation_period_end_datetime
+        )
+        .where(
+            col(Colname.to_date).isNull()
+            | (
+                    col(Colname.to_date)
+                    > calculator_args.calculation_period_start_datetime
+            )
+        )
+
+
+@dataclass
+class CalculationMetaData:
+
+    calculation_id: str
+    calculation_type : str
+
+    def __init__(self, args: CalculatorArgs):
+        self.calculation_id = args.calculation_id
+        self.calculation_type = args.calculation_type.value

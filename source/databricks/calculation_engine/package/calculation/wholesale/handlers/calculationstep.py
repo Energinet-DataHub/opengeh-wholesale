@@ -17,7 +17,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar
 
-from package.calculation.calculation_results import CalculationResultsContainer
+from package.calculation.calculation_output import CalculationOutput
+from package.calculation.wholesale.handlers.repository_interfaces import (
+    CalculationMetaData,
+)
 
 # Define generic type variables
 RequestType = TypeVar("RequestType")
@@ -32,8 +35,8 @@ class CalculationStep(ABC):
 
     @abstractmethod
     def handle(
-        self, output: CalculationResultsContainer
-    ) -> CalculationResultsContainer:
+        self, bucket: Bucket, output: CalculationOutput
+    ) -> [Bucket, CalculationOutput]:
         pass
 
 
@@ -44,25 +47,20 @@ class BaseCalculationStep(CalculationStep):
 
     def __init__(
         self,
-        bucket: Bucket,
     ):
-        #
-        self.bucket = bucket
-
-    _next_handler = None
+        self._next_handler = None
 
     def set_next(self, handler: CalculationStep) -> CalculationStep:
         self._next_handler = handler
-        # Returning a handler from here will let us link handlers in a convenient way like handler1.set_next(handler2).set_next(handler3)
         return handler
 
     def handle(
-        self, output: CalculationResultsContainer
-    ) -> CalculationResultsContainer:
+        self, bucket: Bucket, output: CalculationOutput
+    ) -> [Bucket, CalculationOutput]:
         if self._next_handler:
-            return self._next_handler.handle(output)
-        return output
+            return self._next_handler.handle(bucket, output)
+        return bucket, output
 
 
 class Bucket:
-    pass
+    calculator_args: CalculationMetaData
