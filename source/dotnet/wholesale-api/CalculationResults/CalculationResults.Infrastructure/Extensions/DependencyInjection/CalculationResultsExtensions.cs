@@ -47,7 +47,10 @@ public static class CalculationResultsExtensions
         services.AddDataLakeClientForApplication();
 
         // Used by sql statements (queries)
-        services.AddOptions<DeltaTableOptions>().Bind(configuration);
+        services.AddOptions<DeltaTableOptions>()
+            .Bind(configuration)
+            .ValidateDataAnnotations();
+
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();

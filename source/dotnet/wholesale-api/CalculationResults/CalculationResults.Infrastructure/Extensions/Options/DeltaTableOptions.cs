@@ -12,10 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 public class DeltaTableOptions
 {
+    /// <summary>
+    /// Name of the catalog in which the databricks views are located.
+    /// Should point at the unity catalog when running in Azure, and use hive_metastore when running in tests
+    /// </summary>
+    [Required]
+    public string CatalogName { get; set; } = null!;
+
     /// <summary>
     /// Name of the schema/database under which the output tables are associated.
     /// </summary>
@@ -77,9 +86,9 @@ public class DeltaTableOptions
 
     public string TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME { get; set; } = "total_monthly_amounts_v1";
 
-    public string ENERGY_PER_GA_V1_VIEW_NAME { get; set; } = "energy_per_ga_v1";
+    public string ENERGY_V1_VIEW_NAME { get; set; } = "energy_v1";
 
-    public string ENERGY_PER_BRP_GA_V1_VIEW_NAME { get; set; } = "energy_per_brp_ga_v1";
+    public string ENERGY_PER_BRP_V1_VIEW_NAME { get; set; } = "energy_per_brp_v1";
 
-    public string ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME { get; set; } = "energy_per_es_brp_ga_v1";
+    public string ENERGY_PER_ES_V1_VIEW_NAME { get; set; } = "energy_per_es_v1";
 }
