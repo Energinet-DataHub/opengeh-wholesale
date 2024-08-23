@@ -36,4 +36,5 @@ public sealed record CalculationDto(
     Guid CreatedByUserId,
     long Version,
     CalculationOrchestrationState OrchestrationState,
-    DateTimeOffset? CompletedTime);
+    DateTimeOffset? CompletedTime,
+    bool IsInternalCalculation);

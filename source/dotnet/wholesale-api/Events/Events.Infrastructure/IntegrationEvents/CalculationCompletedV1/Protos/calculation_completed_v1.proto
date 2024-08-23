@@ -44,6 +44,12 @@ message CalculationCompletedV1 {
   * Is the version number corresponding to the calculation for the given type and period.
   */
   int64 calculation_version = 4;
+
+  /*
+   * When calculation is internal, the calculation result is for internal use only
+   * and should not be exposed to external user.
+   */
+  bool is_internal_calculation = 5;
   
   enum CalculationType {
   /*
