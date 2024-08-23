@@ -160,11 +160,11 @@ public sealed class WholesaleResultFileGenerator : CsvFileGeneratorBase<Settleme
                 });
 
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
+                .Name("CHARGEID")
                 .Index(14);
 
             Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
+                .Name("CHARGEOWNER")
                 .Index(15);
         }
     }
