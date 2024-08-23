@@ -114,5 +114,5 @@ SELECT c.calculation_id,
        'kWh' as quantity_unit
 FROM all_energy as e
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.calculations as c
-WHERE c.calculation_id = e.calculation_id
-AND c.calculation_succeeded_time IS NOT NULL
+ON c.calculation_id = e.calculation_id
+WHERE c.calculation_succeeded_time IS NOT NULL
