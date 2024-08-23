@@ -237,8 +237,8 @@ public class Calculation
     public long Version { get; private set; }
 
     /// <summary>
-    /// When calculation is internal, the calculation result is for internal use only
-    /// and should not be exposed to external user.
+    /// When a calculation is internal, the calculation result is for internal use only.
+    /// Results should not be exposed to external users/actors.
     /// </summary>
     public bool IsInternalCalculation { get; }
 

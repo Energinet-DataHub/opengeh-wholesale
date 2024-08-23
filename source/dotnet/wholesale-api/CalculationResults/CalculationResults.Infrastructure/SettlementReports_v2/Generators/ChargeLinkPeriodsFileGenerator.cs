@@ -92,11 +92,11 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
                 });
 
             Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
+                .Name("CHARGEOWNER")
                 .Index(3);
 
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
+                .Name("CHARGEID")
                 .Index(4);
 
             Map(r => r.Quantity)
