@@ -29,7 +29,7 @@ public sealed class
     public string GetSource(DeltaTableOptions tableOptions)
     {
         return
-            $"{tableOptions.CatalogName}.{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
+            $"{tableOptions.DatabricksCatalogName}.{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
     }
 
     public string GetCalculationTypeColumnName()

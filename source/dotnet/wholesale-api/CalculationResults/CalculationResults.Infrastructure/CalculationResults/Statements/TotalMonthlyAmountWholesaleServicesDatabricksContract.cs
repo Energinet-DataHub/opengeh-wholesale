@@ -28,7 +28,7 @@ public sealed class TotalMonthlyAmountWholesaleServicesDatabricksContract : IWho
     public string GetSource(DeltaTableOptions tableOptions)
     {
         return
-            $"{tableOptions.CatalogName}.{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}";
+            $"{tableOptions.DatabricksCatalogName}.{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}";
     }
 
     public string GetCalculationTypeColumnName()

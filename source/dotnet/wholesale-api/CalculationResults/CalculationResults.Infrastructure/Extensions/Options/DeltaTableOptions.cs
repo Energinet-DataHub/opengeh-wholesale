@@ -23,7 +23,7 @@ public class DeltaTableOptions
     /// Should point at the unity catalog when running in Azure, and use hive_metastore when running in tests
     /// </summary>
     [Required]
-    public string CatalogName { get; set; } = null!;
+    public string DatabricksCatalogName { get; set; } = null!;
 
     /// <summary>
     /// Name of the schema/database under which the output tables are associated.
