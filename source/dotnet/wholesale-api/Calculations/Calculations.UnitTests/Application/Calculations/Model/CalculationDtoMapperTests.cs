@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -62,6 +63,7 @@ public class CalculationDtoMapperTests
     {
         // Arrange
         var calculation = new CalculationBuilder()
+            .WithCalculationType(CalculationType.Aggregation)
             .AsInternalCalculation()
             .Build();
 
