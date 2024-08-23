@@ -111,7 +111,7 @@ SELECT c.calculation_id,
        time,
        quantity,
        quantity_qualities,
-       'kWh' as quantity_unit,
+       'kWh' as quantity_unit
 FROM all_energy as e
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1 as c
 WHERE c.calculation_id = e.calculation_id
