@@ -54,8 +54,43 @@ public class DatabricksCalculatorJobParametersFactoryTests
             .Replace("{calculation-id}", calculation.Id.ToString())
             .Replace("\r", string.Empty)
             .Split("\n") // Split lines
-            .Where(l => !l.StartsWith("#") && l.Length > 0) // Remove empty and comment lines
-            .Where(l => l != "--is-internal-calculation"); // Ignore optional is-internal-calculation parameter
+            .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
+        var expected = RunParameters.CreatePythonParams(pythonParams);
+
+        // Act
+        var actual = sut.CreateParameters(calculation);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void CreateParameters_WhenCalculationIsInternal_MatchesExpectationOfDatabricksJob(
+        DatabricksCalculationParametersFactory sut)
+    {
+        // Arrange
+        var calculation = new Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            CalculationType.Aggregation,
+            new List<GridAreaCode> { new("805"), new("806"), new("033") },
+            DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-06-01T22:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-06-04T22:00Z").ToInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            new Guid("c2975345-d935-44a2-b7bf-2629db4aa8bf"),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            true);
+
+        using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.internal-calculation-job-parameters-reference.txt");
+        using var reader = new StreamReader(stream);
+
+        var pythonParams = reader
+            .ReadToEnd()
+            .Replace("{calculation-id}", calculation.Id.ToString())
+            .Replace("\r", string.Empty)
+            .Split("\n") // Split lines
+            .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
         var expected = RunParameters.CreatePythonParams(pythonParams);
 
         // Act
