@@ -88,7 +88,7 @@ def sys_argv_from_contract(contract_parameters) -> list[str]:
 
 @pytest.fixture(scope="session")
 def sys_argv_from_internal_contract(contract_parameters_of_internal_calculation) -> list[str]:
-    return ["dummy_script_name"] + contract_parameters_of_internal_calculation
+    return ["dummy_script_name_internal"] + contract_parameters_of_internal_calculation
 
 
 @pytest.fixture(scope="session")
