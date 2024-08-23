@@ -42,6 +42,23 @@ public class CalculationTests
         sut.GridAreaCodes.Should().NotContain(unexpectedGridAreaCode);
     }
 
+    [Theory]
+    [InlineAutoMoqData(CalculationType.WholesaleFixing)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement)]
+    public void Ctor_WhenIsAggregationAndCalculationTypeIsNotAggregation_ThrowsBusinessValidationException(CalculationType calculationType)
+    {
+        // Arrange & Act
+        var actual = Assert.Throws<BusinessValidationException>(() => new CalculationBuilder()
+            .WithCalculationType(calculationType)
+            .AsInternalCalculation()
+            .Build());
+
+        // Assert
+        actual.Message.Should().Contain($"Internal calculations is not allowed for {calculationType}.");
+    }
+
     [Fact]
     public void Ctor_WhenNoGridAreaCodes_ThrowsBusinessValidationException()
     {
@@ -56,7 +73,8 @@ public class CalculationTests
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks));
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            false));
         actual.Message.Should().Contain("Calculation must contain at least one grid area code");
     }
 
@@ -137,7 +155,8 @@ public class CalculationTests
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            false);
 
         // Assert
         if (isEntireMonth)
@@ -256,7 +275,8 @@ public class CalculationTests
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks));
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            false));
 
         // Assert
         actual.Message.Should().ContainAll("period", "end");
@@ -282,7 +302,8 @@ public class CalculationTests
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks));
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            false));
 
         // Assert
         actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}' must be midnight.");
