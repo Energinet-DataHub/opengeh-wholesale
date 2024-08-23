@@ -2,7 +2,7 @@ CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.amounts_p
 SELECT c.calculation_id,
        c.calculation_type,
        c.calculation_version,
-       c.calculation_succeded_time,
+       c.calculation_succeeded_time,
        apc.grid_area_code,
        apc.energy_supplier_id,
        apc.charge_code,
