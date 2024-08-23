@@ -57,6 +57,23 @@ public class CalculationDtoMapperTests
 
     [Theory]
     [InlineAutoMoqData]
+    public void Map_Returns_AsInternalCalculation(
+        CalculationDtoMapper sut)
+    {
+        // Arrange
+        var calculation = new CalculationBuilder()
+            .AsInternalCalculation()
+            .Build();
+
+        // Act
+        var calculationDto = sut.Map(calculation);
+
+        // Assert
+        calculationDto.IsInternalCalculation.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public void Map_When_ExecutionTimeIsNotNull_Returns_CorrectExecutionTime(
         CalculationDtoMapper sut)
     {
