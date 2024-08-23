@@ -33,6 +33,10 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--calculation-type={CalculationTypeMapper.ToDeltaTableValue(calculation.CalculationType)}",
             $"--created-by-user-id={calculation.CreatedByUserId}",
         };
+        if (calculation.IsInternalCalculation)
+        {
+            jobParameters.Add("--is-internal-calculation");
+        }
 
         return RunParameters.CreatePythonParams(jobParameters);
     }
