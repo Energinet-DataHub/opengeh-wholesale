@@ -86,7 +86,8 @@ public class CalculationsClient(
         DateTimeOffset startDate,
         DateTimeOffset endDate,
         DateTimeOffset scheduledAt,
-        Guid currentUserId)
+        Guid currentUserId,
+        bool isInternalCalculation)
     {
         var calculation = _calculationFactory.Create(
             calculationType,
@@ -94,7 +95,8 @@ public class CalculationsClient(
             startDate,
             endDate,
             scheduledAt,
-            currentUserId);
+            currentUserId,
+            isInternalCalculation);
 
         await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

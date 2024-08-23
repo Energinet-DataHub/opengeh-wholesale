@@ -49,7 +49,8 @@ public class CalculationJobScenario : SubsystemTestsBase<CalculationJobScenarioF
             scheduledAt: createdTime, // Schedule to run immediately
             dateTimeZone: DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             createdByUserId: createdByUserId,
-            version: createdTime.ToDateTimeUtc().Ticks);
+            version: createdTime.ToDateTimeUtc().Ticks,
+            false);
     }
 
     [ScenarioStep(1)]
