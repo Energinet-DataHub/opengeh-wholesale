@@ -34,7 +34,8 @@ public class CalculationCompletedEventProvider : ICalculationCompletedEventProvi
             unpublishedCalculation.CalculationId,
             orchestrationInstanceId,
             unpublishedCalculation.CalculationType,
-            unpublishedCalculation.Version);
+            unpublishedCalculation.Version,
+            unpublishedCalculation.IsInternalCalculation);
 
         return new IntegrationEvent(
             EventIdentification: unpublishedCalculation.CalculationId,

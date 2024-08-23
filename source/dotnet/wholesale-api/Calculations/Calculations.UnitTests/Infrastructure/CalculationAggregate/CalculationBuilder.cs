@@ -30,6 +30,7 @@ public class CalculationBuilder
     private CalculationExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = [new("805")];
     private CalculationType _calculationType = CalculationType.BalanceFixing;
+    private bool _isInternalCalculation = false;
 
     public CalculationBuilder()
     {
@@ -105,6 +106,12 @@ public class CalculationBuilder
         return this;
     }
 
+    public CalculationBuilder AsInternalCalculation()
+    {
+        _isInternalCalculation = true;
+        return this;
+    }
+
     public Calculation Build()
     {
         var calculation = new Calculation(
@@ -116,7 +123,8 @@ public class CalculationBuilder
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks,
+            _isInternalCalculation);
         var orchestrationInstanceId = new OrchestrationInstanceId("instance-id");
         var jobRunId = new CalculationJobId(new Random().Next(1, 1000));
 

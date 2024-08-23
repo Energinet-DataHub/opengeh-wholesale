@@ -535,6 +535,7 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
             scheduledToRunAt,
             DateTimeZone.Utc,
             Guid.Empty,
-            1);
+            1,
+            false);
     }
 }

@@ -19,7 +19,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ca
 
 public class CalculationCompletedV1Factory : ICalculationCompletedFactory
 {
-    public Contracts.IntegrationEvents.CalculationCompletedV1 Create(Guid calculationId, string orchestrationInstanceId, CalculationType calculationType, long calculationVersion)
+    public Contracts.IntegrationEvents.CalculationCompletedV1 Create(
+        Guid calculationId,
+        string orchestrationInstanceId,
+        CalculationType calculationType,
+        long calculationVersion,
+        bool isInternalCalculation)
     {
         return new Contracts.IntegrationEvents.CalculationCompletedV1
         {
@@ -27,6 +32,7 @@ public class CalculationCompletedV1Factory : ICalculationCompletedFactory
             InstanceId = orchestrationInstanceId,
             CalculationType = CalculationTypeMapper.MapCalculationType(calculationType),
             CalculationVersion = calculationVersion,
+            IsInternalCalculation = isInternalCalculation,
         };
     }
 }

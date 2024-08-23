@@ -242,7 +242,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             GridAreaCodes: ["256", "512"],
             StartDate: dateAtMidnight,
             EndDate: dateAtMidnight.AddDays(2),
-            ScheduledAt: DateTimeOffset.UtcNow);
+            ScheduledAt: DateTimeOffset.UtcNow,
+            false);
 
         request.Content = new StringContent(
             JsonConvert.SerializeObject(requestDto),
