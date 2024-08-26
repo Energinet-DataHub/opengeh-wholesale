@@ -11,7 +11,7 @@ locals {
     },
     {
       environment = "sauron.test002"
-      url         = "victorious-ocean-05a6eaa03.5.azurestaticapps.net"
+      url         = "app-ui-sauron-t-we-002.azurewebsites.net"
     },
     {
       environment = "dev"
