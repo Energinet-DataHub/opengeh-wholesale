@@ -13,3 +13,11 @@ pim_contributor_control_plane_group_name = "SEC-A-Datahub-Prod-001-Contributor-C
 pim_reader_group_name                    = "SEC-A-Datahub-Prod-001-Reader"
 alert_email_address                      = "8d8e42fa.energinet.onmicrosoft.com@emea.teams.ms"
 azure_maintenance_alerts_email_address   = "ebf4f917.energinet.onmicrosoft.com@emea.teams.ms"
+databricks_readers_group = {
+  id   = "726131153567802"
+  name = "SEC-A-Datahub-Prod-001-Reader"
+}
+databricks_contributor_dataplane_group = {
+  id   = "504707241967571"
+  name = "SEC-A-Datahub-Prod-001-Contributor-Dataplane"
+}

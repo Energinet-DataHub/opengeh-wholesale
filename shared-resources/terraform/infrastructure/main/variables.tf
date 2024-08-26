@@ -274,3 +274,19 @@ variable "azure_maintenance_alerts_email_address" {
   description = "(Optional) Email address to receive subscription-wide alerts about Azure planned maintenance and incidents on a subscription level"
   default     = null
 }
+
+variable "databricks_readers_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with read permissions."
+}
+
+variable "databricks_contributor_dataplane_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with contributor permissions to the data plane."
+}

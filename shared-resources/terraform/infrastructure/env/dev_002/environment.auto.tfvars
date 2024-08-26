@@ -10,3 +10,11 @@ biztalk_hybrid_connection_hostname          = "datahub.preproduction.biztalk.ene
 apim_url                                    = "https://dev002.b2b.datahub3.dk"
 developer_security_group_contributor_access = true
 developer_security_group_reader_access      = true
+databricks_readers_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
+databricks_contributor_dataplane_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
