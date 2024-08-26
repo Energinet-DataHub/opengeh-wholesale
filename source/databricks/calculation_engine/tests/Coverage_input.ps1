@@ -36,14 +36,14 @@ foreach ($givenFolder in $givenFolders) {
             # Create a row for each file found
             $row = [PSCustomObject]@{
                 Test = $relativePath
-                Type = "Calculation Result"
+                Type = "Result"
                 Data = $fileNameWithoutExtension
             }
 
             # Add the row to the array
             $rows += $row
 
-            Write-Host "Adding row: $relativePath | Calculation Result | $fileNameWithoutExtension"
+            Write-Host "Adding row: $relativePath | Result | $fileNameWithoutExtension"
         }
 
         # Look for all folders ending with "_results" inside the 'then' folder
@@ -61,14 +61,14 @@ foreach ($givenFolder in $givenFolders) {
                 # Create a row for each file found
                 $row = [PSCustomObject]@{
                     Test = $relativePath
-                    Type = "Calculation Result"
+                    Type = "Result"
                     Data = $fileNameWithoutExtension
                 }
 
                 # Add the row to the array
                 $rows += $row
 
-                Write-Host "Adding row: $relativePath | Calculation Result | $fileNameWithoutExtension"
+                Write-Host "Adding row: $relativePath | Result | $fileNameWithoutExtension"
             }
         }
     } else {
@@ -101,14 +101,14 @@ foreach ($givenFolder in $givenFolders) {
                 # Create a row for each coverage item found
                 $row = [PSCustomObject]@{
                     Test = $relativePath
-                    Type = "Scenario"
+                    Type = "Case"
                     Data = $coverageItem
                 }
 
                 # Add the row to the array
                 $rows += $row
 
-                Write-Host "Adding row: $relativePath | Scenario | $coverageItem"
+                Write-Host "Adding row: $relativePath | Case | $coverageItem"
             }
 
             # Exit the "## Coverage" section when hitting another heading

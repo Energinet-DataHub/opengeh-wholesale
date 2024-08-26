@@ -9,4 +9,5 @@ two other grid areas than the one it is in.
   included for it in time series.
 
 ## Coverage
--  Exchange between to grid areas where exchange MP is in neither grid area of the exchange
+- Exchange between to grid areas where exchange MP is in neither grid area of the exchange
+
