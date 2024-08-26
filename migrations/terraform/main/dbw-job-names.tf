@@ -15,11 +15,11 @@ locals {
     "duplicates_in_time_series_silver",
     "Syncronize_To_Bronze_Time_Series",
     "Stream_Time_Series_Bronze_To_Silver",
-    "Stream_Time_Series_Landing_To_Bronze",
     "Stream_Time_Series_Silver_To_Gold",
     "duplicates_in_metering_points_wholesale",
     "monitor_wholesale_metering_points",
     "monitor_wholesale_time_series",
     "Reprocess_Metering_Points_Bronze_Quarantine",
+    "Ready_For_Calculation_Balance_Fixing"
   ]
 }
