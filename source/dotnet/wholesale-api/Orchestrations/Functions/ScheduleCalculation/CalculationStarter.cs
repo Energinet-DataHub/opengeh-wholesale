@@ -42,7 +42,8 @@ public class CalculationStarter(
     {
         var orchestrationInput = new CalculationOrchestrationInput(
             _orchestrationMonitorOptions,
-            calculationToStart.CalculationId);
+            calculationToStart.CalculationId,
+            calculationToStart.IsInternalCalculation);
 
         var alreadyStarted = await OrchestrationIsAlreadyStartedAsync(calculationToStart.OrchestrationInstanceId)
             .ConfigureAwait(false);

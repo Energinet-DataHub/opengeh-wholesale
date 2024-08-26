@@ -43,7 +43,8 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             GridAreaCodes: ["543"],
             StartDate: new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
             EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
-            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(4)));
+            ScheduledAt: DateTimeOffset.UtcNow.Add(TimeSpan.FromMinutes(4)),
+            false);
     }
 
     [ScenarioStep(1)]

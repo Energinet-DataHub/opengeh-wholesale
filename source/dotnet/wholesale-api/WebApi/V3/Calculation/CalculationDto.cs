@@ -32,4 +32,5 @@ public sealed record CalculationDto(
     string[] GridAreaCodes,
     CalculationType CalculationType,
     Guid CreatedByUserId,
-    DateTimeOffset? CompletedTime);
+    DateTimeOffset? CompletedTime,
+    bool IsInternalCalculation);

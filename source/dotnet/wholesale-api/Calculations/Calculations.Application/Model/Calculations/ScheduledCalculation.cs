@@ -16,4 +16,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public sealed record ScheduledCalculation(CalculationId CalculationId, OrchestrationInstanceId OrchestrationInstanceId);
+public sealed record ScheduledCalculation(
+    CalculationId CalculationId,
+    OrchestrationInstanceId OrchestrationInstanceId,
+    bool IsInternalCalculation);

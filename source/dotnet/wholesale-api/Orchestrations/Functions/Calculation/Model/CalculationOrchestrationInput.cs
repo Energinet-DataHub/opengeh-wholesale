@@ -22,4 +22,5 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model
 /// </summary>
 public sealed record CalculationOrchestrationInput(
     CalculationOrchestrationMonitorOptions OrchestrationMonitorOptions,
-    CalculationId CalculationId);
+    CalculationId CalculationId,
+    bool IsInternalCalculation);
