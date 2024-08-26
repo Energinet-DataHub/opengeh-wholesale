@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .calculation_writer import write_calculation, write_calculation_grid_areas
 from .energy_results import write_energy_results
 from .monthly_amounts_per_charge import write_monthly_amounts_per_charge
 from .total_monthly_amounts import write_total_monthly_amounts

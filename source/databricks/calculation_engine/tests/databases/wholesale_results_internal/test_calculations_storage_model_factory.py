@@ -23,7 +23,7 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_internal.schemas import (
     calculations_schema,
 )
-from package.databases.wholesale_internal.calculations_storage_model_factory import (
+from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
     create_calculation,
 )
 
