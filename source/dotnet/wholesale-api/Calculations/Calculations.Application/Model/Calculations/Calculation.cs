@@ -402,7 +402,7 @@ public class Calculation
         if (IsInternalCalculation)
         {
             throw new BusinessValidationException(
-                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuingFailed}' because it is not an internal calculation.");
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuingFailed}' because it is an internal calculation.");
         }
 
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuingFailed;
