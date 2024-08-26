@@ -10,7 +10,7 @@ resource "databricks_external_location" "wholesale_migrations_wholesale" {
   url             = "abfss://${azurerm_storage_container.wholesale_migrations_wholesale.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "wholesale_migrations_wholesale" {
@@ -20,7 +20,7 @@ resource "databricks_schema" "wholesale_migrations_wholesale" {
   comment      = "wholesale_migrations_wholesale Schema"
   storage_root = databricks_external_location.wholesale_migrations_wholesale.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "wholesale_migrations_wholesale" {
@@ -30,5 +30,5 @@ resource "databricks_grant" "wholesale_migrations_wholesale" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE", "CREATE_TABLE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }

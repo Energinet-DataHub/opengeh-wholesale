@@ -1,10 +1,8 @@
-resource "databricks_catalog_workspace_binding" "shared" {
-  provider = databricks.dbw
-
-  securable_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  workspace_id   = module.dbw.workspace_id
-
-  depends_on = [module.dbw]
+removed {
+  from = databricks_catalog_workspace_binding.shared
+  lifecycle {
+    destroy = false
+  }
 }
 
 resource "databricks_external_location" "migrations_bronze_storage" {
@@ -13,7 +11,7 @@ resource "databricks_external_location" "migrations_bronze_storage" {
   url             = "abfss://${azurerm_storage_container.bronze.name}@${module.st_migrations.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 resource "databricks_schema" "migrations_bronze" {
@@ -23,7 +21,7 @@ resource "databricks_schema" "migrations_bronze" {
   comment      = "Migrations Bronze Schema"
   storage_root = databricks_external_location.migrations_bronze_storage.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "migrations_silver_storage" {
@@ -32,7 +30,7 @@ resource "databricks_external_location" "migrations_silver_storage" {
   url             = "abfss://${azurerm_storage_container.silver.name}@${module.st_migrations.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 # TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
@@ -42,7 +40,7 @@ resource "databricks_grant" "dev_external_location" {
   principal         = var.migration_group_name
   privileges        = ["READ_FILES", "WRITE_FILES"]
 
-  depends_on = [module.dbw, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "migrations_silver" {
@@ -52,7 +50,7 @@ resource "databricks_schema" "migrations_silver" {
   comment      = "Migrations Silver Schema"
   storage_root = databricks_external_location.migrations_silver_storage.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "migrations_gold_storage" {
@@ -61,7 +59,7 @@ resource "databricks_external_location" "migrations_gold_storage" {
   url             = "abfss://${azurerm_storage_container.gold.name}@${module.st_migrations.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 # TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
@@ -71,7 +69,7 @@ resource "databricks_grant" "dev_external_location_gold" {
   principal         = var.migration_group_name
   privileges        = ["READ_FILES", "WRITE_FILES"]
 
-  depends_on = [module.dbw, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "migrations_gold" {
@@ -81,7 +79,7 @@ resource "databricks_schema" "migrations_gold" {
   comment      = "Migrations Gold Schema"
   storage_root = databricks_external_location.migrations_gold_storage.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "migrations_eloverblik_storage" {
@@ -90,7 +88,7 @@ resource "databricks_external_location" "migrations_eloverblik_storage" {
   url             = "abfss://${azurerm_storage_container.eloverblik.name}@${module.st_migrations.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 # TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
@@ -100,7 +98,7 @@ resource "databricks_grant" "dev_external_location_eloverblik" {
   principal         = var.migration_group_name
   privileges        = ["READ_FILES", "WRITE_FILES"]
 
-  depends_on = [module.dbw, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "migrations_eloverblik" {
@@ -110,7 +108,7 @@ resource "databricks_schema" "migrations_eloverblik" {
   comment      = "Migrations Eloverblik Schema"
   storage_root = databricks_external_location.migrations_eloverblik_storage.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "migrations_internal_storage" {
@@ -119,7 +117,7 @@ resource "databricks_external_location" "migrations_internal_storage" {
   url             = "abfss://${azurerm_storage_container.internal.name}@${module.st_migrations.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 resource "databricks_schema" "migrations_internal" {
@@ -129,7 +127,7 @@ resource "databricks_schema" "migrations_internal" {
   comment      = "Migrations Internal Schema"
   storage_root = databricks_external_location.migrations_internal_storage.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "migrations_wholesale_storage" {
@@ -138,7 +136,7 @@ resource "databricks_external_location" "migrations_wholesale_storage" {
   url             = "abfss://${azurerm_storage_container.wholesale.name}@${module.st_migrations.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 # TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
@@ -148,7 +146,7 @@ resource "databricks_grant" "dev_external_location_wholesale" {
   principal         = var.migration_group_name
   privileges        = ["READ_FILES", "WRITE_FILES"]
 
-  depends_on = [module.dbw, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "migrations_wholesale" {
@@ -158,7 +156,7 @@ resource "databricks_schema" "migrations_wholesale" {
   comment      = "Migrations Wholesale Schema"
   storage_root = databricks_external_location.migrations_wholesale_storage.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "shared_wholesale_input" {
@@ -167,7 +165,7 @@ resource "databricks_external_location" "shared_wholesale_input" {
   url             = "abfss://wholesaleinput@${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, module.st_migrations]
+  depends_on      = [module.dbw, module.st_migrations]
 }
 
 # TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
@@ -177,7 +175,7 @@ resource "databricks_grant" "dev_external_location_shared_wholesale_input" {
   principal         = var.migration_group_name
   privileges        = ["READ_FILES", "WRITE_FILES"]
 
-  depends_on = [module.dbw, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "shared_wholesale_input" {
@@ -187,7 +185,7 @@ resource "databricks_schema" "shared_wholesale_input" {
   comment      = "Shared Wholesale Schema"
   storage_root = databricks_external_location.shared_wholesale_input.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 data "azurerm_key_vault_secret" "unity_storage_credential_id" {

@@ -8,13 +8,11 @@ data "azurerm_key_vault_secret" "shared_unity_catalog_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-resource "databricks_catalog_workspace_binding" "shared" {
-  provider = databricks.dbw
-
-  securable_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  workspace_id   = module.dbw.workspace_id
-
-  depends_on = [module.dbw]
+removed {
+  from = databricks_catalog_workspace_binding.shared
+  lifecycle {
+    destroy = false
+  }
 }
 
 resource "databricks_external_location" "internal" {
@@ -23,7 +21,7 @@ resource "databricks_external_location" "internal" {
   url             = "abfss://${azurerm_storage_container.internal.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "internal" {
@@ -33,7 +31,7 @@ resource "databricks_schema" "internal" {
   comment      = "wholesale_internal Schema"
   storage_root = databricks_external_location.internal.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "internal" {
@@ -43,7 +41,7 @@ resource "databricks_grant" "internal" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "results_internal" {
@@ -52,7 +50,7 @@ resource "databricks_external_location" "results_internal" {
   url             = "abfss://${azurerm_storage_container.results_internal.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "results_internal" {
@@ -62,7 +60,7 @@ resource "databricks_schema" "results_internal" {
   comment      = "wholesale_results_internal Schema"
   storage_root = databricks_external_location.results_internal.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "results_internal" {
@@ -72,7 +70,7 @@ resource "databricks_grant" "results_internal" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "results" {
@@ -81,7 +79,7 @@ resource "databricks_external_location" "results" {
   url             = "abfss://${azurerm_storage_container.results.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "results" {
@@ -91,7 +89,7 @@ resource "databricks_schema" "results" {
   comment      = "wholesale_results Schema"
   storage_root = databricks_external_location.results.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "results" {
@@ -101,7 +99,7 @@ resource "databricks_grant" "results" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "basis_data_internal" {
@@ -110,7 +108,7 @@ resource "databricks_external_location" "basis_data_internal" {
   url             = "abfss://${azurerm_storage_container.basis_data_internal.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "basis_data_internal" {
@@ -120,7 +118,7 @@ resource "databricks_schema" "basis_data_internal" {
   comment      = "wholesale_basis_data_internal Schema"
   storage_root = databricks_external_location.basis_data_internal.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "basis_data_internal" {
@@ -130,7 +128,7 @@ resource "databricks_grant" "basis_data_internal" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "settlement_reports" {
@@ -139,7 +137,7 @@ resource "databricks_external_location" "settlement_reports" {
   url             = "abfss://${azurerm_storage_container.settlement_reports.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "settlement_reports" {
@@ -149,7 +147,7 @@ resource "databricks_schema" "settlement_reports" {
   comment      = "wholesale_settlement_reports Schema"
   storage_root = databricks_external_location.settlement_reports.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "settlement_reports" {
@@ -159,7 +157,7 @@ resource "databricks_grant" "settlement_reports" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_external_location" "sap" {
@@ -168,7 +166,7 @@ resource "databricks_external_location" "sap" {
   url             = "abfss://${azurerm_storage_container.sap.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
-  depends_on      = [module.dbw, databricks_catalog_workspace_binding.shared, data.azurerm_key_vault_secret.st_data_lake_name]
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
 }
 
 resource "databricks_schema" "sap" {
@@ -178,7 +176,7 @@ resource "databricks_schema" "sap" {
   comment      = "wholesale_sap Schema"
   storage_root = databricks_external_location.sap.url
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 resource "databricks_grant" "sap" {
@@ -188,6 +186,6 @@ resource "databricks_grant" "sap" {
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token, databricks_catalog_workspace_binding.shared]
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
