@@ -372,7 +372,7 @@ public class Calculation
         if (IsInternalCalculation)
         {
             throw new BusinessValidationException(
-                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuing}' because it is not an internal calculation.");
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuing}' because it is an internal calculation.");
         }
 
         ActorMessagesEnqueuingTimeStart = enqueuingTimeStart;
