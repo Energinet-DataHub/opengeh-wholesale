@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Newtonsoft.Json;
 
@@ -73,7 +74,10 @@ public static class DurableClientExtensions
             async () =>
             {
                 // Do not retrieve history here as it could be expensive
-                var completeOrchestrationStatus = await client.GetStatusAsync(instanceId);
+                var completeOrchestrationStatus = await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true);
+                var h = completeOrchestrationStatus.History.OrderBy(item => item["Timestamp"])
+                                          .Select(item => item.ToObject<OrchestrationHistoryItem>())
+                                          .ToList();
                 return completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Completed;
             },
             waitTimeLimit ?? TimeSpan.FromSeconds(30),

@@ -167,7 +167,7 @@ public class Calculation
 
                 // The state can move from Calculating  -> Started if the databricks job is canceled and the calculation is reset and started again
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Started],
-                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
+                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing, CalculationOrchestrationState.Completed],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.ActorMessagesEnqueuingFailed],
                 CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
@@ -392,6 +392,13 @@ public class Calculation
 
     public void MarkAsCompleted(Instant completedAt)
     {
+        if (OrchestrationState == CalculationOrchestrationState.Calculated
+            && IsInternalCalculation == false)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' cannot be marked as '{CalculationOrchestrationState.Completed}' because it is not an internal calculation. Current orchestration state: '{OrchestrationState}'.");
+        }
+
         OrchestrationState = CalculationOrchestrationState.Completed;
         CompletedTime = completedAt;
     }

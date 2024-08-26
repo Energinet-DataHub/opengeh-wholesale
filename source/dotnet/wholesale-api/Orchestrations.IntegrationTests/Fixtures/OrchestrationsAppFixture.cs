@@ -225,8 +225,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// Calls the <see cref="AppHostManager"/> to send a post request to start the
     /// calculation.
     /// </summary>
+    /// <param name="isInternalCalculation"></param>
     /// <returns>Calculation id of the started calculation.</returns>
-    public async Task<Guid> StartCalculationAsync()
+    public async Task<Guid> StartCalculationAsync(bool isInternalCalculation = false)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -242,7 +243,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             GridAreaCodes: ["256", "512"],
             StartDate: dateAtMidnight,
             EndDate: dateAtMidnight.AddDays(2),
-            ScheduledAt: DateTimeOffset.UtcNow);
+            ScheduledAt: DateTimeOffset.UtcNow,
+            IsInternalCalculation: isInternalCalculation);
 
         request.Content = new StringContent(
             JsonConvert.SerializeObject(requestDto),
