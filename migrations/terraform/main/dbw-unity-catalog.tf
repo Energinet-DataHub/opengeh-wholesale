@@ -1,10 +1,3 @@
-removed {
-  from = databricks_catalog_workspace_binding.shared
-  lifecycle {
-    destroy = false
-  }
-}
-
 resource "databricks_external_location" "migrations_bronze_storage" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.bronze.name}_${module.st_migrations.name}"

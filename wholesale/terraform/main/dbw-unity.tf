@@ -8,13 +8,6 @@ data "azurerm_key_vault_secret" "shared_unity_catalog_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-removed {
-  from = databricks_catalog_workspace_binding.shared
-  lifecycle {
-    destroy = false
-  }
-}
-
 resource "databricks_external_location" "internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.internal.name}_${module.st_data_wholesale.name}"

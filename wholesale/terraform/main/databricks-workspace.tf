@@ -17,6 +17,7 @@ module "dbw" {
   private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
   private_endpoints_subnet_address_prefix  = var.databricks_private_endpoints_subnet_address_prefix
+  catalog_name                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
 
   public_network_service_endpoints = [
     "Microsoft.EventHub"
