@@ -44,6 +44,7 @@ public class MigrationsFreeDatabricksSchemaManager
 
         DeltaTableOptions = Options.Create(new DeltaTableOptions
         {
+            DatabricksCatalogName = "hive_metastore",
             SCHEMA_NAME = $"{schemaPrefix}_view_{postfix}",
             BasisDataSchemaName = $"{schemaPrefix}_view_{postfix}",
             WholesaleCalculationResultsSchemaName = $"{schemaPrefix}_view_{postfix}",
@@ -52,7 +53,7 @@ public class MigrationsFreeDatabricksSchemaManager
 
     public DatabricksSettings Settings { get; }
 
-    public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
+    public string SchemaName => $"{DeltaTableOptions.Value.DatabricksCatalogName}.{DeltaTableOptions.Value.SCHEMA_NAME}";
 
     public async Task CreateSchemaAsync()
     {
@@ -73,9 +74,9 @@ public class MigrationsFreeDatabricksSchemaManager
         await CreateTableAsync(DeltaTableOptions.Value.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME, MonthlyAmountsPerChargeViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME, TotalMonthlyAmountsViewSchemaDefinition.SchemaDefinition);
 
-        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_GA_V1_VIEW_NAME, EnergyPerGaViewSchemaDefinition.SchemaDefinition);
-        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_BRP_GA_V1_VIEW_NAME, EnergyPerBrpGaViewSchemaDefinition.SchemaDefinition);
-        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME, EnergyPerEsBrpGaViewSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_V1_VIEW_NAME, EnergyPerGaViewSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_BRP_V1_VIEW_NAME, EnergyPerBrpGaViewSchemaDefinition.SchemaDefinition);
+        await CreateTableAsync(DeltaTableOptions.Value.ENERGY_PER_ES_V1_VIEW_NAME, EnergyPerEsBrpGaViewSchemaDefinition.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()
