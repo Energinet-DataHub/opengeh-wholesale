@@ -2,7 +2,6 @@ resource "databricks_job" "calculator_job" {
   provider            = databricks.dbw
   name                = "CalculatorJob"
   max_concurrent_runs = 100
-  always_running      = false
 
   task {
     task_key    = "calculator_task_${uuid()}"

@@ -2,7 +2,6 @@ resource "databricks_job" "migrations_job" {
   provider            = databricks.dbw
   name                = "MigrationsJob"
   max_concurrent_runs = 1
-  always_running      = false
 
   task {
     task_key    = "migrations_job_${uuid()}"
