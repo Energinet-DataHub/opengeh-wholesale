@@ -39,8 +39,8 @@ from ..constants import Colname
 
 class CalculationCore:
 
+    @staticmethod
     def execute(
-        self,
         args: CalculatorArgs,
         prepared_data_reader: PreparedDataReader,
     ) -> CalculationOutput:
