@@ -27,7 +27,7 @@ public sealed class AmountsPerChargeWholesaleServicesDatabricksContract : IWhole
 
     public string GetSource(DeltaTableOptions tableOptions)
     {
-        return $"{tableOptions.DatabricksCatalogName}.{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
+        return $"{tableOptions.CalculationResultViewsSource}.{tableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
     }
 
     public string GetCalculationTypeColumnName()

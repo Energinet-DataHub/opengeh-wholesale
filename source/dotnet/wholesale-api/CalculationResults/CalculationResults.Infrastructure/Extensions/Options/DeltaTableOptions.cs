@@ -19,6 +19,11 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 public class DeltaTableOptions
 {
     /// <summary>
+    /// The source where the different databricks views are located, consisting of the catalog and schema name.
+    /// </summary>
+    public string CalculationResultViewsSource => $"{DatabricksCatalogName}.{WholesaleCalculationResultsSchemaName}";
+
+    /// <summary>
     /// Name of the catalog in which the databricks views are located.
     /// Should point at the unity catalog when running in Azure, and use hive_metastore when running in tests
     /// </summary>
