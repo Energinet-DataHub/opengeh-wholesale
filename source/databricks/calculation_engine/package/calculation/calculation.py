@@ -29,14 +29,12 @@ from package.databases.wholesale_basis_data_internal.basis_data_results import (
     write_basis_data,
 )
 from package.databases.wholesale_results_internal import (
-    write_calculation,
     write_monthly_amounts_per_charge,
     write_total_monthly_amounts,
     write_wholesale_results,
     write_energy_results,
-    write_calculation_grid_areas,
 )
-from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
+from package.databases.wholesale_internal.calculations_storage_model_factory import (
     create_calculation,
 )
 from package.infrastructure import logging_configuration
@@ -49,10 +47,12 @@ from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
 from ..constants import Colname
-from ..databases.wholesale_results_internal.calculation_writer import (
+from package.databases.wholesale_internal.calculation_writer import (
     write_calculation_succeeded_time,
+    write_calculation,
+    write_calculation_grid_areas,
 )
-from ..databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
+from package.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
 
