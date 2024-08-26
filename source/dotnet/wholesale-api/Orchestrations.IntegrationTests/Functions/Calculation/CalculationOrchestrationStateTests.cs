@@ -296,7 +296,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
             .VerifyCountAsync(1);
 
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeFalse("We did not send the expected message on the ServiceBus");
+        wait.Should().BeFalse("We should not send any messages on the ServiceBus because the calculation is internal");
     }
 
     /// <summary>
