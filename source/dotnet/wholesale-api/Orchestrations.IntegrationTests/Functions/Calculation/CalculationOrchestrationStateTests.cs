@@ -257,7 +257,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var isCalculatingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
-        // => Calculation job is "TERMINATED" (success), orchestration state should be Calculated
+        // => Calculation job is "TERMINATED" (success), orchestration state should be Completed without enqueuing actor messages
         calculationJobStateCallback.SetValue(RunLifeCycleState.TERMINATED);
         var isCompletedState = await dbContext.WaitForCalculationWithStateAsync(
             calculationId,
