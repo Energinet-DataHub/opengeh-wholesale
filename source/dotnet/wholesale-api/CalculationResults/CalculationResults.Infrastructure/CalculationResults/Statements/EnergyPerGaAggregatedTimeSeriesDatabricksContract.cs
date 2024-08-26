@@ -27,7 +27,7 @@ public sealed class EnergyPerGaAggregatedTimeSeriesDatabricksContract : IAggrega
     public string GetSource(DeltaTableOptions tableOptions)
     {
         return
-            $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.ENERGY_PER_GA_V1_VIEW_NAME}";
+            $"{tableOptions.CalculationResultViewsSource}.{tableOptions.ENERGY_V1_VIEW_NAME}";
     }
 
     public string GetTimeColumnName()
