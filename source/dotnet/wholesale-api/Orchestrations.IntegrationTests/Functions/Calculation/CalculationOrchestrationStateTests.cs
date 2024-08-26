@@ -194,7 +194,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
     ///  - A service bus message is sent as expected.
     /// </summary>
     [Fact]
-    public async Task GivenExpectedCalculationFlow_WhenHandlingCalculationOrchestrationForInternalCalculation_OrchestrationCompletesWithExpectedStateUpdatesAndServiceBusMessage()
+    public async Task GivenExpectedCalculationFlow_WhenHandlingCalculationOrchestrationForInternalCalculation_OrchestrationCompletesWithExpectedStateUpdatesAndNoServiceBusMessage()
     {
         // Arrange
         var dbContext = Fixture.DatabaseManager.CreateDbContext();
