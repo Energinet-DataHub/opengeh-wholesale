@@ -79,7 +79,8 @@ public class CalculationRepository : ICalculationRepository
             .Where(c => c.ScheduledAt <= scheduledToRunBefore)
             .Select(c => new ScheduledCalculation(
                 new CalculationId(c.Id),
-                c.OrchestrationInstanceId))
+                c.OrchestrationInstanceId,
+                c.IsInternalCalculation))
             .ToListAsync()
             .ConfigureAwait(false);
 
