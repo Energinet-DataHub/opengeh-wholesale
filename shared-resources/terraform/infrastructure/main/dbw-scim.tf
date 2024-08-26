@@ -2,8 +2,8 @@ locals {
   # Locals determine which security groups that must be assigned grants on the shared Unity catalog.
   # This is necessary as reader and contributor groups may be the same on the development and test environments. In Databricks, the grants of a security group can't be be managed by multiple resources.
   # The legacy local (and the resources depending on it) will be removed when PIM on Databricks is rolled out.
-  readers = var.databricks_readers_group.name == var.databricks_contributor_dataplane_group.name ? {} : { var.databricks_readers_group.name = var.databricks_readers_group.id }
-  legacy  = "SEC-G-Datahub-DevelopersAzure" == var.databricks_contributor_dataplane_group.name ? {} : ("SEC-G-Datahub-DevelopersAzure" == var.databricks_readers_group.name ? {} : { "SEC-G-Datahub-DevelopersAzure" = var.databricks_developers_group_id })
+  readers = var.databricks_readers_group.name == var.databricks_contributor_dataplane_group.name ? {} : { "${var.databricks_readers_group.name}" = "${var.databricks_readers_group.id}" }
+  legacy  = "SEC-G-Datahub-DevelopersAzure" == var.databricks_contributor_dataplane_group.name ? {} : ("SEC-G-Datahub-DevelopersAzure" == var.databricks_readers_group.name ? {} : { "SEC-G-Datahub-DevelopersAzure" = "${var.databricks_developers_group_id}" })
 }
 
 # Configure SCIM synchronization or Databricks groups with reader and contributor permissions
