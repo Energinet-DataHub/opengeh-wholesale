@@ -187,6 +187,10 @@ public class OrchestrationSettlementReportsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksSqlStatementOptions.WarehouseId),
             IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
+        // => Use hive_metastore (instead of unity catalog) for tests, since the tests need to create actual tables
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            nameof(DeltaTableOptions.DatabricksCatalogName),
+            "hive_metastore");
 
         // DataLake
         appHostSettings.ProcessEnvironmentVariables.Add(
