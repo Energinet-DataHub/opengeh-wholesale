@@ -133,8 +133,8 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
     /// <summary>
     /// Verifies that:
-    ///  - The orchestration can complete a full run.
-    ///  - Every activity is executed once and in correct order.
+    ///  - The orchestration can complete a full run for an internal calculation.
+    ///  - Every expected activity is executed once and in correct order.
     /// </summary>
     [Fact]
     public async Task MockExternalDependencies_WhenCallingDurableFunctionEndPointWithAnInternalCalculationRequest_OrchestrationCompletes()
@@ -163,12 +163,6 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
-
-        // // => Wait for the orchestration to reach the "ActorMessagesEnqueuing" state
-        // await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(orchestrationStatus.InstanceId, (status) => status.OrchestrationProgress == "ActorMessagesEnqueuing");
-        //
-        // // => Send "ActorMessagesEnqueued" event to Wholesale inbox
-        // await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(calculationId, orchestrationStatus.InstanceId);
 
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(

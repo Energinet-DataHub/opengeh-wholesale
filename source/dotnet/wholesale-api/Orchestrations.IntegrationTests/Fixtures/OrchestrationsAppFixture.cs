@@ -225,7 +225,6 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// Calls the <see cref="AppHostManager"/> to send a post request to start the
     /// calculation.
     /// </summary>
-    /// <param name="isInternalCalculation"></param>
     /// <returns>Calculation id of the started calculation.</returns>
     public async Task<Guid> StartCalculationAsync(bool isInternalCalculation = false)
     {
