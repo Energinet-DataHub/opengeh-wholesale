@@ -7,4 +7,4 @@ databricks_private_endpoints_subnet_address_prefix = "10.146.106.0/24"
 pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Prod-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Prod-001-Contributor-Controlplane"
 pim_reader_group_name                              = "SEC-A-Datahub-Prod-001-Reader"
-datahub_bi_endpoint_enabled                        = false
+datahub_bi_endpoint_enabled                        = true
