@@ -650,7 +650,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
             using (new PerformanceLogger(testOutputHelper, "Insert ENERGY_PER_GA in databricks"))
             {
                 await databricksSchemaManager.InsertFromCsvFileAsync(
-                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_GA_V1_VIEW_NAME,
+                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_V1_VIEW_NAME,
                     EnergyPerGaViewSchemaDefinition.SchemaDefinition,
                     view1File);
             }
@@ -658,7 +658,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
             using (new PerformanceLogger(testOutputHelper, "Insert ENERGY_PER_BRP_GA in databricks"))
             {
                 await databricksSchemaManager.InsertFromCsvFileAsync(
-                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_BRP_GA_V1_VIEW_NAME,
+                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_BRP_V1_VIEW_NAME,
                     EnergyPerBrpGaViewSchemaDefinition.SchemaDefinition,
                     view2File);
             }
@@ -666,7 +666,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
             using (new PerformanceLogger(testOutputHelper, "Insert ENERGY_PER_ES_BRP_GA in databricks"))
             {
                 await databricksSchemaManager.InsertFromCsvFileAsync(
-                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME,
+                    databricksSchemaManager.DeltaTableOptions.Value.ENERGY_PER_ES_V1_VIEW_NAME,
                     EnergyPerEsBrpGaViewSchemaDefinition.SchemaDefinition,
                     view3File);
             }
@@ -731,7 +731,7 @@ public class AggregatedTimeSeriesQueriesCsvTests
         protected override string GetSqlStatement()
         {
             return $"""
-                    DELETE FROM {_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME}
+                    DELETE FROM {_deltaTableOptions.WholesaleCalculationResultsSchemaName}.{_deltaTableOptions.ENERGY_PER_ES_V1_VIEW_NAME}
                     WHERE {EnergyResultColumnNames.EnergySupplierId} = '{_energySupplierId}'
                     AND {EnergyResultColumnNames.Time} <= '{_before}'
                     {(_after is not null ? $"AND {EnergyResultColumnNames.Time} > '{_after}'" : string.Empty)}
@@ -751,11 +751,11 @@ public class AggregatedTimeSeriesQueriesCsvTests
         {
             var tableToDeleteFrom = aggregationLevel switch
             {
-                DeltaTableAggregationLevel.GridArea => _deltaTableOptions.ENERGY_PER_GA_V1_VIEW_NAME,
+                DeltaTableAggregationLevel.GridArea => _deltaTableOptions.ENERGY_V1_VIEW_NAME,
                 DeltaTableAggregationLevel.BalanceResponsibleAndGridArea => _deltaTableOptions
-                    .ENERGY_PER_BRP_GA_V1_VIEW_NAME,
+                    .ENERGY_PER_BRP_V1_VIEW_NAME,
                 DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea => _deltaTableOptions
-                    .ENERGY_PER_ES_BRP_GA_V1_VIEW_NAME,
+                    .ENERGY_PER_ES_V1_VIEW_NAME,
                 _ => throw new InvalidOperationException(),
             };
 

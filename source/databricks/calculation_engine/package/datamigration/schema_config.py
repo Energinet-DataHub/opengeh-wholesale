@@ -165,6 +165,12 @@ schema_config = [
             View(
                 name=paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
             ),
+            View(
+                name=paths.WholesaleSapDatabase.ENERGY_V1_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleSapDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+            ),
         ],
     ),
 ]
