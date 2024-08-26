@@ -191,10 +191,10 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
     ///  - The orchestration can complete a full run.
     ///  - The calculation state is updated as expected for an internal calculation.
     ///  - The orchestrator completes with the expected output.
-    ///  - A service bus message is sent as expected.
+    ///  - A CalculationCompleted service bus message is not sent as expected, because it is an internal calculation.
     /// </summary>
     [Fact]
-    public async Task GivenExpectedCalculationFlow_WhenHandlingCalculationOrchestrationForInternalCalculation_OrchestrationCompletesWithExpectedStateUpdatesAndServiceBusMessage()
+    public async Task GivenExpectedCalculationFlow_WhenHandlingCalculationOrchestrationForInternalCalculation_OrchestrationCompletesWithExpectedStateUpdatesAndNoServiceBusMessage()
     {
         // Arrange
         var dbContext = Fixture.DatabaseManager.CreateDbContext();
@@ -247,7 +247,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var isCalculationJobCreatedState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculationJobCreatedState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
-        // => Calculation job is "TERMINATED" (success), orchestration state should be Calculated
+        // => Calculation job is "TERMINATED" (success), orchestration state should be Completed without enqueuing actor messages
         calculationJobStateCallback.SetValue(RunLifeCycleState.TERMINATED);
         var isCompletedState = await dbContext.WaitForCalculationWithStateAsync(
             calculationId,
@@ -268,7 +268,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
             TimeSpan.FromMinutes(3));
         completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Success");
 
-        // => Verify that the expected message was sent on the ServiceBus
+        // => Verify that the expected message was not sent on the ServiceBus
         var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
             .When(msg =>
             {
@@ -286,7 +286,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
             .VerifyCountAsync(1);
 
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeFalse("We did send the expected message on the ServiceBus");
+        wait.Should().BeFalse("We should not send any messages on the ServiceBus because the calculation is internal");
     }
 
     /// <summary>
