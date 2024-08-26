@@ -73,7 +73,7 @@ public static class DurableClientExtensions
             async () =>
             {
                 // Do not retrieve history here as it could be expensive
-                var completeOrchestrationStatus = await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true);
+                var completeOrchestrationStatus = await client.GetStatusAsync(instanceId);
                 return completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Completed;
             },
             waitTimeLimit ?? TimeSpan.FromSeconds(30),
