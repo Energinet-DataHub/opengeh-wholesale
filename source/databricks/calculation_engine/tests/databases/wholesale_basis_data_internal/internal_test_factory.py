@@ -22,7 +22,7 @@ from databases.wholesale_results_internal.calculations_storage_model_test_factor
 )
 from package.calculation.calculation_output import InternalDataOutput
 from package.databases.wholesale_basis_data_internal import internal_data_factory
-from package.databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
+from package.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
 
