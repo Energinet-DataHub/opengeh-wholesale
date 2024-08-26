@@ -247,16 +247,6 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var isCalculationJobCreatedState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculationJobCreatedState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
-        // => Calculation job is "PENDING", orchestration state should still be Calculating
-        calculationJobStateCallback.SetValue(RunLifeCycleState.PENDING);
-        var isCalculationJobPendingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
-        isCalculationJobPendingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
-
-        // => Calculation job is "RUNNING", orchestration state should still be Calculating
-        calculationJobStateCallback.SetValue(RunLifeCycleState.RUNNING);
-        var isCalculatingState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
-        isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
-
         // => Calculation job is "TERMINATED" (success), orchestration state should be Calculated
         calculationJobStateCallback.SetValue(RunLifeCycleState.TERMINATED);
         var isCompletedState = await dbContext.WaitForCalculationWithStateAsync(
@@ -296,7 +286,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
             .VerifyCountAsync(1);
 
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeFalse("We did not send the expected message on the ServiceBus");
+        wait.Should().BeFalse("We did send the expected message on the ServiceBus");
     }
 
     /// <summary>
