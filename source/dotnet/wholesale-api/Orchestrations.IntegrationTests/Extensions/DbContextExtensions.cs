@@ -27,16 +27,21 @@ public static class DbContextExtensions
         Guid id,
         CalculationOrchestrationState[] states,
         ITestDiagnosticsLogger logger,
-        TimeSpan? timeLimit = null)
+        TimeSpan? timeLimit = null,
+        CalculationOrchestrationState[]? disallowedStates = null)
     {
         var waitForStates = string.Join(", ", states);
-
+        var wasInDisallowedState = false;
         var success = await Awaiter.TryWaitUntilConditionAsync(
             async () =>
             {
                 var calculation = await dbContext.Calculations
                     .AsNoTracking() // .AsNoTracking() is important, else the result is cached
                     .SingleAsync(c => c.Id == id);
+
+                // If the calculation is in a disallowed state
+                if (disallowedStates != null && disallowedStates.Contains(calculation.OrchestrationState))
+                    wasInDisallowedState = true;
 
                 logger.WriteLine($"Waiting for one of calculation states: [{waitForStates}], current state is: {calculation.OrchestrationState}, calculation id: {id}");
                 return states.Contains(calculation.OrchestrationState);
@@ -51,7 +56,7 @@ public static class DbContextExtensions
         if (!success)
             logger.WriteLine($"Timeout while waiting for one of calculation orchestration states: [{waitForStates}], current orchestration state is: {calculation.OrchestrationState} (execution state: {calculation.ExecutionState})");
 
-        return (success, calculation.OrchestrationState);
+        return (!wasInDisallowedState && success, calculation.OrchestrationState);
     }
 
     public static Task<(bool Success, CalculationOrchestrationState ActualState)> WaitForCalculationWithStateAsync(
@@ -59,5 +64,13 @@ public static class DbContextExtensions
         Guid id,
         CalculationOrchestrationState state,
         ITestDiagnosticsLogger logger,
-        TimeSpan? timeLimit = null) => WaitForCalculationWithOneOfStatesAsync(dbContext, id, [state], logger, timeLimit);
+        TimeSpan? timeLimit = null,
+        CalculationOrchestrationState[]? disallowedStates = null) =>
+        WaitForCalculationWithOneOfStatesAsync(
+            dbContext,
+            id,
+            [state],
+            logger,
+            timeLimit,
+            disallowedStates);
 }

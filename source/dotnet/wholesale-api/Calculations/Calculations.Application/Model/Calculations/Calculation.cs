@@ -369,6 +369,12 @@ public class Calculation
 
     public void MarkAsActorMessagesEnqueuing(Instant enqueuingTimeStart)
     {
+        if (IsInternalCalculation)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuing}' because it is not an internal calculation.");
+        }
+
         ActorMessagesEnqueuingTimeStart = enqueuingTimeStart;
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuing;
     }
@@ -381,12 +387,24 @@ public class Calculation
                 $"Actor messages enqueued time end '{enqueuedTimeEnd}' cannot be before enqueuing time start '{ActorMessagesEnqueuingTimeStart}'");
         }
 
+        if (IsInternalCalculation)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueued}' because it is not an internal calculation.");
+        }
+
         ActorMessagesEnqueuedTimeEnd = enqueuedTimeEnd;
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
     }
 
     public void MarkAsActorMessagesEnqueuingFailed()
     {
+        if (IsInternalCalculation)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuingFailed}' because it is not an internal calculation.");
+        }
+
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuingFailed;
     }
 
