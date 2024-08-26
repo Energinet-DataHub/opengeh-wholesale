@@ -62,6 +62,7 @@ class ViewColumns:
     calculation_type = Column("calculation_type", StringType())
     calculation_period_start = Column("calculation_period_start", TimestampType())
     calculation_period_end = Column("calculation_period_end", TimestampType())
+    calculation_succeeded_time = Column("calculation_succeeded_time", TimestampType())
     calculation_version = Column("calculation_version", LongType())
     charge_code = Column("charge_code", StringType())
     charge_type = Column("charge_type", StringType())
