@@ -31,7 +31,7 @@ locals {
     },
     {
       environment = "sauron"
-      url         = "jolly-field-0d52edd03.4.azurestaticapps.net"
+      url         = "app-ui-sauron-p-we-001.azurewebsites.net"
     },
     {
       environment = "www"
