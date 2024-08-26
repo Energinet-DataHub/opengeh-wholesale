@@ -191,7 +191,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
     ///  - The orchestration can complete a full run.
     ///  - The calculation state is updated as expected for an internal calculation.
     ///  - The orchestrator completes with the expected output.
-    ///  - A service bus message is sent as expected.
+    ///  - A CalculationCompleted service bus message is not sent as expected, because it is an internal calculation.
     /// </summary>
     [Fact]
     public async Task GivenExpectedCalculationFlow_WhenHandlingCalculationOrchestrationForInternalCalculation_OrchestrationCompletesWithExpectedStateUpdatesAndNoServiceBusMessage()
