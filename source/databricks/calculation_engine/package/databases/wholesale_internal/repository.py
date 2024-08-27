@@ -15,7 +15,6 @@ from pyspark.sql import DataFrame, SparkSession
 
 from package.infrastructure.paths import (
     WholesaleInternalDatabase,
-    HiveBasisDataDatabase,
 )
 from .schemas import (
     grid_loss_metering_points_schema,

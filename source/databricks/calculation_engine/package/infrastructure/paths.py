@@ -73,7 +73,6 @@ class WholesaleInternalDatabase:
         CALCULATION_GRID_AREAS_TABLE_NAME,
     ]
 
-    CALCULATIONS_V1_VIEW_NAME = "calculations_v1"
     SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME = "succeeded_external_calculations_v1"
 
 
