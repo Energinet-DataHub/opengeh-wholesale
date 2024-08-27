@@ -57,7 +57,7 @@ public class MigrationsFreeDatabricksSchemaManager
 
     public async Task CreateSchemaAsync()
     {
-        await ExecuteSqlAsync($"CREATE DATABASE IF NOT EXISTS {DeltaTableOptions.Value.SCHEMA_NAME}");
+        await ExecuteSqlAsync($"CREATE DATABASE IF NOT EXISTS {SchemaName}");
         await CreateTableAsync(DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME, SettlementReportEnergyResultViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME, SettlementReportEnergyResultPerEnergySupplierViewSchemaDefinition.SchemaDefinition);
         await CreateTableAsync(DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME, SettlementReportWholesaleViewColumns.SchemaDefinition);

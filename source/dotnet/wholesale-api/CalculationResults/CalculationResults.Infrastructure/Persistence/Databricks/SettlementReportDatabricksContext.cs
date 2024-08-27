@@ -27,7 +27,7 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
     public SettlementReportDatabricksContext(
         IOptions<DeltaTableOptions> deltaTableOptions,
         DatabricksSqlWarehouseQueryExecutor sqlWarehouseQueryExecutor)
-        : base(sqlWarehouseQueryExecutor)
+        : base(sqlWarehouseQueryExecutor, deltaTableOptions)
     {
         _deltaTableOptions = deltaTableOptions;
     }

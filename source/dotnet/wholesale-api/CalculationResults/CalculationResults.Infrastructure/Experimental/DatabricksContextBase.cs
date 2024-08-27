@@ -15,10 +15,12 @@
 using System.Data;
 using System.Linq.Expressions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
@@ -27,10 +29,10 @@ public abstract class DatabricksContextBase : IDisposable
     private readonly DatabricksSqlQueryExecutor _executor;
     private readonly DbContextCore _dbContext;
 
-    protected DatabricksContextBase(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
+    protected DatabricksContextBase(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IOptions<DeltaTableOptions> options)
     {
         _dbContext = new DbContextCore(OnModelCreating);
-        _executor = new DatabricksSqlQueryExecutor(_dbContext, databricksSqlWarehouseQueryExecutor);
+        _executor = new DatabricksSqlQueryExecutor(_dbContext, databricksSqlWarehouseQueryExecutor, options);
     }
 
     public void Dispose()

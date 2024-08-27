@@ -15,20 +15,24 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Experimental;
 
 public sealed class DatabricksSqlQueryBuilder
 {
     private readonly DbContext _context;
+    private readonly IOptions<DeltaTableOptions> _options;
 
-    public DatabricksSqlQueryBuilder(DbContext context)
+    public DatabricksSqlQueryBuilder(DbContext context, IOptions<DeltaTableOptions> options)
     {
         _context = context;
+        _options = options;
     }
 
     public DatabricksStatement Build(DatabricksSqlQueryable query)
@@ -100,13 +104,14 @@ public sealed class DatabricksSqlQueryBuilder
         return TranslateTransactToAnsi(sqlStatement);
     }
 
-    private static string TranslateTransactToAnsi(StringBuilder transactSqlQuery)
+    private string TranslateTransactToAnsi(StringBuilder transactSqlQuery)
     {
         var strBuilder = transactSqlQuery
             .Replace('[', '`')
             .Replace(']', '`')
             .Replace('"', '\'')
-            .Replace('"', '\'');
+            .Replace('"', '\'')
+            .Replace($"`{_options.Value.DatabricksCatalogName}.", $"`{_options.Value.DatabricksCatalogName}`.`");
 
         var ansiSql = strBuilder.ToString();
 
