@@ -9,6 +9,7 @@ resource "null_resource" "scim_developers" {
 
       $headers = @{
           'Authorization' = "Bearer $aadToken"
+          'Content-Type'  = "application/json"
       }
 
       Invoke-RestMethod -Method PUT -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_developers_group_id}" -Headers $headers -Body '{
@@ -31,6 +32,7 @@ resource "null_resource" "scim_migrations" {
 
       $headers = @{
           'Authorization' = "Bearer $aadToken"
+          'Content-Type'  = "application/json"
       }
 
       Invoke-RestMethod -Method PUT -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_migrations_group_id}" -Headers $headers -Body '{
