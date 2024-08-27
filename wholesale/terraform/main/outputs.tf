@@ -46,12 +46,6 @@ output "spn_datalake_contributor_app_id" {
   sensitive   = true
 }
 
-output "spn_datalake_contributor_secret" {
-  description = "Shared datalake contributor secret."
-  value       = data.azurerm_key_vault_secret.spn_datalake_contributor_secret.value
-  sensitive   = true
-}
-
 output "shared_unity_catalog_name" {
   description = "Databricks shared unity catalog name."
   value       = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
