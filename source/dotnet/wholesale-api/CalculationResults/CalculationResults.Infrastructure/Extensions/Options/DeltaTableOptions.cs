@@ -24,6 +24,11 @@ public class DeltaTableOptions
     public string CalculationResultViewsSource => $"{DatabricksCatalogName}.{WholesaleCalculationResultsSchemaName}";
 
     /// <summary>
+    /// The source where the different databricks views are located, consisting of the catalog and schema name.
+    /// </summary>
+    public string SettlementReportViewsSource => $"{DatabricksCatalogName}.{SettlementReportSchemaName}";
+
+    /// <summary>
     /// Name of the catalog in which the databricks views are located.
     /// Should point at the unity catalog when running in Azure, and use hive_metastore to be able to populate testsdata when running tests
     /// </summary>

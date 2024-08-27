@@ -52,7 +52,7 @@ public sealed class SettlementReportDatabricksContext : DatabricksContextBase, I
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema(_deltaTableOptions.Value.SettlementReportSchemaName);
+        modelBuilder.HasDefaultSchema(_deltaTableOptions.Value.SettlementReportViewsSource);
         modelBuilder.ApplyConfiguration(new SettlementReportLatestBalanceFixingCalculationVersionViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportWholesaleViewEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SettlementReportEnergyResultPointsPerGridAreaViewEntityConfiguration());
