@@ -21,7 +21,7 @@ public sealed class SettlementReportWholesaleViewEntityConfiguration : IEntityTy
 {
     public void Configure(EntityTypeBuilder<SettlementReportWholesaleViewEntity> builder)
     {
-        builder.ToTable("wholesale_results_v1");
+        builder.ToTable("amounts_per_charge_v1");
         builder.HasNoKey();
     }
 }

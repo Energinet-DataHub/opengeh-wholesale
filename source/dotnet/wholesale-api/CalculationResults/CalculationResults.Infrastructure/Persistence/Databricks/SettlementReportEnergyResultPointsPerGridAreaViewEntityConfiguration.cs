@@ -21,7 +21,7 @@ public sealed class SettlementReportEnergyResultPointsPerGridAreaViewEntityConfi
 {
     public void Configure(EntityTypeBuilder<SettlementReportEnergyResultPointsPerGridAreaViewEntity> builder)
     {
-        builder.ToTable("energy_result_points_per_ga_v1");
+        builder.ToTable("energy_v1");
         builder.HasNoKey();
     }
 }
