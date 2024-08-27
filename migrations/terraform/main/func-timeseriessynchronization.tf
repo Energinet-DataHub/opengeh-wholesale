@@ -1,5 +1,5 @@
 module "func_timeseriessynchronization" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_5.0.0"
 
   name                                   = "timeseriessynchronization"
   project_name                           = var.domain_name_short
