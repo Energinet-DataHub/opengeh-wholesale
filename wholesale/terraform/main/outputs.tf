@@ -34,18 +34,6 @@ output "dbw_databricks_sql_endpoint_id_deployment" {
   sensitive   = true
 }
 
-output "st_data_lake_name" {
-  description = "Shared storage account data lake name."
-  value       = data.azurerm_key_vault_secret.st_data_lake_name.value
-  sensitive   = true
-}
-
-output "spn_datalake_contributor_app_id" {
-  description = "Shared datalake contributor id."
-  value       = data.azurerm_key_vault_secret.spn_datalake_contributor_app_id.value
-  sensitive   = true
-}
-
 output "shared_unity_catalog_name" {
   description = "Databricks shared unity catalog name."
   value       = data.azurerm_key_vault_secret.shared_unity_catalog_name.value

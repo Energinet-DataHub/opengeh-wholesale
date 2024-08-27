@@ -8,16 +8,6 @@ data "azurerm_key_vault_secret" "shared_unity_catalog_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "spn_datalake_contributor_app_id" {
-  name         = "spn-datalake-contributor-app-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "spn_datalake_contributor_secret" {
-  name         = "spn-datalake-contributor-secret"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 resource "databricks_external_location" "internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.internal.name}_${module.st_data_wholesale.name}"
