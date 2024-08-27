@@ -58,6 +58,7 @@ def get_metering_point_periods_basis_data(
 def get_time_series_points_basis_data(
     calculation_id: str,
     calculation_type: CalculationType,
+    is_internal_calculation: bool,
     calculation_version: int,
     metering_point_time_series: PreparedMeteringPointTimeSeries,
 ) -> DataFrame:
@@ -65,6 +66,7 @@ def get_time_series_points_basis_data(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.lit(calculation_type.value).alias(TableColumnNames.calculation_type),
         f.lit(calculation_version).alias(TableColumnNames.calculation_version),
+        f.lit(is_internal_calculation).alias(TableColumnNames.is_internal_calculation),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
         f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),
         f.col(Colname.resolution).alias(TableColumnNames.resolution),
