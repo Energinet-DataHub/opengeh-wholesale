@@ -50,6 +50,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
+            DatabricksCatalogName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.DatabricksCatalogName,
             SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
             SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
         });
