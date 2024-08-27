@@ -23,7 +23,7 @@ UNION
 
 SELECT calculation_id,
        calculation_type,
-       lculation_version,
+       calculation_version,
        result_id,
        grid_area_code,
        energy_supplier_id,
