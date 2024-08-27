@@ -13,17 +13,15 @@
 # limitations under the License.
 from . import PreparedDataReader
 from .calculator_args import CalculatorArgs
-from ..databases.wholesale_results_internal import (
+from ..databases.wholesale_internal.calculation_writer import (
     write_calculation,
     write_calculation_grid_areas,
-)
-from ..databases.wholesale_results_internal.calculation_writer import (
     write_calculation_succeeded_time,
 )
-from ..databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
+from ..databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
-from ..databases.wholesale_results_internal.calculations_storage_model_factory import (
+from ..databases.wholesale_internal.calculations_storage_model_factory import (
     create_calculation,
 )
 
