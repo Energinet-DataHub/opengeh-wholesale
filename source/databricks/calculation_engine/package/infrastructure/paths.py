@@ -73,6 +73,9 @@ class WholesaleInternalDatabase:
         CALCULATION_GRID_AREAS_TABLE_NAME,
     ]
 
+    CALCULATIONS_V1_VIEW_NAME = "calculations_v1"
+    SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME = "succeeded_external_calculations_v1"
+
 
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS_INTERNAL
@@ -101,7 +104,6 @@ class WholesaleResultsInternalDatabase:
 
 class WholesaleResultsDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
-    CALCULATIONS_V1_VIEW_NAME = "calculations_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
