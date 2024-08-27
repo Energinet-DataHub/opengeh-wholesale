@@ -28,7 +28,7 @@ from ..databases.wholesale_results_internal.calculations_storage_model_factory i
 )
 
 
-class CalculationMetadataWriter:
+class CalculationMetadataService:
 
     @staticmethod
     def write(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:

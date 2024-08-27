@@ -19,7 +19,7 @@ import package.databases.wholesale_basis_data_internal as basis_data_database
 import package.databases.wholesale_results_internal as result_database
 
 
-class CalculationOutputWriter:
+class CalculationOutputService:
 
     @staticmethod
     def write(
