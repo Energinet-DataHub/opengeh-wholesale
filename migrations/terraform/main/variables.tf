@@ -186,3 +186,9 @@ variable "migration_group_name" {
   type        = string
   description = "Name of the AD group with elevated access."
 }
+
+variable "function_app_sku_name" {
+  type        = string
+  description = "The SKU name of the function app."
+  default     = "EP1"
+}
