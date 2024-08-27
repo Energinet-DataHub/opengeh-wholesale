@@ -1,9 +1,9 @@
-# Given amount per charge 
+# Given amount per charge
 
 ...
 
 ## Design considerations
 
-
 ## Coverage
+
 
