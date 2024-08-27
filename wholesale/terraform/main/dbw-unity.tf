@@ -148,7 +148,7 @@ resource "databricks_grant" "settlement_reports" {
   schema   = databricks_schema.settlement_reports.id
 
   principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
+  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE", "CREATE_TABLE", "CREATE_MATERIALIZED_VIEW"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
