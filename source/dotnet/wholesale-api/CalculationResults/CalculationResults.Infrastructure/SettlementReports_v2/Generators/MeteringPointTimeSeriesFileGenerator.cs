@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementRepor
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
@@ -28,11 +29,16 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
 
     private readonly ISettlementReportMeteringPointTimeSeriesResultRepository _dataSource;
     private readonly Resolution _resolution;
+    private readonly ILogger<MeteringPointTimeSeriesFileGenerator> _logger;
 
-    public MeteringPointTimeSeriesFileGenerator(ISettlementReportMeteringPointTimeSeriesResultRepository dataSource, Resolution resolution)
+    public MeteringPointTimeSeriesFileGenerator(
+        ISettlementReportMeteringPointTimeSeriesResultRepository dataSource,
+        Resolution resolution,
+        ILogger<MeteringPointTimeSeriesFileGenerator> logger)
     {
         _dataSource = dataSource;
         _resolution = resolution;
+        _logger = logger;
     }
 
     public string FileExtension => ".csv";
@@ -40,6 +46,7 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
     public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
         var count = await _dataSource.CountAsync(filter, maximumCalculationVersion, _resolution).ConfigureAwait(false);
+        _logger.LogInformation("Counted {Count} records for {Filter} in MeteringPointTimeSeriesView", count, filter);
         return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 

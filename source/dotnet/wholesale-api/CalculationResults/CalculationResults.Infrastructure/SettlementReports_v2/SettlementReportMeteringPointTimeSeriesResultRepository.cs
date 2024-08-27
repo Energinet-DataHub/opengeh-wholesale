@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using NodaTime.Extensions;
 
@@ -30,10 +31,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : ISettlementReportMeteringPointTimeSeriesResultRepository
 {
     private readonly ISettlementReportDatabricksContext _settlementReportDatabricksContext;
+    private readonly ILogger<SettlementReportMeteringPointTimeSeriesResultRepository> _logger;
 
-    public SettlementReportMeteringPointTimeSeriesResultRepository(ISettlementReportDatabricksContext settlementReportDatabricksContext)
+    public SettlementReportMeteringPointTimeSeriesResultRepository(
+        ISettlementReportDatabricksContext settlementReportDatabricksContext,
+        ILogger<SettlementReportMeteringPointTimeSeriesResultRepository> logger)
     {
         _settlementReportDatabricksContext = settlementReportDatabricksContext;
+        _logger = logger;
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution)
@@ -105,6 +110,8 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
                     .Select(quant => new SettlementReportMeteringPointTimeSeriesResultQuantity(quant.Time, quant.Quantity))
                     .ToList());
         }
+
+        _logger.LogInformation("Queried MeteringPointTimeSeriesView {Skip} and {Take}", skip, take);
     }
 
     private Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution)
