@@ -80,7 +80,8 @@ def test__views_have_the_expected_schemas(
     if not expected_schemas:
         raise ValueError(f"No expected schemas found in folder {folder}.")
 
-    database = get_database(spark, folder)
+    database_name = folder.split("/")[-1]
+    database = get_database(spark, database_name)
     errors = []
 
     # Act
