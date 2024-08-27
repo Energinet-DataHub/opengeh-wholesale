@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,44 +35,25 @@ public class HealthCheckTests : WebApiTestBase
     {
     }
 
-    [Fact]
-    public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
+    /// <summary>
+    /// Verify the response contains JSON in a format that the Health Checks UI supports.
+    /// </summary>
+    [Theory]
+    [InlineData(HealthChecksConstants.LiveHealthCheckEndpointRoute)]
+    [InlineData(HealthChecksConstants.ReadyHealthCheckEndpointRoute)]
+    [InlineData(HealthChecksConstants.StatusHealthCheckEndpointRoute)]
+    public async Task CallingHealthCheck_Should_ReturnOKAndExpectedContent(string healthCheckEndpoint)
     {
         // Act
-        var actualResponse = await Client.GetAsync(HealthChecksConstants.LiveHealthCheckEndpointRoute);
+        using var actualResponse = await Client.GetAsync(healthCheckEndpoint);
 
         // Assert
+        using var assertionScope = new AssertionScope();
+
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
 
-        var actualContent = await actualResponse.Content.ReadAsStringAsync();
-        actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-    }
-
-    [Fact]
-    public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
-    {
-        // Act
-        var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
-
-        // Assert
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var actualContent = await actualResponse.Content.ReadAsStringAsync();
-        actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-    }
-
-    [Fact]
-    public async Task When_RequestReadyStatus_Then_AllHealthChecksMustBeInResponse()
-    {
-        // Arrange
-        var type = typeof(HealthCheckNames);
-        var expectedHealthCheckNames = type.GetProperties(BindingFlags.Public).Select(x => x.Name);
-
-        // Act
-        var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
-
-        // Assert
-        var actualContent = await actualResponse.Content.ReadAsStringAsync();
-        expectedHealthCheckNames.ToList().ForEach(x => actualContent.Should().Contain(x));
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().StartWith("{\"status\":\"Healthy\"");
     }
 }
