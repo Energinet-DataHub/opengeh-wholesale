@@ -19,7 +19,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.databases.wholesale_internal.schemas.calculation_grid_areas_schema import (
     calculation_grid_areas_schema,
 )
-from package.databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
+from package.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
 

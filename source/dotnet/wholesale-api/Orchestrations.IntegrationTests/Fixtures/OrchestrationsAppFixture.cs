@@ -226,7 +226,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// calculation.
     /// </summary>
     /// <returns>Calculation id of the started calculation.</returns>
-    public async Task<Guid> StartCalculationAsync()
+    public async Task<Guid> StartCalculationAsync(bool isInternalCalculation = false)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -242,7 +242,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             GridAreaCodes: ["256", "512"],
             StartDate: dateAtMidnight,
             EndDate: dateAtMidnight.AddDays(2),
-            ScheduledAt: DateTimeOffset.UtcNow);
+            ScheduledAt: DateTimeOffset.UtcNow,
+            IsInternalCalculation: isInternalCalculation);
 
         request.Content = new StringContent(
             JsonConvert.SerializeObject(requestDto),
@@ -329,6 +330,10 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksSqlStatementOptions.WarehouseId),
             IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
+        // => Use hive_metastore (instead of unity catalog) for tests, since the tests need to create actual tables
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            nameof(DeltaTableOptions.DatabricksCatalogName),
+            "hive_metastore");
 
         // DataLake
         appHostSettings.ProcessEnvironmentVariables.Add(

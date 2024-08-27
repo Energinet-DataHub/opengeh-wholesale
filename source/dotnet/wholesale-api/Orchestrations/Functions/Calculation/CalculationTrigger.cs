@@ -56,7 +56,8 @@ internal class CalculationTrigger
             startCalculationRequestDto.StartDate,
             startCalculationRequestDto.EndDate,
             startCalculationRequestDto.ScheduledAt,
-            _userContext.CurrentUser.UserId).ConfigureAwait(false);
+            _userContext.CurrentUser.UserId,
+            startCalculationRequestDto.IsInternalCalculation).ConfigureAwait(false);
 
         _logger.LogInformation("Calculation created with id {calculationId}", calculationId);
 

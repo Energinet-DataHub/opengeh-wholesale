@@ -542,7 +542,7 @@ public class WholesaleServicesQueriesCsvTests
         }
 
         [Fact]
-        public async Task Given_EnergySupplierWithAHoleInData_Then_DataReturnedInOneChunkWithAHole()
+        public async Task Given_EnergySupplierWithAHoleInData_Then_DataReturnedInTwoChunkWithoutAHole()
         {
             await ClearAndAddDatabricksDataAsync(_fixture, _testOutputHelper);
             await RemoveDataForEnergySupplierInTimespan(
@@ -575,13 +575,19 @@ public class WholesaleServicesQueriesCsvTests
                     ats.Period.End, ats.TimeSeriesPoints.Count))
                 .Should()
                 .BeEquivalentTo([
-                    (MeteringPointType.Consumption, SettlementMethod.Flex, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 21),
-                    (MeteringPointType.Consumption, SettlementMethod.NonProfiled, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 21),
-                    (MeteringPointType.ElectricalHeating, (SettlementMethod?)null, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 21),
-                    (MeteringPointType.NetConsumption, (SettlementMethod?)null, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 21),
+                    (MeteringPointType.Consumption, SettlementMethod.Flex, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 10, 23, 0), 10),
+                    (MeteringPointType.Consumption, SettlementMethod.Flex, Instant.FromUtc(2022, 1, 20, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 11),
+                    (MeteringPointType.Consumption, SettlementMethod.NonProfiled, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 10, 23, 0), 10),
+                    (MeteringPointType.Consumption, SettlementMethod.NonProfiled, Instant.FromUtc(2022, 1, 20, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 11),
+                    (MeteringPointType.ElectricalHeating, (SettlementMethod?)null, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 10, 23, 0), 10),
+                    (MeteringPointType.ElectricalHeating, (SettlementMethod?)null, Instant.FromUtc(2022, 1, 20, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 11),
+                    (MeteringPointType.NetConsumption, (SettlementMethod?)null, Instant.FromUtc(2021, 12, 31, 23, 0), Instant.FromUtc(2022, 1, 10, 23, 0), 10),
+                    (MeteringPointType.NetConsumption, (SettlementMethod?)null, Instant.FromUtc(2022, 1, 20, 23, 0), Instant.FromUtc(2022, 1, 31, 23, 0), 11),
                 ]);
 
-            actual.Should().AllSatisfy(ats =>
+            // First chunk should have data up to 2022-01-10
+            actual.Where(x => x.TimeSeriesPoints.First().Time == new DateTimeOffset(2021, 12, 31, 23, 0, 0, TimeSpan.Zero))
+                .Should().AllSatisfy(ats =>
             {
                 ats.TimeSeriesPoints.Select(wtsp => wtsp.Time).Should().Equal([
                     new DateTimeOffset(2021, 12, 31, 23, 0, 0, TimeSpan.Zero),
@@ -594,6 +600,14 @@ public class WholesaleServicesQueriesCsvTests
                     new DateTimeOffset(2022, 1, 7, 23, 0, 0, TimeSpan.Zero),
                     new DateTimeOffset(2022, 1, 8, 23, 0, 0, TimeSpan.Zero),
                     new DateTimeOffset(2022, 1, 9, 23, 0, 0, TimeSpan.Zero),
+                ]);
+            });
+
+            // Second chunk should have data from 2022-01-20
+            actual.Where(x => x.TimeSeriesPoints.First().Time != new DateTimeOffset(2021, 12, 31, 23, 0, 0, TimeSpan.Zero))
+                .Should().AllSatisfy(ats =>
+            {
+                ats.TimeSeriesPoints.Select(wtsp => wtsp.Time).Should().Equal([
                     new DateTimeOffset(2022, 1, 20, 23, 0, 0, TimeSpan.Zero),
                     new DateTimeOffset(2022, 1, 21, 23, 0, 0, TimeSpan.Zero),
                     new DateTimeOffset(2022, 1, 22, 23, 0, 0, TimeSpan.Zero),

@@ -32,12 +32,22 @@ public class Calculation
         Instant scheduledAt,
         DateTimeZone dateTimeZone,
         Guid createdByUserId,
-        long version)
+        long version,
+        bool isInternalCalculation)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
-        if (!IsValid(_gridAreaCodes, calculationType, periodStart, periodEnd, dateTimeZone, out var errorMessages))
+        if (!IsValid(
+                _gridAreaCodes,
+                calculationType,
+                periodStart,
+                periodEnd,
+                dateTimeZone,
+                isInternalCalculation,
+                out var errorMessages))
+        {
             throw new BusinessValidationException(string.Join(" ", errorMessages));
+        }
 
         CalculationType = calculationType;
         PeriodStart = periodStart;
@@ -48,6 +58,7 @@ public class Calculation
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
         Version = version;
+        IsInternalCalculation = isInternalCalculation;
 
         _orchestrationState = CalculationOrchestrationState.Scheduled;
         ExecutionState = CalculationExecutionState.Created;
@@ -62,6 +73,7 @@ public class Calculation
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
     /// <param name="dateTimeZone"></param>
+    /// <param name="isInternalCalculation"></param>
     /// <param name="validationErrors"></param>
     /// <returns>If the parameters are valid for a <see cref="Calculation"/></returns>
     private static bool IsValid(
@@ -70,6 +82,7 @@ public class Calculation
         Instant periodStart,
         Instant periodEnd,
         DateTimeZone dateTimeZone,
+        bool isInternalCalculation,
         out IEnumerable<string> validationErrors)
     {
         var errors = new List<string>();
@@ -100,6 +113,9 @@ public class Calculation
                 errors.Add($"The period (start: {periodStart} end: {periodEnd}) has to be an entire month when using calculation type {calculationType}.");
             }
         }
+
+        if (isInternalCalculation && calculationType is not CalculationType.Aggregation)
+            errors.Add($"Internal calculations is not allowed for {calculationType}.");
 
         validationErrors = errors;
         return !errors.Any();
@@ -145,16 +161,19 @@ public class Calculation
 
             CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
             {
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started],
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started, CalculationOrchestrationState.Canceled],
                 // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
                 CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
-                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
-                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
+
+                // The state can move from Calculating  -> Started if the databricks job is canceled and the calculation is reset and started again
+                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Started],
+                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing, CalculationOrchestrationState.Completed],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.ActorMessagesEnqueuingFailed],
                 CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
                 CalculationOrchestrationState.ActorMessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
                 CalculationOrchestrationState.Completed => [],
+                CalculationOrchestrationState.Canceled => [],
                 _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
             };
 
@@ -178,6 +197,11 @@ public class Calculation
     public Instant CreatedTime { get; }
 
     public Guid CreatedByUserId { get; }
+
+    /// <summary>
+    /// The user who canceled the scheduled calculation.
+    /// </summary>
+    public Guid? CanceledByUserId { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
@@ -211,6 +235,12 @@ public class Calculation
     /// The version is created with the calculation.
     /// </summary>
     public long Version { get; private set; }
+
+    /// <summary>
+    /// When a calculation is internal, the calculation result is for internal use only.
+    /// Results should not be exposed to external users/actors.
+    /// </summary>
+    public bool IsInternalCalculation { get; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given calculation type.
@@ -339,6 +369,12 @@ public class Calculation
 
     public void MarkAsActorMessagesEnqueuing(Instant enqueuingTimeStart)
     {
+        if (IsInternalCalculation)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuing}' because it is an internal calculation.");
+        }
+
         ActorMessagesEnqueuingTimeStart = enqueuingTimeStart;
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuing;
     }
@@ -351,31 +387,61 @@ public class Calculation
                 $"Actor messages enqueued time end '{enqueuedTimeEnd}' cannot be before enqueuing time start '{ActorMessagesEnqueuingTimeStart}'");
         }
 
+        if (IsInternalCalculation)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueued}' because it is an internal calculation.");
+        }
+
         ActorMessagesEnqueuedTimeEnd = enqueuedTimeEnd;
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
     }
 
     public void MarkAsActorMessagesEnqueuingFailed()
     {
+        if (IsInternalCalculation)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' is not allowed to be marked as '{CalculationOrchestrationState.ActorMessagesEnqueuingFailed}' because it is an internal calculation.");
+        }
+
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuingFailed;
     }
 
     public void MarkAsCompleted(Instant completedAt)
     {
+        if (OrchestrationState == CalculationOrchestrationState.Calculated
+            && IsInternalCalculation == false)
+        {
+            throw new BusinessValidationException(
+                $"Calculation with ID '{Id}' cannot be marked as '{CalculationOrchestrationState.Completed}' because it is not an internal calculation. Current orchestration state: '{OrchestrationState}'.");
+        }
+
         OrchestrationState = CalculationOrchestrationState.Completed;
         CompletedTime = completedAt;
+    }
+
+    public void MarkAsCanceled(Guid canceledByUserId)
+    {
+        CanceledByUserId = canceledByUserId;
+        OrchestrationState = CalculationOrchestrationState.Canceled;
     }
 
     /// <summary>
     /// Reset a <see cref="Calculation"/>. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
-    public void Reset()
+    public void Restart()
     {
         if (ExecutionState is CalculationExecutionState.Completed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
         ExecutionState = CalculationExecutionState.Created;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
+        OrchestrationState = CalculationOrchestrationState.Started;
+    }
+
+    public bool CanCancel()
+    {
+        return OrchestrationState is CalculationOrchestrationState.Scheduled;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)

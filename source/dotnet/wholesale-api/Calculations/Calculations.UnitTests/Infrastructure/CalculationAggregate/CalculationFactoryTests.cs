@@ -39,7 +39,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false);
 
         // Assert
         calculation.PeriodStart.Should().Be(Instant.FromDateTimeOffset(_startDate));
@@ -53,10 +53,25 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false);
 
         // Assert
         calculation.ScheduledAt.Should().Be(Instant.FromDateTimeOffset(_scheduledAt));
+    }
+
+    [Fact]
+    public void Create_ReturnsCalculationAsInternalCalculation()
+    {
+        // Arrange
+        var isInternalCalculations = true;
+        var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
+
+        // Act
+        var calculation = sut.Create(CalculationType.Aggregation, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), isInternalCalculations);
+
+        // Assert
+        calculation.IsInternalCalculation.Should()
+            .BeTrue("Because the calculation type is Aggregation and the calculation is internal");
     }
 
     [Fact]
@@ -66,7 +81,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false);
 
         // Assert
         calculation.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
@@ -81,7 +96,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false);
         calculation.MarkAsStarted();
         calculation.MarkAsCalculationJobSubmitted(new CalculationJobId(1), Instant.FromDateTimeOffset(_executionStartedAt));
 
@@ -100,7 +115,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid()).Version;
+        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false).Version;
 
         // Assert
         actual.Should().Be(expected);
@@ -111,11 +126,11 @@ public class CalculationFactoryTests
     {
         // Arrange
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
-        var earlierCalculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid());
+        var earlierCalculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false);
         var earlierVersion = earlierCalculation.Version;
 
         // Act
-        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid()).Version;
+        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, _scheduledAt, Guid.NewGuid(), false).Version;
 
         // Assert
         actual.Should().BeGreaterThan(earlierVersion);

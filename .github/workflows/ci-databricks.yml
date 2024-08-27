@@ -81,15 +81,6 @@ jobs:
           # Turns comma seperated string in to an array using the IFS
           read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
 
-          for item in "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}"
-          do
-            # If a item from the SCRIPT_FILES_IN_MAIN_ARRAY does not exist in the SCRIPT_FILES_IN_PR_ARRAY then
-            if [[ ! " ${SCRIPT_FILES_IN_PR_ARRAY[@]} " =~ "${item}" ]]; then
-              echo "Error: Existing file: ${item} has been deleted in migration_scripts folder"
-              exit 1
-            fi
-          done
-
           # Reverse sort the SCRIPT_FILES_IN_MAIN_ARRAY to get the file with the latest prefix datetime first
           script_files_in_main_reverse_sorted=($(echo "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           # Turn script_files_in_main_reverse_sorted into a array (the array will only have one item, since it wont look past a new line)
@@ -180,15 +171,6 @@ jobs:
           # Turns comma seperated string in to an array using the IFS
           read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
 
-          for item in "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}"
-          do
-            # If a item from the SCRIPT_FILES_IN_MAIN_ARRAY does not exist in the SCRIPT_FILES_IN_PR_ARRAY then
-            if [[ ! " ${SCRIPT_FILES_IN_PR_ARRAY[@]} " =~ "${item}" ]]; then
-              echo "Error: Existing file: ${item} has been deleted in migration_scripts folder"
-              exit 1
-            fi
-          done
-
           # Reverse sort the SCRIPT_FILES_IN_MAIN_ARRAY to get the file with the latest prefix datetime first
           script_files_in_main_reverse_sorted=($(echo "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           # Turn script_files_in_main_reverse_sorted into a array (the array will only have one item, since it wont look past a new line)
@@ -250,7 +232,7 @@ jobs:
           - name: Data products
             paths: features/data_products contracts
           - name: Unit tests
-            paths: calculation codelists common databases infrastructure
+            paths: calculation codelists common optimize_job databases infrastructure
           - name: Entry point tests
             paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
@@ -349,6 +331,7 @@ jobs:
           databases/
           infrastructure/
           entry_points/
+          optimize_job/
           datamigration/all_hive_scripts
           datamigration/current_state
           datamigration/migration_scripts

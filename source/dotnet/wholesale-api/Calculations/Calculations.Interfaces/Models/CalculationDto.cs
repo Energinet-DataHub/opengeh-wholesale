@@ -26,6 +26,7 @@ public sealed record CalculationDto(
     DateTimeOffset PeriodEnd,
     string Resolution,
     string Unit,
+    DateTimeOffset ScheduledAt,
     DateTimeOffset? ExecutionTimeStart,
     DateTimeOffset? ExecutionTimeEnd,
     CalculationState ExecutionState,
@@ -35,4 +36,5 @@ public sealed record CalculationDto(
     Guid CreatedByUserId,
     long Version,
     CalculationOrchestrationState OrchestrationState,
-    DateTimeOffset? CompletedTime);
+    DateTimeOffset? CompletedTime,
+    bool IsInternalCalculation);
