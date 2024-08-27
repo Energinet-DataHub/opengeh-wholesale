@@ -131,5 +131,5 @@ resource "azurerm_role_assignment" "quota_alert_reader_subscription_60" {
 
   scope                = data.azurerm_subscription.this.id
   role_definition_name = "Reader"
-  principal_id         = azurerm_monitor_scheduled_query_rules_alert_v2.quota[0].identity[0].principal_id
+  principal_id         = azurerm_monitor_scheduled_query_rules_alert_v2.quota_60[0].identity[0].principal_id
 }
