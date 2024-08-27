@@ -48,7 +48,7 @@ public class DeltaTableOptions
     /// <summary>
     /// Name of the schema/database under which the settlement report views are associated.
     /// </summary>
-    public string SettlementReportSchemaName { get; set; } = "settlement_report";
+    public string SettlementReportSchemaName { get; set; } = "wholesale_settlement_reports";
 
     /// <summary>
     /// Name of the schema/database to which the calculation result views belong.
