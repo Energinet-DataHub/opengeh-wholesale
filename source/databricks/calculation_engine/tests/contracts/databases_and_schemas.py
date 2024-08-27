@@ -29,7 +29,7 @@ def get_database(spark: SparkSession, database_name: str) -> Database:
     return database
 
 
-def get_expected_schemas_from_folder(folder: str) -> dict:
+def get_expected_schemas(folder: str) -> dict:
     schemas = {}
     current_directory = Path(__file__).parent
     schemas_folder = current_directory / ".." / ".." / "contracts" / folder

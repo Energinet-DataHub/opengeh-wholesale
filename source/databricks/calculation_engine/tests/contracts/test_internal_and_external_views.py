@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from contracts.databases_and_schemas import (
     get_database,
-    get_expected_schemas_from_folder,
+    get_expected_schemas,
 )
 from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
@@ -63,9 +63,9 @@ def test__views_have_the_expected_column_names_and_types(
     "folder",
     [
         "wholesale_internal",
-        "wholesale_results",
-        "wholesale_settlement_reports",
-        "wholesale_sap",
+        "data_products/wholesale_results",
+        "data_products/wholesale_settlement_reports",
+        "data_products/wholesale_sap",
     ],
 )
 def test__views_have_the_expected_schemas(
@@ -76,9 +76,9 @@ def test__views_have_the_expected_schemas(
     """Verify that all wholesale internal views have the expected schemas."""
 
     # Arrange
-    expected_schemas = get_expected_schemas_from_folder(folder)
+    expected_schemas = get_expected_schemas(folder)
     if not expected_schemas:
-        raise ValueError("No expected schemas found.")
+        raise ValueError(f"No expected schemas found in folder {folder}.")
 
     database = get_database(spark, folder)
     errors = []
