@@ -13,12 +13,12 @@
 # limitations under the License.
 
 import pytest
-from contracts.data_products_databases_and_schemas import (
+from pyspark.sql import SparkSession, DataFrame
+
+from contracts.databases_and_schemas import (
     get_database,
     get_expected_schemas_from_folder,
 )
-from pyspark.sql import SparkSession, DataFrame
-
 from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
 
