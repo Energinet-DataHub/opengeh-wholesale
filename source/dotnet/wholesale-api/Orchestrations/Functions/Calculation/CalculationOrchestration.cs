@@ -61,7 +61,9 @@ internal class CalculationOrchestration
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
-        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds);
+        var expiryTime =
+            context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions
+                .CalculationJobStatusExpiryTimeInSeconds);
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
@@ -93,7 +95,8 @@ internal class CalculationOrchestration
                 }
 
                 // Wait for the next checkpoint
-                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions.CalculationJobStatusPollingIntervalInSeconds);
+                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions
+                    .CalculationJobStatusPollingIntervalInSeconds);
                 await context.CreateTimer(nextCheckpoint, CancellationToken.None);
             }
             else
@@ -113,21 +116,25 @@ internal class CalculationOrchestration
             calculationMetadata.OrchestrationProgress = "CalculationJobCompleted";
             context.SetCustomStatus(calculationMetadata);
 
-            // Send calculation results (ServiceBus)
-            await context.CallActivityAsync(
-                nameof(SendCalculationResultsActivity),
-                new SendCalculationResultsInput(calculationMetadata.Id, context.InstanceId),
-                defaultRetryOptions);
+            // If the calculation is internal, we don't want to send the calculation results event.
+            if (!input.IsInternalCalculation)
+            {
+                // Send calculation results (ServiceBus)
+                await context.CallActivityAsync(
+                    nameof(SendCalculationResultsActivity),
+                    new SendCalculationResultsInput(calculationMetadata.Id, context.InstanceId),
+                    defaultRetryOptions);
 
-            await UpdateCalculationOrchestrationStateAsync(
-                context,
-                calculationMetadata.Id,
-                CalculationOrchestrationState.ActorMessagesEnqueuing,
-                defaultRetryOptions);
+                await UpdateCalculationOrchestrationStateAsync(
+                    context,
+                    calculationMetadata.Id,
+                    CalculationOrchestrationState.ActorMessagesEnqueuing,
+                    defaultRetryOptions);
 
-            calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
+                calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
-            context.SetCustomStatus(calculationMetadata);
+                context.SetCustomStatus(calculationMetadata);
+            }
         }
         else
         {
@@ -136,31 +143,37 @@ internal class CalculationOrchestration
             return $"Error: Job status '{calculationMetadata.JobStatus}'";
         }
 
-        // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
-        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(
-            context,
-            calculationMetadata.Id,
-            input.OrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds);
-        if (!waitForActorMessagesEnqueuedEventResult.IsSuccess)
+        // If the calculation is internal, we are not enqueueing messages to the actors
+        if (!input.IsInternalCalculation)
         {
-            calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
+            // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
+            var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(
+                context,
+                calculationMetadata.Id,
+                input.OrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds);
+            if (!waitForActorMessagesEnqueuedEventResult.IsSuccess)
+            {
+                calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ??
+                                                            "UnknownWaitForActorMessagesEnqueuedEventError";
+                context.SetCustomStatus(calculationMetadata);
+                await UpdateCalculationOrchestrationStateAsync(
+                    context,
+                    calculationMetadata.Id,
+                    CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
+                    defaultRetryOptions);
+                return
+                    $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
+            }
+
+            // Update state to ActorMessagesEnqueued
+            calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueued";
             context.SetCustomStatus(calculationMetadata);
             await UpdateCalculationOrchestrationStateAsync(
                 context,
                 calculationMetadata.Id,
-                CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
+                CalculationOrchestrationState.ActorMessagesEnqueued,
                 defaultRetryOptions);
-            return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
         }
-
-        // Update state to ActorMessagesEnqueued
-        calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueued";
-        context.SetCustomStatus(calculationMetadata);
-        await UpdateCalculationOrchestrationStateAsync(
-            context,
-            calculationMetadata.Id,
-            CalculationOrchestrationState.ActorMessagesEnqueued,
-            defaultRetryOptions);
 
         // Update state to Completed
         calculationMetadata.OrchestrationProgress = "Completed";
@@ -206,12 +219,19 @@ internal class CalculationOrchestration
         }
         catch (TaskCanceledException taskCanceledException)
         {
-            return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", $"Timeout while waiting for actor messages enqueued event. Timeout limit: {timeoutLimit}, exception: {taskCanceledException}");
+            return OrchestrationResult.Error(
+                "ActorMessagesEnqueuingTimeout",
+                $"Timeout while waiting for actor messages enqueued event. Timeout limit: {timeoutLimit}, exception: {taskCanceledException}");
         }
 
-        var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
+        var canParseCalculationId =
+            Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
         if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
-            return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+        {
+            return OrchestrationResult.Error(
+                "ActorMessagesEnqueuedCalculationIdMismatch",
+                $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+        }
 
         if (!messagesEnqueuedEvent.Success)
         {

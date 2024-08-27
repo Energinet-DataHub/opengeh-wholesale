@@ -37,3 +37,7 @@ class Logger:
     def warning(self, message: str, extras: dict[str, Any] | None = None) -> None:
         extras = (extras or {}) | self._extras
         self._logger.warning(message, extra=extras)
+
+    def error(self, message: str, extras: dict[str, Any] | None = None) -> None:
+        extras = (extras or {}) | self._extras
+        self._logger.error(message, extra=extras)

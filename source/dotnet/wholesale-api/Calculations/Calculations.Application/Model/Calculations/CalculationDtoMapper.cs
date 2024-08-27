@@ -38,7 +38,8 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.CreatedByUserId,
             calculation.Version,
             calculation.OrchestrationState,
-            calculation.CompletedTime?.ToDateTimeOffset() ?? null);
+            calculation.CompletedTime?.ToDateTimeOffset() ?? null,
+            calculation.IsInternalCalculation);
     }
 
     private static Interfaces.Models.CalculationState MapState(CalculationExecutionState state)

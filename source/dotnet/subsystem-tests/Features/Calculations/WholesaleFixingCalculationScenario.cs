@@ -45,7 +45,8 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
             GridAreaCodes: new List<string> { "804" },
             StartDate: new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero),
             EndDate: new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero),
-            ScheduledAt: DateTimeOffset.UtcNow);
+            ScheduledAt: DateTimeOffset.UtcNow,
+            false);
     }
 
     [ScenarioStep(1)]
