@@ -59,9 +59,9 @@ from package.databases.wholesale_internal.calculations_grid_areas_storage_model_
 
 @logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    _write_calculation_metadata(args, prepared_data_reader)
+    calculation_version = _write_calculation_metadata(args, prepared_data_reader)
 
-    results = _execute(args, prepared_data_reader)
+    results = _execute(args, prepared_data_reader, calculation_version)
 
     _write_calculation_output(results)
 
@@ -74,6 +74,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 def _execute(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
+    calculation_version: int,
 ) -> CalculationOutput:
     calculation_output = CalculationOutput()
 
@@ -181,6 +182,7 @@ def _execute(
         metering_point_time_series,
         input_charges,
         grid_loss_metering_points_df,
+        calculation_version,
     )
 
     return calculation_output
@@ -188,12 +190,20 @@ def _execute(
 
 def _write_calculation_metadata(
     args: CalculatorArgs, prepared_data_reader: PreparedDataReader
-) -> None:
-    calculations = create_calculation(args, prepared_data_reader)
-    write_calculation(calculations)
+) -> int:
+    latest_version = prepared_data_reader.get_latest_calculation_version(
+        args.calculation_type
+    )
+    # Next version begins with 1 and increments by 1
+    next_version = (latest_version or 0) + 1
+
+    calculation = create_calculation(args, next_version)
+    write_calculation(calculation)
 
     calculation_grid_areas = create_calculation_grid_areas(args)
     write_calculation_grid_areas(calculation_grid_areas)
+
+    return next_version
 
 
 @logging_configuration.use_span("calculation.write")

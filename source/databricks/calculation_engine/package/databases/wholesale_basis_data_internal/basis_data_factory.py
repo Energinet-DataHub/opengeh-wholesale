@@ -34,9 +34,13 @@ def create(
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     input_charges_container: InputChargesContainer | None,
     grid_loss_metering_points_df: GridLossMeteringPoints,
+    calculation_version: int,
 ) -> BasisDataOutput:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
-        args.calculation_id, metering_point_time_series_df
+        args.calculation_id,
+        args.calculation_type,
+        calculation_version,
+        metering_point_time_series_df,
     )
 
     metering_point_periods_basis_data = (

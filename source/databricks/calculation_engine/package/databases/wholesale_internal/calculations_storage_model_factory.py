@@ -26,28 +26,20 @@ from package.databases.wholesale_internal.schemas.calculations_schema import (
 
 def create_calculation(
     args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
+    next_version: int,
 ) -> DataFrame:
     """
     Creates a data frame with a row representing the currently executing calculation.
     The version is the next available version for the given calculation type.
     """
-    return _create_calculation(args, prepared_data_reader)
+    return _create_calculation(args, next_version)
 
 
 def _create_calculation(
     args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
+    next_version: int,
     spark: SparkSession = Provide[Container.spark],
 ) -> DataFrame:
-
-    latest_version = prepared_data_reader.get_latest_calculation_version(
-        args.calculation_type
-    )
-
-    # Next version begins with 1 and increments by 1
-    next_version = (latest_version or 0) + 1
-
     calculation = {
         TableColumnNames.calculation_id: args.calculation_id,
         TableColumnNames.calculation_type: args.calculation_type.value,
