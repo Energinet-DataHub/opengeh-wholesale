@@ -21,4 +21,4 @@ SELECT c.calculation_id,
        charge_owner_id,
        is_tax
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.amounts_per_charge_v1 AS apc
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = apc.calculation_id
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = apc.calculation_id
