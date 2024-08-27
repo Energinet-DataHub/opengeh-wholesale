@@ -32,6 +32,9 @@ monthly_amounts_v1 = t.StructType(
         # 'kWh' | 'pcs'
         t.StructField("quantity_unit", t.StringType(), nullable),
         #
+        # 'DKK'
+        t.StructField("currency", t.StringType(), not nullable),
+        #
         t.StructField("amount", t.DecimalType(18, 6), nullable),
         #
         # 'subscription' | 'fee' | 'tariff'
