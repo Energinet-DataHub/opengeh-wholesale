@@ -30,6 +30,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
     version = "2.1"
     action  = "Block"
 
+    # Exclude cookie from evaluation, as WAF sees it as SQL injection
+    exclusion {
+      match_variable = "RequestCookieNames"
+      selector       = "CookieInformationConsent"
+      operator       = "Equals"
+    }
+
     override {
       rule_group_name = "PROTOCOL-ENFORCEMENT"
       # Missing User Agent Header, not sent from BizTalk
