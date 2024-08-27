@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
@@ -47,6 +48,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
+        var mockedLogging = new Mock<ILoggerFactory>();
         var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
@@ -67,9 +69,11 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             mockedOptions.Object,
             sqlWarehouseQueryExecutor));
 
-        var settlementReportMeteringPointTimeSeriesResultRepository = new SettlementReportMeteringPointTimeSeriesResultRepository(new SettlementReportDatabricksContext(
+        var settlementReportMeteringPointTimeSeriesResultRepository = new SettlementReportMeteringPointTimeSeriesResultRepository(
+            new SettlementReportDatabricksContext(
             mockedOptions.Object,
-            sqlWarehouseQueryExecutor));
+            sqlWarehouseQueryExecutor),
+            mockedLogging.Object);
 
         var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
@@ -91,7 +95,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             settlementReportMeteringPointTimeSeriesResultRepository,
             settlementReportMonthlyAmountRepository,
             settlementReportChargePriceRepository,
-            settlementReportMonthlyAmountTotalRepository));
+            settlementReportMonthlyAmountTotalRepository,
+            mockedLogging.Object));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));

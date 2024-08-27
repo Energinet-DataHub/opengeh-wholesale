@@ -34,11 +34,11 @@ public sealed class MeteringPointTimeSeriesFileGenerator : ISettlementReportFile
     public MeteringPointTimeSeriesFileGenerator(
         ISettlementReportMeteringPointTimeSeriesResultRepository dataSource,
         Resolution resolution,
-        ILogger<MeteringPointTimeSeriesFileGenerator> logger)
+        ILoggerFactory loggerFactory)
     {
         _dataSource = dataSource;
         _resolution = resolution;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<MeteringPointTimeSeriesFileGenerator>();
     }
 
     public string FileExtension => ".csv";

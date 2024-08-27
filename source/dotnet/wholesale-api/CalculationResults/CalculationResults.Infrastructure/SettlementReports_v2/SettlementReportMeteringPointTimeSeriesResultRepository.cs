@@ -35,10 +35,10 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
 
     public SettlementReportMeteringPointTimeSeriesResultRepository(
         ISettlementReportDatabricksContext settlementReportDatabricksContext,
-        ILogger<SettlementReportMeteringPointTimeSeriesResultRepository> logger)
+        ILoggerFactory loggerFactory)
     {
         _settlementReportDatabricksContext = settlementReportDatabricksContext;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<SettlementReportMeteringPointTimeSeriesResultRepository>();
     }
 
     public Task<int> CountAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution)
@@ -111,7 +111,7 @@ public sealed class SettlementReportMeteringPointTimeSeriesResultRepository : IS
                     .ToList());
         }
 
-        _logger.LogInformation("Queried MeteringPointTimeSeriesView {Skip} and {Take}", skip, take);
+        _logger.LogInformation("Queried MeteringPointTimeSeriesView {Skip} and {Take} with {Filter}", skip, take, filter);
     }
 
     private Task<int> CountLatestAsync(SettlementReportRequestFilterDto filter, long maximumCalculationVersion, Resolution resolution)

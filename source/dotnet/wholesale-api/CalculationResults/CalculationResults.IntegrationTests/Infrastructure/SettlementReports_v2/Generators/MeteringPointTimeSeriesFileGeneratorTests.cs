@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime.Extensions;
 using Xunit;
@@ -35,6 +36,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
         // arrange
         var numberOfQuantities = resolution == Resolution.Hour ? 24 : 96;
 
+        var loggingMock = new Mock<ILoggerFactory>();
         var dataSourceMock = new Mock<ISettlementReportMeteringPointTimeSeriesResultRepository>();
 
         dataSourceMock
@@ -49,7 +51,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
                         Enumerable.Range(0, numberOfQuantities).Select(x => new SettlementReportMeteringPointTimeSeriesResultQuantity(DateTimeOffset.Now.ToInstant(), 10.1m + x)).ToList()),
                 }.ToAsyncEnumerable());
 
-        var sut = new MeteringPointTimeSeriesFileGenerator(dataSourceMock.Object, resolution);
+        var sut = new MeteringPointTimeSeriesFileGenerator(dataSourceMock.Object, resolution, loggingMock.Object);
 
         // act
         await using var ms = new MemoryStream();
@@ -94,6 +96,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
         // arrange
         var numberOfQuantities = 24;
 
+        var loggingMock = new Mock<ILoggerFactory>();
         var dataSourceMock = new Mock<ISettlementReportMeteringPointTimeSeriesResultRepository>();
 
         dataSourceMock
@@ -108,7 +111,7 @@ public sealed class MeteringPointTimeSeriesFileGeneratorTests
                         Enumerable.Range(0, numberOfQuantities).Select(x => new SettlementReportMeteringPointTimeSeriesResultQuantity(DateTimeOffset.Now.ToInstant(), 10.1m + x)).ToList()),
                 }.ToAsyncEnumerable());
 
-        var sut = new MeteringPointTimeSeriesFileGenerator(dataSourceMock.Object, Resolution.Hour);
+        var sut = new MeteringPointTimeSeriesFileGenerator(dataSourceMock.Object, Resolution.Hour, loggingMock.Object);
 
         // act
         await using var ms = new MemoryStream();

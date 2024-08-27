@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementRepor
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
@@ -29,6 +30,7 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
     private readonly ISettlementReportMonthlyAmountRepository _settlementReportMonthlyAmountRepository;
     private readonly ISettlementReportChargePriceRepository _settlementChargePriceRepository;
     private readonly ISettlementReportMonthlyAmountTotalRepository _settlementReportMonthlyAmountTotalRepository;
+    private readonly ILoggerFactory _loggerFactory;
 
     public SettlementReportFileGeneratorFactory(
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
@@ -38,7 +40,8 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         ISettlementReportMeteringPointTimeSeriesResultRepository settlementReportMeteringPointTimeSeriesResultRepository,
         ISettlementReportMonthlyAmountRepository settlementReportMonthlyAmountRepository,
         ISettlementReportChargePriceRepository settlementChargePriceRepository,
-        ISettlementReportMonthlyAmountTotalRepository settlementReportMonthlyAmountTotalRepository)
+        ISettlementReportMonthlyAmountTotalRepository settlementReportMonthlyAmountTotalRepository,
+        ILoggerFactory loggerFactory)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
@@ -48,6 +51,7 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         _settlementReportMonthlyAmountRepository = settlementReportMonthlyAmountRepository;
         _settlementChargePriceRepository = settlementChargePriceRepository;
         _settlementReportMonthlyAmountTotalRepository = settlementReportMonthlyAmountTotalRepository;
+        _loggerFactory = loggerFactory;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -63,9 +67,9 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
             case SettlementReportFileContent.MeteringPointMasterData:
                 return new MeteringPointMasterDataFileGenerator(_settlementReportMeteringPointMasterDataRepository);
             case SettlementReportFileContent.Pt15M:
-                return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Quarter);
+                return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Quarter, _loggerFactory);
             case SettlementReportFileContent.Pt1H:
-                return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Hour);
+                return new MeteringPointTimeSeriesFileGenerator(_settlementReportMeteringPointTimeSeriesResultRepository, Resolution.Hour, _loggerFactory);
             case SettlementReportFileContent.MonthlyAmount:
                 return new MonthlyAmountFileGenerator(_settlementReportMonthlyAmountRepository);
             case SettlementReportFileContent.MonthlyAmountTotal:
