@@ -55,7 +55,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 await WriteHeaderAsync(csvHelper).ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, actorInfo, fileInfo.ChunkOffset, 1).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, actorInfo, fileInfo.ChunkOffset, int.MaxValue).ConfigureAwait(false))
             {
                 await WriteRecordAsync(csvHelper, record).ConfigureAwait(false);
             }
