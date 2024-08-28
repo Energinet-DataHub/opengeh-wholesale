@@ -15,45 +15,21 @@ import importlib.util
 import os
 from importlib.util import spec_from_file_location
 from pathlib import Path
-from typing import List
 
 from pyspark.sql import SparkSession
-from pyspark.sql.catalog import Database
 
 
-def get_data_product_databases(spark: SparkSession) -> List[Database]:
-    """
-    Get all view databases.
-    """
-    non_data_product_databases = {
-        "default",
-        "schema_migration",
-        "wholesale_output",
-        "shared_wholesale_input",
-        "wholesale_input",
-        "basis_data",
-        "wholesale_basis_data_internal",
-        "wholesale_results_internal",
-        "wholesale_internal",
-        "wholesale_calculation_results",  # TODO JMG: This is hive. Remove when on Unity Catalog
-        "settlement_report",  # TODO JMG: This is hive. Remove when on Unity Catalog
-    }
-    databases = [
-        db
-        for db in spark.catalog.listDatabases()
-        if db.name not in non_data_product_databases
-    ]
-
-    if not databases:
-        raise ValueError("No databases found.")
-
-    return databases
+def get_views_from_database(database_name: str, spark: SparkSession) -> list:
+    tables = spark.catalog.listTables(database_name)
+    views = [table for table in tables if table.tableType == "VIEW"]
+    assert views, f"No views found in database {database_name}."
+    return views
 
 
-def get_expected_data_product_schemas() -> dict:
+def get_expected_schemas(folder: str) -> dict:
     schemas = {}
     current_directory = Path(__file__).parent
-    schemas_folder = current_directory / ".." / ".." / "contracts" / "data_products"
+    schemas_folder = current_directory / ".." / ".." / "contracts" / folder
 
     for root, _, files in os.walk(schemas_folder):
         database_name = Path(root).name

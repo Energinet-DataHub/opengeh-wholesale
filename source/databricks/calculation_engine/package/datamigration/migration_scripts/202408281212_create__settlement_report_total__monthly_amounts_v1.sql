@@ -12,5 +12,4 @@ SELECT c.calculation_id,
        amount,
        charge_owner_id
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.total_monthly_amounts_v1 AS tma
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1 AS c ON c.calculation_id = tma.calculation_id
-WHERE c.is_internal_calculation = FALSE
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = tma.calculation_id
