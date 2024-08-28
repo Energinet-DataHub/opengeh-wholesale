@@ -16,6 +16,7 @@ from pyspark.sql import SparkSession
 from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
+from package.codelists import CalculationType
 from package.databases.wholesale_basis_data_internal.schemas import (
     time_series_points_schema,
 )
@@ -35,7 +36,11 @@ def test__when_valid_input__returns_df_with_expected_schema(
 
     # Act
     actual = get_time_series_points_basis_data(
-        "some-calculation-id", metering_point_time_series
+        "some-calculation-id",
+        CalculationType.BALANCE_FIXING,
+        False,
+        1,
+        metering_point_time_series,
     )
 
     # Assert

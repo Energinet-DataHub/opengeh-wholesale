@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABAS
     metering_point_type STRING NOT NULL,
     resolution STRING NOT NULL,
     grid_area_code STRING NOT NULL,
-    energy_supplier_id STRING NOT NULL,
+    energy_supplier_id STRING,
     observation_time TIMESTAMP NOT NULL,
     quantity DECIMAL(18, 3) NOT NULL,
     quality STRING NOT NULL
