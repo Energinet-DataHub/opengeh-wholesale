@@ -49,7 +49,6 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
         var mockedLogging = new Mock<ILogger>();
-        mockedLogging.Setup(x => x.LogInformation(It.IsAny<string>()));
 
         var mockedLoggerFactory = new Mock<ILoggerFactory>();
         mockedLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(mockedLogging.Object);
