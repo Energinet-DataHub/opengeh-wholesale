@@ -13,7 +13,7 @@
 # limitations under the License.
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import DecimalType
+from pyspark.sql.types import DecimalType, LongType
 
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
@@ -65,7 +65,9 @@ def get_time_series_points_basis_data(
     return metering_point_time_series.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.lit(calculation_type.value).alias(TableColumnNames.calculation_type),
-        f.lit(calculation_version).alias(TableColumnNames.calculation_version),
+        f.lit(calculation_version)
+        .alias(TableColumnNames.calculation_version)
+        .cast(LongType()),
         f.lit(is_internal_calculation).alias(TableColumnNames.is_internal_calculation),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
         f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),
