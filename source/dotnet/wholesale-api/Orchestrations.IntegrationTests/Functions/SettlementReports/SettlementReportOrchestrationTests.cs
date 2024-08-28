@@ -86,7 +86,8 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            1);
+            1,
+            false);
 
         dbContext.Calculations.Add(calculationEntity);
         await dbContext.SaveChangesAsync();
@@ -157,7 +158,8 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            1);
+            1,
+            false);
 
         dbContext.Calculations.Add(calculationEntity);
         await dbContext.SaveChangesAsync();
@@ -241,7 +243,8 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            1);
+            1,
+            false);
 
         dbContext.Calculations.Add(calculationEntity);
         await dbContext.SaveChangesAsync();

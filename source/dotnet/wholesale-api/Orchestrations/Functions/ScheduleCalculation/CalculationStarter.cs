@@ -19,8 +19,6 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.DurableTask;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
@@ -44,7 +42,8 @@ public class CalculationStarter(
     {
         var orchestrationInput = new CalculationOrchestrationInput(
             _orchestrationMonitorOptions,
-            calculationToStart.CalculationId);
+            calculationToStart.CalculationId,
+            calculationToStart.IsInternalCalculation);
 
         var alreadyStarted = await OrchestrationIsAlreadyStartedAsync(calculationToStart.OrchestrationInstanceId)
             .ConfigureAwait(false);

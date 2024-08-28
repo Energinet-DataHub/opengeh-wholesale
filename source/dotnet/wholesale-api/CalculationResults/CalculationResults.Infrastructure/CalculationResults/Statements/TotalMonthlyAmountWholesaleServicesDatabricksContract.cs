@@ -28,7 +28,7 @@ public sealed class TotalMonthlyAmountWholesaleServicesDatabricksContract : IWho
     public string GetSource(DeltaTableOptions tableOptions)
     {
         return
-            $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}";
+            $"{tableOptions.CalculationResultViewsSource}.{tableOptions.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}";
     }
 
     public string GetCalculationTypeColumnName()
@@ -74,6 +74,11 @@ public sealed class TotalMonthlyAmountWholesaleServicesDatabricksContract : IWho
     public string GetCalculationIdColumnName()
     {
         return TotalMonthlyAmountsViewColumnNames.CalculationId;
+    }
+
+    public string GetResolutionColumnName()
+    {
+        throw new InvalidOperationException("There is no resolution for total monthly amounts");
     }
 
     public string GetIsTaxColumnName()

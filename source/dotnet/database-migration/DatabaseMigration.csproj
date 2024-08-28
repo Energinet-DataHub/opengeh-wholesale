@@ -62,6 +62,8 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202408151222_Add_ScheduledAt_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202408161458_Add_OrchestrationInstanceId_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202408201311_Make_OrchestrationInstanceId_required.sql" />
+    <EmbeddedResource Include="Scripts\202408202024_Add_CanceledByUserId_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202408221540_Add_IsInternalCalculation_to_Calculation.sql" />
   </ItemGroup>
 
   <ItemGroup>

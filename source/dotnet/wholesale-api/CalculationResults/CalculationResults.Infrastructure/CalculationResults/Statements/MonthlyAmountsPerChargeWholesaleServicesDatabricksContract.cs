@@ -29,7 +29,7 @@ public sealed class
     public string GetSource(DeltaTableOptions tableOptions)
     {
         return
-            $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
+            $"{tableOptions.CalculationResultViewsSource}.{tableOptions.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
     }
 
     public string GetCalculationTypeColumnName()
@@ -75,6 +75,11 @@ public sealed class
     public string GetCalculationIdColumnName()
     {
         return MonthlyAmountsPerChargeViewColumnNames.CalculationId;
+    }
+
+    public string GetResolutionColumnName()
+    {
+        throw new InvalidOperationException("There is no resolution for monthly amounts");
     }
 
     public string GetIsTaxColumnName()

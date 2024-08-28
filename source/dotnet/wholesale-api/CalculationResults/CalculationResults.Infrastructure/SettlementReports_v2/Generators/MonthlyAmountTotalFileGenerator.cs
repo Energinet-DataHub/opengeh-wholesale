@@ -25,7 +25,9 @@ public sealed class MonthlyAmountTotalFileGenerator : CsvFileGeneratorBase<Settl
     private readonly ISettlementReportMonthlyAmountTotalRepository _dataSource;
 
     public MonthlyAmountTotalFileGenerator(ISettlementReportMonthlyAmountTotalRepository dataSource)
-        : base(250, quotedColumns: [2, 3, 11])
+        : base(
+            int.MaxValue, //250,
+            quotedColumns: [2, 3, 11])
     {
         _dataSource = dataSource;
     }
@@ -113,11 +115,11 @@ public sealed class MonthlyAmountTotalFileGenerator : CsvFileGeneratorBase<Settl
                 });
 
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
+                .Name("CHARGEID")
                 .Index(10);
 
             Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
+                .Name("CHARGEOWNER")
                 .Index(11);
         }
     }

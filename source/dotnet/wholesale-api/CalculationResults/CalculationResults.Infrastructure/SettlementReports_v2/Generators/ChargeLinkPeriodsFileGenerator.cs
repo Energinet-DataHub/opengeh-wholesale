@@ -28,7 +28,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
 
     public ChargeLinkPeriodsFileGenerator(ISettlementReportChargeLinkPeriodsRepository dataSource)
         : base(
-            40_000, // About 25 rows per metering point, about 1.000.000 rows per chunk in total.
+            int.MaxValue, //40_000, // About 25 rows per metering point, about 1.000.000 rows per chunk in total.
             quotedColumns: [0, 3, 8])
     {
         _dataSource = dataSource;
@@ -92,11 +92,11 @@ public sealed class ChargeLinkPeriodsFileGenerator : CsvFileGeneratorBase<Settle
                 });
 
             Map(r => r.ChargeOwnerId)
-                .Name("CHARGETYPEOWNERID")
+                .Name("CHARGEOWNER")
                 .Index(3);
 
             Map(r => r.ChargeCode)
-                .Name("CHARGETYPEID")
+                .Name("CHARGEID")
                 .Index(4);
 
             Map(r => r.Quantity)

@@ -28,6 +28,7 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.PeriodEnd.ToDateTimeOffset(),
             calculation.GetResolution(),
             calculation.GetQuantityUnit().ToString(),
+            calculation.ScheduledAt.ToDateTimeOffset(),
             calculation.ExecutionTimeStart?.ToDateTimeOffset(),
             calculation.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(calculation.ExecutionState),
@@ -37,7 +38,8 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.CreatedByUserId,
             calculation.Version,
             calculation.OrchestrationState,
-            calculation.CompletedTime?.ToDateTimeOffset() ?? null);
+            calculation.CompletedTime?.ToDateTimeOffset() ?? null,
+            calculation.IsInternalCalculation);
     }
 
     private static Interfaces.Models.CalculationState MapState(CalculationExecutionState state)

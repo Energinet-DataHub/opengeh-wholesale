@@ -34,7 +34,8 @@ public class CalculationFactory : ICalculationFactory
         DateTimeOffset startDate,
         DateTimeOffset endDate,
         DateTimeOffset scheduledAt,
-        Guid createdByUserId)
+        Guid createdByUserId,
+        bool isInternalCalculation)
     {
         var createdTime = _clock.GetCurrentInstant();
         var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
@@ -43,6 +44,16 @@ public class CalculationFactory : ICalculationFactory
         var scheduledAtInstant = Instant.FromDateTimeOffset(scheduledAt);
 
         var version = _clock.GetCurrentInstant().ToDateTimeUtc().Ticks;
-        return new Calculation(createdTime, calculationType, gridAreas, periodStart, periodEnd, scheduledAtInstant, _dateTimeZone, createdByUserId, version);
+        return new Calculation(
+            createdTime,
+            calculationType,
+            gridAreas,
+            periodStart,
+            periodEnd,
+            scheduledAtInstant,
+            _dateTimeZone,
+            createdByUserId,
+            version,
+            isInternalCalculation);
     }
 }

@@ -24,6 +24,7 @@ public sealed record CalculationDto(
     DateTimeOffset PeriodEnd,
     string Resolution,
     string Unit,
+    DateTimeOffset ScheduledAt,
     DateTimeOffset? ExecutionTimeStart,
     DateTimeOffset? ExecutionTimeEnd,
     CalculationOrchestrationState OrchestrationState,
@@ -31,4 +32,5 @@ public sealed record CalculationDto(
     string[] GridAreaCodes,
     CalculationType CalculationType,
     Guid CreatedByUserId,
-    DateTimeOffset? CompletedTime);
+    DateTimeOffset? CompletedTime,
+    bool IsInternalCalculation);

@@ -27,7 +27,7 @@ public sealed class AmountsPerChargeWholesaleServicesDatabricksContract : IWhole
 
     public string GetSource(DeltaTableOptions tableOptions)
     {
-        return $"{tableOptions.WholesaleCalculationResultsSchemaName}.{tableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
+        return $"{tableOptions.CalculationResultViewsSource}.{tableOptions.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}";
     }
 
     public string GetCalculationTypeColumnName()
@@ -73,6 +73,11 @@ public sealed class AmountsPerChargeWholesaleServicesDatabricksContract : IWhole
     public string GetCalculationIdColumnName()
     {
         return AmountsPerChargeViewColumnNames.CalculationId;
+    }
+
+    public string GetResolutionColumnName()
+    {
+        return AmountsPerChargeViewColumnNames.Resolution;
     }
 
     public string GetIsTaxColumnName()

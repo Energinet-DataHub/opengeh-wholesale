@@ -66,6 +66,13 @@ class WholesaleInternalDatabase:
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
     CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
 
+    TABLE_NAMES = [
+        EXECUTED_MIGRATIONS_TABLE_NAME,
+        CALCULATIONS_TABLE_NAME,
+        GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        CALCULATION_GRID_AREAS_TABLE_NAME,
+    ]
+
 
 class WholesaleResultsInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS_INTERNAL
@@ -79,6 +86,17 @@ class WholesaleResultsInternalDatabase:
     AMOUNTS_PER_CHARGE_TABLE_NAME = "amounts_per_charge"
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
     MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME = "monthly_amounts_per_charge"
+
+    TABLE_NAMES = [
+        ENERGY_TABLE_NAME,
+        ENERGY_PER_ES_TABLE_NAME,
+        ENERGY_PER_BRP_TABLE_NAME,
+        GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
+        EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+        AMOUNTS_PER_CHARGE_TABLE_NAME,
+        TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+        MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
+    ]
 
 
 class WholesaleResultsDatabase:
@@ -107,12 +125,14 @@ class WholesaleSettlementReportsDatabase:
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
+    MONTHLY_AMOUNTS_V1_VIEW_NAME = "monthly_amounts_v1"
 
 
 class WholesaleSapDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SAP
     LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME = "latest_calculations_history_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
+    AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
 
 
 class HiveOutputDatabase:
