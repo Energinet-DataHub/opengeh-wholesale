@@ -25,9 +25,16 @@ def execute(
     calculation_metadata_service: CalculationMetadataService,
     calculation_output_service: CalculationOutputService,
 ) -> None:
-    calculation_metadata_service.write(args, prepared_data_reader)
+    latest_version = prepared_data_reader.get_latest_calculation_version(
+        args.calculation_type
+    )
 
-    output = calculation_core.execute(args, prepared_data_reader)
+    # Next version begins with 1 and increments by 1
+    next_version = (latest_version or 0) + 1
+
+    calculation_metadata_service.write(args, next_version)
+
+    output = calculation_core.execute(args, prepared_data_reader, next_version)
 
     calculation_output_service.write(output)
 
