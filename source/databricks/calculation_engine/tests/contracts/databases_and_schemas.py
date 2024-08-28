@@ -17,16 +17,13 @@ from importlib.util import spec_from_file_location
 from pathlib import Path
 
 from pyspark.sql import SparkSession
-from pyspark.sql.catalog import Database
 
 
-def get_database(spark: SparkSession, database_name: str) -> Database:
-    database = spark.catalog.getDatabase(database_name)
-
-    if not database:
-        raise ValueError(f"Database {database_name} NOT found.")
-
-    return database
+def get_views_from_database(database_name: str, spark: SparkSession) -> list:
+    tables = spark.catalog.listTables(database_name)
+    views = [table for table in tables if table.tableType == "VIEW"]
+    assert views, f"No views found in database {database_name}."
+    return views
 
 
 def get_expected_schemas(folder: str) -> dict:

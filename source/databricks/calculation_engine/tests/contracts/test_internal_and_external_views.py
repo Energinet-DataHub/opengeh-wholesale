@@ -16,8 +16,8 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from contracts.databases_and_schemas import (
-    get_database,
     get_expected_schemas,
+    get_views_from_database,
 )
 from features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
@@ -40,21 +40,20 @@ def test__views_have_the_expected_column_names_and_types(
     """Verify that all columns in views have the expected column name and data type."""
 
     # Arrange
-    database = get_database(spark, database_name)
+    views = get_views_from_database(database_name, spark)
     errors = []
 
     # Act
-    views = spark.catalog.listTables(database.name)
-    assert views, f"No views found in database {database.name}."
+    assert views, f"No views found in database {database_name}."
 
     for view in views:
         try:
-            df = spark.table(f"{database.name}.{view.name}")
+            df = spark.table(f"{database_name}.{view.name}")
             for column in df.columns:
                 # Assert
                 _assert_name_and_data_type(column, df)
         except Exception as e:
-            errors.append(f"{database.name}.{view.name}: {e}")
+            errors.append(f"{database_name}.{view.name}: {e}")
 
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
@@ -73,7 +72,7 @@ def test__views_have_the_expected_schemas(
     spark: SparkSession,
     folder: str,
 ) -> None:
-    """Verify that all wholesale internal views have the expected schemas."""
+    """Verify that wholesale internal and public data views have the expected schemas."""
 
     # Arrange
     expected_schemas = get_expected_schemas(folder)
@@ -81,15 +80,12 @@ def test__views_have_the_expected_schemas(
         raise ValueError(f"No expected schemas found in folder {folder}.")
 
     database_name = folder.split("/")[-1]
-    database = get_database(spark, database_name)
+    views = get_views_from_database(database_name, spark)
     errors = []
 
     # Act
-    views = spark.catalog.listTables(database.name)
-    assert views, f"No views found in database {database.name}."
-
     for view in views:
-        view_identifier = f"{database.name}.{view.name}"
+        view_identifier = f"{database_name}.{view.name}"
         try:
             if view_identifier not in expected_schemas:
                 raise ValueError(f"Expected schema for {view_identifier} not found.")
