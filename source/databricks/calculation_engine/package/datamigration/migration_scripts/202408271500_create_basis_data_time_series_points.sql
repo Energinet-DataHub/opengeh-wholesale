@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABAS
 (
     calculation_id STRING NOT NULL,
     calculation_type STRING NOT NULL,
-    calculation_version STRING NOT NULL,
+    calculation_version BIGINT NOT NULL,
     is_internal_calculation BOOLEAN NOT NULL,
     metering_point_id STRING NOT NULL,
     metering_point_type STRING NOT NULL,
