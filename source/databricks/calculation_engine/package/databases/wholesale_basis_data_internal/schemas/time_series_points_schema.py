@@ -18,8 +18,8 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
     StructType,
-    IntegerType,
     BooleanType,
+    LongType,
 )
 
 from package.databases.table_column_names import TableColumnNames
@@ -29,7 +29,7 @@ time_series_points_schema = StructType(
         StructField(TableColumnNames.calculation_id, StringType(), False),
         StructField(TableColumnNames.calculation_type, StringType(), False),
         StructField(
-            TableColumnNames.calculation_version, IntegerType(), False
+            TableColumnNames.calculation_version, LongType(), False
         ),  # TODO JVM: long or int?
         StructField(
             TableColumnNames.is_internal_calculation, BooleanType(), False
