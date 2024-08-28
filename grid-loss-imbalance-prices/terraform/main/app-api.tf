@@ -15,7 +15,7 @@ module "app_api" {
   dotnet_framework_version               = "v8.0"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_settings                           = local.default_api_app_settings
+  app_settings                           = local.app_api.app_settings
 
   monitor_action_group = length(module.monitor_action_group_gridloss) != 1 ? null : {
     id                  = module.monitor_action_group_gridloss[0].id
@@ -36,15 +36,4 @@ module "kvs_app_grid_loss_imbalance_prices_api_base_url" {
   name         = "app-grid-loss-imbalance-prices-api-base-url"
   value        = "https://${module.app_api.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-locals {
-  default_api_app_settings = {
-    "UserAuthentication:MitIdExternalMetadataAddress" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
-    "UserAuthentication:ExternalMetadataAddress"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
-    "UserAuthentication:InternalMetadataAddress"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=api-backend-open-id-url)"
-    "UserAuthentication:BackendBffAppId"              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
-    "DatabaseSettings:ConnectionString"               = local.MS_GRID_LOSS_IMBALANCE_PRICES_CONNECTION_STRING
-    "RevisionLogOptions:ApiAddress"                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
-  }
 }
