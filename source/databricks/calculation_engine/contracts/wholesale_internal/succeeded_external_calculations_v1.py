@@ -2,7 +2,7 @@ import pyspark.sql.types as t
 
 nullable = True
 
-calculations_v1 = t.StructType(
+succeeded_external_calculations_v1 = t.StructType(
     [
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
@@ -19,8 +19,5 @@ calculations_v1 = t.StructType(
         #
         # Number series per calculation type. Starts from number 1.
         t.StructField("calculation_version", t.LongType(), False),
-        #
-        # Boolean flag to indicate if the calculation is a control calculation
-        t.StructField("is_internal_calculation", t.BooleanType(), True),
     ]
 )
