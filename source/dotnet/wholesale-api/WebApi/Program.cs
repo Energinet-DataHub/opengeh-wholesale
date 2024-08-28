@@ -87,6 +87,7 @@ app.MapControllers().RequireAuthorization();
 // Health check
 app.MapLiveHealthChecks();
 app.MapReadyHealthChecks();
+app.MapStatusHealthChecks();
 
 app.Run();
 
