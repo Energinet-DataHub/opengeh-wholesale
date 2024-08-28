@@ -44,3 +44,13 @@ time_series_points_schema = StructType(
         StructField(TableColumnNames.quality, StringType(), False),
     ]
 )
+
+hive_time_series_points_schema = StructType(
+    [
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_id, StringType(), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(TableColumnNames.quality, StringType(), False),
+        StructField(TableColumnNames.observation_time, TimestampType(), False),
+    ]
+)
