@@ -38,6 +38,15 @@ time_series_points.csv and the desired result output files to create the scenari
 - Elements in lists are separated with “,” fx. ['measured', 'calculated']
 - Decimal number are with 3 decimals in the results
 
+### The readme.md file
+
+**All test scenarios must have a readme.md file**. Easiest is to copy and modify an existing readme-file from another
+scenario.
+existing scenario.
+
+Under the "Coverage" heading, list the testcases covered by the scenario as bullet items. These will be scanned as part
+of coverage overview.
+
 ### Local test config settings
 
 Make a copy of [test.local.settings.sample.yml](..%2Ftest.local.settings.sample.yml) and remove ".sample" from the file
