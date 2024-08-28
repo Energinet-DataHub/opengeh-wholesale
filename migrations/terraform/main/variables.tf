@@ -84,6 +84,12 @@ variable "feature_flag_datahub2_healthcheck" {
   default     = false
 }
 
+variable "feature_flag_new_ts_orchestration" {
+  type        = bool
+  description = "(Optional) Enables the new time series orchestration"
+  default     = false
+}
+
 variable "cert_pwd_migration_dh2_authentication_key1" {
   type        = string
   description = "Password for the certificate"
@@ -191,4 +197,16 @@ variable "function_app_sku_name" {
   type        = string
   description = "The SKU name of the function app."
   default     = "EP1"
+}
+
+variable "time_series_processor_pre_warmed_instance_count" {
+  type        = number
+  description = "The number of pre-warmed instances for the timeseries retriever function app."
+  default     = 1
+}
+
+variable "time_series_processor_elastic_instance_minimum" {
+  type        = number
+  description = "The minimum number of elastic instances for the timeseries retriever function app."
+  default     = 1
 }
