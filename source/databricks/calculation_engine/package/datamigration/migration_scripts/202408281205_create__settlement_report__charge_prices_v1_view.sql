@@ -21,6 +21,5 @@ INNER JOIN (
   SELECT distinct mp.calculation_id, charge_key, energy_supplier_id, grid_area_code FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.charge_link_periods AS cl
   INNER JOIN {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods AS mp ON mp.calculation_id = cl.calculation_id AND mp.metering_point_id = cl.metering_point_id
 ) AS es_ga ON cm.calculation_id = es_ga.calculation_id AND cm.charge_key = es_ga.charge_key
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_RESULTS_DATABASE_NAME}.calculations_v1 AS c ON c.calculation_id = cm.calculation_id
-WHERE c.is_internal_calculation = FALSE
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = cm.calculation_id
 GROUP BY c.calculation_id, cm.charge_key, es_ga.grid_area_code, es_ga.energy_supplier_id, DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen'))
