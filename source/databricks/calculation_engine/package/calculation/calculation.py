@@ -11,210 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import inject
-
-from package.calculation.energy.calculated_grid_loss import (
-    add_calculated_grid_loss_to_metering_point_times_series,
-)
-from package.calculation.preparation.transformations.grid_loss_metering_points import (
-    get_grid_loss_metering_points,
-)
-from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
-    get_metering_points_periods_for_wholesale_basis_data,
-    get_metering_point_periods_for_energy_basis_data,
-    get_metering_point_periods_for_wholesale_calculation,
-)
-from package.databases.wholesale_basis_data_internal import basis_data_factory
-from package.databases.wholesale_basis_data_internal.basis_data_results import (
-    write_basis_data,
-)
-from package.databases.wholesale_results_internal import (
-    write_monthly_amounts_per_charge,
-    write_total_monthly_amounts,
-    write_wholesale_results,
-    write_energy_results,
-)
-from package.databases.wholesale_internal.calculations_storage_model_factory import (
-    create_calculation,
-)
-from package.infrastructure import logging_configuration
-from .calculation_output import (
-    CalculationOutput,
-)
+from .calculation_core import CalculationCore
+from .calculation_metadata_service import CalculationMetadataService
+from .calculation_output_service import CalculationOutputService
 from .calculator_args import CalculatorArgs
-from .energy import energy_calculation
 from .preparation import PreparedDataReader
-from .wholesale import wholesale_calculation
-from ..codelists.calculation_type import is_wholesale_calculation_type
-from ..constants import Colname
-from package.databases.wholesale_internal.calculation_writer import (
-    write_calculation_succeeded_time,
-    write_calculation,
-    write_calculation_grid_areas,
-)
-from package.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
-    create_calculation_grid_areas,
-)
 
 
-@logging_configuration.use_span("calculation")
-def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    calculation_version = _write_calculation_metadata(args, prepared_data_reader)
+def execute(
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
+    calculation_core: CalculationCore,
+    calculation_metadata_service: CalculationMetadataService,
+    calculation_output_service: CalculationOutputService,
+) -> None:
+    calculation_metadata_service.write(args, prepared_data_reader)
 
-    results = _execute(args, prepared_data_reader, calculation_version)
+    output = calculation_core.execute(args, prepared_data_reader)
 
-    _write_calculation_output(results)
+    calculation_output_service.write(output)
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation_succeeded_time(args.calculation_id)
-
-
-@inject
-def _execute(
-    args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
-    calculation_version: int,
-) -> CalculationOutput:
-    calculation_output = CalculationOutput()
-
-    with logging_configuration.start_span("calculation.prepare"):
-        # cache of metering_point_time_series had no effect on performance (01-12-2023)
-        all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
-            args.calculation_period_start_datetime,
-            args.calculation_period_end_datetime,
-            args.calculation_grid_areas,
-        )
-
-        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-            args.calculation_grid_areas, all_metering_point_periods
-        )
-
-        metering_point_periods_df_without_grid_loss = (
-            prepared_data_reader.get_metering_point_periods_without_grid_loss(
-                all_metering_point_periods
-            )
-        )
-
-        grid_loss_metering_points_df = get_grid_loss_metering_points(
-            grid_loss_responsible_df
-        )
-
-        metering_point_time_series = (
-            prepared_data_reader.get_metering_point_time_series(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-                metering_point_periods_df_without_grid_loss,
-            )
-        )
-        metering_point_time_series.cache_internal()
-
-    (
-        calculation_output.energy_results_output,
-        positive_grid_loss,
-        negative_grid_loss,
-    ) = energy_calculation.execute(
-        args,
-        metering_point_time_series,
-        grid_loss_responsible_df,
-    )
-
-    # This extends the content of metering_point_time_series with calculated grid loss,
-    # which is used in the wholesale calculation and the basis data
-    metering_point_time_series = (
-        add_calculated_grid_loss_to_metering_point_times_series(
-            args,
-            metering_point_time_series,
-            positive_grid_loss,
-            negative_grid_loss,
-        )
-    )
-
-    if is_wholesale_calculation_type(args.calculation_type):
-        with logging_configuration.start_span("calculation.wholesale.prepare"):
-
-            # Extract metering point ids from all metering point periods in
-            # the grid areas specified in the calculation arguments.
-            metering_point_period_ids = all_metering_point_periods.select(
-                Colname.metering_point_id
-            ).distinct()
-
-            input_charges = prepared_data_reader.get_input_charges(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-                metering_point_period_ids,
-            )
-
-            metering_point_periods_for_basis_data = (
-                get_metering_points_periods_for_wholesale_basis_data(
-                    all_metering_point_periods
-                )
-            )
-
-            metering_point_periods_for_wholesale_calculation = (
-                get_metering_point_periods_for_wholesale_calculation(
-                    metering_point_periods_for_basis_data
-                )
-            )
-
-            prepared_charges = prepared_data_reader.get_prepared_charges(
-                metering_point_periods_for_wholesale_calculation,
-                metering_point_time_series,
-                input_charges,
-                args.time_zone,
-            )
-
-        calculation_output.wholesale_results_output = wholesale_calculation.execute(
-            args,
-            prepared_charges,
-        )
-    else:
-        metering_point_periods_for_basis_data = (
-            get_metering_point_periods_for_energy_basis_data(all_metering_point_periods)
-        )
-
-        input_charges = None
-
-    # Add basis data to results
-    calculation_output.basis_data_output = basis_data_factory.create(
-        args,
-        metering_point_periods_for_basis_data,
-        metering_point_time_series,
-        input_charges,
-        grid_loss_metering_points_df,
-        calculation_version,
-    )
-
-    return calculation_output
-
-
-def _write_calculation_metadata(
-    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
-) -> int:
-    latest_version = prepared_data_reader.get_latest_calculation_version(
-        args.calculation_type
-    )
-    # Next version begins with 1 and increments by 1
-    next_version = (latest_version or 0) + 1
-
-    calculation = create_calculation(args, next_version)
-    write_calculation(calculation)
-
-    calculation_grid_areas = create_calculation_grid_areas(args)
-    write_calculation_grid_areas(calculation_grid_areas)
-
-    return next_version
-
-
-@logging_configuration.use_span("calculation.write")
-def _write_calculation_output(
-    calculation_output: CalculationOutput,
-) -> None:
-    write_energy_results(calculation_output.energy_results_output)
-    if calculation_output.wholesale_results_output is not None:
-        write_wholesale_results(calculation_output.wholesale_results_output)
-        write_monthly_amounts_per_charge(calculation_output.wholesale_results_output)
-        write_total_monthly_amounts(calculation_output.wholesale_results_output)
-
-    # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
-    write_basis_data(calculation_output.basis_data_output)
+    calculation_metadata_service.write_calculation_succeeded_time(args.calculation_id)

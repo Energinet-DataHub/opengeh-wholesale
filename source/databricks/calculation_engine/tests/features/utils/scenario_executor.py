@@ -45,9 +45,9 @@ class ScenarioExecutor:
         self._setup(scenario_folder_path)
 
         from package.calculation import PreparedDataReader
-        from package.calculation.calculation import _execute
+        from package.calculation.calculation_core import CalculationCore
 
-        actual = _execute(
+        actual = CalculationCore().execute(
             self.test_calculation_args,
             PreparedDataReader(
                 self.migrations_wholesale_repository, self.wholesale_internal_repository
