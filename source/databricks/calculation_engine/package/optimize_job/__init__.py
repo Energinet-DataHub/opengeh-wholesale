@@ -11,19 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from pyspark.sql import DataFrame
-
-from package.calculation.calculation_output import InternalDataOutput
-from package.infrastructure import logging_configuration
-
-
-@logging_configuration.use_span("calculation.internal.prepare")
-def create(
-    calculations: DataFrame, calculation_grid_areas: DataFrame
-) -> InternalDataOutput:
-
-    return InternalDataOutput(
-        calculations=calculations,
-        calculation_grid_areas=calculation_grid_areas,
-    )

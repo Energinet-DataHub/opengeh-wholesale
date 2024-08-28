@@ -24,22 +24,17 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
-from package.databases.wholesale_basis_data_internal import (
-    basis_data_factory,
-    internal_data_factory,
-)
+from package.databases.wholesale_basis_data_internal import basis_data_factory
 from package.databases.wholesale_basis_data_internal.basis_data_results import (
     write_basis_data,
 )
 from package.databases.wholesale_results_internal import (
-    write_calculation,
     write_monthly_amounts_per_charge,
     write_total_monthly_amounts,
     write_wholesale_results,
     write_energy_results,
-    write_calculation_grid_areas,
 )
-from package.databases.wholesale_results_internal.calculations_storage_model_factory import (
+from package.databases.wholesale_internal.calculations_storage_model_factory import (
     create_calculation,
 )
 from package.infrastructure import logging_configuration
@@ -52,15 +47,27 @@ from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
 from ..constants import Colname
-from ..databases.wholesale_results_internal.calculations_grid_areas_storage_model_factory import (
+from package.databases.wholesale_internal.calculation_writer import (
+    write_calculation_succeeded_time,
+    write_calculation,
+    write_calculation_grid_areas,
+)
+from package.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
 
 
 @logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    _write_calculation_metadata(args, prepared_data_reader)
+
     results = _execute(args, prepared_data_reader)
-    _write_output(results)
+
+    _write_calculation_output(results)
+
+    # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
+    # is only marked as succeeded when all results are written
+    write_calculation_succeeded_time(args.calculation_id)
 
 
 @inject
@@ -71,9 +78,6 @@ def _execute(
     calculation_output = CalculationOutput()
 
     with logging_configuration.start_span("calculation.prepare"):
-        calculations = create_calculation(args, prepared_data_reader)
-        calculation_grid_areas = create_calculation_grid_areas(args)
-
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
             args.calculation_period_start_datetime,
@@ -179,16 +183,21 @@ def _execute(
         grid_loss_metering_points_df,
     )
 
-    calculation_output.internal_data_output = internal_data_factory.create(
-        calculations,
-        calculation_grid_areas,
-    )
-
     return calculation_output
 
 
+def _write_calculation_metadata(
+    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
+) -> None:
+    calculations = create_calculation(args, prepared_data_reader)
+    write_calculation(calculations)
+
+    calculation_grid_areas = create_calculation_grid_areas(args)
+    write_calculation_grid_areas(calculation_grid_areas)
+
+
 @logging_configuration.use_span("calculation.write")
-def _write_output(
+def _write_calculation_output(
     calculation_output: CalculationOutput,
 ) -> None:
     write_energy_results(calculation_output.energy_results_output)
@@ -199,12 +208,3 @@ def _write_output(
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(calculation_output.basis_data_output)
-
-    # Write calculation grid areas to table Wholesale internal table calculation_grid_areas.
-    write_calculation_grid_areas(
-        calculation_output.internal_data_output.calculation_grid_areas
-    )
-
-    # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
-    # is only marked as succeeded when all results are written
-    write_calculation(calculation_output.internal_data_output.calculations)

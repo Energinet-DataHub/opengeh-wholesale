@@ -33,6 +33,7 @@ public static class CalculationDtoMapper
             calculation.GridAreaCodes,
             CalculationTypeMapper.Map(calculation.CalculationType),
             calculation.CreatedByUserId,
-            calculation.CompletedTime);
+            calculation.CompletedTime,
+            calculation.IsInternalCalculation);
     }
 }
