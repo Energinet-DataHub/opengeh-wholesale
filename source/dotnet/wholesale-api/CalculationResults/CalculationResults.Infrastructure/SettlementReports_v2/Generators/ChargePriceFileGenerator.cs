@@ -24,6 +24,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 {
+    private const int ChunkSize = int.MaxValue; //1;
+
     private readonly ISettlementReportChargePriceRepository _dataSource;
 
     public ChargePriceFileGenerator(ISettlementReportChargePriceRepository dataSource)
@@ -33,9 +35,10 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
 
     public string FileExtension => ".csv";
 
-    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, long maximumCalculationVersion)
     {
-        return _dataSource.CountAsync(filter, actorInfo);
+        var count = await _dataSource.CountAsync(filter, actorInfo).ConfigureAwait(false);
+        return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, SettlementReportRequestedByActor actorInfo, SettlementReportPartialFileInfo fileInfo, long maximumCalculationVersion, StreamWriter destination)
@@ -55,7 +58,7 @@ public sealed class ChargePriceFileGenerator : ISettlementReportFileGenerator
                 await WriteHeaderAsync(csvHelper).ConfigureAwait(false);
             }
 
-            await foreach (var record in _dataSource.GetAsync(filter, actorInfo, fileInfo.ChunkOffset, int.MaxValue).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, actorInfo, fileInfo.ChunkOffset, ChunkSize).ConfigureAwait(false))
             {
                 await WriteRecordAsync(csvHelper, record).ConfigureAwait(false);
             }
