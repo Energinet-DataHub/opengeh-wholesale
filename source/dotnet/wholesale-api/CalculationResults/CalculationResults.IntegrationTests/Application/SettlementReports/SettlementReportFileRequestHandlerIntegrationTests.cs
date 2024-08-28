@@ -48,7 +48,12 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
-        var mockedLogging = new Mock<ILoggerFactory>();
+        var mockedLogging = new Mock<ILogger>();
+        mockedLogging.Setup(x => x.LogInformation(It.IsAny<string>()));
+
+        var mockedLoggerFactory = new Mock<ILoggerFactory>();
+        mockedLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(mockedLogging.Object);
+
         var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
         mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
         {
@@ -73,7 +78,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             new SettlementReportDatabricksContext(
             mockedOptions.Object,
             sqlWarehouseQueryExecutor),
-            mockedLogging.Object);
+            mockedLoggerFactory.Object);
 
         var settlementReportMonthlyAmountRepository = new SettlementReportMonthlyAmountRepository(new SettlementReportDatabricksContext(
             mockedOptions.Object,
@@ -96,7 +101,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             settlementReportMonthlyAmountRepository,
             settlementReportChargePriceRepository,
             settlementReportMonthlyAmountTotalRepository,
-            mockedLogging.Object));
+            mockedLoggerFactory.Object));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
