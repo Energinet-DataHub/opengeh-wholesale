@@ -25,7 +25,9 @@ public sealed class MonthlyAmountFileGenerator : CsvFileGeneratorBase<Settlement
     private readonly ISettlementReportMonthlyAmountRepository _dataSource;
 
     public MonthlyAmountFileGenerator(ISettlementReportMonthlyAmountRepository dataSource)
-        : base(250, quotedColumns: [2, 3, 11])
+        : base(
+            int.MaxValue, //250,
+            quotedColumns: [2, 3, 11])
     {
         _dataSource = dataSource;
     }

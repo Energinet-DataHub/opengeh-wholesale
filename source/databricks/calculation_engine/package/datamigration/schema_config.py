@@ -32,7 +32,11 @@ schema_config = [
                 schema=internal_schemas.calculation_grid_areas_schema,
             ),
         ],
-        views=[],
+        views=[
+            View(
+                name=paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
+            ),
+        ],
     ),
     Schema(
         name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
@@ -103,9 +107,6 @@ schema_config = [
         tables=[],
         views=[
             View(
-                name=paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME,
-            ),
-            View(
                 name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
             ),
             View(
@@ -155,6 +156,10 @@ schema_config = [
             ),
             View(
                 name=paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+            ),
+            View(
+                # ToDo JMG: Remove when settlement report subsystem uses monthly_amounts_per_charge_v1/total_monthly_amounts_v1
+                name=paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_V1_VIEW_NAME,
             ),
         ],
     ),
