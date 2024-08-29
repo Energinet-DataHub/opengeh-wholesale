@@ -13,8 +13,6 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql import functions as f
-from pyspark.sql.types import StringType
 
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from helpers.data_frame_utils import assert_dataframe_and_schema
@@ -31,12 +29,6 @@ def assert_output(
     actual_result = _get_expected_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
-    columns_to_skip = []
-    for column in expected_result.columns:
-        if isinstance(expected_result.schema[column].dataType, StringType):
-            if expected_result.filter(f.col(column) == "IGNORED").count() > 0:
-                columns_to_skip.append(column)
-
     assert_dataframe_and_schema(
         actual_result,
         expected_result,
@@ -44,7 +36,6 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
-        columns_to_skip=columns_to_skip,
     )
 
 
