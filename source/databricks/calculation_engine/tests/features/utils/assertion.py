@@ -16,6 +16,7 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StringType
+from pyspark.sql import functions as f
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput
