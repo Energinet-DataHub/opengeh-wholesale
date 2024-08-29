@@ -1,4 +1,4 @@
-# When period is two days with MP period ending
+# Given period is two days with MP period ending
 
 The purpose is to test that we can handle a metering point being discontinued.
 
@@ -9,11 +9,4 @@ The purpose is to test that we can handle a metering point being discontinued.
 
 ## Coverage
 
-Metering point types:
-
-- Exchange (energy in)
-- Flex consumption
-- Nonprofiled consumption
-- Production
-- Flex consumption - grid loss
-- Production - system correction
+- MP is shut down in calculation period

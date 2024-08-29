@@ -1,4 +1,4 @@
-# When only Exchange, GLMP and SKMP in GA
+# Given only Exchange, GLMP and SKMP in GA
 
 The purpose of this test is to check the edge case where a grid area only has GLMP, SKMP and an exchange metering point.
 I.e. no consumption or production metering points.
@@ -13,6 +13,8 @@ I.e. no consumption or production metering points.
 
 ## Coverage
 
-- E20 (energy in - 1H)
-- E17 (glmp - 15M)
-- E18 (skmp - 15M)
+- Grid area with only Exchange MP (just one direction)
+- Grid area with only Exchange MP and Grid Loss MP and System Correction MP
+- Grid with E20 in neighbour grid area and Grid Loss MP and System Correction MP
+- Energy Supplier only has Grid Loss MP or System Correction MP
+- Exchange MP where exchange is between two other grid areas than the one it is in
