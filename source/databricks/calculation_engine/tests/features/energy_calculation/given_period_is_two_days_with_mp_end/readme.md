@@ -8,4 +8,5 @@ The purpose is to test that we can handle a metering point being discontinued.
 - On day 2, a new exchange metering point is initiated
 
 ## Coverage
- - MP is shut down in calculation period
+
+- MP is shut down in calculation period

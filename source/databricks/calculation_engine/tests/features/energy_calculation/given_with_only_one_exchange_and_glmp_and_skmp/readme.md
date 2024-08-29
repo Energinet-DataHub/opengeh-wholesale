@@ -12,8 +12,9 @@ I.e. no consumption or production metering points.
 - Oracle Excel-sheet included (Oracle - only E20 and GLMP-SKMP.xlsx)
 
 ## Coverage
- - Grid area with only Exchange MP (just one direction)
- - Grid area with only Exchange MP and Grid Loss MP and System Correction MP
- - Grid with E20 in neighbour grid area and Grid Loss MP and System Correction MP
- - Energy Supplier only has Grid Loss MP or System Correction MP
- - Exchange MP where exchange is between two other grid areas than the one it is in
+
+- Grid area with only Exchange MP (just one direction)
+- Grid area with only Exchange MP and Grid Loss MP and System Correction MP
+- Grid with E20 in neighbour grid area and Grid Loss MP and System Correction MP
+- Energy Supplier only has Grid Loss MP or System Correction MP
+- Exchange MP where exchange is between two other grid areas than the one it is in

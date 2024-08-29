@@ -1,6 +1,6 @@
 # Given calculation period is before quarterly transition date
 
-The purpose is to test a calculation on a period before the transition to quarterly results. 
+The purpose is to test a calculation on a period before the transition to quarterly results.  
 
 ## Design considerations
  

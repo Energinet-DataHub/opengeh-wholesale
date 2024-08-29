@@ -152,7 +152,9 @@ The purpose is to test that the settlement reports data product view charge_link
     CPIP        |-------------------------------------|
     EXPECTED    |-----------------|-------------------|
 ```
+
 ## Coverage
+
 - Generate data for settlement report when there is a missing metering point period
 - Generate data for settlement report when there is missing charge link period
 - Generate data for settlement report when metering point period and charge link period overlap
