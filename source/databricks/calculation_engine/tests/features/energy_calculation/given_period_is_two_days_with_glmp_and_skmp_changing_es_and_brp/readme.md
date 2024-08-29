@@ -11,7 +11,8 @@ responsible.
 - Quantities are set so that both grid loss and system correction metering point have values both days
 
 ## Coverage
- - Energy Supplier change on Grid Loss MP
- - Energy Supplier change on System Correction MP
- - Balance Responsible change on Grid Loss MP
- - Balance Responsible change on System Correction MP
+
+- Energy Supplier change on Grid Loss MP
+- Energy Supplier change on System Correction MP
+- Balance Responsible change on Grid Loss MP
+- Balance Responsible change on System Correction MP

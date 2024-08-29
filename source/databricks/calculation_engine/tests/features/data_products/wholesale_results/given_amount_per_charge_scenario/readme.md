@@ -5,6 +5,3 @@
 ## Design considerations
 
 ## Coverage
-
-
-

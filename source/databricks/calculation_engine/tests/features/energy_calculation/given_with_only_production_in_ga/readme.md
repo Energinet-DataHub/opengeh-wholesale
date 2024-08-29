@@ -9,4 +9,5 @@ specifically that grid loss calculation is correct.
 - Input data is mostly minimal standard scenario, but without consumption metering points.
 
 ## Coverage
- - Grid area only has Production MPs, but no consumption MPs, except for Grid Loss MP
+
+- Grid area only has Production MPs, but no consumption MPs, except for Grid Loss MP
