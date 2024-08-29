@@ -12,10 +12,10 @@ alert_email_address                         = "d01b5c85.energinet.onmicrosoft.co
 developer_security_group_contributor_access = true
 developer_security_group_reader_access      = true
 databricks_readers_group = {
-  id   = "729028915538231"
-  name = "SEC-G-Datahub-DevelopersAzure"
+  id   = "629664400987703"
+  name = "SEC-A-Datahub-Dev-003-Reader"
 }
 databricks_contributor_dataplane_group = {
-  id   = "729028915538231"
-  name = "SEC-G-Datahub-DevelopersAzure"
+  id   = "1105450622987696"
+  name = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
 }
