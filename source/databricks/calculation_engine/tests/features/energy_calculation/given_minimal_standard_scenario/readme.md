@@ -18,4 +18,5 @@ time period (one hour).
     - Example - flex metering point with resolution 15M: '**17**000000**15**00000**2**01'
 
 ## Coverage
+
  - Standard scenario for energy results

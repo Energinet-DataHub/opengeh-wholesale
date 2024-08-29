@@ -5,7 +5,7 @@ csv-files as input and checks against an expected outcome - also in csv-files fo
 span is from actual calculation execution to the resulting output. If basis-data expected results are present in the
 output folder, these are also checked.
 
-### How to add a calculation logic test.
+## How to add a calculation logic test.
 
 1. Generate the readme file (md). Remember to format the file correct as the CI check is strict.
 2. Generate the various data input files (csv)
@@ -30,7 +30,7 @@ A useful starting point for creating an energy logic test is the test when_minim
 result files and result basis data. Make a copy of this folder and modify metering_point_periods.csv,
 time_series_points.csv and the desired result output files to create the scenario you wish to check.
 
-### Formatting Rules
+## Formatting Rules
 
 - Columns are separated with “;”. This applies also for headers.
 - The data format is åååå-mm-dd hh:mm:ss fx. 2020-12-03 13:00:00.
@@ -38,7 +38,7 @@ time_series_points.csv and the desired result output files to create the scenari
 - Elements in lists are separated with “,” fx. ['measured', 'calculated']
 - Decimal number are with 3 decimals in the results
 
-### The readme.md file
+## The readme.md file
 
 **All test scenarios must have a readme.md file**. Easiest is to copy and modify an existing readme-file from another
 scenario.
@@ -47,13 +47,13 @@ existing scenario.
 Under the "Coverage" heading, list the testcases covered by the scenario as bullet items. These will be scanned as part
 of coverage overview.
 
-### Local test config settings
+## Local test config settings
 
 Make a copy of [test.local.settings.sample.yml](..%2Ftest.local.settings.sample.yml) and remove ".sample" from the file
 name. This is your local config settings where you set various settings that affect the log output. See file for
 descriptions.
 
-### Oracle Excel-sheet
+## Oracle Excel-sheet
 
 - In the standard scenario for both energy and wholesale tests there is an Excel-sheet which was used to generate
   expected results. Example in
@@ -71,7 +71,7 @@ descriptions.
 - Use with caution. If there is a mismatch between sheet and actual results, the problem is most likely that the data in
   the sheet and in metering_point_periods.csv and time_series_points.csv do not match completely.
 
-### Additional notes
+## Additional notes
 
 - The rows in expected result files do not have to be listed in exactly the same order as the actual result generated.
   This is both a curse and a blessing. The latter because it makes the framework a bit more forgiving about results

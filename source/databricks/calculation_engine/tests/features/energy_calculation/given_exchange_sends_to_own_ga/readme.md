@@ -12,4 +12,5 @@ The purpose is to test a scenario where there are exchange MPs where from and to
 - Expected behaviour is that the measurements from the former are included in the calculation, but not from the latter.
 
 ## Coverage
+
  - Exchange MP where from and to is the same grid area

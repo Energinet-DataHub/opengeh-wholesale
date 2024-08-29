@@ -13,7 +13,7 @@ results.
     - Example - flex metering point with resolution 15M: '**17**000000**15**00000**2**01'
 
 ## Coverage
- - Change of balance responsible on an MP
- - Change of energy supplier on an MP
- - Change of resolution on an MP
 
+- Change of balance responsible on an MP
+- Change of energy supplier on an MP
+- Change of resolution on an MP
