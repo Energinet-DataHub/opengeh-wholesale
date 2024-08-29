@@ -19,4 +19,4 @@ time period (one hour).
 
 ## Coverage
 
- - Standard scenario for energy results
+- Standard scenario for energy results
