@@ -162,7 +162,7 @@ The purpose is to test that the settlement reports data product view charge_link
 - Generate data for settlement report when metering point period is a subset of charge link period
 - Generate data for settlement report when charge link period is a subset of the metering point period
 - Generate data for settlement report when two metering point periods due to a change of energy supplier results
-- Generate data for settlement report when charge link periods have a gap 
+- Generate data for settlement report when charge link periods have a gap
 - Generate data for settlement report when metering point periods are overlapping a charge link period
 - Generate data for settlement report when two charge link periods
 - Generate data for settlement report when there is charge link period between metering point periods

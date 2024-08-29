@@ -12,5 +12,6 @@ The purpose is to test that an consumption metering point changes settlement met
   negative grid loss.
 
 ## Coverage
- - Change of settlement method on an MP
- - Change of resolution on an MP
+
+- Change of settlement method on an MP
+- Change of resolution on an MP

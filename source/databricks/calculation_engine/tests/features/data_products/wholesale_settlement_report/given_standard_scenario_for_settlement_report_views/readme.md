@@ -17,5 +17,6 @@ Two small corner cases are included:
   to test that the view does not include this row.
 
 ## Coverage
+
 - Generate data for settlement report when input data is from minimal standard wholesale scenario
 - Generate data for settlement report that only includes rows with correct calculation_id

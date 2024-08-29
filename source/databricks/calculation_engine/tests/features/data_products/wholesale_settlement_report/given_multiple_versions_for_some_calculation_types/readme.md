@@ -2,7 +2,7 @@
 
 ## Design considerations
 
-Input data has a combination of different calculation types and calculation versions. 
+Input data has a combination of different calculation types and calculation versions.
 
 ## Coverage
 
