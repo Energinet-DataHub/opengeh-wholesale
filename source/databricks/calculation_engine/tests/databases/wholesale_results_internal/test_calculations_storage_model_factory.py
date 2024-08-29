@@ -37,7 +37,7 @@ def test__when_valid_input__creates_calculation_with_expected_schema(
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=0,
     ):
-        actual = create_calculation(any_calculator_args, prepared_data_reader)
+        actual = create_calculation(any_calculator_args, next_version=1)
         assert actual.schema == calculations_schema
 
 
@@ -64,7 +64,7 @@ def test__when_valid_input__creates_expected_calculation(
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=latest_version,
     ):
-        actual = create_calculation(any_calculator_args, prepared_data_reader)
+        actual = create_calculation(any_calculator_args, next_version=next_version)
         assert actual.collect()[0] == Row(**expected)
 
 
@@ -78,7 +78,7 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=latest_version,
     ):
-        actual = create_calculation(any_calculator_args, prepared_data_reader)
+        actual = create_calculation(any_calculator_args, next_version=1)
         assert actual.collect()[0].calculation_version == 1
 
 
@@ -91,5 +91,5 @@ def test__when_calculation_exists__creates_new_calculation_with_latest_version_p
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=7,
     ):
-        actual = create_calculation(any_calculator_args, prepared_data_reader)
+        actual = create_calculation(any_calculator_args, next_version=8)
         assert actual.collect()[0].calculation_version == 8

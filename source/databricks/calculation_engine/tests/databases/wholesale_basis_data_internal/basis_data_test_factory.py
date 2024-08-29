@@ -71,6 +71,7 @@ class DefaultValues:
     CALCULATION_EXECUTION_TIME_START = datetime(2018, 1, 5, 23, 0, 0)
     QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(2018, 1, 5, 23, 0, 0)
     CREATED_BY_USER_ID = "bar"
+    CALCULATION_VERSION = 1
 
 
 def create_charge_price_information_row(
@@ -257,4 +258,5 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
         grid_loss_metering_points_df=grid_loss_metering_points,
+        calculation_version=DefaultValues.CALCULATION_VERSION,
     )

@@ -28,4 +28,7 @@ from .metering_point_periods_schema import (
     hive_metering_point_period_schema,
     metering_point_periods_schema_uc,
 )
-from .time_series_points_schema import time_series_points_schema
+from .time_series_points_schema import (
+    time_series_points_schema,
+    hive_time_series_points_schema,
+)

@@ -43,6 +43,7 @@ class CalculationCore:
     def execute(
         args: CalculatorArgs,
         prepared_data_reader: PreparedDataReader,
+        next_version: int,
     ) -> CalculationOutput:
         calculation_output = CalculationOutput()
 
@@ -154,6 +155,7 @@ class CalculationCore:
             metering_point_time_series,
             input_charges,
             grid_loss_metering_points_df,
+            next_version,
         )
 
         return calculation_output

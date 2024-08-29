@@ -18,11 +18,34 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
     StructType,
+    BooleanType,
+    LongType,
 )
 
 from package.databases.table_column_names import TableColumnNames
 
 time_series_points_schema = StructType(
+    [
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.calculation_type, StringType(), False),
+        StructField(
+            TableColumnNames.calculation_version, LongType(), False
+        ),  # TODO JVM: long or int?
+        StructField(
+            TableColumnNames.is_internal_calculation, BooleanType(), False
+        ),  # TODO JVM: nullable or not?
+        StructField(TableColumnNames.metering_point_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_type, StringType(), False),
+        StructField(TableColumnNames.resolution, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), True),
+        StructField(TableColumnNames.observation_time, TimestampType(), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(TableColumnNames.quality, StringType(), False),
+    ]
+)
+
+hive_time_series_points_schema = StructType(
     [
         StructField(TableColumnNames.calculation_id, StringType(), False),
         StructField(TableColumnNames.metering_point_id, StringType(), False),

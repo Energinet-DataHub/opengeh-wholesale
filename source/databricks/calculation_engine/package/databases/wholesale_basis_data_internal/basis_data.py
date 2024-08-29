@@ -13,7 +13,7 @@
 # limitations under the License.
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import DecimalType
+from pyspark.sql.types import DecimalType, LongType
 
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
@@ -22,6 +22,7 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
+from package.codelists import CalculationType
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
@@ -56,16 +57,28 @@ def get_metering_point_periods_basis_data(
 @logging_configuration.use_span("get_time_series_points_basis_data")
 def get_time_series_points_basis_data(
     calculation_id: str,
+    calculation_type: CalculationType,
+    is_internal_calculation: bool,
+    calculation_version: int,
     metering_point_time_series: PreparedMeteringPointTimeSeries,
 ) -> DataFrame:
     return metering_point_time_series.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
+        f.lit(calculation_type.value).alias(TableColumnNames.calculation_type),
+        f.lit(calculation_version)
+        .alias(TableColumnNames.calculation_version)
+        .cast(LongType()),
+        f.lit(is_internal_calculation).alias(TableColumnNames.is_internal_calculation),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
+        f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),
+        f.col(Colname.resolution).alias(TableColumnNames.resolution),
+        f.col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
+        f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
+        f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
         f.col(Colname.quantity)
         .alias(TableColumnNames.quantity)
         .cast(DecimalType(18, 3)),
         f.col(Colname.quality).alias(TableColumnNames.quality),
-        f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
     )
 
 
