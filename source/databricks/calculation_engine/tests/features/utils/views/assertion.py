@@ -44,6 +44,7 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
+        columns_to_skip=columns_to_skip,
     )
 
 
