@@ -1,15 +1,8 @@
-# When Minimal Standard Scenario for wholesale calculations
+# Given Minimal Standard Scenario for wholesale calculations
 
 The purpose of this test is to check a minimal, but representative sample of all wholesale calculation results.
 
-## Coverage
-
-- All types of wholesale calculations - fee, subscription, hourly and daily tariffs - are included.
-- A small set of energy time series is included in order to test tariffs.
-- Added two MP which are in another grid area and have the same energy supplier/balance responsible as Grid Loss/System
-  Correction MP in the grid area for the calculation.
-
-### Fees
+## Fees
 
 - Charge Masterdata
     - 3 fees, start date before calculation period, no end date.
@@ -25,7 +18,7 @@ The purpose of this test is to check a minimal, but representative sample of all
     - A fee charge link in calculation period, but no charge price for that period (price and amount = null).
     - A fee charge outside calculation period (no rows in results).
 
-### Subscriptions
+## Subscriptions
 
 - Charge Masterdata
     - 3 subscriptions, start date before calculation period, no end date.
@@ -40,7 +33,7 @@ The purpose of this test is to check a minimal, but representative sample of all
     - Calculation period is covered by all subscription charge price periods.
     - Includes a price point to check correct rounding.
 
-### Hourly Tariffs
+## Hourly Tariffs
 
 - Charge Masterdata
     - 4 tariffs, 1 of which has charge owner System Operator and is_tax = true.
@@ -60,7 +53,7 @@ The purpose of this test is to check a minimal, but representative sample of all
 - Charge Price
     - The charge price times match up with the energy time series (02.00 on the first day of the calculation period).
 
-### Daily Tariffs
+## Daily Tariffs
 
 - Charge Masterdata
     - 4 tariffs, 2 of which has charge owner System Operator, 1 of these is_tax = true and 1 of these is_tax = false.
@@ -72,3 +65,7 @@ The purpose of this test is to check a minimal, but representative sample of all
     - System Correction MP has a tariff.
     - A tariff that ends before end of calculation period.
     - A tariff that starts before end of calculation period, but not at beginning.
+
+## Coverage
+
+- Standard scenario for a wholesale calculation

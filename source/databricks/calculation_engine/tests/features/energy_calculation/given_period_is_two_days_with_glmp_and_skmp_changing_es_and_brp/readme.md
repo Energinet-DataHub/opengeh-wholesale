@@ -1,4 +1,4 @@
-# When period is two days with GLMP and SKMP changing ES
+# Given period is two days with GLMP and SKMP changing ES
 
 The purpose is to test that grid loss and system correction metering points can change energy supplier and balance
 responsible.
@@ -12,11 +12,7 @@ responsible.
 
 ## Coverage
 
-Metering point types:
-
-- Exchange (energy in)
-- Flex consumption
-- Nonprofiled consumption
-- Production
-- Flex consumption - grid loss
-- Production - system correction
+- Energy Supplier change on Grid Loss MP
+- Energy Supplier change on System Correction MP
+- Balance Responsible change on Grid Loss MP
+- Balance Responsible change on System Correction MP

@@ -1,4 +1,4 @@
-# When period is two days with ES and RES change
+# Given period is two days with ES and RES change
 
 The purpose is to test every resolution (from 1H to 15M), es and brp change for metering point types relevant for energy
 results.
@@ -14,9 +14,6 @@ results.
 
 ## Coverage
 
-- E20 (energy in)
-- E17 (flex)
-- E17 (nonprofiled)
-- E17 (glmp)
-- E18
-- E18 (skmp)
+- Change of balance responsible on an MP
+- Change of energy supplier on an MP
+- Change of resolution on an MP
