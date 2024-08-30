@@ -236,3 +236,9 @@ class PreparedDataReader:
         )
 
         return latest_version
+
+    def is_calculation_id_unique(self, calculation_id: str) -> bool:
+        calculation = self._wholesale_internal_repository.get_by_calculation_id(
+            calculation_id
+        )
+        return calculation is None

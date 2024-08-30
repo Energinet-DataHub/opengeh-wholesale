@@ -88,6 +88,12 @@ def start_with_deps(
             prepared_data_reader = create_prepared_data_reader(
                 infrastructure_settings, spark
             )
+
+            if prepared_data_reader.is_calculation_id_unique(args.calculation_id):
+                raise Exception(
+                    f"Calculation ID '{args.calculation_id}' is already used."
+                )
+
             calculation_executor(
                 args,
                 prepared_data_reader,
