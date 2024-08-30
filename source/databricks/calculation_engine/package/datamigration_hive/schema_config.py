@@ -78,7 +78,7 @@ schema_config = [
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.time_series_points_schema,
+                schema=basis_data_schemas.hive_time_series_points_schema,
             ),
             Table(
                 name=paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
