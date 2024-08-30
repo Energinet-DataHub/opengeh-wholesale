@@ -45,6 +45,14 @@ module "apima_b2b" {
             </validate-jwt>
             <base />
             <choose>
+                <when condition="@(${var.apim_maintenance_mode})">
+                  <return-response>
+                    <set-status code="503" reason="Service Unavailable"/>
+                    <set-body>DataHub is in maintenance mode.</set-body>
+                  </return-response>
+                </when>
+            </choose>
+            <choose>
                 <when condition="@(context.Request.Method == "POST")">
                     <check-header name="Content-Type" failed-check-httpcode="415" failed-check-error-message="Content-Type must be either application/xml or application/json" ignore-case="true">
                       <value>application/xml</value>

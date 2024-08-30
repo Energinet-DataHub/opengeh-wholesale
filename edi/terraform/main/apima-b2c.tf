@@ -36,6 +36,14 @@ module "apima_b2c" {
                 }</message>
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
+            <choose>
+                <when condition="@(${var.apim_maintenance_mode})">
+                  <return-response>
+                    <set-status code="503" reason="Service Unavailable"/>
+                    <set-body>DataHub is in maintenance mode.</set-body>
+                  </return-response>
+                </when>
+            </choose>
             <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
                 <openid-config url="${data.azurerm_key_vault_secret.api_backend_open_id_url.value}" />
                 <required-claims>
