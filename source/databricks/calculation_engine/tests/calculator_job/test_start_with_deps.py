@@ -78,6 +78,17 @@ def test_(
         )
     ]
 
+    table_name = f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+
+    # Read the existing table
+    df = spark.read.format("delta").table(table_name)
+
+    # Filter out the rows with the specified calculation ID
+    filtered_df = df.filter(df.calculation_id != calculation_id)
+
+    # Overwrite the table with the filtered DataFrame
+    filtered_df.write.format("delta").mode("overwrite").saveAsTable(table_name)
+
     calculations_df = spark.createDataFrame(data, calculations_schema)
     write_calculation(calculations_df, infrastructure_settings)
 
