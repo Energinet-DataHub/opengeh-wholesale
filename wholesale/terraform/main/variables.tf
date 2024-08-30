@@ -152,9 +152,3 @@ variable "datahub_bi_endpoint_enabled" {
   description = "Flag to determine if the SQL warehouse for Datahub BI should be created"
   default     = false
 }
-
-variable "alert_email_address_edi" {
-  type        = string
-  description = "(Optional) The email address to which alerts are sent."
-  default     = null
-}

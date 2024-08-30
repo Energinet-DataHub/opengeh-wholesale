@@ -22,15 +22,15 @@ module "monitor_action_group_edi" {
   query_alerts_list = [
     {
       name        = "exception-trigger"
-      description = "Alert when a exception occurs"
+      description = "Alert when an exception occurs"
       query       = <<-QUERY
                       exceptions
-                      | where timestamp > ago(10m)
-                          and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
-                          or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
-                          and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
-                          // avoid triggering alert when exception is logged as a warring
-                          and severityLevel >= 2
+                        | where timestamp > ago(10m)
+                        | where customDimensions["Subsystem"] == "EDI"
+                        // avoid triggering alert when exception is logged as a warning or lower
+                        | where severityLevel >= 2
+                        // avoid triggering alert when exception is logged by health check
+                        | where customDimensions["EventName"] != "HealthCheckEnd"
                     QUERY
       severity    = 1
       frequency   = 5
