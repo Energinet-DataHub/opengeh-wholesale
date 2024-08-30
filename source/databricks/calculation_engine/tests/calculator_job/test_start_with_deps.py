@@ -14,6 +14,7 @@
 import argparse
 from datetime import datetime
 
+import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession, DataFrame
 
@@ -28,12 +29,21 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 from package.infrastructure.paths import WholesaleInternalDatabase
 
 
+@pytest.mark.parametrize(
+    "calculation_id,test_successful",
+    [
+        ("0b15a420-9fc8-409a-a169-fbd49479d718", False),
+        ("0b15a420-9fc8-409a-a169-fbd49479d719", True),
+    ],
+)
 def test_(
     calculator_args_balance_fixing: CalculatorArgs,
     calculation_input_database: str,
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
+    calculation_id: str,
+    test_successful: bool,
 ) -> None:
 
     # Arrange
@@ -51,8 +61,8 @@ def test_(
     )
 
     command_line_args = argparse.Namespace()
-    command_line_args.calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-    any_calculator_args.calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
+    command_line_args.calculation_id = calculation_id
+    any_calculator_args.calculation_id = command_line_args.calculation_id
 
     data = [
         Row(
@@ -86,7 +96,7 @@ def test_(
         )
     except SystemExit as e:
         # Assert
-        print(e)
+        assert e.code == 4 and not test_successful
 
 
 def write_calculation(
