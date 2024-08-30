@@ -33,8 +33,15 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
     # Exclude cookie from evaluation, as WAF sees it as SQL injection
     exclusion {
       match_variable = "RequestCookieNames"
-      selector       = "CookieInformationConsent"
       operator       = "Equals"
+      selector       = "CookieInformationConsent"
+    }
+
+    # Exclude GraphQL body payloads from evaluation, as WAF blocks false positives
+    exclusion {
+      match_variable = "RequestBodyJsonArgNames"
+      operator       = "StartsWith"
+      selector       = "variables."
     }
 
     override {
