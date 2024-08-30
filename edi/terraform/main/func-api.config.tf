@@ -19,6 +19,7 @@ locals {
       AuditLog__IngestionUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
 
       # FeatureManagement
+      FeatureManagement__UsePeekMessages = var.feature_management_use_peek_messages
 
       # Service Bus
       ServiceBus__ManageConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
