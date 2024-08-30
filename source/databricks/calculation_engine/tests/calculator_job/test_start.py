@@ -112,7 +112,7 @@ AppTraces
         - app role name = "dbr-calculation-engine"
         - name = "calculation.parse_job_arguments"
         - operation id has value
-        - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         """
 
@@ -134,7 +134,7 @@ AppDependencies
 | where AppRoleName == "dbr-calculation-engine"
 | where Name == "calculation.parse_job_arguments"
 | where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale"
+| where Properties.Subsystem == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | count
         """
@@ -163,7 +163,7 @@ AppDependencies
         - exception type = <exception type name>
         - outer message <exception message>
         - operation id has value
-        - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
         """
@@ -187,7 +187,7 @@ AppExceptions
 | where ExceptionType == "ValueError"
 | where OuterMessage == "Environment variable not found: TIME_ZONE"
 | where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale"
+| where Properties.Subsystem == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
 | count
