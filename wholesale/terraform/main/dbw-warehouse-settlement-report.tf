@@ -1,14 +1,15 @@
 # SQL warehouse to host Databricks SQL Statement Execution API
 resource "databricks_sql_endpoint" "settlement_report_sql_endpoint" {
-  provider         = databricks.dbw
-  name             = "Settlement Report SQL Endpoint"
-  cluster_size     = "Small"
-  max_num_clusters = 10
-  auto_stop_mins   = 120
-  warehouse_type   = "PRO"
-  # Enable preview as the statement API is currently in public preview
+  provider             = databricks.dbw
+  name                 = "Settlement Report SQL Endpoint"
+  cluster_size         = "Small"
+  min_num_clusters     = 1
+  max_num_clusters     = 10
+  auto_stop_mins       = 120
+  warehouse_type       = "PRO"
+  spot_instance_policy = "RELIABILITY_OPTIMIZED"
   channel {
-    name = "CHANNEL_NAME_PREVIEW"
+    name = "CHANNEL_NAME_CURRENT"
   }
 }
 

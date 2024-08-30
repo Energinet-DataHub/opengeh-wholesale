@@ -3,15 +3,15 @@
 #
 
 resource "databricks_sql_endpoint" "deployment_warehouse" {
-  provider         = databricks.dbw
-  name             = "Wholesale Deployment Warehouse"
-  cluster_size     = "Small"
-  max_num_clusters = 1
-  auto_stop_mins   = 120
-  warehouse_type   = "PRO"
-  # Enable preview as the statement API is currently in public preview
+  provider             = databricks.dbw
+  name                 = "Wholesale Deployment Warehouse"
+  cluster_size         = "Small"
+  max_num_clusters     = 1
+  auto_stop_mins       = 120
+  warehouse_type       = "PRO"
+  spot_instance_policy = "RELIABILITY_OPTIMIZED"
   channel {
-    name = "CHANNEL_NAME_PREVIEW"
+    name = "CHANNEL_NAME_CURRENT"
   }
 }
 
