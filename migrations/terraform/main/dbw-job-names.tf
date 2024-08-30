@@ -20,6 +20,9 @@ locals {
     "monitor_wholesale_metering_points",
     "monitor_wholesale_time_series",
     "Reprocess_Metering_Points_Bronze_Quarantine",
-    "Ready_For_Calculation_Balance_Fixing"
+    "Ready_For_Calculation_Balance_Fixing",
+    "Alert_Gold_Charge_Links_Changed",
+    "Alert_Gold_Metering_Points_Changed",
+    "Alert_Gold_Time_Series_Changed"
   ]
 }
