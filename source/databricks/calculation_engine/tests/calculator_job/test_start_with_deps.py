@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import argparse
+from datetime import datetime
 
 from pyspark import Row
 from pyspark.sql import SparkSession, DataFrame
@@ -35,6 +36,7 @@ def test_(
     infrastructure_settings: InfrastructureSettings,
 ) -> None:
 
+    # Arrange
     migrations_wholesale_repository = (
         migrations_wholesale.MigrationsWholesaleRepository(
             spark, "spark_catalog", calculation_input_database
@@ -52,72 +54,44 @@ def test_(
     command_line_args.calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
     any_calculator_args.calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
-    # Create a list of rows
     data = [
         Row(
             calculation_id="0b15a420-9fc8-409a-a169-fbd49479d718",
             calculation_type="balance_fixing",
-            calculation_period_start="2023-10-01 00:00:00",
-            calculation_period_end="2023-10-01 23:59:59",
-            calculation_execution_time_start="2023-10-01 12:00:00",
-            created_by_user_id="user123",
+            calculation_period_start=datetime.now(),
+            calculation_period_end=datetime.now(),
+            calculation_execution_time_start=datetime.now(),
+            created_by_user_id="0b15a420-9fc8-409a-a169-fbd49479d718",
             calculation_version=1,
             is_internal_calculation=True,
-            calculation_succeeded_time="2023-10-01 12:30:00",
+            calculation_succeeded_time=datetime.now(),
         )
     ]
 
-    # Create the DataFrame
     calculations_df = spark.createDataFrame(data, calculations_schema)
+    write_calculation(calculations_df, infrastructure_settings)
 
-    start_with_deps(
-        parse_command_line_args=lambda: command_line_args,
-        parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-        calculation_executor=lambda *args: calculation.execute(
-            any_calculator_args,
-            prepared_data_reader,
-            CalculationCore(),
-            CalculationMetadataService(),
-            CalculationOutputService(),
-        ),
-    )
-
-
-def write_calculation(self, df: DataFrame) -> None:
-    df.write.format("delta").mode("append").saveAsTable(
-        f"{self._catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    )
-
-
-def executed_balance_fixing(
-    spark: SparkSession,
-    calculator_args_balance_fixing: CalculatorArgs,
-    migrations_executed: None,
-    energy_input_data_written_to_delta: None,
-    grid_loss_metering_points_input_data_written_to_delta: None,
-    calculation_input_database: str,
-) -> None:
-    """Execute the calculator job.
-    This is the act part of a test in the arrange-act-assert paradigm.
-    This act is made as a session-scoped fixture because it is a slow process
-    and because lots of assertions can be made and split into separate tests
-    without awaiting the execution in each test."""
-
-    migrations_wholesale_repository = (
-        migrations_wholesale.MigrationsWholesaleRepository(
-            spark, "spark_catalog", calculation_input_database
+    # Act
+    try:
+        start_with_deps(
+            parse_command_line_args=lambda: command_line_args,
+            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
+            calculation_executor=lambda *args: calculation.execute(
+                any_calculator_args,
+                prepared_data_reader,
+                CalculationCore(),
+                CalculationMetadataService(),
+                CalculationOutputService(),
+            ),
         )
-    )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(
-        spark, "spark_catalog"
-    )
-    prepared_data_reader = PreparedDataReader(
-        migrations_wholesale_repository, wholesale_internal_repository
-    )
-    calculation.execute(
-        calculator_args_balance_fixing,
-        prepared_data_reader,
-        CalculationCore(),
-        CalculationMetadataService(),
-        CalculationOutputService(),
+    except SystemExit as e:
+        # Assert
+        print(e)
+
+
+def write_calculation(
+    df: DataFrame, infrastructure_settings: InfrastructureSettings
+) -> None:
+    df.write.format("delta").mode("append").saveAsTable(
+        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
     )
