@@ -2,6 +2,3 @@
 
 {DATABRICKS-ONLY}ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
 {DATABRICKS-ONLY}CLUSTER BY (calculation_id, calculation_type);
-
--- Avoid problem with empty script while running in test
-SELECT 1;
