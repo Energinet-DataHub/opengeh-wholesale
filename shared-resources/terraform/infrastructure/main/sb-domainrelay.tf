@@ -1,5 +1,5 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_4.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_4.2.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
@@ -8,6 +8,7 @@ module "sb_domain_relay" {
   location                   = azurerm_resource_group.this.location
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_restrictions            = var.ip_restrictions
+  # TODO: remove auth_rules when subsystems use RBAC
   auth_rules = [
     {
       name   = "listen",
@@ -31,6 +32,7 @@ module "sb_domain_relay" {
   ]
 }
 
+# TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_listen_connection_string" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
@@ -39,6 +41,7 @@ module "kvs_sb_domain_relay_listen_connection_string" {
   key_vault_id = module.kv_shared.id
 }
 
+# TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_send_connection_string" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
@@ -47,6 +50,7 @@ module "kvs_sb_domain_relay_send_connection_string" {
   key_vault_id = module.kv_shared.id
 }
 
+# TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_transceiver_connection_string" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
@@ -55,6 +59,7 @@ module "kvs_sb_domain_relay_transceiver_connection_string" {
   key_vault_id = module.kv_shared.id
 }
 
+# TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_manage_connection_string" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
@@ -76,5 +81,13 @@ module "kvs_sb_domain_relay_name" {
 
   name         = "sb-domain-relay-namespace-name"
   value        = module.sb_domain_relay.name
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_sb_domain_relay_endpoint" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+
+  name         = "sb-domain-relay-namespace-endpoint"
+  value        = module.sb_domain_relay.endpoint
   key_vault_id = module.kv_shared.id
 }
