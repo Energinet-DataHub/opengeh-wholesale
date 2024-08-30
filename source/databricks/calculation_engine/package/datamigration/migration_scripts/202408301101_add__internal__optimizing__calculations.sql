@@ -3,4 +3,4 @@
 {DATABRICKS-ONLY}OPTIMIZE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations;
 
 -- Avoid problem with empty script while running in test
-SELECT 1
+SELECT 1;

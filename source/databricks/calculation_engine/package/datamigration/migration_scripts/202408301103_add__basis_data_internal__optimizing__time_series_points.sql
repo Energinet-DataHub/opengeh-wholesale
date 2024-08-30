@@ -3,4 +3,4 @@
 {DATABRICKS-ONLY}OPTIMIZE {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_series_points;
 
 -- Avoid problem with empty script while running in test
-SELECT 1
+SELECT 1;

@@ -4,4 +4,4 @@
 {DATABRICKS-ONLY}CLUSTER BY (calculation_id, calculation_type);
 
 -- Avoid problem with empty script while running in test
-SELECT 1
+SELECT 1;

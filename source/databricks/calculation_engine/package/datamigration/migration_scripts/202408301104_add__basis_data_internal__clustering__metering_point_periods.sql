@@ -4,4 +4,4 @@
 {DATABRICKS-ONLY}CLUSTER BY (calculation_id, metering_point_id);
 
 -- Avoid problem with empty script while running in test
-SELECT 1
+SELECT 1;
