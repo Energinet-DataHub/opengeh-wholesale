@@ -97,6 +97,7 @@ def test_(
     except SystemExit as e:
         # Assert
         assert e.code == 4 and not test_successful
+        print(e.args)
 
 
 def write_calculation(
