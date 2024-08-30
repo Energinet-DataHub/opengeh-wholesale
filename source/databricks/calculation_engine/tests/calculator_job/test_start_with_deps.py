@@ -52,12 +52,18 @@ def test_(
     command_line_args.calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
     any_calculator_args.calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
+    # Create a list of rows
     data = [
         Row(
             calculation_id="0b15a420-9fc8-409a-a169-fbd49479d718",
             calculation_type="balance_fixing",
-            calculation_version="1.0",
-            calculation_succeeded_time="2023-10-01 12:00:00",
+            calculation_period_start="2023-10-01 00:00:00",
+            calculation_period_end="2023-10-01 23:59:59",
+            calculation_execution_time_start="2023-10-01 12:00:00",
+            created_by_user_id="user123",
+            calculation_version=1,
+            is_internal_calculation=True,
+            calculation_succeeded_time="2023-10-01 12:30:00",
         )
     ]
 
