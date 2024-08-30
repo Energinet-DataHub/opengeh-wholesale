@@ -1,3 +1,0 @@
-from test_cases import TestCases
-
-TestCases.TC001_mp_is_out_of_whack

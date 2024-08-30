@@ -1,0 +1,4 @@
+from ....Playground.test_cases import Tests
+
+# noinspection PyStatementEffect
+Tests.CalculationTests.Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change
