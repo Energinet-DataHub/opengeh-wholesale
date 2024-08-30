@@ -21,4 +21,7 @@ def get_substitutions(catalog_name: str, is_testing: bool) -> dict[str, str]:
         "{DATABRICKS-ONLY}": (
             "--" if is_testing else ""
         ),  # Comment out script lines when running in test as it is not using Databricks
+        "{TEST-ONLY}": (
+            "--" if not is_testing else ""
+        ),  # Comment out script lines when running in test as it is not using Databricks
     }
