@@ -241,4 +241,6 @@ class PreparedDataReader:
         calculation = self._wholesale_internal_repository.get_by_calculation_id(
             calculation_id
         )
-        return calculation.count() == 0
+
+        count = calculation.count()
+        return count == 0
