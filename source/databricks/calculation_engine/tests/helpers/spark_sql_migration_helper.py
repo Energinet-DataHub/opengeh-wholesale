@@ -84,7 +84,7 @@ def migrate(
     spark_config = create_spark_sql_migrations_configuration(
         spark, "", substitution_variables=substitution_variables
     )
-    migrate_data_lake(catalog_name, spark_config_hive=spark_config)
+    migrate_data_lake(catalog_name, spark_config_hive=spark_config, is_testing=True)
 
 
 def _remove_registration_of_modified_scripts(

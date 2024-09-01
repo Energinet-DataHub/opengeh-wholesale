@@ -17,6 +17,7 @@ UNUSED = "UNUSED"  # Marks fields that were only used in the old hive implementa
 def migrate_data_lake(
     catalog_name: str | None = None,
     spark_config_hive: SparkSqlMigrationsConfiguration = None,
+    is_testing: bool = False,
 ) -> None:
     """
     This method must remain parameterless because it will be called from the entry point when deployed.
@@ -26,7 +27,7 @@ def migrate_data_lake(
     catalog_name = catalog_name or env_vars.get_catalog_name()
     print(f"Executing Unity Catalog migrations for catalog {catalog_name}")
 
-    spark_config = _create_spark_config(catalog_name)
+    spark_config = _create_spark_config(catalog_name, is_testing)
 
     create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()
@@ -37,7 +38,9 @@ def migrate_data_lake(
     hive_migration.migrate_data_lake(spark_config_hive)
 
 
-def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
+def _create_spark_config(
+    catalog_name: str, is_testing: bool
+) -> SparkSqlMigrationsConfiguration:
     return SparkSqlMigrationsConfiguration(
         migration_schema_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
         migration_table_name=paths.WholesaleInternalDatabase.EXECUTED_MIGRATIONS_TABLE_NAME,
@@ -46,6 +49,6 @@ def _create_spark_config(catalog_name: str) -> SparkSqlMigrationsConfiguration:
         current_state_tables_folder_path=None,
         current_state_views_folder_path=None,
         schema_config=schema_config,
-        substitution_variables=get_substitutions(catalog_name),
+        substitution_variables=get_substitutions(catalog_name, is_testing),
         catalog_name=catalog_name,
     )
