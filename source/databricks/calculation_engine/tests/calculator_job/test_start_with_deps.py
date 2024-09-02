@@ -47,6 +47,7 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     any_calculator_args.calculation_id = calculation_id
     calculation_executor_mock = Mock()
 
+    # If true add calculation row to fake that the calculation id is already used
     if calculation_id_already_used:
         add_calculation_row(calculation_id, infrastructure_settings, spark)
 

@@ -17,10 +17,14 @@ import time
 import uuid
 from datetime import timedelta
 from typing import cast, Callable
+from unittest.mock import Mock
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
+from package.calculation import CalculationCore
+from package.calculation.calculation_metadata_service import CalculationMetadataService
+from package.calculation.calculation_output_service import CalculationOutputService
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
 from tests.integration_test_configuration import IntegrationTestConfiguration
@@ -39,11 +43,13 @@ class TestWhenInvokedWithValidArguments:
     def test_does_not_raise(self, any_calculator_args, infrastructure_settings):
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
+        mock_reader = Mock()
+        mock_reader.is_calculation_id_unique.return_value = True
 
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
             parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=lambda args, reader, core, metadata_service, output_service: None,
+            calculation_executor=lambda args, reader=mock_reader, calculation_core=CalculationCore(), calculation_metadata_service=CalculationMetadataService(), calculation_output_service=CalculationOutputService(),: None,
         )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
