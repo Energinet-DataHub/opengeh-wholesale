@@ -1,4 +1,4 @@
-from ....Playground.test_cases import Tests
+from Coverage.all_test_cases import Tests
 
 # noinspection PyStatementEffect
 Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_balance_responsible_on_an_MP

@@ -1,6 +1,6 @@
 # Set the path to the Python file relative to the script location
 $scriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
-$pythonFilePath = Join-Path -Path $scriptPath -ChildPath "..\package\calculation\calculation_output.py"
+$pythonFilePath = Join-Path -Path $scriptPath -ChildPath "..\..\..\package\calculation\calculation_output.py"
 
 # Debug: Output the full path of the Python file being read
 Write-Host "Reading Python file at: $pythonFilePath"
@@ -44,7 +44,7 @@ foreach ($className in $classNames) {
 }
 
 # Export the collected field names to a CSV file without an extra newline at the end
-$csvPath = Join-Path -Path $scriptPath -ChildPath "AllResults.csv"
+$csvPath = Join-Path -Path $scriptPath -ChildPath "..\find_coverage_script_output\all_results.csv"
 
 # Convert the objects to CSV format, skip the last newline, and make sure no trailing newline is added
 $csvContent = $fieldsList | ConvertTo-Csv -NoTypeInformation | Out-String

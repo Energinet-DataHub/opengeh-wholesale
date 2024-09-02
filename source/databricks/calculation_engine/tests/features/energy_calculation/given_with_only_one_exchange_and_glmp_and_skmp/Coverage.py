@@ -1,4 +1,4 @@
-from ....Playground.test_cases import Tests
+from Coverage.all_test_cases import Tests
 
 # noinspection PyStatementEffect
 Tests.CalculationTests.UnusualGridAreaSetups.Grid_area_with_only_Exchange_MP_just_one_direction
@@ -6,5 +6,3 @@ Tests.CalculationTests.UnusualGridAreaSetups.Grid_area_with_only_Exchange_MP_and
 Tests.CalculationTests.UnusualGridAreaSetups.Grid_with_E20_in_neighbour_grid_area_and_Grid_Loss_MP_and_System_Correction_MP
 Tests.CalculationTests.UnusualGridAreaSetups.Energy_Supplier_only_has_Grid_Loss_MP_or_System_Correction_MP
 Tests.CalculationTests.ExchangeCases.Exchange_MP_where_exchange_is_between_two_other_grid_areas_than_the_one_it_is_in
-
-

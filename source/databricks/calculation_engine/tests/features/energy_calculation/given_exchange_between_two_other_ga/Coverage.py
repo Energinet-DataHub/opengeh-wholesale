@@ -1,4 +1,4 @@
-from ....Playground.test_cases import Tests
+from Coverage.all_test_cases import Tests
 
 # The purpose of this test is the scenario that an exchange metering point is in a grid area, but is exchanging between two other grid areas than the one it is in.
 

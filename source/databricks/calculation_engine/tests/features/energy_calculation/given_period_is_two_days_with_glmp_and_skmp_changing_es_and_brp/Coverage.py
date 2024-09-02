@@ -1,4 +1,4 @@
-from ....Playground.test_cases import Tests
+from Coverage.all_test_cases import Tests
 
 # noinspection PyStatementEffect
 Tests.CalculationTests.MeteringPointMasterDataUpdates.Energy_Supplier_change_on_Grid_Loss_MP

@@ -2,7 +2,7 @@
 $scriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 # Define the output CSV file path relative to the script location
-$outputCsv = Join-Path -Path $scriptPath -ChildPath "CaseCoverage.csv"
+$outputCsv = Join-Path -Path $scriptPath -ChildPath "..\find_coverage_script_output\case_coverage.csv"
 
 # Create an empty array to store the rows
 $rows = @()
@@ -13,12 +13,15 @@ $rootPath = Get-Location
 # Recursively search for all "given_" folders at any depth
 $givenFolders = Get-ChildItem -Path $rootPath -Recurse -Directory | Where-Object { $_.Name -like "given_*" }
 
+Write-Host "Coverage folders: $givenFolders"
+
 # Loop through each "given_" folder
 foreach ($givenFolder in $givenFolders) {
     $relativePath = $givenFolder.FullName.Substring($rootPath.Path.Length + 1)
 
     # Look for the 'Coverage.py' file in each 'given_' folder
     $coverageFile = Get-ChildItem -Path $givenFolder.FullName -File | Where-Object { $_.Name -eq "Coverage.py" }
+    
 
     if ($coverageFile) {
         $coverageContent = Get-Content -Path $coverageFile.FullName
@@ -36,7 +39,7 @@ foreach ($givenFolder in $givenFolders) {
             }
         }
     } else {
-        Write-Host "No 'Coverage.py' file found in $relativePath."
+        Write-Host "No 'test_coverage.py' file found in $relativePath."
     }
 }
 

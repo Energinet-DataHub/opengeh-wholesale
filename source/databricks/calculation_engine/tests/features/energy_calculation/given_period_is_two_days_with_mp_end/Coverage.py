@@ -1,4 +1,4 @@
-from ....Playground.test_cases import Tests
+from Coverage.all_test_cases import Tests
 
 # noinspection PyStatementEffect
 Tests.CalculationTests.MeteringPointMasterDataUpdates.MP_is_shut_down_in_calculation_period
