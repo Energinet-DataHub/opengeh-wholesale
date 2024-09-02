@@ -20,7 +20,7 @@ resource "databricks_permissions" "databricks_sql_endpoint_reader" {
 
   access_control {
     group_name       = each.key
-    permission_level = "CAN_VIEW"
+    permission_level = "CAN_USE"
   }
   depends_on = [module.dbw]
 }
