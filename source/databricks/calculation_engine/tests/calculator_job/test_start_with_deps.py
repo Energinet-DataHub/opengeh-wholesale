@@ -12,29 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import argparse
+import uuid
 from datetime import datetime
+from unittest.mock import Mock
 
 import pytest
 from pyspark import Row
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
-from package.calculation import PreparedDataReader, calculation, CalculationCore
-from package.calculation.calculation_metadata_service import CalculationMetadataService
-from package.calculation.calculation_output_service import CalculationOutputService
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start_with_deps
-from package.databases import migrations_wholesale, wholesale_internal
 from package.databases.wholesale_internal.schemas import calculations_schema
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import WholesaleInternalDatabase
 
 
 @pytest.mark.parametrize(
-    "calculation_id,test_successful",
-    [
-        ("0b15a420-9fc8-409a-a169-fbd49479d718", False),
-        ("0b15a420-9fc8-409a-a169-fbd49479d719", True),
-    ],
+    "calculation_id_already_used",
+    [True, False],
 )
 def test_(
     calculator_args_balance_fixing: CalculatorArgs,
@@ -42,31 +37,44 @@ def test_(
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
-    calculation_id: str,
-    test_successful: bool,
+    calculation_id_already_used: bool,
 ) -> None:
 
     # Arrange
-    migrations_wholesale_repository = (
-        migrations_wholesale.MigrationsWholesaleRepository(
-            spark, "spark_catalog", calculation_input_database
-        )
-    )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(
-        spark, "spark_catalog"
-    )
-
-    prepared_data_reader = PreparedDataReader(
-        migrations_wholesale_repository, wholesale_internal_repository
-    )
-
+    calculation_id = str(uuid.uuid4())
     command_line_args = argparse.Namespace()
     command_line_args.calculation_id = calculation_id
     any_calculator_args.calculation_id = command_line_args.calculation_id
+    mock_object = Mock()
 
+    if calculation_id_already_used:
+        add_calculation_row(calculation_id, infrastructure_settings, spark)
+
+    # Act
+    try:
+        start_with_deps(
+            parse_command_line_args=lambda: command_line_args,
+            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
+            calculation_executor=mock_object.execute,
+        )
+    except SystemExit as e:
+        assert e.code == 4
+
+    # Assert
+    if calculation_id_already_used:
+        mock_object.execute.assert_not_called()
+    else:
+        mock_object.execute.assert_called()
+
+
+def add_calculation_row(
+    calculation_id: str,
+    infrastructure_settings: InfrastructureSettings,
+    spark: SparkSession,
+) -> None:
     data = [
         Row(
-            calculation_id="0b15a420-9fc8-409a-a169-fbd49479d718",
+            calculation_id=calculation_id,
             calculation_type="balance_fixing",
             calculation_period_start=datetime.now(),
             calculation_period_end=datetime.now(),
@@ -77,51 +85,7 @@ def test_(
             calculation_succeeded_time=datetime.now(),
         )
     ]
-
-    # Read the existing table
-    delete("0b15a420-9fc8-409a-a169-fbd49479d718", infrastructure_settings, spark)
-    # Read the existing table
-    delete("0b15a420-9fc8-409a-a169-fbd49479d719", infrastructure_settings, spark)
-
     calculations_df = spark.createDataFrame(data, calculations_schema)
-    write_calculation(calculations_df, infrastructure_settings)
-
-    # Act
-    try:
-        start_with_deps(
-            parse_command_line_args=lambda: command_line_args,
-            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=lambda *args: calculation.execute(
-                any_calculator_args,
-                prepared_data_reader,
-                CalculationCore(),
-                CalculationMetadataService(),
-                CalculationOutputService(),
-            ),
-        )
-    except SystemExit as e:
-        # Assert
-        assert e.code == 4 and not test_successful
-        print(e.args)
-
-
-def write_calculation(
-    df1: DataFrame,
-    infrastructure_settings: InfrastructureSettings,
-) -> None:
-
-    df1.write.format("delta").mode("append").saveAsTable(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    )
-
-
-def delete(calculation_id, infrastructure_settings, spark):
-    df = spark.read.format("delta").table(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    )
-    # Filter out the rows with the specified calculation ID
-    filtered_df = df.filter(df.calculation_id != calculation_id)
-    # Overwrite the table with the filtered DataFrame
-    filtered_df.write.format("delta").mode("overwrite").saveAsTable(
+    calculations_df.write.format("delta").mode("append").saveAsTable(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
     )
