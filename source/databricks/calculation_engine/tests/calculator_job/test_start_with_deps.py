@@ -45,7 +45,7 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     command_line_args = argparse.Namespace()
     command_line_args.calculation_id = calculation_id
     any_calculator_args.calculation_id = calculation_id
-    mock_object = Mock()
+    calculation_executor_mock = Mock()
 
     if calculation_id_already_used:
         add_calculation_row(calculation_id, infrastructure_settings, spark)
@@ -55,16 +55,16 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
             parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=mock_object.execute,
+            calculation_executor=calculation_executor_mock.execute,
         )
     except SystemExit as e:
         assert e.code == 4
 
     # Assert
     if calculation_id_already_used:
-        mock_object.execute.assert_not_called()
+        calculation_executor_mock.execute.assert_not_called()
     else:
-        mock_object.execute.assert_called()
+        calculation_executor_mock.execute.assert_called()
 
 
 def add_calculation_row(
