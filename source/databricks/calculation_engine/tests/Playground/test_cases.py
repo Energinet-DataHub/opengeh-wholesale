@@ -7,10 +7,9 @@ from dataclasses import dataclass
 class Tests:
 
     class CalculationTests:
-
         Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change: str
 
-        class MeteringPointBaseDataUpdates:
+        class MeteringPointMasterDataUpdates:
             Change_of_settlement_method_on_an_MP: str
             Change_of_resolution_on_an_MP: str
             Change_of_balance_responsible_on_an_MP: str
@@ -61,6 +60,7 @@ class Tests:
         There_are_two_metering_point_periods_due_to_a_change_of_balance_responsible: str
         There_is_a_combination_of_different_calculation_types: str
         There_are_different_calculation_versions: str
+
         class OverlapScenarios:
             MP_period_and_charge_link_period_overlap: str
             MP_period_and_charge_link_period_overlap: str

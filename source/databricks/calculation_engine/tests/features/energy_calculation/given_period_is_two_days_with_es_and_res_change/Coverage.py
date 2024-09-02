@@ -1,0 +1,6 @@
+from ....Playground.test_cases import Tests
+
+# noinspection PyStatementEffect
+Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_balance_responsible_on_an_MP
+Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_energy_supplier_on_an_MP
+Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_resolution_on_an_MP

@@ -17,17 +17,18 @@ if (Test-Path -Path $targetDirectory) {
         $filenameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
         # Add the filename to the array as a custom object
         $fileList += [PSCustomObject]@{
-            FileName = $filenameWithoutExtension
+            Scenario = $targetDirectory
+            ResultsCoverage = $filenameWithoutExtension
         }
     }
     
     # Export the list to a CSV file without an extra newline at the end
-    $csvPath = Join-Path -Path $scriptPath -ChildPath "AllViews.csv"
-    # Convert the objects to CSV format, skip the last newline, and make sure no trailing newline is added
+    $csvPath = Join-Path -Path $scriptPath -ChildPath "ResultsCoverage.csv"
+    # Convert the objects to CSV format and then trim the end to remove extra newlines
     $csvContent = $fileList | ConvertTo-Csv -NoTypeInformation | Out-String
     $csvContent = $csvContent.TrimEnd("`r`n")  # Ensure no trailing newlines
     Set-Content -Path $csvPath -Value $csvContent -NoNewline
-    Write-Host "File names have been written to $csvPath without an extra newline."
+    Write-Host "Results Coverage data has been written to $csvPath without an extra newline."
 } else {
     Write-Error "The specified path does not exist: $targetDirectory"
 }

@@ -1,0 +1,7 @@
+from ....Playground.test_cases import Tests
+
+# noinspection PyStatementEffect
+Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_settlement_method_on_an_MP
+# noinspection PyStatementEffect
+Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_resolution_on_an_MP
+

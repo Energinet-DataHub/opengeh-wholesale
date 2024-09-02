@@ -1,0 +1,4 @@
+from ....Playground.test_cases import Tests
+
+# noinspection PyStatementEffect
+Tests.CalculationTests.UnusualGridAreaSetups.Grid_area_only_has_Production_MPs_but_no_consumption_MPs_except_for_Grid_Loss_MP
