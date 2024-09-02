@@ -33,11 +33,11 @@ from package.infrastructure.paths import WholesaleInternalDatabase
 )
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculator_args_balance_fixing: CalculatorArgs,
-    calculation_input_database: str,
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
     calculation_id_already_used: bool,
+    migrations_executed: bool,
 ) -> None:
 
     # Arrange
