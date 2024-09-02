@@ -8,3 +8,11 @@ developer_security_group_name                      = "SEC-G-Datahub-DevelopersAz
 platform_security_group_contributor_access         = true
 platform_security_group_reader_access              = true
 datahub_bi_endpoint_enabled                        = true
+databricks_readers_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
+databricks_contributor_dataplane_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}

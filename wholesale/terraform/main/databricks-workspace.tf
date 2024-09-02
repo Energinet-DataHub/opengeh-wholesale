@@ -1,5 +1,5 @@
 module "dbw" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=databricks-workspace_4.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=databricks-workspace_4.2.0"
   providers = { # The databricks module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -18,6 +18,11 @@ module "dbw" {
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
   private_endpoints_subnet_address_prefix  = var.databricks_private_endpoints_subnet_address_prefix
   catalog_name                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+
+  scim_databrick_group_ids = [
+    var.databricks_readers_group.id,
+    var.databricks_contributor_dataplane_group.id
+  ]
 
   public_network_service_endpoints = [
     "Microsoft.EventHub"

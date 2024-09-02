@@ -8,3 +8,11 @@ developer_security_group_name                      = "SEC-G-Datahub-DevelopersAz
 pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Dev-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Dev-001-Contributor-Controlplane"
 developer_security_group_reader_access             = true
+databricks_readers_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
+databricks_contributor_dataplane_group = {
+  id   = "284159814927462"
+  name = "SEC-A-Datahub-Dev-001-Contributor-Dataplane"
+}

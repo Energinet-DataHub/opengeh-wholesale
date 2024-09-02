@@ -27,16 +27,6 @@ resource "databricks_schema" "internal" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
-resource "databricks_grant" "internal" {
-  provider = databricks.dbw
-  schema   = databricks_schema.internal.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "results_internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.results_internal.name}_${module.st_data_wholesale.name}"
@@ -52,16 +42,6 @@ resource "databricks_schema" "results_internal" {
   name         = "wholesale_results_internal"
   comment      = "wholesale_results_internal Schema"
   storage_root = databricks_external_location.results_internal.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
-resource "databricks_grant" "results_internal" {
-  provider = databricks.dbw
-  schema   = databricks_schema.results_internal.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
@@ -85,16 +65,6 @@ resource "databricks_schema" "results" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
-resource "databricks_grant" "results" {
-  provider = databricks.dbw
-  schema   = databricks_schema.results.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "basis_data_internal" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.basis_data_internal.name}_${module.st_data_wholesale.name}"
@@ -110,16 +80,6 @@ resource "databricks_schema" "basis_data_internal" {
   name         = "wholesale_basis_data_internal"
   comment      = "wholesale_basis_data_internal Schema"
   storage_root = databricks_external_location.basis_data_internal.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
-resource "databricks_grant" "basis_data_internal" {
-  provider = databricks.dbw
-  schema   = databricks_schema.basis_data_internal.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
@@ -143,16 +103,6 @@ resource "databricks_schema" "settlement_reports" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
-resource "databricks_grant" "settlement_reports" {
-  provider = databricks.dbw
-  schema   = databricks_schema.settlement_reports.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE", "CREATE_TABLE", "CREATE_MATERIALIZED_VIEW"]
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "sap" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.sap.name}_${module.st_data_wholesale.name}"
@@ -168,16 +118,6 @@ resource "databricks_schema" "sap" {
   name         = "wholesale_sap"
   comment      = "wholesale_sap Schema"
   storage_root = databricks_external_location.sap.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
-resource "databricks_grant" "sap" {
-  provider = databricks.dbw
-  schema   = databricks_schema.sap.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE"]
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }

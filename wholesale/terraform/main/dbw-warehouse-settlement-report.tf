@@ -13,15 +13,28 @@ resource "databricks_sql_endpoint" "settlement_report_sql_endpoint" {
   }
 }
 
-resource "databricks_permissions" "databricks_sql_endpoint_settlement_report" {
+resource "databricks_permissions" "databricks_sql_endpoint_settlement_report_reader" {
+  for_each        = local.readers
   provider        = databricks.dbw
   sql_endpoint_id = databricks_sql_endpoint.settlement_report_sql_endpoint.id
 
   access_control {
-    group_name       = "SEC-G-Datahub-DevelopersAzure"
+    group_name       = each.key
+    permission_level = "CAN_VIEW"
+  }
+  depends_on = [module.dbw]
+
+}
+
+resource "databricks_permissions" "databricks_sql_endpoint_settlement_report_contributor_dataplane" {
+  provider        = databricks.dbw
+  sql_endpoint_id = databricks_sql_endpoint.settlement_report_sql_endpoint.id
+
+  access_control {
+    group_name       = var.databricks_contributor_dataplane_group.name
     permission_level = "CAN_MANAGE"
   }
-  depends_on = [module.dbw, null_resource.scim_developers]
+  depends_on = [module.dbw]
 
 }
 

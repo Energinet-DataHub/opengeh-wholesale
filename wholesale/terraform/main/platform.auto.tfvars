@@ -7,6 +7,5 @@ ip_restrictions = [{
   ip_address = "20.120.143.248/29"
   name       = "github_largerunner"
 }]
-tenant_id                      = "f7619355-6c67-4100-9a78-1847f30742e2"
-databricks_developers_group_id = "729028915538231"
-platform_security_group_name   = "SEC-G-Datahub-PlatformDevelopersAzure"
+tenant_id                    = "f7619355-6c67-4100-9a78-1847f30742e2"
+platform_security_group_name = "SEC-G-Datahub-PlatformDevelopersAzure"

@@ -136,11 +136,6 @@ variable "ip_restrictions" {
   default     = []
 }
 
-variable "databricks_developers_group_id" {
-  type        = string
-  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
-}
-
 variable "alert_email_address" {
   type        = string
   description = "(Optional) The email address to which alerts are sent."
@@ -151,4 +146,26 @@ variable "datahub_bi_endpoint_enabled" {
   type        = bool
   description = "Flag to determine if the SQL warehouse for Datahub BI should be created"
   default     = false
+}
+
+variable "alert_email_address_edi" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}
+
+variable "databricks_readers_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with read permissions."
+}
+
+variable "databricks_contributor_dataplane_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with contributor permissions to the data plane."
 }

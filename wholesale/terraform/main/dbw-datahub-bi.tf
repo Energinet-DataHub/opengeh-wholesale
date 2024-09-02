@@ -106,7 +106,7 @@ resource "databricks_permissions" "datahub_bi_sql_endpoint" {
     permission_level       = "CAN_USE"
   }
 
-  depends_on = [module.dbw, null_resource.scim_developers]
+  depends_on = [module.dbw]
 }
 
 resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_results" {

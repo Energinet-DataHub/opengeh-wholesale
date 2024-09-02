@@ -22,13 +22,3 @@ resource "databricks_schema" "wholesale_migrations_wholesale" {
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
-
-resource "databricks_grant" "wholesale_migrations_wholesale" {
-  provider = databricks.dbw
-  schema   = databricks_schema.wholesale_migrations_wholesale.id
-
-  principal  = "SEC-G-Datahub-DevelopersAzure"
-  privileges = ["USE_SCHEMA", "MODIFY", "SELECT", "REFRESH", "EXECUTE", "CREATE_TABLE"]
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
