@@ -31,7 +31,7 @@ from package.infrastructure.paths import WholesaleInternalDatabase
     "calculation_id_already_used",
     [True, False],
 )
-def test_(
+def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculator_args_balance_fixing: CalculatorArgs,
     calculation_input_database: str,
     spark: SparkSession,
@@ -44,7 +44,7 @@ def test_(
     calculation_id = str(uuid.uuid4())
     command_line_args = argparse.Namespace()
     command_line_args.calculation_id = calculation_id
-    any_calculator_args.calculation_id = command_line_args.calculation_id
+    any_calculator_args.calculation_id = calculation_id
     mock_object = Mock()
 
     if calculation_id_already_used:
