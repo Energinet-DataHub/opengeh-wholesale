@@ -39,7 +39,6 @@ class TestWhenInvokedWithValidArguments:
     def test_does_not_raise(self, any_calculator_args, infrastructure_settings):
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
-        infrastructure_settings.calculation_input_path = "wholesale_internal"
 
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
