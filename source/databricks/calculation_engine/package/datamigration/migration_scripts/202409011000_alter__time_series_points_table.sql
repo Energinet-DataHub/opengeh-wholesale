@@ -1,0 +1,5 @@
+ALTER TABLE {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_series_points
+DROP COLUMN IF EXISTS metering_point_type,
+DROP COLUMN IF EXISTS resolution,
+DROP COLUMN IF EXISTS grid_area_code,
+DROP COLUMN IF EXISTS energy_supplier_id;
