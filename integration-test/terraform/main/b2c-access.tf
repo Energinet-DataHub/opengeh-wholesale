@@ -87,7 +87,7 @@ resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbff_app_id" {
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -97,7 +97,7 @@ resource "azurerm_key_vault_secret" "kvs_azure_b2c_testbackend_app_id" {
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -107,7 +107,7 @@ resource "azurerm_key_vault_secret" "kvs_azure_b2c_backend_app_objectid" {
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -117,7 +117,7 @@ resource "azurerm_key_vault_secret" "kvs_azure_b2c_backend_spn_objectid" {
   key_vault_id = azurerm_key_vault.this.id
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 

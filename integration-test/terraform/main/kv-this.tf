@@ -1,9 +1,10 @@
 resource "azurerm_key_vault" "this" {
-  name                = "kv${local.resource_suffix_without_dash}"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  tenant_id           = data.azurerm_client_config.this.tenant_id
-  sku_name            = "standard"
+  name                      = "kv${local.resource_suffix_without_dash}"
+  location                  = azurerm_resource_group.this.location
+  resource_group_name       = azurerm_resource_group.this.name
+  tenant_id                 = data.azurerm_client_config.this.tenant_id
+  sku_name                  = "standard"
+  enable_rbac_authorization = true
 
   lifecycle {
     ignore_changes = [
@@ -12,62 +13,22 @@ resource "azurerm_key_vault" "this" {
   }
 }
 
-resource "azurerm_key_vault_access_policy" "kv_selfpermission" {
-  key_vault_id = azurerm_key_vault.this.id
-  tenant_id    = data.azurerm_client_config.this.tenant_id
-  object_id    = data.azurerm_client_config.this.object_id
-
-  secret_permissions = [
-    "Delete",
-    "List",
-    "Get",
-    "Set",
-    "Purge",
-  ]
+resource "azurerm_role_assignment" "kv_self" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = data.azurerm_client_config.this.object_id
 }
 
-resource "azurerm_key_vault_access_policy" "kv_spn_ci" {
-  key_vault_id = azurerm_key_vault.this.id
-  tenant_id    = data.azurerm_client_config.this.tenant_id
-  object_id    = azuread_service_principal.spn_ci.object_id
-
-  secret_permissions = [
-    "Get",
-    "Set",
-    "List",
-    "Delete",
-  ]
-
-  key_permissions = [
-    "Get",
-    "List",
-    "Update",
-    "Create",
-    "Delete",
-    "Sign",
-  ]
+resource "azurerm_role_assignment" "kv_spn_ci" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = azuread_service_principal.spn_ci.id
 }
 
-resource "azurerm_key_vault_access_policy" "kv_omada_developer_ad_group" {
-  key_vault_id = azurerm_key_vault.this.id
-  tenant_id    = data.azurerm_client_config.this.tenant_id
-  object_id    = var.omada_developers_security_group_object_id
-
-  secret_permissions = [
-    "Get",
-    "Set",
-    "List",
-    "Delete",
-  ]
-
-  key_permissions = [
-    "Get",
-    "List",
-    "Update",
-    "Create",
-    "Delete",
-    "Sign",
-  ]
+resource "azurerm_role_assignment" "kv_omada_developer_ad_group" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = var.omada_developers_security_group_object_id
 }
 
 locals {
@@ -94,6 +55,6 @@ resource "azurerm_key_vault_secret" "kv_secrets" {
 
   # Ensure the access policy was created before trying to access the Key Vault
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }

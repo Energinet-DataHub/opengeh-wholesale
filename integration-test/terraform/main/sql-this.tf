@@ -33,7 +33,7 @@ resource "azurerm_key_vault_secret" "kvs_mssql_admin_name" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -49,7 +49,7 @@ resource "azurerm_key_vault_secret" "kvs_mssql_admin_password" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -65,6 +65,6 @@ resource "azurerm_key_vault_secret" "kvs_mssql_server_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }

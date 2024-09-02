@@ -26,6 +26,6 @@ resource "azurerm_key_vault_secret" "kvs_evhns_connection_string" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }

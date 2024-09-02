@@ -13,7 +13,7 @@ resource "azurerm_key_vault_secret" "kvs_resource_group_name" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -29,7 +29,7 @@ resource "azurerm_key_vault_secret" "kvs_shared_subscription_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -45,6 +45,6 @@ resource "azurerm_key_vault_secret" "kvs_shared_tenant_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }

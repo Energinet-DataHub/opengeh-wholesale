@@ -42,23 +42,7 @@ resource "azurerm_key_vault_secret" "kvs_log_workspace_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
-  ]
-}
-
-resource "azurerm_key_vault_secret" "kvs_appi_instrumentation_key" {
-  name         = "AZURE-APPINSIGHTS-INSTRUMENTATIONKEY"
-  value        = azurerm_application_insights.this.instrumentation_key
-  key_vault_id = azurerm_key_vault.this.id
-
-  lifecycle {
-    ignore_changes = [
-      tags,
-    ]
-  }
-
-  depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -74,6 +58,6 @@ resource "azurerm_key_vault_secret" "kvs_appi_connection_string" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }

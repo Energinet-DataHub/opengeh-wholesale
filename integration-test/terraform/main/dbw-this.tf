@@ -305,7 +305,7 @@ resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -321,7 +321,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_to
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -337,7 +337,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_ur
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -353,7 +353,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_id
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -369,7 +369,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_storage_acco
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -385,7 +385,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -401,7 +401,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -417,7 +417,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
 
@@ -433,6 +433,6 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_storage_a
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_selfpermission
+    azurerm_role_assignment.kv_self
   ]
 }
