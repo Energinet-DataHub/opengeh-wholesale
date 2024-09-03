@@ -16,3 +16,5 @@ module "monitor_action_group_healthchecksapi" {
 
   application_insights_id = data.azurerm_key_vault_secret.appi_shared_id.value
 }
+
+# XKBER - comment will build an artifact we can use to test in dh3-environments
