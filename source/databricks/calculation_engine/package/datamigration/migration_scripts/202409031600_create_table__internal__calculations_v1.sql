@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.cal
     calculation_type STRING NOT NULL,
     calculation_period_start TIMESTAMP NOT NULL,
     calculation_period_end TIMESTAMP NOT NULL,
-    calculation_execution_time_start TIMESTAMP NOT NULL,
     {DATABRICKS-ONLY}calculation_version BIGINT GENERATED ALWAYS AS IDENTITY,
+    calculation_execution_time_start TIMESTAMP NOT NULL,
     calculation_succeeded_time TIMESTAMP
 )
 USING DELTA
