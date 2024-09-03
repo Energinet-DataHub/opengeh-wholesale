@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
@@ -35,10 +36,10 @@ public static class WholesaleInboxExtensions
 
         // Health checks
         services.AddHealthChecks()
-            // Must use a listener connection string
             .AddAzureServiceBusQueue(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<WholesaleInboxQueueOptions>>().Value.QueueName,
+                sp => new DefaultAzureCredential(),
                 name: "WholesaleInboxQueue");
 
         return services;

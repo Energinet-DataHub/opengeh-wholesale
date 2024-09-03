@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -39,12 +40,15 @@ public static class ServiceBusExtensions
 
         services.AddAzureClients(builder =>
         {
+            builder
+                .UseCredential(new DefaultAzureCredential());
+
             var serviceBusNamespaceOptions = configuration
                 .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
                 .Get<ServiceBusNamespaceOptions>();
 
             builder
-                .AddServiceBusClient(serviceBusNamespaceOptions!.ConnectionString);
+                .AddServiceBusClientWithNamespace(serviceBusNamespaceOptions!.FullyQualifiedNamespace);
         });
 
         return services;
