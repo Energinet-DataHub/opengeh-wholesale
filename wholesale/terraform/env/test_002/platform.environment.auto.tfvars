@@ -12,7 +12,8 @@ databricks_readers_group = {
   id   = "729028915538231"
   name = "SEC-G-Datahub-DevelopersAzure"
 }
+# Uses security group intended for test-001, to mimic setup in 001-swinlane
 databricks_contributor_dataplane_group = {
-  id   = "729028915538231"
-  name = "SEC-G-Datahub-DevelopersAzure"
+  id   = "318888432738283"
+  name = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
 }

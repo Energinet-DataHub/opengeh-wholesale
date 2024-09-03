@@ -13,20 +13,7 @@ resource "databricks_sql_endpoint" "settlement_report_sql_endpoint" {
   }
 }
 
-resource "databricks_permissions" "databricks_sql_endpoint_settlement_report_reader" {
-  for_each        = local.readers
-  provider        = databricks.dbw
-  sql_endpoint_id = databricks_sql_endpoint.settlement_report_sql_endpoint.id
-
-  access_control {
-    group_name       = each.key
-    permission_level = "CAN_USE"
-  }
-  depends_on = [module.dbw]
-
-}
-
-resource "databricks_permissions" "databricks_sql_endpoint_settlement_report_contributor_dataplane" {
+resource "databricks_permissions" "databricks_sql_endpoint_settlement_report" {
   provider        = databricks.dbw
   sql_endpoint_id = databricks_sql_endpoint.settlement_report_sql_endpoint.id
 
@@ -34,8 +21,14 @@ resource "databricks_permissions" "databricks_sql_endpoint_settlement_report_con
     group_name       = var.databricks_contributor_dataplane_group.name
     permission_level = "CAN_MANAGE"
   }
+  dynamic "access_control" {
+    for_each = local.readers
+    content {
+      group_name       = access_control.key
+      permission_level = "CAN_USE"
+    }
+  }
   depends_on = [module.dbw]
-
 }
 
 #

@@ -13,25 +13,20 @@ resource "databricks_sql_endpoint" "this" {
   }
 }
 
-resource "databricks_permissions" "databricks_sql_endpoint_reader" {
-  for_each        = local.readers
-  provider        = databricks.dbw
-  sql_endpoint_id = databricks_sql_endpoint.this.id
-
-  access_control {
-    group_name       = each.key
-    permission_level = "CAN_USE"
-  }
-  depends_on = [module.dbw]
-}
-
-resource "databricks_permissions" "databricks_sql_endpoint_contributor_dataplane" {
+resource "databricks_permissions" "databricks_sql_endpoint" {
   provider        = databricks.dbw
   sql_endpoint_id = databricks_sql_endpoint.this.id
 
   access_control {
     group_name       = var.databricks_contributor_dataplane_group.name
     permission_level = "CAN_MANAGE"
+  }
+  dynamic "access_control" {
+    for_each = local.readers
+    content {
+      group_name       = access_control.key
+      permission_level = "CAN_USE"
+    }
   }
   depends_on = [module.dbw]
 }
