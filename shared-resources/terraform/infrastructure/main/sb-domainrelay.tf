@@ -32,6 +32,12 @@ module "sb_domain_relay" {
   ]
 }
 
+resource "azurerm_role_assignment" "spn_sbns" {
+  scope                = module.sb_domain_relay.id
+  role_definition_name = "Azure Service Bus Data Owner"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 # TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_listen_connection_string" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
