@@ -169,3 +169,9 @@ variable "databricks_contributor_dataplane_group" {
   })
   description = "The Databricks group containing users with contributor permissions to the data plane."
 }
+
+variable "settlement_report_auto_stop_minutes" {
+  type        = number
+  description = "Auto termination for Settlement Report SQL Warehouse, 0 means no auto termination."
+  default     = 0
+}

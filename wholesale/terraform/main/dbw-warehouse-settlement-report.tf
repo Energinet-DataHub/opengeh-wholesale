@@ -5,7 +5,7 @@ resource "databricks_sql_endpoint" "settlement_report_sql_endpoint" {
   cluster_size         = "Small"
   min_num_clusters     = 1
   max_num_clusters     = 10
-  auto_stop_mins       = 120
+  auto_stop_mins       = var.settlement_report_auto_stop_minutes
   warehouse_type       = "PRO"
   spot_instance_policy = "RELIABILITY_OPTIMIZED"
   channel {
