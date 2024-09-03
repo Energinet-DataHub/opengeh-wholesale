@@ -21,7 +21,7 @@ from package.calculation.preparation.transformations.grid_loss_responsible impor
 )
 from package.calculation.wholesale.handlers.calculationstep import (
     BaseCalculationStep,
-    Bucket,
+    CacheBucket,
 )
 from package.calculation.wholesale.handlers.repository_interfaces import (
     MeteringPointPeriodRepositoryInterface,
@@ -39,7 +39,7 @@ class CalculateGridLossResponsibleStep(BaseCalculationStep):
         super().__init__()
         self.wholesale_internal_table_reader = wholesale_internal_table_reader
 
-    def handle(self, bucket: Bucket, calculation_output: CalculationOutput) -> None:
+    def handle(self, bucket: CacheBucket, calculation_output: CalculationOutput) -> None:
 
         grid_loss_responsible = (
             self.wholesale_internal_table_reader.read_grid_loss_metering_points()
@@ -73,8 +73,8 @@ class AddMeteringPointPeriodsToBucketStep(BaseCalculationStep):
         self.metering_point_period_repository = metering_point_period_repository
 
     def handle(
-        self, bucket: Bucket, output: CalculationOutput
-    ) -> [Bucket, CalculationOutput]:
+        self, bucket: CacheBucket, output: CalculationOutput
+    ) -> [CacheBucket, CalculationOutput]:
         metering_point_periods = self.metering_point_period_repository.get_by(
             bucket.calculator_args.calculation_grid_areas
         )

@@ -34,9 +34,7 @@ class CalculationStep(ABC):
         pass
 
     @abstractmethod
-    def handle(
-        self, bucket: Bucket, output: CalculationOutput
-    ) -> [Bucket, CalculationOutput]:
+    def handle(self, output: CalculationOutput) -> CalculationOutput:
         pass
 
 
@@ -54,13 +52,11 @@ class BaseCalculationStep(CalculationStep):
         self._next_handler = handler
         return handler
 
-    def handle(
-        self, bucket: Bucket, output: CalculationOutput
-    ) -> [Bucket, CalculationOutput]:
+    def handle(self, output: CalculationOutput) -> CalculationOutput:
         if self._next_handler:
-            return self._next_handler.handle(bucket, output)
-        return bucket, output
+            return self._next_handler.handle(output)
+        return output
 
 
-class Bucket:
+class CacheBucket:
     calculator_args: CalculationMetaData

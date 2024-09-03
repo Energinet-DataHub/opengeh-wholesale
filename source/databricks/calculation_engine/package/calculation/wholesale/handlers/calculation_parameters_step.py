@@ -18,7 +18,6 @@ from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.handlers.calculationstep import (
     BaseCalculationStep,
-    Bucket,
 )
 from package.calculation.wholesale.handlers.repository_interfaces import (
     CalculationMetaData,
@@ -36,9 +35,7 @@ class CreateCalculationMetaDataOutputStep(BaseCalculationStep):
         self.calculator_args = calculator_args
         self.prepared_data_reader = prepared_data_reader
 
-    def handle(
-        self, bucket: Bucket, output: CalculationOutput
-    ) -> [Bucket, CalculationOutput]:
+    def handle(self, output: CalculationOutput) -> CalculationOutput:
 
         latest_version = self.prepared_data_reader.get_latest_calculation_version(
             self.calculator_args.calculation_type
@@ -48,7 +45,7 @@ class CreateCalculationMetaDataOutputStep(BaseCalculationStep):
         next_version = (latest_version or 0) + 1
 
         output.calculation_meta_data = CalculationMetaData(
-            self.calculator_args, next_version
+            self.calculator_args
         )
 
-        return [bucket, output]
+        return output

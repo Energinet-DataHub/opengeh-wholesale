@@ -18,7 +18,7 @@ from package.calculation.wholesale.handlers.calculation_parameters_step import (
     CreateCalculationMetaDataOutputStep,
 )
 from package.calculation.wholesale.handlers.calculationstep import (
-    Bucket,
+    CacheBucket,
     BaseCalculationStep,
 )
 from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
@@ -38,6 +38,7 @@ def chain(
     metering_point_period_repository: MeteringPointPeriodRepositoryInterface,
     prepared_data_reader: PreparedDataReader,
 ) -> None:
+    bucket = CacheBucket()
 
     calculation_meta_data_step = CreateCalculationMetaDataOutputStep(
         calculator_args, prepared_data_reader
@@ -60,4 +61,4 @@ def chain(
     )
 
     # Execute calculation chain
-    calculation_meta_data_step.handle(Bucket(), CalculationOutput())
+    calculation_meta_data_step.handle(CalculationOutput())
