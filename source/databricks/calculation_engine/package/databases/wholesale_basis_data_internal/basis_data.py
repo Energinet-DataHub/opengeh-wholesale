@@ -61,11 +61,11 @@ def get_time_series_points_basis_data(
     return metering_point_time_series.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
-        f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
         f.col(Colname.quantity)
         .alias(TableColumnNames.quantity)
         .cast(DecimalType(18, 3)),
         f.col(Colname.quality).alias(TableColumnNames.quality),
+        f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
     )
 
 
