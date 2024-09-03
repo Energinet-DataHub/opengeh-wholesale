@@ -51,6 +51,20 @@ def parse_job_arguments(
             env_vars.get_quarterly_resolution_transition_datetime()
         )
 
+        _validate_quarterly_resolution_transition_datetime(
+            quarterly_resolution_transition_datetime,
+            time_zone,
+            job_args.calculation_period_start_datetime,
+            job_args.calculation_period_end_datetime,
+        )
+
+        if is_wholesale_calculation_type(job_args.calculation_type):
+            _validate_period_for_wholesale_calculation(
+                time_zone,
+                job_args.calculation_period_start_datetime,
+                job_args.calculation_period_end_datetime,
+            )
+
         calculator_args = CalculatorArgs(
             calculation_id=job_args.calculation_id,
             calculation_grid_areas=job_args.grid_areas,
@@ -67,20 +81,6 @@ def parse_job_arguments(
         _throw_exception_if_internal_calculation_and_not_aggregation_calculation_type(
             calculator_args
         )
-
-        _validate_quarterly_resolution_transition_datetime(
-            quarterly_resolution_transition_datetime,
-            time_zone,
-            calculator_args.calculation_period_start_datetime,
-            calculator_args.calculation_period_end_datetime,
-        )
-
-        if is_wholesale_calculation_type(calculator_args.calculation_type):
-            _validate_period_for_wholesale_calculation(
-                time_zone,
-                calculator_args.calculation_period_start_datetime,
-                calculator_args.calculation_period_end_datetime,
-            )
 
         storage_account_name = env_vars.get_storage_account_name()
         credential = env_vars.get_storage_account_credential()
