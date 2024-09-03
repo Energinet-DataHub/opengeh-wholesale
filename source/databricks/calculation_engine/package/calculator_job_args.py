@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
 import sys
 from argparse import Namespace
+from datetime import datetime
 from typing import Tuple
 
 import configargparse
@@ -25,11 +25,11 @@ from package.codelists.calculation_type import (
     CalculationType,
     is_wholesale_calculation_type,
 )
-from package.common.logger import Logger
 from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
     is_midnight_in_time_zone,
 )
+from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, logging_configuration, paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
@@ -45,24 +45,11 @@ def parse_job_arguments(
     logger.info(f"Command line arguments: {repr(job_args)}")
 
     with logging_configuration.start_span("calculation.parse_job_arguments"):
+
         time_zone = env_vars.get_time_zone()
         quarterly_resolution_transition_datetime = (
             env_vars.get_quarterly_resolution_transition_datetime()
         )
-
-        _validate_quarterly_resolution_transition_datetime(
-            quarterly_resolution_transition_datetime,
-            time_zone,
-            job_args.period_start_datetime,
-            job_args.period_end_datetime,
-        )
-
-        if is_wholesale_calculation_type(job_args.calculation_type):
-            _validate_period_for_wholesale_calculation(
-                time_zone,
-                job_args.period_start_datetime,
-                job_args.period_end_datetime,
-            )
 
         calculator_args = CalculatorArgs(
             calculation_id=job_args.calculation_id,
@@ -76,6 +63,24 @@ def parse_job_arguments(
             quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
             is_internal_calculation=job_args.is_internal_calculation,
         )
+
+        _throw_exception_if_internal_calculation_and_not_aggregation_calculation_type(
+            calculator_args
+        )
+
+        _validate_quarterly_resolution_transition_datetime(
+            quarterly_resolution_transition_datetime,
+            time_zone,
+            calculator_args.calculation_period_start_datetime,
+            calculator_args.calculation_period_end_datetime,
+        )
+
+        if is_wholesale_calculation_type(calculator_args.calculation_type):
+            _validate_period_for_wholesale_calculation(
+                time_zone,
+                calculator_args.calculation_period_start_datetime,
+                calculator_args.calculation_period_end_datetime,
+            )
 
         storage_account_name = env_vars.get_storage_account_name()
         credential = env_vars.get_storage_account_credential()
@@ -170,3 +175,13 @@ def _validate_period_for_wholesale_calculation(
         raise Exception(
             f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({time_zone}))."
         )
+
+
+def _throw_exception_if_internal_calculation_and_not_aggregation_calculation_type(
+    calculator_args: CalculatorArgs,
+) -> None:
+    if (
+        calculator_args.is_internal_calculation
+        and calculator_args.calculation_type != CalculationType.AGGREGATION
+    ):
+        raise Exception("Internal calculations must be of type AGGREGATION. ")
