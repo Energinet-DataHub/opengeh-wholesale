@@ -62,9 +62,6 @@ public static class EventsExtensions
 
         // Health checks
         services.AddHealthChecks()
-            // TODO:
-            // Refactor health check, we must use 'DefaultAzureCredential'. See also https://github.com/Azure/azure-sdk-for-js/issues/24891
-            // Is it possible to use the token credential factory that we already registered, and retrieve it here(?).
             .AddAzureServiceBusSubscription(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
