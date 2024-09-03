@@ -54,15 +54,15 @@ def parse_job_arguments(
         _validate_quarterly_resolution_transition_datetime(
             quarterly_resolution_transition_datetime,
             time_zone,
-            job_args.calculation_period_start_datetime,
-            job_args.calculation_period_end_datetime,
+            job_args.period_start_datetime,
+            job_args.period_end_datetime,
         )
 
         if is_wholesale_calculation_type(job_args.calculation_type):
             _validate_period_for_wholesale_calculation(
                 time_zone,
-                job_args.calculation_period_start_datetime,
-                job_args.calculation_period_end_datetime,
+                job_args.period_start_datetime,
+                job_args.period_end_datetime,
             )
 
         calculator_args = CalculatorArgs(
