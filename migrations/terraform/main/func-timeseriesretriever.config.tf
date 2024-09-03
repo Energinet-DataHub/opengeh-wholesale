@@ -1,5 +1,5 @@
 locals {
-  func_timeseriesmessagesretriever = {
+  func_timeseriesretriever = {
     app_settings = {
       WEBSITE_LOAD_CERTIFICATES                                              = local.datahub2_certificate_thumbprint
       "StorageAccount__Dh2StorageAccountUri"                                 = "https://${module.st_dh2data.name}.blob.core.windows.net"
@@ -16,7 +16,7 @@ locals {
       "FeatureManagement__DataHub2TimeSeriesImport"                          = var.feature_flag_datahub2_time_series_import
       "FeatureManagement__PurgeDurableFunctionHistory"                       = var.feature_flag_purge_durable_function_history
       "FeatureManagement__NewRetrieverAndProcessorOrchestration"             = var.feature_flag_new_ts_orchestration
-      "TimeSeriesSynchronizationTaskHubName"                                 = "TimeSeriesMessagesRetriever01"
+      "TimeSeriesSynchronizationTaskHubName"                                 = "TimeSeriesRetriever01"
 
       # Logging Worker
       "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
