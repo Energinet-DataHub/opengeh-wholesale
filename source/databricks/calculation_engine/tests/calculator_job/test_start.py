@@ -24,6 +24,7 @@ from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
@@ -37,7 +38,11 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, any_calculator_args, infrastructure_settings) -> None:
+    def test_does_not_raise(
+        self,
+        any_calculator_args: CalculatorArgs,
+        infrastructure_settings: InfrastructureSettings,
+    ) -> None:
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
         mock_calculation_execute = Mock()
