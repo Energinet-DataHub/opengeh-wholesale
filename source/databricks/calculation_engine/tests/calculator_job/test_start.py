@@ -17,21 +17,18 @@ import time
 import uuid
 from datetime import timedelta
 from typing import cast, Callable
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
-from package.calculation import CalculationCore
-from package.calculation.calculation_metadata_service import CalculationMetadataService
-from package.calculation.calculation_output_service import CalculationOutputService
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
 class TestWhenInvokedWithInvalidArguments:
-    def test_exits_with_code_2(self):
+    def test_exits_with_code_2(self) -> None:
         """The exit code 2 originates from the argparse library."""
         with pytest.raises(SystemExit) as system_exit:
             start()
@@ -40,23 +37,33 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, any_calculator_args, infrastructure_settings):
+    def test_does_not_raise(self, any_calculator_args, infrastructure_settings) -> None:
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
-        mock_reader = Mock()
-        mock_reader.is_calculation_id_unique.return_value = True
+        mock_calculation_execute = Mock()
+        mock_prepared_data_reader = Mock()
+        mock_prepared_data_reader.is_calculation_id_unique.return_value = True
 
-        start_with_deps(
-            parse_command_line_args=lambda: command_line_args,
-            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=lambda args, reader=mock_reader, calculation_core=CalculationCore(), calculation_metadata_service=CalculationMetadataService(), calculation_output_service=CalculationOutputService(): None,
-        )
+        with patch("package.calculation.execute", mock_calculation_execute):
+            with patch(
+                "package.calculation.PreparedDataReader",
+                return_value=mock_prepared_data_reader,
+            ):
+                # Act
+                start_with_deps(
+                    parse_command_line_args=lambda: command_line_args,
+                    parse_job_args=lambda args: (
+                        any_calculator_args,
+                        infrastructure_settings,
+                    ),
+                    calculation_executor=mock_calculation_execute,
+                )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
         any_calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
-    ):
+    ) -> None:
         """
         Assert that the calculator job adds log records to Azure Monitor with the expected settings:
         - cloud role name = "dbr-calculation-engine"
