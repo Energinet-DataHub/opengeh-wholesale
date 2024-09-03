@@ -19,6 +19,12 @@ if ([string]::IsNullOrWhiteSpace($fileContent)) {
 $classNames = @("EnergyResultsOutput", "WholesaleResultsOutput")
 $fieldsList = @()
 
+# Define a mapping from class name to the desired output value
+$classMapping = @{
+    "EnergyResultsOutput" = "energy_calculation"
+    "WholesaleResultsOutput" = "wholesale_calculation"
+}
+
 foreach ($className in $classNames) {
     # Regex to find the class definition block and the fields directly below it
     $classPattern = "(?sm)@dataclass\s*class\s+$className\s*:\s*([\s\S]*?)^(?=@dataclass|\Z)"
@@ -31,9 +37,12 @@ foreach ($className in $classNames) {
         $fieldPattern = "^\s*(\w+):"
         $fieldMatches = [regex]::Matches($classContent, $fieldPattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
         foreach ($match in $fieldMatches) {
+            # Use the mapping to determine the correct output value for the "Class" column
+            $mappedClassName = $classMapping[$className]
+
             # Add each field to the list as a custom object
             $fieldsList += [PSCustomObject]@{
-                Class = $className
+                Class = $mappedClassName
                 Field = $match.Groups[1].Value
             }
         }
@@ -53,4 +62,3 @@ $csvContent = $csvContent.TrimEnd("`r`n")  # Ensure no trailing newlines
 # Write the CSV content to the file
 Set-Content -Path $csvPath -Value $csvContent -NoNewline
 Write-Host "Field names have been written to $csvPath without an extra newline."
-

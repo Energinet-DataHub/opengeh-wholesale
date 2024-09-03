@@ -7,46 +7,76 @@ $outputCsv = Join-Path -Path $scriptPath -ChildPath "..\find_coverage_script_out
 # Create an empty array to store the rows
 $rows = @()
 
-# Get the current directory where the script is running to search for "given_*" folders
-$rootPath = Get-Location
+# Set the root path to the directory where the search for "given_*" folders should start
+$rootPath = Join-Path -Path $scriptPath -ChildPath "..\..\"
 
-# Recursively search for all "given_" folders at any depth
+# Debug: Output the root path
+Write-Host "Root path: $rootPath"
+
+# Recursively search for all "given_" folders at any depth starting from $rootPath
 $givenFolders = Get-ChildItem -Path $rootPath -Recurse -Directory | Where-Object { $_.Name -like "given_*" }
 
-Write-Host "Coverage folders: $givenFolders"
+# Debug: Output the number of "given_" folders found
+Write-Host "Found $( $givenFolders.Count ) 'given_' folders."
 
 # Loop through each "given_" folder
-foreach ($givenFolder in $givenFolders) {
-    $relativePath = $givenFolder.FullName.Substring($rootPath.Path.Length + 1)
+foreach ($givenFolder in $givenFolders)
+{
+    # Compute the relative path starting from 'tests' folder
+    $testsIndex = $givenFolder.FullName.IndexOf("tests")
+    $relativePath = $givenFolder.FullName.Substring($testsIndex + "tests".Length)
+
+    # Ensure the relative path starts with a backslash for consistent formatting
+    if (-not $relativePath.StartsWith("\"))
+    {
+        $relativePath = "\" + $relativePath
+    }
+
+    Write-Host "Processing 'given_' folder: $relativePath"
 
     # Look for the 'Coverage.py' file in each 'given_' folder
     $coverageFile = Get-ChildItem -Path $givenFolder.FullName -File | Where-Object { $_.Name -eq "Coverage.py" }
-    
 
-    if ($coverageFile) {
+    if ($coverageFile)
+    {
         $coverageContent = Get-Content -Path $coverageFile.FullName
 
-        foreach ($line in $coverageContent) {
-            if ($line.Trim().StartsWith("Tests.")) {
-                # Extracting the specific part after "Tests."
+        foreach ($line in $coverageContent)
+        {
+            if ( $line.Trim().StartsWith("Tests."))
+            {
+                # Extract the specific part after "Tests."
                 $caseCoverage = $line.Trim().Substring("Tests.".Length)
 
-                # Create a row for each valid statement
+                # Extract the last part of the test case string after the last '.'
+                $testCaseName = $caseCoverage.Split('.')[-1]
+
+                # Create a row for each valid statement with the base path and test case name
                 $rows += [PSCustomObject]@{
                     Scenario = $relativePath
-                    CaseCoverage = $caseCoverage
+                    CaseCoverage = $testCaseName
                 }
             }
         }
-    } else {
-        Write-Host "No 'test_coverage.py' file found in $relativePath."
+    }
+    else
+    {
+        Write-Host "No 'Coverage.py' file found in $relativePath."
     }
 }
 
-# Convert the objects to CSV format and then trim the end to remove extra newlines
-$csvContent = $rows | ConvertTo-Csv -NoTypeInformation | Out-String
-$csvContent = $csvContent.TrimEnd("`r`n")  # Ensure no trailing newlines
+# Check if any rows were added
+if ($rows.Count -eq 0)
+{
+    Write-Host "No case coverage data found."
+}
+else
+{
+    # Convert the objects to CSV format and then trim the end to remove extra newlines
+    $csvContent = $rows | ConvertTo-Csv -NoTypeInformation | Out-String
+    $csvContent = $csvContent.TrimEnd("`r`n")  # Ensure no trailing newlines
 
-# Write the CSV content to the file, ensuring file is created even if empty
-Set-Content -Path $outputCsv -Value $csvContent -NoNewline
-Write-Host "Case coverage data has been written and saved to $outputCsv"
+    # Write the CSV content to the file, ensuring file is created even if empty
+    Set-Content -Path $outputCsv -Value $csvContent -NoNewline
+    Write-Host "Case coverage data has been written and saved to $outputCsv"
+}

@@ -1,10 +1,13 @@
-from Coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Tests
 
-# The purpose of this test is the scenario that an exchange metering point is in a grid area, but is exchanging between two other grid areas than the one it is in.
+"""
+## PURPOSE ##
+The purpose of this test is the scenario that an exchange metering point is in a grid area, but is exchanging between two other grid areas than the one it is in.
 
-## Design considerations
+## DESIGN CONSIDERATIONS ## 
 # An E20 sending power into the grid area is included, otherwise we cannot calculate grid loss. But no readings are included for it in time series.
 
-# noinspection PyStatementEffect
-## Cases Tested
+## CASES TESTED ##
+"""
 Tests.CalculationTests.ExchangeCases.Exchange_between_two_ga_where_exchange_MP_is_in_neither_ga
+Tests.CalculationTests.MultipleGridAreasCalculations.Calculation_includes_2_out_of_3_MP_grid_areas_in_input_data
