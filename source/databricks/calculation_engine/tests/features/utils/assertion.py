@@ -15,6 +15,8 @@ from dataclasses import fields
 from typing import Any
 
 from pyspark.sql import DataFrame
+from pyspark.sql.types import StringType
+from pyspark.sql import functions as f
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput
@@ -38,6 +40,11 @@ def assert_output(
         columns_to_skip.append(TableColumnNames.calculation_result_id)
     if "result_id" in expected_result.columns:
         columns_to_skip.append("result_id")
+
+    for column in expected_result.columns:
+        if isinstance(expected_result.schema[column].dataType, StringType):
+            if expected_result.filter(f.col(column) == "IGNORED").count() > 0:
+                columns_to_skip.append(column)
 
     # Sort actual_result and expected_result
     actual_result = actual_result.sort(actual_result.columns)

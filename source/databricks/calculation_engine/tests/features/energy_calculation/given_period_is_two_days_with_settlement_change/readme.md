@@ -1,4 +1,4 @@
-# When period is two days with settlement change
+# Given period is two days with settlement change
 
 The purpose is to test that an consumption metering point changes settlement method
 
@@ -13,11 +13,5 @@ The purpose is to test that an consumption metering point changes settlement met
 
 ## Coverage
 
-Metering point types:
-
-- Exchange (energy in)
-- Flex consumption
-- Nonprofiled consumption
-- Production
-- Flex consumption - grid loss
-- Production - system correction
+- Change of settlement method on an MP
+- Change of resolution on an MP

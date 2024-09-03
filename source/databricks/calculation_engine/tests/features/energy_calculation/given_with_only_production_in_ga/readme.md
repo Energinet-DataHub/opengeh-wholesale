@@ -1,4 +1,4 @@
-# When only production MP in GA
+# Given only production MP in GA
 
 The purpose of this test is the scenario where a grid area only has non-profiled consumption metering points,
 specifically that grid loss calculation is correct.
@@ -10,10 +10,4 @@ specifically that grid loss calculation is correct.
 
 ## Coverage
 
-All metering point types relevant for energy calculations
-
-- Exchange (energy in)
-- Exchange (energy out)
-- Flex consumption (grid loss)
-- Production (system correction)
-- Production
+- Grid area only has Production MPs, but no consumption MPs, except for Grid Loss MP

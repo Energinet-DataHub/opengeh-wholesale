@@ -32,7 +32,11 @@ schema_config = [
                 schema=internal_schemas.calculation_grid_areas_schema,
             ),
         ],
-        views=[],
+        views=[
+            View(
+                name=paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
+            ),
+        ],
     ),
     Schema(
         name=paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
@@ -102,9 +106,6 @@ schema_config = [
         name=paths.WholesaleResultsDatabase.DATABASE_NAME,
         tables=[],
         views=[
-            View(
-                name=paths.WholesaleResultsDatabase.CALCULATIONS_V1_VIEW_NAME,
-            ),
             View(
                 name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
             ),

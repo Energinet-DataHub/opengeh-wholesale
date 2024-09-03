@@ -19,6 +19,9 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
+from package.calculation import CalculationCore
+from package.calculation.calculation_metadata_service import CalculationMetadataService
+from package.calculation.calculation_output_service import CalculationOutputService
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
 from package.codelists.calculation_type import (
@@ -86,7 +89,13 @@ def executed_balance_fixing(
     prepared_data_reader = PreparedDataReader(
         migrations_wholesale_repository, wholesale_internal_repository
     )
-    calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
+    calculation.execute(
+        calculator_args_balance_fixing,
+        prepared_data_reader,
+        CalculationCore(),
+        CalculationMetadataService(),
+        CalculationOutputService(),
+    )
 
 
 @pytest.fixture(scope="session")
@@ -116,7 +125,13 @@ def executed_wholesale_fixing(
     prepared_data_reader = PreparedDataReader(
         migrations_wholesale_repository, wholesale_internal_repository
     )
-    calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
+    calculation.execute(
+        calculator_args_wholesale_fixing,
+        prepared_data_reader,
+        CalculationCore(),
+        CalculationMetadataService(),
+        CalculationOutputService(),
+    )
 
 
 @pytest.fixture(scope="session")
