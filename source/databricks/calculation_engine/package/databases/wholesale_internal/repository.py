@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col
 
 from package.infrastructure.paths import (
     WholesaleInternalDatabase,
@@ -21,6 +22,7 @@ from .schemas import (
     calculations_schema,
 )
 from ..repository_helper import read_table
+from ..table_column_names import TableColumnNames
 
 
 class WholesaleInternalRepository:
@@ -53,4 +55,9 @@ class WholesaleInternalRepository:
             WholesaleInternalDatabase.DATABASE_NAME,
             WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
             calculations_schema,
+        )
+
+    def get_by_calculation_id(self, calculation_id: str) -> DataFrame:
+        return self.read_calculations().where(
+            col(TableColumnNames.calculation_id) == calculation_id
         )
