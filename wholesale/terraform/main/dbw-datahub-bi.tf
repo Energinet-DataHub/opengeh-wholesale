@@ -1,6 +1,6 @@
 # SQL warehouse for SAP BI
 resource "databricks_sql_endpoint" "datahub_bi" {
-  count            = var.datahub_bi_endpoint_enabled ? 1 : 0
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
   provider         = databricks.dbw
   name             = "Datahub BI SQL Endpoint"
@@ -29,7 +29,7 @@ resource "azuread_application" "app_datahub_bi" {
   required_resource_access {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result["AzureDataBricks"]
     resource_access {
-      id   = "739272be-e143-11e8-9f32-f2801f1b9fd1"  # user_impersonation
+      id   = "739272be-e143-11e8-9f32-f2801f1b9fd1" # user_impersonation
       type = "Scope"
     }
   }
@@ -75,34 +75,34 @@ resource "azurerm_role_assignment" "spn_datahub_bi_workspace_access" {
 resource "azuread_application_password" "spn_secret" {
   count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
-  display_name = "spn-secret"
+  display_name   = "spn-secret"
   application_id = azuread_application.app_datahub_bi[0].id
 }
 
 
 # Databricks service principal
 resource "databricks_service_principal" "sp_datahub_bi" {
-  count                 = var.datahub_bi_endpoint_enabled ? 1 : 0
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
   provider              = databricks.dbw
-  application_id        = azuread_application.app_datahub_bi[0].client_id   // Link the MS Entra SPN to the Databricks SPN
+  application_id        = azuread_application.app_datahub_bi[0].client_id // Link the MS Entra SPN to the Databricks SPN
   display_name          = azuread_application.app_datahub_bi[0].display_name
   databricks_sql_access = true
 }
 
 resource "databricks_permissions" "datahub_bi_sql_endpoint" {
-  count            = var.datahub_bi_endpoint_enabled ? 1 : 0
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
   provider        = databricks.dbw
   sql_endpoint_id = databricks_sql_endpoint.datahub_bi[0].id
 
   access_control {
-    group_name       = "SEC-G-Datahub-DevelopersAzure"  //Allow devs read/monitor access in UI
+    group_name       = var.databricks_readers_group.name //Allow devs with reader permissions to read/monitor access in UI
     permission_level = "CAN_MONITOR"
   }
 
   access_control {
-    service_principal_name = azuread_application.app_datahub_bi[0].client_id  //Allow the SPN to use the SQL endpoint
+    service_principal_name = azuread_application.app_datahub_bi[0].client_id //Allow the SPN to use the SQL endpoint
     permission_level       = "CAN_USE"
   }
 
@@ -110,19 +110,19 @@ resource "databricks_permissions" "datahub_bi_sql_endpoint" {
 }
 
 resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_results" {
-  count      = var.datahub_bi_endpoint_enabled ? 1 : 0
-  provider   = databricks.dbw
+  count    = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider = databricks.dbw
 
-  schema     = databricks_schema.results.id  //wholesale_results
+  schema     = databricks_schema.results.id //wholesale_results
   principal  = azuread_application.app_datahub_bi[0].client_id
   privileges = ["USE_SCHEMA", "SELECT"]
 }
 
 resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_sap" {
-  count      = var.datahub_bi_endpoint_enabled ? 1 : 0
-  provider   = databricks.dbw
+  count    = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider = databricks.dbw
 
-  schema     = databricks_schema.sap.id  //wholesale_sap
+  schema     = databricks_schema.sap.id //wholesale_sap
   principal  = azuread_application.app_datahub_bi[0].client_id
   privileges = ["USE_SCHEMA", "SELECT"]
 }
@@ -130,8 +130,8 @@ resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_sap"
 //Needed to interact with objects in schemas
 //See https://docs.databricks.com/en/data-governance/unity-catalog/manage-privileges/privileges.html#use-catalog for details
 resource "databricks_grant" "databricks_spn_database_grant_use_catalog" {
-  count      = var.datahub_bi_endpoint_enabled ? 1 : 0
-  provider   = databricks.dbw
+  count    = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider = databricks.dbw
 
   catalog    = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
   principal  = azuread_application.app_datahub_bi[0].client_id
@@ -143,24 +143,24 @@ resource "databricks_grant" "databricks_spn_database_grant_use_catalog" {
 //as it will be much easier to add more SPNs for external access later on rather than applying the role directly to the SPN
 //See https://registry.terraform.io/providers/databrickslabs/databricks/latest/docs/resources/permissions#token-usage for details
 resource "databricks_group" "external_token_users" {
-  count            = var.datahub_bi_endpoint_enabled ? 1 : 0
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
-  provider         = databricks.dbw
-  display_name     = "ExternalTokenUsers"
+  provider     = databricks.dbw
+  display_name = "ExternalTokenUsers"
 }
 
 resource "databricks_group_member" "sp_datahub_bi_exttokenusers_membership" {
-  count            = var.datahub_bi_endpoint_enabled ? 1 : 0
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
-  provider         = databricks.dbw
+  provider  = databricks.dbw
   group_id  = databricks_group.external_token_users[0].id
   member_id = databricks_service_principal.sp_datahub_bi[0].id
 }
 
 resource "databricks_permissions" "token_access" {
-  count            = var.datahub_bi_endpoint_enabled ? 1 : 0
+  count = var.datahub_bi_endpoint_enabled ? 1 : 0
 
-  provider         = databricks.dbw
+  provider = databricks.dbw
   # Note: There can only be one 'authorization = "tokens"' permissions resource per workspace
   # See https://registry.terraform.io/providers/databrickslabs/databricks/latest/docs/resources/permissions#token-usage for details
   authorization = "tokens"
@@ -194,7 +194,7 @@ resource "shell_script" "create_datahub_bi_token" {
 
   environment = {
     workspaceUrl       = "${module.dbw.workspace_url}"
-    lifetimeSeconds    = "${60 * 60 * 24 * 400}"  # Token is valid for 400 days
+    lifetimeSeconds    = "${60 * 60 * 24 * 400}" # Token is valid for 400 days
     tenantId           = "${data.azuread_client_config.current.tenant_id}"
     clientId           = "${azuread_application.app_datahub_bi[0].client_id}"
     clientSecret       = "${resource.azuread_application_password.spn_secret[0].value}"
@@ -205,10 +205,10 @@ resource "shell_script" "create_datahub_bi_token" {
   interpreter = ["/bin/bash", "-c"]
 
   triggers = {
-    rotation       = time_rotating.datahub_bi_token[0].rfc3339
-    workspace      = module.dbw.workspace_url,
-    clientId       = azuread_application.app_datahub_bi[0].client_id,
-    clientSecret   = resource.azuread_application_password.spn_secret[0].value
+    rotation     = time_rotating.datahub_bi_token[0].rfc3339
+    workspace    = module.dbw.workspace_url,
+    clientId     = azuread_application.app_datahub_bi[0].client_id,
+    clientSecret = resource.azuread_application_password.spn_secret[0].value
   }
 
   // One has to manually maintain dependencies as Terraform has no idea what the script does.
