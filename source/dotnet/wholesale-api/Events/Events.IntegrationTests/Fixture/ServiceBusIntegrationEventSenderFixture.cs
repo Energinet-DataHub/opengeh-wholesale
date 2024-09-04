@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
@@ -36,10 +37,10 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
-            integrationTestConfiguration.ServiceBusConnectionString,
-            new TestDiagnosticsLogger());
+            new TestDiagnosticsLogger(),
+            integrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
 
-        ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusConnectionString);
+        ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
 
         IntegrationEventsOptions = Options.Create(
             new IntegrationEventsOptions

@@ -46,7 +46,7 @@ public class CompositionRootTests
         var testConfiguration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ServiceBus:ConnectionString"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
+                ["ServiceBus:FullyQualifiedNamespace"] = "https://unknown.servicebus.windows.net/",
                 ["IntegrationEvents:TopicName"] = "NotEmpty",
                 ["IntegrationEvents:SubscriptionName"] = "NotEmpty",
                 ["UserAuthentication:MitIdExternalMetadataAddress"] = "NotEmpty",
