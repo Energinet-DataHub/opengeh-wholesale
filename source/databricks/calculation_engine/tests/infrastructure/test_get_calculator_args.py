@@ -552,8 +552,8 @@ class TestWhenInternalCalculation:
             sys_argv_from_contract, calculation_type
         )
 
-        period_start_datetime = datetime(2022, 5, 31, 22)
-        period_end_datetime = datetime(2022, 6, 30, 22)
+        period_start_datetime = datetime(2022, 5, 31, 23)
+        period_end_datetime = datetime(2022, 6, 30, 23)
         sys_argv = _substitute_period(
             sys_argv, period_start_datetime, period_end_datetime
         )
