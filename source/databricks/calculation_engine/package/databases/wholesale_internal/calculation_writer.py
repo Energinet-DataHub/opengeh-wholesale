@@ -87,6 +87,15 @@ def write_calculation_succeeded_time(
 
     spark.sql(
         f"""
+        UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}
+        SET {TableColumnNames.calculation_succeeded_time} = current_timestamp()
+        WHERE {TableColumnNames.calculation_id} = '{calculation_id}'
+        """
+    )
+
+    # ToDo JMG: Remove when use of calculations_v1 is fully implemented
+    spark.sql(
+        f"""
         UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}
         SET {TableColumnNames.calculation_succeeded_time} = current_timestamp()
         WHERE {TableColumnNames.calculation_id} = '{calculation_id}'
