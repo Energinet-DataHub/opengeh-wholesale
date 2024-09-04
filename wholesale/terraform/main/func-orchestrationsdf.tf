@@ -44,6 +44,21 @@ module "func_orchestrationsdf" {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      // ServiceBus Integration Events Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
+      // ServiceBus Wholesale Inbox Queue
+      resource_id          = data.azurerm_key_vault_secret.sbq_wholesale_inbox_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
+      // ServiceBus EDI Inbox Queue
+      resource_id          = data.azurerm_key_vault_secret.sbq_edi_inbox_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
 }

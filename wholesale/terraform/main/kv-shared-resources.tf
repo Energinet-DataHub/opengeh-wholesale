@@ -13,6 +13,10 @@ data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+//
+// Application Insights
+//
+
 data "azurerm_key_vault_secret" "appi_shared_connection_string" {
   name         = "appi-shared-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -22,6 +26,10 @@ data "azurerm_key_vault_secret" "appi_shared_id" {
   name         = "appi-shared-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+//
+// DataLake
+//
 
 data "azurerm_key_vault_secret" "st_data_lake_name" {
   name         = "st-data-lake-name"
@@ -33,12 +41,6 @@ data "azurerm_key_vault_secret" "st_data_lake_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-# ID of the shared servicebus namespace
-data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
-  name         = "sbt-shres-integrationevent-received-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "st_data_lake_blob_private_ip_address" {
   name         = "st-data-lake-blob-private-ip-address"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -46,5 +48,29 @@ data "azurerm_key_vault_secret" "st_data_lake_blob_private_ip_address" {
 
 data "azurerm_key_vault_secret" "st_data_lake_dfs_private_ip_address" {
   name         = "st-data-lake-dfs-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+//
+// ServiceBus
+//
+
+data "azurerm_key_vault_secret" "sb_domainrelay_namespace_id" {
+  name         = "sb-domain-relay-namespace-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
+  name         = "sbt-shres-integrationevent-received-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbq_wholesale_inbox_id" {
+  name         = "sbq-wholesale-inbox-messagequeue-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbq_edi_inbox_id" {
+  name         = "sbq-edi-inbox-messagequeue-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

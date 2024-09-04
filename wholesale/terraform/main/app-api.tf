@@ -41,6 +41,11 @@ module "app_api" {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      // ServiceBus Integration Events Subscription
+      resource_id          = module.sbtsub_wholesale_integration_event_listener.id
+      role_definition_name = "Azure Service Bus Data Receiver"
     }
   ]
 }
