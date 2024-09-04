@@ -99,3 +99,26 @@ module "kvs_shared_databricks_dbw_workspace_token" {
   value        = module.dbw.databricks_token
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+
+resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
+  name                       = "dbw-diagnostic-settings"
+  target_resource_id         = module.dbw.id
+  log_analytics_workspace_id = data.azurerm_key_vault_secret.log_shared_id.value
+
+  enabled_log {
+    category = "jobs"
+  }
+
+  enabled_log {
+    category = "workspace"
+  }
+
+  enabled_log {
+    category = "sqlanalytics"
+  }
+
+  enabled_log {
+    category = "databrickssql"
+  }
+}

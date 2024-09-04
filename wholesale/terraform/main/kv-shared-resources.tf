@@ -27,6 +27,16 @@ data "azurerm_key_vault_secret" "appi_shared_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+
+//
+// Log Analytic Workspace
+//
+
+data "azurerm_key_vault_secret" "log_shared_id" {
+  name         = "log-shared-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 //
 // DataLake
 //
