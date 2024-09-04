@@ -3,7 +3,7 @@ locals {
   func_settlement_reports_df = {
     app_settings = {
       # Timeout
-      "AzureFunctionsJobHost__functionTimeout" = "01:00:00"
+      "AzureFunctionsJobHost__functionTimeout" = "11:00:00"
 
       # Storage (Blob)
       "SettlementReportStorage__StorageAccountUri"    = local.BLOB_STORAGE_ACCOUNT_URI
