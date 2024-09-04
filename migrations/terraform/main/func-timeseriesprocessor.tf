@@ -11,7 +11,7 @@ module "func_timeseriesprocessor" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_service_plan_id                    = module.func_service_plan.id
+  app_service_plan_id                    = module.message_processor_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
