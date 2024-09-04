@@ -11,11 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
 import re
+from datetime import datetime
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
+
 from package.calculator_job_args import (
     parse_job_arguments,
     parse_command_line_arguments,
@@ -534,3 +535,46 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
             "The quarterly resolution transition datetime must be at midnight local time (Europe/Copenhagen)."
             in actual_error_message
         )
+
+
+class TestWhenInternalCalculation:
+
+    @pytest.mark.parametrize("index, calculation_type", enumerate(CalculationType))
+    def test_raise_exception_when_calculation_is_not_aggregation(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+        index: int,
+        calculation_type: CalculationType,
+    ) -> None:
+        # Arrange
+        quarter_transition_datetime = "2023-01-31T23:00:00Z"
+        job_environment_variables[
+            EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name
+        ] = quarter_transition_datetime
+        sys_argv = _substitute_calculation_type(
+            sys_argv_from_contract, calculation_type
+        )
+
+        period_start_datetime = datetime(2022, 5, 31, 22)
+        period_end_datetime = datetime(2022, 6, 30, 22)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+                command_line_args.is_internal_calculation = True
+
+                if calculation_type == CalculationType.AGGREGATION:
+                    # Act
+                    parse_job_arguments(command_line_args)
+                    assert True
+                else:
+                    with pytest.raises(Exception) as error:
+                        # Act
+                        parse_job_arguments(command_line_args)
+
+                    # Assert
+                    assert error.value != 0
