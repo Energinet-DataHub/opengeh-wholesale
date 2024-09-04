@@ -122,14 +122,14 @@ resource "azuread_invitation" "lanni" {
 #JUJ
 resource "azuread_directory_role_assignment" "juj" {
   count               = 1
-  role_id             = azuread_directory_role.global_admin.template_id
+  role_id             = azuread_directory_role.global_reader.template_id
   principal_object_id = azuread_invitation.juj[0].user_id
 }
 
 resource "azuread_invitation" "juj" {
   count              = 1
   user_email_address = "juj@energinet.dk"
-  user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
+  user_display_name  = "Jesper Justesen (Raccoons)"
   redirect_url       = "https://portal.azure.com"
 }
 
@@ -137,7 +137,7 @@ resource "azuread_invitation" "juj" {
 resource "azuread_invitation" "aiu" {
   count              = 1
   user_email_address = "aiu@energinet.dk"
-  user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
+  user_display_name  = "Alexei Mihalchuk (Raccoons)"
   redirect_url       = "https://portal.azure.com"
 }
 
