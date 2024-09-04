@@ -11,6 +11,7 @@ module "st_dh2timeseries_intermediary" {
   access_tier                = "Hot"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
+  prevent_deletion           = false
 }
 
 #---- Role assignments
