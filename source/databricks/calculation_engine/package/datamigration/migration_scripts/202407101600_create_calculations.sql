@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.cal
     created_by_user_id STRING NOT NULL,
     calculation_version BIGINT NOT NULL
 )
-CLUSTER BY (calculation_id, calculation_type)
 USING DELTA
+CLUSTER BY (calculation_id, calculation_type)
 TBLPROPERTIES (
     delta.deletedFileRetentionDuration = 'interval 30 days',
     delta.columnMapping.mode = 'name',
