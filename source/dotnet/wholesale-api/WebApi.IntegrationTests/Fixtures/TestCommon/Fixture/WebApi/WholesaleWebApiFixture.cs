@@ -42,8 +42,8 @@ public class WholesaleWebApiFixture : WebApiFixture
         DatabricksTestManager.DatabricksToken = IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken;
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestLogger);
+            TestLogger,
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
     }
 
     public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
@@ -97,8 +97,8 @@ public class WholesaleWebApiFixture : WebApiFixture
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
 
         Environment.SetEnvironmentVariable(
-            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
-            ServiceBusResourceProvider.ConnectionString);
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}",
+            ServiceBusResourceProvider.FullyQualifiedNamespace);
 
         await ServiceBusResourceProvider
             .BuildTopic("integration-events")

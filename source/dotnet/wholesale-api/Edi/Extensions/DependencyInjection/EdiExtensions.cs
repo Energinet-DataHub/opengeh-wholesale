@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Edi.Client;
@@ -47,10 +48,10 @@ public static class EdiExtensions
 
         // Health checks
         services.AddHealthChecks()
-            // Must use a listener connection string
             .AddAzureServiceBusQueue(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
+                sp => new DefaultAzureCredential(),
                 name: "EdiInboxQueue");
 
         // Validation helpers
