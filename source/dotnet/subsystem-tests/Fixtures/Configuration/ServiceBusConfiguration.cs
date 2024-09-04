@@ -23,26 +23,20 @@ public sealed class ServiceBusConfiguration
 {
     private ServiceBusConfiguration(
         string fullyQualifiedNamespace,
-        string connectionString,
         string subsystemRelayTopicName,
         string wholesaleInboxQueueName)
     {
         if (string.IsNullOrWhiteSpace(fullyQualifiedNamespace))
             throw new ArgumentException("Cannot be null or whitespace.", nameof(fullyQualifiedNamespace));
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new ArgumentException("Cannot be null or whitespace.", nameof(connectionString));
         if (string.IsNullOrWhiteSpace(subsystemRelayTopicName))
             throw new ArgumentException("Cannot be null or whitespace.", nameof(subsystemRelayTopicName));
         if (string.IsNullOrWhiteSpace(wholesaleInboxQueueName))
             throw new ArgumentException("Cannot be null or whitespace.", nameof(wholesaleInboxQueueName));
 
         FullyQualifiedNamespace = fullyQualifiedNamespace;
-        ConnectionString = connectionString;
         SubsystemRelayTopicName = subsystemRelayTopicName;
         WholesaleInboxQueueName = wholesaleInboxQueueName;
     }
-
-    public string WholesaleInboxQueueName { get; set; }
 
     /// <summary>
     /// Fully qualified namespace for the shared service bus.
@@ -50,14 +44,11 @@ public sealed class ServiceBusConfiguration
     public string FullyQualifiedNamespace { get; }
 
     /// <summary>
-    /// Connection string for the shared service bus.
-    /// </summary>
-    public string ConnectionString { get; }
-
-    /// <summary>
     /// Service bus topic name for the subsystem relay messages (integration events).
     /// </summary>
     public string SubsystemRelayTopicName { get; internal set; }
+
+    public string WholesaleInboxQueueName { get; set; }
 
     /// <summary>
     /// Retrieve secrets from Key Vaults and create configuration.
@@ -65,11 +56,8 @@ public sealed class ServiceBusConfiguration
     /// <param name="secretsConfiguration">A configuration that has been built so it can retrieve secrets from the shared key vault.</param>
     public static ServiceBusConfiguration CreateFromConfiguration(IConfigurationRoot secretsConfiguration)
     {
-        var serviceBusNamespace = secretsConfiguration.GetValue<string>("sb-domain-relay-namespace-name")!;
-
         return new ServiceBusConfiguration(
-            $"{serviceBusNamespace}.servicebus.windows.net",
-            secretsConfiguration.GetValue<string>("sb-domain-relay-transceiver-connection-string")!,
+            secretsConfiguration.GetValue<string>("sb-domain-relay-namespace-endpoint")!,
             secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!,
             secretsConfiguration.GetValue<string>("sbq-wholesale-inbox-messagequeue-name")!);
     }

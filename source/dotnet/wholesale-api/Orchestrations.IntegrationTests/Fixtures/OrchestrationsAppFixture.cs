@@ -71,12 +71,12 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             AzuriteManager.FullConnectionString);
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestLogger);
+            TestLogger,
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
 
         ServiceBusListenerMock = new ServiceBusListenerMock(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestLogger);
+            TestLogger,
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
@@ -345,8 +345,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         // ServiceBus connection strings
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
-            ServiceBusResourceProvider.ConnectionString);
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}",
+            ServiceBusResourceProvider.FullyQualifiedNamespace);
 
         // Settlement Report blob storage configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
