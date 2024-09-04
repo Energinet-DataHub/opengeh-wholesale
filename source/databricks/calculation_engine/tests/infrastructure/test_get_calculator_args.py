@@ -548,12 +548,16 @@ class TestWhenInternalCalculation:
         calculation_type: CalculationType,
     ) -> None:
         # Arrange
+        quarter_transition_datetime = "2023-01-31T23:00:00Z"
+        job_environment_variables[
+            EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name
+        ] = quarter_transition_datetime
         sys_argv = _substitute_calculation_type(
             sys_argv_from_contract, calculation_type
         )
 
-        period_start_datetime = datetime(2022, 5, 31, 23)
-        period_end_datetime = datetime(2022, 6, 30, 23)
+        period_start_datetime = datetime(2022, 5, 31, 22)
+        period_end_datetime = datetime(2022, 6, 30, 22)
         sys_argv = _substitute_period(
             sys_argv, period_start_datetime, period_end_datetime
         )
