@@ -8,32 +8,32 @@ class Tests:
 
     class CalculationTests:
         Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change: str
+        Calculation_input_data_includes_other_ga: str
 
         class MeteringPointMasterDataUpdates:
             Change_of_settlement_method_on_an_MP: str
             Change_of_resolution_on_an_MP: str
             Change_of_balance_responsible_on_an_MP: str
             Change_of_energy_supplier_on_an_MP: str
-            Change_of_resolution_on_an_MP: str
             Energy_Supplier_change_on_Grid_Loss_MP: str
             Energy_Supplier_change_on_System_Correction_MP: str
             Balance_Responsible_change_on_Grid_Loss_MP: str
             Balance_Responsible_change_on_System_Correction_MP: str
             MP_is_shut_down_in_calculation_period: str
+            MP_is_starts_up_in_calculation_period: str
+
+            # hmm?
             Metering_point_used_as_input_to_wholesale_results_changes_energy_supplier: str
 
         class ExchangeCases:
             Exchange_between_two_ga_where_exchange_MP_is_in_neither_ga: str
             Exchange_MP_where_from_and_to_is_the_same_grid_area: str
-            Exchange_MP_where_exchange_is_between_two_other_grid_areas_than_the_one_it_is_in: str
 
         class UnusualGridAreaSetups:
-            Grid_area_only_has_nonprofiled_MPs_Production_MPs_but_no_Flex_MPs_except_for_Grid_Loss_MP: str
-            Grid_area_with_only_Exchange_MP_just_one_direction: str
-            Grid_area_with_only_Exchange_MP_and_Grid_Loss_MP_and_System_Correction_MP: str
-            Grid_with_E20_in_neighbour_grid_area_and_Grid_Loss_MP_and_System_Correction_MP: str
+            Grid_area_with_only_non_profiled_MP: str
+            Grid_area_with_only_exchange_MP: str
+            Grid_area_with_only_production_MP: str
             Energy_Supplier_only_has_Grid_Loss_MP_or_System_Correction_MP: str
-            Grid_area_only_has_Production_MPs_but_no_consumption_MPs_except_for_Grid_Loss_MP: str
 
         class PriceElementUpdates:
             Extra_fees_are_added_to_MP_in_calculation_period: str
@@ -44,7 +44,7 @@ class Tests:
             When_to_date_for_a_price_element_in_charge_master_data_is_in_calculation_period: str
             Active_price_elements_and_charge_links_in_calculation_period_no_price_points_in_the_calculation_period: str
 
-        class MultipleGridAreasCalculations:
+        class MultipleGridAreasInCalculations:
             Calculation_covers_multiple_grid_areas: str
             Calculation_includes_2_out_of_3_MP_grid_areas_in_input_data: str
 

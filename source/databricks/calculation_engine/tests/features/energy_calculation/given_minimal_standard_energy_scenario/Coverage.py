@@ -9,6 +9,7 @@ time period (one hour).
 - Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
   metering point type
 - Input quantities have been set so production, flex, and nonprofiled do not produce the same result.
+- Input data has MPs not included in calculation
 - Energy Supplier and Balance Responsible id's have set so that ga_es, ga_brp and ga_brp_es do not produce the same
   result/rows.
 - Oracle Excel-sheet included (Oracle - minimal standard calculation.xlsx)
@@ -20,4 +21,4 @@ time period (one hour).
 
 ## CASES TESTED ##
 """
-Tests.CalculationTests.ExchangeCases.Exchange_MP_where_from_and_to_is_the_same_grid_area
+Tests.CalculationTests.Calculation_input_data_includes_other_ga
