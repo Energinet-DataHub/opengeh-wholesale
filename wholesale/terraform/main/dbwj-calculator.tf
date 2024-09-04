@@ -9,7 +9,7 @@ resource "databricks_job" "calculator_job" {
 
     new_cluster {
       spark_version = local.spark_version
-      node_type_id  = "Standard_DS4_v2"
+      node_type_id  = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 4
@@ -21,7 +21,6 @@ resource "databricks_job" "calculator_job" {
         "fs.azure.account.oauth.provider.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
         "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
-        "spark.databricks.delta.preview.enabled" : true
         # aggressiveWindowDownS specifies in seconds how often a cluster makes down-scaling decisions. Adjusted from 40 (default), to keep more machines running for longer, even in periods of low CPU-usage, such as when writes are happening.
         "spark.databricks.aggressiveWindowDownS" : 300
       }

@@ -9,10 +9,10 @@ resource "databricks_job" "migrations_job" {
 
     new_cluster {
       spark_version = local.spark_version
-      node_type_id  = "Standard_DS3_v2"
+      node_type_id  = "Standard_D8as_v4"
       autoscale {
         min_workers = 1
-        max_workers = 4
+        max_workers = 10
       }
       spark_conf = {
         "fs.azure.account.oauth2.client.endpoint.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
@@ -20,7 +20,6 @@ resource "databricks_job" "migrations_job" {
         "fs.azure.account.oauth.provider.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
         "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
-        "spark.databricks.delta.preview.enabled" : true
         # TODO JMG: Set Unity Catalog as the default catalog (data.azurerm_key_vault_secret.shared_unity_catalog_name.value) when hive migration scripts are removed from the wholesale repo
         "spark.databricks.sql.initial.catalog.name" : "hive_metastore"
       }
