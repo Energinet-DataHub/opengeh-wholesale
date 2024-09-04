@@ -85,30 +85,6 @@ resource "azurerm_monitor_metric_alert" "dropzoneunzipper_cl_metric_alert" {
   window_size = "P1D"
 }
 
-resource "azurerm_monitor_metric_alert" "dropzoneunzipper_healthcheck_alert" {
-  name                = "alert-dropzoneunzipper-healthcheck-${local.resources_suffix}"
-  resource_group_name = azurerm_resource_group.this.name
-  scopes              = [module.func_dropzoneunzipper.id]
-  description         = "Triggers if there has been a failed health check in the past hour in the dropzoneunzipper function"
-  severity            = 1
-  enabled             = true
-
-  criteria {
-    metric_namespace = "microsoft.web/sites"
-    metric_name      = "HealthCheckStatus"
-    aggregation      = "Average"
-    operator         = "LessThan"
-    threshold        = 100
-  }
-
-  action {
-    action_group_id = module.monitor_action_group_mig[0].id
-  }
-
-  frequency   = "PT5M"
-  window_size = "PT5M"
-}
-
 resource "azurerm_monitor_metric_alert" "timeseriessynchronization_ts_metric_alert" {
   name                = "alert-timeseriessynchronization-ts-sync-not-received-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
@@ -165,28 +141,4 @@ resource "azurerm_monitor_metric_alert" "timeseriessynchronization_deadletter_qu
 
   frequency   = "PT1H"
   window_size = "PT1H"
-}
-
-resource "azurerm_monitor_metric_alert" "timeseriessynchronization_healthcheck_alert" {
-  name                = "alert-timeseriessynchronization-healthcheck-${local.resources_suffix}"
-  resource_group_name = azurerm_resource_group.this.name
-  scopes              = [module.func_timeseriessynchronization.id]
-  description         = "Triggers if there has been a failed health check in the past hour in the timeseriessynchronization function"
-  severity            = 1
-  enabled             = true
-
-  criteria {
-    metric_namespace = "microsoft.web/sites"
-    metric_name      = "HealthCheckStatus"
-    aggregation      = "Average"
-    operator         = "LessThan"
-    threshold        = 100
-  }
-
-  action {
-    action_group_id = module.monitor_action_group_mig[0].id
-  }
-
-  frequency   = "PT5M"
-  window_size = "PT5M"
 }
