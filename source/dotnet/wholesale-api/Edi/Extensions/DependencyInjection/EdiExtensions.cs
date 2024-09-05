@@ -53,9 +53,11 @@ public static class EdiExtensions
 
         services.AddAzureClients(builder =>
         {
-            var ediInboxQueueOptions = configuration
-                .GetRequiredSection(EdiInboxQueueOptions.SectionName)
-                .Get<EdiInboxQueueOptions>()!;
+            var ediInboxQueueOptions =
+                configuration
+                    .GetRequiredSection(EdiInboxQueueOptions.SectionName)
+                    .Get<EdiInboxQueueOptions>()
+                ?? throw new InvalidOperationException("Missing EDI Inbox configuration.");
 
             builder
                 .AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>

@@ -66,9 +66,11 @@ public static class EventsExtensions
 
         services.AddAzureClients(builder =>
         {
-            var integrationEventsOptions = configuration
-                .GetRequiredSection(IntegrationEventsOptions.SectionName)
-                .Get<IntegrationEventsOptions>()!;
+            var integrationEventsOptions =
+                configuration
+                    .GetRequiredSection(IntegrationEventsOptions.SectionName)
+                    .Get<IntegrationEventsOptions>()
+                ?? throw new InvalidOperationException("Missing Integration Events configuration.");
 
             builder
                 .AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>
