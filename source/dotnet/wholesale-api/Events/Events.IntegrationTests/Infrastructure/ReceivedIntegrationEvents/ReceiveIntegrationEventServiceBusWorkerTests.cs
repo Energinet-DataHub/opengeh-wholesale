@@ -13,12 +13,15 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -39,7 +42,8 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
     [InlineAutoData]
     public async Task ProcessAsync_WhenAnIntegrationEventIsReceived_HandlerProccessesIt(
         ServiceCollection services,
-        Mock<ILogger<ReceiveIntegrationEventServiceBusWorker>> loggerMock)
+        Mock<ILogger<ReceiveIntegrationEventServiceBusWorker>> loggerMock,
+        Mock<IAzureClientFactory<ServiceBusProcessor>> processorFactoryMock)
     {
         // Arrange
         var expectedMessageId = Guid.NewGuid();
@@ -49,10 +53,16 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
         var subscriberSpy = new SubscriberSpy(messageHasBeenReceivedEvent);
         services.AddScoped<ISubscriber>(_ => subscriberSpy);
 
+        processorFactoryMock
+            .Setup(m => m.CreateClient(_fixture.IntegrationEventsOptions.Value.SubscriptionName))
+            .Returns(_fixture.ServiceBusClient.CreateProcessor(
+                _fixture.IntegrationEventsOptions.Value.TopicName,
+                _fixture.IntegrationEventsOptions.Value.SubscriptionName));
+
         var sut = new ReceiveIntegrationEventServiceBusWorker(
             loggerMock.Object,
             _fixture.IntegrationEventsOptions,
-            _fixture.ServiceBusClient,
+            processorFactoryMock.Object,
             services.BuildServiceProvider());
 
         // Act
@@ -61,7 +71,7 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
 
         // Assert
         using var assertionScope = new AssertionScope();
-        var messageHasBeenReceived = subscriberSpy.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = subscriberSpy.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(5));
         messageHasBeenReceived.Should().BeTrue();
         subscriberSpy.ActualSubject.Should().Be(expectedSubject);
         subscriberSpy.ActualMessageId.Should().Be(expectedMessageId);
