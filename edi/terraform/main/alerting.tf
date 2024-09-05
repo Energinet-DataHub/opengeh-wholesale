@@ -28,7 +28,7 @@ module "monitor_action_group_edi" {
                         | where timestamp > ago(10m)
                         | where customDimensions["Subsystem"] == "EDI"
                         // avoid triggering alert when exception is logged as a warning or lower
-                        | where severityLevel >= 2
+                        | where severityLevel >= 3
                         // avoid triggering alert when exception is logged by health check
                         | where customDimensions["EventName"] != "HealthCheckEnd"
                     QUERY
