@@ -101,6 +101,13 @@ resource "databricks_external_location" "settlement_report" {
   depends_on      = [azurerm_databricks_workspace.this, time_sleep.wait_role_assignment, module.st_settlement_report]
 }
 
+# Give the access connector the necessary role on the storage account
+resource "azurerm_role_assignment" "st_settlement_report_contributor" {
+  scope                = module.st_settlement_report.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_databricks_access_connector.this.identity[0].principal_id
+}
+
 module "settlement_report_external_location" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
