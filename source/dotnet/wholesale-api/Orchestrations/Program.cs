@@ -55,7 +55,7 @@ var host = new HostBuilder()
             .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
 
         // ServiceBus channels
-        services.AddIntegrationEventsPublishing();
+        services.AddIntegrationEventsPublishing(context.Configuration);
         services
             .AddInboxSubscription()
             .AddCalculationOrchestrationInboxRequestHandler();

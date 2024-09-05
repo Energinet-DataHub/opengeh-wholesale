@@ -57,9 +57,11 @@ public static class EdiExtensions
                 .GetRequiredSection(EdiInboxQueueOptions.SectionName)
                 .Get<EdiInboxQueueOptions>()!;
 
-            builder.AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>
-                provider.GetRequiredService<ServiceBusClient>()
-                    .CreateSender(ediInboxQueueOptions.QueueName))
+            builder
+                .AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>
+                    provider
+                        .GetRequiredService<ServiceBusClient>()
+                        .CreateSender(ediInboxQueueOptions.QueueName))
                 .WithName(ediInboxQueueOptions.QueueName);
         });
 
