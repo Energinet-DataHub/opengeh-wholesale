@@ -25,3 +25,4 @@ def run_settlement_report(catalog_name: str | None = None) -> None:
     catalog_name = catalog_name or env_vars.get_catalog_name()
 
     print("reached entrypoint")
+    logger.info("reached entrypoint")
