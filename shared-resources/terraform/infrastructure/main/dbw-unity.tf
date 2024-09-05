@@ -92,6 +92,23 @@ resource "databricks_grant" "self_storage_credential" {
   depends_on = [azurerm_databricks_workspace.this]
 }
 
+resource "databricks_external_location" "settlement_report" {
+  provider        = databricks.dbw
+  name            = "reports_${module.st_settlement_report.name}"
+  url             = "abfss://reports@${module.st_settlement_report.name}.dfs.core.windows.net/"
+  credential_name = local.credential_name
+  comment         = "Managed by TF"
+  depends_on      = [azurerm_databricks_workspace.this, time_sleep.wait_role_assignment, module.st_settlement_report]
+}
+
+module "settlement_report_external_location" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+
+  name         = "settlement-report-external-location-url"
+  value        = databricks_external_location.settlement_report.url
+  key_vault_id = module.kv_shared.id
+}
+
 module "shared_unity_catalog_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
 
