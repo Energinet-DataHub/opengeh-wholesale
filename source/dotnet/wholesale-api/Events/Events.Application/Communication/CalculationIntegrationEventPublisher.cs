@@ -53,15 +53,12 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
     public async Task PublishAsync(CalculationDto completedCalculation, string orchestrationInstanceId, CancellationToken cancellationToken)
     {
-        var stopwatch = Stopwatch.StartNew();
-        var eventCount = 0;
         var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
         await foreach (var @event in GetAsync(completedCalculation, orchestrationInstanceId).WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            eventCount++;
             var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
             if (!messageBatch.TryAddMessage(serviceBusMessage))
             {
@@ -82,11 +79,6 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         catch (Exception e)
         {
             _logger.LogError(e, "Failed to publish messages");
-        }
-
-        if (eventCount > 0)
-        {
-            _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
         }
     }
 
