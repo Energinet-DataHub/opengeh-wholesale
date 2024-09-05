@@ -1,4 +1,4 @@
-/* module "func_timeseriesretriever" {
+module "func_timeseriesretriever" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_5.0.0"
 
   name                                   = "timeseriesretriever"
@@ -48,4 +48,3 @@
     }
   ]
 }
- */
