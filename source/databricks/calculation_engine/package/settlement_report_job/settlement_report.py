@@ -18,11 +18,10 @@ from package.common.logger import Logger
 import package.infrastructure.environment_variables as env_vars
 
 
-def run_settlement_report(catalog_name: str | None = None) -> None:
-    logger = Logger(__name__)
+def start() -> None:
+    # logger = Logger(__name__)
 
     # spark = initialize_spark()
-    catalog_name = catalog_name or env_vars.get_catalog_name()
+    # catalog_name = catalog_name or env_vars.get_catalog_name()
 
     print("reached entrypoint")
-    logger.info("reached entrypoint")
