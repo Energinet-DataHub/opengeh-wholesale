@@ -38,16 +38,6 @@ data "azurerm_key_vault_secret" "mssql_data_elastic_pool_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "sb_domain_relay_namespace_id" {
-  name         = "sb-domain-relay-namespace-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
-  name         = "sbt-shres-integrationevent-received-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "apim_instance_name" {
   name         = "apim-instance-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -100,5 +90,29 @@ data "azurerm_key_vault_secret" "shared_adf_principal_id" {
 
 data "azurerm_key_vault_secret" "appi_shared_connection_string" {
   name         = "appi-shared-connection-string"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+//
+// ServiceBus
+//
+
+data "azurerm_key_vault_secret" "sb_domain_relay_namespace_id" {
+  name         = "sb-domain-relay-namespace-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
+  name         = "sbt-shres-integrationevent-received-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbq_wholesale_inbox_id" {
+  name         = "sbq-wholesale-inbox-messagequeue-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbq_edi_inbox_id" {
+  name         = "sbq-edi-inbox-messagequeue-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

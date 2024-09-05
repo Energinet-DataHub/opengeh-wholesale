@@ -11,6 +11,8 @@ locals {
       UserAuthentication__MitIdExternalMetadataAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
 
       # Service Bus
+      ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
+      # TODO: remove servicebus connection strings when subsystem has been deployed once with RBAC
       ServiceBus__ManageConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
       ServiceBus__ListenConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
       ServiceBus__SendConnectionString   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
@@ -27,8 +29,8 @@ locals {
       AuditLog__IngestionUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
 
       # Durable client (orchestrations)
-      OrchestrationsStorageAccountConnectionString  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-edi-api-web-jobs-storage-connection-string)"
-      OrchestrationsTaskHubName                     = local.OrchestrationsTaskHubName
+      OrchestrationsStorageAccountConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-edi-api-web-jobs-storage-connection-string)"
+      OrchestrationsTaskHubName                    = local.OrchestrationsTaskHubName
     }
   }
 }

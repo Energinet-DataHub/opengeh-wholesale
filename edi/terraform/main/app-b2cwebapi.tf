@@ -32,6 +32,11 @@ module "b2c_web_api" {
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      // ServiceBus EDI Incomming Messages Queue
+      resource_id          = azurerm_servicebus_queue.edi_incoming_messages_queue.id
+      role_definition_name = "Azure Service Bus Data Receiver"
     }
   ]
 }
