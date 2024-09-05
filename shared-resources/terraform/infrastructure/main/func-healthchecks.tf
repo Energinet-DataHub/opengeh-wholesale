@@ -24,13 +24,17 @@ module "func_healthchecks" {
     {
       resource_id          = module.kv_shared.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = azurerm_servicebus_topic.domainrelay_integrationevent_received.id
+      role_definition_name = "Azure Service Bus Data Receiver"
     }
   ]
   app_settings = {
-    SHARED_KEYVAULT_NAME         = "${module.kv_shared.name}"
-    SHARED_DATALAKE_NAME         = "@Microsoft.KeyVault(VaultName=${module.kv_shared.name};SecretName=st-data-lake-name)"
-    SERVICEBUS_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${module.kv_shared.name};SecretName=sb-domain-relay-manage-connection-string)"
-    SERVICEBUS_TOPIC_NAME        = "@Microsoft.KeyVault(VaultName=${module.kv_shared.name};SecretName=sbt-shres-integrationevent-received-name)"
+    SHARED_KEYVAULT_NAME  = "${module.kv_shared.name}"
+    SHARED_DATALAKE_NAME  = "@Microsoft.KeyVault(VaultName=${module.kv_shared.name};SecretName=st-data-lake-name)"
+    SERVICEBUS_ENDPOINT   = "${module.sb_domain_relay.endpoint}"
+    SERVICEBUS_TOPIC_NAME = "@Microsoft.KeyVault(VaultName=${module.kv_shared.name};SecretName=sbt-shres-integrationevent-received-name)"
   }
 }
 

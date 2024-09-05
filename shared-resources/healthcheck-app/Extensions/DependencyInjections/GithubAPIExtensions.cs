@@ -23,8 +23,12 @@ public static class HealthCheckAppExtensions
         ArgumentNullException.ThrowIfNull(blobStorageName);
         var blobStorageUri = new Uri($"https://{blobStorageName}.blob.core.windows.net");
 
-        var servicebusConnectionString = Environment.GetEnvironmentVariable("SERVICEBUS_CONNECTION_STRING");
-        ArgumentNullException.ThrowIfNull(servicebusConnectionString);
+        var servicebusEndpoint = Environment.GetEnvironmentVariable("SERVICEBUS_ENDPOINT");
+        ArgumentNullException.ThrowIfNull(servicebusEndpoint);
+        // format of URL is https://<namespace>.servicebus.windows.net:443/
+        // It only accepts the format of <namespace>.servicebus.windows.net
+        servicebusEndpoint = servicebusEndpoint.Replace("https://", "").Replace(":443/", "");
+
         var servicebusTopicName = Environment.GetEnvironmentVariable("SERVICEBUS_TOPIC_NAME");
         ArgumentNullException.ThrowIfNull(servicebusTopicName);
 
@@ -45,8 +49,9 @@ public static class HealthCheckAppExtensions
                     new DefaultAzureCredential(),
                     name: $"Storage account {blobStorageName} access")
                 .AddAzureServiceBusTopic(
-                    servicebusConnectionString,
+                    servicebusEndpoint,
                     servicebusTopicName,
+                    new DefaultAzureCredential(),
                     name: $"Servicebus topic {servicebusTopicName} access");
 
         return services;
