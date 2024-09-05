@@ -17,7 +17,7 @@ module "mssqldb_edi" {
   # Find available SKU's for "single database" (not pooled) here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql
   sku_name                    = "GP_S_Gen5_12" # General Purpose (GP) - serverless compute (S) - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1
   min_capacity                = 1.5            #
-  max_size_gb                 = 20
+  max_size_gb                 = 40
   auto_pause_delay_in_minutes = -1
 
   monitor_action_group = length(module.monitor_action_group_edi) != 1 ? null : {
