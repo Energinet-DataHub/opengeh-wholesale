@@ -47,7 +47,7 @@ setup(
             "start_calculator = package.calculator_job:start",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
             "optimize_delta_tables = package.optimize_job.delta_optimization:optimize_tables",
-            "run_settlement_report = package.settlement_report_job.settlement_report:start",
+            "settlement_report = package.settlement_report.test:run",
         ]
     },
 )
