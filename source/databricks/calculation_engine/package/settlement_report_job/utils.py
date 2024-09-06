@@ -1,10 +1,9 @@
-from pyspark import SparkConf
 from pyspark.sql import functions as F, types as T
 from pyspark.sql.session import SparkSession
 from typing import Any
 
 
-def get_dbutils(spark: SparkSession):
+def get_dbutils(spark: SparkSession) -> Any:
     """Get the DBUtils object from the SparkSession.
 
     Args:
@@ -30,7 +29,7 @@ def get_param_or_fail(
     message: str,
     _type: T.DataType = T.StringType(),
     default: Any = None,
-):
+) -> F.Column:
     """Get a parameter from a dictionary or fail if it is missing.
 
     Args:
@@ -51,7 +50,7 @@ def get_param_or_fail(
     return F.lit(val).cast(_type)
 
 
-def log_params(d, title: str = "Received parameters:"):
+def log_params(d: dict, title: str = "Received parameters:") -> None:
     """Log the parameters in a dictionary.
 
     Args:
