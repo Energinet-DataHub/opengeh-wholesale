@@ -122,3 +122,23 @@ resource "databricks_schema" "sap" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
+# Settlement Report storage account is created in shared together with external location
+resource "databricks_schema" "settlement_report_output" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "wholesale_settlement_report_output"
+  comment      = "wholesale_settlement_report_output Schema"
+  storage_root = data.azurerm_key_vault_secret.settlement_report_external_location_url.value
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
+}
+
+resource "databricks_volume" "settlement_reports" {
+  provider         = databricks.dbw
+  name             = "settlement_reports"
+  catalog_name     = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  schema_name      = databricks_schema.settlement_report_output.name
+  volume_type      = "EXTERNAL"
+  storage_location = "${data.azurerm_key_vault_secret.settlement_report_external_location_url.value}reports"
+  comment          = "this volume is managed by terraform"
+}

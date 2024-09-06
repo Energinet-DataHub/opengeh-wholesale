@@ -62,6 +62,35 @@ data "azurerm_key_vault_secret" "st_data_lake_dfs_private_ip_address" {
 }
 
 //
+// Settlement Report storage account
+//
+
+data "azurerm_key_vault_secret" "st_settlement_report_name" {
+  name         = "st-settlement-report-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_settlement_report_id" {
+  name         = "st-settlement-report-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_settlement_report_blob_private_ip_address" {
+  name         = "st-settlement-report-blob-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_settlement_report_dfs_private_ip_address" {
+  name         = "st-settlement-report-dfs-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "settlement_report_external_location_url" {
+  name         = "settlement-report-external-location-url"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+//
 // ServiceBus
 //
 
