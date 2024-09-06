@@ -37,7 +37,6 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
     {
         Logger.LogWarning("Disposing worker");
         await StopAsync(CancellationToken.None).ConfigureAwait(false);
-        await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
         Logger.LogWarning("Disposed worker");
         GC.SuppressFinalize(this);
     }
