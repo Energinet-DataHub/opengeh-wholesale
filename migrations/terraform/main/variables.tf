@@ -198,15 +198,3 @@ variable "function_app_sku_name" {
   description = "The SKU name of the function app."
   default     = "EP1"
 }
-
-variable "time_series_processor_pre_warmed_instance_count" {
-  type        = number
-  description = "The number of pre-warmed instances for the timeseries retriever function app."
-  default     = 1
-}
-
-variable "time_series_processor_elastic_instance_minimum" {
-  type        = number
-  description = "The minimum number of elastic instances for the timeseries retriever function app."
-  default     = 1
-}
