@@ -14,29 +14,24 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Edi.Client;
 
-public class EdiClient : IEdiClient, IAsyncDisposable
+public class EdiClient : IEdiClient
 {
     private readonly ServiceBusSender _sender;
 
     public EdiClient(
         IOptions<EdiInboxQueueOptions> ediInboxQueueOptions,
-        ServiceBusClient serviceBusClient)
+        IAzureClientFactory<ServiceBusSender> senderFactory)
     {
-        _sender = serviceBusClient.CreateSender(ediInboxQueueOptions.Value.QueueName);
+        _sender = senderFactory.CreateClient(ediInboxQueueOptions.Value.QueueName);
     }
 
     public async Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken)
     {
         await _sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _sender.DisposeAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
     }
 }
