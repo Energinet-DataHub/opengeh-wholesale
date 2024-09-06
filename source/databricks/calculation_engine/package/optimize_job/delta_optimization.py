@@ -61,3 +61,7 @@ def _optimize_table(
         logger.info(f"Finished optimizing table: {full_table_name}")
     except Exception as e:
         logger.error(f"Failed to optimize table: {full_table_name}. Error: {e}")
+
+
+def run() -> None:
+    print("Hello world")
