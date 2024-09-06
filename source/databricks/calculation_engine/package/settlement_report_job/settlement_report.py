@@ -22,7 +22,15 @@ from package.infrastructure.paths import (
 )
 from package.common.logger import Logger
 import package.infrastructure.environment_variables as env_vars
+from package.settlement_report_job.utils import (
+    get_dbutils,
+    log_params,
+)
 
 
 def run() -> None:
+    spark = initialize_spark()
+    dbutils = get_dbutils(spark)
+    params = dbutils.widgets.getAll()
+    log_params(params)
     print("Hello world")
