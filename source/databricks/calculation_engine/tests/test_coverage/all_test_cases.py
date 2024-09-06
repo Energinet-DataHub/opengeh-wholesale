@@ -49,22 +49,19 @@ class Tests:
             Calculation_includes_2_out_of_3_MP_grid_areas_in_input_data: str
 
     class SettlementReportsTests:
-        Missing_metering_point_period: str
-        Missing_charge_link_period: str
-        two_metering_point_periods_due_to_a_change_of_energy_supplier_results: str
-        Charge_link_periods_have_a_gap: str
-        Two_charge_link_periods: str
-        There_is_charge_link_period_between_MP_periods: str
-        There_are_multiple_metering_point_periods_due_to_change_of_energy_supplier: str
-        There_are_two_charge_price_information_periods: str
-        There_are_two_metering_point_periods_due_to_a_change_of_balance_responsible: str
-        There_is_a_combination_of_different_calculation_types: str
-        There_are_different_calculation_versions: str
 
-        class OverlapScenarios:
-            MP_period_and_charge_link_period_overlap: str
-            MP_period_and_charge_link_period_overlap: str
-            MP_period_and_charge_link_period_do_not_overlap: str
-            MP_period_is_a_subset_of_charge_link_period: str
-            MP_periods_are_overlapping_a_charge_link_period: str
-            Charge_link_period_is_a_subset_of_the_MP_period: str
+        Charge_link_period_between_MP_periods: str
+        Charge_link_period_is_a_subset_of_the_MP_period: str
+        Charge_link_periods_have_a_gap: str
+        Charge_link_periods_multiple: str
+        Charge_link_period_missing: str
+        Charge_link_period_between_MP_periods: str
+        Charge_price_information_periods_multiple: str
+        MP_period_missing: str
+        MP_period_multiple: str
+        MP_period_and_charge_link_period_do_not_overlap: str
+        MP_period_and_charge_link_period_overlap: str
+        MP_period_subset_of_charge_link_period: str
+        MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices: str
+        Calculation_versions_different: str
+        Calculation_types_different: str
