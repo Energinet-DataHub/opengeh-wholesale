@@ -42,7 +42,9 @@ def write_calculation(
         TableColumnNames.calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time,
     )
-    new_calculations = new_calculations.withColumn(TableColumnNames.calculation_version, lit(None))
+    new_calculations = new_calculations.withColumn(
+        TableColumnNames.calculation_version, lit(None)
+    )
     new_calculations.select(
         TableColumnNames.calculation_id,
         TableColumnNames.calculation_type,
