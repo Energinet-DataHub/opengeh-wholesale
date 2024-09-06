@@ -40,9 +40,9 @@ class Tests:
             Extra_subscriptions_are_added_to_MP_in_calculation_period: str
 
         class PriceElementsAndMPPeriods:
-            When_from_date_for_a_price_element_in_charge_master_data_is_in_calculation_period: str
-            When_to_date_for_a_price_element_in_charge_master_data_is_in_calculation_period: str
-            Active_price_elements_and_charge_links_in_calculation_period_no_price_points_in_the_calculation_period: str
+            Price_element_from_date_inside_calculation_period: str
+            Price_element_to_date_inside_calculation_period: str
+            No_price_points_for_active_price_elements_in_the_calculation_period: str
 
         class MultipleGridAreasInCalculations:
             Calculation_covers_multiple_grid_areas: str
