@@ -51,6 +51,11 @@ resource "azurerm_storage_container" "sap_backup" {
   storage_account_name = module.st_data_backup_wholesale.name
 }
 
+resource "azurerm_storage_container" "data_p_001_backup" {
+  name                 = "data-p-001"
+  storage_account_name = module.st_data_backup_wholesale.name
+}
+
 resource "azurerm_storage_container" "wholesale_migrations_wholesale_backup" {
   name                 = "wholesale-migrations-wholesale"
   storage_account_name = module.st_data_backup_wholesale.name
