@@ -121,4 +121,8 @@ resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
   enabled_log {
     category = "databrickssql"
   }
+  
+  enabled_log {
+    category = "dashboards"
+  }
 }
