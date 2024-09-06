@@ -95,7 +95,7 @@ resource "databricks_grant" "self_storage_credential" {
 resource "databricks_external_location" "settlement_report" {
   provider        = databricks.dbw
   name            = "reports_${module.st_settlement_report.name}"
-  url             = "abfss://reports@${module.st_settlement_report.name}.dfs.core.windows.net/"
+  url             = "abfss://settlement-reports@${module.st_settlement_report.name}.dfs.core.windows.net/"
   credential_name = local.credential_name
   comment         = "Managed by TF"
   depends_on      = [azurerm_databricks_workspace.this, time_sleep.wait_role_assignment, module.st_settlement_report]

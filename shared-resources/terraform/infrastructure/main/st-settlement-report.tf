@@ -18,7 +18,7 @@ module "st_settlement_report" {
   ]
   containers = [
     {
-      name = "reports"
+      name = "settlement-reports"
     }
   ]
 }
