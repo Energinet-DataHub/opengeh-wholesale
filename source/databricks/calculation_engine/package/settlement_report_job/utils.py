@@ -57,6 +57,8 @@ def log_params(d: dict, title: str = "Received parameters:") -> None:
         d (dict): The dictionary to log.
         title (str, optional): The title of the log. Defaults to "Received parameters:".
     """
+    if len(d) == 0:
+        return
     max_key_len = max(len(key) for key in d.keys())
     print(title)
     for key, value in d.items():
