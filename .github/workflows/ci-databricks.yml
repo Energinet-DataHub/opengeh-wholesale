@@ -336,7 +336,8 @@ jobs:
           datamigration/all_hive_scripts
           datamigration/current_state
           datamigration/migration_scripts
-          datamigration/unity_catalog"
+          datamigration/unity_catalog
+          settlement_report_job"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
