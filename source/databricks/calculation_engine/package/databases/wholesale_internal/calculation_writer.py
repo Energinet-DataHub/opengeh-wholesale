@@ -24,7 +24,7 @@ from package.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
 
-timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
+timestamp_format = "YYYY-mm-ddTHH:MM:SS.fff"
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
