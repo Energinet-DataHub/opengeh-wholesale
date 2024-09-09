@@ -13,7 +13,7 @@ function Add-Assets {
         $WorkingDirectory
     )
 
-    if ((Test-Path -Path "${WorkingDirectory}/package") -eq $true) {
+    if (($WorkingDirectory -Match "/package") -eq $true) {
         $destination = "${WorkingDirectory}/artifacts"
 
         if ((Test-Path -Path $destination) -eq $false) {
