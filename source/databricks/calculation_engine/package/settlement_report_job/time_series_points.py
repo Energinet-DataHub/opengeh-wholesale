@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
+from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
 
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
@@ -21,6 +20,6 @@ from package.settlement_report_job.settlement_report_args import SettlementRepor
 def generate_time_series(
     spark: SparkSession,
     args: SettlementReportArgs,
-) -> None:
+) -> DataFrame:
     # ToDo JMG: implement
-    return spark.createDataFrame([], schema=None)  # type: ignore
+    return spark.createDataFrame([], schema=["column1", "column2", "column3"])
