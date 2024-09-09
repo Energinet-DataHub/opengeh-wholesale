@@ -5,7 +5,7 @@ from test_coverage.all_test_cases import Tests
 The purpose of this test is to check the edge case where a grid area only has GLMP, SKMP and an exchange metering point.
 I.e. no consumption or production metering points.
 
-## DESIGN CONSIDERATIONS 
+## DESIGN CONSIDERATIONS
 - Period is one hour
 - The exchange metering point is in a neighbor grid area
 - Energy goes into the grid area, putting non-zero quantities on GLMP and zero quantities on SKMP

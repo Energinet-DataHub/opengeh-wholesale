@@ -5,7 +5,7 @@ from test_coverage.all_test_cases import Tests
 The purpose of this test is to test every energy result calculation (along with basis data) with the smallest meaningful
 time period (one hour).
 
-## DESIGN CONSIDERATIONS 
+## DESIGN CONSIDERATIONS
 - Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
   metering point type
 - Input quantities have been set so production, flex, and nonprofiled do not produce the same result.

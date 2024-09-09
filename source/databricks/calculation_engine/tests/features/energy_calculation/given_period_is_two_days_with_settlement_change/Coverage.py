@@ -4,7 +4,7 @@ from test_coverage.all_test_cases import Tests
 ## PURPOSE
 The purpose is to test that an consumption metering point changes settlement method.
 
-## DESIGN CONSIDERATIONS 
+## DESIGN CONSIDERATIONS
 - Input period is post May 2023 so that results are quarterly
 - Input period is two days with settlement method change between the two days
 - Included is a flex metering point changing to non-profiled and a non-profiled changing to flex. Both metering points
