@@ -232,7 +232,7 @@ jobs:
           - name: Data products
             paths: features/data_products contracts
           - name: Unit tests
-            paths: calculation codelists common optimize_job databases infrastructure
+            paths: calculation codelists common optimize_job databases infrastructure settlement_report_job
           - name: Entry point tests
             paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
