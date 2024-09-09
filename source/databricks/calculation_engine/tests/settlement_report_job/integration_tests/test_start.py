@@ -56,7 +56,7 @@ class TestWhenInvokedWithValidArguments:
     ) -> None:
         """
         Assert that the settlement report job adds log records to Azure Monitor with the expected settings:
-        - cloud role name = "dbr-settlement-report"
+        - cloud role name = "dbr-calculation-engine"
         - severity level = 1
         - message <the message>
         - operation id has value
@@ -82,7 +82,7 @@ class TestWhenInvokedWithValidArguments:
 
         query = f"""
 AppTraces
-| where AppRoleName == "dbr-settlement-report"
+| where AppRoleName == "dbr-calculation-engine"
 | where SeverityLevel == 1
 | where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
@@ -112,7 +112,7 @@ AppTraces
     ):
         """
         Assert that the settlement report job logs to Azure Monitor with the expected settings:
-        - app role name = "dbr-settlement-report"
+        - app role name = "dbr-calculation-engine"
         - name = "settlement_report.parse_job_arguments"
         - operation id has value
         - custom field "Subsystem" = "wholesale-aggregations"
@@ -134,7 +134,7 @@ AppTraces
 
         query = f"""
 AppDependencies
-| where AppRoleName == "dbr-settlement-report"
+| where AppRoleName == "dbr-calculation-engine"
 | where Name == "settlement_report.parse_job_arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale-aggregations"
@@ -162,7 +162,7 @@ AppDependencies
     ):
         """
         Assert that the settlement report job logs to Azure Monitor with the expected settings:
-        - app role name = "dbr-settlement-report"
+        - app role name = "dbr-calculation-engine"
         - exception type = <exception type name>
         - outer message <exception message>
         - operation id has value
@@ -186,7 +186,7 @@ AppDependencies
 
         query = f"""
 AppExceptions
-| where AppRoleName == "dbr-settlement-report"
+| where AppRoleName == "dbr-calculation-engine"
 | where ExceptionType == "ValueError"
 | where OuterMessage == "Environment variable not found: TIME_ZONE"
 | where OperationId != "00000000000000000000000000000000"

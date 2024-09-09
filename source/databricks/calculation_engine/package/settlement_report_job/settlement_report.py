@@ -44,7 +44,7 @@ def start() -> None:
 
 def start_with_deps(
     *,
-    cloud_role_name: str = "dbr-settlement-report",
+    cloud_role_name: str = "dbr-calculation-engine",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
     parse_job_args: Callable[..., SettlementReportArgs] = parse_job_arguments,
