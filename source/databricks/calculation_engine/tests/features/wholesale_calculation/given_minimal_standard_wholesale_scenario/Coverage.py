@@ -1,7 +1,7 @@
 from test_coverage.all_test_cases import Tests
 
 """
-## PURPOSE ##
+## PURPOSE
 The purpose of this test is to check a minimal, but representative sample of all wholesale calculation results.
 
 Fees
@@ -64,6 +64,6 @@ Daily Tariffs
     - A tariff that ends before end of calculation period.
     - A tariff that starts before end of calculation period, but not at beginning.
 
-## CASES TESTED ##
+## CASES TESTED
 """
 Tests.CalculationTests.Typical_wholesale_scenario
