@@ -1,4 +1,4 @@
-# Get the absolute path of the currently running script
+# Get the absolute path of the currently running script.
 $scriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 # Define the relative path to the 'find_coverage_scripts' directory
