@@ -13,7 +13,6 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import lit
 
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
@@ -34,32 +33,14 @@ def write_calculation(
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-    new_calculations = calculations.select(
+    calculations.select(
         TableColumnNames.calculation_id,
         TableColumnNames.calculation_type,
         TableColumnNames.calculation_period_start,
         TableColumnNames.calculation_period_end,
         TableColumnNames.calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time,
-    )
-
-    new_calculations.withColumn(
-        TableColumnNames.calculation_version, lit(None).cast("bigint")
-    ).select(
-        TableColumnNames.calculation_id,
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_period_start,
-        TableColumnNames.calculation_period_end,
-        TableColumnNames.calculation_version,
-        TableColumnNames.calculation_execution_time_start,
-        TableColumnNames.calculation_succeeded_time,
-    ).write.format(
-        "delta"
-    ).mode(
-        "append"
-    ).option(
-        "mergeSchema", "false"
-    ).insertInto(
+    ).write.format("delta").mode("append").option("mergeSchema", "true").insertInto(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
     )
 
