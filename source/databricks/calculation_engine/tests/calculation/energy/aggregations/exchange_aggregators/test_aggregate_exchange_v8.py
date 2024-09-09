@@ -51,7 +51,7 @@ def metering_point_time_series(
 ) -> MeteringPointTimeSeries:
     rows = []
 
-    # add 24 hours of exchange with different examples of exchange between grid areas. See readme.md for more info
+    # add 24 hours of exchange with different examples of exchange between grid areas. See eadme.md for more info
     for quarter_number in range(numberOfQuarters):
         obs_time = default_obs_time + timedelta(minutes=quarter_number * 15)
 

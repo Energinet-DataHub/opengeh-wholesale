@@ -20,5 +20,6 @@ Two small corner cases are included:
 
 ## CASES TESTED ##
 """
+Tests.CalculationTests.Typical_wholesale_scenario
 Tests.SettlementReportsTests.Calculation_versions_different
 Tests.SettlementReportsTests.MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices

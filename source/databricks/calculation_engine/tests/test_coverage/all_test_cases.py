@@ -7,6 +7,8 @@ from dataclasses import dataclass
 class Tests:
 
     class CalculationTests:
+        Typical_energy_scenario: str
+        Typical_wholesale_scenario: str
         Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change: str
         Calculation_input_data_includes_other_ga: str
 
@@ -21,9 +23,6 @@ class Tests:
             Balance_Responsible_change_on_System_Correction_MP: str
             MP_is_shut_down_in_calculation_period: str
             MP_is_starts_up_in_calculation_period: str
-
-            # hmm?
-            Metering_point_used_as_input_to_wholesale_results_changes_energy_supplier: str
 
         class ExchangeCases:
             Exchange_between_two_ga_where_exchange_MP_is_in_neither_ga: str

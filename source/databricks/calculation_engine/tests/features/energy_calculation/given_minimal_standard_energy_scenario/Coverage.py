@@ -21,4 +21,5 @@ time period (one hour).
 
 ## CASES TESTED ##
 """
+Tests.CalculationTests.Typical_energy_scenario
 Tests.CalculationTests.Calculation_input_data_includes_other_ga

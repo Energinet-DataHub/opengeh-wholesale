@@ -1,9 +1,10 @@
-# Given Minimal Standard Scenario for wholesale calculations
+from test_coverage.all_test_cases import Tests
 
+"""
+## PURPOSE ##
 The purpose of this test is to check a minimal, but representative sample of all wholesale calculation results.
 
-## Fees
-
+Fees
 - Charge Masterdata
     - 3 fees, start date before calculation period, no end date.
 
@@ -18,8 +19,7 @@ The purpose of this test is to check a minimal, but representative sample of all
     - A fee charge link in calculation period, but no charge price for that period (price and amount = null).
     - A fee charge outside calculation period (no rows in results).
 
-## Subscriptions
-
+Subscriptions
 - Charge Masterdata
     - 3 subscriptions, start date before calculation period, no end date.
 
@@ -33,8 +33,7 @@ The purpose of this test is to check a minimal, but representative sample of all
     - Calculation period is covered by all subscription charge price periods.
     - Includes a price point to check correct rounding.
 
-## Hourly Tariffs
-
+Hourly Tariffs
 - Charge Masterdata
     - 4 tariffs, 1 of which has charge owner System Operator and is_tax = true.
     - All start dates before calculation period, no end date.
@@ -53,8 +52,7 @@ The purpose of this test is to check a minimal, but representative sample of all
 - Charge Price
     - The charge price times match up with the energy time series (02.00 on the first day of the calculation period).
 
-## Daily Tariffs
-
+Daily Tariffs
 - Charge Masterdata
     - 4 tariffs, 2 of which has charge owner System Operator, 1 of these is_tax = true and 1 of these is_tax = false.
     - All start dates before calculation period, no end date.
@@ -66,6 +64,6 @@ The purpose of this test is to check a minimal, but representative sample of all
     - A tariff that ends before end of calculation period.
     - A tariff that starts before end of calculation period, but not at beginning.
 
-## Coverage
-
-- Standard scenario for a wholesale calculation
+## CASES TESTED ##
+"""
+Tests.CalculationTests.Typical_wholesale_scenario
