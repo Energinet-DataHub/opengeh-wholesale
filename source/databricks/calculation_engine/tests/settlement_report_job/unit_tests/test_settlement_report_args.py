@@ -115,13 +115,13 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual_args, actual_settings = parse_job_arguments(command_line_args)
+                actual_args = parse_job_arguments(command_line_args)
 
         # Assert
 
         # Assert - settlement report arguments
         assert actual_args.report_id == DEFAULT_REPORT_ID
-        assert actual_args.period_start_datetime == datetime(2022, 5, 31, 22)
+        assert actual_args.period_start == datetime(2022, 5, 31, 22)
         assert actual_args.period_end == datetime(2022, 6, 1, 22)
         assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
         assert actual_args.time_zone == "Europe/Copenhagen"
