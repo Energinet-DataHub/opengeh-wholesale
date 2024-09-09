@@ -8,4 +8,3 @@ prices in the calculation period.
 ## CASES TESTED
 """
 Tests.CalculationTests.PriceElementsAndMPPeriods.No_price_points_for_active_price_elements_in_the_calculation_period
-
