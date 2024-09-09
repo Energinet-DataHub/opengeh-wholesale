@@ -13,20 +13,22 @@ function Add-Assets {
         $WorkingDirectory
     )
 
-    $destination = "${WorkingDirectory}/artifacts"
+    if ((Test-Path -Path "${WorkingDirectory}/package") -eq $true) {
+        $destination = "${WorkingDirectory}/artifacts"
 
-    if ((Test-Path -Path $destination) -eq $false) {
-        New-Item -Path $destination -ItemType 'directory'
+        if ((Test-Path -Path $destination) -eq $false) {
+            New-Item -Path $destination -ItemType 'directory'
+        }
+
+        Move-Item -Path "${WorkingDirectory}/package/datamigration/migration_scripts" -Destination $destination
+
+        # Hive
+        $destination = "${WorkingDirectory}/artifacts/hive"
+
+        if ((Test-Path -Path $destination) -eq $false) {
+            New-Item -Path $destination -ItemType 'directory'
+        }
+
+        Move-Item -Path "${WorkingDirectory}/package/datamigration_hive/migration_scripts" -Destination $destination
     }
-
-    Move-Item -Path "${WorkingDirectory}/package/datamigration/migration_scripts" -Destination $destination
-
-    # Hive
-    $destination = "${WorkingDirectory}/artifacts/hive"
-
-    if ((Test-Path -Path $destination) -eq $false) {
-        New-Item -Path $destination -ItemType 'directory'
-    }
-
-    Move-Item -Path "${WorkingDirectory}/package/datamigration_hive/migration_scripts" -Destination $destination
 }
