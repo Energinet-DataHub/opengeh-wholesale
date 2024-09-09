@@ -69,9 +69,8 @@ def start_with_deps(
             config.add_extras({"settlement_report_id": command_line_args.report_id})
             span.set_attributes(config.get_extras())
 
-            args = parse_job_args(command_line_args)
-
-            spark = initialize_spark()
+            parse_job_args(command_line_args)  # ToDo JMG: use the return value
+            # spark = initialize_spark()
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
