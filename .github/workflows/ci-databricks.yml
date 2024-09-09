@@ -29,7 +29,7 @@ jobs:
   databricks_package_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v13
     with:
-      job_name = "Build Databricks Package"
+      job_name: Build Databricks Package
       python_version: 3.11.7
       architecture: x64
       wheel_working_directory: ./source/databricks/calculation_engine
@@ -38,7 +38,7 @@ jobs:
   databricks_settlement_report_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v13
     with:
-      job_name = "Build Settlement Report Package"
+      job_name: Build Settlement Report Package
       python_version: 3.11.7
       architecture: x64
       wheel_working_directory: ./source/databricks/settlement_report
