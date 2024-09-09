@@ -20,7 +20,9 @@ from configargparse import argparse
 from package.settlement_report_job import logging_configuration
 from package.settlement_report_job.args_helper import valid_date
 from package.settlement_report_job.calculation_type import CalculationType
+from package.settlement_report_job.logger import Logger
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
+import package.settlement_report_job.environment_variables as env_vars
 
 
 def parse_command_line_arguments() -> Namespace:
@@ -43,6 +45,7 @@ def parse_job_arguments(
             split_report_per_grid_area=True,
             prevent_large_text_files=False,
             time_zone="Europe/Copenhagen",
+            catalog_name=env_vars.get_catalog_name(),
         )
 
         return settlement_report_args

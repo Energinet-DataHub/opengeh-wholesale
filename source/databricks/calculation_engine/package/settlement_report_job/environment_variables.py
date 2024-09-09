@@ -12,19 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from datetime import datetime
+import os
+from enum import Enum
+from typing import Any
 
-from package.settlement_report_job.calculation_type import CalculationType
+
+class EnvironmentVariable(Enum):
+    CATALOG_NAME = "CATALOG_NAME"
 
 
-@dataclass
-class SettlementReportArgs:
-    report_id: str
-    period_start: datetime
-    period_end: datetime
-    calculation_type: CalculationType
-    split_report_per_grid_area: bool
-    prevent_large_text_files: bool
-    time_zone: str
-    catalog_name: str
+def get_catalog_name() -> str:
+    return get_env_variable_or_throw(EnvironmentVariable.CATALOG_NAME)
+
+
+def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:
+    env_variable = os.getenv(variable.name)
+    if env_variable is None:
+        raise ValueError(f"Environment variable not found: {variable.name}")
+
+    return env_variable
