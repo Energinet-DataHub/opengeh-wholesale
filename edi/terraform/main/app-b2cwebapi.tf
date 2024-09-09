@@ -37,6 +37,11 @@ module "b2c_web_api" {
       // ServiceBus EDI Incomming Messages Queue
       resource_id          = azurerm_servicebus_queue.edi_incoming_messages_queue.id
       role_definition_name = "Azure Service Bus Data Receiver"
+    },
+    {
+      // ServiceBus EDI Incomming Messages Queue
+      resource_id          = azurerm_servicebus_queue.edi_incoming_messages_queue.id
+      role_definition_name = "Azure Service Bus Data Sender"
     }
   ]
 }
