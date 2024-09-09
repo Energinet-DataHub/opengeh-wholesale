@@ -21,7 +21,7 @@ from package.settlement_report_job.settlement_report_args import SettlementRepor
 
 
 @pytest.fixture(scope="session")
-def wholesale_settlement_report_args() -> SettlementReportArgs:
+def any_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
         period_start=datetime(2018, 1, 31, 23, 0, 0),
