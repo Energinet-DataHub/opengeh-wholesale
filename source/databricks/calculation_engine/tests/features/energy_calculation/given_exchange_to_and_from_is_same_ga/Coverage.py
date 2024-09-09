@@ -4,7 +4,7 @@ from test_coverage.all_test_cases import Tests
 ## PURPOSE
 The purpose is to test a scenario where there are exchange MPs where from and to grid area is the same.
 
-## DESIGN CONSIDERATIONS 
+## DESIGN CONSIDERATIONS
 - Two variants are tested:
     - One is MP 200000000000000002 which is in another grid area (802) but sends from and to the grid area for this
       calculation (800).
