@@ -20,6 +20,7 @@ from configargparse import argparse
 from package.common.logger import Logger
 from package.settlement_report_job import logging_configuration
 from package.settlement_report_job.args_helper import valid_date
+from package.settlement_report_job.calculation_type import CalculationType
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
 
 

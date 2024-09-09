@@ -26,6 +26,7 @@ from package.settlement_report_job.settlement_report_job_args import (
     parse_command_line_arguments,
 )
 from package.settlement_report_job.spark_initializor import initialize_spark
+from package.settlement_report_job.time_series_points import generate_time_series
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -69,8 +70,9 @@ def start_with_deps(
             config.add_extras({"settlement_report_id": command_line_args.report_id})
             span.set_attributes(config.get_extras())
 
-            parse_job_args(command_line_args)  # ToDo JMG: use the return value
-            # spark = initialize_spark()
+            args = parse_job_args(command_line_args)
+            spark = initialize_spark()
+            generate_time_series(spark, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
