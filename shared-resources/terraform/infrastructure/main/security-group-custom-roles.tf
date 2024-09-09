@@ -38,3 +38,23 @@ resource "azurerm_role_definition" "locks_contributor_access" {
     ]
   }
 }
+
+resource "azurerm_role_definition" "contributor_app_developers" {
+  name        = "datahub-app-manage-contributor-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
+  scope       = data.azurerm_subscription.this.id
+  description = "Allow restarting, stopping, pulling reference values, and starting Function apps and App Services"
+
+  permissions {
+    actions = [
+      "Microsoft.Web/sites/restart/Action",
+      "Microsoft.Web/sites/stop/Action",
+      "Microsoft.Web/sites/start/Action",
+      "Microsoft.Web/sites/slots/restart/Action",
+      "Microsoft.Web/sites/slots/start/Action",
+      "Microsoft.Web/sites/slots/stop/Action",
+      "Microsoft.Web/sites/config/list/Action",
+      "Microsoft.Web/sites/config/Read",
+      "Microsoft.Web/sites/config/Write"
+    ]
+  }
+}

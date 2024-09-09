@@ -31,6 +31,10 @@ module "pim_contributor_security_group_permissions" {
   resource_group_name = azurerm_resource_group.this.name
   security_group_name = var.pim_contributor_data_plane_group_name
   role_level          = "Contributor Data Plane"
+  custom_roles_contributor_data_plane = [
+    azurerm_role_definition.contributor_app_developers.name,
+    azurerm_role_definition.apim_groups_contributor_access.name,
+  ]
 
   depends_on = [azurerm_resource_group.this]
 }
@@ -44,7 +48,7 @@ module "pim_contributor_control_plane_security_group_permissions" {
   security_group_name = var.pim_contributor_control_plane_group_name
   role_level          = "Contributor Control Plane"
   custom_roles_contributor_control_plane = [
-    azurerm_role_definition.app_config_settings_read_access.name,
+    azurerm_role_definition.contributor_app_developers.name,
     azurerm_role_definition.apim_groups_contributor_access.name,
     azurerm_role_definition.locks_contributor_access.name,
   ]
