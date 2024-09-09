@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Tests:
+class Cases:
 
     class CalculationTests:
         Typical_energy_scenario: str

@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -10,5 +10,5 @@ specifically that grid loss calculation is correct.
 
 ## CASES TESTED
 """
-Tests.CalculationTests.UnusualGridAreaSetups.Grid_area_with_only_non_profiled_MP
-Tests.CalculationTests.UnusualGridAreaSetups.Energy_Supplier_only_has_Grid_Loss_MP_or_System_Correction_MP
+Cases.CalculationTests.UnusualGridAreaSetups.Grid_area_with_only_non_profiled_MP
+Cases.CalculationTests.UnusualGridAreaSetups.Energy_Supplier_only_has_Grid_Loss_MP_or_System_Correction_MP

@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -11,4 +11,4 @@ The purpose is to test a calculation on a period before the transition to quarte
 
 ## CASES TESTED
 """
-Tests.CalculationTests.Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change
+Cases.CalculationTests.Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change

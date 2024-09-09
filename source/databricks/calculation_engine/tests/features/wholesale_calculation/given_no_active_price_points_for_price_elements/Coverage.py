@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -7,4 +7,4 @@ prices in the calculation period.
 
 ## CASES TESTED
 """
-Tests.CalculationTests.PriceElementsAndMPPeriods.No_price_points_for_active_price_elements_in_the_calculation_period
+Cases.CalculationTests.PriceElementsAndMPPeriods.No_price_points_for_active_price_elements_in_the_calculation_period
