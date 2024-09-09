@@ -15,9 +15,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from package.codelists.calculation_type import (
-    CalculationType,
-)
+from package.settlement_report_job.calculation_type import CalculationType
 
 
 @dataclass
