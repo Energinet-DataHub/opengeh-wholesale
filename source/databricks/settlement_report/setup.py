@@ -14,7 +14,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="package",
+    name="package_settlement_report",
     version=1.0,
     description="Tools for settlement report",
     long_description="",
@@ -32,7 +32,6 @@ setup(
         "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.2.0",
-        "opengeh-wholesale @ git+https://git@github.com/Energinet-DataHub/-wholesale@databricks_2752#subdirectory=source/databricks/calculation_engine",
     ],
     entry_points={
         "console_scripts": [
