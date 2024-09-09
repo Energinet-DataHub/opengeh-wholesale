@@ -13,7 +13,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # hence domains that doesn't depend on others, should be listed first.
 
             # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2FHT74ZKH4BZQ4C3VWZV7IKRQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGGEKAPTLVCQMNMBKSZW6WLAA
 
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
@@ -37,27 +37,39 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2EKIEIFXPTMJRCDJ5YZV7ILQA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGOSLKKCXJI2WX6K4WZW6WLIA
 
             # Include Grid Loss Imbalance Prices model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2ETHR3UDHR4TI7LIKAZV7IL3Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGNDVLA6LWEXLFYEMCZW6WLYA
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2EKK35JH7INW5GEKTMZV7IMJA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QHNEF7PTM4WKZ2K2RCZW6WL7A
 
             # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2E6LGRU2TYSZRPJPF4ZV7IMYA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGM2BA7IXVE7M2SXZ6ZW6WMGA
 
             # Include DH2 Bridge model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVEMB2EG7K7VRCUDBPS3YC6ZV7INDA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGKDJREULWVXTEU66GZW6WMPQ
         }
 
 
         deploymentEnvironment "Production (prod_001)" {
+            # on-premise
+            deploymentNode "Energinet on-premise" {
+                infrastructureNode "V0618P02.energinet.local" {
+                    description "Esett Exchange - production"
+                    technology "Windows Server 2019 Standard"
+                }
+
+                infrastructureNode "V0618B01.energinet.local" {
+                    description "Esett Exchange - dev/test"
+                    technology "Windows Server 2019 Standard"
+                }
+            }
 
             # Azure Cloud
             deploymentNode "Azure Cloud" {
