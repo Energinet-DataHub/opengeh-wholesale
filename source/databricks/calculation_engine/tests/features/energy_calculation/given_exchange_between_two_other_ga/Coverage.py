@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -9,4 +9,4 @@ An E20 sending power into the grid area is included, otherwise we cannot calcula
 
 ## CASES TESTED
 """
-Tests.CalculationTests.ExchangeCases.Exchange_between_two_ga_where_exchange_MP_is_in_neither_ga
+Cases.CalculationTests.ExchangeCases.Exchange_between_two_ga_where_exchange_MP_is_in_neither_ga

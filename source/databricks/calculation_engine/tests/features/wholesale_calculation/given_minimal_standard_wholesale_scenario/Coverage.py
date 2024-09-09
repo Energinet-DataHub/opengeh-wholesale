@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -66,4 +66,4 @@ Daily Tariffs
 
 ## CASES TESTED
 """
-Tests.CalculationTests.Typical_wholesale_scenario
+Cases.CalculationTests.Typical_wholesale_scenario

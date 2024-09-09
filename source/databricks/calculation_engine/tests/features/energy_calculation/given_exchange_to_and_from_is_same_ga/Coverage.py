@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -14,4 +14,4 @@ The purpose is to test a scenario where there are exchange MPs where from and to
 
 ## CASES TESTED
 """
-Tests.CalculationTests.ExchangeCases.Exchange_MP_where_from_and_to_is_the_same_grid_area
+Cases.CalculationTests.ExchangeCases.Exchange_MP_where_from_and_to_is_the_same_grid_area

@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -14,5 +14,5 @@ The purpose is to test that an consumption metering point changes settlement met
 
 ## CASES TESTED
 """
-Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_settlement_method_on_an_MP
-Tests.CalculationTests.MeteringPointMasterDataUpdates.Change_of_resolution_on_an_MP
+Cases.CalculationTests.MeteringPointMasterDataUpdates.Change_of_settlement_method_on_an_MP
+Cases.CalculationTests.MeteringPointMasterDataUpdates.Change_of_resolution_on_an_MP

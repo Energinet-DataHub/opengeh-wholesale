@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
@@ -14,5 +14,5 @@ I.e. no consumption or production metering points.
 
 ## CASES TESTED
 """
-Tests.CalculationTests.UnusualGridAreaSetups.Grid_area_with_only_exchange_MP
-Tests.CalculationTests.UnusualGridAreaSetups.Energy_Supplier_only_has_Grid_Loss_MP_or_System_Correction_MP
+Cases.CalculationTests.UnusualGridAreaSetups.Grid_area_with_only_exchange_MP
+Cases.CalculationTests.UnusualGridAreaSetups.Energy_Supplier_only_has_Grid_Loss_MP_or_System_Correction_MP

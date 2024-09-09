@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 ## Purpose
@@ -11,5 +11,5 @@ The purpose is checking the latest calculation history view used for SAP.
 
 ## CASES TESTED
 """
-Tests.SettlementReportsTests.Calculation_versions_different
-Tests.SettlementReportsTests.Calculation_types_different
+Cases.SettlementReportsTests.Calculation_versions_different
+Cases.SettlementReportsTests.Calculation_types_different

@@ -1,4 +1,4 @@
-from test_coverage.all_test_cases import Tests
+from test_coverage.all_test_cases import Cases
 
 """
 The purpose is checking all current views used for settlement reports.
@@ -20,6 +20,6 @@ Two small corner cases are included:
 
 ## CASES TESTED
 """
-Tests.CalculationTests.Typical_wholesale_scenario
-Tests.SettlementReportsTests.Calculation_versions_different
-Tests.SettlementReportsTests.MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices
+Cases.CalculationTests.Typical_wholesale_scenario
+Cases.SettlementReportsTests.Calculation_versions_different
+Cases.SettlementReportsTests.MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices
