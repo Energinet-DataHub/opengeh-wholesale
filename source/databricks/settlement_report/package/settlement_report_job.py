@@ -12,17 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from delta.tables import DeltaTable
-from package.infrastructure import initialize_spark
-from pyspark.sql import SparkSession
-from package.infrastructure.paths import (
-    WholesaleResultsInternalDatabase,
-    WholesaleBasisDataInternalDatabase,
-    WholesaleInternalDatabase,
-)
-from package.common.logger import Logger
-import package.infrastructure.environment_variables as env_vars
-
 
 def run() -> None:
     print("Hello world")
