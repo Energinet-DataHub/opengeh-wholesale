@@ -1,11 +1,11 @@
 from test_coverage.all_test_cases import Tests
 
 """
-## PURPOSE ##
+## PURPOSE
 The purpose of this test is to test every energy result calculation (along with basis data) with the smallest meaningful
 time period (one hour).
 
-## DESIGN CONSIDERATIONS ## 
+## DESIGN CONSIDERATIONS 
 - Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
   metering point type
 - Input quantities have been set so production, flex, and nonprofiled do not produce the same result.
@@ -19,7 +19,7 @@ time period (one hour).
     - Nonprofiled metering points end with 1xx, flex with 2xx
     - Example - flex metering point with resolution 15M: '**17**000000**15**00000**2**01'
 
-## CASES TESTED ##
+## CASES TESTED
 """
 Tests.CalculationTests.Typical_energy_scenario
 Tests.CalculationTests.Calculation_input_data_includes_other_ga
