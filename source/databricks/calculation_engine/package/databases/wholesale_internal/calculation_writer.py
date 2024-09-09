@@ -39,7 +39,7 @@ def write_calculation(
     spark.sql(
         f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time})"
-        f" VALUES ({args.calculation_id}, {args.calculation_type}, {args.calculation_period_start_datetime}, {args.calculation_period_end_datetime}, {args.calculation_execution_time_start}, NULL)"
+        f" VALUES ({args.calculation_id}, {args.calculation_type}, {args.calculation_period_start_datetime}, {args.calculation_period_end_datetime}, {args.calculation_execution_time_start}, NULL);"
     )
 
     # calculations.select(
