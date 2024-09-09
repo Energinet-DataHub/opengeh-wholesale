@@ -40,7 +40,7 @@ jobs:
       python_version: 3.11.7
       architecture: x64
       wheel_working_directory: ./source/databricks/settlement_report
-      should_include_assets: true
+      should_include_assets: false
 
   migration_scripts_verification_hive:
     runs-on: ubuntu-latest
