@@ -24,7 +24,7 @@ from package.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
 
-timestamp_format = "YYYY-mm-ddTHH:MM:SS.fff"
+timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
@@ -38,10 +38,20 @@ def write_calculation(
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
+    calculation_period_start_datetime = str(
+        args.calculation_period_start_datetime.strftime(timestamp_format)[:-3]
+    )
+    calculation_period_end_datetime = str(
+        args.calculation_period_end_datetime.strftime(timestamp_format)[:-3]
+    )
+    calculation_execution_time_start = str(
+        args.calculation_execution_time_start.strftime(timestamp_format)[:-3]
+    )
+
     spark.sql(
         f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time})"
-        f" VALUES ({args.calculation_id}, {args.calculation_type.value}, {args.calculation_period_start_datetime.strftime(timestamp_format)}, {args.calculation_period_end_datetime.strftime(timestamp_format)}, {args.calculation_execution_time_start.strftime(timestamp_format)}, NULL);"
+        f" VALUES ({args.calculation_id}, {args.calculation_type.value}, {calculation_period_start_datetime}, {calculation_period_end_datetime}, {calculation_execution_time_start}, NULL);"
     )
 
     # calculations.select(
