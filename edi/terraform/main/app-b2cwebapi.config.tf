@@ -24,9 +24,6 @@ locals {
       # Durable client (orchestrations)
       OrchestrationsStorageAccountConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-edi-api-web-jobs-storage-connection-string)"
       OrchestrationsTaskHubName                    = local.OrchestrationsTaskHubName
-
-      # Feature flags
-      FeatureManagement__UseAuditLog          = var.feature_management_use_audit_log
     }
   }
 }

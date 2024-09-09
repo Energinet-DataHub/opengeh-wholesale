@@ -111,9 +111,3 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
-
-variable "feature_management_use_audit_log" {
-  type        = bool
-  description = "Should send Audit Logs http requests to external audit log service."
-  default     = false
-}
