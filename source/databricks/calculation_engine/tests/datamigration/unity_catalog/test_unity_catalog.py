@@ -69,6 +69,10 @@ from package.infrastructure import paths
         ),
         (
             paths.WholesaleInternalDatabase.DATABASE_NAME,
+            paths.WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME,
+        ),
+        (
+            paths.WholesaleInternalDatabase.DATABASE_NAME,
             paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
         ),
     ],
