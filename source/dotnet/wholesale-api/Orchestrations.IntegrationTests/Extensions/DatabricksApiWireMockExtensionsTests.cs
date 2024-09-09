@@ -49,13 +49,15 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
             .MockJobsList(jobId);
 
         // Act
-        var actualJobList = await _fixture.JobApiClient.Jobs.List();
+        var actualJobList = await _fixture.JobApiClient.Jobs
+            .ListPageable()
+            .ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        actualJobList.Jobs.Should().ContainSingle();
+        actualJobList.Should().ContainSingle();
 
-        var job = actualJobList.Jobs.First();
+        var job = actualJobList.First();
         job.JobId.Should().Be(jobId);
         job.Settings.Name.Should().Be("CalculatorJob");
     }

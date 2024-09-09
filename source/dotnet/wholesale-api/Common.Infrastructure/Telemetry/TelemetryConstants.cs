@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 
 public static class TelemetryConstants
 {
-    public const string SubsystemName = "wholesale";
+    public const string SubsystemName = "wholesale-dotnet";
 }

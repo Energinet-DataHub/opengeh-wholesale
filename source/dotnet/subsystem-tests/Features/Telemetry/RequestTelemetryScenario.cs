@@ -50,20 +50,20 @@ public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixt
         Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppRequestMatch
         {
             AppVersionContains = "PR:",
-            Subsystem = "wholesale",
+            Subsystem = "wholesale-dotnet",
             Name = "GET Calculation/Get [calculationId]",
         });
         Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppDependencyMatch
         {
             AppVersionContains = "PR:",
-            Subsystem = "wholesale",
+            Subsystem = "wholesale-dotnet",
             NameContains = "mssqldb-data-wholsal-",
             DependencyType = "SQL",
         });
         Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppExceptionMatch
         {
             AppVersionContains = "PR:",
-            Subsystem = "wholesale",
+            Subsystem = "wholesale-dotnet",
             EventName = "ApplicationError",
             OuterType = "System.InvalidOperationException",
             OuterMessage = "Sequence contains no elements.",

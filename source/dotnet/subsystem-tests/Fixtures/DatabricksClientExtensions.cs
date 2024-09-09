@@ -72,7 +72,7 @@ public static class DatabricksClientExtensions
     {
         var job = await databricksClient.Jobs
             .ListPageable(name: "CalculatorJob")
-            .FirstAsync();
+            .SingleAsync();
 
         return job.JobId;
     }

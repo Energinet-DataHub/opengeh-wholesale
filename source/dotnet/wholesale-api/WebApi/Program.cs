@@ -45,7 +45,7 @@ builder.Services.AddCalculationsModule(builder.Configuration);
 builder.Services.AddCalculationResultsModule(builder.Configuration);
 
 // ServiceBus channels
-builder.Services.AddIntegrationEventsSubscription();
+builder.Services.AddIntegrationEventsSubscription(builder.Configuration);
 
 // Http channels
 builder.Services

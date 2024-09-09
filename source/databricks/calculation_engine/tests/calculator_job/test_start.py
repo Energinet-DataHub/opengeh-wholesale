@@ -17,17 +17,19 @@ import time
 import uuid
 from datetime import timedelta
 from typing import cast, Callable
+from unittest.mock import Mock, patch
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
+
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
-
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
 class TestWhenInvokedWithInvalidArguments:
-    def test_exits_with_code_2(self):
+    def test_exits_with_code_2(self) -> None:
         """The exit code 2 originates from the argparse library."""
         with pytest.raises(SystemExit) as system_exit:
             start()
@@ -36,29 +38,44 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, any_calculator_args, infrastructure_settings):
+    def test_does_not_raise(
+        self,
+        any_calculator_args: CalculatorArgs,
+        infrastructure_settings: InfrastructureSettings,
+    ) -> None:
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
+        mock_calculation_execute = Mock()
+        mock_prepared_data_reader = Mock()
+        mock_prepared_data_reader.is_calculation_id_unique.return_value = True
 
-        start_with_deps(
-            parse_command_line_args=lambda: command_line_args,
-            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=lambda args, reader, core, metadata_service, output_service: None,
-        )
+        with patch("package.calculation.execute", mock_calculation_execute):
+            with patch(
+                "package.calculation.PreparedDataReader",
+                return_value=mock_prepared_data_reader,
+            ):
+                # Act
+                start_with_deps(
+                    parse_command_line_args=lambda: command_line_args,
+                    parse_job_args=lambda args: (
+                        any_calculator_args,
+                        infrastructure_settings,
+                    ),
+                    calculation_executor=mock_calculation_execute,
+                )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
         any_calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
-    ):
+    ) -> None:
         """
         Assert that the calculator job adds log records to Azure Monitor with the expected settings:
         - cloud role name = "dbr-calculation-engine"
         - severity level = 1
         - message <the message>
         - operation id has value
-        - custom field "Subsystem" = "wholesale"
-        - custom field "Subsystem-Area" = "wholesale-aggregations"
+        - custom field "Subsystem" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
 
@@ -84,8 +101,7 @@ AppTraces
 | where SeverityLevel == 1
 | where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale"
-| where Properties["Subsystem-Area"] == "wholesale-aggregations"
+| where Properties.Subsystem == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count
@@ -114,7 +130,7 @@ AppTraces
         - app role name = "dbr-calculation-engine"
         - name = "calculation.parse_job_arguments"
         - operation id has value
-        - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         """
 
@@ -136,7 +152,7 @@ AppDependencies
 | where AppRoleName == "dbr-calculation-engine"
 | where Name == "calculation.parse_job_arguments"
 | where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale"
+| where Properties.Subsystem == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | count
         """
@@ -165,7 +181,7 @@ AppDependencies
         - exception type = <exception type name>
         - outer message <exception message>
         - operation id has value
-        - custom field "Subsystem" = "wholesale"
+        - custom field "Subsystem" = "wholesale-aggregations"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
         """
@@ -189,7 +205,7 @@ AppExceptions
 | where ExceptionType == "ValueError"
 | where OuterMessage == "Environment variable not found: TIME_ZONE"
 | where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale"
+| where Properties.Subsystem == "wholesale-aggregations"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
 | count

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
+using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
@@ -28,8 +29,11 @@ public sealed class DatabricksCalculatorJobSelector : IDatabricksCalculatorJobSe
 
     public async Task<Job> GetAsync()
     {
-        var jobs = await _client.Jobs.List().ConfigureAwait(false);
-        var calculatorJob = jobs.Jobs.Single(j => j.Settings.Name == "CalculatorJob");
+        var calculatorJob = await _client.Jobs
+            .ListPageable(name: "CalculatorJob")
+            .SingleAsync()
+            .ConfigureAwait(false);
+
         return await _client.Jobs.Get(calculatorJob.JobId).ConfigureAwait(false);
     }
 }

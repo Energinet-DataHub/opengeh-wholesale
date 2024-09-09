@@ -24,5 +24,5 @@ public class ServiceBusNamespaceOptions
     public const string SectionName = "ServiceBus";
 
     [Required]
-    public string ConnectionString { get; set; } = string.Empty;
+    public string FullyQualifiedNamespace { get; set; } = string.Empty;
 }
