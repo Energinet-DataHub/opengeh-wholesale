@@ -11,15 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame
-from pyspark.sql.session import SparkSession
+import uuid
+from datetime import datetime
 
+import pytest
+
+from package.settlement_report_job.calculation_type import CalculationType
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
 
 
-def generate_time_series(
-    spark: SparkSession,
-    args: SettlementReportArgs,
-) -> DataFrame:
-    # ToDo JMG: implement
-    return spark.createDataFrame([], schema=[])
+@pytest.fixture(scope="session")
+def wholesale_settlement_report_args() -> SettlementReportArgs:
+    return SettlementReportArgs(
+        report_id=str(uuid.uuid4()),
+        period_start=datetime(2018, 1, 31, 23, 0, 0),
+        period_end=datetime(2018, 1, 31, 23, 0, 0),
+        calculation_type=CalculationType.WHOLESALE_FIXING,
+        split_report_per_grid_area=True,
+        prevent_large_text_files=False,
+        time_zone="Europe/Copenhagen",
+        catalog_name="catalog_name",
+    )
