@@ -40,7 +40,7 @@ def write_calculation(
         TableColumnNames.calculation_period_end,
         TableColumnNames.calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time,
-    ).write.format("delta").mode("append").option("mergeSchema", "true").insertInto(
+    ).write.format("delta").mode("append").option("mergeSchema", "true").saveAsTable(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
     )
 
