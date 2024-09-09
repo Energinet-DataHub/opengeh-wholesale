@@ -30,7 +30,7 @@ resource "databricks_grant" "reader_access_catalog" {
   provider   = databricks.dbw
   catalog    = databricks_catalog.shared.id
   principal  = each.key
-  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA", "READ_VOLUME"]
+  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
 
   depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.scim_reader, time_sleep.grant_sleep]
 }
@@ -39,7 +39,7 @@ resource "databricks_grant" "contributor_dataplane_access_catalog" {
   provider   = databricks.dbw
   catalog    = databricks_catalog.shared.id
   principal  = var.databricks_contributor_dataplane_group.name
-  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA", "CREATE_TABLE", "MODIFY", "READ_VOLUME", "WRITE_VOLUME"]
+  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA", "CREATE_TABLE", "MODIFY", "WRITE_VOLUME"]
 
   depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.scim_contributor_dataplane, time_sleep.grant_sleep]
 }
