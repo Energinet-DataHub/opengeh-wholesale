@@ -28,21 +28,37 @@ from package.infrastructure.paths import (
 @inject
 def write_calculation(
     calculations: DataFrame,
+    spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[
         Container.infrastructure_settings
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-    calculations.select(
+    new_calculations = calculations.select(
         TableColumnNames.calculation_id,
         TableColumnNames.calculation_type,
         TableColumnNames.calculation_period_start,
         TableColumnNames.calculation_period_end,
         TableColumnNames.calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time,
-    ).write.format("delta").mode("append").option("mergeSchema", "true").saveAsTable(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
     )
+    new_calculations.createOrReplaceTempView("new_calculations_temp_view")
+    spark.sql(
+        f"INSERT INOT {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
+        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time})"
+        f" VALUES (SELECT * FROM new_calculations_temp_view)"
+    )
+
+    # calculations.select(
+    #     TableColumnNames.calculation_id,
+    #     TableColumnNames.calculation_type,
+    #     TableColumnNames.calculation_period_start,
+    #     TableColumnNames.calculation_period_end,
+    #     TableColumnNames.calculation_execution_time_start,
+    #     TableColumnNames.calculation_succeeded_time,
+    # ).write.format("delta").mode("append").option("mergeSchema", "true").saveAsTable(
+    #     f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
+    # )
 
     # ToDo JMG: Remove when use of calculations_v1 is fully implemented
     calculations.write.format("delta").mode("append").option(
