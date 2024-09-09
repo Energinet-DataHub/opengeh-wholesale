@@ -14,6 +14,7 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame, SparkSession
 
+from package.calculation.calculator_args import CalculatorArgs
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
@@ -28,25 +29,17 @@ from package.infrastructure.paths import (
 @inject
 def write_calculation(
     calculations: DataFrame,
+    args: CalculatorArgs,
     spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[
         Container.infrastructure_settings
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-    new_calculations = calculations.select(
-        TableColumnNames.calculation_id,
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_period_start,
-        TableColumnNames.calculation_period_end,
-        TableColumnNames.calculation_execution_time_start,
-        TableColumnNames.calculation_succeeded_time,
-    )
-    new_calculations.createOrReplaceTempView("new_calculations_temp_view")
     spark.sql(
         f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time})"
-        f" VALUES (SELECT * FROM new_calculations_temp_view)"
+        f" VALUES ({args.calculation_id}, {args.calculation_type}, {args.calculation_period_start_datetime}, {args.calculation_period_end_datetime}, {args.calculation_execution_time_start}, NULL)"
     )
 
     # calculations.select(
