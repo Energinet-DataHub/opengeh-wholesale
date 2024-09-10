@@ -39,30 +39,6 @@ def _get_contract_parameters(filename: str) -> list[str]:
         )
 
 
-def _substitute_period(
-    sys_argv: list[str], period_start: datetime, period_end: datetime
-) -> list[str]:
-    for i, item in enumerate(sys_argv):
-        if item.startswith("--period-start"):
-            sys_argv[i] = (
-                f"--period-start={period_start.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-            )
-        elif item.startswith("--period-end"):
-            sys_argv[i] = f"--period-end={period_end.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-
-    return sys_argv
-
-
-def _substitute_calculation_type(
-    sys_argv: list[str], calculation_type: CalculationType
-) -> list[str]:
-    for i, item in enumerate(sys_argv):
-        if item.startswith("--calculation-type="):
-            sys_argv[i] = f"--calculation-type={calculation_type.value}"
-            break
-    return sys_argv
-
-
 @pytest.fixture(scope="session")
 def contract_parameters(contracts_path: str) -> list[str]:
     job_parameters = _get_contract_parameters(
@@ -128,6 +104,7 @@ class TestWhenInvokedWithValidParameters:
             "804": "95bd2365-c09b-4ee7-8c25-8dd56b564811",
             "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d",
         }
+        assert actual_args.energy_supplier_id == "1234567890123"
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
@@ -236,6 +213,30 @@ def test_returns_expected_value_for_split_report_by_grid_area(
 
     # Assert
     assert actual_args.split_report_by_grid_area is split_report_by_grid_area
+
+
+class TestNoEnergySupplierId:
+    def test_returns_none_for_energy_supplier_id(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        test_sys_args = [
+            item
+            for item in sys_argv_from_contract
+            if not item.startswith("--energy-supplier-id")
+        ]
+
+        with patch("sys.argv", test_sys_args):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+
+                # Act
+                actual_args = parse_job_arguments(command_line_args)
+
+        # Assert
+        assert actual_args.energy_supplier_id is None
 
 
 class TestWhenUnknownCalculationType:

@@ -25,6 +25,7 @@ class SettlementReportArgs:
     period_end: datetime
     calculation_type: CalculationType
     calculation_id_by_grid_area: dict[str, str]
+    energy_supplier_id: str | None
     split_report_by_grid_area: bool
     prevent_large_text_files: bool
     time_zone: str
