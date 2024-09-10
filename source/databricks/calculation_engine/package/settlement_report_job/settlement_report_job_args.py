@@ -19,7 +19,7 @@ import configargparse
 from configargparse import argparse
 
 from package.settlement_report_job import logging_configuration
-from package.settlement_report_job.args_helper import valid_date
+from package.settlement_report_job.args_helper import valid_date, is_valid_uuid
 from package.settlement_report_job.calculation_type import CalculationType
 from package.settlement_report_job.logger import Logger
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
@@ -52,6 +52,10 @@ def parse_job_arguments(
             catalog_name=env_vars.get_catalog_name(),
         )
 
+        _validate_calculation_id_by_grid_area(
+            settlement_report_args.calculation_id_by_grid_area
+        )
+
         return settlement_report_args
 
 
@@ -74,3 +78,14 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
         raise Exception(f"Unknown args: {unknown_args_text}")
 
     return args
+
+
+def _validate_calculation_id_by_grid_area(
+    calculation_id_by_grid_area: dict[str, str]
+) -> None:
+    for (
+        grid_area,
+        calculation_id,
+    ) in calculation_id_by_grid_area.items():
+        if is_valid_uuid(calculation_id) is False:
+            raise ValueError(f"Calculation ID for grid area {grid_area} is not a uuid")

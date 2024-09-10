@@ -131,6 +131,32 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.time_zone == "Europe/Copenhagen"
 
 
+class TestWhenGridAreaHasNoCalculationId:
+    def test_raise_system_exit_with_non_zero_code(
+        self, job_environment_variables: dict, sys_argv_from_contract
+    ) -> None:
+        # Arrange
+        test_sys_args = sys_argv_from_contract.copy()
+        pattern = r"--calculation-id-by-grid-area=(\{.*\})"
+
+        for i, item in enumerate(test_sys_args):
+            if re.search(pattern, item):
+                test_sys_args[i] = re.sub(
+                    pattern, '--calculation-id-by-grid-area={"804":""}', item
+                )
+                break
+
+        with patch("sys.argv", test_sys_args):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(SystemExit) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        assert error.value.code != 0
+
+
 class TestWhenUnknownCalculationType:
     def test_raise_system_exit_with_non_zero_code(
         self, job_environment_variables: dict, sys_argv_from_contract
