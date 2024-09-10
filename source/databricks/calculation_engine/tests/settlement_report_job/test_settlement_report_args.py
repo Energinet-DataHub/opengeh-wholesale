@@ -25,7 +25,7 @@ from package.settlement_report_job.settlement_report import (
 from package.settlement_report_job.environment_variables import EnvironmentVariable
 from package.settlement_report_job.calculation_type import CalculationType
 
-DEFAULT_REPORT_ID = "the-report-id"
+DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
 
 def _get_contract_parameters(filename: str) -> list[str]:

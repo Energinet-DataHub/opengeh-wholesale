@@ -24,8 +24,8 @@ from package.settlement_report_job.settlement_report_args import SettlementRepor
 def any_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
-        period_start=datetime(2018, 1, 31, 23, 0, 0),
-        period_end=datetime(2018, 1, 31, 23, 0, 0),
+        period_start=datetime(2018, 3, 31, 22, 0, 0),
+        period_end=datetime(2018, 4, 30, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
         split_report_per_grid_area=True,
         prevent_large_text_files=False,
