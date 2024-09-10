@@ -27,7 +27,7 @@ on:
 
 jobs:
   databricks_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@nhq/multipleSetupPythonFilesWheel
+    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v14
     with:
       python_version: 3.11.7
       architecture: x64
