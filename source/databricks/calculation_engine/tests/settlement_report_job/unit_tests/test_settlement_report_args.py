@@ -132,17 +132,18 @@ class TestWhenUnknownCalculationType:
         self, job_environment_variables: dict, sys_argv_from_contract
     ) -> None:
         # Arrange
+        test_sys_args = sys_argv_from_contract.copy()
         unknown_calculation_type = "unknown_calculation_type"
         pattern = r"--calculation-type=(\w+)"
 
-        for i, item in enumerate(sys_argv_from_contract):
+        for i, item in enumerate(test_sys_args):
             if re.search(pattern, item):
-                sys_argv_from_contract[i] = re.sub(
+                test_sys_args[i] = re.sub(
                     pattern, f"--calculation-type={unknown_calculation_type}", item
                 )
                 break
 
-        with patch("sys.argv", sys_argv_from_contract):
+        with patch("sys.argv", test_sys_args):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(SystemExit) as error:
                     command_line_args = parse_command_line_arguments()
