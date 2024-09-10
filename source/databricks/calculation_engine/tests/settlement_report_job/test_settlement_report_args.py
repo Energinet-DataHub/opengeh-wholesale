@@ -133,9 +133,22 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.time_zone == "Europe/Copenhagen"
 
 
-class TestWhenGridAreaHasNoCalculationId:
+class TestWhenNoValidCalculationIdForGridArea:
+
+    @pytest.mark.parametrize(
+        "not_valid_calculation_id",
+        [
+            "not_valid",
+            "",
+            None,
+            "c09b-4ee7-8c25-8dd56b564811",
+        ],
+    )
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+        not_valid_calculation_id: str,
     ) -> None:
         # Arrange
         test_sys_args = sys_argv_from_contract.copy()
@@ -144,19 +157,21 @@ class TestWhenGridAreaHasNoCalculationId:
         for i, item in enumerate(test_sys_args):
             if re.search(pattern, item):
                 test_sys_args[i] = re.sub(
-                    pattern, '--calculation-id-by-grid-area={"804":""}', item
+                    pattern,
+                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',
+                    item,
                 )
                 break
 
         with patch("sys.argv", test_sys_args):
             with patch.dict("os.environ", job_environment_variables):
-                with pytest.raises(SystemExit) as error:
+                with pytest.raises(ValueError) as exc_info:
                     command_line_args = parse_command_line_arguments()
                     # Act
                     parse_job_arguments(command_line_args)
 
         # Assert
-        assert error.value.code != 0
+        assert "Calculation ID for grid area" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
