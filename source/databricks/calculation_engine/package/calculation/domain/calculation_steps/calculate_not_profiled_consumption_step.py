@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
+
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
@@ -18,23 +20,23 @@ from package.calculation.wholesale.handlers.calculationstep import BaseCalculati
 from package.codelists import TimeSeriesType, AggregationLevel
 
 
-class CalculatieTotalEnergyConsumptionStep(BaseCalculationStep):
+class CalculateNonProfiledConsumptionStep(BaseCalculationStep):
 
     def __init__(
-        self,
-        calculator_args: CalculatorArgs,
-        grid_loss_aggr: grid_loss_aggr,
+        self, args: CalculatorArgs, non_profiled_consumption_per_es: DataFrame
     ):
         super().__init__()
-        self.calculator_args = calculator_args
+        self.args = args
+        self.non_profiled_consumption_per_es = non_profiled_consumption_per_es
 
     def handle(self, output: CalculationOutput) -> CalculationOutput:
-        total_consumption = factory.create(
-            self.calculator_args,
-            self.grid_loss_aggr.calculate_total_consumption(production, exchange),
-            TimeSeriesType.TOTAL_CONSUMPTION,
-            AggregationLevel.GRID_AREA,
+        non_profiled_consumption_per_es = factory.create(
+            self.args,
+            self.non_profiled_consumption_per_es,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            AggregationLevel.ENERGY_SUPPLIER,
         )
-
-        output.energy_results_output.total_consumption = total_consumption
+        output.energy_results_output.non_profiled_consumption_per_es = (
+            non_profiled_consumption_per_es
+        )
         return super().handle(output)
