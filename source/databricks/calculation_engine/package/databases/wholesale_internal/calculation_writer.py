@@ -48,7 +48,7 @@ def write_calculation(
     calculation_execution_time_start = args.calculation_execution_time_start.strftime(
         timestamp_format
     )[:-3]
-
+    # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
     spark.sql(
         f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
