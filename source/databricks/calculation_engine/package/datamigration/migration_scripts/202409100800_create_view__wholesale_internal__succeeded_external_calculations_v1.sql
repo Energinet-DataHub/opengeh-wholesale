@@ -7,6 +7,7 @@ SELECT calculation_id,
        calculation_type,
        calculation_period_start,
        calculation_period_end,
-       calculation_version
+       calculation_version,
+       is_internal_calculation
 FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1
 WHERE is_internal_calculation = false AND calculation_succeeded_time IS NOT NULL
