@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 import sys
 from argparse import Namespace
 
@@ -42,7 +43,9 @@ def parse_job_arguments(
             period_start=job_args.period_start,
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
-            calculation_id_by_grid_area=job_args.calculation_id_by_grid_area,
+            calculation_id_by_grid_area=json.loads(
+                job_args.calculation_id_by_grid_area
+            ),
             split_report_per_grid_area=True,
             prevent_large_text_files=False,
             time_zone="Europe/Copenhagen",
@@ -63,7 +66,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-start", type=valid_date, required=True)
     p.add("--period-end", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
-    p.add("--calculation-id-by-grid-area", type=dict, required=True)
+    p.add("--calculation-id-by-grid-area", type=str, required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
