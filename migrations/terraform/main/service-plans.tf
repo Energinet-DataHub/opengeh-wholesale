@@ -8,7 +8,7 @@ module "func_service_plan" {
   resource_group_name            = azurerm_resource_group.this.name
   location                       = azurerm_resource_group.this.location
   sku_name                       = var.function_app_sku_name
-  maximum_elastic_worker_count   = 3
+  maximum_elastic_worker_count   = 1
   monitor_alerts_action_group_id = length(module.monitor_action_group_mig) != 1 ? null : module.monitor_action_group_mig[0].id
 
   cpu_alert_information = {
@@ -98,7 +98,7 @@ module "webapp_service_plan" {
   environment_instance           = var.environment_instance
   resource_group_name            = azurerm_resource_group.this.name
   location                       = azurerm_resource_group.this.location
-  sku_name                       = "P1v3"
+  sku_name                       = "P0v3"
   monitor_alerts_action_group_id = length(module.monitor_action_group_mig) != 1 ? null : module.monitor_action_group_mig[0].id
 
   cpu_alert_information = {
