@@ -20,9 +20,9 @@ Describe "Add-Assets" {
             Add-Assets -WorkingDirectory '.\test-files'
 
             # Assert
-            Test-Path '.\test-files\artifacts\migration_scripts\test-script-1.sql' |
+            Test-Path '.\test-files\artifacts\calculation_engine\migration_scripts\test-script-1.sql' |
                 Should -Be $true
-            Test-Path '.\test-files\artifacts\hive\migration_scripts\test-script-1.sql' |
+            Test-Path '.\test-files\artifacts\calculation_engine\hive\migration_scripts\test-script-1.sql' |
                 Should -Be $true
         }
     }
