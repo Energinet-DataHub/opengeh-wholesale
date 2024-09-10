@@ -2,7 +2,7 @@
 resource "databricks_sql_endpoint" "settlement_report_sql_endpoint" {
   provider             = databricks.dbw
   name                 = "Settlement Report SQL Endpoint"
-  cluster_size         = "Small"
+  cluster_size         = "Medium"
   min_num_clusters     = 1
   max_num_clusters     = 10
   auto_stop_mins       = var.settlement_report_auto_stop_minutes
