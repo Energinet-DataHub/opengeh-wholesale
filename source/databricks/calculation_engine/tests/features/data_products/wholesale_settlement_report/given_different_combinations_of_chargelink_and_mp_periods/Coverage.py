@@ -1,12 +1,14 @@
-# When charge link periods scenario
+from test_coverage.all_test_cases import Cases
 
-The purpose is to test that the settlement reports data product view charge_link_periods returns the expected data.
+"""
+## PURPOSE ##
+The purpose is to test a calculation on a period before the transition to quarterly results.
 
-## Design considerations
+## DESIGN CONSIDERATIONS
+- Period is before the calculation result resolution change
+- Input data has two of each production MP, a consumption MP of both types of settlement methods and exchange MP - one with resolution 15M and one with resolution 1H
+- Time series for each MP
 
-- Verify that various relevant combinations of charge_link_periods and metering point periods produce the correct view data.
-
-```text
  1. Missing metering point period.
       2023-02-02                     2023-02-10
    MMP      MISSING
@@ -151,21 +153,18 @@ The purpose is to test that the settlement reports data product view charge_link
     CLP         |-------------------------------------|
     CPIP        |-------------------------------------|
     EXPECTED    |-----------------|-------------------|
-```
 
-## Coverage
-
-- Generate data for settlement report when there is a missing metering point period
-- Generate data for settlement report when there is missing charge link period
-- Generate data for settlement report when metering point period and charge link period overlap
-- Generate data for settlement report when metering point period and charge link period do not overlap
-- Generate data for settlement report when metering point period is a subset of charge link period
-- Generate data for settlement report when charge link period is a subset of the metering point period
-- Generate data for settlement report when two metering point periods due to a change of energy supplier results
-- Generate data for settlement report when charge link periods have a gap
-- Generate data for settlement report when metering point periods are overlapping a charge link period
-- Generate data for settlement report when two charge link periods
-- Generate data for settlement report when there is charge link period between metering point periods
-- Generate data for settlement report when there are multiple metering point periods due to change of energy supplier
-- Generate data for settlement report when there are two charge price information periods
-- Generate data for settlement report when there are two metering point periods due to a change of balance responsible
+## CASES TESTED ##
+"""
+Cases.SettlementReportsTests.MP_period_missing
+Cases.SettlementReportsTests.Charge_link_period_missing
+Cases.SettlementReportsTests.MP_period_and_charge_link_period_overlap
+Cases.SettlementReportsTests.MP_period_and_charge_link_period_do_not_overlap
+Cases.SettlementReportsTests.Charge_link_period_is_a_subset_of_the_MP_period
+Cases.SettlementReportsTests.MP_period_subset_of_charge_link_period
+Cases.SettlementReportsTests.MP_period_multiple
+Cases.SettlementReportsTests.Charge_link_periods_have_a_gap
+Cases.SettlementReportsTests.MP_period_and_charge_link_period_overlap
+Cases.SettlementReportsTests.Charge_link_periods_multiple
+Cases.SettlementReportsTests.Charge_link_period_between_MP_periods
+Cases.SettlementReportsTests.Charge_price_information_periods_multiple
