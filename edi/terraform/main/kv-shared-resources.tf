@@ -116,3 +116,8 @@ data "azurerm_key_vault_secret" "sbq_edi_inbox_id" {
   name         = "sbq-edi-inbox-messagequeue-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "apim_instance_id" {
+  name         = "apim-instance-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
