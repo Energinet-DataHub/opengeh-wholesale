@@ -43,10 +43,10 @@ foreach ($givenFolder in $givenFolders)
 
         foreach ($line in $coverageContent)
         {
-            if ( $line.Trim().StartsWith("Tests."))
+            if ( $line.Trim().StartsWith("Cases."))
             {
                 # Extract the specific part after "Tests."
-                $caseCoverage = $line.Trim().Substring("Tests.".Length)
+                $caseCoverage = $line.Trim().Substring("Cases.".Length)
 
                 # Extract the last part of the test case string after the last '.'
                 $testCaseName = $caseCoverage.Split('.')[-1]
