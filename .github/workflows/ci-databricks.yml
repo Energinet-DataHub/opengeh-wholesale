@@ -27,11 +27,11 @@ on:
 
 jobs:
   databricks_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@nhq/multipleSetupPythonFilesWheel
     with:
       python_version: 3.11.7
       architecture: x64
-      wheel_working_directory: ./source/databricks/calculation_engine
+      wheel_working_directory: ./source/databricks
       should_include_assets: true
 
   migration_scripts_verification_hive:
