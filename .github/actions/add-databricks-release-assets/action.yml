@@ -14,7 +14,4 @@ runs:
       run: |
         . ${{ github.action_path }}/Add-Assets.ps1
 
-        # Do it for each subdirectory in the wheel working directory
-        Get-ChildItem -Directory -Path ${{ inputs.wheel_working_directory }}/artifacts | ForEach-Object {
-          Add-Assets -WorkingDirectory $_.FullName
-        }
+        Add-Assets -WorkingDirectory ${{ inputs.wheel_working_directory }}/artifacts/calculation_engine
