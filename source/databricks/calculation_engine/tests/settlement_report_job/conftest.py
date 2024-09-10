@@ -27,7 +27,7 @@ def any_settlement_report_args() -> SettlementReportArgs:
         period_start=datetime(2018, 3, 31, 22, 0, 0),
         period_end=datetime(2018, 4, 30, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
-        split_report_per_grid_area=True,
+        split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",

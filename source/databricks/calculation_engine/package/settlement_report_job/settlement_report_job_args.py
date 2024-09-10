@@ -42,7 +42,7 @@ def parse_job_arguments(
             period_start=job_args.period_start,
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
-            split_report_per_grid_area=True,
+            split_report_by_grid_area=True,
             prevent_large_text_files=False,
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
