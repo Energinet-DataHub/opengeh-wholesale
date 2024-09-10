@@ -25,7 +25,7 @@ class SettlementReportArgs:
     period_end: datetime
     calculation_type: CalculationType
     calculation_id_by_grid_area: dict[str, str]
-    split_report_per_grid_area: bool
+    split_report_by_grid_area: bool
     prevent_large_text_files: bool
     time_zone: str
     catalog_name: str

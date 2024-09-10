@@ -10,3 +10,5 @@
 --period-end=2022-06-01T22:00:00Z
 --calculation-type=wholesale_fixing
 --calculation-id-by-grid-area={"804": "95bd2365-c09b-4ee7-8c25-8dd56b564811", "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"}
+--split-report-by-grid-area
+--prevent-large-text-files

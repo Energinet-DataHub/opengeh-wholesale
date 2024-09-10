@@ -128,6 +128,8 @@ class TestWhenInvokedWithValidParameters:
             "804": "95bd2365-c09b-4ee7-8c25-8dd56b564811",
             "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d",
         }
+        assert actual_args.prevent_large_text_files is True
+        assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
 
 
@@ -155,6 +157,70 @@ class TestWhenGridAreaHasNoCalculationId:
 
         # Assert
         assert error.value.code != 0
+
+
+@pytest.mark.parametrize(
+    "prevent_large_text_files",
+    [
+        True,
+        False,
+    ],
+)
+def test_returns_expected_value_for_prevent_large_text_files(
+    job_environment_variables: dict,
+    sys_argv_from_contract: list[str],
+    prevent_large_text_files: bool,
+) -> None:
+    # Arrange
+    test_sys_args = sys_argv_from_contract.copy()
+    if not prevent_large_text_files:
+        test_sys_args = [
+            item
+            for item in sys_argv_from_contract
+            if not item.startswith("--prevent-large-text-files")
+        ]
+
+    with patch("sys.argv", test_sys_args):
+        with patch.dict("os.environ", job_environment_variables):
+            command_line_args = parse_command_line_arguments()
+
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert
+    assert actual_args.prevent_large_text_files is prevent_large_text_files
+
+
+@pytest.mark.parametrize(
+    "split_report_by_grid_area",
+    [
+        True,
+        False,
+    ],
+)
+def test_returns_expected_value_for_split_report_by_grid_area(
+    job_environment_variables: dict,
+    sys_argv_from_contract: list[str],
+    split_report_by_grid_area: bool,
+) -> None:
+    # Arrange
+    test_sys_args = sys_argv_from_contract.copy()
+    if not split_report_by_grid_area:
+        test_sys_args = [
+            item
+            for item in sys_argv_from_contract
+            if not item.startswith("--split-report-by-grid-area")
+        ]
+
+    with patch("sys.argv", test_sys_args):
+        with patch.dict("os.environ", job_environment_variables):
+            command_line_args = parse_command_line_arguments()
+
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert
+    assert actual_args.split_report_by_grid_area is split_report_by_grid_area
 
 
 class TestWhenUnknownCalculationType:

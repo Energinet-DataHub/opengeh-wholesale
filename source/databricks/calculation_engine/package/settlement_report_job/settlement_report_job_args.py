@@ -46,8 +46,8 @@ def parse_job_arguments(
             calculation_id_by_grid_area=json.loads(
                 job_args.calculation_id_by_grid_area
             ),
-            split_report_per_grid_area=True,
-            prevent_large_text_files=False,
+            split_report_by_grid_area=job_args.split_report_by_grid_area,
+            prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
         )
@@ -71,6 +71,12 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-end", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
     p.add("--calculation-id-by-grid-area", type=str, required=True)
+    p.add(
+        "--split-report-by-grid-area", action="store_true"
+    )  # true if present, false otherwise
+    p.add(
+        "--prevent-large-text-files", action="store_true"
+    )  # true if present, false otherwise
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
