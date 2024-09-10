@@ -13,7 +13,8 @@ runs:
       shell: pwsh
       run: |
         . ${{ github.action_path }}/Add-Assets.ps1
+
         # Do it for each subdirectory in the wheel working directory
-        Get-ChildItem -Directory -Path ${{ inputs.wheel_working_directory }} | ForEach-Object {
+        Get-ChildItem -Directory -Path ${{ inputs.wheel_working_directory }}/artifacts | ForEach-Object {
           Add-Assets -WorkingDirectory $_.FullName
         }
