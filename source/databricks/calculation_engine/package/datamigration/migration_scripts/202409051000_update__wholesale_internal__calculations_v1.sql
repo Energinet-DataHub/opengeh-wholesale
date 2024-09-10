@@ -8,10 +8,11 @@ ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1
 ADD COLUMN is_internal_calculation BOOLEAN
 GO
 
-UPDATE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1
-SET is_internal_calculation = c.is_internal_calculation
-FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
-WHERE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1.calculation_id = c.calculation_id;
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1 AS target
+USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations AS source
+ON target.calculation_id = source.calculation_id
+WHEN MATCHED THEN
+  UPDATE SET target.is_internal_calculation = source.is_internal_calculation;
 GO
 
 ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1
