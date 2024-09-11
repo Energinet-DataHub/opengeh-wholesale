@@ -29,13 +29,18 @@ def create_energy_results(
     spark: SparkSession,
     args: SettlementReportArgs,
 ) -> DataFrame:
+    calculation_id_by_grid_area_df = spark.createDataFrame(
+        args.calculation_id_by_grid_area.items(),
+        [DataProductColumnNames.grid_area_code, DataProductColumnNames.calculation_id],
+    )
+
     energy = spark.read.table(get_energy_view())
 
-    energy_filtered = energy.where(
-        F.struct(
-            DataProductColumnNames.grid_area_code, DataProductColumnNames.calculation_id
-        ).isin(args.calculation_id_by_grid_area)
-        & (F.col(DataProductColumnNames.time) >= args.period_start)
+    energy_filtered = energy.join(
+        calculation_id_by_grid_area_df,
+        [DataProductColumnNames.grid_area_code, DataProductColumnNames.calculation_id],
+    ).where(
+        (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
     )
 
