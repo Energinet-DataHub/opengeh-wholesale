@@ -25,6 +25,7 @@ from package.databases.wholesale_results_internal.schemas import (
     hive_total_monthly_amounts_schema,
     hive_monthly_amounts_schema,
 )
+
 # calculation_output
 from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
     hive_wholesale_results_schema,
