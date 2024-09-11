@@ -4,14 +4,14 @@ Describe "Add-Assets" {
     }
 
     BeforeEach {
-        New-Item -Path '.\test-files\package' -ItemType 'directory'
-        New-Item -Path '.\test-files\package\datamigration' -ItemType 'directory'
-        New-Item -Path '.\test-files\package\datamigration\migration_scripts' -ItemType 'directory'
-        New-Item -Path '.\test-files\package\datamigration\migration_scripts\test-script-1.sql' -ItemType 'file'
+        New-Item -Path '.\test-files\calculation_engine\package' -ItemType 'directory'
+        New-Item -Path '.\test-files\calculation_engine\package\datamigration' -ItemType 'directory'
+        New-Item -Path '.\test-files\calculation_engine\package\datamigration\migration_scripts' -ItemType 'directory'
+        New-Item -Path '.\test-files\calculation_engine\package\datamigration\migration_scripts\test-script-1.sql' -ItemType 'file'
 
-        New-Item -Path '.\test-files\package\datamigration_hive' -ItemType 'directory'
-        New-Item -Path '.\test-files\package\datamigration_hive\migration_scripts' -ItemType 'directory'
-        New-Item -Path '.\test-files\package\datamigration_hive\migration_scripts\test-script-1.sql' -ItemType 'file'
+        New-Item -Path '.\test-files\calculation_engine\package\datamigration_hive' -ItemType 'directory'
+        New-Item -Path '.\test-files\calculation_engine\package\datamigration_hive\migration_scripts' -ItemType 'directory'
+        New-Item -Path '.\test-files\calculation_engine\package\datamigration_hive\migration_scripts\test-script-1.sql' -ItemType 'file'
     }
 
     Context "Given a working directory containing wheel distribution files" {
@@ -21,9 +21,9 @@ Describe "Add-Assets" {
 
             # Assert
             Test-Path '.\test-files\artifacts\calculation_engine\migration_scripts\test-script-1.sql' |
-                Should -Be $true
+            Should -Be $true
             Test-Path '.\test-files\artifacts\calculation_engine\hive\migration_scripts\test-script-1.sql' |
-                Should -Be $true
+            Should -Be $true
         }
     }
 
