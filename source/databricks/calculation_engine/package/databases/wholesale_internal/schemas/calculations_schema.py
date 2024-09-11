@@ -44,21 +44,3 @@ calculations_schema = StructType(
         ),
     ]
 )
-
-hive_calculations_schema = StructType(
-    [
-        StructField("calculation_id", StringType(), False),
-        StructField("calculation_type", StringType(), False),
-        StructField("period_start", TimestampType(), False),
-        StructField("period_end", TimestampType(), False),
-        StructField("execution_time_start", TimestampType(), False),
-        StructField("created_by_user_id", StringType(), False),
-        StructField("version", LongType(), False),
-        StructField("is_internal_calculation", BooleanType(), True),
-        StructField(
-            "calculation_succeeded_time",
-            TimestampType(),
-            True,
-        ),
-    ]
-)

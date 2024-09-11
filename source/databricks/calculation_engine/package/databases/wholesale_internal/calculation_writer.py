@@ -20,7 +20,6 @@ from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveBasisDataDatabase,
     WholesaleInternalDatabase,
 )
 
@@ -60,13 +59,6 @@ def write_calculation(
         "mergeSchema", "false"
     ).insertInto(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    )
-
-    # ToDo JMG: Remove when we are on Unity Catalog
-    calculations.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(
-        f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
     )
 
 
