@@ -21,6 +21,7 @@ from package.settlement_report_job import logging_configuration
 from package.settlement_report_job.args_helper import valid_date
 from package.settlement_report_job.calculation_type import CalculationType
 from package.settlement_report_job.logger import Logger
+from package.settlement_report_job.market_role import MarketRole
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
 import package.settlement_report_job.environment_variables as env_vars
 
@@ -42,6 +43,7 @@ def parse_job_arguments(
             period_start=job_args.period_start,
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
+            market_role=job_args.market_role,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
@@ -62,6 +64,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-start", type=valid_date, required=True)
     p.add("--period-end", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
+    p.add("--market-role", type=MarketRole, required=True)
     p.add(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise

@@ -12,21 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from datetime import datetime
-
-from package.settlement_report_job.calculation_type import CalculationType
-from package.settlement_report_job.market_role import MarketRole
+from enum import Enum
 
 
-@dataclass
-class SettlementReportArgs:
-    report_id: str
-    period_start: datetime
-    period_end: datetime
-    calculation_type: CalculationType
-    market_role: MarketRole
-    split_report_by_grid_area: bool
-    prevent_large_text_files: bool
-    time_zone: str
-    catalog_name: str
+class MarketRole(Enum):
+    DATAHUB_ADMINISTRATOR = "datahub_administrator"
+    ENERGY_SUPPLIER = "energy_supplier"
+    GRID_ACCESS_PROVIDER = "grid_access_provider"
+    SYSTEM_OPERATOR = "system_operator"
