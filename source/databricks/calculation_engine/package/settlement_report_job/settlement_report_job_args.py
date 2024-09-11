@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 import sys
+import uuid
 from argparse import Namespace
 
 import configargparse
@@ -44,6 +46,10 @@ def parse_job_arguments(
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
             market_role=job_args.market_role,
+            calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
+                job_args.calculation_id_by_grid_area
+            ),
+            energy_supplier_id=job_args.energy_supplier_id,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
@@ -65,6 +71,9 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-end", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
     p.add("--market-role", type=MarketRole, required=True)
+
+    p.add("--calculation-id-by-grid-area", type=str, required=True)
+    p.add("--energy-supplier-id", type=str, required=False)
     p.add(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise
@@ -78,3 +87,22 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
         raise Exception(f"Unknown args: {unknown_args_text}")
 
     return args
+
+
+def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid.UUID]:
+    try:
+        calculation_id_by_grid_area = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            f"Failed to parse `calculation_id_by_grid_area` json format as dict[str, uuid]: {e}"
+        )
+
+    for grid_area, calculation_id in calculation_id_by_grid_area.items():
+        try:
+            calculation_id_by_grid_area[grid_area] = uuid.UUID(calculation_id)
+        except ValueError:
+            raise ValueError(f"Calculation ID for grid area {grid_area} is not a uuid")
+
+    return calculation_id_by_grid_area
+
+    # Verify that all values are not empty strings or None
