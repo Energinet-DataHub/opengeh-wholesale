@@ -6,32 +6,47 @@ resource "azuread_directory_role" "global_admin" {
   display_name = "Global Administrator"
 }
 
-# locals {
-#   platform_team_members = "comma_delimited_list_of_members_in_SEC-G-Datahub-PlatformDevelopersAzure"
-# }
+############################################################################################################
+# Product Owner for Spectrum and Product Owner for Outlaws have access to the 'Tenant Creator' role via PIM
+# This allows them to create a new B2C tenant. The person creating the tenant become Global Administrator on the tenant
+#
+# However, to ensure that both the Productowner for Outlaws and Productowner for Spectrum are Global Admin on
+# all B2C instances always, this is explicitly configured in the Terraform resources below. This mitigates the risk
+# of locking ourselves out of the B2C tenant if our deployment serviceprincipal is invalidated without anybody
+# being able to log in and recreate it
+#
+# The ISO control IK 8.3 ensures that privileged admin-access is kept up to date on a regular interval
+############################################################################################################
 
-# resource "azuread_directory_role_assignment" "member_role_assignment" {
-#   for_each = [for v in values(azuread_invitation.team_members) : v.user_id]
+#MRK
+resource "azuread_directory_role_assignment" "mrk" {
+  count               = 1
+  role_id             = azuread_directory_role.global_admin.template_id
+  principal_object_id = azuread_invitation.mrk[0].user_id
+}
 
-#   role_id             = azuread_directory_role.global_reader.template_id
-#   principal_object_id = each.value
-# }
+resource "azuread_invitation" "mrk" {
+  count              = 1
+  user_email_address = "mrk@energinet.dk"
+  user_display_name  = "Morten Kjær Nicolaysen"
+  redirect_url       = "https://portal.azure.com"
+}
 
-# resource "azuread_invitation" "team_members" {
-#   for_each = toset(split(",", local.platform_team_members))
-#   user_email_address  = each.value
-#   user_display_name   = "SEC-G-Datahub-PlatformDevelopersAzure member"
-#   redirect_url        = "https://portal.azure.com"
-# }
+resource "azuread_directory_role_assignment" "kos" {
+  count               = 1
+  role_id             = azuread_directory_role.global_admin.template_id
+  principal_object_id = azuread_invitation.kos[0].user_id
+}
+
+resource "azuread_invitation" "kos" {
+  count              = 1
+  user_email_address = "kos@energinet.dk"
+  user_display_name  = "Kristoffer Højrup Moos"
+  redirect_url       = "https://portal.azure.com"
+}
 
 
-# Note: We tried extracting members of SEC-G-Datahub-PlatformDevelopersAzure and iterate over the members in the group - no luck with the code above
-
-# The hardcoded resources below is a consequence of Terraform not being able to
-# correctly replace role assignments if the list of platform team members change (i.e. when adding or removing
-# a member from SEC-G-Datahub-PlatformDevelopersAzure. The reason is a known quirk when using count where values on a
-# given index changes, Terraform will not replace the resource but instead try to update the existing resource, resulting in a conflicted state
-# Note: count = 1 from resources below can be removed once overrides on legacy environments has been removed
+############## Other users are configured below this line ##################
 
 #XKBER
 resource "azuread_directory_role_assignment" "xkber" {
@@ -72,20 +87,6 @@ resource "azuread_directory_role_assignment" "dbj" {
 resource "azuread_invitation" "dbj" {
   count              = 1
   user_email_address = "dbj@energinet.dk"
-  user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
-  redirect_url       = "https://portal.azure.com"
-}
-
-#MRK
-resource "azuread_directory_role_assignment" "mrk" {
-  count               = 1
-  role_id             = azuread_directory_role.global_reader.template_id
-  principal_object_id = azuread_invitation.mrk[0].user_id
-}
-
-resource "azuread_invitation" "mrk" {
-  count              = 1
-  user_email_address = "mrk@energinet.dk"
   user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
   redirect_url       = "https://portal.azure.com"
 }
