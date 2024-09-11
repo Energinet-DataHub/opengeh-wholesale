@@ -14,4 +14,4 @@ runs:
       run: |
         . ${{ github.action_path }}/Add-Assets.ps1
 
-        Add-Assets -WorkingDirectory ${{ inputs.wheel_working_directory }}/calculation_engine
+        Add-Assets -WorkingDirectory ${{ inputs.wheel_working_directory }}
