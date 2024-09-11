@@ -40,6 +40,7 @@ def _get_contract_parameters(filename: str) -> list[str]:
             filter(lambda line: not line.startswith("#") and len(line) > 0, lines)
         )
 
+
 def _substitute_market_role(sys_argv: list[str], market_role: str) -> list[str]:
     pattern = r"--market-role=(\w+)"
 
@@ -226,6 +227,7 @@ def test_returns_expected_value_for_split_report_by_grid_area(
     # Assert
     assert actual_args.split_report_by_grid_area is split_report_by_grid_area
 
+
 class TestNoEnergySupplierId:
     def test_returns_none_for_energy_supplier_id(
         self,
@@ -248,6 +250,7 @@ class TestNoEnergySupplierId:
 
         # Assert
         assert actual_args.energy_supplier_id is None
+
 
 class TestWhenInvokedWithValidMarketRole:
     @pytest.mark.parametrize(
