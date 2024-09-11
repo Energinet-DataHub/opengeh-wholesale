@@ -118,7 +118,7 @@ class TestWhenNoValidCalculationIdForGridArea:
             "not_valid",
             "",
             None,
-            "c09b-4ee7-8c25-8dd56b564811",
+            "c09b-4ee7-8c25-8dd56b564811",  # too short
         ],
     )
     def test_raise_system_exit_with_non_zero_code(
