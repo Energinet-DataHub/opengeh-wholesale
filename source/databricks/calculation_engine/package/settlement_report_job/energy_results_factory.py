@@ -37,7 +37,9 @@ def create_energy_results(
         ).isin(args.calculation_id_by_grid_area)
         & (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
-    ).select(
+    )
+
+    return energy_filtered.select(
         F.col(DataProductColumnNames.grid_area_code).alias(
             EnergyResultsCsvColumnNames.grid_area_code
         ),
@@ -58,5 +60,3 @@ def create_energy_results(
             EnergyResultsCsvColumnNames.quantity
         ),
     )
-
-    return energy_filtered
