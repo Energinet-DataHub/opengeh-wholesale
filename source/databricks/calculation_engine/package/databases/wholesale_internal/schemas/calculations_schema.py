@@ -29,19 +29,18 @@ calculations_schema = StructType(
         StructField(TableColumnNames.calculation_type, StringType(), False),
         StructField(TableColumnNames.calculation_period_start, TimestampType(), False),
         StructField(TableColumnNames.calculation_period_end, TimestampType(), False),
+        StructField(TableColumnNames.calculation_version, LongType(), False),
         StructField(
             TableColumnNames.calculation_execution_time_start,
             TimestampType(),
             False,
         ),
-        StructField(TableColumnNames.created_by_user_id, StringType(), False),
-        StructField(TableColumnNames.calculation_version, LongType(), False),
-        StructField(TableColumnNames.is_internal_calculation, BooleanType(), True),
         StructField(
             TableColumnNames.calculation_succeeded_time,
             TimestampType(),
             True,
         ),
+        StructField(TableColumnNames.is_internal_calculation, BooleanType(), True),
     ]
 )
 
