@@ -23,6 +23,11 @@ module "app_api" {
 
   role_assignments = [
     {
+      // Blob
+      resource_id          = module.storage_settlement_reports.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
