@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.cal
     calculation_period_end TIMESTAMP NOT NULL,
     -- Use identity column.This is not supported in the test suite
     {DATABRICKS-ONLY}calculation_version BIGINT GENERATED ALWAYS AS IDENTITY,
-    {TEST-ONLY}calculation_version BIGINT
+    {TEST-ONLY}calculation_version BIGINT,
     calculation_execution_time_start TIMESTAMP NOT NULL,
     calculation_succeeded_time TIMESTAMP
 )
