@@ -9,3 +9,5 @@
 --period-start=2022-05-31T22:00:00Z
 --period-end=2022-06-01T22:00:00Z
 --calculation-type=balance_fixing
+--split-report-by-grid-area
+--prevent-large-text-files
