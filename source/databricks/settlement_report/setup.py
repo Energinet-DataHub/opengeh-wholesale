@@ -35,7 +35,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "create_settlement_report = package.settlement_report_job.settlement_report:run",
+            "create_settlement_report = settlement_report.settlement_report_job.main:run",
         ]
     },
 )
