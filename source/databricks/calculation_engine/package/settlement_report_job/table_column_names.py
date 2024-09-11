@@ -7,6 +7,8 @@ class DataProductColumnNames:
     metering_point_id = "metering_point_id"
     metering_point_type = "metering_point_type"
     quantity = "quantity"
+    settlement_method = "settlement_method"
+    time = "time"
 
 
 class TimeSeriesPointCsvColumnNames:
@@ -14,6 +16,16 @@ class TimeSeriesPointCsvColumnNames:
     metering_point_type = "TYPEOFMP"
     start_of_day = "STARTDATETIME"
     energy_prefix = "ENERGYQUANTITY"
+
+
+class EnergyResultsCsvColumnNames:
+    grid_area_code = "METERINGGRIDAREAID"
+    calculation_type = "ENERGYBUSINESSPROCESS"
+    time = "STARTDATETIME"
+    resolution = "RESOLUTIONDURATION"
+    metering_point_type = "TYPEOFMP"
+    settlement_method = "SETTLEMENTMETHOD"
+    quantity = "ENERGYQUANTITY"
 
 
 class EphemeralColumns:

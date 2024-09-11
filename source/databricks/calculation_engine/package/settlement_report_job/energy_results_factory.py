@@ -11,15 +11,52 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
+
 from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
+import pyspark.sql.functions as F
 
+from package.settlement_report_job.constants import get_energy_view
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
+from package.settlement_report_job.table_column_names import (
+    DataProductColumnNames,
+    EnergyResultsCsvColumnNames,
+)
 
 
 def create_energy_results(
     spark: SparkSession,
     args: SettlementReportArgs,
 ) -> DataFrame:
-    # ToDo JMG: implement
-    return spark.createDataFrame([], schema=[])
+    energy = spark.read.table(get_energy_view())
+
+    energy_filtered = energy.where(
+        F.struct(
+            DataProductColumnNames.grid_area_code, DataProductColumnNames.calculation_id
+        ).isin(args.calculation_id_by_grid_area)
+        & (F.col(DataProductColumnNames.time) >= args.period_start)
+        & (F.col(DataProductColumnNames.time) < args.period_end)
+    ).select(
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            EnergyResultsCsvColumnNames.grid_area_code
+        ),
+        F.col(DataProductColumnNames.calculation_type).alias(
+            EnergyResultsCsvColumnNames.calculation_type
+        ),
+        F.col(DataProductColumnNames.time).alias(EnergyResultsCsvColumnNames.time),
+        F.col(DataProductColumnNames.resolution).alias(
+            EnergyResultsCsvColumnNames.resolution
+        ),
+        F.col(DataProductColumnNames.metering_point_type).alias(
+            EnergyResultsCsvColumnNames.metering_point_type
+        ),
+        F.col(DataProductColumnNames.settlement_method).alias(
+            EnergyResultsCsvColumnNames.settlement_method
+        ),
+        F.col(DataProductColumnNames.quantity).alias(
+            EnergyResultsCsvColumnNames.quantity
+        ),
+    )
+
+    return energy_filtered

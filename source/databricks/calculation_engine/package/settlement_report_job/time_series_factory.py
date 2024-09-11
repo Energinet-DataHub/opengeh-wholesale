@@ -17,9 +17,9 @@ from pyspark.sql.session import SparkSession
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
 
 
-def create_time_series(
+def create_energy_results(
     spark: SparkSession,
     args: SettlementReportArgs,
 ) -> DataFrame:
-    # ToDo JMG: implement
+
     return spark.createDataFrame([], schema=[])
