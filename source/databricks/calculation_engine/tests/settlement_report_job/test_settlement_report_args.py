@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
+import uuid
 from datetime import datetime
 from unittest.mock import patch
 
@@ -37,30 +38,6 @@ def _get_contract_parameters(filename: str) -> list[str]:
         return list(
             filter(lambda line: not line.startswith("#") and len(line) > 0, lines)
         )
-
-
-def _substitute_period(
-    sys_argv: list[str], period_start: datetime, period_end: datetime
-) -> list[str]:
-    for i, item in enumerate(sys_argv):
-        if item.startswith("--period-start"):
-            sys_argv[i] = (
-                f"--period-start={period_start.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-            )
-        elif item.startswith("--period-end"):
-            sys_argv[i] = f"--period-end={period_end.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-
-    return sys_argv
-
-
-def _substitute_calculation_type(
-    sys_argv: list[str], calculation_type: CalculationType
-) -> list[str]:
-    for i, item in enumerate(sys_argv):
-        if item.startswith("--calculation-type="):
-            sys_argv[i] = f"--calculation-type={calculation_type.value}"
-            break
-    return sys_argv
 
 
 @pytest.fixture(scope="session")
@@ -123,10 +100,56 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.report_id == DEFAULT_REPORT_ID
         assert actual_args.period_start == datetime(2022, 5, 31, 22)
         assert actual_args.period_end == datetime(2022, 6, 1, 22)
-        assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
+        assert actual_args.calculation_type == CalculationType.WHOLESALE_FIXING
+        assert actual_args.calculation_id_by_grid_area == {
+            "804": uuid.UUID("95bd2365-c09b-4ee7-8c25-8dd56b564811"),
+            "805": uuid.UUID("d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"),
+        }
+        assert actual_args.energy_supplier_id == "1234567890123"
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
+
+
+class TestWhenNoValidCalculationIdForGridArea:
+
+    @pytest.mark.parametrize(
+        "not_valid_calculation_id",
+        [
+            "not_valid",
+            "",
+            None,
+            "c09b-4ee7-8c25-8dd56b564811",  # too short
+        ],
+    )
+    def test_raise_uuid_value_error(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+        not_valid_calculation_id: str,
+    ) -> None:
+        # Arrange
+        test_sys_args = sys_argv_from_contract.copy()
+        pattern = r"--calculation-id-by-grid-area=(\{.*\})"
+
+        for i, item in enumerate(test_sys_args):
+            if re.search(pattern, item):
+                test_sys_args[i] = re.sub(
+                    pattern,
+                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',
+                    item,
+                )
+                break
+
+        with patch("sys.argv", test_sys_args):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(ValueError) as exc_info:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        assert "Calculation ID for grid area 804 is not a uuid" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -191,6 +214,30 @@ def test_returns_expected_value_for_split_report_by_grid_area(
 
     # Assert
     assert actual_args.split_report_by_grid_area is split_report_by_grid_area
+
+
+class TestNoEnergySupplierId:
+    def test_returns_none_for_energy_supplier_id(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        test_sys_args = [
+            item
+            for item in sys_argv_from_contract
+            if not item.startswith("--energy-supplier-id")
+        ]
+
+        with patch("sys.argv", test_sys_args):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+
+                # Act
+                actual_args = parse_job_arguments(command_line_args)
+
+        # Assert
+        assert actual_args.energy_supplier_id is None
 
 
 class TestWhenUnknownCalculationType:
