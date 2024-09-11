@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
+import uuid
 from datetime import datetime
 from unittest.mock import patch
 
@@ -101,8 +102,8 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.period_end == datetime(2022, 6, 1, 22)
         assert actual_args.calculation_type == CalculationType.WHOLESALE_FIXING
         assert actual_args.calculation_id_by_grid_area == {
-            "804": "95bd2365-c09b-4ee7-8c25-8dd56b564811",
-            "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d",
+            "804": uuid.UUID("95bd2365-c09b-4ee7-8c25-8dd56b564811"),
+            "805": uuid.UUID("d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"),
         }
         assert actual_args.energy_supplier_id == "1234567890123"
         assert actual_args.prevent_large_text_files is True
@@ -121,7 +122,7 @@ class TestWhenNoValidCalculationIdForGridArea:
             "c09b-4ee7-8c25-8dd56b564811",  # too short
         ],
     )
-    def test_raise_system_exit_with_non_zero_code(
+    def test_raise_uuid_value_error(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract: list[str],
@@ -148,7 +149,7 @@ class TestWhenNoValidCalculationIdForGridArea:
                     parse_job_arguments(command_line_args)
 
         # Assert
-        assert "Calculation ID for grid area" in str(exc_info.value)
+        assert "Calculation ID for grid area 804 is not a uuid" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(

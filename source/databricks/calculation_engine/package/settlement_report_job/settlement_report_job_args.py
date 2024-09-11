@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 import sys
+import uuid
 from argparse import Namespace
 
 import configargparse
@@ -43,7 +44,7 @@ def parse_job_arguments(
             period_start=job_args.period_start,
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
-            calculation_id_by_grid_area=json.loads(
+            calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
                 job_args.calculation_id_by_grid_area
             ),
             energy_supplier_id=job_args.energy_supplier_id,
@@ -51,10 +52,6 @@ def parse_job_arguments(
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
-        )
-
-        _validate_calculation_id_by_grid_area(
-            settlement_report_args.calculation_id_by_grid_area
         )
 
         return settlement_report_args
@@ -88,12 +85,20 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     return args
 
 
-def _validate_calculation_id_by_grid_area(
-    calculation_id_by_grid_area: dict[str, str]
-) -> None:
-    for (
-        grid_area,
-        calculation_id,
-    ) in calculation_id_by_grid_area.items():
-        if is_valid_uuid(calculation_id) is False:
+def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid]:
+    try:
+        calculation_id_by_grid_area = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            f"Failed to parse `calculation_id_by_grid_area` json format as dict[str, uuid]: {e}"
+        )
+
+    for grid_area, calculation_id in calculation_id_by_grid_area.items():
+        try:
+            calculation_id_by_grid_area[grid_area] = uuid.UUID(calculation_id)
+        except ValueError:
             raise ValueError(f"Calculation ID for grid area {grid_area} is not a uuid")
+
+    return calculation_id_by_grid_area
+
+    # Verify that all values are not empty strings or None
