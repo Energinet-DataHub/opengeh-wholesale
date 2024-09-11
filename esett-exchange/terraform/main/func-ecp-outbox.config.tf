@@ -16,6 +16,7 @@ locals {
       "EcpSettings:BusinessTypeExchange"                 = var.biz_talk_business_type_exchange
       "EcpSettings:DisableBizTalkBackOff"                = var.disable_biztalk_backoff
       "FeatureManagement__DisableBizTalkConnectionCheck" = var.disable_biztalk_connection_check
+      "RevisionLogOptions:ApiAddress"                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
     }
   }
 }
