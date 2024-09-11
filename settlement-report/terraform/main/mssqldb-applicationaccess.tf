@@ -5,6 +5,7 @@ module "mssql_database_application_access" {
   database_name   = module.mssqldb_settlement_report.name
   application_hosts_names = [
     module.app_api.name,
+    module.app_api.slot_name,
     module.func_settlement_reports_df.name,
   ]
 
