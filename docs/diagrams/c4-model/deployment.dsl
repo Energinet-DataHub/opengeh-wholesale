@@ -10,10 +10,10 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # IMPORTANT:
             # The order by which models are included is important for how the domain-to-domain relationships are specified.
             # A domain-to-domain relationship should be specified in the "client" of a "client->server" dependency, and
-            # hence domains that doesn't depend on others, should be listed first.
+            # hence domains that doesn't depend on others, should be listed first
 
             # IMPORTANT: The token expires within an hour (or so). Go to the repo and find the file and view the raw content to get a new token (copy from the url)
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGGEKAPTLVCQMNMBKSZW6WLAA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-revision-log/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGUZXU54YSR2QC3WGMZXBLN4A
 
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
@@ -37,23 +37,23 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGOSLKKCXJI2WX6K4WZW6WLIA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QHJZCCX7NUCC2IZQZMZXBLODA
 
             # Include Grid Loss Imbalance Prices model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGNDVLA6LWEXLFYEMCZW6WLYA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QHI7VSJZRXNPXZTTK6ZXBLOOQ
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QHNEF7PTM4WKZ2K2RCZW6WL7A
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGSCYMZSC545RNQLXSZXBLOWA
 
             # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGM2BA7IXVE7M2SXZ6ZW6WMGA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QH3YI6DCOTKHJLWK2OZXBLO2A
 
             # Include DH2 Bridge model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QGKDJREULWVXTEU66GZW6WMPQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACVV25QHWPTP7UGY3DGQJZ6QZXBLO7A
         }
 
 
@@ -166,7 +166,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         tags "Microsoft Azure - Key Vaults"
                     }
 
-                    deploymentNode "Service Bus" {
+                    infrastructureNode "Service Bus" {
                         description "Servicebus namespace for eventbased communication between subproducts"
                         technology "Azure Service Bus"
                         tags "Microsoft Azure - Azure Service Bus"
@@ -178,12 +178,16 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         tags "Microsoft Azure - SQL Server"
                     }
 
-                    deploymentNode "Azure B2C tenant" {
+                    infrastructureNode "Azure B2C tenant" {
                         description ""
                         technology "Azure AD B2C"
                         tags "Microsoft Azure - Azure AD B2C"
+                    }
 
-                        sharedB2CInstance = containerInstance dh3.sharedB2C
+                    infrastructureNode "Databricks" {
+                        description "Shared workspace for Unity Catalogue"
+                        technology "Azure Databricks"
+                        tags "Microsoft Azure - Databricks"
                     }
                 }
             }
@@ -288,21 +292,10 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             exclude "relationship.tag==Simple View"
         }
 
-        deployment dh3 "Production (prod_001)" "Production_no_OAuth" {
-            title "[Deployment] DataHub 3.0 (Detailed, no OAuth)"
-            description "Detailed 'as-is' view of all domains and infrastructure dependencies. Excludes 'OAuth' relationships"
+        deployment dh3 "Production (prod_001)" "Production" {
+            title "[Deployment] DataHub 3.0"
+            description "Detailed 'as-is' view of all domains and infrastructure dependencies"
             include *
-            exclude "relationship.tag==Container Diagram"
-            exclude "relationship.tag==OAuth"
-            exclude "relationship.tag==Simple View"
-        }
-
-        deployment dh3 "Production (prod_001)" "Production_focus_OAuth" {
-            title "[Deployment] DataHub 3.0 Azure AD B2C"
-            description "'As-is' view of all relationships to and from the Azure AD B2C"
-            include ->sharedB2CInstance->
-            exclude "relationship.tag==Container Diagram"
-            exclude "relationship.tag==Simple View"
         }
     }
 }
