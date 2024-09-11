@@ -3,7 +3,8 @@
 -- the time between the calculation's succeeded time and the succeeded time of the next calculation (if a
 -- newer calculation covers the same day, calculation type and grid area). Note that internal and external calculations
 -- are not distinguished in this view - the view returns the latest calculation no matter if it is internal or external.
-
+DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_history_v1
+GO
 
 CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_history_v1 as
 WITH calculations_by_day AS (
@@ -23,7 +24,7 @@ WITH calculations_by_day AS (
     -- All rows should represent a full day, so the to_date is the day after the from_date
     DATE_ADD(from_date_local, 1) AS to_date_local,
     calculation_succeeded_time as latest_from_time
-  FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
+  FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1 c
   INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas cga ON c.calculation_id = cga.calculation_id
   WHERE calculation_succeeded_time IS NOT NULL
 )
