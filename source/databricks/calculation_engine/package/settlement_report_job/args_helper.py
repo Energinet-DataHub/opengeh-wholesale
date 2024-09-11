@@ -23,11 +23,3 @@ def valid_date(s: str) -> datetime:
     except ValueError:
         msg = "not a valid date: {0!r}".format(s)
         raise configargparse.ArgumentTypeError(msg)
-
-
-def is_valid_uuid(val: str) -> bool:
-    try:
-        uuid.UUID(str(val))
-        return True
-    except ValueError:
-        return False

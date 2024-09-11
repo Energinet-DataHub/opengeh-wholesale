@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import uuid
+from uuid import UUID
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -24,7 +24,7 @@ class SettlementReportArgs:
     period_start: datetime
     period_end: datetime
     calculation_type: CalculationType
-    calculation_id_by_grid_area: dict[str, uuid]
+    calculation_id_by_grid_area: dict[str, UUID]
     """A dictionary containing grid area codes (keys) and calculation ids (values)."""
     energy_supplier_id: str | None
     split_report_by_grid_area: bool

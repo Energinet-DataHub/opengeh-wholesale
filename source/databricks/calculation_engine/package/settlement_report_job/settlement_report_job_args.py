@@ -20,7 +20,7 @@ import configargparse
 from configargparse import argparse
 
 from package.settlement_report_job import logging_configuration
-from package.settlement_report_job.args_helper import valid_date, is_valid_uuid
+from package.settlement_report_job.args_helper import valid_date
 from package.settlement_report_job.calculation_type import CalculationType
 from package.settlement_report_job.logger import Logger
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
@@ -85,7 +85,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     return args
 
 
-def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid]:
+def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid.UUID]:
     try:
         calculation_id_by_grid_area = json.loads(json_str)
     except json.JSONDecodeError as e:
