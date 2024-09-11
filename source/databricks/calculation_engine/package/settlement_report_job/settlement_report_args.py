@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from package.settlement_report_job.calculation_type import CalculationType
+from package.settlement_report_job.market_role import MarketRole
 
 
 @dataclass
@@ -24,6 +25,7 @@ class SettlementReportArgs:
     period_start: datetime
     period_end: datetime
     calculation_type: CalculationType
+    market_role: MarketRole
     calculation_id_by_grid_area: dict[str, UUID]
     """A dictionary containing grid area codes (keys) and calculation ids (values)."""
     energy_supplier_id: str | None
