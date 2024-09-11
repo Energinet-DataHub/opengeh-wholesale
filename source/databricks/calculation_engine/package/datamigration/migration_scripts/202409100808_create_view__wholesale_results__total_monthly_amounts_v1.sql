@@ -13,4 +13,4 @@ SELECT c.calculation_id,
        tma.time,
        tma.amount
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.total_monthly_amounts as tma
-INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1 AS c ON c.calculation_id = tma.calculation_id
+INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = tma.calculation_id
