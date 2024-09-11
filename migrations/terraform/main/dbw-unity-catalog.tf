@@ -26,16 +26,6 @@ resource "databricks_external_location" "migrations_silver_storage" {
   depends_on      = [module.dbw, module.st_migrations]
 }
 
-# TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
-resource "databricks_grant" "dev_external_location" {
-  provider          = databricks.dbw
-  external_location = databricks_external_location.migrations_silver_storage.id
-  principal         = var.migration_group_name
-  privileges        = ["READ_FILES", "WRITE_FILES"]
-
-  depends_on = [module.dbw]
-}
-
 resource "databricks_schema" "migrations_silver" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
@@ -55,16 +45,6 @@ resource "databricks_external_location" "migrations_gold_storage" {
   depends_on      = [module.dbw, module.st_migrations]
 }
 
-# TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
-resource "databricks_grant" "dev_external_location_gold" {
-  provider          = databricks.dbw
-  external_location = databricks_external_location.migrations_gold_storage.id
-  principal         = var.migration_group_name
-  privileges        = ["READ_FILES", "WRITE_FILES"]
-
-  depends_on = [module.dbw]
-}
-
 resource "databricks_schema" "migrations_gold" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
@@ -82,16 +62,6 @@ resource "databricks_external_location" "migrations_eloverblik_storage" {
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
   depends_on      = [module.dbw, module.st_migrations]
-}
-
-# TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
-resource "databricks_grant" "dev_external_location_eloverblik" {
-  provider          = databricks.dbw
-  external_location = databricks_external_location.migrations_eloverblik_storage.id
-  principal         = var.migration_group_name
-  privileges        = ["READ_FILES", "WRITE_FILES"]
-
-  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "migrations_eloverblik" {
@@ -132,16 +102,6 @@ resource "databricks_external_location" "migrations_wholesale_storage" {
   depends_on      = [module.dbw, module.st_migrations]
 }
 
-# TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
-resource "databricks_grant" "dev_external_location_wholesale" {
-  provider          = databricks.dbw
-  external_location = databricks_external_location.migrations_wholesale_storage.id
-  principal         = var.migration_group_name
-  privileges        = ["READ_FILES", "WRITE_FILES"]
-
-  depends_on = [module.dbw]
-}
-
 resource "databricks_schema" "migrations_wholesale" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
@@ -159,16 +119,6 @@ resource "databricks_external_location" "shared_wholesale_input" {
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
   depends_on      = [module.dbw, module.st_migrations]
-}
-
-# TEMPORARY: give developers access to copy data from hive_metastore to unity catalog
-resource "databricks_grant" "dev_external_location_shared_wholesale_input" {
-  provider          = databricks.dbw
-  external_location = databricks_external_location.shared_wholesale_input.id
-  principal         = var.migration_group_name
-  privileges        = ["READ_FILES", "WRITE_FILES"]
-
-  depends_on = [module.dbw]
 }
 
 resource "databricks_schema" "shared_wholesale_input" {
