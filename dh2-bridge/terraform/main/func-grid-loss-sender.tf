@@ -26,6 +26,10 @@ module "func_entrypoint_grid_loss_sender" {
     {
       resource_id          = module.storage_dh2_bridge_documents.id
       role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
+      resource_id          = data.azurerm_key_vault.kv_shared_resources.id
+      role_definition_name = "Key Vault Secrets User"
     }
   ]
   app_settings = local.entrypoint_grid_loss_sender.app_settings

@@ -28,6 +28,10 @@ module "func_entrypoint_grid_loss_peek" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
+      resource_id          = data.azurerm_key_vault.kv_shared_resources.id
+      role_definition_name = "Key Vault Secrets User"
+    },
+    {
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"
     }
