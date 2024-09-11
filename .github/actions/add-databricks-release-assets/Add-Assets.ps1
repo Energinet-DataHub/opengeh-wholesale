@@ -19,7 +19,7 @@ function Add-Assets {
         New-Item -Path $destination -ItemType 'directory'
     }
 
-    Move-Item -Path "${WorkingDirectory}/calculation_engine/package/datamigration/migration_scripts" -Destination $destination
+    Move-Item -Path "${WorkingDirectory}/package/datamigration/migration_scripts" -Destination $destination
 
     # Hive
     $destination = "${WorkingDirectory}/artifacts/calculation_engine/hive"
@@ -28,5 +28,5 @@ function Add-Assets {
         New-Item -Path $destination -ItemType 'directory'
     }
 
-    Move-Item -Path "${WorkingDirectory}/calculation_engine/package/datamigration_hive/migration_scripts" -Destination $destination
+    Move-Item -Path "${WorkingDirectory}/package/datamigration_hive/migration_scripts" -Destination $destination
 }
