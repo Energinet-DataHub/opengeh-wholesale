@@ -6,6 +6,7 @@ locals {
       "BlobStorageSettings:ContainerName" = local.DH2_BRIDGE_DOCUMENT_STORAGE_CONTAINER_NAME
       "DatabaseSettings:ConnectionString" = local.MS_DH2_BRIDGE_CONNECTION_STRING
       "DataHub2Settings:DataHub2Endpoint" = var.dh2_endpoint != null ? var.dh2_endpoint : "https://${module.app_dh2_placeholder.default_hostname}"
+      "RevisionLogOptions:ApiAddress"     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
     }
   }
 }
