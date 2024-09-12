@@ -52,11 +52,10 @@ def test__when_valid_input__creates_expected_calculation(
         TableColumnNames.calculation_type: any_calculator_args.calculation_type.value,
         TableColumnNames.calculation_period_start: any_calculator_args.calculation_period_start_datetime,
         TableColumnNames.calculation_period_end: any_calculator_args.calculation_period_end_datetime,
-        TableColumnNames.calculation_execution_time_start: any_calculator_args.calculation_execution_time_start,
-        TableColumnNames.created_by_user_id: any_calculator_args.created_by_user_id,
         TableColumnNames.calculation_version: next_version,
-        TableColumnNames.is_internal_calculation: any_calculator_args.is_internal_calculation,
+        TableColumnNames.calculation_execution_time_start: any_calculator_args.calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time: None,
+        TableColumnNames.is_internal_calculation: any_calculator_args.is_internal_calculation,
     }
     prepared_data_reader = PreparedDataReader(mock.Mock(), mock.Mock())
     with patch.object(
