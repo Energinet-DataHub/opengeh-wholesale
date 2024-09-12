@@ -20,6 +20,7 @@ from typing import Callable
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import package.settlement_report_job.logging_configuration as config
+from package.settlement_report_job.energy_results_factory import create_energy_results
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
 from package.settlement_report_job.settlement_report_job_args import (
     parse_job_arguments,
@@ -73,6 +74,7 @@ def start_with_deps(
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
             create_time_series(spark, args)
+            create_energy_results(spark, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
