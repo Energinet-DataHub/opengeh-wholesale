@@ -3,6 +3,7 @@
 "CalculationTests.Cases","Typical_wholesale_scenario"
 "CalculationTests.Cases","Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change"
 "CalculationTests.Cases","Calculation_input_data_includes_other_ga"
+"CalculationTests.Cases","Grid_loss_explodes"
 "CalculationTests.Cases.MeteringPointMasterDataUpdates","Change_of_settlement_method_on_an_MP"
 "CalculationTests.Cases.MeteringPointMasterDataUpdates","Change_of_resolution_on_an_MP"
 "CalculationTests.Cases.MeteringPointMasterDataUpdates","Change_of_balance_responsible_on_an_MP"
