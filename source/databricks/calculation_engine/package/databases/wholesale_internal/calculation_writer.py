@@ -20,7 +20,6 @@ from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveBasisDataDatabase,
     WholesaleInternalDatabase,
 )
 
@@ -61,13 +60,6 @@ def write_calculation(
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
         f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
     )
-
-    # # ToDo JMG: Remove when we are on Unity Catalog
-    # calculations.write.format("delta").mode("append").option(
-    #     "mergeSchema", "false"
-    # ).insertInto(
-    #     f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
-    # )
 
 
 @logging_configuration.use_span("calculation.write-calculation-grid-areas")
