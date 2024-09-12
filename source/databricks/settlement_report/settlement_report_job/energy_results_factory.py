@@ -17,12 +17,7 @@ from pyspark.sql.session import SparkSession
 import pyspark.sql.functions as F
 
 
-from settlement_report_job.constants import (
-    get_energy_view,
-    CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS,
-    SETTLEMENT_METHOD_DICT,
-    METERING_POINT_TYPE_DICT,
-)
+import settlement_report_job.market_naming_convention as market_naming
 from settlement_report_job.settlement_report_args import SettlementReportArgs
 
 from settlement_report_job.table_column_names import (
@@ -44,17 +39,17 @@ def create_energy_results(
         F.col(DataProductColumnNames.grid_area_code).alias(
             EnergyResultsCsvColumnNames.grid_area_code
         ),
-        map_from_dict(CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
+        map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
         ].alias(EnergyResultsCsvColumnNames.calculation_type),
         F.col(DataProductColumnNames.time).alias(EnergyResultsCsvColumnNames.time),
         F.col(DataProductColumnNames.resolution).alias(
             EnergyResultsCsvColumnNames.resolution
         ),
-        map_from_dict(METERING_POINT_TYPE_DICT)[
+        map_from_dict(market_naming.METERING_POINT_TYPE_DICT)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(EnergyResultsCsvColumnNames.metering_point_type),
-        map_from_dict(SETTLEMENT_METHOD_DICT)[
+        map_from_dict(market_naming.SETTLEMENT_METHOD_DICT)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(EnergyResultsCsvColumnNames.settlement_method),
         F.col(DataProductColumnNames.quantity).alias(
