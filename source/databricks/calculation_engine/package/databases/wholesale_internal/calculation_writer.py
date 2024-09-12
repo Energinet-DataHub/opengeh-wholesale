@@ -20,7 +20,6 @@ from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveBasisDataDatabase,
     WholesaleInternalDatabase,
 )
 
@@ -30,7 +29,6 @@ timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
 @inject
 def write_calculation(
-    calculations: DataFrame,
     args: CalculatorArgs,
     spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[
@@ -50,23 +48,9 @@ def write_calculation(
     )[:-3]
     # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
     spark.sql(
-        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
+        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
         f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
-    )
-
-    # ToDo JMG: Remove when use of calculations_v1 is fully implemented
-    calculations.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    )
-
-    # ToDo JMG: Remove when we are on Unity Catalog
-    calculations.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(
-        f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
     )
 
 
@@ -96,15 +80,6 @@ def write_calculation_succeeded_time(
 ) -> None:
     """Writes the succeeded time to the calculation table."""
 
-    spark.sql(
-        f"""
-        UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}
-        SET {TableColumnNames.calculation_succeeded_time} = current_timestamp()
-        WHERE {TableColumnNames.calculation_id} = '{calculation_id}'
-        """
-    )
-
-    # ToDo JMG: Remove when use of calculations_v1 is fully implemented
     spark.sql(
         f"""
         UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}

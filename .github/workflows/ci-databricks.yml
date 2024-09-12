@@ -27,11 +27,12 @@ on:
 
 jobs:
   databricks_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v14
     with:
       python_version: 3.11.7
       architecture: x64
-      wheel_working_directory: ./source/databricks/calculation_engine
+      wheel_working_directory: ./source/databricks
+      multiple_wheels: true
       should_include_assets: true
 
   migration_scripts_verification_hive:
@@ -232,7 +233,7 @@ jobs:
           - name: Data products
             paths: features/data_products contracts
           - name: Unit tests
-            paths: calculation codelists common optimize_job databases infrastructure settlement_report_job
+            paths: calculation codelists common optimize_job databases infrastructure
           - name: Entry point tests
             paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
@@ -336,8 +337,7 @@ jobs:
           datamigration/all_hive_scripts
           datamigration/current_state
           datamigration/migration_scripts
-          datamigration/unity_catalog
-          settlement_report_job"
+          datamigration/unity_catalog"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 

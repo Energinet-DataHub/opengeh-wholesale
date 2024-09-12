@@ -19,13 +19,13 @@ from argparse import Namespace
 import configargparse
 from configargparse import argparse
 
-from package.settlement_report_job import logging_configuration
-from package.settlement_report_job.args_helper import valid_date
-from package.settlement_report_job.calculation_type import CalculationType
-from package.settlement_report_job.logger import Logger
-from package.settlement_report_job.market_role import MarketRole
-from package.settlement_report_job.settlement_report_args import SettlementReportArgs
-import package.settlement_report_job.environment_variables as env_vars
+from settlement_report_job import logging_configuration
+from settlement_report_job.args_helper import valid_date
+from settlement_report_job.calculation_type import CalculationType
+from settlement_report_job.logger import Logger
+from settlement_report_job.market_role import MarketRole
+from settlement_report_job.settlement_report_args import SettlementReportArgs
+import settlement_report_job.environment_variables as env_vars
 
 
 def parse_command_line_arguments() -> Namespace:
