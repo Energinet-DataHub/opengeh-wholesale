@@ -41,7 +41,7 @@ resource "databricks_job" "calculator_job" {
     }
 
     library {
-      whl = "dbfs:/opengeh-wholesale/package-1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/calculation_engine/package-1.0-py3-none-any.whl"
     }
 
     python_wheel_task {

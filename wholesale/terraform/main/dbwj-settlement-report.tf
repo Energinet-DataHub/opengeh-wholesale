@@ -1,7 +1,7 @@
 resource "databricks_job" "settlement_report_job" {
   provider            = databricks.dbw
   name                = "SettlementReportJob"
-  max_concurrent_runs = 1
+  max_concurrent_runs = 125
 
   task {
     task_key    = "settlement_report_job_${uuid()}"
@@ -10,6 +10,7 @@ resource "databricks_job" "settlement_report_job" {
     new_cluster {
       spark_version = local.spark_version
       node_type_id  = "Standard_D8as_v4"
+      runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
         max_workers = 10
@@ -22,11 +23,11 @@ resource "databricks_job" "settlement_report_job" {
     }
 
     library {
-      whl = "dbfs:/opengeh-wholesale/package-1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "package"
+      package_name = "opengeh_settlement_report"
       # The entry point is defined in setup.py
       entry_point = "create_settlement_report"
     }
