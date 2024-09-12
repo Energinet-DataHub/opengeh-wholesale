@@ -11,12 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.environment_variables import get_catalog_name
-
-
-def get_energy_view() -> str:
-    return f"{get_catalog_name()}.wholesale_results.energy_v1"
-
 
 METERING_POINT_TYPE_DICT = {
     "ve_production": "D01",

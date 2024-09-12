@@ -18,6 +18,7 @@ import pyspark.sql.functions as F
 
 
 import settlement_report_job.market_naming_convention as market_naming
+from settlement_report_job.database_definitions import get_energy_view
 from settlement_report_job.settlement_report_args import SettlementReportArgs
 
 from settlement_report_job.table_column_names import (
@@ -32,7 +33,7 @@ def create_energy_results(
     args: SettlementReportArgs,
 ) -> DataFrame:
 
-    energy = _read_from_view(spark, args, get_energy_view())
+    energy = _read_and_filter_from_view(spark, args, get_energy_view())
 
     # return relevant columns with market naming convention
     return energy.select(
@@ -58,7 +59,7 @@ def create_energy_results(
     )
 
 
-def _read_from_view(
+def _read_and_filter_from_view(
     spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
     df = spark.read.table(view_name).where(
