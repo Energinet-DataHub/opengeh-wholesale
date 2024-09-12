@@ -16,18 +16,20 @@ from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
 import pyspark.sql.functions as F
 
-from package.settlement_report_job.constants import (
+
+from settlement_report_job.constants import (
     get_energy_view,
-    METERING_POINT_TYPE_DICT,
-    SETTLEMENT_METHOD_DICT,
     CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS,
+    SETTLEMENT_METHOD_DICT,
+    METERING_POINT_TYPE_DICT,
 )
-from package.settlement_report_job.settlement_report_args import SettlementReportArgs
-from package.settlement_report_job.table_column_names import (
-    DataProductColumnNames,
+from settlement_report_job.settlement_report_args import SettlementReportArgs
+
+from settlement_report_job.table_column_names import (
     EnergyResultsCsvColumnNames,
+    DataProductColumnNames,
 )
-from package.settlement_report_job.utils import map_from_dict
+from settlement_report_job.utils import map_from_dict
 
 
 def create_energy_results(
