@@ -24,4 +24,18 @@ METERING_POINT_TYPE_DICT = {
     "exchange": "E20",
 }
 
+SETTLEMENT_METHOD_DICT = {
+    "non_profiled": "E02",
+    "flex": "D01",
+    None: None,
+}
+
+CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS = {
+    "balance_fixing": "D04",
+    "wholesale_fixing": "D05",
+    "first_correction_settlement": "D32",
+    "second_correction_settlement": "D32",
+    "third_correction_settlement": "D32",
+}
+
 RESOLUTION_NAMES = {"PT1H": "TSSD60", "PT15M": "TSSD15"}

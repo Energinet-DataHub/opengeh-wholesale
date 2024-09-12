@@ -16,51 +16,68 @@ from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
 import pyspark.sql.functions as F
 
-from package.settlement_report_job.constants import get_energy_view
+from package.settlement_report_job.constants import (
+    get_energy_view,
+    METERING_POINT_TYPE_DICT,
+    SETTLEMENT_METHOD_DICT,
+    CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS,
+)
 from package.settlement_report_job.settlement_report_args import SettlementReportArgs
 from package.settlement_report_job.table_column_names import (
     DataProductColumnNames,
     EnergyResultsCsvColumnNames,
 )
+from package.settlement_report_job.utils import map_from_dict
 
 
 def create_energy_results(
     spark: SparkSession,
     args: SettlementReportArgs,
 ) -> DataFrame:
-    calculation_id_by_grid_area_df = spark.createDataFrame(
-        args.calculation_id_by_grid_area.items(),
-        [DataProductColumnNames.grid_area_code, DataProductColumnNames.calculation_id],
-    )
 
-    energy = spark.read.table(get_energy_view())
+    energy = _read_from_view(spark, args, get_energy_view())
 
-    energy_filtered = energy.join(
-        calculation_id_by_grid_area_df,
-        [DataProductColumnNames.grid_area_code, DataProductColumnNames.calculation_id],
-    ).where(
-        (F.col(DataProductColumnNames.time) >= args.period_start)
-        & (F.col(DataProductColumnNames.time) < args.period_end)
-    )
-
-    return energy_filtered.select(
+    # return relevant columns with market naming convention
+    return energy.select(
         F.col(DataProductColumnNames.grid_area_code).alias(
             EnergyResultsCsvColumnNames.grid_area_code
         ),
-        F.col(DataProductColumnNames.calculation_type).alias(
-            EnergyResultsCsvColumnNames.calculation_type
-        ),
+        map_from_dict(CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
+            F.col(DataProductColumnNames.calculation_type)
+        ].alias(EnergyResultsCsvColumnNames.calculation_type),
         F.col(DataProductColumnNames.time).alias(EnergyResultsCsvColumnNames.time),
         F.col(DataProductColumnNames.resolution).alias(
             EnergyResultsCsvColumnNames.resolution
         ),
-        F.col(DataProductColumnNames.metering_point_type).alias(
-            EnergyResultsCsvColumnNames.metering_point_type
-        ),
-        F.col(DataProductColumnNames.settlement_method).alias(
-            EnergyResultsCsvColumnNames.settlement_method
-        ),
+        map_from_dict(METERING_POINT_TYPE_DICT)[
+            F.col(DataProductColumnNames.metering_point_type)
+        ].alias(EnergyResultsCsvColumnNames.metering_point_type),
+        map_from_dict(SETTLEMENT_METHOD_DICT)[
+            F.col(DataProductColumnNames.settlement_method)
+        ].alias(EnergyResultsCsvColumnNames.settlement_method),
         F.col(DataProductColumnNames.quantity).alias(
             EnergyResultsCsvColumnNames.quantity
         ),
     )
+
+
+def _read_from_view(
+    spark: SparkSession, args: SettlementReportArgs, view_name: str
+) -> DataFrame:
+    df = spark.read.table(view_name).where(
+        F.col(DataProductColumnNames.time) >= args.period_start
+    ) & (F.col(DataProductColumnNames.time) < args.period_end)
+
+    calculation_id_by_grid_area_structs = [
+        F.struct(F.lit(grid_area_code), F.lit(calculation_id))
+        for grid_area_code, calculation_id in args.calculation_id_by_grid_area
+    ]
+
+    df_filtered = df.where(
+        F.struct(
+            F.col(DataProductColumnNames.grid_area_code),
+            F.col(DataProductColumnNames.calculation_id),
+        ).isin(calculation_id_by_grid_area_structs)
+    )
+
+    return df_filtered
