@@ -18,14 +18,14 @@ from unittest.mock import patch
 
 import pytest
 
-from package.settlement_report_job.market_role import MarketRole
-from package.settlement_report_job.settlement_report import (
+from settlement_report_job.market_role import MarketRole
+from settlement_report_job.settlement_report import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
 
-from package.settlement_report_job.environment_variables import EnvironmentVariable
-from package.settlement_report_job.calculation_type import CalculationType
+from settlement_report_job.environment_variables import EnvironmentVariable
+from settlement_report_job.calculation_type import CalculationType
 
 DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 

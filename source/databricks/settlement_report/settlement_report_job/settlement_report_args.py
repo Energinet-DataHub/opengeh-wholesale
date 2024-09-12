@@ -15,12 +15,8 @@ from uuid import UUID
 from dataclasses import dataclass
 from datetime import datetime
 
-<<<<<<< HEAD:source/databricks/settlement_report/settlement_report_job/settlement_report_args.py
 from settlement_report_job.calculation_type import CalculationType
-=======
-from package.settlement_report_job.calculation_type import CalculationType
-from package.settlement_report_job.market_role import MarketRole
->>>>>>> 9ccbbb94798ec2957ca8fcda10b5807a0ecf6146:source/databricks/calculation_engine/package/settlement_report_job/settlement_report_args.py
+from settlement_report_job.market_role import MarketRole
 
 
 @dataclass
