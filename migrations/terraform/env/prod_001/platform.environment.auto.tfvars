@@ -8,4 +8,3 @@ pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Prod-001-Con
 pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Prod-001-Contributor-Controlplane"
 pim_reader_group_name                              = "SEC-A-Datahub-Prod-001-Reader"
 function_app_sku_name                              = "EP3"
-databricks_enable_verbose_audit_logs               = true
