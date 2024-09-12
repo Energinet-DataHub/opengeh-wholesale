@@ -85,7 +85,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_periods_schema_uc,
+                schema=basis_data_schemas.metering_point_periods_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
@@ -97,7 +97,7 @@ schema_config = [
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_information_periods_schema_uc,
+                schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,

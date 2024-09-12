@@ -21,7 +21,7 @@ from pyspark.sql.types import (
 
 from package.databases.table_column_names import TableColumnNames
 
-metering_point_periods_schema_uc = StructType(
+metering_point_periods_schema = StructType(
     [
         StructField(TableColumnNames.calculation_id, StringType(), False),
         StructField(TableColumnNames.metering_point_id, StringType(), False),
@@ -36,24 +36,5 @@ metering_point_periods_schema_uc = StructType(
         StructField(TableColumnNames.balance_responsible_party_id, StringType(), True),
         StructField(TableColumnNames.from_date, TimestampType(), False),
         StructField(TableColumnNames.to_date, TimestampType(), False),
-    ]
-)
-
-# ToDo JMG: Remove when we are on Unity Catalog
-hive_metering_point_period_schema = StructType(
-    [
-        StructField("calculation_id", StringType(), False),
-        StructField("metering_point_id", StringType(), False),
-        StructField("metering_point_type", StringType(), False),
-        StructField("settlement_method", StringType(), True),
-        StructField("grid_area_code", StringType(), False),
-        StructField("resolution", StringType(), False),
-        StructField("from_grid_area_code", StringType(), True),
-        StructField("to_grid_area_code", StringType(), True),
-        StructField("parent_metering_point_id", StringType(), True),
-        StructField("energy_supplier_id", StringType(), True),
-        StructField("balance_responsible_id", StringType(), True),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), True),
     ]
 )
