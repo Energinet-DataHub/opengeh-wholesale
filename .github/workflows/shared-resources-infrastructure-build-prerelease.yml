@@ -76,7 +76,7 @@ jobs:
         shell: bash
         run: |
           dotnet publish \
-            '${{ inputs.healthcheckapp_path }}\healthcheck-app.csproj' \
+            '${{ inputs.healthcheckapp_path }}\source\healthcheck-app\healthcheck-app.csproj' \
             --configuration Release \
             --output '${{ env.RELEASE_FOLDER_PATH }}\functions\healthchecks'
 
