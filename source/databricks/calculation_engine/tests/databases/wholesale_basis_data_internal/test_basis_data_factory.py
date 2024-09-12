@@ -26,7 +26,7 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     time_series_points_schema,
 )
 from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema_uc,
+    charge_link_periods_schema,
 )
 
 
@@ -41,7 +41,7 @@ from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods
             "time_series_points",
             time_series_points_schema,
         ),
-        ("charge_link_periods", charge_link_periods_schema_uc),
+        ("charge_link_periods", charge_link_periods_schema),
         (
             "charge_price_information_periods",
             charge_price_information_periods_schema,

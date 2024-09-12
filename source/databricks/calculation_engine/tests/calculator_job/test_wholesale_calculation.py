@@ -26,7 +26,7 @@ from package.codelists import (
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
-    charge_link_periods_schema_uc,
+    charge_link_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_points_schema,
     metering_point_periods_schema,
@@ -324,7 +324,7 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-            charge_link_periods_schema_uc,
+            charge_link_periods_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
