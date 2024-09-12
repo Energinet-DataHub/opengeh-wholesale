@@ -79,11 +79,10 @@ def add_calculation_row(
             calculation_type="balance_fixing",
             calculation_period_start=datetime.now(),
             calculation_period_end=datetime.now(),
-            calculation_execution_time_start=datetime.now(),
-            created_by_user_id="0b15a420-9fc8-409a-a169-fbd49479d718",
             calculation_version=1,
-            is_internal_calculation=True,
+            calculation_execution_time_start=datetime.now(),
             calculation_succeeded_time=datetime.now(),
+            is_internal_calculation=True,
         )
     ]
     calculations_df = spark.createDataFrame(data, calculations_schema)

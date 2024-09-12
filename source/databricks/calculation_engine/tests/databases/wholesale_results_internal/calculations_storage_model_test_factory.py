@@ -39,7 +39,6 @@ def create_calculation_row(
     calculation_period_start_datetime: datetime = DefaultValues.CALCULATION_PERIOD_START_DATETIME,
     calculation_period_end_datetime: datetime = DefaultValues.CALCULATION_PERIOD_END_DATETIME,
     calculation_execution_time_start: datetime = DefaultValues.CALCULATION_EXECUTION_TIME_START,
-    created_by_user_id: str = DefaultValues.CREATED_BY_USER_ID,
     version: int = DefaultValues.VERSION,
 ) -> Row:
     calculation = {
@@ -47,11 +46,10 @@ def create_calculation_row(
         TableColumnNames.calculation_type: calculation_type.value,
         TableColumnNames.calculation_period_start: calculation_period_start_datetime,
         TableColumnNames.calculation_period_end: calculation_period_end_datetime,
-        TableColumnNames.calculation_execution_time_start: calculation_execution_time_start,
-        TableColumnNames.created_by_user_id: created_by_user_id,
         TableColumnNames.calculation_version: version,
-        TableColumnNames.is_internal_calculation: False,
+        TableColumnNames.calculation_execution_time_start: calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time: None,
+        TableColumnNames.is_internal_calculation: False,
     }
 
     return Row(**calculation)
