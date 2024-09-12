@@ -16,8 +16,8 @@ from datetime import datetime
 
 import pytest
 
-from package.settlement_report_job.calculation_type import CalculationType
-from package.settlement_report_job.settlement_report_args import SettlementReportArgs
+from settlement_report_job.calculation_type import CalculationType
+from settlement_report_job.settlement_report_args import SettlementReportArgs
 
 
 @pytest.fixture(scope="session")

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from . import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from ..databases.wholesale_internal.calculation_writer import (
     write_calculation,
@@ -21,17 +20,13 @@ from ..databases.wholesale_internal.calculation_writer import (
 from ..databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
-from ..databases.wholesale_internal.calculations_storage_model_factory import (
-    create_calculation,
-)
 
 
 class CalculationMetadataService:
 
     @staticmethod
-    def write(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-        calculations = create_calculation(args, prepared_data_reader)
-        write_calculation(calculations, args)
+    def write(args: CalculatorArgs) -> None:
+        write_calculation(args)
 
         calculation_grid_areas = create_calculation_grid_areas(args)
         write_calculation_grid_areas(calculation_grid_areas)
