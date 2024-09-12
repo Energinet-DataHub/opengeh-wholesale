@@ -24,7 +24,7 @@ WITH calculations_by_day AS (
     -- All rows should represent a full day, so the to_date is the day after the from_date
     DATE_ADD(from_date_local, 1) AS to_date_local,
     calculation_succeeded_time as latest_from_time
-  FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1 c
+  FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
   INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas cga ON c.calculation_id = cga.calculation_id
   WHERE calculation_succeeded_time IS NOT NULL
 )
