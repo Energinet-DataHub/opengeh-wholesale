@@ -57,7 +57,7 @@ def test__basis_data_uses_correct_schema(
     spark: SparkSession,
     basis_data_table_property_name: str,
     expected_schema: StructType,
-):
+) -> None:
     # Arrange
     basis_data_container = create_basis_data_factory(spark)
 
@@ -66,6 +66,8 @@ def test__basis_data_uses_correct_schema(
     basis_data_container_property = getattr(
         basis_data_container, basis_data_table_property_name
     )
+
+    basis_data_container.metering_point_periods.printSchema()
 
     # Assert
     assert basis_data_container_property.schema == expected_schema

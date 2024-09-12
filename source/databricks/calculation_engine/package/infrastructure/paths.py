@@ -174,10 +174,8 @@ class HiveBasisDataDatabase:
 
     DATABASE_NAME = "basis_data"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
-    CALCULATIONS_TABLE_NAME = "calculations"
 
     TABLE_NAMES = [
-        CALCULATIONS_TABLE_NAME,
         GRID_LOSS_METERING_POINTS_TABLE_NAME,
     ]
 
