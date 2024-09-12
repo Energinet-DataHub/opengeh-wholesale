@@ -14,7 +14,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="package_settlement_report",
+    name="opengeh-settlement-report",
     version=1.0,
     description="Tools for settlement report",
     long_description="",
@@ -25,10 +25,6 @@ setup(
     install_requires=[
         "ConfigArgParse==1.5.3",
         "pyspark==3.5.1",
-        "azure-identity==1.12.0",
-        "azure-storage-file-datalake==12.11.0",
-        "dependency_injector==4.41.0",
-        "urllib3==2.2.*",
         "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.6.0",
@@ -36,7 +32,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "create_settlement_report = settlement_report_job.main:run",
+            "create_settlement_report = settlement_report_job.settlement_report:start",
         ]
     },
 )

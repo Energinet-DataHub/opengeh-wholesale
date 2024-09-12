@@ -11,3 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from dataclasses import dataclass
+from datetime import datetime
+
+from settlement_report_job.calculation_type import CalculationType
+
+
+@dataclass
+class SettlementReportArgs:
+    report_id: str
+    period_start: datetime
+    period_end: datetime
+    calculation_type: CalculationType
+    split_report_by_grid_area: bool
+    prevent_large_text_files: bool
+    time_zone: str
+    catalog_name: str

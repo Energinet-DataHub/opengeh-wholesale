@@ -15,7 +15,7 @@
 import logging
 from typing import Any
 
-import package.settlement_report_job.logging_configuration as config
+import settlement_report_job.logging_configuration as config
 
 
 class Logger:
