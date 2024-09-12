@@ -11,11 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from uuid import UUID
 from dataclasses import dataclass
 from datetime import datetime
 
+<<<<<<< HEAD:source/databricks/settlement_report/settlement_report_job/settlement_report_args.py
 from settlement_report_job.calculation_type import CalculationType
+=======
+from package.settlement_report_job.calculation_type import CalculationType
+from package.settlement_report_job.market_role import MarketRole
+>>>>>>> 9ccbbb94798ec2957ca8fcda10b5807a0ecf6146:source/databricks/calculation_engine/package/settlement_report_job/settlement_report_args.py
 
 
 @dataclass
@@ -24,6 +29,10 @@ class SettlementReportArgs:
     period_start: datetime
     period_end: datetime
     calculation_type: CalculationType
+    market_role: MarketRole
+    calculation_id_by_grid_area: dict[str, UUID]
+    """A dictionary containing grid area codes (keys) and calculation ids (values)."""
+    energy_supplier_id: str | None
     split_report_by_grid_area: bool
     prevent_large_text_files: bool
     time_zone: str

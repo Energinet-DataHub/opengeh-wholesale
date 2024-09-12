@@ -11,15 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import uuid
-from datetime import datetime
-import configargparse
+
+from enum import Enum
 
 
-def valid_date(s: str) -> datetime:
-    """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
-    try:
-        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
-    except ValueError:
-        msg = "not a valid date: {0!r}".format(s)
-        raise configargparse.ArgumentTypeError(msg)
+class MarketRole(Enum):
+    """
+    The market role value affects what is included in the settlement report.
+    The 'market-role' command line argument must use one of these values.
+    """
+
+    DATAHUB_ADMINISTRATOR = "datahub_administrator"
+    ENERGY_SUPPLIER = "energy_supplier"
+    GRID_ACCESS_PROVIDER = "grid_access_provider"
+    SYSTEM_OPERATOR = "system_operator"
