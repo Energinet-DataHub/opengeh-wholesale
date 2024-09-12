@@ -20,6 +20,7 @@ from typing import Callable
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import settlement_report_job.logging_configuration as config
+from settlement_report_job.energy_results_factory import create_energy_results
 from settlement_report_job.settlement_report_args import SettlementReportArgs
 from settlement_report_job.settlement_report_job_args import (
     parse_job_arguments,
