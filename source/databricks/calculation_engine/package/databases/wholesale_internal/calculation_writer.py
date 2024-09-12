@@ -29,7 +29,6 @@ timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
 @inject
 def write_calculation(
-    calculations: DataFrame,
     args: CalculatorArgs,
     spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[

@@ -29,9 +29,8 @@ from ..databases.wholesale_internal.calculations_storage_model_factory import (
 class CalculationMetadataService:
 
     @staticmethod
-    def write(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-        calculations = create_calculation(args, prepared_data_reader)
-        write_calculation(calculations, args)
+    def write(args: CalculatorArgs) -> None:
+        write_calculation(args)
 
         calculation_grid_areas = create_calculation_grid_areas(args)
         write_calculation_grid_areas(calculation_grid_areas)
