@@ -173,16 +173,14 @@ class HiveBasisDataDatabase:
     """The folder in the storage account container"""
 
     DATABASE_NAME = "basis_data"
-    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
-    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+    CALCULATIONS_TABLE_NAME = "calculations"
 
     TABLE_NAMES = [
-        METERING_POINT_PERIODS_TABLE_NAME,
-        TIME_SERIES_POINTS_TABLE_NAME,
+        CALCULATIONS_TABLE_NAME,
         CHARGE_LINK_PERIODS_TABLE_NAME,
         CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         CHARGE_PRICE_POINTS_TABLE_NAME,
