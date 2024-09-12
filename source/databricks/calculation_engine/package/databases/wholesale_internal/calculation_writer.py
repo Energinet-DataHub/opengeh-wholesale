@@ -49,13 +49,6 @@ def write_calculation(
     )[:-3]
     # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
     spark.sql(
-        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}"
-        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
-        f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
-    )
-
-    # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
-    spark.sql(
         f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
         f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
@@ -88,15 +81,6 @@ def write_calculation_succeeded_time(
 ) -> None:
     """Writes the succeeded time to the calculation table."""
 
-    spark.sql(
-        f"""
-        UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME}
-        SET {TableColumnNames.calculation_succeeded_time} = current_timestamp()
-        WHERE {TableColumnNames.calculation_id} = '{calculation_id}'
-        """
-    )
-
-    # ToDo JMG: Remove when use of calculations_v1 is fully implemented
     spark.sql(
         f"""
         UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}
