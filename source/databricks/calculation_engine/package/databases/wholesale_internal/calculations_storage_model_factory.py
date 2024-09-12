@@ -53,11 +53,10 @@ def _create_calculation(
         TableColumnNames.calculation_type: args.calculation_type.value,
         TableColumnNames.calculation_period_start: args.calculation_period_start_datetime,
         TableColumnNames.calculation_period_end: args.calculation_period_end_datetime,
-        TableColumnNames.calculation_execution_time_start: args.calculation_execution_time_start,
-        TableColumnNames.created_by_user_id: args.created_by_user_id,
         TableColumnNames.calculation_version: next_version,
-        TableColumnNames.is_internal_calculation: args.is_internal_calculation,
+        TableColumnNames.calculation_execution_time_start: args.calculation_execution_time_start,
         TableColumnNames.calculation_succeeded_time: None,
+        TableColumnNames.is_internal_calculation: args.is_internal_calculation,
     }
 
     return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)

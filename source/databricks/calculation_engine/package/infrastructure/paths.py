@@ -63,12 +63,14 @@ class WholesaleInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
     CALCULATIONS_TABLE_NAME = "calculations"
+    CALCULATIONS_V1_TABLE_NAME = "calculations_v1"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
     CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
 
     TABLE_NAMES = [
         EXECUTED_MIGRATIONS_TABLE_NAME,
         CALCULATIONS_TABLE_NAME,
+        CALCULATIONS_V1_TABLE_NAME,
         GRID_LOSS_METERING_POINTS_TABLE_NAME,
         CALCULATION_GRID_AREAS_TABLE_NAME,
     ]
@@ -177,10 +179,8 @@ class HiveBasisDataDatabase:
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
-    CALCULATIONS_TABLE_NAME = "calculations"
 
     TABLE_NAMES = [
-        CALCULATIONS_TABLE_NAME,
         METERING_POINT_PERIODS_TABLE_NAME,
         TIME_SERIES_POINTS_TABLE_NAME,
         CHARGE_LINK_PERIODS_TABLE_NAME,
