@@ -329,6 +329,34 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return results.ToList();
     }
 
+    public async Task<(string CalculationId, string Message)> IsIdentityColumnWorkingAsync(
+        string databaseName,
+        string tableName,
+        string columnName)
+    {
+        try
+        {
+            var statement = DatabricksStatement.FromRawSql(
+                $"SELECT calculation_id FROM {Configuration.DatabricksCatalogName}.{databaseName}.{tableName} ORDER BY {columnName} DESC LIMIT 1");
+            var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+            var list = await queryResult.ToListAsync();
+
+            if (list.Count > 0)
+            {
+                var calculationId = list[0]["calculation_id"].ToString();
+                return (calculationId, "Calculation ID retrieved successfully");
+            }
+            else
+            {
+                return (string.Empty, "No data found in the table");
+            }
+        }
+        catch (Exception e)
+        {
+            return (string.Empty, $"An error occurred: {e.Message}");
+        }
+    }
+
     protected override async Task OnInitializeAsync()
     {
         await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);

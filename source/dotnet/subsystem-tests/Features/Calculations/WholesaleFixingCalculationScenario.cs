@@ -268,4 +268,25 @@ AppDependencies
         calculation.Should().NotBeNull();
         calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);
     }
+
+    [ScenarioStep(14)]
+    [SubsystemFact]
+    public async Task AndThen_CheckThatIdentityColumnOnCalculationsIsWorkingCorrectly()
+    {
+        // Arrange
+        const string databaseName = "wholesale_internal";
+        const string tableName = "calculations";
+        const string columnName = "calculation_version";
+
+        // Act
+        var (calculationId, message) = await Fixture.IsIdentityColumnWorkingAsync(databaseName, tableName, columnName);
+
+        // Assert
+        if (calculationId == string.Empty)
+        {
+            throw new InvalidOperationException(message);
+        }
+
+        Fixture.ScenarioState.CalculationId.Should().Be(calculationId);
+    }
 }
