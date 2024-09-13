@@ -64,7 +64,7 @@ def contract_parameters(contracts_path: str) -> list[str]:
 
 
 @pytest.fixture(scope="session")
-def sys_argv_from_contract(contract_parameters) -> list[str]:
+def sys_argv_from_contract(contract_parameters: list[str]) -> list[str]:
     return ["dummy_script_name"] + contract_parameters
 
 
@@ -95,7 +95,7 @@ class TestWhenInvokedWithValidParameters:
     def test_parses_parameters_from_contract(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract,
+        sys_argv_from_contract: list[str],
     ) -> None:
         """
         This test ensures that the settlement report job accepts
@@ -306,7 +306,7 @@ class TestWhenInvokedWithInvalidMarketRole:
 
 class TestWhenUnknownCalculationType:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract
+        self, job_environment_variables: dict, sys_argv_from_contract: list[str]
     ) -> None:
         # Arrange
         test_sys_args = sys_argv_from_contract.copy()
@@ -333,7 +333,7 @@ class TestWhenUnknownCalculationType:
 
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract
+        self, job_environment_variables: dict, sys_argv_from_contract: list[str]
     ) -> None:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
