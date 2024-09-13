@@ -19,7 +19,7 @@ from package.calculation.preparation.data_structures import GridLossResponsible
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     _throw_if_no_grid_loss_responsible,
 )
-from package.calculation.wholesale.handlers.calculationstep import (
+from package.calculation.wholesale.handlers.calculation_step import (
     BaseCalculationStep,
     CacheBucket,
 )
@@ -39,7 +39,7 @@ class CalculateGridLossResponsibleStep(BaseCalculationStep):
         super().__init__()
         self.wholesale_internal_table_reader = wholesale_internal_table_reader
 
-    def handle(self, bucket: CacheBucket, calculation_output: CalculationOutput) -> None:
+    def execute(self, calculation_output: CalculationOutput) -> None:
 
         grid_loss_responsible = (
             self.wholesale_internal_table_reader.read_grid_loss_metering_points()
@@ -55,7 +55,7 @@ class CalculateGridLossResponsibleStep(BaseCalculationStep):
                 col(Colname.to_date),
                 col(Colname.metering_point_type),
                 col(Colname.energy_supplier_id),
-                col(Colname.balance_responsible_id),
+                col(Colname.balance_responsible_party_id),
             )
         )
 

@@ -34,7 +34,7 @@ class CalculationStep(ABC):
         pass
 
     @abstractmethod
-    def handle(self, output: CalculationOutput) -> CalculationOutput:
+    def execute(self, output: CalculationOutput) -> CalculationOutput:
         pass
 
 
@@ -52,9 +52,9 @@ class BaseCalculationStep(CalculationStep):
         self._next_handler = handler
         return handler
 
-    def handle(self, output: CalculationOutput) -> CalculationOutput:
+    def execute(self, output: CalculationOutput) -> CalculationOutput:
         if self._next_handler:
-            return self._next_handler.handle(output)
+            return self._next_handler.execute(output)
         return output
 
 

@@ -11,15 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from package.calculation.wholesale.handlers.calculationstep import (
+    CacheBucket,
+    BaseCalculationStep,
+)
+
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.handlers.calculation_parameters_step import (
     CreateCalculationMetaDataOutputStep,
 )
-from package.calculation.wholesale.handlers.calculationstep import (
-    CacheBucket,
-    BaseCalculationStep,
+from package.calculation.wholesale.handlers.calculation_start_step import (
+    CalculationStartStep,
 )
 from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
     AddMeteringPointPeriodsToBucketStep,
@@ -40,11 +44,13 @@ def chain(
 ) -> None:
     bucket = CacheBucket()
 
+    calculation_start_step = CalculationStartStep()
+
     calculation_meta_data_step = CreateCalculationMetaDataOutputStep(
         calculator_args, prepared_data_reader
     )
 
-    add_metering_point_periods_to_bucket_step = AddMeteringPointPeriodsToBucketStep(
+    calculate_exchange_step = AddMeteringPointPeriodsToBucketStep(
         metering_point_period_repository
     )
 
@@ -55,10 +61,12 @@ def chain(
 
     # Set up the chain
     (
-        calculation_meta_data_step.set_next(add_metering_point_periods_to_bucket_step)
+        calculation_start_step
+        .set_next(calculation_meta_data_step)
+        .set_next(calculate_exchange_step)
         .set_next(calculate_grid_loss_responsible_step)
         .set_next(fallback_step)
     )
 
-    # Execute calculation chain
-    calculation_meta_data_step.handle(CalculationOutput())
+    # Execute chain
+    calculation_start_step.execute(CalculationOutput())
