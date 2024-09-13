@@ -31,9 +31,31 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
 public class WholesaleFixingCalculationScenario : SubsystemTestsBase<CalculationScenarioFixture>
 {
-    public WholesaleFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory)
+    public WholesaleFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory, string calculationVersion)
         : base(lazyFixtureFactory)
     {
+        CalculationVersion = calculationVersion;
+    }
+
+    public string CalculationVersion { get; private set; }
+
+    [ScenarioStep(-1)]
+    [SubsystemFact]
+    public async Task GetTheNewestCalculationVerionBeforeANewCalculationIsStarted()
+    {
+        // Arrange
+
+        // Act
+        var (calculationVersion, message) = await Fixture.GetLatestCalculationVersionFromCalculationsAsync();
+
+        // Assert
+        if (calculationVersion == string.Empty)
+        {
+            throw new InvalidOperationException(message);
+        }
+
+        // Set the property value
+        CalculationVersion = calculationVersion;
     }
 
     [ScenarioStep(0)]
@@ -274,19 +296,16 @@ AppDependencies
     public async Task AndThen_CheckThatIdentityColumnOnCalculationsIsWorkingCorrectly()
     {
         // Arrange
-        const string databaseName = "wholesale_internal";
-        const string tableName = "calculations";
-        const string columnName = "calculation_version";
 
         // Act
-        var (calculationId, message) = await Fixture.IsIdentityColumnWorkingAsync(databaseName, tableName, columnName);
+        var (calculationVersion, message) = await Fixture.GetCalculationVersionOfCalculationIdFromCalculationsAsync(Fixture.ScenarioState.CalculationId.ToString());
 
         // Assert
-        if (calculationId == string.Empty)
+        if (calculationVersion == string.Empty)
         {
             throw new InvalidOperationException(message);
         }
 
-        Fixture.ScenarioState.CalculationId.Should().Be(calculationId);
+        Assert.True(Convert.ToInt32(calculationVersion) > Convert.ToInt32(CalculationVersion));
     }
 }

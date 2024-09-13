@@ -329,22 +329,45 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return results.ToList();
     }
 
-    public async Task<(string CalculationId, string Message)> IsIdentityColumnWorkingAsync(
-        string databaseName,
-        string tableName,
-        string columnName)
+    public async Task<(string CalculationVersion, string Message)> GetCalculationVersionOfCalculationIdFromCalculationsAsync(
+        string calculationId)
     {
         try
         {
             var statement = DatabricksStatement.FromRawSql(
-                $"SELECT calculation_id FROM {Configuration.DatabricksCatalogName}.{databaseName}.{tableName} ORDER BY {columnName} DESC LIMIT 1");
+                $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations WHERE calculation_id = '{calculationId}'");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
             var list = await queryResult.ToListAsync();
 
             if (list.Count > 0)
             {
-                var calculationId = list[0]["calculation_id"].ToString();
-                return (calculationId, "Calculation ID retrieved successfully");
+                var calculationVersion = list[0]["calculation_version"].ToString();
+                return (calculationVersion, "Calculation ID retrieved successfully");
+            }
+            else
+            {
+                return (string.Empty, "No data found in the table");
+            }
+        }
+        catch (Exception e)
+        {
+            return (string.Empty, $"An error occurred: {e.Message}");
+        }
+    }
+
+    public async Task<(string CalculationVersion, string Message)> GetLatestCalculationVersionFromCalculationsAsync()
+    {
+        try
+        {
+            var statement = DatabricksStatement.FromRawSql(
+                $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations ORDER BY calculation_version DESC LIMIT 1");
+            var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+            var list = await queryResult.ToListAsync();
+
+            if (list.Count > 0)
+            {
+                var calculationVersion = list[0]["calculation_version"].ToString();
+                return (calculationVersion, "calculationVersion retrieved successfully");
             }
             else
             {
