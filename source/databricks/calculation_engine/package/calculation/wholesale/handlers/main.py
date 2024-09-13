@@ -11,19 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation.wholesale.handlers.calculationstep import (
-    CacheBucket,
-    BaseCalculationStep,
-)
-
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.wholesale.handlers.calculate_temporary_flex_consumption_per_es_step import (
+    CalculateTemporaryFlexConsumptionPerEsStep,
+)
 from package.calculation.wholesale.handlers.calculation_parameters_step import (
     CreateCalculationMetaDataOutputStep,
 )
 from package.calculation.wholesale.handlers.calculation_start_step import (
     CalculationStartStep,
+)
+from package.calculation.wholesale.handlers.calculation_step import (
+    CacheBucket,
+    BaseCalculationStep,
 )
 from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
     AddMeteringPointPeriodsToBucketStep,
@@ -54,18 +56,21 @@ def chain(
         metering_point_period_repository
     )
 
+    calculate_temporary_flex_consumption_per_es_step = (
+        CalculateTemporaryFlexConsumptionPerEsStep()
+    )
     calculate_grid_loss_responsible_step = CalculateGridLossResponsibleStep(
         metering_point_period_repository
     )
-    fallback_step = BaseCalculationStep()
+    last_step = BaseCalculationStep()
 
     # Set up the chain
     (
-        calculation_start_step
-        .set_next(calculation_meta_data_step)
+        calculation_start_step.set_next(calculation_meta_data_step)
         .set_next(calculate_exchange_step)
         .set_next(calculate_grid_loss_responsible_step)
-        .set_next(fallback_step)
+        .set_next(calculate_temporary_flex_consumption_per_es_step)
+        .set_next(last_step)
     )
 
     # Execute chain
