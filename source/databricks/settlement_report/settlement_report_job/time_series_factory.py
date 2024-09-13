@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
 
-from package.settlement_report_job.settlement_report_args import SettlementReportArgs
+from settlement_report_job.settlement_report_args import SettlementReportArgs
 
 
 def create_time_series(
