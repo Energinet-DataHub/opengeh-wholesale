@@ -259,12 +259,11 @@ jobs:
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
       image_tag: ${{ inputs.image_tag }}
 
-  # Calculator job tests that require the integration test environment
-  integration_tests:
+  # Tests that require the integration test environment
+  calculator_job_integration_tests:
     if: ${{ inputs.has_calculator_job_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
-      job_name: Integration tests
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
@@ -280,7 +279,7 @@ jobs:
       image_tag: ${{ inputs.image_tag }}
 
   # Calculator job migration tests
-  migrations_tests:
+  calculator_job_migrations_tests:
     if: ${{ inputs.has_delta_migration_changes }}
     strategy:
       fail-fast: false
@@ -307,11 +306,10 @@ jobs:
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
       image_tag: ${{ inputs.image_tag }}
 
-  # Calculator job
-  unit_test_check:
+  # Check executed unit tests
+  calculator_job_unit_test_check:
     if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
-    name: Check executed unit tests
     steps:
       - uses: actions/checkout@v4
       - name: Log in to the Container registry
@@ -356,11 +354,9 @@ jobs:
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
-  # Calculator job
-  mypy_check:
+  calculator_job_mypy_check:
     if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
-    name: Static type checker
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -373,11 +369,9 @@ jobs:
           pip install mypy types-python-dateutil
           mypy ./source/databricks/calculation_engine/package --disallow-untyped-defs --ignore-missing-imports
 
-  # Calculator job
-  black_check:
+  calculator_job_black_check:
     if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
-    name: Code style check
     steps:
       - uses: actions/checkout@v4
       - uses: psf/black@stable
@@ -385,7 +379,6 @@ jobs:
           options: --check --diff
           src: ./source/databricks/calculation_engine
 
-  # Settlement report tests
   settlement_report_unit_tests:
     if: ${{ inputs.has_settlement_report_job_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
@@ -397,11 +390,9 @@ jobs:
       test_report_path: ./source/databricks/settlement_report/tests
       image_tag: ${{ inputs.image_tag }}
 
-  # Calculator job
   settlement_report_mypy_check:
     if: ${{ inputs.has_settlement_report_job_changes }}
     runs-on: ubuntu-latest
-    name: Static type checker
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -414,11 +405,9 @@ jobs:
           pip install mypy types-python-dateutil
           mypy ./source/databricks/settlement_report/settlement_report_job --disallow-untyped-defs --ignore-missing-imports
 
-  # Calculator job
   settlement_report_black_check:
     if: ${{ inputs.has_settlement_report_job_changes }}
     runs-on: ubuntu-latest
-    name: Code style check
     steps:
       - uses: actions/checkout@v4
       - uses: psf/black@stable
