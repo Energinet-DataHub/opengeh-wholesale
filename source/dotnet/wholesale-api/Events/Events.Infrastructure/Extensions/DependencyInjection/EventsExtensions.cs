@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -43,8 +46,10 @@ public static class EventsExtensions
         return services;
     }
 
-    public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<ICalculationCompletedFactory, CalculationCompletedV1Factory>();
@@ -60,13 +65,29 @@ public static class EventsExtensions
             .BindConfiguration(IntegrationEventsOptions.SectionName)
             .ValidateDataAnnotations();
 
+        services.AddAzureClients(builder =>
+        {
+            var integrationEventsOptions =
+                configuration
+                    .GetRequiredSection(IntegrationEventsOptions.SectionName)
+                    .Get<IntegrationEventsOptions>()
+                ?? throw new InvalidOperationException("Missing Integration Events configuration.");
+
+            builder
+                .AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>
+                    provider
+                        .GetRequiredService<ServiceBusClient>()
+                        .CreateSender(integrationEventsOptions.TopicName))
+                .WithName(integrationEventsOptions.TopicName);
+        });
+
         // Health checks
         services.AddHealthChecks()
-            // Must use a listener connection string
             .AddAzureServiceBusSubscription(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
+                sp => new DefaultAzureCredential(),
                 name: HealthCheckNames.IntegrationEventsTopicSubscription);
 
         return services;

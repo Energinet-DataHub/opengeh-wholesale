@@ -18,9 +18,9 @@ using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -45,7 +45,7 @@ builder.Services.AddCalculationsModule(builder.Configuration);
 builder.Services.AddCalculationResultsModule(builder.Configuration);
 
 // ServiceBus channels
-builder.Services.AddIntegrationEventsSubscription();
+builder.Services.AddIntegrationEventsSubscription(builder.Configuration);
 
 // Http channels
 builder.Services

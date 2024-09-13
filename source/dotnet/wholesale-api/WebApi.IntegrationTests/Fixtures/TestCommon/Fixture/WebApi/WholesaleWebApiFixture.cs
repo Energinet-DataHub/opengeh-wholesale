@@ -19,8 +19,8 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
@@ -42,8 +42,8 @@ public class WholesaleWebApiFixture : WebApiFixture
         DatabricksTestManager.DatabricksToken = IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken;
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestLogger);
+            TestLogger,
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
     }
 
     public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
@@ -97,8 +97,8 @@ public class WholesaleWebApiFixture : WebApiFixture
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
 
         Environment.SetEnvironmentVariable(
-            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
-            ServiceBusResourceProvider.ConnectionString);
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}",
+            ServiceBusResourceProvider.FullyQualifiedNamespace);
 
         await ServiceBusResourceProvider
             .BuildTopic("integration-events")

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
-using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 /// Copied from the Messaging package and refactored to allow us to send events immediately
 /// and for a certain calculation only.
 /// </summary>
-public class CalculationIntegrationEventPublisher : ICalculationIntegrationEventPublisher, IAsyncDisposable
+public class CalculationIntegrationEventPublisher : ICalculationIntegrationEventPublisher
 {
     private readonly ServiceBusSender _sender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
@@ -37,13 +37,13 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
     public CalculationIntegrationEventPublisher(
         IOptions<IntegrationEventsOptions> integrationEventsOptions,
-        ServiceBusClient serviceBusClient,
+        IAzureClientFactory<ServiceBusSender> senderFactory,
         IServiceBusMessageFactory serviceBusMessageFactory,
         ICalculationCompletedEventProvider calculationCompletedEventProvider,
         IEnergyResultEventProvider energyResultEventProvider,
         ILogger<CalculationIntegrationEventPublisher> logger)
     {
-        _sender = serviceBusClient.CreateSender(integrationEventsOptions.Value.TopicName);
+        _sender = senderFactory.CreateClient(integrationEventsOptions.Value.TopicName);
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _calculationCompletedEventProvider = calculationCompletedEventProvider;
         _energyResultEventProvider = energyResultEventProvider;
@@ -52,15 +52,12 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
     public async Task PublishAsync(CalculationDto completedCalculation, string orchestrationInstanceId, CancellationToken cancellationToken)
     {
-        var stopwatch = Stopwatch.StartNew();
-        var eventCount = 0;
         var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
         await foreach (var @event in GetAsync(completedCalculation, orchestrationInstanceId).WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            eventCount++;
             var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
             if (!messageBatch.TryAddMessage(serviceBusMessage))
             {
@@ -82,17 +79,6 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         {
             _logger.LogError(e, "Failed to publish messages");
         }
-
-        if (eventCount > 0)
-        {
-            _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _sender.DisposeAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
     }
 
     private async IAsyncEnumerable<IntegrationEvent> GetAsync(CalculationDto completedCalculation, string orchestrationInstanceId)

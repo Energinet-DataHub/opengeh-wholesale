@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
@@ -20,9 +23,9 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
@@ -32,8 +35,10 @@ namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 /// </summary>
 public static class EventsExtensions
 {
-    public static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         // These are located within Calculations sub-area
         services
             .AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>()
@@ -52,19 +57,36 @@ public static class EventsExtensions
             ]);
 
         services
-            .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
-
-        services
             .AddOptions<IntegrationEventsOptions>()
             .BindConfiguration(IntegrationEventsOptions.SectionName)
             .ValidateDataAnnotations();
 
+        services.AddAzureClients(builder =>
+        {
+            var integrationEventsOptions =
+                configuration
+                    .GetRequiredSection(IntegrationEventsOptions.SectionName)
+                    .Get<IntegrationEventsOptions>()
+                ?? throw new InvalidOperationException("Missing Integration Events configuration.");
+
+            builder
+                .AddClient<ServiceBusProcessor, ServiceBusClientOptions>((_, _, provider) =>
+                    provider
+                        .GetRequiredService<ServiceBusClient>()
+                        .CreateProcessor(integrationEventsOptions.TopicName, integrationEventsOptions.SubscriptionName))
+                .WithName(integrationEventsOptions.SubscriptionName);
+        });
+
+        services
+            .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
+
         // Health checks
         services.AddHealthChecks()
             .AddAzureServiceBusSubscription(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
+                sp => new DefaultAzureCredential(),
                 name: HealthCheckNames.IntegrationEventsTopicSubscription);
 
         return services;

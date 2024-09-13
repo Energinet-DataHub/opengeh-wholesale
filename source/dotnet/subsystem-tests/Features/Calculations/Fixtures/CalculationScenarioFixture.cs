@@ -14,7 +14,6 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text;
@@ -54,8 +53,9 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         : base(diagnosticMessageSink)
     {
         Configuration = new WholesaleSubsystemConfiguration();
-        ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, new DefaultAzureCredential());
-        ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.ConnectionString);
+        var credential = new DefaultAzureCredential();
+        ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, credential);
+        ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.FullyQualifiedNamespace, credential);
         ScenarioState = new CalculationScenarioState();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         DatabricksSqlWarehouseQueryExecutor = GetDatabricksSqlWarehouseQueryExecutor();

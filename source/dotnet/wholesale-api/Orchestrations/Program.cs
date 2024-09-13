@@ -15,9 +15,9 @@
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
@@ -55,7 +55,7 @@ var host = new HostBuilder()
             .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
 
         // ServiceBus channels
-        services.AddIntegrationEventsPublishing();
+        services.AddIntegrationEventsPublishing(context.Configuration);
         services
             .AddInboxSubscription()
             .AddCalculationOrchestrationInboxRequestHandler();
@@ -64,7 +64,7 @@ var host = new HostBuilder()
         services.AddCalculationScheduler();
 
         // Modules
-        services.AddEdiModule(); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
+        services.AddEdiModule(context.Configuration); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
         services.AddCalculationsModule(context.Configuration);
         services.AddCalculationEngineModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);

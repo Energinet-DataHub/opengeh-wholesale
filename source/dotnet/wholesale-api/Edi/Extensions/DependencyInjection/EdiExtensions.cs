@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Edi.Client;
@@ -22,6 +25,8 @@ using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rul
 using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
+using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -32,8 +37,10 @@ namespace Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 /// </summary>
 public static class EdiExtensions
 {
-    public static void AddEdiModule(this IServiceCollection services)
+    public static void AddEdiModule(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddScoped<IWholesaleInboxRequestHandler, AggregatedTimeSeriesRequestHandler>();
         services.AddScoped<IWholesaleInboxRequestHandler, WholesaleServicesRequestHandler>();
         services.AddTransient<WholesaleServicesRequestMapper>();
@@ -45,12 +52,28 @@ public static class EdiExtensions
             .BindConfiguration(EdiInboxQueueOptions.SectionName)
             .ValidateDataAnnotations();
 
+        services.AddAzureClients(builder =>
+        {
+            var ediInboxQueueOptions =
+                configuration
+                    .GetRequiredSection(EdiInboxQueueOptions.SectionName)
+                    .Get<EdiInboxQueueOptions>()
+                ?? throw new InvalidOperationException("Missing EDI Inbox configuration.");
+
+            builder
+                .AddClient<ServiceBusSender, ServiceBusClientOptions>((_, _, provider) =>
+                    provider
+                        .GetRequiredService<ServiceBusClient>()
+                        .CreateSender(ediInboxQueueOptions.QueueName))
+                .WithName(ediInboxQueueOptions.QueueName);
+        });
+
         // Health checks
         services.AddHealthChecks()
-            // Must use a listener connection string
             .AddAzureServiceBusQueue(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
+                sp => new DefaultAzureCredential(),
                 name: "EdiInboxQueue");
 
         // Validation helpers

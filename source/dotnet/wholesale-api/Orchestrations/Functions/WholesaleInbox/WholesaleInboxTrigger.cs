@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Azure.Functions.Worker;
@@ -31,7 +32,7 @@ internal class WholesaleInboxTrigger(
     public Task ReceiveWholesaleInboxMessageAsync(
         [ServiceBusTrigger(
             $"%{WholesaleInboxQueueOptions.SectionName}:{nameof(WholesaleInboxQueueOptions.QueueName)}%",
-            Connection = $"{ServiceBusNamespaceOptions.SectionName}:{nameof(ServiceBusNamespaceOptions.ConnectionString)}")]
+            Connection = ServiceBusNamespaceOptions.SectionName)]
         ServiceBusReceivedMessage inboxMessage,
         [DurableClient] DurableTaskClient durableTaskClient,
         CancellationToken cancellationToken)

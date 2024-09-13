@@ -14,36 +14,43 @@
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame, SparkSession
 
+from package.calculation.calculator_args import CalculatorArgs
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveBasisDataDatabase,
     WholesaleInternalDatabase,
 )
+
+timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
 @inject
 def write_calculation(
-    calculations: DataFrame,
+    args: CalculatorArgs,
+    spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[
         Container.infrastructure_settings
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-    calculations.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    )
+    calculation_period_start_datetime = args.calculation_period_start_datetime.strftime(
+        timestamp_format
+    )[:-3]
 
-    # ToDo JMG: Remove when we are on Unity Catalog
-    calculations.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(
-        f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CALCULATIONS_TABLE_NAME}"
+    calculation_period_end_datetime = args.calculation_period_end_datetime.strftime(
+        timestamp_format
+    )[:-3]
+    calculation_execution_time_start = args.calculation_execution_time_start.strftime(
+        timestamp_format
+    )[:-3]
+    # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
+    spark.sql(
+        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
+        f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
     )
 
 

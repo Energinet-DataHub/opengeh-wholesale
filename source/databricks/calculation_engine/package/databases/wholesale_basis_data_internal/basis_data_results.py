@@ -16,7 +16,6 @@ from dependency_injector.wiring import inject, Provide
 from package.calculation.calculation_output import BasisDataOutput
 from package.constants import Colname
 from package.container import Container
-from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -52,13 +51,6 @@ def _write_basis_data(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
         )
 
-        # ToDo JMG: Remove when we are on Unity Catalog
-        basis_data_output.metering_point_periods.write.format("delta").mode(
-            "append"
-        ).option("mergeSchema", "false").insertInto(
-            f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
-        )
-
     with logging_configuration.start_span("time_series"):
         basis_data_output.time_series_points.write.format("delta").mode(
             "append"
@@ -67,16 +59,9 @@ def _write_basis_data(
         )
 
         # ToDo JMG: Remove when we are on Unity Catalog
-        hive_time_series_points = basis_data_output.time_series_points.select(
-            TableColumnNames.calculation_id,
-            TableColumnNames.metering_point_id,
-            TableColumnNames.quantity,
-            TableColumnNames.quality,
-            TableColumnNames.observation_time,
-        )
-        hive_time_series_points.write.format("delta").mode("append").option(
-            "mergeSchema", "false"
-        ).insertInto(
+        basis_data_output.time_series_points.write.format("delta").mode(
+            "append"
+        ).option("mergeSchema", "false").insertInto(
             f"{HiveBasisDataDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 

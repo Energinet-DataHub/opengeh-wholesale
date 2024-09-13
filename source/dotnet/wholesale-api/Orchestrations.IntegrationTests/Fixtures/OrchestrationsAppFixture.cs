@@ -29,6 +29,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.OpenIdJwt;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
@@ -71,12 +72,12 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             AzuriteManager.FullConnectionString);
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestLogger);
+            TestLogger,
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
 
         ServiceBusListenerMock = new ServiceBusListenerMock(
-            IntegrationTestConfiguration.ServiceBusConnectionString,
-            TestLogger);
+            TestLogger,
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
@@ -345,8 +346,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         // ServiceBus connection strings
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
-            ServiceBusResourceProvider.ConnectionString);
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}",
+            ServiceBusResourceProvider.FullyQualifiedNamespace);
 
         // Settlement Report blob storage configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
