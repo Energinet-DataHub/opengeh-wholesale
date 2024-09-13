@@ -17,6 +17,14 @@ name: CI Databricks
 on:
   workflow_call:
     inputs:
+      has_calculator_job_changes:
+        description: Whether there are changes in the calculator job folder
+        required: true
+        type: boolean
+      has_settlement_report_job_changes:
+        description: Whether there are changes in the settlement report job folder
+        required: true
+        type: boolean
       has_delta_migration_changes:
         description: Whether there are changes in the delta migration scripts
         required: true
@@ -36,6 +44,7 @@ jobs:
       should_include_assets: true
 
   migration_scripts_verification_hive:
+    if: ${{ inputs.has_delta_migration_changes }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -126,6 +135,7 @@ jobs:
           done
 
   migration_scripts_verification:
+    if: ${{ inputs.has_delta_migration_changes }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -217,6 +227,7 @@ jobs:
 
   # Calculator job tests that do not require the integration test environment
   unit_tests:
+    if: ${{ inputs.has_calculator_job_changes }}
     strategy:
       fail-fast: false
       matrix:
@@ -250,6 +261,7 @@ jobs:
 
   # Calculator job tests that require the integration test environment
   integration_tests:
+    if: ${{ inputs.has_calculator_job_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: Integration tests
@@ -269,6 +281,7 @@ jobs:
 
   # Calculator job migration tests
   migrations_tests:
+    if: ${{ inputs.has_delta_migration_changes }}
     strategy:
       fail-fast: false
       matrix:
@@ -282,7 +295,6 @@ jobs:
             paths: datamigration/migration_scripts
           - name: Test Unity Catalog
             paths: datamigration/unity_catalog
-    if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -297,6 +309,7 @@ jobs:
 
   # Calculator job
   unit_test_check:
+    if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
     name: Check executed unit tests
     steps:
@@ -345,6 +358,7 @@ jobs:
 
   # Calculator job
   mypy_check:
+    if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
     name: Static type checker
     steps:
@@ -361,6 +375,7 @@ jobs:
 
   # Calculator job
   black_check:
+    if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
     name: Code style check
     steps:
@@ -372,6 +387,7 @@ jobs:
 
   # Settlement report tests
   settlement_report_unit_tests:
+    if: ${{ inputs.has_settlement_report_job_changes }}
     strategy:
       fail-fast: false
       matrix:
@@ -402,6 +418,7 @@ jobs:
 
   # Calculator job
   settlement_report_mypy_check:
+    if: ${{ inputs.has_settlement_report_job_changes }}
     runs-on: ubuntu-latest
     name: Static type checker
     steps:
@@ -418,6 +435,7 @@ jobs:
 
   # Calculator job
   settlement_report_black_check:
+    if: ${{ inputs.has_settlement_report_job_changes }}
     runs-on: ubuntu-latest
     name: Code style check
     steps:
