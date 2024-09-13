@@ -388,25 +388,6 @@ jobs:
   # Settlement report tests
   settlement_report_unit_tests:
     if: ${{ inputs.has_settlement_report_job_changes }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
-        tests_filter_expression:
-          - name: Energy (calculator_job)
-            paths: calculator_job/test_energy_calculation.py
-          - name: Wholesale (calculator_job)
-            paths: calculator_job/test_wholesale_calculation.py
-          - name: Energy logic
-            paths: features/energy_calculation
-          - name: Wholesale logic
-            paths: features/wholesale_calculation
-          - name: Data products
-            paths: features/data_products contracts
-          - name: Unit tests
-            paths: calculation codelists common optimize_job databases infrastructure
-          - name: Entry point tests
-            paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       operating_system: dh3-ubuntu-20.04-4core
