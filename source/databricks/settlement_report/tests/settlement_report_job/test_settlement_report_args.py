@@ -18,13 +18,14 @@ from unittest.mock import patch
 
 import pytest
 
-from package.settlement_report_job.settlement_report import (
+from settlement_report_job.market_role import MarketRole
+from settlement_report_job.settlement_report import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
 
-from package.settlement_report_job.environment_variables import EnvironmentVariable
-from package.settlement_report_job.calculation_type import CalculationType
+from settlement_report_job.environment_variables import EnvironmentVariable
+from settlement_report_job.calculation_type import CalculationType
 
 DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
@@ -38,6 +39,17 @@ def _get_contract_parameters(filename: str) -> list[str]:
         return list(
             filter(lambda line: not line.startswith("#") and len(line) > 0, lines)
         )
+
+
+def _substitute_market_role(sys_argv: list[str], market_role: str) -> list[str]:
+    pattern = r"--market-role=(\w+)"
+
+    for i, item in enumerate(sys_argv):
+        if re.search(pattern, item):
+            sys_argv[i] = re.sub(pattern, f"--market-role={market_role}", item)
+            break
+
+    return sys_argv
 
 
 @pytest.fixture(scope="session")
@@ -238,6 +250,56 @@ class TestNoEnergySupplierId:
 
         # Assert
         assert actual_args.energy_supplier_id is None
+
+
+class TestWhenInvokedWithValidMarketRole:
+    @pytest.mark.parametrize(
+        "market_role",
+        [market_role for market_role in MarketRole],
+    )
+    def test_returns_expected_market_role(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+        market_role: MarketRole,
+    ) -> None:
+        # Arrange
+        test_sys_args = _substitute_market_role(
+            sys_argv_from_contract.copy(), market_role.value
+        )
+
+        with patch("sys.argv", test_sys_args):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+
+                # Act
+                actual_args = parse_job_arguments(command_line_args)
+
+        # Assert
+        assert actual_args.market_role == market_role
+
+
+class TestWhenInvokedWithInvalidMarketRole:
+
+    def test_raise_system_exit_with_non_zero_code(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        test_sys_args = _substitute_market_role(
+            sys_argv_from_contract.copy(), "invalid_market_role"
+        )
+
+        with patch("sys.argv", test_sys_args):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(SystemExit) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        assert error.value.code != 0
 
 
 class TestWhenUnknownCalculationType:

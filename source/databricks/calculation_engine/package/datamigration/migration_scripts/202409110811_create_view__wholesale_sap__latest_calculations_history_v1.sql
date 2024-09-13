@@ -3,7 +3,8 @@
 -- the time between the calculation's succeeded time and the succeeded time of the next calculation (if a
 -- newer calculation covers the same day, calculation type and grid area). Note that internal and external calculations
 -- are not distinguished in this view - the view returns the latest calculation no matter if it is internal or external.
-
+DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_history_v1
+GO
 
 CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_history_v1 as
 WITH calculations_by_day AS (

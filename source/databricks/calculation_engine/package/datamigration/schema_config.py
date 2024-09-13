@@ -24,10 +24,6 @@ schema_config = [
                 schema=internal_schemas.calculations_schema,
             ),
             Table(
-                name=paths.WholesaleInternalDatabase.CALCULATIONS_V1_TABLE_NAME,
-                schema=internal_schemas.calculations_schema,
-            ),
-            Table(
                 name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=internal_schemas.grid_loss_metering_points_schema,
             ),
@@ -93,11 +89,11 @@ schema_config = [
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_link_periods_schema_uc,
+                schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_information_periods_schema_uc,
+                schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,

@@ -11,15 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame
-from pyspark.sql.session import SparkSession
 
-from package.settlement_report_job.settlement_report_args import SettlementReportArgs
+from enum import Enum
 
 
-def create_time_series(
-    spark: SparkSession,
-    args: SettlementReportArgs,
-) -> DataFrame:
-    # ToDo JMG: implement
-    return spark.createDataFrame([], schema=[])
+class MarketRole(Enum):
+    """
+    The market role value affects what is included in the settlement report.
+    The 'market-role' command line argument must use one of these values.
+    """
+
+    DATAHUB_ADMINISTRATOR = "datahub_administrator"
+    ENERGY_SUPPLIER = "energy_supplier"
+    GRID_ACCESS_PROVIDER = "grid_access_provider"
+    SYSTEM_OPERATOR = "system_operator"

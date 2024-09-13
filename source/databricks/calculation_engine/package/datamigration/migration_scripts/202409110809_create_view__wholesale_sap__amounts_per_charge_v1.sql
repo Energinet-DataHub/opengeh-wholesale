@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.amounts_per_charge_v1
+GO
+
 CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.amounts_per_charge_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,

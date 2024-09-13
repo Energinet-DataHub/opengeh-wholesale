@@ -25,7 +25,7 @@ def execute(
     calculation_metadata_service: CalculationMetadataService,
     calculation_output_service: CalculationOutputService,
 ) -> None:
-    calculation_metadata_service.write(args, prepared_data_reader)
+    calculation_metadata_service.write(args)
 
     output = calculation_core.execute(args, prepared_data_reader)
 

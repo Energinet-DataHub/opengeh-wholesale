@@ -11,19 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
+from pyspark.sql.session import SparkSession
 
-from .charge_link_periods_schema import (
-    charge_link_periods_schema,
-)
-from .charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
-)
-from .charge_price_points_schema import charge_price_points_schema
-from .grid_loss_metering_points_schema import (
-    grid_loss_metering_points_schema,
-)
-from .metering_point_periods_schema import (
-    hive_metering_point_period_schema,
-    metering_point_periods_schema_uc,
-)
-from .time_series_points_schema import time_series_points_schema
+from settlement_report_job.settlement_report_args import SettlementReportArgs
+
+
+def create_time_series(
+    spark: SparkSession,
+    args: SettlementReportArgs,
+) -> DataFrame:
+    # ToDo JMG: implement
+    return spark.createDataFrame([], schema=[])
