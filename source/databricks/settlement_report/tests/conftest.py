@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import shutil
 import uuid
 import pytest
 import yaml
@@ -25,11 +24,6 @@ from pyspark.sql import SparkSession
 
 from settlement_report_job.calculation_type import CalculationType
 from settlement_report_job.settlement_report_args import SettlementReportArgs
-
-from tests.testsession_configuration import (
-    TestSessionConfiguration,
-    MigrationsExecution,
-)
 
 
 @pytest.fixture(scope="session")
@@ -114,30 +108,10 @@ def tests_path(settlement_report_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def test_session_configuration(tests_path: str) -> TestSessionConfiguration:
-    settings_file_path = Path(tests_path) / "test.local.settings.yml"
-    settings = _load_settings_from_file(settings_file_path)
-    return TestSessionConfiguration(settings)
-
-
-@pytest.fixture(scope="session")
 def spark(
-    test_session_configuration: TestSessionConfiguration,
     tests_path: str,
 ) -> Generator[SparkSession, None, None]:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
-    metastore_path = f"{tests_path}/__metastore_db__"
-
-    if (
-        test_session_configuration.migrations.execute.value
-        == MigrationsExecution.ALL.value
-    ):
-        if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")
-            shutil.rmtree(warehouse_location)
-        if os.path.exists(metastore_path):
-            print(f"Removing metastore before clean run (path={metastore_path})")
-            shutil.rmtree(metastore_path)
 
     session = configure_spark_with_delta_pip(
         SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
@@ -163,22 +137,6 @@ def spark(
             "spark.sql.catalog.spark_catalog",
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
-        # Enable Hive support for persistence across test sessions
-        .config("spark.sql.catalogImplementation", "hive")
-        .config(
-            "javax.jdo.option.ConnectionURL",
-            f"jdbc:derby:;databaseName={metastore_path};create=true",
-        )
-        .config(
-            "javax.jdo.option.ConnectionDriverName",
-            "org.apache.derby.jdbc.EmbeddedDriver",
-        )
-        .config("javax.jdo.option.ConnectionUserName", "APP")
-        .config("javax.jdo.option.ConnectionPassword", "mine")
-        .config("datanucleus.autoCreateSchema", "true")
-        .config("hive.metastore.schema.verification", "false")
-        .config("hive.metastore.schema.verification.record.version", "false")
-        .enableHiveSupport()
     ).getOrCreate()
 
     yield session
