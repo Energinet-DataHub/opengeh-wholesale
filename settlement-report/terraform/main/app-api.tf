@@ -28,6 +28,11 @@ module "app_api" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
+      // Blob
+      resource_id          = data.azurerm_key_vault_secret.st_settlement_report_id.value
+      role_definition_name = "Storage Blob Data Reader"
+    },
+    {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
