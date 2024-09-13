@@ -337,17 +337,14 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             var statement = DatabricksStatement.FromRawSql(
                 $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations WHERE calculation_id = '{calculationId}'");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-            var list = await queryResult.ToListAsync();
+            var calculationVersion = (await queryResult.FirstAsync()).ToString();
 
-            if (list.Count > 0)
+            if (calculationVersion != string.Empty)
             {
-                var calculationVersion = list[0]["calculation_version"].ToString();
                 return (calculationVersion, "Calculation ID retrieved successfully");
             }
-            else
-            {
-                return (string.Empty, "No data found in the table");
-            }
+
+            return (string.Empty, "No data found in the table");
         }
         catch (Exception e)
         {
@@ -362,17 +359,14 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             var statement = DatabricksStatement.FromRawSql(
                 $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations ORDER BY calculation_version DESC LIMIT 1");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-            var list = await queryResult.ToListAsync();
+            var calculationVersion = (await queryResult.FirstAsync()).ToString();
 
-            if (list.Count > 0)
+            if (calculationVersion != string.Empty)
             {
-                var calculationVersion = list[0]["calculation_version"].ToString();
-                return (calculationVersion, "calculationVersion retrieved successfully");
+                return (calculationVersion, "Calculation ID retrieved successfully");
             }
-            else
-            {
-                return (string.Empty, "No data found in the table");
-            }
+
+            return (string.Empty, "No data found in the table");
         }
         catch (Exception e)
         {

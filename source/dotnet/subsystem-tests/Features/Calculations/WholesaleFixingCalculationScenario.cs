@@ -31,13 +31,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
 public class WholesaleFixingCalculationScenario : SubsystemTestsBase<CalculationScenarioFixture>
 {
-    public WholesaleFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory, string calculationVersion)
+    private string PreviousCalculationVersion { get; set; } = string.Empty;
+
+    public WholesaleFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
-        CalculationVersion = calculationVersion;
     }
-
-    public string CalculationVersion { get; private set; }
 
     [ScenarioStep(-1)]
     [SubsystemFact]
@@ -55,7 +54,9 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         }
 
         // Set the property value
-        CalculationVersion = calculationVersion;
+        PreviousCalculationVersion = calculationVersion;
+
+        calculationVersion.Should().NotBeEmpty();
     }
 
     [ScenarioStep(0)]
@@ -306,6 +307,6 @@ AppDependencies
             throw new InvalidOperationException(message);
         }
 
-        Assert.True(Convert.ToInt32(calculationVersion) > Convert.ToInt32(CalculationVersion));
+        (Convert.ToInt32(calculationVersion) > Convert.ToInt32(PreviousCalculationVersion)).Should().BeTrue();
     }
 }
