@@ -72,13 +72,6 @@ def _write_basis_data(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
         )
 
-        # TODO JVM: Remove when we are on Unity Catalog
-        basis_data_output.grid_loss_metering_points.write.format("delta").mode(
-            "append"
-        ).option("mergeSchema", "false").insertInto(
-            f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
-        )
-
     if basis_data_output.charge_price_information_periods:
         with logging_configuration.start_span("charge_price_information_periods"):
             basis_data_output.charge_price_information_periods.write.format(
