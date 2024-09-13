@@ -14,8 +14,6 @@
 import os
 import uuid
 import pytest
-import yaml
-from pathlib import Path
 from datetime import datetime
 from typing import Callable, Generator
 
@@ -38,14 +36,6 @@ def any_settlement_report_args() -> SettlementReportArgs:
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
     )
-
-
-def _load_settings_from_file(file_path: Path) -> dict:
-    if file_path.exists():
-        with file_path.open() as stream:
-            return yaml.safe_load(stream)
-    else:
-        return {}
 
 
 @pytest.fixture(scope="session")
