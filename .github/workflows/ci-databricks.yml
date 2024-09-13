@@ -17,6 +17,14 @@ name: CI Databricks
 on:
   workflow_call:
     inputs:
+      has_calculator_job_changes:
+        description: Whether there are changes in the calculator job folder
+        required: true
+        type: boolean
+      has_settlement_report_job_changes:
+        description: Whether there are changes in the settlement report job folder
+        required: true
+        type: boolean
       has_delta_migration_changes:
         description: Whether there are changes in the delta migration scripts
         required: true
@@ -36,6 +44,7 @@ jobs:
       should_include_assets: true
 
   migration_scripts_verification_hive:
+    if: ${{ inputs.has_delta_migration_changes }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -126,6 +135,7 @@ jobs:
           done
 
   migration_scripts_verification:
+    if: ${{ inputs.has_delta_migration_changes }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -215,8 +225,9 @@ jobs:
             fi
           done
 
-  # Tests that do not require the integration test environment
+  # Calculator job tests that do not require the integration test environment
   unit_tests:
+    if: ${{ inputs.has_calculator_job_changes }}
     strategy:
       fail-fast: false
       matrix:
@@ -236,27 +247,29 @@ jobs:
             paths: calculation codelists common optimize_job databases infrastructure
           - name: Entry point tests
             paths: entry_points/
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      tests_folder_path: ./source/databricks/calculation_engine/tests
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
       image_tag: ${{ inputs.image_tag }}
 
   # Tests that require the integration test environment
-  integration_tests:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+  calculator_job_integration_tests:
+    if: ${{ inputs.has_calculator_job_changes }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
-      job_name: Integration tests
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      tests_folder_path: ./source/databricks/calculation_engine/tests
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: calculator_job/test_start.py calculator_job/test_start_with_deps.py
@@ -267,7 +280,9 @@ jobs:
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
       image_tag: ${{ inputs.image_tag }}
 
-  migrations_tests:
+  # Calculator job migration tests
+  calculator_job_migrations_tests:
+    if: ${{ inputs.has_delta_migration_changes }}
     strategy:
       fail-fast: false
       matrix:
@@ -281,22 +296,23 @@ jobs:
             paths: datamigration/migration_scripts
           - name: Test Unity Catalog
             paths: datamigration/unity_catalog
-    if: ${{ inputs.has_delta_migration_changes }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      tests_folder_path: ./source/databricks/calculation_engine/tests
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
-      tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
+      tests_filter_expression: ${{ matrix.tests_filter_expression.paths }} # source/databricks/calculation_engine/tests/
       image_tag: ${{ inputs.image_tag }}
 
-  unit_test_check:
+  # Check executed unit tests
+  calculator_job_unit_test_check:
+    if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
-    name: Check executed unit tests
     steps:
       - uses: actions/checkout@v4
       - name: Log in to the Container registry
@@ -341,9 +357,9 @@ jobs:
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
-  mypy_check:
+  calculator_job_mypy_check:
+    if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
-    name: Static type checker
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -356,12 +372,49 @@ jobs:
           pip install mypy types-python-dateutil
           mypy ./source/databricks/calculation_engine/package --disallow-untyped-defs --ignore-missing-imports
 
-  black_check:
+  calculator_job_black_check:
+    if: ${{ inputs.has_calculator_job_changes }}
     runs-on: ubuntu-latest
-    name: Code style check
     steps:
       - uses: actions/checkout@v4
       - uses: psf/black@stable
         with:
           options: --check --diff
           src: ./source/databricks/calculation_engine
+
+  settlement_report_unit_tests:
+    if: ${{ inputs.has_settlement_report_job_changes }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
+    with:
+      operating_system: dh3-ubuntu-20.04-4core
+      path_static_checks: ./source/databricks/settlement_report
+      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      tests_folder_path: ./source/databricks/settlement_report/tests
+      test_report_path: ./source/databricks/settlement_report/tests
+      image_tag: ${{ inputs.image_tag }}
+
+  settlement_report_mypy_check:
+    if: ${{ inputs.has_settlement_report_job_changes }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - name: Run pip intall and mypy check of files in package
+        shell: bash
+        run: |
+          pip install --upgrade pip
+          pip install mypy types-python-dateutil
+          mypy ./source/databricks/settlement_report/settlement_report_job --disallow-untyped-defs --ignore-missing-imports
+
+  settlement_report_black_check:
+    if: ${{ inputs.has_settlement_report_job_changes }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: psf/black@stable
+        with:
+          options: --check --diff
+          src: ./source/databricks/settlement_report
