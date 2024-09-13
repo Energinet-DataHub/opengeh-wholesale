@@ -20,8 +20,8 @@ from typing import Callable, Generator
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
-from settlement_report_job.calculation_type import CalculationType
-from settlement_report_job.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
 
 @pytest.fixture(scope="session")
