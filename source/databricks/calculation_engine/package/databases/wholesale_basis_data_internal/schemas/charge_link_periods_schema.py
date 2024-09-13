@@ -22,7 +22,7 @@ from pyspark.sql.types import (
 
 from package.databases.table_column_names import TableColumnNames
 
-charge_link_periods_schema_uc = StructType(
+charge_link_periods_schema = StructType(
     [
         StructField(TableColumnNames.calculation_id, StringType(), False),
         StructField(TableColumnNames.charge_key, StringType(), False),
