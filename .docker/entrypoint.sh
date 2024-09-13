@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# $1: (Optional) Can be set to specify a filter for running python tests by using 'keyword expressions'.
+# $1: Mandatory test folder path
+# $2: (Optional) Can be set to specify a filter for running python tests by using 'keyword expressions'.
 # See use of '-k' and 'keyword expressions' here: https://docs.pytest.org/en/7.4.x/how-to/usage.html#specifying-which-tests-to-run
-echo "Filter (paths): '$1'"
+echo "Tests folder path: '$1'"
+echo "Filter (paths): '$2'"
 
 # Configure Azure CLI to use token cache which must be mapped as volume from host machine
 export AZURE_CONFIG_DIR=/home/joyvan/.azure
@@ -31,8 +33,8 @@ set -e
 # Enable extended globbing. E.g. see https://stackoverflow.com/questions/8525437/list-files-not-matching-a-pattern
 shopt -s extglob
 
-cd source/databricks/calculation_engine/tests/
-coverage run --branch -m pytest -vv --junitxml=pytest-results.xml $1
+cd $1
+coverage run --branch -m pytest -vv --junitxml=pytest-results.xml $2
 
 # Create data for threshold evaluation
 coverage json
