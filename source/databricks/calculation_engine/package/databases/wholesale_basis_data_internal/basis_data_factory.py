@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-
 from package.calculation.calculation_output import BasisDataOutput
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
     GridLossMeteringPoints,
+)
+from package.calculation.preparation.data_structures.metering_point_periods import (
+    MeteringPointPeriods,
 )
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
@@ -30,7 +31,7 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,
-    metering_point_periods_df: DataFrame,
+    metering_point_periods_df: MeteringPointPeriods,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     input_charges_container: InputChargesContainer | None,
     grid_loss_metering_points_df: GridLossMeteringPoints,

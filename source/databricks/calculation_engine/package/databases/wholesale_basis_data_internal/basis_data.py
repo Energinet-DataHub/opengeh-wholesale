@@ -19,6 +19,9 @@ from package.calculation.preparation.data_structures import InputChargesContaine
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
     GridLossMeteringPoints,
 )
+from package.calculation.preparation.data_structures.metering_point_periods import (
+    MeteringPointPeriods,
+)
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
@@ -30,9 +33,10 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("get_metering_point_periods_basis_data")
 def get_metering_point_periods_basis_data(
     calculation_id: str,
-    metering_point_df: DataFrame,
+    metering_point_df: MeteringPointPeriods,
 ) -> DataFrame:
-    return metering_point_df.select(
+
+    return metering_point_df.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
         f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),
@@ -74,7 +78,7 @@ def get_charge_price_information_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
-    return input_charges_container.charge_price_information._df.select(
+    return input_charges_container.charge_price_information.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.charge_key).alias(TableColumnNames.charge_key),
         f.col(Colname.charge_code).alias(TableColumnNames.charge_code),
@@ -94,7 +98,7 @@ def get_charge_prices_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
-    return input_charges_container.charge_prices._df.select(
+    return input_charges_container.charge_prices.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.charge_key).alias(TableColumnNames.charge_key),
         f.col(Colname.charge_code).alias(TableColumnNames.charge_code),

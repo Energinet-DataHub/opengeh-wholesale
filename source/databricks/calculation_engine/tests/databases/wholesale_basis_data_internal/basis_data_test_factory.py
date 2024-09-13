@@ -32,6 +32,10 @@ from package.calculation.preparation.data_structures.charge_prices import Charge
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
     GridLossMeteringPoints,
 )
+from package.calculation.preparation.data_structures.metering_point_periods import (
+    MeteringPointPeriods,
+    metering_point_periods_schema,
+)
 from package.codelists import ChargeType
 from package.constants import Colname
 from package.databases.wholesale_basis_data_internal.schemas import (
@@ -40,7 +44,6 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     grid_loss_metering_points_schema,
     charge_link_periods_schema,
 )
-from tests.calculation.preparation.transformations import metering_point_periods_factory
 from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
@@ -71,6 +74,7 @@ class DefaultValues:
     CALCULATION_EXECUTION_TIME_START = datetime(2018, 1, 5, 23, 0, 0)
     QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(2018, 1, 5, 23, 0, 0)
     CREATED_BY_USER_ID = "bar"
+    BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123456"
 
 
 def create_charge_price_information_row(
@@ -162,6 +166,41 @@ def create_grid_loss_metering_points_row(
     return Row(**row)
 
 
+def create_metering_point_periods_row(
+    calculation_id: str = DefaultValues.CALCULATION_ID,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
+    metering_point_type: e.MeteringPointType = DefaultValues.METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = DefaultValues.SETTLEMENT_METHOD,
+    grid_area_code: str = DefaultValues.GRID_AREA,
+    resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
+    from_grid_area_code: str = DefaultValues.GRID_AREA,
+    to_grid_area_code: str = DefaultValues.GRID_AREA,
+    parent_metering_point_id: str = DefaultValues.METERING_POINT_ID,
+    energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
+    balance_responsible_party_id: str = DefaultValues.BALANCE_RESPONSIBLE_PARTY_ID,
+    from_date: datetime = DefaultValues.FROM_DATE,
+    to_date: datetime = DefaultValues.TO_DATE,
+) -> Row:
+
+    row = {
+        Colname.calculation_id: calculation_id,
+        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.settlement_method: settlement_method.value,
+        Colname.grid_area_code: grid_area_code,
+        Colname.resolution: resolution.value,
+        Colname.from_grid_area_code: from_grid_area_code,
+        Colname.to_grid_area_code: to_grid_area_code,
+        Colname.parent_metering_point_id: parent_metering_point_id,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.balance_responsible_party_id: balance_responsible_party_id,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
+    }
+
+    return Row(**row)
+
+
 def create_charge_price_information(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargePriceInformation:
@@ -236,11 +275,23 @@ def create_grid_loss_metering_points(
     )
 
 
+def create_metering_point_periods(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> MeteringPointPeriods:
+    if data is None:
+        data = [create_metering_point_periods_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    return MeteringPointPeriods(
+        spark.createDataFrame(data, metering_point_periods_schema)
+    )
+
+
 def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
     calculation_args = create_calculation_args()
-    metering_point_period_df = metering_point_periods_factory.create(spark)
+    metering_point_period_df = create_metering_point_periods(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
-    grid_loss_metering_points = create_grid_loss_metering_points(spark)
+    grid_loss_metering_points_df = create_grid_loss_metering_points(spark)
     charge_links = create_charge_links(spark)
     charge_prices = create_charge_prices(spark)
     charge_price_information = create_charge_price_information(spark)
@@ -256,5 +307,5 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
-        grid_loss_metering_points_df=grid_loss_metering_points,
+        grid_loss_metering_points_df=grid_loss_metering_points_df,
     )
