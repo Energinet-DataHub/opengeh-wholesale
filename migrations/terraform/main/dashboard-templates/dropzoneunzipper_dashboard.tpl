@@ -1,9 +1,9 @@
 {
-  "lenses": {
-    "0": {
+  "lenses": [
+    {
       "order": 0,
-      "parts": {
-        "0": {
+      "parts": [
+        {
           "position": {
             "x": 0,
             "y": 0,
@@ -26,7 +26,7 @@
             }
           }
         },
-        "1": {
+        {
           "position": {
             "x": 3,
             "y": 0,
@@ -133,7 +133,7 @@
             }
           }
         },
-        "2": {
+        {
           "position": {
             "x": 7,
             "y": 0,
@@ -251,7 +251,7 @@
             }
           }
         },
-        "3": {
+        {
           "position": {
             "x": 11,
             "y": 0,
@@ -358,7 +358,7 @@
             }
           }
         },
-        "4": {
+        {
           "position": {
             "x": 15,
             "y": 0,
@@ -465,7 +465,7 @@
             }
           }
         },
-        "5": {
+        {
           "position": {
             "x": 19,
             "y": 0,
@@ -475,54 +475,11 @@
           "metadata": {
             "inputs": [
               {
-                "name": "sharedTimeRange",
+                "name": "options",
                 "isOptional": true
               },
               {
-                "name": "options",
-                "value": {
-                  "chart": {
-                    "metrics": [
-                      {
-                        "aggregationType": 4,
-                        "metricVisualization": {
-                          "displayName": "Health check status"
-                        },
-                        "name": "HealthCheckStatus",
-                        "namespace": "microsoft.web/sites",
-                        "resourceMetadata": {
-                          "id": "${dropzoneunzipper_id}"
-                        }
-                      }
-                    ],
-                    "timespan": {
-                      "grain": 1,
-                      "relative": {
-                        "duration": 86400000
-                      },
-                      "showUTCTime": false
-                    },
-                    "titleKind": 0,
-                    "visualization": {
-                      "axisVisualization": {
-                        "x": {
-                          "axisType": 2,
-                          "isVisible": true
-                        },
-                        "y": {
-                          "axisType": 1,
-                          "isVisible": true
-                        }
-                      },
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideSubtitle": false,
-                        "isVisible": true,
-                        "position": 2
-                      }
-                    }
-                  }
-                },
+                "name": "sharedTimeRange",
                 "isOptional": true
               }
             ],
@@ -533,36 +490,39 @@
                   "chart": {
                     "metrics": [
                       {
-                        "aggregationType": 4,
-                        "metricVisualization": {
-                          "displayName": "Health check status"
-                        },
-                        "name": "HealthCheckStatus",
-                        "namespace": "microsoft.web/sites",
                         "resourceMetadata": {
                           "id": "${dropzoneunzipper_id}"
+                        },
+                        "name": "HealthCheckStatus",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.web/sites",
+                        "metricVisualization": {
+                          "displayName": "Health check status",
+                          "resourceDisplayName": "${dropzoneunzipper_name}"
                         }
                       }
                     ],
-                    "titleKind": 0,
+                    "title": "Avg Health check status for ${dropzoneunzipper_name}",
+                    "titleKind": 1,
                     "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
                       "axisVisualization": {
                         "x": {
-                          "axisType": 2,
-                          "isVisible": true
+                          "isVisible": true,
+                          "axisType": 2
                         },
                         "y": {
-                          "axisType": 1,
-                          "isVisible": true
+                          "isVisible": true,
+                          "axisType": 1
                         }
                       },
-                      "chartType": 2,
-                      "disablePinning": true,
-                      "legendVisualization": {
-                        "hideSubtitle": false,
-                        "isVisible": true,
-                        "position": 2
-                      }
+                      "disablePinning": true
                     }
                   }
                 }
@@ -570,7 +530,7 @@
             }
           }
         },
-        "6": {
+        {
           "position": {
             "x": 0,
             "y": 3,
@@ -593,7 +553,7 @@
             }
           }
         },
-        "7": {
+        {
           "position": {
             "x": 3,
             "y": 3,
@@ -700,7 +660,7 @@
             }
           }
         },
-        "8": {
+        {
           "position": {
             "x": 9,
             "y": 3,
@@ -807,7 +767,7 @@
             }
           }
         },
-        "9": {
+        {
           "position": {
             "x": 15,
             "y": 3,
@@ -828,7 +788,7 @@
             }
           }
         },
-        "10": {
+        {
           "position": {
             "x": 16,
             "y": 3,
@@ -1030,7 +990,7 @@
             }
           }
         },
-        "11": {
+        {
           "position": {
             "x": 0,
             "y": 6,
@@ -1053,7 +1013,7 @@
             }
           }
         },
-        "12": {
+        {
           "position": {
             "x": 3,
             "y": 6,
@@ -1160,7 +1120,7 @@
             }
           }
         },
-        "13": {
+        {
           "position": {
             "x": 9,
             "y": 6,
@@ -1377,7 +1337,7 @@
             }
           }
         },
-        "14": {
+        {
           "position": {
             "x": 16,
             "y": 6,
@@ -1603,7 +1563,7 @@
             }
           }
         },
-        "15": {
+        {
           "position": {
             "x": 0,
             "y": 9,
@@ -1626,7 +1586,7 @@
             }
           }
         },
-        "16": {
+        {
           "position": {
             "x": 3,
             "y": 9,
@@ -1733,7 +1693,7 @@
             }
           }
         },
-        "17": {
+        {
           "position": {
             "x": 9,
             "y": 9,
@@ -1840,7 +1800,7 @@
             }
           }
         },
-        "18": {
+        {
           "position": {
             "x": 16,
             "y": 9,
@@ -2018,10 +1978,152 @@
             }
           }
         },
-        "19": {
+        {
           "position": {
             "x": 0,
             "y": 12,
+            "colSpan": 3,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [],
+            "type": "Extension/HubsExtension/PartType/MarkdownPart",
+            "settings": {
+              "content": {
+                "content": "### Custom metrics",
+                "title": "",
+                "subtitle": "",
+                "markdownSource": 1,
+                "markdownUri": ""
+              }
+            }
+          }
+        },
+        {
+          "position": {
+            "x": 3,
+            "y": 12,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "${appi_sharedres_id}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "95c7f2e4-396a-4f7a-b12c-14daf04b6be2",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "P1D",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "value": "traces\n| where cloud_RoleName in (\"${dropzoneunzipper_name}\")\n| where message startswith \"Trying to retrigger\"\n| extend \n    TsCount = toint(extract(\"Trying to retrigger (\\\\d+) files with TS prefix\", 1, message)),\n    MdCount = toint(extract(\"(\\\\d+) files with MD prefix\", 1, message)),\n    ChCount = toint(extract(\"(\\\\d+) files with CH prefix\", 1, message)),\n    ClCount = toint(extract(\"(\\\\d+) files with CL prefix\", 1, message)),\n    CsCount = toint(extract(\"(\\\\d+) files with CS prefix\", 1, message))\n| project timestamp, TsCount, MdCount, ChCount, ClCount, CsCount\n",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "StackedColumn",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "timestamp",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "TsCount",
+                      "type": "int"
+                    },
+                    {
+                      "name": "MdCount",
+                      "type": "int"
+                    },
+                    {
+                      "name": "ChCount",
+                      "type": "int"
+                    },
+                    {
+                      "name": "ClCount",
+                      "type": "int"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "PartTitle": "Reprocessed dead events"
+              }
+            }
+          }
+        },
+        {
+          "position": {
+            "x": 0,
+            "y": 15,
             "colSpan": 3,
             "rowSpan": 3
           },
@@ -2039,10 +2141,10 @@
             }
           }
         },
-        "20": {
+        {
           "position": {
             "x": 3,
-            "y": 12,
+            "y": 15,
             "colSpan": 6,
             "rowSpan": 3
           },
@@ -2130,14 +2232,16 @@
                         }
                       }
                     ],
-                    "title": "Sum Exceptions for ${appi_sharedres_id} where cloud/roleName = '${dropzoneunzipper_name}'",
-                    "titleKind": 1,
+                    "title": "Sum Exceptions for ${dropzoneunzipper_name}",
+                    "titleKind": 2,
                     "visualization": {
                       "chartType": 2,
                       "legendVisualization": {
                         "hideSubtitle": false,
                         "isVisible": true,
-                        "position": 2
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
                       },
                       "axisVisualization": {
                         "x": {
@@ -2167,92 +2271,7 @@
             }
           }
         },
-        "21": {
-          "position": {
-            "x": 0,
-            "y": 15,
-            "colSpan": 3,
-            "rowSpan": 3
-          },
-          "metadata": {
-            "inputs": [],
-            "type": "Extension/HubsExtension/PartType/MarkdownPart",
-            "settings": {
-              "content": {
-                "content": "### App Service Plan",
-                "title": "",
-                "subtitle": "",
-                "markdownSource": 1,
-                "markdownUri": ""
-              }
-            }
-          }
-        },
-        "22": {
-          "position": {
-            "x": 3,
-            "y": 15,
-            "colSpan": 6,
-            "rowSpan": 3
-          },
-          "metadata": {
-            "inputs": [
-              {
-                "name": "options",
-                "isOptional": true
-              },
-              {
-                "name": "sharedTimeRange",
-                "isOptional": true
-              }
-            ],
-            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
-            "settings": {
-              "content": {
-                "options": {
-                  "chart": {
-                    "metrics": [
-                      {
-                        "resourceMetadata": {
-                          "id": "${plan_services_id}"
-                        },
-                        "name": "CpuPercentage",
-                        "aggregationType": 4,
-                        "namespace": "microsoft.web/serverfarms",
-                        "metricVisualization": {
-                          "displayName": "CPU Percentage",
-                          "resourceDisplayName": "${plan_services_name}"
-                        }
-                      }
-                    ],
-                    "title": "Avg CPU Percentage for ${plan_services_name}",
-                    "titleKind": 1,
-                    "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideSubtitle": false
-                      },
-                      "axisVisualization": {
-                        "x": {
-                          "isVisible": true,
-                          "axisType": 2
-                        },
-                        "y": {
-                          "isVisible": true,
-                          "axisType": 1
-                        }
-                      },
-                      "disablePinning": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "23": {
+        {
           "position": {
             "x": 9,
             "y": 15,
@@ -2278,25 +2297,26 @@
                     "metrics": [
                       {
                         "resourceMetadata": {
-                          "id": "${plan_services_id}"
+                          "id": "${dropzoneunzipper_id}"
                         },
-                        "name": "MemoryPercentage",
+                        "name": "InstanceCount",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/serverfarms",
+                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
-                          "displayName": "Memory Percentage",
-                          "resourceDisplayName": "${plan_services_name}"
+                          "displayName": "Automatic Scaling Instance Count",
+                          "resourceDisplayName": "${dropzoneunzipper_name}"
                         }
                       }
                     ],
-                    "title": "Avg Memory Percentage for ${plan_services_name}",
+                    "title": "Avg Automatic Scaling Instance Count for ${dropzoneunzipper_name}",
                     "titleKind": 1,
                     "visualization": {
                       "chartType": 2,
                       "legendVisualization": {
                         "isVisible": true,
                         "position": 2,
-                        "hideSubtitle": false
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
                       },
                       "axisVisualization": {
                         "x": {
@@ -2315,10 +2335,159 @@
               }
             }
           }
+        },
+        {
+          "position": {
+            "x": 0,
+            "y": 18,
+            "colSpan": 3,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [],
+            "type": "Extension/HubsExtension/PartType/MarkdownPart",
+            "settings": {
+              "content": {
+                "content": "### App Service Plan",
+                "markdownSource": 1,
+                "markdownUri": "",
+                "subtitle": "",
+                "title": ""
+              }
+            }
+          }
+        },
+        {
+          "position": {
+            "x": 3,
+            "y": 18,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "aggregationType": 4,
+                        "metricVisualization": {
+                          "displayName": "CPU Percentage",
+                          "resourceDisplayName": "${plan_services_name}"
+                        },
+                        "name": "CpuPercentage",
+                        "namespace": "microsoft.web/serverfarms",
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
+                        }
+                      }
+                    ],
+                    "title": "Avg CPU Percentage for ${plan_services_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "axisVisualization": {
+                        "x": {
+                          "axisType": 2,
+                          "isVisible": true
+                        },
+                        "y": {
+                          "axisType": 1,
+                          "isVisible": true
+                        }
+                      },
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideSubtitle": false,
+                        "isVisible": true,
+                        "position": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "position": {
+            "x": 9,
+            "y": 18,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "aggregationType": 4,
+                        "metricVisualization": {
+                          "displayName": "Memory Percentage",
+                          "resourceDisplayName": "${plan_services_name}"
+                        },
+                        "name": "MemoryPercentage",
+                        "namespace": "microsoft.web/serverfarms",
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
+                        }
+                      }
+                    ],
+                    "title": "Avg Memory Percentage for ${plan_services_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "axisVisualization": {
+                        "x": {
+                          "axisType": 2,
+                          "isVisible": true
+                        },
+                        "y": {
+                          "axisType": 1,
+                          "isVisible": true
+                        }
+                      },
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideSubtitle": false,
+                        "isVisible": true,
+                        "position": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      }
+      ]
     }
-  },
+  ],
   "metadata": {
     "model": {
       "timeRange": {
@@ -2346,23 +2515,25 @@
               "value": "Past 24 hours"
             },
             "filteredPartIds": [
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f117",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f119",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f11b",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f11d",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f11f",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f123",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f125",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f129",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f12d",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f12f",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f131",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f135",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f137",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f139",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f13d",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f213",
-              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f62e"
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6b9",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6bb",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6bd",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6bf",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6c5",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6c7",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6cb",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6cf",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6d1",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6d3",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6d7",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6d9",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6db",
+              "StartboardPart-LogsDashboardPart-b399bb4e-e921-4588-8dae-98ae552635d3",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6df",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e7a0",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6e3",
+              "StartboardPart-MonitorChartPart-774680db-542e-4418-af7d-58b57c69e6e5",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae5526384a"
             ]
           }
         }

@@ -1,9 +1,9 @@
 {
-  "lenses": {
-    "0": {
+  "lenses": [
+    {
       "order": 0,
-      "parts": {
-        "0": {
+      "parts": [
+        {
           "position": {
             "x": 0,
             "y": 0,
@@ -16,15 +16,15 @@
             "settings": {
               "content": {
                 "content": "## General metrics",
-                "title": "",
-                "subtitle": "",
                 "markdownSource": 1,
-                "markdownUri": {}
+                "markdownUri": {},
+                "subtitle": "",
+                "title": ""
               }
             }
           }
         },
-        "1": {
+        {
           "position": {
             "x": 2,
             "y": 0,
@@ -89,7 +89,7 @@
             }
           }
         },
-        "2": {
+        {
           "position": {
             "x": 7,
             "y": 0,
@@ -154,7 +154,7 @@
             }
           }
         },
-        "3": {
+        {
           "position": {
             "x": 12,
             "y": 0,
@@ -231,7 +231,7 @@
             }
           }
         },
-        "4": {
+        {
           "position": {
             "x": 2,
             "y": 4,
@@ -308,7 +308,7 @@
             }
           }
         },
-        "5": {
+        {
           "position": {
             "x": 7,
             "y": 4,
@@ -373,7 +373,7 @@
             }
           }
         },
-        "6": {
+        {
           "position": {
             "x": 12,
             "y": 4,
@@ -398,39 +398,39 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "InstanceCount",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Automatic Scaling Instance Count",
                           "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "InstanceCount",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
                         }
                       }
                     ],
                     "title": "Avg Automatic Scaling Instance Count for ${timeseriessync_name}",
                     "titleKind": 1,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -438,12 +438,12 @@
             }
           }
         },
-        "7": {
+        {
           "position": {
             "x": 0,
             "y": 8,
             "colSpan": 2,
-            "rowSpan": 4
+            "rowSpan": 8
           },
           "metadata": {
             "inputs": [],
@@ -459,7 +459,7 @@
             }
           }
         },
-        "8": {
+        {
           "position": {
             "x": 2,
             "y": 8,
@@ -545,7 +545,7 @@
             }
           }
         },
-        "9": {
+        {
           "position": {
             "x": 7,
             "y": 8,
@@ -631,7 +631,7 @@
             }
           }
         },
-        "10": {
+        {
           "position": {
             "x": 12,
             "y": 8,
@@ -656,49 +656,42 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/ArchiveTimeSeriesMessageDuration",
                         "aggregationType": 4,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "ArchiveTimeSeriesMessageDuration"
+                        },
+                        "name": "customMetrics/ArchiveTimeSeriesMessageDuration",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/DequeueTimeSeriesMessageDuration",
                         "aggregationType": 4,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "DequeueTimeSeriesMessageDuration"
+                        },
+                        "name": "customMetrics/DequeueTimeSeriesMessageDuration",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/SendTimeSeriesMessageDuration",
                         "aggregationType": 4,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "SendTimeSeriesMessageDuration"
+                        },
+                        "name": "customMetrics/SendTimeSeriesMessageDuration",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       }
                     ],
                     "title": "Avg ArchiveTimeSeriesMessageDuration, Avg DequeueTimeSeriesMessageDuration, and Avg SendTimeSeriesMessageDuration in milliseconds",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideHoverCard": false,
-                        "hideLabelNames": true,
-                        "isVisible": true,
-                        "position": 2
-                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -709,7 +702,14 @@
                           "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -717,10 +717,116 @@
             }
           }
         },
-        "11": {
+        {
           "position": {
-            "x": 17,
-            "y": 8,
+            "x": 2,
+            "y": 12,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "${appi_sharedres_id}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "2e318f26-5d12-40b8-9666-ab2293108efa",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "timestamp",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "Count",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": true,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "traces\n| where cloud_RoleName in (\"${timeseriessync_name}\")\n| where message contains \"Reprocessing TimeSeriesIntermediaryBlob with id\"\n| project timestamp, itemCount;\n\n",
+                "ControlType": "AnalyticsGrid",
+                "PartTitle": "Blobs reprocessed from Intermediary",
+                "IsQueryContainTimeRange": false
+              }
+            }
+          }
+        },
+        {
+          "position": {
+            "x": 7,
+            "y": 12,
             "colSpan": 5,
             "rowSpan": 4
           },
@@ -742,27 +848,20 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/PeekedTimeSeriesMessageAge",
                         "aggregationType": 4,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "PeekedTimeSeriesMessageAge"
+                        },
+                        "name": "customMetrics/PeekedTimeSeriesMessageAge",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       }
                     ],
                     "title": "Avg PeekedTimeSeriesMessageAge in seconds",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideHoverCard": false,
-                        "hideLabelNames": true,
-                        "isVisible": true,
-                        "position": 2
-                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -773,7 +872,14 @@
                           "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -781,10 +887,10 @@
             }
           }
         },
-        "12": {
+        {
           "position": {
             "x": 0,
-            "y": 12,
+            "y": 16,
             "colSpan": 2,
             "rowSpan": 4
           },
@@ -802,10 +908,10 @@
             }
           }
         },
-        "13": {
+        {
           "position": {
             "x": 2,
-            "y": 12,
+            "y": 16,
             "colSpan": 5,
             "rowSpan": 4
           },
@@ -879,10 +985,10 @@
             }
           }
         },
-        "14": {
+        {
           "position": {
             "x": 7,
-            "y": 12,
+            "y": 16,
             "colSpan": 5,
             "rowSpan": 4
           },
@@ -904,28 +1010,21 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${sbns_shared_id}"
-                        },
-                        "name": "DeadletteredMessages",
                         "aggregationType": 4,
-                        "namespace": "microsoft.servicebus/namespaces",
                         "metricVisualization": {
                           "displayName": "Count of dead-lettered messages in Topic.",
                           "resourceDisplayName": "${sbns_shared_name}"
+                        },
+                        "name": "DeadletteredMessages",
+                        "namespace": "microsoft.servicebus/namespaces",
+                        "resourceMetadata": {
+                          "id": "${sbns_shared_name}"
                         }
                       }
                     ],
                     "title": "Dead-lettered messages in time series Service Bus Topic",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideHoverCard": false,
-                        "hideLabelNames": true,
-                        "isVisible": true,
-                        "position": 2
-                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -936,7 +1035,14 @@
                           "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -954,10 +1060,10 @@
             }
           }
         },
-        "15": {
+        {
           "position": {
             "x": 12,
-            "y": 12,
+            "y": 16,
             "colSpan": 5,
             "rowSpan": 4
           },
@@ -1029,10 +1135,10 @@
             }
           }
         },
-        "16": {
+        {
           "position": {
             "x": 17,
-            "y": 12,
+            "y": 16,
             "colSpan": 5,
             "rowSpan": 4
           },
@@ -1143,9 +1249,9 @@
             }
           }
         }
-      }
+      ]
     }
-  },
+  ],
   "metadata": {
     "model": {
       "timeRange": {
@@ -1173,20 +1279,22 @@
               "value": "Past 24 hours"
             },
             "filteredPartIds": [
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5674",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5676",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5678",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d567a",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d567c",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d56ec",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5680",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5682",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5684",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d5686",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d568a",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d568c",
-              "StartboardPart-MonitorChartPart-b45e38ad-1cde-454e-83fc-369e8e3d568e",
-              "StartboardPart-LogsDashboardPart-b45e38ad-1cde-454e-83fc-369e8e3d5690"
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b4b",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b5b",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b5d",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263bd7",
+              "StartboardPart-LogsDashboardPart-b399bb4e-e921-4588-8dae-98ae55263e40",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b5f",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b61",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b63",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b67",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b69",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b4d",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b4f",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b53",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b55",
+              "StartboardPart-MonitorChartPart-b399bb4e-e921-4588-8dae-98ae55263b57",
+              "StartboardPart-LogsDashboardPart-b399bb4e-e921-4588-8dae-98ae55263b59"
             ]
           }
         }
