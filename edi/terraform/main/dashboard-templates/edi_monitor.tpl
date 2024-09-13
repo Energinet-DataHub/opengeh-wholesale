@@ -247,7 +247,7 @@
                         }
                       }
                     ],
-                    "title": "Avg Message Enqueue Time (ms)",
+                    "title": "Avg Message Enqueue Time (µs)",
                     "titleKind": 2,
                     "visualization": {
                       "chartType": 1,
