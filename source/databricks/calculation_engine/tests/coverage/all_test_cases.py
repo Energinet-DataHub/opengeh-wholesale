@@ -47,20 +47,25 @@ class Cases:
             Calculation_covers_multiple_grid_areas: str
             Calculation_includes_2_out_of_3_MP_grid_areas_in_input_data: str
 
-    class SettlementReportsTests:
+    class DataProductTests:
 
-        Charge_link_period_between_MP_periods: str
-        Charge_link_period_is_a_subset_of_the_MP_period: str
-        Charge_link_periods_have_a_gap: str
-        Charge_link_periods_multiple: str
-        Charge_link_period_missing: str
-        Charge_link_period_between_MP_periods: str
-        Charge_price_information_periods_multiple: str
-        MP_period_missing: str
-        MP_period_multiple: str
-        MP_period_and_charge_link_period_do_not_overlap: str
-        MP_period_and_charge_link_period_overlap: str
-        MP_period_subset_of_charge_link_period: str
-        MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices: str
-        Calculation_versions_different: str
-        Calculation_types_different: str
+        class WholesaleResultsTests:
+            Internal_calculation_ids_not_included: str
+            Calculation_ids_without_calculation_succeeded_time_not_included: str
+            Correct_mp_types_included_in_energy_v1_output: str
+        class SettlementReportsTests:
+            Charge_link_period_between_MP_periods: str
+            Charge_link_period_is_a_subset_of_the_MP_period: str
+            Charge_link_periods_have_a_gap: str
+            Charge_link_periods_multiple: str
+            Charge_link_period_missing: str
+            Charge_link_period_between_MP_periods: str
+            Charge_price_information_periods_multiple: str
+            MP_period_missing: str
+            MP_period_multiple: str
+            MP_period_and_charge_link_period_do_not_overlap: str
+            MP_period_and_charge_link_period_overlap: str
+            MP_period_subset_of_charge_link_period: str
+            MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices: str
+            Calculation_versions_different: str
+            Calculation_types_different: str
