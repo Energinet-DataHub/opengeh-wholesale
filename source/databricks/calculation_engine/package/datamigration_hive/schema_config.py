@@ -31,7 +31,6 @@ from package.databases.wholesale_results_internal.schemas.hive_wholesale_results
     hive_wholesale_results_schema,
 )
 
-
 schema_config = [
     Schema(
         name=paths.HiveOutputDatabase.DATABASE_NAME,
@@ -72,18 +71,6 @@ schema_config = [
     Schema(
         name=paths.HiveBasisDataDatabase.DATABASE_NAME,
         tables=[
-            Table(
-                name=paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.hive_charge_link_periods_schema,
-            ),
-            Table(
-                name=paths.HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.hive_charge_price_information_periods_schema,
-            ),
-            Table(
-                name=paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_points_schema,
-            ),
             Table(
                 name=paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
