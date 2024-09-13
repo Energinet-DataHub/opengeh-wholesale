@@ -49,7 +49,7 @@ jobs:
 
   ci_databricks:
     needs: [changes, ci_docker]
-    if: ${{ needs.changes.outputs.databricks == 'true' }}
+    if: ${{ needs.changes.outputs.databricks_common == 'true' || needs.changes.outputs.calculator_job == 'true' || needs.changes.outputs.settlement_report_job == 'true' }}
     uses: ./.github/workflows/ci-databricks.yml
     with:
       has_delta_migration_changes: ${{ needs.changes.outputs.delta_migrations == 'true' }}

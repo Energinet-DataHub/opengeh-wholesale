@@ -65,13 +65,17 @@ jobs:
         uses: dorny/paths-filter@v3
         id: filter
         with:
+          # databricks_common is a common filter for all Databricks jobs
           filters: |
-            databricks:
+            databricks_common:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-databricks.yml'
-              - 'source/databricks/!(exploratory-notebooks/**)/**'
               - '.devcontainer/docker-compose.yml'
               - '.docker/requirements.txt'
+            calculator_job:
+              - 'source/databricks/calculation_engine/**'
+            settlement_report_job:
+              - 'source/databricks/settlement_report/**'
             delta_migrations:
               - 'source/databricks/calculation_engine/package/datamigration_hive/**'
               - 'source/databricks/calculation_engine/package/datamigration/**'
