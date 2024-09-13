@@ -35,6 +35,7 @@ module "backend_for_frontend" {
     ApiClientSettings__ESettExchangeBaseUrl                           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-esett-webapi-base-url)"
     ApiClientSettings__EdiB2CWebApiBaseUrl                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-edi-b2cwebapi-base-url)"
     ApiClientSettings__ImbalancePricesBaseUrl                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-grid-loss-imbalance-prices-api-base-url)"
+    ApiClientSettings__SettlementReportsAPIBaseUrl                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-settlement-report-webapi-base-url)"
     MITID_EXTERNAL_OPEN_ID_URL                                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
     EXTERNAL_OPEN_ID_URL                                              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL                                              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=api-backend-open-id-url)"
