@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_v1
+test om CI kører migration script tests
