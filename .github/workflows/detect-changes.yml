@@ -23,8 +23,12 @@ name: Detect changes
 on:
   workflow_call:
     outputs:
-      databricks:
-        value: ${{ jobs.changes.outputs.databricks }}
+      any_databricks:
+        value: ${{ jobs.changes.outputs.any_databricks }}
+      calculator_job:
+        value: ${{ jobs.changes.outputs.calculator_job }}
+      settlement_report_job:
+        value: ${{ jobs.changes.outputs.settlement_report_job }}
       delta_migrations:
         value: ${{ jobs.changes.outputs.delta_migrations }}
       dotnet:
