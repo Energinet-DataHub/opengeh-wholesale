@@ -412,7 +412,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install mypy types-python-dateutil
-          mypy ./source/databricks/settlement_report/package --disallow-untyped-defs --ignore-missing-imports
+          mypy ./source/databricks/settlement_report/settlement_report_job --disallow-untyped-defs --ignore-missing-imports
 
   # Calculator job
   settlement_report_black_check:
