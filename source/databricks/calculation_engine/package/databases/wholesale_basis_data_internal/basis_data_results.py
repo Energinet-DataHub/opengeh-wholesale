@@ -19,7 +19,6 @@ from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveBasisDataDatabase,
     WholesaleBasisDataInternalDatabase,
 )
 
@@ -56,13 +55,6 @@ def _write_basis_data(
             "append"
         ).option("mergeSchema", "false").insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
-        )
-
-        # ToDo JMG: Remove when we are on Unity Catalog
-        basis_data_output.time_series_points.write.format("delta").mode(
-            "append"
-        ).option("mergeSchema", "false").insertInto(
-            f"{HiveBasisDataDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 
     with logging_configuration.start_span("grid_loss_metering_points"):
