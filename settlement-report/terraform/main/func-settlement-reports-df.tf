@@ -34,6 +34,11 @@ module "func_settlement_reports_df" {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      // Blob
+      resource_id          = data.azurerm_key_vault_secret.st_settlement_report_id.value
+      role_definition_name = "Storage Blob Data Reader"
     }
   ]
 }

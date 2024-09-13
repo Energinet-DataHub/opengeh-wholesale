@@ -8,6 +8,8 @@ locals {
       # Storage (Blob)
       "SettlementReportStorage__StorageAccountUri"    = local.BLOB_STORAGE_ACCOUNT_URI
       "SettlementReportStorage__StorageContainerName" = local.BLOB_CONTAINER_SETTLEMENTREPORTS_NAME
+      "SettlementReportStorage__StorageAccountForJobsUri"    = local.BLOB_STORAGE_ACCOUNT_JOBS_URI
+      "SettlementReportStorage__StorageContainerForJobsName" = local.BLOB_CONTAINER_JOBS_SETTLEMENTREPORTS_NAME
 
       # Databricks
       WorkspaceToken 			= "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-token)"
