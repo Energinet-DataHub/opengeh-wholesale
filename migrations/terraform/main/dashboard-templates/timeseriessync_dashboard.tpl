@@ -1018,7 +1018,7 @@
                         "name": "DeadletteredMessages",
                         "namespace": "microsoft.servicebus/namespaces",
                         "resourceMetadata": {
-                          "id": "${sbns_shared_name}"
+                          "id": "${sbns_shared_id}"
                         }
                       }
                     ],
