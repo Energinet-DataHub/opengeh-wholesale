@@ -15,7 +15,7 @@
 import logging
 from typing import Any
 
-import settlement_report_job.infrastructure.logging_configuration as config
+import source.databricks.app.app.logging.logging_configuration as config
 
 
 class Logger:

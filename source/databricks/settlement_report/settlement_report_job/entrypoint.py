@@ -19,7 +19,7 @@ from typing import Callable
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
-import settlement_report_job.infrastructure.logging_configuration as config
+import source.databricks.app.app.logging.logging_configuration as config
 from settlement_report_job.domain import report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
