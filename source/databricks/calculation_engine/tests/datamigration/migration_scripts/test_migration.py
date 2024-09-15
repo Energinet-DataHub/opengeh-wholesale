@@ -14,6 +14,7 @@
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField
+
 import package.datamigration_hive.schema_config as schema_config
 from package.infrastructure import paths
 
@@ -80,6 +81,10 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
             paths.MigrationsWholesaleDatabase.DATABASE_NAME,
             paths.WholesaleSapDatabase.DATABASE_NAME,
         ]:
+            continue
+
+        # Skip Hive Basis Data Database - it is not part of the schema config anymore
+        if db.name in [paths.HiveBasisDataDatabase.DATABASE_NAME]:
             continue
 
         schema = next((x for x in schemas if x.name == db.name), None)
