@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opengeh-app"
+version = "1.0"
+description = "Tools for apps"
+license = {text = "MIT"}
+dependencies = [
+    "azure-monitor-opentelemetry==1.6.0",
+    "azure-core==1.30.0",
+]
