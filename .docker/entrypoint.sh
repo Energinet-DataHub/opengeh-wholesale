@@ -34,6 +34,7 @@ set -e
 shopt -s extglob
 
 cd $1
+pip install -e ../../app  # TODO BJM: Remove when package moved to other repo
 coverage run --branch -m pytest -vv --junitxml=pytest-results.xml $2
 
 # Create data for threshold evaluation

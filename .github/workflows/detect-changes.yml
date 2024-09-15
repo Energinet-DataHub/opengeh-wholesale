@@ -81,6 +81,7 @@ jobs:
             calculator_job:
               - 'source/databricks/calculation_engine/**'
             settlement_report_job:
+              - 'source/databricks/app/**'
               - 'source/databricks/settlement_report/**'
             delta_migrations:
               - 'source/databricks/calculation_engine/package/datamigration_hive/**'
