@@ -28,7 +28,7 @@ setup(
         "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-core==1.30.0",
-        "opengeh-app @ file://../app/app",
+        "opengeh-app @ file:///opt/project/source/databricks/app",
     ],
     entry_points={
         "console_scripts": [
