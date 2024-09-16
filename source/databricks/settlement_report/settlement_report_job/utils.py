@@ -158,17 +158,17 @@ def move_files(dbutils: Any, new_files: list[TmpFile], headers: list[str]) -> li
         headers (list[str]): Headers for the csv file.
     """
     for dst in [f.tmp_dst for f in new_files]:
-        dst[1].parent.mkdir(parents=True, exist_ok=True)
-        with dst[1].open("w+") as f:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        with dst.open("w+") as f:
             f.write(",".join(headers) + "\n")
 
     for f in new_files:
         with f.src.open("r") as src:
-            with f.tmp_dst.open("a") as dst:
-                dst.write(src.read())
+            with f.tmp_dst.open("a") as tmp_dst:
+                tmp_dst.write(src.read())
 
     for f in new_files:
         print("Moving " + str(f.tmp_dst) + " to " + str(f.dst))
         dbutils.fs.mv("file:" + str(f.tmp_dst), str(f.dst))
 
-    return [str(f["dst"]) for f in new_files]
+    return [str(f.dst) for f in new_files]
