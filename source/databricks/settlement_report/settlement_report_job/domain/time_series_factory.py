@@ -18,11 +18,7 @@ from pyspark.sql.window import Window
 from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.utils import (
-    map_from_dict,
-    rowbind_list_of_dataframes,
-    get_dbutils,
-)
+from settlement_report_job.utils import map_from_dict, get_dbutils
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
     get_metering_point_time_series_view_name,
@@ -47,10 +43,9 @@ def create_time_series(
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    metering_point_time_series = spark.read.table(
-        get_metering_point_time_series_view_name()
+    hourly_data, quarterly_data = _get_filtered_data(
+        spark, get_metering_point_time_series_view_name(), args
     )
-    hourly_data, quarterly_data = _get_filtered_data(args, metering_point_time_series)
     hourly_time_points = _generate_hourly_ts(hourly_data, args.time_zone)
     quarterly_time_points = _generate_quarterly_ts(quarterly_data, args.time_zone)
     files_to_zip = _write_time_series(
@@ -181,38 +176,28 @@ def pad_array_col(
 
 
 @logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._filter_metering_points"
+    "settlement_report_job.time_series_factory._read_and_filter_from_view"
 )
-def _filter_metering_points(
-    metering_point_time_series: DataFrame,
-    grid_area: str,
-    start_period: datetime,
-    end_period: datetime,
-    resolution: str,
-    calculation_id: Union[str, None] = None,
+def _read_and_filter_from_view(
+    spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
-    log.info(
-        "Filtering metering points with the following arguments:\n\t{}".format(
-            "\n\t".join(
-                [
-                    f"grid_area: {grid_area}",
-                    f"start_period: {start_period}",
-                    f"end_period: {end_period}",
-                    f"resolution: {resolution}",
-                    f"calculation_id: {calculation_id}",
-                ]
-            )
-        )
-    )
-    df = metering_point_time_series.filter(
-        (F.col(DataProductColumnNames.grid_area_code) == grid_area)
-        & (F.col(DataProductColumnNames.calculation_id) == calculation_id)
-        & (F.col(DataProductColumnNames.resolution) == resolution)
-        & (F.col(DataProductColumnNames.observation_time) >= start_period)
-        & (F.col(DataProductColumnNames.observation_time) < end_period)
+    df = spark.read.table(view_name).where(
+        F.col(DataProductColumnNames.observation_time) >= args.period_start
+    ) & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+
+    calculation_id_by_grid_area_structs = [
+        F.struct(F.lit(grid_area_code), F.lit(calculation_id))
+        for grid_area_code, calculation_id in args.calculation_id_by_grid_area
+    ]
+
+    df_filtered = df.where(
+        F.struct(
+            F.col(DataProductColumnNames.grid_area_code),
+            F.col(DataProductColumnNames.calculation_id),
+        ).isin(calculation_id_by_grid_area_structs)
     )
 
-    return df
+    return df_filtered
 
 
 @logging_configuration.use_span(
@@ -342,38 +327,14 @@ def _generate_quarterly_ts(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
 def _get_filtered_data(
-    args: SettlementReportArgs, df: DataFrame
+    spark: SparkSession, df: DataFrame, args: SettlementReportArgs
 ) -> tuple[DataFrame, DataFrame]:
     log.info("Getting filtered data")
-
-    hourly_chunks = []
-    quaterly_chunks = []
-    grid_areas = {k: str(v) for k, v in args.calculation_id_by_grid_area.items()}
-
-    for grid_area, calculation_id in grid_areas.items():
-        hourly_chunks.append(
-            _filter_metering_points(
-                metering_point_time_series=df,
-                grid_area=grid_area,
-                start_period=args.period_start,
-                end_period=args.period_end,
-                calculation_id=calculation_id,
-                resolution="PT1H",
-            )
-        )
-        quaterly_chunks.append(
-            _filter_metering_points(
-                metering_point_time_series=df,
-                grid_area=grid_area,
-                start_period=args.period_start,
-                end_period=args.period_end,
-                calculation_id=calculation_id,
-                resolution="PT15M",
-            )
-        )
-
-    hourly_data = rowbind_list_of_dataframes(hourly_chunks)
-    quarterly_data = rowbind_list_of_dataframes(quaterly_chunks)
+    df = _read_and_filter_from_view(
+        spark, args, get_metering_point_time_series_view_name()
+    )
+    hourly_data = df.filter(DataProductColumnNames.resolution == "PT1H")
+    quarterly_data = df.filter(DataProductColumnNames.resolution == "PT15M")
     log.info("Filtered data retrieved")
     return hourly_data, quarterly_data
 

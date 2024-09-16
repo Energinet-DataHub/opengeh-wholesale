@@ -1,22 +1,9 @@
-import functools
 import itertools
 import zipfile
 
 from typing import Any
-from pyspark.sql import DataFrame, Column, SparkSession
+from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
-
-
-def rowbind_list_of_dataframes(dfs: list[DataFrame]) -> DataFrame:
-    """Rowbinds a list of DataFrames using the unionByName method
-
-    Args:
-        dfs (list[DataFrame]): List of DataFrames to rowbind
-
-    Returns:
-        DataFrame: Rowbound DataFrame
-    """
-    return functools.reduce(DataFrame.unionByName, dfs)
 
 
 def map_from_dict(d: dict) -> Column:

@@ -6,24 +6,8 @@ from pyspark.sql import SparkSession, functions as F
 from settlement_report_job.utils import (
     create_zip_file,
     get_dbutils,
-    rowbind_list_of_dataframes,
     map_from_dict,
 )
-
-
-def test_rowbind_list_of_dataframes__when_given_list_of_dfs__returns_rowbound_df(
-    spark: SparkSession,
-):
-    # Arrange
-    df1 = spark.createDataFrame([("a", 1)], ["col1", "col2"])
-    df2 = spark.createDataFrame([("b", 2)], ["col1", "col2"])
-
-    # Act
-    actual = rowbind_list_of_dataframes([df1, df2])
-
-    # Assert
-    expected = spark.createDataFrame([("a", 1), ("b", 2)], ["col1", "col2"])
-    assert actual.collect() == expected.collect()
 
 
 def test_map_from_dict__when_applied_to_new_col__returns_df_with_new_col(
