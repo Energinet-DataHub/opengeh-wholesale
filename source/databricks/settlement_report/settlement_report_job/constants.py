@@ -26,5 +26,3 @@ METERING_POINT_TYPE_DICT = {
     "production": "E18",
     "exchange": "E20",
 }
-
-RESOLUTION_NAMES = {"PT1H": "TSSD60", "PT15M": "TSSD15"}

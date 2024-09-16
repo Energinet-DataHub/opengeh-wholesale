@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import itertools
 from pathlib import Path
 import re
@@ -10,6 +11,13 @@ from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+
+
+@dataclass
+class TmpFile:
+    src: Path
+    dst: Path
+    tmp_dst: Path
 
 
 def map_from_dict(d: dict) -> Column:
@@ -112,7 +120,7 @@ def write_files(
     return df.columns
 
 
-def get_new_files(result_path: str, file_name_template: str) -> list[dict[str, Path]]:
+def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
     Args:
@@ -136,13 +144,11 @@ def get_new_files(result_path: str, file_name_template: str) -> list[dict[str, P
         file_name = file_name_template.format(grid_area=grid_area, split=split)
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
-        new_files.append({"src": f, "dst": new_name, "tmp_dst": tmp_dst})
+        new_files.append(TmpFile(f, new_name, tmp_dst))
     return new_files
 
 
-def move_files(
-    dbutils: Any, new_files: list[dict[str, Path]], headers: list[str]
-) -> None:
+def move_files(dbutils: Any, new_files: list[TmpFile], headers: list[str]) -> list[str]:
     """Move the new files to the final location.
 
     Args:

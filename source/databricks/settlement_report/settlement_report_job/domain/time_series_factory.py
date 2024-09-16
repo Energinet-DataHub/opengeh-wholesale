@@ -50,18 +50,18 @@ def create_time_series(
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
     df = _get_filtered_data(spark, get_metering_point_time_series_view_name(), args)
-    if args.report_type == "hourly":
+    if args.task_type == "hourly":
         time_series_points = _generate_hourly_ts(
             df.filter(DataProductColumnNames.resolution == "PT1H"), args.time_zone
         )
-    elif args.report_type == "quarterly":
+    elif args.task_type == "quarterly":
         time_series_points = _generate_quarterly_ts(
             df.filter(DataProductColumnNames.resolution == "PT15M"), args.time_zone
         )
     else:
-        raise ValueError(f"Unknown time series type: {args.report_type}")
+        raise ValueError(f"Unknown time series type: {args.task_type}")
 
-    result_path = f"{query_directory}/{args.report_type}"
+    result_path = f"{query_directory}/{args.task_type}"
     headers = write_files(
         df=time_series_points,
         path=result_path,
@@ -74,11 +74,12 @@ def create_time_series(
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
     )
+    resolution_name = "TSSD60" if args.task_type == "hourly" else "TSSD15"
     new_files = get_new_files(
         result_path,
         file_name_template="_".join(
             [
-                RESOLUTION_NAMES.get("PT1H"),
+                resolution_name,
                 "{grid_area}",
                 args.period_start.strftime("%d-%m-%Y"),
                 args.period_end.strftime("%d-%m-%Y"),
