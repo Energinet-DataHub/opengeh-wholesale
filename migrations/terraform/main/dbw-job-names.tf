@@ -8,7 +8,7 @@ locals {
     "duplicates_in_metering_points_gold",
     "Gold_To_Eloverblik",
     "Gold_To_Wholesale",
-    "Landing_To_Gold",
+    "Bulk_Time_Series_to_Bronze",
     "optimize_bronze_time_series",
     "Reprocess_Metering_Points_Silver_Quarantine",
     "Reprocess_Time_Series_Silver_Quarantine",
