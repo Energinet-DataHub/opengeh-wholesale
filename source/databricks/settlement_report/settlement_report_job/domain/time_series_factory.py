@@ -172,8 +172,10 @@ def pad_array_col(
     return F.transform(
         sorted_pad,
         lambda x, i: F.struct(
-            F.concat(F.lit(prefix), i).alias(DataProductColumnNames.observation_time),
-            x.getField(DataProductColumnNames.quantity),
+            F.concat(F.lit(prefix), i).alias(EphemeralColumns.uid),
+            x.getField(DataProductColumnNames.quantity).alias(
+                DataProductColumnNames.quantity
+            ),
         ),
     )
 
@@ -238,12 +240,7 @@ def _generate_time_series(
         for i in range(desired_number_of_observations)
     ]
 
-    _non_null_columns = [
-        f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"
-        for i in range(actual_number_of_observations)
-    ]
-
-    result = (
+    df_with_array_column = (
         filtered_metering_points.withColumn(
             EphemeralColumns.start_of_day,
             F.date_trunc(
@@ -268,7 +265,10 @@ def _generate_time_series(
                 )
             ).alias(EphemeralColumns.quantities)
         )
-        .select(
+    )
+
+    padded_array_column = (
+        df_with_array_column.select(
             F.col(DataProductColumnNames.grid_area_code),
             F.col(DataProductColumnNames.calculation_id),
             F.col(DataProductColumnNames.metering_point_id),
@@ -293,17 +293,20 @@ def _generate_time_series(
         )
         .select("*", "exploded.*")
         .drop("exploded")
-        .groupBy(
+    )
+
+    result = (
+        padded_array_column.groupBy(
             F.col(DataProductColumnNames.grid_area_code),
             F.col(DataProductColumnNames.metering_point_id),
             F.col(DataProductColumnNames.metering_point_type),
             F.col(EphemeralColumns.start_of_day),
-        )
-        .pivot(EphemeralColumns.uid)
+        ).pivot(EphemeralColumns.uid)
+        # We can use whatever aggregation here as there is only one value per uid
         .sum(DataProductColumnNames.quantity)
     )
 
-    return result.fillna(0, subset=_non_null_columns).select(*_result_columns)
+    return result.select(*_result_columns)
 
 
 @logging_configuration.use_span(
