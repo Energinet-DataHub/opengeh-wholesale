@@ -87,6 +87,8 @@ module "pim_reader_security_group_permissions_audit" {
   resource_group_name = azurerm_resource_group.audit_logs.name
   security_group_name = var.pim_reader_group_name
   role_level          = "Reader"
+
+  depends_on = [azurerm_resource_group.audit_logs]
 }
 
 # Only applied to dev environments
@@ -98,6 +100,8 @@ module "developer_security_group_permissions_reader_audit" {
   resource_group_name = azurerm_resource_group.audit_logs.name
   security_group_name = var.developer_security_group_name
   role_level          = "Reader"
+
+  depends_on = [azurerm_resource_group.audit_logs]
 }
 
 module "platform_security_group_permissions_reader_audit" {
@@ -108,4 +112,6 @@ module "platform_security_group_permissions_reader_audit" {
   resource_group_name = azurerm_resource_group.audit_logs.name
   security_group_name = var.platform_security_group_name
   role_level          = "Reader"
+
+  depends_on = [azurerm_resource_group.audit_logs]
 }
