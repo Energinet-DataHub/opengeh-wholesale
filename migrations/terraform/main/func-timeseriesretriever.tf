@@ -31,7 +31,15 @@ module "func_timeseriesretriever" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
+      resource_id          = module.st_dh2dropzone_archive.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
       resource_id          = module.st_dh2timeseries_intermediary.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
+      resource_id          = module.st_dh2timeseries_audit.id
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
