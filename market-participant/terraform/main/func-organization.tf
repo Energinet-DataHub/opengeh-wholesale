@@ -33,6 +33,11 @@ module "func_organization" {
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      // ServiceBus Integration Events Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
 }
