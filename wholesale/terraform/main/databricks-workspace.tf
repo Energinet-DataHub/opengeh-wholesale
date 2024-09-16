@@ -1,5 +1,5 @@
 module "dbw" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=databricks-workspace_4.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=databricks-workspace_4.4.0"
   providers = { # The databricks module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -18,6 +18,7 @@ module "dbw" {
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
   private_endpoints_subnet_address_prefix  = var.databricks_private_endpoints_subnet_address_prefix
   catalog_name                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  enable_verbose_audit_logs                = var.databricks_enable_verbose_audit_logs
 
   scim_databrick_group_ids = [
     var.databricks_readers_group.id,
@@ -121,10 +122,10 @@ module "kvs_shared_databricks_dbw_workspace_token" {
 }
 
 
-resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
-  name                       = "dbw-diagnostic-settings"
-  target_resource_id         = module.dbw.id
-  log_analytics_workspace_id = data.azurerm_key_vault_secret.log_shared_id.value
+resource "azurerm_monitor_diagnostic_setting" "ds_dbw_audit" {
+  name               = "ds-dbw-audit"
+  target_resource_id = module.dbw.id
+  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
 
   enabled_log {
     category = "jobs"
@@ -140,9 +141,5 @@ resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
 
   enabled_log {
     category = "databrickssql"
-  }
-
-  enabled_log {
-    category = "dashboards"
   }
 }

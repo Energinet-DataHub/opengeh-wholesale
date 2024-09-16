@@ -113,3 +113,12 @@ data "azurerm_key_vault_secret" "sbq_edi_inbox_id" {
   name         = "sbq-edi-inbox-messagequeue-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+//
+// Storage
+//
+
+data "azurerm_key_vault_secret" "st_audit_shres_id" {
+  name         = "st-audit-shres-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
