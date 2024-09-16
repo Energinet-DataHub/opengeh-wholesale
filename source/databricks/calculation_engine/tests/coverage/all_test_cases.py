@@ -53,6 +53,13 @@ class Cases:
             Only_calculation_ids_in_internal_calculations_included: str
             Calculation_ids_without_calculation_succeeded_time_not_included: str
             Correct_mp_types_included_in_energy_v1_output: str
+
+        class SapResultsTests:
+            Calculation_history_splits_period_in_correct_amount_of_days: str
+            Calculation_history_sets_correct_latest_calculation_when_periods_overlap: str
+            Correct_calculation_ids_included_in_output: str
+            Only_calculation_ids_with_succeeded_time_included: str
+
         class SettlementReportsTests:
             Charge_link_period_between_MP_periods: str
             Charge_link_period_is_a_subset_of_the_MP_period: str
