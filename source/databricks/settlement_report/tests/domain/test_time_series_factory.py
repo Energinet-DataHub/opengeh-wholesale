@@ -1,18 +1,6 @@
-import pytest
 from datetime import datetime
 from pyspark.sql import functions as F, types as T
 from settlement_report_job.domain.time_series_factory import pad_array_col
-
-
-@pytest.fixture(scope="session")
-def metering_points_csv_path(settlement_report_path: str) -> str:
-    """
-    Returns the <settlement_report_path>/test_data/metering_points.csv
-    Please note that this only works if current folder haven't been changed prior using
-    `os.chdir()`. The correctness also relies on the prerequisite that this function is
-    actually located in a file located directly in the tests folder.
-    """
-    return f"{settlement_report_path}/test_data/metering_points.csv"
 
 
 def test_pad_array_col__returns_column_padded_with_null_observations(spark):
