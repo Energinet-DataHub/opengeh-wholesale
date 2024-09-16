@@ -17,11 +17,11 @@ from pyspark.sql.session import SparkSession
 import pyspark.sql.functions as F
 
 
-import settlement_report_job.market_naming_convention as market_naming
-from settlement_report_job.database_definitions import get_energy_view
+import settlement_report_job.domain.market_naming_convention as market_naming
+from settlement_report_job.infrastructure.database_definitions import get_energy_view
 from settlement_report_job.settlement_report_args import SettlementReportArgs
 
-from settlement_report_job.table_column_names import (
+from settlement_report_job.infrastructure.table_column_names import (
     EnergyResultsCsvColumnNames,
     DataProductColumnNames,
 )
