@@ -42,12 +42,14 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     elif args.task_type == TaskType.ZIP:
         files_to_zip = []
         files_to_zip.extend(
-            dbutils.jobs.taskValues.get(taskKey="tshourly", key="files")
+            dbutils.jobs.taskValues.get(taskKey=TaskType.HOURLY.value, key="files")
         )
         files_to_zip.extend(
-            dbutils.jobs.taskValues.get(taskKey="tsquarterly", key="files")
+            dbutils.jobs.taskValues.get(taskKey=TaskType.QUARTERLY.value, key="files")
         )
-        files_to_zip.extend(dbutils.jobs.taskValues.get(taskKey="rest", key="files"))
+        files_to_zip.extend(
+            dbutils.jobs.taskValues.get(taskKey=TaskType.REST.value, key="files")
+        )
         log.info(f"Creating zip file at '{report_directory}.zip'")
         create_zip_file(dbutils, args.report_id, zip_file_path, files_to_zip)
         log.info(f"Finished creating '{report_directory}/some-name.zip'")
