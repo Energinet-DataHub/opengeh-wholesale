@@ -162,13 +162,13 @@ def move_files(dbutils: Any, new_files: list[TmpFile], headers: list[str]) -> li
         with dst.open("w+") as f:
             f.write(",".join(headers) + "\n")
 
-    for f in new_files:
-        with f.src.open("r") as src:
-            with f.tmp_dst.open("a") as tmp_dst:
+    for _file in new_files:
+        with _file.src.open("r") as src:
+            with _file.tmp_dst.open("a") as tmp_dst:
                 tmp_dst.write(src.read())
 
-    for f in new_files:
-        print("Moving " + str(f.tmp_dst) + " to " + str(f.dst))
-        dbutils.fs.mv("file:" + str(f.tmp_dst), str(f.dst))
+    for _file in new_files:
+        print("Moving " + str(_file.tmp_dst) + " to " + str(_file.dst))
+        dbutils.fs.mv("file:" + str(_file.tmp_dst), str(_file.dst))
 
-    return [str(f.dst) for f in new_files]
+    return [str(_file.dst) for _file in new_files]

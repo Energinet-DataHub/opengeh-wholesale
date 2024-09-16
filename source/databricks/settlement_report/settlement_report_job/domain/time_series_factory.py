@@ -318,7 +318,7 @@ def _generate_quarterly_ts(
 )
 def _get_filtered_data(
     spark: SparkSession, df: DataFrame, args: SettlementReportArgs
-) -> tuple[DataFrame, DataFrame]:
+) -> DataFrame:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
         spark, args, get_metering_point_time_series_view_name()
