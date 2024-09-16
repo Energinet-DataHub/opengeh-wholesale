@@ -1,16 +1,12 @@
 from settlement_report_job.infrastructure.environment_variables import get_catalog_name
 
 
-def get_metering_point_time_series_view() -> str:
-    CATALOG_NAME = get_catalog_name()
-    return f"{CATALOG_NAME}.wholesale_settlement_reports.metering_point_time_series_v1"
+def get_metering_point_time_series_view_name() -> str:
+    return f"{get_catalog_name()}.wholesale_settlement_reports.metering_point_time_series_v1"  # noqa: E501
 
 
-def get_output_volume() -> str:
-    CATALOG_NAME = get_catalog_name()
-    return (
-        f"/Volumes/{CATALOG_NAME}/wholesale_settlement_report_output/settlement_reports"
-    )
+def get_output_volume_name() -> str:
+    return f"/Volumes/{get_catalog_name()}/wholesale_settlement_report_output/settlement_reports"  # noqa: E501
 
 
 METERING_POINT_TYPE_DICT = {
