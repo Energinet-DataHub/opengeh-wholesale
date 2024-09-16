@@ -59,6 +59,16 @@ module "dbw" {
       dns_zone      = "privatelink.dfs.core.windows.net"
       ip_record     = data.azurerm_key_vault_secret.st_settlement_report_dfs_private_ip_address.value
     },
+    {
+      resource_name = module.st_dbw_backup.name
+      dns_zone      = "privatelink.blob.core.windows.net"
+      ip_record     = module.st_dbw_backup.blob_private_ip_address
+    },
+    {
+      resource_name = module.st_dbw_backup.name
+      dns_zone      = "privatelink.dfs.core.windows.net"
+      ip_record     = module.st_dbw_backup.dfs_private_ip_address
+    },
   ]
 }
 
@@ -131,7 +141,7 @@ resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
   enabled_log {
     category = "databrickssql"
   }
-  
+
   enabled_log {
     category = "dashboards"
   }
