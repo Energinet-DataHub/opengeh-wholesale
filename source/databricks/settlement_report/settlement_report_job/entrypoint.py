@@ -63,13 +63,15 @@ def start_with_deps(
         # Try/except added to enable adding custom fields to the exception as
         # the span attributes do not appear to be included in the exception.
         try:
-            # The command line arguments are parsed to have necessary information for coming log messages
+
+            # The command line arguments are parsed to have necessary information for
+            # coming log messages
             command_line_args = parse_command_line_args()
 
-            # Add settlement_report_id to structured logging data to be included in every log message.
+            # Add settlement_report_id to structured logging data to be included in
+            # every log message.
             config.add_extras({"settlement_report_id": command_line_args.report_id})
             span.set_attributes(config.get_extras())
-
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
             report_generator.execute(spark, args)

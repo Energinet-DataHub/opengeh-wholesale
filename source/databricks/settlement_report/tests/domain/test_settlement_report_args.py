@@ -33,7 +33,7 @@ DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
 
 def _get_contract_parameters(filename: str) -> list[str]:
-    """Get the parameters as they are expected to be received from the settlement report invoker."""
+    """Get the parameters as they are expected to be received from the settlement report invoker."""  # noqa
     with open(filename) as file:
         text = file.read()
         text = text.replace("{report-id}", DEFAULT_REPORT_ID)
@@ -150,7 +150,7 @@ class TestWhenNoValidCalculationIdForGridArea:
             if re.search(pattern, item):
                 test_sys_args[i] = re.sub(
                     pattern,
-                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',
+                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',  # noqa
                     item,
                 )
                 break

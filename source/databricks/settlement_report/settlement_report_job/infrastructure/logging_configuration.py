@@ -20,6 +20,7 @@ from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry import trace
 from opentelemetry.trace import Span, Tracer
 
+DEFAULT_LOG_FORMAT: str = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
 _IS_INSTRUMENTED: bool = False
@@ -78,7 +79,7 @@ def add_extras(extras: dict[str, Any]) -> None:
 def get_tracer() -> Tracer:
     global _TRACER
     if _TRACER is None:
-        _TRACER = trace.get_tracer("calculation-engine")
+        _TRACER = trace.get_tracer("settlement-report-job")
     return _TRACER
 
 
