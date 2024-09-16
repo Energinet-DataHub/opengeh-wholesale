@@ -25,7 +25,7 @@ from settlement_report_job.utils import (
 )
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
-    get_metering_point_time_series_view,
+    get_metering_point_time_series_view_name,
     RESOLUTION_NAMES,
 )
 from settlement_report_job.table_column_names import (
@@ -47,7 +47,9 @@ def create_time_series(
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    metering_point_time_series = spark.read.table(get_metering_point_time_series_view())
+    metering_point_time_series = spark.read.table(
+        get_metering_point_time_series_view_name()
+    )
     hourly_data, quarterly_data = _get_filtered_data(args, metering_point_time_series)
     hourly_time_points = _generate_hourly_ts(hourly_data, args.time_zone)
     quarterly_time_points = _generate_quarterly_ts(quarterly_data, args.time_zone)
