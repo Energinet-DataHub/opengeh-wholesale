@@ -20,6 +20,7 @@ locals {
     "monitor_wholesale_metering_points",
     "monitor_wholesale_time_series",
     "Reprocess_Metering_Points_Bronze_Quarantine",
+    "alert_bronze_vs_audit_differences",
     "alert_bronze_quarantined_ch_increased",
     "alert_bronze_quarantined_mp_increased",
     "alert_bronze_quarantined_ts_increased",
