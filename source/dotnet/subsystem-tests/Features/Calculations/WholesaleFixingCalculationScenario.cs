@@ -40,7 +40,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
 
     [ScenarioStep(-1)]
     [SubsystemFact]
-    public async Task GetTheNewestCalculationVerionBeforeANewCalculationIsStarted()
+    public async Task GetTheNewestCalculationVersionBeforeANewCalculationIsStarted()
     {
         // Arrange
 
