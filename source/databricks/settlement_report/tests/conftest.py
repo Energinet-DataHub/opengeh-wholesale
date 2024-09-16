@@ -20,8 +20,8 @@ from typing import Callable, Generator
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
-from settlement_report_job.calculation_type import CalculationType
-from settlement_report_job.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
 
 @pytest.fixture(scope="session")
@@ -106,6 +106,17 @@ def tests_path(settlement_report_path: str) -> str:
     actually located in a file located directly in the tests folder.
     """
     return f"{settlement_report_path}/tests"
+
+
+@pytest.fixture(scope="session")
+def settlement_report_job_container_path(databricks_path: str) -> str:
+    """
+    Returns the <repo-root>/source folder path.
+    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
+    The correctness also relies on the prerequisite that this function is actually located in a
+    file located directly in the tests folder.
+    """
+    return f"{databricks_path}/settlement_report"
 
 
 @pytest.fixture(scope="session")
