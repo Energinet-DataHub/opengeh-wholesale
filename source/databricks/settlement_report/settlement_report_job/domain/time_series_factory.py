@@ -26,7 +26,6 @@ from settlement_report_job.utils import (
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
     get_metering_point_time_series_view_name,
-    RESOLUTION_NAMES,
 )
 from settlement_report_job.table_column_names import (
     DataProductColumnNames,
