@@ -16,6 +16,7 @@ def metering_points_csv_path(settlement_report_path: str) -> str:
 
 
 def test_pad_array_col__returns_column_padded_with_null_observations(spark):
+    # Arrange
     data = [
         (
             1,
@@ -55,6 +56,7 @@ def test_pad_array_col__returns_column_padded_with_null_observations(spark):
 
     df = spark.createDataFrame(data, df_schema)
 
+    # Act
     padded = (
         df.select(
             "id",
@@ -65,6 +67,7 @@ def test_pad_array_col__returns_column_padded_with_null_observations(spark):
         .collect()
     )
 
+    # Assert
     sizes = [r.size for r in padded]
     non_null = [
         sum([1 for x in r.padded_value if x["quantity"] is not None]) for r in padded
@@ -73,7 +76,6 @@ def test_pad_array_col__returns_column_padded_with_null_observations(spark):
         sum([1 for x in r.padded_value if x["observation_time"].startswith("QUANTITY")])
         for r in padded
     ]
-
     assert sizes == [5, 5, 5]
     assert non_null == [3, 2, 1]
     assert starts_with_quantity == [5, 5, 5]
