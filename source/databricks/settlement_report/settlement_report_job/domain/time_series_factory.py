@@ -204,15 +204,11 @@ def _filter_metering_points(
     )
     df = metering_point_time_series.filter(
         (F.col(DataProductColumnNames.grid_area_code) == grid_area)
+        & (F.col(DataProductColumnNames.calculation_id) == calculation_id)
         & (F.col(DataProductColumnNames.resolution) == resolution)
         & (F.col(DataProductColumnNames.observation_time) >= start_period)
         & (F.col(DataProductColumnNames.observation_time) < end_period)
     )
-
-    if calculation_id is not None:
-        df = df.filter(F.col(DataProductColumnNames.calculation_id) == calculation_id)
-    else:
-        df = df.filter(F.col(DataProductColumnNames.calculation_id).isNull())
 
     return df
 
