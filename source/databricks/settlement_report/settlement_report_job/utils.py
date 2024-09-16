@@ -1,9 +1,15 @@
 import itertools
+from pathlib import Path
+import re
 import zipfile
 
+from settlement_report_job.table_column_names import DataProductColumnNames
+
 from typing import Any
+from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
+from pyspark.sql.window import Window
 
 
 def map_from_dict(d: dict) -> Column:
@@ -68,3 +74,97 @@ def get_dbutils(spark: SparkSession) -> Any:
             "DBUtils is not available in local mode. This is expected when running tests."  # noqa
         )
     return dbutils
+
+
+def write_files(
+    df: DataFrame,
+    path: str,
+    split_large_files: bool = False,
+    split_by_grid_area: bool = True,
+    rows_per_file: int = 1_000_000,
+    order_by: list[str] = [],
+) -> list[str]:
+    """Write a DataFrame to multiple files.
+
+    Args:
+        df (DataFrame): DataFrame to write.
+        path (str): Path to write the files.
+        rows_per_file (int): Number of rows per file.
+
+    Returns:
+        list[str]: Headers for the csv file.
+    """
+    grid_col = F.col(DataProductColumnNames.grid_area_code)
+    split_col = F.lit(0)
+
+    if split_large_files is True:
+        w = Window().orderBy(*order_by)
+        split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
+    if split_by_grid_area is False:
+        grid_col = F.lit("ALL")
+
+    df = df.withColumn(DataProductColumnNames.grid_area_code, grid_col)
+    df = df.withColumn("split", split_col)
+
+    df.write.mode("overwrite").partitionBy(
+        DataProductColumnNames.grid_area_code, "split"
+    ).csv(path)
+    return df.columns
+
+
+def get_new_files(result_path: str, file_name_template: str) -> list[dict[str, Path]]:
+    """Get the new files to move to the final location.
+
+    Args:
+        result_path (str): The path where the files are written.
+        file_name_template (str): The template for the new file names. The template
+            should contain two placeholders for the {grid_area} and {split}.
+            For example: "TSSD1H-{grid_area}-{split}.csv"
+
+    Returns:
+        list[dict[str, Path]]: List of dictionaries with the source and destination
+            paths for the new files.
+    """
+    files = [f for f in Path(result_path).rglob("*.csv")]
+    new_files: list[dict[str, Path]] = []
+    regex = f"{result_path}/{DataProductColumnNames.grid_area_code}=(\\d+)/split=(\\d+)"
+    for f in files:
+        partition_match = re.match(regex, str(f))
+        if partition_match is None:
+            raise ValueError(f"File {f} does not match the expected pattern")
+        grid_area, split = partition_match.groups()
+        file_name = file_name_template.format(grid_area=grid_area, split=split)
+        new_name = Path(result_path) / file_name
+        tmp_dst = Path("/tmp") / file_name
+        new_files.append({"src": f, "dst": new_name, "tmp_dst": tmp_dst})
+    return new_files
+
+
+def move_files(
+    dbutils: Any, new_files: list[dict[str, Path]], headers: list[str]
+) -> None:
+    """Move the new files to the final location.
+
+    Args:
+        dbutils (Any): The DBUtils object.
+        new_files (list[dict[str, Path]]): List of dictionaries with the source and
+            destination paths for the new files.
+        headers (list[str]): Headers for the csv file.
+    """
+    dsts = set([(f["dst"], f["tmp_dst"]) for f in new_files])
+
+    for dst in dsts:
+        dst[1].parent.mkdir(parents=True, exist_ok=True)
+        with dst[1].open("w+") as f:
+            f.write(",".join(headers) + "\n")
+
+    for f in new_files:
+        with f["src"].open("r") as src:
+            with f["tmp_dst"].open("a") as dst:
+                dst.write(src.read())
+
+    for dst in dsts:
+        print("Moving " + str(dst[1]) + " to " + str(dst[0]))
+        dbutils.fs.mv("file:" + str(dst[1]), str(dst[0]))
+
+    return [str(f["dst"]) for f in new_files]

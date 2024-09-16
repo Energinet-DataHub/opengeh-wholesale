@@ -54,6 +54,7 @@ def parse_job_arguments(
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
+            task_type=env_vars.get_task_type(),
         )
 
         return settlement_report_args
