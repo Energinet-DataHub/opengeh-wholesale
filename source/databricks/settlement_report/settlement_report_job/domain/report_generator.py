@@ -17,12 +17,12 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     create_time_series(spark, args)
     dbutils = get_dbutils(spark)
     query_directory = f"{get_output_volume_name()}/{args.report_id}"
+    zip_file_path = f"{query_directory}/final_report.zip"
+
     files_to_zip = []
     time_series_files = create_time_series(spark, args, query_directory)
-
     files_to_zip.extend(time_series_files)
 
     log.info(f"Creating zip file at '{query_directory}.zip'")
-    create_zip_file(dbutils, args.report_id, f"{query_directory}.zip", files_to_zip)
-    log.info(f"Finished creating '{query_directory}.zip'")
-    dbutils.fs.rm(query_directory, recurse=True)
+    create_zip_file(dbutils, args.report_id, zip_file_path, files_to_zip)
+    log.info(f"Finished creating '{query_directory}/some-name.zip'")
