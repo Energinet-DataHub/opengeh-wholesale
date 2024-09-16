@@ -19,15 +19,14 @@ from typing import Callable
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
-import settlement_report_job.logging_configuration as config
-from settlement_report_job.energy_results_factory import create_energy_results
-from settlement_report_job.settlement_report_args import SettlementReportArgs
-from settlement_report_job.settlement_report_job_args import (
+import settlement_report_job.infrastructure.logging_configuration as config
+from settlement_report_job.domain import report_generator
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
-from settlement_report_job.spark_initializor import initialize_spark
-from settlement_report_job.time_series_factory import create_time_series
+from settlement_report_job.infrastructure.spark_initializor import initialize_spark
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -73,8 +72,7 @@ def start_with_deps(
 
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            create_time_series(spark, args)
-            create_energy_results(spark, args)
+            report_generator.execute(spark, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:

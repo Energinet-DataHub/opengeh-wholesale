@@ -19,7 +19,6 @@ from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveBasisDataDatabase,
     WholesaleBasisDataInternalDatabase,
 )
 
@@ -58,25 +57,11 @@ def _write_basis_data(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 
-        # ToDo JMG: Remove when we are on Unity Catalog
-        basis_data_output.time_series_points.write.format("delta").mode(
-            "append"
-        ).option("mergeSchema", "false").insertInto(
-            f"{HiveBasisDataDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
-        )
-
     with logging_configuration.start_span("grid_loss_metering_points"):
         basis_data_output.grid_loss_metering_points.write.format("delta").mode(
             "append"
         ).option("mergeSchema", "false").insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
-        )
-
-        # TODO JVM: Remove when we are on Unity Catalog
-        basis_data_output.grid_loss_metering_points.write.format("delta").mode(
-            "append"
-        ).option("mergeSchema", "false").insertInto(
-            f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
         )
 
     if basis_data_output.charge_price_information_periods:
@@ -87,13 +72,6 @@ def _write_basis_data(
                 f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
             )
 
-            # ToDo JMG: Remove when we are on Unity Catalog
-            basis_data_output.charge_price_information_periods.write.format(
-                "delta"
-            ).mode("append").option("mergeSchema", "false").insertInto(
-                f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
-            )
-
     if basis_data_output.charge_price_points:
         with logging_configuration.start_span("charge_price_points"):
             basis_data_output.charge_price_points.write.format("delta").mode(
@@ -102,24 +80,10 @@ def _write_basis_data(
                 f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
             )
 
-            # ToDo JMG: Remove when we are on Unity Catalog
-            basis_data_output.charge_price_points.write.format("delta").mode(
-                "append"
-            ).option("mergeSchema", "false").insertInto(
-                f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
-            )
-
     if basis_data_output.charge_link_periods:
         with logging_configuration.start_span("charge_link_periods"):
             basis_data_output.charge_link_periods.write.format("delta").mode(
                 "append"
             ).option("mergeSchema", "false").insertInto(
                 f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
-            )
-
-            # ToDo JMG: Remove when we are on Unity Catalog
-            basis_data_output.charge_link_periods.write.format("delta").mode(
-                "append"
-            ).option("mergeSchema", "false").insertInto(
-                f"{HiveBasisDataDatabase.DATABASE_NAME}.{HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
             )

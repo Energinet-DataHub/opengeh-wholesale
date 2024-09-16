@@ -14,9 +14,9 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
-using Energinet.DataHub.Wholesale.Events.Application.Communication.Messaging;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
