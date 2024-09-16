@@ -79,13 +79,7 @@ public static class EdiExtensions
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
                 _ => defaultAzureCredential,
-                name: "EdiInboxQueue")
-            .AddServiceBusQueueDeadLetter(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
-                sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
-                _ => defaultAzureCredential,
-                "Dead-letter(edi inbox)",
-                [HealthChecksConstants.StatusHealthCheckTag]);
+                name: "EdiInboxQueue");
 
         // Validation helpers
         services.AddTransient<PeriodValidationHelper>();
