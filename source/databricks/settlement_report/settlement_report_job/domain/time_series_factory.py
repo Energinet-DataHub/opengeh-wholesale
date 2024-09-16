@@ -220,7 +220,6 @@ def _filter_metering_points(
 )
 def _generate_time_series(
     filtered_metering_points: DataFrame,
-    actual_number_of_observations: int,
     desired_number_of_observations: int,
     time_zone: str,
 ) -> DataFrame:
@@ -316,7 +315,6 @@ def _generate_hourly_ts(df: DataFrame, time_zone: str) -> DataFrame:
     log.info("Generating hourly time series")
     ts = _generate_time_series(
         df,
-        actual_number_of_observations=24,
         desired_number_of_observations=25,
         time_zone=time_zone,
     )
@@ -333,7 +331,6 @@ def _generate_quarterly_ts(
     log.info("Generating quarterly time series")
     ts = _generate_time_series(
         filtered_metering_points,
-        actual_number_of_observations=24 * 4,
         desired_number_of_observations=25 * 4,
         time_zone=time_zone,
     )
