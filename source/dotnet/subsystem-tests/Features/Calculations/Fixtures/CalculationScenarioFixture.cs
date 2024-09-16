@@ -329,15 +329,15 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return results.ToList();
     }
 
-    public async Task<(string CalculationVersion, string Message)> GetCalculationVersionOfCalculationIdFromCalculationsAsync(
-        string calculationId)
+    public async Task<(dynamic CalculationVersion, string Message)> GetCalculationVersionOfCalculationIdFromCalculationsAsync(
+        Guid calculationId)
     {
         try
         {
             var statement = DatabricksStatement.FromRawSql(
                 $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations WHERE calculation_id = '{calculationId}'");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-            var calculationVersion = (await queryResult.FirstAsync()).ToString();
+            var calculationVersion = await queryResult.FirstAsync();
 
             if (calculationVersion != string.Empty)
             {
@@ -352,14 +352,14 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         }
     }
 
-    public async Task<(string CalculationVersion, string Message)> GetLatestCalculationVersionFromCalculationsAsync()
+    public async Task<(dynamic CalculationVersion, string Message)> GetLatestCalculationVersionFromCalculationsAsync()
     {
         try
         {
             var statement = DatabricksStatement.FromRawSql(
                 $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations ORDER BY calculation_version DESC LIMIT 1");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-            var calculationVersion = (await queryResult.FirstAsync()).ToString();
+            var calculationVersion = await queryResult.FirstAsync();
 
             if (calculationVersion != string.Empty)
             {
