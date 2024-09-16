@@ -2,7 +2,7 @@ from coverage.all_test_cases import Cases
 
 """
 ## Purpose
-The purpose is checking views related to amount per charge view.
+The purpose is checking views related to monthly amount per charge view.
 
 ## CASES TESTED
 """

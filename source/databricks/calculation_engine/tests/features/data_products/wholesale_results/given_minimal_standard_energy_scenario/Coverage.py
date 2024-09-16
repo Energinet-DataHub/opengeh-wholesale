@@ -10,6 +10,6 @@ The purpose is checking views related to energy results.
 
 ## CASES TESTED
 """
-Cases.DataProductTests.WholesaleResultsTests.Internal_calculation_ids_not_included
+Cases.DataProductTests.WholesaleResultsTests.Only_calculation_ids_in_internal_calculations_included
 Cases.DataProductTests.WholesaleResultsTests.Calculation_ids_without_calculation_succeeded_time_not_included
 Cases.DataProductTests.WholesaleResultsTests.Correct_mp_types_included_in_energy_v1_output
