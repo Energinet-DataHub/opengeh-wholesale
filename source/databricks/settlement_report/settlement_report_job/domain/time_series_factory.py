@@ -110,7 +110,9 @@ def _write_time_series(
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.pad_array_col"
 )
-def pad_array_col(value_col, size, prefix: str = "QUANTITY") -> Column:
+def pad_array_col(
+    value_col: Union[str, Column], size: Union[int, Column], prefix: str = "QUANTITY"
+) -> Column:
     if isinstance(size, int):
         size = F.lit(size) - F.size(value_col)
     elif isinstance(size, Column):
