@@ -98,7 +98,7 @@ public static class EventsExtensions
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
                 _ => defaultAzureCredential,
-                $"Dead-letter({HealthCheckNames.IntegrationEventsTopicSubscription})",
+                "Dead-letter(integration events)",
                 [HealthChecksConstants.StatusHealthCheckTag]);
 
         return services;
