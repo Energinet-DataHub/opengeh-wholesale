@@ -11,33 +11,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
-from package.calculation.calculation_output import CalculationOutput
+from package.calculation.calculation_output import (
+    CalculationOutput,
+)
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.wholesale.handlers.calculation_step import BaseCalculationStep
 from package.codelists import TimeSeriesType, AggregationLevel
 
-from package.calculation.energy.aggregators.grid_loss_aggregators import as grid_loss_aggr
 
-class CalculateTotalEnergyConsumptionStep(BaseCalculationStep):
+class CalculateNonProfiledConsumptionPerGridAreaStep(BaseCalculationStep):
 
     def __init__(
         self,
-        calculator_args: CalculatorArgs,
+        args: CalculatorArgs,
+        non_profiled_consumption_per_es: EnergyResults,
     ):
         super().__init__()
-        if calculator_args is None:
-            raise ValueError("calculator_args cannot be None")
-
-        self.calculator_args = calculator_args
+        self.args = args
+        self.non_profiled_consumption_per_es = non_profiled_consumption_per_es
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
-        total_consumption = factory.create(
-            self.calculator_args,
-            grid_loss_aggr.calculate_total_consumption(production, exchange),
-            TimeSeriesType.TOTAL_CONSUMPTION,
+
+        output.energy_results_output.non_profiled_consumption = factory.create(
+            self.args,
+            grouping_aggr.aggregate(self.non_profiled_consumption_per_es),
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
             AggregationLevel.GRID_AREA,
         )
 
-        output.energy_results_output.total_consumption = total_consumption
         return super().execute(output)

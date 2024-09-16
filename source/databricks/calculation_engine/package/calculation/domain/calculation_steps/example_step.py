@@ -11,33 +11,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
+from typing import Any
+
 from package.calculation.calculation_output import CalculationOutput
-from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.handlers.calculation_step import BaseCalculationStep
-from package.codelists import TimeSeriesType, AggregationLevel
 
-from package.calculation.energy.aggregators.grid_loss_aggregators import as grid_loss_aggr
 
-class CalculateTotalEnergyConsumptionStep(BaseCalculationStep):
+class ExampleStep(BaseCalculationStep):
 
     def __init__(
         self,
-        calculator_args: CalculatorArgs,
+        # Injections like configurations, repositories, services, etc.
+        injections: Any,
     ):
         super().__init__()
-        if calculator_args is None:
-            raise ValueError("calculator_args cannot be None")
 
-        self.calculator_args = calculator_args
+        # Guard clauses
+        if injections is None:
+            raise ValueError("injections cannot be None")
+
+        # Does input conform to business rules?
+        if injections is None:
+            raise ValueError("injections are invalid")
+
+        # Assignments
+        self.injections = injections
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
-        total_consumption = factory.create(
-            self.calculator_args,
-            grid_loss_aggr.calculate_total_consumption(production, exchange),
-            TimeSeriesType.TOTAL_CONSUMPTION,
-            AggregationLevel.GRID_AREA,
-        )
 
-        output.energy_results_output.total_consumption = total_consumption
+        # Business Logic
+        output.x = ""
+
+        # Pass calculation output to the next step for execution
         return super().execute(output)

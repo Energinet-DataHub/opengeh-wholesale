@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import (
     CalculationOutput,
@@ -22,7 +23,7 @@ from package.calculation.wholesale.handlers.calculation_step import BaseCalculat
 from package.codelists import TimeSeriesType, AggregationLevel, CalculationType
 
 
-class CalculateNonProfiledConsumptionStep(BaseCalculationStep):
+class CalculateNonProfiledConsumptionPerBrpStep(BaseCalculationStep):
 
     def __init__(
         self,
@@ -33,36 +34,17 @@ class CalculateNonProfiledConsumptionStep(BaseCalculationStep):
         self.args = args
         self.non_profiled_consumption_per_es = non_profiled_consumption_per_es
 
-    def handle(self, output: CalculationOutput) -> CalculationOutput:
-
-        # Non-profiled consumption per energy supplier
-        output.non_profiled_consumption_per_es = factory.create(
-            self.args,
-            self.non_profiled_consumption_per_es,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.ENERGY_SUPPLIER,
-        )
+    def execute(self, output: CalculationOutput) -> CalculationOutput:
 
         if _is_aggregation_or_balance_fixing(self.args.calculation_type):
-            # Non-profiled consumption per balance responsible
-            energy_results_output.non_profiled_consumption_per_brp = factory.create(
+            output.non_profiled_consumption_per_brp = factory.create(
                 self.args,
-                self.grouping_aggr.aggregate_per_brp(
-                    self.non_profiled_consumption_per_es
-                ),
+                grouping_aggr.aggregate_per_brp(self.non_profiled_consumption_per_es),
                 TimeSeriesType.NON_PROFILED_CONSUMPTION,
                 AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
             )
 
-        # Non-profiled consumption per grid area
-        output.energy_results_output.non_profiled_consumption = factory.create(
-            self.args,
-            self.grouping_aggr.aggregate(self.non_profiled_consumption_per_es),
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.GRID_AREA,
-        )
-
-        return super().handle(output)
+        return super().execute(output)
 
 
 def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
