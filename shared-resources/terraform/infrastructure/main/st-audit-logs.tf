@@ -63,7 +63,7 @@ resource "azurerm_storage_management_policy" "retention_audit" {
     name    = "retention"
     enabled = true
     filters {
-      blob_types = ["blockBlob"]
+      blob_types = ["blockBlob", "appendBlob"]
     }
     actions {
       base_blob {
