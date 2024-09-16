@@ -134,7 +134,7 @@ def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
             paths for the new files.
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
-    new_files: list[dict[str, Path]] = []
+    new_files = []
     regex = f"{result_path}/{DataProductColumnNames.grid_area_code}=(\\d+)/split=(\\d+)"
     for f in files:
         partition_match = re.match(regex, str(f))
@@ -157,20 +157,18 @@ def move_files(dbutils: Any, new_files: list[TmpFile], headers: list[str]) -> li
             destination paths for the new files.
         headers (list[str]): Headers for the csv file.
     """
-    dsts = set([(f["dst"], f["tmp_dst"]) for f in new_files])
-
-    for dst in dsts:
+    for dst in [f.tmp_dst for f in new_files]:
         dst[1].parent.mkdir(parents=True, exist_ok=True)
         with dst[1].open("w+") as f:
             f.write(",".join(headers) + "\n")
 
     for f in new_files:
-        with f["src"].open("r") as src:
-            with f["tmp_dst"].open("a") as dst:
+        with f.src.open("r") as src:
+            with f.tmp_dst.open("a") as dst:
                 dst.write(src.read())
 
-    for dst in dsts:
-        print("Moving " + str(dst[1]) + " to " + str(dst[0]))
-        dbutils.fs.mv("file:" + str(dst[1]), str(dst[0]))
+    for f in new_files:
+        print("Moving " + str(f.tmp_dst) + " to " + str(f.dst))
+        dbutils.fs.mv("file:" + str(f.tmp_dst), str(f.dst))
 
     return [str(f["dst"]) for f in new_files]
