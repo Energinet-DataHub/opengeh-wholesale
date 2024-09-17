@@ -5,7 +5,7 @@ from coverage.all_test_cases import Cases
 The purpose is checking views related to energy results.
 
 ## DESIGN CONSIDERATIONS
-- wholesale_internal.calculations table has three calculation_id's, only one of which is valid. 
+- wholesale_internal.calculations table has three calculation_id's, only one of which is valid.
 - The two others are either internal or doesn't have an end date.
 
 ## CASES TESTED
