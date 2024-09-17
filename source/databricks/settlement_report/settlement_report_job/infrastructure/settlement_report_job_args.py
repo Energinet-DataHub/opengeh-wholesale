@@ -55,7 +55,10 @@ def parse_job_arguments(
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
             task_type=env_vars.get_task_type(),
+            task_key=job_args.task_key,
         )
+
+        print("task_key:", job_args.task_key)
 
         return settlement_report_args
 
@@ -81,6 +84,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
+    p.add("--task-key", type=str, required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
