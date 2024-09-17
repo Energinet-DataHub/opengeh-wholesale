@@ -148,14 +148,19 @@ def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
     return new_files
 
 
-def move_files(dbutils: Any, new_files: list[TmpFile], headers: list[str]) -> list[str]:
-    """Move the new files to the final location.
+def merge_files(
+    dbutils: Any, new_files: list[TmpFile], headers: list[str]
+) -> list[str]:
+    """Merges the new files and moves them to the final location.
 
     Args:
         dbutils (Any): The DBUtils object.
         new_files (list[dict[str, Path]]): List of dictionaries with the source and
             destination paths for the new files.
         headers (list[str]): Headers for the csv file.
+
+    Returns:
+        list[str]: List of the final file paths.
     """
     for dst in [f.tmp_dst for f in new_files]:
         dst.parent.mkdir(parents=True, exist_ok=True)

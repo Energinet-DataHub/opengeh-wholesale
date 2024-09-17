@@ -21,7 +21,7 @@ from settlement_report_job.utils import (
     get_dbutils,
     write_files,
     get_new_files,
-    move_files,
+    merge_files,
 )
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
@@ -86,7 +86,7 @@ def create_time_series(
             ]
         ),
     )
-    files = move_files(
+    files = merge_files(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
