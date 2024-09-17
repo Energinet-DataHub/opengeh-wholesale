@@ -18,10 +18,10 @@ import pyspark.sql.functions as F
 
 
 import settlement_report_job.domain.market_naming_convention as market_naming
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.database_definitions import (
     get_energy_view_name,
 )
-from settlement_report_job.settlement_report_args import SettlementReportArgs
 
 from settlement_report_job.infrastructure.table_column_names import (
     EnergyResultsCsvColumnNames,
@@ -64,13 +64,17 @@ def create_energy_results(
 def _read_and_filter_from_view(
     spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
-    df = spark.read.table(view_name).where(
-        F.col(DataProductColumnNames.time) >= args.period_start
-    ) & (F.col(DataProductColumnNames.time) < args.period_end)
+    df = spark.read.table(view_name)
+    df.show()
+
+    df = df.where(
+        (F.col(DataProductColumnNames.time) >= args.period_start)
+        & (F.col(DataProductColumnNames.time) < args.period_end)
+    )
 
     calculation_id_by_grid_area_structs = [
-        F.struct(F.lit(grid_area_code), F.lit(calculation_id))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area
+        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
+        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
     ]
 
     df_filtered = df.where(

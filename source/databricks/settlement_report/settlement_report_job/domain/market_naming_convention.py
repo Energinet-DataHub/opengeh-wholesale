@@ -33,7 +33,6 @@ METERING_POINT_TYPE_DICT = {
 SETTLEMENT_METHOD_DICT = {
     "non_profiled": "E02",
     "flex": "D01",
-    None: None,
 }
 
 CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS = {

@@ -21,7 +21,18 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.environment_variables import (
+    EnvironmentVariable,
+)
+
+
+@pytest.fixture(scope="session")
+def job_environment_variables() -> dict:
+    return {
+        EnvironmentVariable.CATALOG_NAME.name: "spark_catalog",
+    }
 
 
 @pytest.fixture(scope="session")
@@ -35,6 +46,12 @@ def any_settlement_report_args() -> SettlementReportArgs:
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
+        market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        calculation_id_by_grid_area={
+            "804": uuid.UUID("aa3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b"),
+            "805": uuid.UUID("bb3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b"),
+        },
+        energy_supplier_id="energy_supplier_id",
     )
 
 
