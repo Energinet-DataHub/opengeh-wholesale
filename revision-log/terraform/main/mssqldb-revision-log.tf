@@ -18,6 +18,21 @@ module "mssqldb_revision_log" {
     id                  = module.monitor_action_group[0].id
     resource_group_name = azurerm_resource_group.this.name
   }
+
+  # All backup and retention policies are set explicitly for revision log.
+  prevent_deletion = true
+
+  short_term_retention_policy = {
+    retention_days = 22
+    backup_interval_in_hours = 12
+  }
+
+  long_term_retention_policy = {
+    weekly_retention = "P22D"
+    monthly_retention = "PT0S"
+    yearly_retention = "PT0S"
+    week_of_year = 1
+  }
 }
 
 module "kvs_sql_ms_revision_log_database_name" {
