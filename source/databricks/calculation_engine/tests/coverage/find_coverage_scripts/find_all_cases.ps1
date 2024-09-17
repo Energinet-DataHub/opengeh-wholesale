@@ -1,112 +1,66 @@
-# Get the absolute path of the currently running script
-$scriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+# Define the path to the Python file relative to the script
+$scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
+$parentDirectory = Split-Path -Parent $scriptDirectory
+$pythonFilePath = Join-Path $parentDirectory "all_test_cases.py"
 
-# Define the input Python file path relative to the script location
-$pythonFilePath = Join-Path -Path $scriptPath -ChildPath "..\all_test_cases.py"
+# Define the output directory and ensure it exists
+$outputDirectory = Join-Path $parentDirectory "find_coverage_script_output"
+if (-Not (Test-Path $outputDirectory)) {
+    New-Item -ItemType Directory -Path $outputDirectory | Out-Null
+}
 
-# Define the output CSV file path relative to the script location
-$outputCsv = Join-Path -Path $scriptPath -ChildPath "..\find_coverage_script_output\all_cases.csv"
+# Define the output CSV file path
+$csvFilePath = Join-Path $outputDirectory "all_cases.csv"
 
-# Initialize an empty array to store the rows
-$rows = @()
+# Ensure that the Python file path is valid
+if (-Not (Test-Path $pythonFilePath)) {
+    Write-Error "The specified Python file path does not exist: $pythonFilePath"
+    exit
+}
 
 # Read the contents of the Python file
-$fileContent = Get-Content -Path $pythonFilePath -Raw
+$pythonFileContent = Get-Content -Path $pythonFilePath -Raw
 
-# Function to recursively parse nested classes and test cases
-function Parse-ClassContent
-{
+# Function to parse the Python class structure and output it with test cases to a CSV file
+function Parse-PythonClass {
     param (
-        [string]$content,
-        [ref]$rowsRef  # Use reference to the array to modify it within the function
+        [string]$content
     )
 
-    # Regex to match class declarations and test case definitions
-    $classPattern = '^\s*class\s+(\w+):'
-    $testCasePattern = '^\s+(\w+): str$'
-
-    # Initialize stack to track class hierarchy
-    $classStack = [System.Collections.Stack]::new()
+    $classStack = New-Object System.Collections.Generic.List[string]
+    $classStack.Add("Cases") # Start with Root as the base path
+    $lines = $content -split "`r`n" # Correctly split on new lines
     $currentIndent = 0
+    $output = @()
 
-    foreach ($line in $content -split "`r?`n")
-    {
-        # Match class declarations
-        if ($line -match $classPattern)
-        {
+    foreach ($line in $lines) {
+        if ($line.Trim() -eq '') { continue } # Skip empty lines
+
+        $newIndent = ($line.Length - $line.TrimStart().Length) / 4 # Assuming 4 spaces per indentation level
+
+        if ($line -match '^\s*class\s+([\w-]+)') {
+            if ($newIndent -le $currentIndent) {
+                # Remove levels from stack according to the current indentation level
+                $diff = $currentIndent - $newIndent + 1
+                $classStack.RemoveRange($classStack.Count - $diff, $diff)
+            }
             $className = $matches[1]
-            $indentation = $line.Length - $line.TrimStart().Length
-
-            # Update stack based on indentation level
-            if ($indentation -gt $currentIndent)
-            {
-                # Entering a new nested class, but skip adding "Tests" to the stack
-                if ($className -ne "Tests")
-                {
-                    $classStack.Push($className)
-                }
-            }
-            elseif ($indentation -eq $currentIndent)
-            {
-                # Same level class, replace the top of the stack
-                if ($classStack.Count -gt 0)
-                {
-                    $classStack.Pop() | Out-Null
-                }
-                if ($className -ne "Tests")
-                {
-                    $classStack.Push($className)
-                }
-            }
-            else
-            {
-                # Exiting a nested level, adjust stack accordingly
-                while ($classStack.Count -gt 0 -and ($indentation -lt $currentIndent))
-                {
-                    $classStack.Pop() | Out-Null
-                    $currentIndent -= 4  # assuming standard Python indentation of 4 spaces
-                }
-                if ($className -ne "Tests")
-                {
-                    $classStack.Push($className)
-                }
-            }
-
-            # Update current indentation level
-            $currentIndent = $indentation
+            $classStack.Add($className)
+            $currentPath = $classStack -join '.'
+            $currentIndent = $newIndent
         }
-        # Match test case definitions
-        elseif ($line -match $testCasePattern)
-        {
-            $testCase = $matches[1]
-
-            # Generate the current path without "Tests" base class
-            $currentPath = ($classStack.GetEnumerator() | Sort-Object) -join '.'
-
-            # Add each found test case to the referenced array
-            $rowsRef.Value += [PSCustomObject]@{
+        elseif ($line -match '^\s*([\w-]+)\s*:\s*str') {
+            $testCaseName = $matches[1]
+            $output += [PSCustomObject]@{
                 Path = $currentPath
-                TestCase = $testCase
+                TestCase = $testCaseName
             }
         }
     }
+
+    # Export the collected data to CSV
+    $output | Export-Csv -Path $csvFilePath -NoTypeInformation
 }
 
-# Parse the entire file content starting from the outermost class
-Parse-ClassContent -content $fileContent -rowsRef ([ref]$rows)
-
-# Check if any rows were added
-if ($rows.Count -eq 0)
-{
-    Write-Host "No test cases found in the Python file."
-}
-else
-{
-    # Convert the objects to CSV format and then trim the end to remove extra newlines
-    $csvContent = $rows | ConvertTo-Csv -NoTypeInformation | Out-String
-    $csvContent = $csvContent.TrimEnd("`r`n")  # Ensure no trailing newlines
-
-    # Write the CSV content to the file, ensuring file is created even if empty
-    Set-Content -Path $outputCsv -Value $csvContent -NoNewline
-    Write-Host "Test cases data has been written and saved to $outputCsv"
-}
+# Run the parsing function
+Parse-PythonClass -content $pythonFileContent
