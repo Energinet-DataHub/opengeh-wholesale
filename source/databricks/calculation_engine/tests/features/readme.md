@@ -38,14 +38,14 @@ time_series_points.csv and the desired result output files to create the scenari
 - Elements in lists are separated with “,” fx. ['measured', 'calculated']
 - Decimal number are with 3 decimals in the results
 
-## The readme.md file
+## Coverage - all_test_cases.py and Coverage.py
 
-**All test scenarios must have a readme.md file**. Easiest is to copy and modify an existing readme-file from another
-scenario.
-existing scenario.
+The class coverage/all_test_cases.py contains all test-cases that we want to test in the feature tests.
 
-Under the "Coverage" heading, list the testcases covered by the scenario as bullet items. These will be scanned as part
+The cases listed in this file can be referenced from Coverage.py files in scenarios. Under the "Cases Tested" heading, list the testcases covered by the scenario as bullet items. These will be scanned as part
 of coverage overview.
+
+**All test scenarios must have a Coverage.py file**. Easiest is to copy and modify an existing Coverage-file from another scenario.
 
 ## Local test config settings
 
