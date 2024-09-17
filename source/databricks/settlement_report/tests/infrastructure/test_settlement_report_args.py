@@ -68,6 +68,13 @@ def sys_argv_from_contract(contract_parameters: list[str]) -> list[str]:
     return ["dummy_script_name"] + contract_parameters
 
 
+@pytest.fixture(scope="session")
+def job_environment_variables() -> dict:
+    return {
+        EnvironmentVariable.CATALOG_NAME.name: "some_catalog",
+    }
+
+
 class TestWhenInvokedWithIncorrectParameters:
     def test_fails(
         self,
