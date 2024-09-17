@@ -58,9 +58,9 @@ def create_time_series(
     elif resolution == MeteringPointResolution.QUARTER:
         time_series_points = _generate_quarterly_ts(df, args.time_zone)
     else:
-        raise ValueError(f"Unknown time series type: {args.task_type}")
+        raise ValueError(f"Unknown time series resolution: {resolution.value}")
 
-    result_path = f"{report_directory}/{args.task_type}"
+    result_path = f"{report_directory}/time_series_{resolution.value}"
     headers = write_files(
         df=time_series_points,
         path=result_path,
@@ -73,7 +73,9 @@ def create_time_series(
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
     )
-    resolution_name = "TSSD60" if args.task_type == "hourly" else "TSSD15"
+    resolution_name = (
+        "TSSD60" if resolution.value == MeteringPointResolution.HOUR else "TSSD15"
+    )
     new_files = get_new_files(
         result_path,
         file_name_template="_".join(
