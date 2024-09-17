@@ -52,17 +52,16 @@ def create_time_series(
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    df = _get_filtered_data(spark, args, resolution)
-    if resolution == MeteringPointResolution.HOUR:
-        time_series_points = _generate_hourly_ts(df, args.time_zone)
-    elif resolution == MeteringPointResolution.QUARTER:
-        time_series_points = _generate_quarterly_ts(df, args.time_zone)
-    else:
-        raise ValueError(f"Unknown time series resolution: {resolution.value}")
+    time_series_points = _get_filtered_time_series_points(spark, args, resolution)
+    prepared_time_series = _generate_time_series(
+        time_series_points,
+        _get_desired_quantity_column_count(resolution),
+        args.time_zone,
+    )
 
     result_path = f"{report_directory}/time_series_{resolution.value}"
     headers = write_files(
-        df=time_series_points,
+        df=prepared_time_series,
         path=result_path,
         split_large_files=args.prevent_large_text_files,
         split_by_grid_area=args.split_report_by_grid_area,
@@ -197,7 +196,7 @@ def _read_and_filter_from_view(
 )
 def _generate_time_series(
     filtered_metering_points: DataFrame,
-    desired_number_of_observations: int,
+    desired_quantity_column_count: int,
     time_zone: str,
 ) -> DataFrame:
     _result_columns = [
@@ -213,7 +212,7 @@ def _generate_time_series(
         ),
     ] + [
         f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"
-        for i in range(desired_number_of_observations)
+        for i in range(desired_quantity_column_count)
     ]
 
     df_with_array_column = (
@@ -262,7 +261,7 @@ def _generate_time_series(
             F.explode(
                 pad_array_col(
                     EphemeralColumns.quantities,
-                    desired_number_of_observations,
+                    desired_quantity_column_count,
                     TimeSeriesPointCsvColumnNames.energy_prefix,
                 )
             ).alias("exploded"),
@@ -285,40 +284,19 @@ def _generate_time_series(
     return result.select(*_result_columns)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._generate_hourly_time_series"
-)
-def _generate_hourly_ts(df: DataFrame, time_zone: str) -> DataFrame:
-    log.info("Generating hourly time series")
-    ts = _generate_time_series(
-        df,
-        desired_number_of_observations=25,
-        time_zone=time_zone,
-    )
-    log.info("Hourly time series generated")
-    return ts
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._generate_quarterly_time_series"
-)
-def _generate_quarterly_ts(
-    filtered_metering_points: DataFrame, time_zone: str
-) -> DataFrame:
-    log.info("Generating quarterly time series")
-    ts = _generate_time_series(
-        filtered_metering_points,
-        desired_number_of_observations=25 * 4,
-        time_zone=time_zone,
-    )
-    log.info("Quarterly time series generated")
-    return ts
+def _get_desired_quantity_column_count(resolution: MeteringPointResolution) -> int:
+    if resolution == MeteringPointResolution.HOUR:
+        return 25
+    elif resolution == MeteringPointResolution.QUARTER:
+        return 25 * 4
+    else:
+        raise ValueError(f"Unknown time series resolution: {resolution.value}")
 
 
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
-def _get_filtered_data(
+def _get_filtered_time_series_points(
     spark: SparkSession, args: SettlementReportArgs, resolution: MeteringPointResolution
 ) -> DataFrame:
     log.info("Getting filtered data")
