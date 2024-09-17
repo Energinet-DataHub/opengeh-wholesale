@@ -18,19 +18,18 @@ from pyspark.sql.window import Window
 from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.table_column_names import (
+    DataProductColumnNames,
+)
 from settlement_report_job.utils import map_from_dict, get_dbutils
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
     get_metering_point_time_series_view_name,
     RESOLUTION_NAMES,
 )
-from settlement_report_job.table_column_names import (
-    DataProductColumnNames,
-    TimeSeriesPointCsvColumnNames,
-    EphemeralColumns,
-)
+
 from settlement_report_job.infrastructure import logging_configuration
-from settlement_report_job.logger import Logger
+from settlement_report_job.infrastructure.logger import Logger
 
 log = Logger(__name__)
 
@@ -327,7 +326,7 @@ def _generate_quarterly_ts(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
 def _get_filtered_data(
-    spark: SparkSession, df: DataFrame, args: SettlementReportArgs
+    spark: SparkSession, args: SettlementReportArgs
 ) -> tuple[DataFrame, DataFrame]:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
