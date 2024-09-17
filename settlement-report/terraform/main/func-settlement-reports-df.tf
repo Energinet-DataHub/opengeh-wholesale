@@ -18,6 +18,8 @@ module "func_settlement_reports_df" {
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   app_settings                           = local.func_settlement_reports_df.app_settings
+  elastic_instance_minimum               = 2
+  pre_warmed_instance_count              = 0
 
   health_check_alert = length(module.monitor_action_group_setr) != 1 ? null : {
     enabled         = true
