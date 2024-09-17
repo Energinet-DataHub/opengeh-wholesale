@@ -15,4 +15,12 @@ from settlement_report_job.infrastructure.environment_variables import get_catal
 
 
 def get_energy_view_name() -> str:
-    return f"{get_catalog_name()}.wholesale_results.energy_v1"
+    return f"{get_catalog_name()}.wholesale_results.energy_v1"  # noqa: E501
+
+
+def get_metering_point_time_series_view_name() -> str:
+    return f"{get_catalog_name()}.wholesale_settlement_reports.metering_point_time_series_v1"  # noqa: E501
+
+
+def get_output_volume_name() -> str:
+    return f"/Volumes/{get_catalog_name()}/wholesale_settlement_report_output/settlement_reports"  # noqa: E501
