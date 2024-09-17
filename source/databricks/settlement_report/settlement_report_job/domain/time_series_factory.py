@@ -173,8 +173,9 @@ def _read_and_filter_from_view(
     spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
     df = spark.read.table(view_name).where(
-        F.col(DataProductColumnNames.observation_time) >= args.period_start
-    ) & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+        (F.col(DataProductColumnNames.observation_time) >= args.period_start)
+        & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+    )
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
