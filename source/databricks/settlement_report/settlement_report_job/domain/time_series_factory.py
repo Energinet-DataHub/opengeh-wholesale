@@ -15,6 +15,9 @@ from typing import Union
 from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.session import SparkSession
 
+from settlement_report_job.domain.metering_point_resolution import (
+    MeteringPointResolution,
+)
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.utils import (
     map_from_dict,
@@ -44,23 +47,20 @@ log = Logger(__name__)
 def create_time_series(
     spark: SparkSession,
     args: SettlementReportArgs,
-    query_directory: str,
+    report_directory: str,
+    resolution: MeteringPointResolution,
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    df = _get_filtered_data(spark, get_metering_point_time_series_view_name(), args)
-    if args.task_type == "hourly":
-        time_series_points = _generate_hourly_ts(
-            df.filter(DataProductColumnNames.resolution == "PT1H"), args.time_zone
-        )
-    elif args.task_type == "quarterly":
-        time_series_points = _generate_quarterly_ts(
-            df.filter(DataProductColumnNames.resolution == "PT15M"), args.time_zone
-        )
+    df = _get_filtered_data(spark, args, resolution)
+    if resolution == MeteringPointResolution.HOUR:
+        time_series_points = _generate_hourly_ts(df, args.time_zone)
+    elif resolution == MeteringPointResolution.QUARTER:
+        time_series_points = _generate_quarterly_ts(df, args.time_zone)
     else:
         raise ValueError(f"Unknown time series type: {args.task_type}")
 
-    result_path = f"{query_directory}/{args.task_type}"
+    result_path = f"{report_directory}/{args.task_type}"
     headers = write_files(
         df=time_series_points,
         path=result_path,
@@ -317,10 +317,10 @@ def _generate_quarterly_ts(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
 def _get_filtered_data(
-    spark: SparkSession, df: DataFrame, args: SettlementReportArgs
+    spark: SparkSession, args: SettlementReportArgs, resolution: MeteringPointResolution
 ) -> DataFrame:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
         spark, args, get_metering_point_time_series_view_name()
     )
-    return df
+    return df.where(F.col(DataProductColumnNames.resolution) == resolution.value)

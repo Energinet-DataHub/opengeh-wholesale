@@ -15,7 +15,6 @@ from uuid import UUID
 from dataclasses import dataclass
 from datetime import datetime
 
-from settlement_report_job.domain.task_type import TaskType
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 
@@ -34,4 +33,3 @@ class SettlementReportArgs:
     prevent_large_text_files: bool
     time_zone: str
     catalog_name: str
-    task_type: TaskType
