@@ -49,7 +49,6 @@ public class DatabaseContext : DbContext, IDatabaseContext, IOutboxContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
-
         modelBuilder.ApplyConfiguration(new CalculationEntityConfiguration());
         modelBuilder.ApplyConfiguration(new GridAreaEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ReceivedIntegrationEventEntityConfiguration());

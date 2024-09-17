@@ -71,7 +71,6 @@ public static class CalculationsExtensions
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
 
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 configuration
@@ -82,6 +81,10 @@ public static class CalculationsExtensions
                     o.UseNodaTime();
                     o.EnableRetryOnFailure();
                 }));
+
+        // Make sure injection an IDatabaseContext will return the same instance as injection a DatabaseContext
+        services.AddTransient<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>());
+
         // Database Health check
         services.TryAddHealthChecks(
             registrationKey: HealthCheckNames.WholesaleDatabase,

@@ -77,7 +77,7 @@ public class Calculation
     /// <param name="validationErrors"></param>
     /// <returns>If the parameters are valid for a <see cref="Calculation"/></returns>
     private static bool IsValid(
-        IEnumerable<GridAreaCode> gridAreaCodes,
+        List<GridAreaCode> gridAreaCodes,
         CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,

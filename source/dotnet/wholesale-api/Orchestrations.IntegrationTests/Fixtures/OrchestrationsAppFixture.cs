@@ -229,8 +229,6 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// <returns>Calculation id of the started calculation.</returns>
     public async Task<Guid> StartCalculationAsync(bool isInternalCalculation = false)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
-
         var dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
         var dateAtMidnight = new LocalDate(2024, 5, 17)
             .AtMidnight()
@@ -246,6 +244,12 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             ScheduledAt: DateTimeOffset.UtcNow,
             IsInternalCalculation: isInternalCalculation);
 
+        return await StartCalculationAsync(requestDto);
+    }
+
+    public async Task<Guid> StartCalculationAsync(StartCalculationRequestDto requestDto)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
         request.Content = new StringContent(
             JsonConvert.SerializeObject(requestDto),
             Encoding.UTF8,

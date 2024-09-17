@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Outbox.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
@@ -67,6 +68,7 @@ var host = new HostBuilder()
         // Calculation scheduler
         services.AddCalculationScheduler();
 
+        services.AddTransient<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IAuditUserContext, AuditUserContext>();
         services.AddOutboxClient<DatabaseContext>();
         services.AddOutboxProcessor<DatabaseContext>();
