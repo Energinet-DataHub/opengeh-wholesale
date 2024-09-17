@@ -19,14 +19,14 @@ from typing import Callable
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
-import settlement_report_job.logging_configuration as config
-from settlement_report_job.settlement_report_args import SettlementReportArgs
-from settlement_report_job.settlement_report_job_args import (
+import settlement_report_job.infrastructure.logging_configuration as config
+from settlement_report_job.domain import report_generator
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
-from settlement_report_job.spark_initializor import initialize_spark
-from settlement_report_job.time_series_factory import create_time_series
+from settlement_report_job.infrastructure.spark_initializor import initialize_spark
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -63,16 +63,18 @@ def start_with_deps(
         # Try/except added to enable adding custom fields to the exception as
         # the span attributes do not appear to be included in the exception.
         try:
-            # The command line arguments are parsed to have necessary information for coming log messages
+
+            # The command line arguments are parsed to have necessary information for
+            # coming log messages
             command_line_args = parse_command_line_args()
 
-            # Add settlement_report_id to structured logging data to be included in every log message.
+            # Add settlement_report_id to structured logging data to be included in
+            # every log message.
             config.add_extras({"settlement_report_id": command_line_args.report_id})
             span.set_attributes(config.get_extras())
-
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            create_time_series(spark, args)
+            report_generator.execute(spark, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:

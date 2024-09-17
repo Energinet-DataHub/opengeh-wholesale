@@ -18,20 +18,22 @@ from unittest.mock import patch
 
 import pytest
 
-from settlement_report_job.market_role import MarketRole
-from settlement_report_job.settlement_report import (
+from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.entrypoint import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
 
-from settlement_report_job.environment_variables import EnvironmentVariable
-from settlement_report_job.calculation_type import CalculationType
+from settlement_report_job.infrastructure.environment_variables import (
+    EnvironmentVariable,
+)
+from settlement_report_job.domain.calculation_type import CalculationType
 
 DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
 
 def _get_contract_parameters(filename: str) -> list[str]:
-    """Get the parameters as they are expected to be received from the settlement report invoker."""
+    """Get the parameters as they are expected to be received from the settlement report invoker."""  # noqa
     with open(filename) as file:
         text = file.read()
         text = text.replace("{report-id}", DEFAULT_REPORT_ID)
@@ -62,7 +64,7 @@ def contract_parameters(contracts_path: str) -> list[str]:
 
 
 @pytest.fixture(scope="session")
-def sys_argv_from_contract(contract_parameters) -> list[str]:
+def sys_argv_from_contract(contract_parameters: list[str]) -> list[str]:
     return ["dummy_script_name"] + contract_parameters
 
 
@@ -93,7 +95,7 @@ class TestWhenInvokedWithValidParameters:
     def test_parses_parameters_from_contract(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract,
+        sys_argv_from_contract: list[str],
     ) -> None:
         """
         This test ensures that the settlement report job accepts
@@ -148,7 +150,7 @@ class TestWhenNoValidCalculationIdForGridArea:
             if re.search(pattern, item):
                 test_sys_args[i] = re.sub(
                     pattern,
-                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',
+                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',  # noqa
                     item,
                 )
                 break
@@ -304,7 +306,7 @@ class TestWhenInvokedWithInvalidMarketRole:
 
 class TestWhenUnknownCalculationType:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract
+        self, job_environment_variables: dict, sys_argv_from_contract: list[str]
     ) -> None:
         # Arrange
         test_sys_args = sys_argv_from_contract.copy()
@@ -331,7 +333,7 @@ class TestWhenUnknownCalculationType:
 
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract
+        self, job_environment_variables: dict, sys_argv_from_contract: list[str]
     ) -> None:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):

@@ -14,6 +14,8 @@
 
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
@@ -82,13 +84,23 @@ public static class EventsExtensions
         });
 
         // Health checks
-        services.AddHealthChecks()
+        var defaultAzureCredential = new DefaultAzureCredential();
+
+        services
+            .AddHealthChecks()
             .AddAzureServiceBusSubscription(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
-                sp => new DefaultAzureCredential(),
-                name: HealthCheckNames.IntegrationEventsTopicSubscription);
+                _ => defaultAzureCredential,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription)
+            .AddServiceBusTopicSubscriptionDeadLetter(
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
+                sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
+                sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
+                _ => defaultAzureCredential,
+                "Dead-letter (integration events)",
+                [HealthChecksConstants.StatusHealthCheckTag]);
 
         return services;
     }

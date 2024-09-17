@@ -171,11 +171,6 @@ class HiveBasisDataDatabase:
     """The folder in the storage account container"""
 
     DATABASE_NAME = "basis_data"
-    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
-
-    TABLE_NAMES = [
-        GRID_LOSS_METERING_POINTS_TABLE_NAME,
-    ]
 
 
 # Hive
