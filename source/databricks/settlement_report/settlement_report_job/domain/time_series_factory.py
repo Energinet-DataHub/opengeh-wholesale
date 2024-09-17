@@ -17,17 +17,20 @@ from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.window import Window
 from pyspark.sql.session import SparkSession
 
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.table_column_names import (
-    DataProductColumnNames,
-)
-from settlement_report_job.utils import map_from_dict, get_dbutils
-from settlement_report_job.constants import (
+from settlement_report_job.domain.market_naming_convention import (
     METERING_POINT_TYPE_DICT,
-    get_metering_point_time_series_view_name,
     RESOLUTION_NAMES,
 )
-
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.database_definitions import (
+    get_metering_point_time_series_view_name,
+)
+from settlement_report_job.infrastructure.table_column_names import (
+    DataProductColumnNames,
+    TimeSeriesPointCsvColumnNames,
+    EphemeralColumns,
+)
+from settlement_report_job.utils import map_from_dict, get_dbutils
 from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.infrastructure.logger import Logger
 
