@@ -31,8 +31,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
 public class WholesaleFixingCalculationScenario : SubsystemTestsBase<CalculationScenarioFixture>
 {
-    private dynamic PreviousCalculationVersion { get; set; } = string.Empty;
-
     public WholesaleFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
@@ -42,21 +40,11 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public async Task GetTheNewestCalculationVersionBeforeANewCalculationIsStarted()
     {
-        // Arrange
-
-        // Act
+        // Arrange & Act
         var (calculationVersion, message) = await Fixture.GetLatestCalculationVersionFromCalculationsAsync();
 
         // Assert
-        if (calculationVersion == string.Empty)
-        {
-            throw new InvalidOperationException(message);
-        }
-
-        // Set the property value
-        PreviousCalculationVersion = calculationVersion;
-
-        calculationVersion.Should().NotBeEmpty();
+        calculationVersion.Should().NotBeNull(message);
     }
 
     [ScenarioStep(0)]
@@ -297,16 +285,12 @@ AppDependencies
     public async Task AndThen_CheckThatIdentityColumnOnCalculationsIsWorkingCorrectly()
     {
         // Arrange
+        var previousCalculationVersion = Fixture.GetLatestCalculationVersion();
 
         // Act
         var (calculationVersion, message) = await Fixture.GetCalculationVersionOfCalculationIdFromCalculationsAsync(Fixture.ScenarioState.CalculationId);
 
         // Assert
-        if (calculationVersion == string.Empty)
-        {
-            throw new InvalidOperationException(message);
-        }
-
-        (calculationVersion > PreviousCalculationVersion).Should().BeTrue();
+        (calculationVersion > previousCalculationVersion).Should().BeTrue(message);
     }
 }

@@ -48,6 +48,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 public sealed class CalculationScenarioFixture : LazyFixtureBase
 {
     private readonly string _subscriptionName = Guid.NewGuid().ToString();
+    private long? _latestCalculationVersion = null;
 
     public CalculationScenarioFixture(IMessageSink diagnosticMessageSink)
         : base(diagnosticMessageSink)
@@ -329,7 +330,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return results.ToList();
     }
 
-    public async Task<(dynamic CalculationVersion, string Message)> GetCalculationVersionOfCalculationIdFromCalculationsAsync(
+    public async Task<(long? CalculationVersion, string Message)> GetCalculationVersionOfCalculationIdFromCalculationsAsync(
         Guid calculationId)
     {
         try
@@ -337,41 +338,47 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             var statement = DatabricksStatement.FromRawSql(
                 $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations WHERE calculation_id = '{calculationId}'");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-            var calculationVersion = await queryResult.FirstAsync();
+            var item = await queryResult.FirstAsync();
 
-            if (calculationVersion != string.Empty)
+            if (item.calculation_version != null)
             {
-                return (calculationVersion, "Calculation ID retrieved successfully");
+                return (item.calculation_version, "Calculation ID retrieved successfully");
             }
 
-            return (string.Empty, "No data found in the table");
+            return (null, "No data found in the table");
         }
         catch (Exception e)
         {
-            return (string.Empty, $"An error occurred: {e.Message}");
+            return (null, $"An error occurred: {e.Message}");
         }
     }
 
-    public async Task<(dynamic CalculationVersion, string Message)> GetLatestCalculationVersionFromCalculationsAsync()
+    public async Task<(long? CalculationVersion, string Message)> GetLatestCalculationVersionFromCalculationsAsync()
     {
         try
         {
             var statement = DatabricksStatement.FromRawSql(
                 $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations ORDER BY calculation_version DESC LIMIT 1");
             var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-            var calculationVersion = await queryResult.FirstAsync();
+            var item = await queryResult.FirstAsync();
 
-            if (calculationVersion != string.Empty)
+            if (item.calculation_version != null)
             {
-                return (calculationVersion, "Calculation ID retrieved successfully");
+                _latestCalculationVersion = item.calculation_version;
+                return (item.calculation_version, "Calculation version retrieved successfully");
             }
 
-            return (string.Empty, "No data found in the table");
+            return (null, "No data found in the table");
         }
         catch (Exception e)
         {
-            return (string.Empty, $"An error occurred: {e.Message}");
+            return (null, $"An error occurred: {e.Message}");
         }
+    }
+
+    public long? GetLatestCalculationVersion()
+    {
+        return _latestCalculationVersion;
     }
 
     protected override async Task OnInitializeAsync()
