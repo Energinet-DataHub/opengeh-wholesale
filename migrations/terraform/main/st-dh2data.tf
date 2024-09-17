@@ -271,3 +271,15 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_timeseries_syn
     type = "SystemAssigned"
   }
 }
+
+#---- Diagnostic Settings
+
+resource "azurerm_monitor_diagnostic_setting" "ds_dh2data_audit" {
+  name               = "ds-dh2data-audit"
+  target_resource_id = "${module.st_dh2data.id}/blobServices/default"
+  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+
+  enabled_log {
+    category = "StorageDelete"
+  }
+}

@@ -132,3 +132,14 @@ resource "azurerm_role_assignment" "st_migrations_queue_data_sender" {
 }
 
 
+#---- Diagnostic Settings
+
+resource "azurerm_monitor_diagnostic_setting" "ds_migrations_audit" {
+  name               = "ds-migrations-audit"
+  target_resource_id = "${module.st_migrations.id}/blobServices/default"
+  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+
+  enabled_log {
+    category = "StorageDelete"
+  }
+}

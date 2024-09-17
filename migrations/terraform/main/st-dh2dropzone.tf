@@ -58,6 +58,7 @@ resource "azurerm_eventgrid_system_topic" "system_topic_dropzone_zipped" {
 }
 
 #---- System topic event subscription for blob created events
+
 resource "azurerm_eventgrid_system_topic_event_subscription" "eventgrid_dropzone_zipped" {
   name                 = "ests-dropzonezipped-${local.resources_suffix}"
   system_topic         = azurerm_eventgrid_system_topic.system_topic_dropzone_zipped.name
@@ -69,5 +70,17 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "eventgrid_dropzone
   }
   delivery_identity {
     type = "SystemAssigned"
+  }
+}
+
+#---- Diagnostic Settings
+
+resource "azurerm_monitor_diagnostic_setting" "ds_dh2dropzone_audit" {
+  name               = "ds-dh2dropzone-audit"
+  target_resource_id = "${module.st_dh2dropzone.id}/blobServices/default"
+  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+
+  enabled_log {
+    category = "StorageDelete"
   }
 }

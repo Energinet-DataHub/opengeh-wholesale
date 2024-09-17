@@ -160,10 +160,10 @@ module "kvs_databricks_dbw_workspace_token" {
   depends_on   = [module.dbw]
 }
 
-resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
-  name                       = "dbw-diagnostic-settings"
-  target_resource_id         = module.dbw.id
-  log_analytics_workspace_id = data.azurerm_key_vault_secret.log_shared_id.value
+resource "azurerm_monitor_diagnostic_setting" "ds_dbw_audit" {
+  name               = "ds-dbw-audit"
+  target_resource_id = module.dbw.id
+  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
 
   enabled_log {
     category = "jobs"
@@ -182,3 +182,17 @@ resource "azurerm_monitor_diagnostic_setting" "dbw_diagnostic_settings" {
   }
 }
 
+
+resource "azurerm_monitor_diagnostic_setting" "ds_dbw_dashboards" {
+  name                       = "ds-dbw-dashboards"
+  target_resource_id         = module.dbw.id
+  log_analytics_workspace_id = data.azurerm_key_vault_secret.log_shared_id.value
+
+  enabled_log {
+    category = "jobs"
+  }
+
+  enabled_log {
+    category = "workspace"
+  }
+}

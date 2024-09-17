@@ -119,7 +119,7 @@ variable "databricks_private_endpoints_subnet_address_prefix" {
 variable "databricks_enable_verbose_audit_logs" {
   type        = bool
   description = "Flag to determine if verbose audit logs should be enabled for Databricks."
-  default     = false
+  default     = true
 }
 
 variable "github_username" {

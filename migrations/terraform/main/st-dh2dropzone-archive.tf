@@ -34,3 +34,15 @@ resource "azurerm_storage_container" "dropzonetimeseriessyncarchive" {
   storage_account_name  = module.st_dh2dropzone_archive.name
   container_access_type = "private"
 }
+
+#---- Diagnostic Settings
+
+resource "azurerm_monitor_diagnostic_setting" "ds_dh2dropzonearchive_audit" {
+  name               = "ds-dh2dropzonearchive-audit"
+  target_resource_id = "${module.st_dh2dropzone_archive.id}/blobServices/default"
+  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+
+  enabled_log {
+    category = "StorageDelete"
+  }
+}
