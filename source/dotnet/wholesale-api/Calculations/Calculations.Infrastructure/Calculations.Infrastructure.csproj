@@ -5,6 +5,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="13.2.0" />
+    <PackageReference Include="Energinet.DataHub.Core.Outbox" Version="1.0.0-alpha-4" />
+    <PackageReference Include="Energinet.DataHub.Core.Outbox.Abstractions" Version="1.0.0-alpha-4" />
+    <PackageReference Include="Energinet.DataHub.RevisionLog.Integration" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="11.2.1" />

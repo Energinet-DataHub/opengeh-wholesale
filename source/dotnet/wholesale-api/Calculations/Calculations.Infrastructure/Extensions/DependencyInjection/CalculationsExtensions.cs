@@ -13,13 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Outbox.Abstractions;
+using Energinet.DataHub.RevisionLog.Integration.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
@@ -48,6 +53,8 @@ public static class CalculationsExtensions
 
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+
+        AddAuditLogging(services, configuration);
 
         return services;
     }
@@ -88,6 +95,15 @@ public static class CalculationsExtensions
 
         services.AddScoped<IGridAreaOwnershipClient, GridAreaOwnershipClient>();
 
+        AddAuditLogging(services, configuration);
+
         return services;
+    }
+
+    private static void AddAuditLogging(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddTransient<IAuditLogger, AuditLogger>();
+        services.AddTransient<IOutboxPublisher, AuditLogOutboxMessageV1Publisher>();
+        services.AddRevisionLogIntegrationModule(configuration);
     }
 }

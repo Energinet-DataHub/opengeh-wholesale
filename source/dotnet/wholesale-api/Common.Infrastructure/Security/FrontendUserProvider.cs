@@ -30,10 +30,22 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
         IEnumerable<Claim> claims)
     {
         var enumeratedClaims = claims.ToList();
-        var frontendActor = new FrontendActor(actorId, GetActorNumber(enumeratedClaims), GetMarketRole(enumeratedClaims));
+        var frontendActor = new FrontendActor(
+            actorId,
+            GetActorNumber(enumeratedClaims),
+            GetMarketRole(enumeratedClaims),
+            GetPermissions(enumeratedClaims));
         var frontendUser = new FrontendUser(userId, multiTenancy, frontendActor);
 
         return Task.FromResult<FrontendUser?>(frontendUser);
+    }
+
+    private IReadOnlyCollection<string> GetPermissions(List<Claim> enumeratedClaims)
+    {
+        return enumeratedClaims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToArray();
     }
 
     private static string GetActorNumber(IEnumerable<Claim> claims)

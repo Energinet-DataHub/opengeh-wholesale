@@ -357,7 +357,8 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 new FrontendActor(
                     Guid.NewGuid(),
                     "1",
-                    FrontendActorMarketRole.DataHubAdministrator)));
+                    FrontendActorMarketRole.DataHubAdministrator,
+                    [])));
 
         var scheduledCalculation = CreateCalculation(scheduledToRunAt);
         await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())

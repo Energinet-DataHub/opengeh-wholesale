@@ -64,7 +64,7 @@ public class WebApiFactory : WebApplicationFactory<Program>
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
             defaultUserContext.Setup(x => x.CurrentUser)
-                .Returns(new FrontendUser(Guid.NewGuid(), false, new FrontendActor(Guid.NewGuid(), string.Empty, FrontendActorMarketRole.Other)));
+                .Returns(new FrontendUser(Guid.NewGuid(), false, new FrontendActor(Guid.NewGuid(), string.Empty, FrontendActorMarketRole.Other, [])));
             services.AddScoped(_ => UserContextMock?.Object ?? defaultUserContext.Object);
         });
     }

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Energinet DataHub A/S
+﻿    // Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -31,15 +33,18 @@ internal class CalculationTrigger
 
     private readonly IUserContext<FrontendUser> _userContext;
     private readonly ICalculationsClient _calculationsClient;
+    private readonly IAuditLogger _auditLogger;
     private readonly ILogger<CalculationTrigger> _logger;
 
     public CalculationTrigger(
         IUserContext<FrontendUser> userContext,
         ICalculationsClient calculationsClient,
+        IAuditLogger auditLogger,
         ILogger<CalculationTrigger> logger)
     {
         _userContext = userContext;
         _calculationsClient = calculationsClient;
+        _auditLogger = auditLogger;
         _logger = logger;
     }
 
@@ -50,6 +55,14 @@ internal class CalculationTrigger
         [FromBody] StartCalculationRequestDto startCalculationRequestDto,
         FunctionContext executionContext)
     {
+        await _auditLogger.LogWithCommitAsync(
+                AuditLogActivity.StartNewCalculation,
+                httpRequest.GetDisplayUrl(),
+                startCalculationRequestDto,
+                AuditLogEntityType.Calculation,
+                null)
+            .ConfigureAwait(false);
+
         var calculationId = await _calculationsClient.CreateAndCommitAsync(
             startCalculationRequestDto.CalculationType,
             startCalculationRequestDto.GridAreaCodes,

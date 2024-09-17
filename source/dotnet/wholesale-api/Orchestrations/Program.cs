@@ -16,12 +16,16 @@ using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Outbox.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Orchestrations;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Microsoft.Azure.Functions.Worker;
@@ -62,6 +66,10 @@ var host = new HostBuilder()
 
         // Calculation scheduler
         services.AddCalculationScheduler();
+
+        services.AddScoped<IAuditUserContext, AuditUserContext>();
+        services.AddOutboxClient<DatabaseContext>();
+        services.AddOutboxProcessor<DatabaseContext>();
 
         // Modules
         services.AddEdiModule(context.Configuration); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox

@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 
-public sealed record FrontendActor(
-    Guid ActorId,
-    string ActorNumber,
-    FrontendActorMarketRole MarketRole,
-    IReadOnlyCollection<string> Permissions)
+public interface IAuditLogger
 {
-    public bool HasMarketRole(FrontendActorMarketRole marketRole)
-    {
-        return MarketRole == marketRole;
-    }
+    Task LogWithCommitAsync(
+        AuditLogActivity activity,
+        string origin,
+        object? payload,
+        AuditLogEntityType? affectedEntityType,
+        Guid? affectedEntityKey);
 }

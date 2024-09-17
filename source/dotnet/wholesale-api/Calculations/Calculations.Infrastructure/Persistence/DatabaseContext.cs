@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Outbox.Domain;
+using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
@@ -20,7 +22,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 
-public class DatabaseContext : DbContext, IDatabaseContext
+public class DatabaseContext : DbContext, IDatabaseContext, IOutboxContext
 {
     private const string Schema = "calculations";
 
@@ -40,6 +42,8 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
 
+    public virtual DbSet<OutboxMessage> Outbox { get; private set; }
+
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,6 +53,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
         modelBuilder.ApplyConfiguration(new CalculationEntityConfiguration());
         modelBuilder.ApplyConfiguration(new GridAreaEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ReceivedIntegrationEventEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

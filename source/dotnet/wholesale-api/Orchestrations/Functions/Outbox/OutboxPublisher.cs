@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Core.Outbox.Application;
+using Microsoft.Azure.Functions.Worker;
 
-public sealed record FrontendActor(
-    Guid ActorId,
-    string ActorNumber,
-    FrontendActorMarketRole MarketRole,
-    IReadOnlyCollection<string> Permissions)
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Outbox;
+
+public class OutboxPublisher(IOutboxProcessor outboxProcessor)
 {
-    public bool HasMarketRole(FrontendActorMarketRole marketRole)
+    private readonly IOutboxProcessor _outboxProcessor = outboxProcessor;
+
+    [Function(nameof(OutboxPublisher))]
+    public Task PublishOutboxAsync(
+        [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
+        FunctionContext context,
+        CancellationToken cancellationToken)
     {
-        return MarketRole == marketRole;
+        return _outboxProcessor.ProcessOutboxAsync();
     }
 }

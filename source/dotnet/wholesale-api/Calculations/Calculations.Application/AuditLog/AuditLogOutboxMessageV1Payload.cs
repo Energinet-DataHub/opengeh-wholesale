@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using NodaTime;
 
-public sealed record FrontendActor(
+namespace Energinet.DataHub.Wholesale.Calculations.Application.AuditLog;
+
+public record AuditLogOutboxMessageV1Payload(
+    Guid SystemId,
+    string Activity,
+    string Origin,
+    string Payload,
+    Guid LogId,
+    Instant OccuredOn,
+    Guid UserId,
     Guid ActorId,
-    string ActorNumber,
-    FrontendActorMarketRole MarketRole,
-    IReadOnlyCollection<string> Permissions)
-{
-    public bool HasMarketRole(FrontendActorMarketRole marketRole)
-    {
-        return MarketRole == marketRole;
-    }
-}
+    string? ActorNumber,
+    string? MarketRoles,
+    string? Permissions,
+    string? AffectedEntityType,
+    string? AffectedEntityKey);
