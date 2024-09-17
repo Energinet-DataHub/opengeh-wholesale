@@ -5,7 +5,7 @@ csv-files as input and checks against an expected outcome - also in csv-files fo
 span is from actual calculation execution to the resulting output. If basis-data expected results are present in the
 output folder, these are also checked.
 
-## How to add a calculation logic test
+## How to add a feature test
 
 1. Generate the readme file (md). Remember to format the file correct as the CI check is strict.
 2. Generate the various data input files (csv)
