@@ -47,6 +47,7 @@ def any_settlement_report_args() -> SettlementReportArgs:
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
+        task_type="task_type",
     )
 
 
