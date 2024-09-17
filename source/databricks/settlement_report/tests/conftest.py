@@ -21,37 +21,32 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.environment_variables import (
-    EnvironmentVariable,
-)
+from tests.fixtures import DBUtilsFixture
 
 
 @pytest.fixture(scope="session")
-def job_environment_variables() -> dict:
-    return {
-        EnvironmentVariable.CATALOG_NAME.name: "spark_catalog",
-    }
+def dbutils() -> DBUtilsFixture:
+    """
+    Returns a DBUtilsFixture instance that can be used to mock dbutils.
+    """
+    return DBUtilsFixture()
 
 
 @pytest.fixture(scope="session")
 def any_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
-        period_start=datetime(2018, 3, 31, 22, 0, 0),
-        period_end=datetime(2018, 4, 30, 22, 0, 0),
+        period_start=datetime(2024, 6, 30, 22, 0, 0),
+        period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
+        calculation_id_by_grid_area={
+            "016": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373")
+        },
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
-        market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        calculation_id_by_grid_area={
-            "804": uuid.UUID("aa3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b"),
-            "805": uuid.UUID("bb3b3b3b-3b3b-3b3b-3b3b-3b3b3b3b3b3b"),
-        },
-        energy_supplier_id="energy_supplier_id",
     )
 
 
@@ -95,7 +90,7 @@ def databricks_path(source_path: str) -> str:
 @pytest.fixture(scope="session")
 def settlement_report_path(databricks_path: str) -> str:
     """
-    Returns the <repo-root>/source folder path.
+    Returns the source/databricks/ folder path.
     Please note that this only works if current folder haven't been changed prior using
     `os.chdir()`. The correctness also relies on the prerequisite that this function is
     actually located in a file located directly in the tests folder.
@@ -129,9 +124,9 @@ def tests_path(settlement_report_path: str) -> str:
 def settlement_report_job_container_path(databricks_path: str) -> str:
     """
     Returns the <repo-root>/source folder path.
-    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
-    The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the tests folder.
+    Please note that this only works if current folder haven't been changed prior using
+    `os.chdir()`. The correctness also relies on the prerequisite that this function is
+    actually located in a file located directly in the tests folder.
     """
     return f"{databricks_path}/settlement_report"
 

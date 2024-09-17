@@ -14,6 +14,8 @@
 
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
@@ -69,11 +71,14 @@ public static class EdiExtensions
         });
 
         // Health checks
-        services.AddHealthChecks()
+        var defaultAzureCredential = new DefaultAzureCredential();
+
+        services
+            .AddHealthChecks()
             .AddAzureServiceBusQueue(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.FullyQualifiedNamespace,
                 sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
-                sp => new DefaultAzureCredential(),
+                _ => defaultAzureCredential,
                 name: "EdiInboxQueue");
 
         // Validation helpers
