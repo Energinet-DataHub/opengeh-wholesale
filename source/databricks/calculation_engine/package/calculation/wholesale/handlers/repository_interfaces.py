@@ -19,6 +19,9 @@ from pyspark.sql import DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
 
+import package.databases.repository_helper as repository_helper
+from package.databases import read_table
+
 
 class MeteringPointPeriodRepositoryInterface(ABC):
     @abstractmethod
@@ -27,8 +30,13 @@ class MeteringPointPeriodRepositoryInterface(ABC):
 
 
 class MeteringPointPeriodRepository(MeteringPointPeriodRepositoryInterface):
+
+    def __init__(self):
+        self.reader = read_table()
+
+
     def get_by(self, grid_area_codes: List[str]) -> DataFrame:
-        metering_point_periods.where(
+        read_table(). metering_point_periods.where(
             col(Colname.grid_area_code).isin(bucket.calculator_args.calculation_grid_areas)
             | col(Colname.from_grid_area_code).isin(
                 calculator_args.calculation_grid_areas

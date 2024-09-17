@@ -45,9 +45,12 @@ from package.calculation.wholesale.handlers.repository_interfaces import (
 
 class Chain:
 
-    def __init__(self, calculator_args: CalculatorArgs):
+    def __init__(
+        self,
+        calculator_args: CalculatorArgs,
+        metering_point_period_repository: MeteringPointPeriodRepositoryInterface,
+    ):
 
-        metering_point_period_repository: MeteringPointPeriodRepositoryInterface
         prepared_data_reader: PreparedDataReader
         bucket = CacheBucket()
         non_profiled_consumption_per_es = EnergyResults()
