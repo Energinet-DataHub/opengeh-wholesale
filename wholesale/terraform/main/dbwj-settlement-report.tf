@@ -1,7 +1,7 @@
 resource "databricks_job" "settlement_report_job" {
   provider            = databricks.dbw
   name                = "SettlementReportJob"
-  max_concurrent_runs = 125
+  max_concurrent_runs = 40
 
   task {
     task_key    = "settlement_report_job_${uuid()}"
@@ -35,5 +35,9 @@ resource "databricks_job" "settlement_report_job" {
 
   email_notifications {
     no_alert_for_skipped_runs = true
+  }
+  
+  queue {
+	enabled = true
   }
 }
