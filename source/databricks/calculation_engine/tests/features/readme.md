@@ -5,7 +5,7 @@ csv-files as input and checks against an expected outcome - also in csv-files fo
 span is from actual calculation execution to the resulting output. If basis-data expected results are present in the
 output folder, these are also checked.
 
-## How to add a calculation logic test
+## How to add a feature test
 
 1. Generate the readme file (md). Remember to format the file correct as the CI check is strict.
 2. Generate the various data input files (csv)
@@ -38,14 +38,16 @@ time_series_points.csv and the desired result output files to create the scenari
 - Elements in lists are separated with “,” fx. ['measured', 'calculated']
 - Decimal number are with 3 decimals in the results
 
-## The readme.md file
+## Coverage - all_test_cases.py and Coverage.py
 
-**All test scenarios must have a readme.md file**. Easiest is to copy and modify an existing readme-file from another
-scenario.
-existing scenario.
+The class coverage/all_test_cases.py contains all test-cases that we want to test in the feature tests.
 
-Under the "Coverage" heading, list the testcases covered by the scenario as bullet items. These will be scanned as part
+The cases listed in this file can be referenced from Coverage.py files in scenarios. Under the "Cases Tested" heading, list the testcases covered by the scenario as bullet items. These will be scanned as part
 of coverage overview.
+
+**All test scenarios must have a Coverage.py file**. Easiest is to copy and modify an existing Coverage-file from another scenario.
+
+See also [Confluece](https://energinet.atlassian.net/wiki/spaces/D3/pages/1081999392/Coverage).
 
 ## Local test config settings
 
