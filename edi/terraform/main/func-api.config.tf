@@ -16,7 +16,7 @@ locals {
       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
       # Audit Log
-      AuditLog__IngestionUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
+      RevisionLogOptions__ApiAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
 
       # FeatureManagement
       FeatureManagement__UsePeekMessages = var.feature_management_use_peek_messages
