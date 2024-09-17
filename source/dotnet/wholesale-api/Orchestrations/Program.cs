@@ -68,7 +68,6 @@ var host = new HostBuilder()
         // Calculation scheduler
         services.AddCalculationScheduler();
 
-        services.AddTransient<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IAuditUserContext, AuditUserContext>();
         services.AddOutboxClient<DatabaseContext>();
         services.AddOutboxProcessor<DatabaseContext>();

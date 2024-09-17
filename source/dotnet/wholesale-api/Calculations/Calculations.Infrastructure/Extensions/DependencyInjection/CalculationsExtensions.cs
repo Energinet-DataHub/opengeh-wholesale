@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Outbox.Abstractions;
 using Energinet.DataHub.RevisionLog.Integration.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
@@ -32,6 +33,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 
@@ -105,6 +107,7 @@ public static class CalculationsExtensions
 
     private static void AddAuditLogging(IServiceCollection services, IConfiguration configuration)
     {
+        services.TryAddTransient<IJsonSerializer, JsonSerializer>();
         services.AddTransient<IAuditLogger, AuditLogger>();
         services.AddTransient<IOutboxPublisher, AuditLogOutboxMessageV1Publisher>();
         services.AddRevisionLogIntegrationModule(configuration);
