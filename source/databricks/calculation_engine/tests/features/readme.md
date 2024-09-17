@@ -47,6 +47,8 @@ of coverage overview.
 
 **All test scenarios must have a Coverage.py file**. Easiest is to copy and modify an existing Coverage-file from another scenario.
 
+See also https://energinet.atlassian.net/wiki/spaces/D3/pages/1081999392/Coverage
+
 ## Local test config settings
 
 Make a copy of [test.local.settings.sample.yml](..%2Ftest.local.settings.sample.yml) and remove ".sample" from the file
