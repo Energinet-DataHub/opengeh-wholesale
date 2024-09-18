@@ -50,6 +50,7 @@ public class CalculationTriggerTests : IAsyncLifetime
         // Clear mappings etc. before each test
         Fixture.MockServer.Reset();
         Fixture.MockServer.MockAuditLogEndpoint();
+        Fixture.MockServer.ResetLogEntries();
 
         return Task.CompletedTask;
     }
@@ -62,7 +63,7 @@ public class CalculationTriggerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task WhenStartCalculationIsCalled_CorrectAuditLogIsAddedToOutbox()
+    public async Task WhenStartCalculationIsCalled_CorrectAuditLogIsSentUsingOutbox()
     {
         // Arrange
         var startCalculationRequest = new StartCalculationRequestDto(
