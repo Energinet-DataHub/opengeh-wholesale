@@ -50,7 +50,7 @@ def create_time_series(
     resolution: DataProductMeteringPointResolution,
 ) -> list[str]:
     log.info("Creating time series points")
-    dbutils = get_dbutils(spark)
+    # dbutils = get_dbutils(spark)
     time_series_points = _get_filtered_time_series_points(spark, args, resolution)
     prepared_time_series = _generate_time_series(
         time_series_points,
@@ -174,7 +174,9 @@ def _generate_time_series(
     )
 
 
-def _add_start_of_day_column(filtered_time_series_points: DataFrame, time_zone: str):
+def _add_start_of_day_column(
+    filtered_time_series_points: DataFrame, time_zone: str
+) -> DataFrame:
     filtered_time_series_points = filtered_time_series_points.withColumn(
         EphemeralColumns.start_of_day,
         F.to_utc_timestamp(
