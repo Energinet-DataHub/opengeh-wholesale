@@ -11,8 +11,6 @@ module "st_documents" {
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
-
-  prevent_deletion = false
 }
 
 resource "azurerm_storage_container" "outgoing" {
@@ -40,6 +38,4 @@ module "st_documents_backup" {
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
-
-  prevent_deletion = false
 }
