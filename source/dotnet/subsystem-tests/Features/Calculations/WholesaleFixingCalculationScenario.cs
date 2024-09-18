@@ -36,6 +36,17 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     {
     }
 
+    [ScenarioStep(-1)]
+    [SubsystemFact]
+    public async Task GetTheNewestCalculationVersionBeforeANewCalculationIsStarted()
+    {
+        // Arrange & Act
+        var (calculationVersion, message) = await Fixture.GetLatestCalculationVersionFromCalculationsAsync();
+
+        // Assert
+        calculationVersion.Should().NotBeNull(message);
+    }
+
     [ScenarioStep(0)]
     [SubsystemFact]
     public void Given_CalculationInput()
@@ -267,5 +278,19 @@ AppDependencies
         isSuccess.Should().BeTrue("because the calculation should be completed");
         calculation.Should().NotBeNull();
         calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);
+    }
+
+    [ScenarioStep(14)]
+    [SubsystemFact]
+    public async Task AndThen_CheckThatIdentityColumnOnCalculationsIsWorkingCorrectly()
+    {
+        // Arrange
+        var previousCalculationVersion = Fixture.GetLatestCalculationVersion();
+
+        // Act
+        var (calculationVersion, message) = await Fixture.GetCalculationVersionOfCalculationIdFromCalculationsAsync(Fixture.ScenarioState.CalculationId);
+
+        // Assert
+        (calculationVersion > previousCalculationVersion).Should().BeTrue(message);
     }
 }
