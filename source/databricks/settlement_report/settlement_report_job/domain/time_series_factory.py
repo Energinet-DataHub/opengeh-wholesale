@@ -43,9 +43,7 @@ def create_time_series(
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    hourly_data, quarterly_data = _get_filtered_data(
-        spark, get_metering_point_time_series_view_name(), args
-    )
+    hourly_data, quarterly_data = _get_filtered_data(spark, args)
     hourly_time_points = _generate_hourly_ts(hourly_data, args.time_zone)
     quarterly_time_points = _generate_quarterly_ts(quarterly_data, args.time_zone)
     files_to_zip = _write_time_series(
@@ -204,11 +202,41 @@ def _read_and_filter_from_view(
     "settlement_report_job.time_series_factory._generate_time_series"
 )
 def _generate_time_series(
-    filtered_metering_points: DataFrame,
+    filtered_time_series_points: DataFrame,
     desired_number_of_observations: int,
     time_zone: str,
 ) -> DataFrame:
-    _result_columns = [
+    filtered_time_series_points = _add_start_of_day_column(
+        filtered_time_series_points, time_zone
+    )
+
+    win = Window.partitionBy(
+        DataProductColumnNames.grid_area_code,
+        DataProductColumnNames.metering_point_id,
+        DataProductColumnNames.metering_point_type,
+        EphemeralColumns.start_of_day,
+    ).orderBy(DataProductColumnNames.observation_time)
+    filtered_time_series_points = filtered_time_series_points.withColumn(
+        "chronological_order", F.row_number().over(win)
+    )
+
+    quantity_column_names = [
+        F.col(str(i)).alias(f"ENERGYQUANTITY{i}")
+        for i in range(1, desired_number_of_observations)
+    ]
+
+    pivoted_df = (
+        filtered_time_series_points.groupBy(
+            DataProductColumnNames.grid_area_code,
+            DataProductColumnNames.metering_point_id,
+            DataProductColumnNames.metering_point_type,
+            EphemeralColumns.start_of_day,
+        )
+        .pivot("chronological_order", quantity_column_names)
+        .agg(F.first(DataProductColumnNames.quantity))
+    )
+
+    return pivoted_df.select(
         F.col(DataProductColumnNames.grid_area_code),
         F.col(DataProductColumnNames.metering_point_id).alias(
             TimeSeriesPointCsvColumnNames.metering_point_id
@@ -219,78 +247,24 @@ def _generate_time_series(
         F.col(EphemeralColumns.start_of_day).alias(
             TimeSeriesPointCsvColumnNames.start_of_day
         ),
-    ] + [
-        f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"
-        for i in range(desired_number_of_observations)
-    ]
+        *quantity_column_names,
+    )
 
-    df_with_array_column = (
-        filtered_metering_points.withColumn(
-            EphemeralColumns.start_of_day,
+
+def _add_start_of_day_column(filtered_time_series_points, time_zone):
+    filtered_time_series_points = filtered_time_series_points.withColumn(
+        EphemeralColumns.start_of_day,
+        F.to_utc_timestamp(
             F.date_trunc(
                 "DAY",
                 F.from_utc_timestamp(
                     DataProductColumnNames.observation_time, time_zone
                 ),
             ),
-        )
-        .groupBy(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.col(EphemeralColumns.start_of_day),
-        )
-        .agg(
-            F.array_agg(
-                F.struct(
-                    F.col(DataProductColumnNames.observation_time),
-                    F.col(DataProductColumnNames.quantity),
-                )
-            ).alias(EphemeralColumns.quantities)
-        )
+            time_zone,
+        ),
     )
-
-    padded_array_column = (
-        df_with_array_column.select(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.to_utc_timestamp(F.col(EphemeralColumns.start_of_day), time_zone).alias(
-                EphemeralColumns.start_of_day
-            ),
-            F.col(EphemeralColumns.quantities),
-        )
-        .select(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.col(EphemeralColumns.start_of_day),
-            F.explode(
-                pad_array_col(
-                    EphemeralColumns.quantities,
-                    desired_number_of_observations,
-                    TimeSeriesPointCsvColumnNames.energy_prefix,
-                )
-            ).alias("exploded"),
-        )
-        .select("*", "exploded.*")
-        .drop("exploded")
-    )
-
-    result = (
-        padded_array_column.groupBy(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.col(EphemeralColumns.start_of_day),
-        ).pivot(EphemeralColumns.uid)
-        # We can use whatever aggregation here as there is only one value per uid
-        .sum(DataProductColumnNames.quantity)
-    )
-
-    return result.select(*_result_columns)
+    return filtered_time_series_points
 
 
 @logging_configuration.use_span(
