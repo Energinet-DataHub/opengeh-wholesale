@@ -10,17 +10,6 @@ module "st_documents" {
   account_replication_type   = "LRS"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
-  data_factory_backup = {
-    enabled      = false
-    id           = data.azurerm_key_vault_secret.shared_adf_id.value
-    principal_id = data.azurerm_key_vault_secret.shared_adf_principal_id.value
-    containers = [
-      "outgoing",
-      "archived"
-    ]
-    backup_storage_account_id   = module.st_documents_backup.id
-    backup_storage_account_fqdn = module.st_documents_backup.fully_qualified_domain_name
-  }
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
 }
 
