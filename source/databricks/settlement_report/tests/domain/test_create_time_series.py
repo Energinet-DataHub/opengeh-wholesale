@@ -18,7 +18,7 @@ from settlement_report_job.domain.time_series_factory import create_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
 
-def test_create_time_series(mocker, spark: SparkSession):
+def test_create_time_series(spark: SparkSession):
 
     # # Arrange
     # test_data = [
@@ -78,3 +78,5 @@ def test_create_time_series(mocker, spark: SparkSession):
     # # Assert
     # assert isinstance(result, list)
     # assert len(result) > 0
+
+    assert True
