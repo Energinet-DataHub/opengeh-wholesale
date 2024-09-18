@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-METERING_POINT_TYPE_DICT = {
+METERING_POINT_TYPES = {
     "ve_production": "D01",
     "net_production": "D05",
     "supply_to_grid": "D06",
@@ -30,7 +30,7 @@ METERING_POINT_TYPE_DICT = {
     "exchange": "E20",
 }
 
-SETTLEMENT_METHOD_DICT = {
+SETTLEMENT_METHODS = {
     "non_profiled": "E02",
     "flex": "D01",
 }

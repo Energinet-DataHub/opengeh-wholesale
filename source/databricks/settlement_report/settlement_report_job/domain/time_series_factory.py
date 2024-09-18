@@ -16,7 +16,7 @@ from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.report_naming_convention import (
-    METERING_POINT_TYPE_DICT,
+    METERING_POINT_TYPES,
 )
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
@@ -209,7 +209,7 @@ def _generate_time_series(
         F.col(DataProductColumnNames.metering_point_id).alias(
             TimeSeriesPointCsvColumnNames.metering_point_id
         ),
-        map_from_dict(METERING_POINT_TYPE_DICT)[
+        map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
         F.col(EphemeralColumns.start_of_day).alias(

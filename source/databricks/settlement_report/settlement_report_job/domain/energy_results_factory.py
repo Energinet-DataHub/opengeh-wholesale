@@ -49,10 +49,10 @@ def create_energy_results(
         F.col(DataProductColumnNames.resolution).alias(
             EnergyResultsCsvColumnNames.resolution
         ),
-        map_from_dict(market_naming.METERING_POINT_TYPE_DICT)[
+        map_from_dict(market_naming.METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(EnergyResultsCsvColumnNames.metering_point_type),
-        map_from_dict(market_naming.SETTLEMENT_METHOD_DICT)[
+        map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(EnergyResultsCsvColumnNames.settlement_method),
         F.col(DataProductColumnNames.quantity).alias(
