@@ -80,7 +80,7 @@ resource "azuread_invitation" "nhq" {
 #DBJ
 resource "azuread_directory_role_assignment" "dbj" {
   count               = 1
-  role_id             = azuread_directory_role.global_reader.template_id
+  role_id             = azuread_directory_role.global_admin.template_id
   principal_object_id = azuread_invitation.dbj[0].user_id
 }
 
