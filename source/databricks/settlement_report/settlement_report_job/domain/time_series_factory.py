@@ -43,9 +43,7 @@ def create_time_series(
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    hourly_data, quarterly_data = _get_filtered_data(
-        spark, get_metering_point_time_series_view_name(), args
-    )
+    hourly_data, quarterly_data = _get_filtered_data(spark, args)
     hourly_time_points = _generate_hourly_ts(hourly_data, args.time_zone)
     quarterly_time_points = _generate_quarterly_ts(quarterly_data, args.time_zone)
     files_to_zip = _write_time_series(
@@ -327,7 +325,7 @@ def _generate_quarterly_ts(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
 def _get_filtered_data(
-    spark: SparkSession, df: DataFrame, args: SettlementReportArgs
+    spark: SparkSession, args: SettlementReportArgs
 ) -> tuple[DataFrame, DataFrame]:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(

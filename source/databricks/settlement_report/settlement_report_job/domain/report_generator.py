@@ -14,7 +14,6 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating settlement reports.
     """
-    create_time_series(spark, args)
     dbutils = get_dbutils(spark)
     report_directory = f"{get_output_volume_name()}/{args.report_id}"
     zip_file_path = f"{report_directory}/final_report.zip"
