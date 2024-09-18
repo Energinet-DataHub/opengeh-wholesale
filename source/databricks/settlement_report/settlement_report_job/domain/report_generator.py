@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain.metering_point_resolution import (
-    MeteringPointResolution,
+    DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.time_series_factory import create_time_series
@@ -25,13 +25,13 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
         spark,
         args,
         report_directory,
-        MeteringPointResolution.HOUR,
+        DataProductMeteringPointResolution.HOUR,
     )
     quarterly_time_series_files = create_time_series(
         spark,
         args,
         report_directory,
-        MeteringPointResolution.QUARTER,
+        DataProductMeteringPointResolution.QUARTER,
     )
 
     files_to_zip = []

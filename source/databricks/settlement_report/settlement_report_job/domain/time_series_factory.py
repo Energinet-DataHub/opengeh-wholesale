@@ -16,7 +16,7 @@ from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.metering_point_resolution import (
-    MeteringPointResolution,
+    DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.utils import (
@@ -48,7 +48,7 @@ def create_time_series(
     spark: SparkSession,
     args: SettlementReportArgs,
     report_directory: str,
-    resolution: MeteringPointResolution,
+    resolution: DataProductMeteringPointResolution,
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
@@ -73,7 +73,9 @@ def create_time_series(
         ],
     )
     resolution_name = (
-        "TSSD60" if resolution.value == MeteringPointResolution.HOUR else "TSSD15"
+        "TSSD60"
+        if resolution.value == DataProductMeteringPointResolution.HOUR
+        else "TSSD15"
     )
     new_files = get_new_files(
         result_path,
@@ -285,10 +287,12 @@ def _generate_time_series(
     return result.select(*_result_columns)
 
 
-def _get_desired_quantity_column_count(resolution: MeteringPointResolution) -> int:
-    if resolution == MeteringPointResolution.HOUR:
+def _get_desired_quantity_column_count(
+    resolution: DataProductMeteringPointResolution,
+) -> int:
+    if resolution == DataProductMeteringPointResolution.HOUR:
         return 25
-    elif resolution == MeteringPointResolution.QUARTER:
+    elif resolution == DataProductMeteringPointResolution.QUARTER:
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution.value}")
@@ -298,7 +302,9 @@ def _get_desired_quantity_column_count(resolution: MeteringPointResolution) -> i
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
 def _get_filtered_time_series_points(
-    spark: SparkSession, args: SettlementReportArgs, resolution: MeteringPointResolution
+    spark: SparkSession,
+    args: SettlementReportArgs,
+    resolution: DataProductMeteringPointResolution,
 ) -> DataFrame:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
