@@ -11,18 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime, timedelta
-from typing import Union, Any
+from typing import Union
 from pyspark.sql import DataFrame, Column, functions as F, types as T
-from pyspark.sql.window import Window
 from pyspark.sql.session import SparkSession
 
+from settlement_report_job.domain.metering_point_resolution import (
+    DataProductMeteringPointResolution,
+)
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.utils import map_from_dict, get_dbutils
+from settlement_report_job.utils import (
+    map_from_dict,
+    get_dbutils,
+    write_files,
+    get_new_files,
+    merge_files,
+)
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
     get_metering_point_time_series_view_name,
-    RESOLUTION_NAMES,
 )
 from settlement_report_job.table_column_names import (
     DataProductColumnNames,
@@ -39,69 +45,56 @@ log = Logger(__name__)
     "settlement_report_job.time_series_factory.create_time_series"
 )
 def create_time_series(
-    spark: SparkSession, args: SettlementReportArgs, query_directory: str
+    spark: SparkSession,
+    args: SettlementReportArgs,
+    report_directory: str,
+    resolution: DataProductMeteringPointResolution,
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    hourly_data, quarterly_data = _get_filtered_data(
-        spark, get_metering_point_time_series_view_name(), args
+    time_series_points = _get_filtered_time_series_points(spark, args, resolution)
+    prepared_time_series = _generate_time_series(
+        time_series_points,
+        _get_desired_quantity_column_count(resolution),
+        args.time_zone,
     )
-    hourly_time_points = _generate_hourly_ts(hourly_data, args.time_zone)
-    quarterly_time_points = _generate_quarterly_ts(quarterly_data, args.time_zone)
-    files_to_zip = _write_time_series(
+
+    result_path = f"{report_directory}/time_series_{resolution.value}"
+    headers = write_files(
+        df=prepared_time_series,
+        path=result_path,
+        split_large_files=args.prevent_large_text_files,
+        split_by_grid_area=args.split_report_by_grid_area,
+        order_by=[
+            DataProductColumnNames.grid_area_code,
+            TimeSeriesPointCsvColumnNames.metering_point_type,
+            TimeSeriesPointCsvColumnNames.metering_point_id,
+            TimeSeriesPointCsvColumnNames.start_of_day,
+        ],
+    )
+    resolution_name = (
+        "TSSD60"
+        if resolution.value == DataProductMeteringPointResolution.HOUR
+        else "TSSD15"
+    )
+    new_files = get_new_files(
+        result_path,
+        file_name_template="_".join(
+            [
+                resolution_name,
+                "{grid_area}",
+                args.period_start.strftime("%d-%m-%Y"),
+                args.period_end.strftime("%d-%m-%Y"),
+                "{split}",
+            ]
+        ),
+    )
+    files = merge_files(
         dbutils=dbutils,
-        query_directory=query_directory,
-        args=args,
-        hourly_time_points_by_grid_area=hourly_time_points,
-        quarterly_time_points_by_grid_area=quarterly_time_points,
+        new_files=new_files,
+        headers=headers,
     )
-    log.info(
-        "Time series points created the following files:\n\t{}".format(
-            "\n\t".join(files_to_zip)
-        )
-    )
-    return files_to_zip
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._write_time_series"
-)
-def _write_time_series(
-    dbutils: Any,
-    query_directory: str,
-    args: SettlementReportArgs,
-    hourly_time_points_by_grid_area: DataFrame,
-    quarterly_time_points_by_grid_area: DataFrame,
-) -> list[str]:
-    files_to_zip = []
-    for df, resolution in [
-        (hourly_time_points_by_grid_area, "PT1H"),
-        (quarterly_time_points_by_grid_area, "PT15M"),
-    ]:
-        write_success = _write_time_series_points(
-            df=df,
-            path=query_directory,
-            order_by=[
-                DataProductColumnNames.grid_area_code,
-                TimeSeriesPointCsvColumnNames.start_of_day,
-            ],
-            split_by_grid_area=args.split_report_by_grid_area,
-            split_large_files=args.prevent_large_text_files,
-            rows_per_file=1_000_000,
-        )
-        if write_success is False:
-            raise Exception(
-                f"Failed to write time series points to storage with resolution: {resolution}"  # noqa
-            )
-        to_zip = _get_files_to_zip(
-            dbutils=dbutils,
-            path=query_directory,
-            resolution=resolution,
-            period_start=args.period_start,
-            period_end=args.period_end,
-        )
-        files_to_zip.extend(to_zip)
-    return files_to_zip
+    return files
 
 
 @logging_configuration.use_span(
@@ -182,8 +175,9 @@ def _read_and_filter_from_view(
     spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
     df = spark.read.table(view_name).where(
-        F.col(DataProductColumnNames.observation_time) >= args.period_start
-    ) & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+        (F.col(DataProductColumnNames.observation_time) >= args.period_start)
+        & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+    )
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
@@ -205,7 +199,7 @@ def _read_and_filter_from_view(
 )
 def _generate_time_series(
     filtered_metering_points: DataFrame,
-    desired_number_of_observations: int,
+    desired_quantity_column_count: int,
     time_zone: str,
 ) -> DataFrame:
     _result_columns = [
@@ -221,7 +215,7 @@ def _generate_time_series(
         ),
     ] + [
         f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"
-        for i in range(desired_number_of_observations)
+        for i in range(desired_quantity_column_count)
     ]
 
     df_with_array_column = (
@@ -270,7 +264,7 @@ def _generate_time_series(
             F.explode(
                 pad_array_col(
                     EphemeralColumns.quantities,
-                    desired_number_of_observations,
+                    desired_quantity_column_count,
                     TimeSeriesPointCsvColumnNames.energy_prefix,
                 )
             ).alias("exploded"),
@@ -293,148 +287,27 @@ def _generate_time_series(
     return result.select(*_result_columns)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._generate_hourly_time_series"
-)
-def _generate_hourly_ts(df: DataFrame, time_zone: str) -> DataFrame:
-    log.info("Generating hourly time series")
-    ts = _generate_time_series(
-        df,
-        desired_number_of_observations=25,
-        time_zone=time_zone,
-    )
-    log.info("Hourly time series generated")
-    return ts
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._generate_quarterly_time_series"
-)
-def _generate_quarterly_ts(
-    filtered_metering_points: DataFrame, time_zone: str
-) -> DataFrame:
-    log.info("Generating quarterly time series")
-    ts = _generate_time_series(
-        filtered_metering_points,
-        desired_number_of_observations=25 * 4,
-        time_zone=time_zone,
-    )
-    log.info("Quarterly time series generated")
-    return ts
+def _get_desired_quantity_column_count(
+    resolution: DataProductMeteringPointResolution,
+) -> int:
+    if resolution == DataProductMeteringPointResolution.HOUR:
+        return 25
+    elif resolution == DataProductMeteringPointResolution.QUARTER:
+        return 25 * 4
+    else:
+        raise ValueError(f"Unknown time series resolution: {resolution.value}")
 
 
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
-def _get_filtered_data(
-    spark: SparkSession, df: DataFrame, args: SettlementReportArgs
-) -> tuple[DataFrame, DataFrame]:
+def _get_filtered_time_series_points(
+    spark: SparkSession,
+    args: SettlementReportArgs,
+    resolution: DataProductMeteringPointResolution,
+) -> DataFrame:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
         spark, args, get_metering_point_time_series_view_name()
     )
-    hourly_data = df.filter(DataProductColumnNames.resolution == "PT1H")
-    quarterly_data = df.filter(DataProductColumnNames.resolution == "PT15M")
-    log.info("Filtered data retrieved")
-    return hourly_data, quarterly_data
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._write_time_series_points"
-)
-def _write_time_series_points(
-    df: DataFrame,
-    path: str,
-    split_large_files: bool = False,
-    split_by_grid_area: bool = True,
-    rows_per_file: int = 1_000_000,
-    order_by: list[str] = [],
-) -> Union[bool, None]:
-    log.info(f"Writing time series points to: {path}")
-    grid_col = F.col(DataProductColumnNames.grid_area_code)
-    split_col = F.lit(0)
-
-    if split_large_files is True:
-        w = Window().orderBy(order_by)
-        split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
-    if split_by_grid_area is False:
-        grid_col = F.lit("ALL")
-
-    df = df.withColumn(DataProductColumnNames.grid_area_code, grid_col)
-    df = df.withColumn("split", split_col)
-
-    (
-        df.coalesce(1)
-        .write.mode("overwrite")
-        .partitionBy(DataProductColumnNames.grid_area_code, "split")
-        .csv(path, header=True)
-    )
-    log.info(f"Time series points written to: {path}")
-    return True
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._get_files_to_zip"
-)
-def _get_files_to_zip(
-    dbutils: Any,
-    path: str,
-    resolution: str,
-    period_start: datetime,
-    period_end: datetime,
-) -> list[str]:
-    log.info(f"Getting files to zip for resolution: {resolution}")
-    resolution_name = RESOLUTION_NAMES.get(resolution)
-    if resolution_name is None:
-        raise Exception(f"Unknown resolution: {resolution}")
-    start_date_name = (period_start + timedelta(days=1)).strftime("%d-%m-%Y")
-    end_date_name = period_end.strftime("%d-%m-%Y")
-    RESULT_DIR = "result"
-    files_to_zip = []
-    for grid_file in dbutils.fs.ls(path):
-        # Skip the result directory
-        if grid_file.name.startswith(RESULT_DIR):
-            continue
-
-        # Skip files that are not grid area files
-        if not grid_file.name.startswith(DataProductColumnNames.grid_area_code):  # noqa
-            log.info(f"Removing {grid_file.path}")
-            dbutils.fs.rm(grid_file.path, recurse=True)
-            continue
-
-        grid_area_name = grid_file.name.split("=")[-1].removesuffix("/")
-        for split_file in dbutils.fs.ls(grid_file.path):
-            # Skip files that are not split files
-            if not split_file.name.startswith("split"):
-                continue
-
-            csv_files = [
-                f for f in dbutils.fs.ls(split_file.path) if f.name.endswith(".csv")
-            ]
-            if len(csv_files) != 1:
-                msg = (
-                    f"Only one csv file expected per partition, found {len(csv_files)}"
-                )
-                raise Exception(msg)
-
-            split_name = split_file.name.split("=")[-1].removesuffix("/")
-
-            src = csv_files[0].path
-            file_name = "_".join(
-                [
-                    resolution_name,
-                    grid_area_name,
-                    start_date_name,
-                    end_date_name,
-                    split_name,
-                ]
-            )
-            dst = f"{path}/{RESULT_DIR}/{file_name}.csv"  # noqa
-            files_to_zip.append(dst)
-            log.info(f"Moving {src} to {dst}")
-            dbutils.fs.mv(src, dst)
-            log.info(f"Removing {grid_file.path}")
-            dbutils.fs.rm(grid_file.path, recurse=True)
-
-    log.info(f"Files to zip for resolution: {resolution} retrieved")
-    return files_to_zip
+    return df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
