@@ -10,7 +10,7 @@ from settlement_report_job.infrastructure.database_definitions import (
 )
 
 from settlement_report_job.utils import create_zip_file, get_dbutils
-from settlement_report_job.infrastructure.logger import Logger
+from settlement_report_job.logger import Logger
 
 log = Logger(__name__)
 

@@ -22,7 +22,7 @@ from configargparse import argparse
 from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.infrastructure.args_helper import valid_date
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.infrastructure.logger import Logger
+from settlement_report_job.logger import Logger
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import settlement_report_job.infrastructure.environment_variables as env_vars
