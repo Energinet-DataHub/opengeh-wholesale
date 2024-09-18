@@ -22,7 +22,7 @@ from pyspark.sql.types import (
 
 from package.databases.table_column_names import TableColumnNames
 
-charge_link_periods_schema_uc = StructType(
+charge_link_periods_schema = StructType(
     [
         StructField(TableColumnNames.calculation_id, StringType(), False),
         StructField(TableColumnNames.charge_key, StringType(), False),
@@ -33,20 +33,5 @@ charge_link_periods_schema_uc = StructType(
         StructField(TableColumnNames.quantity, IntegerType(), False),
         StructField(TableColumnNames.from_date, TimestampType(), False),
         StructField(TableColumnNames.to_date, TimestampType(), False),
-    ]
-)
-
-# ToDo JMG: Remove when we are on Unity Catalog
-hive_charge_link_periods_schema = StructType(
-    [
-        StructField("calculation_id", StringType(), False),
-        StructField("charge_key", StringType(), False),
-        StructField("charge_code", StringType(), False),
-        StructField("charge_type", StringType(), False),
-        StructField("charge_owner_id", StringType(), False),
-        StructField("metering_point_id", StringType(), False),
-        StructField("quantity", IntegerType(), False),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), True),
     ]
 )

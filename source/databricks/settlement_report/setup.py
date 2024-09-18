@@ -32,7 +32,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "create_settlement_report = settlement_report_job.settlement_report:start",
+            "create_settlement_report = settlement_report_job.entrypoint:start",
         ]
     },
 )

@@ -13,7 +13,6 @@
 # limitations under the License.
 from spark_sql_migrations import Schema, Table, View
 
-import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
 
 # calculation_input
@@ -22,15 +21,12 @@ from package.databases.wholesale_internal.schemas import (
 )
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
-    hive_total_monthly_amounts_schema,
-    hive_monthly_amounts_schema,
 )
 
 # calculation_output
 from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
     hive_wholesale_results_schema,
 )
-
 
 schema_config = [
     Schema(
@@ -43,14 +39,6 @@ schema_config = [
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
                 schema=hive_energy_results_schema,
-            ),
-            Table(
-                name=paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=hive_monthly_amounts_schema,
-            ),
-            Table(
-                name=paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=hive_total_monthly_amounts_schema,
             ),
         ],
         views=[
@@ -66,28 +54,6 @@ schema_config = [
                 name=paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=grid_loss_metering_points_schema,
             )
-        ],
-        views=[],
-    ),
-    Schema(
-        name=paths.HiveBasisDataDatabase.DATABASE_NAME,
-        tables=[
-            Table(
-                name=paths.HiveBasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.hive_charge_link_periods_schema,
-            ),
-            Table(
-                name=paths.HiveBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.hive_charge_price_information_periods_schema,
-            ),
-            Table(
-                name=paths.HiveBasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_points_schema,
-            ),
-            Table(
-                name=paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.grid_loss_metering_points_schema,
-            ),
         ],
         views=[],
     ),

@@ -19,14 +19,14 @@ from databases.wholesale_basis_data_internal.basis_data_test_factory import (
     create_basis_data_factory,
 )
 from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_charge_price_information_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_points_schema,
     hive_metering_point_period_schema,
     time_series_points_schema,
 )
 from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
-    hive_charge_link_periods_schema,
+    charge_link_periods_schema,
 )
 
 
@@ -41,10 +41,10 @@ from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods
             "time_series_points",
             time_series_points_schema,
         ),
-        ("charge_link_periods", hive_charge_link_periods_schema),
+        ("charge_link_periods", charge_link_periods_schema),
         (
             "charge_price_information_periods",
-            hive_charge_price_information_periods_schema,
+            charge_price_information_periods_schema,
         ),
         ("charge_price_points", charge_price_points_schema),
         (
@@ -57,7 +57,7 @@ def test__basis_data_uses_correct_schema(
     spark: SparkSession,
     basis_data_table_property_name: str,
     expected_schema: StructType,
-):
+) -> None:
     # Arrange
     basis_data_container = create_basis_data_factory(spark)
 

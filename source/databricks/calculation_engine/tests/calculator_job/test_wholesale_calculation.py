@@ -25,8 +25,8 @@ from package.codelists import (
 )
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
-    charge_price_information_periods_schema_uc,
-    charge_link_periods_schema_uc,
+    charge_price_information_periods_schema,
+    charge_link_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_points_schema,
     metering_point_periods_schema_uc,
@@ -324,15 +324,19 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-            charge_link_periods_schema_uc,
+            charge_link_periods_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-            charge_price_information_periods_schema_uc,
+            charge_price_information_periods_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
+        ),
+        (
+            paths.WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+            grid_loss_metering_points_schema,
         ),
     ],
 )
@@ -353,22 +357,6 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 
     # Assert
     assert actual.schema == expected_schema
-
-
-def test__when_wholesale_calculation__grid_loss_metering_points_is_stored_with_correct_schema(
-    spark: SparkSession,
-    executed_wholesale_fixing: None,
-) -> None:
-    # Arrange
-    actual = spark.read.table(
-        f"{paths.HiveBasisDataDatabase.DATABASE_NAME}.{paths.HiveBasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
-    )
-
-    # Act: Calculator job is executed just once per session.
-    #      See the fixtures `results_df` and `executed_wholesale_fixing`
-
-    # Assert
-    assert actual.schema == grid_loss_metering_points_schema
 
 
 @pytest.mark.parametrize(

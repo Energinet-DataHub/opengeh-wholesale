@@ -35,8 +35,8 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
 from package.codelists import ChargeType
 from package.constants import Colname
 from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_charge_link_periods_schema,
-    hive_charge_price_information_periods_schema,
+    charge_link_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_points_schema,
 )
@@ -169,7 +169,7 @@ def create_charge_price_information(
         data = [create_charge_price_information_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, hive_charge_price_information_periods_schema)
+    df = spark.createDataFrame(data, charge_price_information_periods_schema)
     return ChargePriceInformation(df)
 
 
@@ -191,7 +191,7 @@ def create_charge_links(
         data = [create_charge_link_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data, hive_charge_link_periods_schema)
+    return spark.createDataFrame(data, charge_link_periods_schema)
 
 
 def create_calculation_args() -> CalculatorArgs:

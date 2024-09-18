@@ -20,7 +20,6 @@ from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveOutputDatabase,
     WholesaleResultsInternalDatabase,
 )
 
@@ -49,11 +48,11 @@ def _write(
 ) -> None:
     with logging_configuration.start_span(name):
         df.drop(
-            # ToDo JMG: Remove when we are on Unity Catalog
+            # ToDo JMG: Remove when we are on Unity Catalog.
             TableColumnNames.calculation_type,
             TableColumnNames.calculation_execution_time_start,
         ).withColumnRenamed(
-            # ToDo JMG: Remove when we are on Unity Catalog
+            # ToDo JMG: Remove when we are on Unity Catalog.
             TableColumnNames.calculation_result_id,
             TableColumnNames.result_id,
         ).write.format(
@@ -64,11 +63,4 @@ def _write(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
-        )
-
-        # ToDo JMG: Remove when we are on Unity Catalog
-        df.write.format("delta").mode("append").option(
-            "mergeSchema", "false"
-        ).insertInto(
-            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
         )
