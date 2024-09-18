@@ -41,16 +41,20 @@ module "apima_bff" {
                 }</message>
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
-            <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
-                <openid-config url="${data.azurerm_key_vault_secret.mitid_frontend_open_id_url.value}" />
-                <openid-config url="${data.azurerm_key_vault_secret.frontend_open_id_url.value}" />
-                <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
-                <required-claims>
-                    <claim name="aud" match="any">
-                        <value>${data.azurerm_key_vault_secret.backend_bff_app_id.value}</value>
-                    </claim>
-                </required-claims>
-            </validate-jwt>
+            <choose>
+              <when condition="@(!context.Operation.UrlTemplate.Equals("/v1/WholesaleSettlementReport/DownloadReport"))">
+                  <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
+                      <openid-config url="https://b2cshresdevwe002.b2clogin.com/09f452f8-5372-478b-8661-0616584b199e/B2C_1_MitID_SignInSignUpFlow_v2/v2.0/.well-known/openid-configuration" />
+                      <openid-config url="https://b2cshresdevwe002.b2clogin.com/09f452f8-5372-478b-8661-0616584b199e/B2C_1_SignInFlow/v2.0/.well-known/openid-configuration" />
+                      <openid-config url="https://app-api-markpart-d-we-002.azurewebsites.net/.well-known/openid-configuration" />
+                      <required-claims>
+                          <claim name="aud" match="any">
+                              <value>f40d736f-98c2-4a45-be3b-c5317a7a8e9a</value>
+                          </claim>
+                      </required-claims>
+                  </validate-jwt>
+              </when>
+            </choose>
             <base />
             <set-header name="CorrelationId" exists-action="override">
                 <value>@($"{context.RequestId}")</value>
