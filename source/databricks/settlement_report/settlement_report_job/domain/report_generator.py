@@ -37,6 +37,6 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     files_to_zip = []
     files_to_zip.extend(hourly_time_series_files)
     files_to_zip.extend(quarterly_time_series_files)
-    log.info(f"Creating zip file at '{report_directory}.zip'")
+    log.info(f"Creating zip file: '{zip_file_path}'")
     create_zip_file(dbutils, args.report_id, zip_file_path, files_to_zip)
-    log.info(f"Finished creating '{report_directory}/some-name.zip'")
+    log.info(f"Finished creating '{zip_file_path}'")
