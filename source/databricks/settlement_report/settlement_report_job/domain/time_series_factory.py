@@ -15,7 +15,7 @@ from typing import Union
 from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.session import SparkSession
 
-from settlement_report_job.domain.market_naming_convention import (
+from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPE_DICT,
 )
 from settlement_report_job.domain.metering_point_resolution import (
