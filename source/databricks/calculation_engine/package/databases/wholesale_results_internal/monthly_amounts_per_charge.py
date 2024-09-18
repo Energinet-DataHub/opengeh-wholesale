@@ -56,9 +56,6 @@ def _write(
     ],
 ) -> None:
 
-    df.printSchema()
-    df.show()
-
     with logging_configuration.start_span(name):
         df.drop(
             # ToDo JMG: Remove when we are on Unity Catalog. AJW: Are you sure?

@@ -16,6 +16,7 @@ from pyspark.sql import DataFrame
 
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
+from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
@@ -46,7 +47,19 @@ def _write(
     ],
 ) -> None:
     with logging_configuration.start_span(name):
-        df.write.format("delta").mode("append").option(
+        df.drop(
+            # ToDo JMG: Remove when we are on Unity Catalog. AJW: Are you sure?
+            TableColumnNames.calculation_type,
+            TableColumnNames.calculation_execution_time_start,
+        ).withColumnRenamed(
+            # ToDo JMG: Remove when we are on Unity Catalog. AJW: Are you sure?
+            TableColumnNames.calculation_result_id,
+            TableColumnNames.result_id,
+        ).write.format(
+            "delta"
+        ).mode(
+            "append"
+        ).option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
