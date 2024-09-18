@@ -141,7 +141,12 @@ def write_files(
     return [c for c in df.columns if c not in partition_columns]
 
 
-def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
+def get_new_files(
+    result_path: str,
+    file_name_template: str,
+    split_large_files: bool,
+    split_by_grid_area: bool,
+) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
     Args:
@@ -156,7 +161,14 @@ def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
     new_files = []
-    regex = f"{result_path}/{DataProductColumnNames.grid_area_code}=(\\d+)/split=(\\d+)"
+
+    regex = result_path
+    if split_by_grid_area:
+        regex = f"{regex}/{ EphemeralColumns.grid_area_split_column}=(\\d+)"
+
+    if split_large_files:
+        regex = f"{regex}/{EphemeralColumns.large_files_split_column}=(\\d+)"
+
     for f in files:
         partition_match = re.match(regex, str(f))
         if partition_match is None:
