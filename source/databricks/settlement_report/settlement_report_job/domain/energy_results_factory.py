@@ -65,7 +65,6 @@ def _read_and_filter_from_view(
     spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
     df = spark.read.table(view_name)
-    df.show()
 
     df = df.where(
         (F.col(DataProductColumnNames.time) >= args.period_start)
