@@ -332,8 +332,8 @@ def _get_filtered_data(
     df = _read_and_filter_from_view(
         spark, args, get_metering_point_time_series_view_name()
     )
-    hourly_data = df.filter(DataProductColumnNames.resolution == "PT1H")
-    quarterly_data = df.filter(DataProductColumnNames.resolution == "PT15M")
+    hourly_data = df.where(F.col(DataProductColumnNames.resolution) == "PT1H")
+    quarterly_data = df.where(F.col(DataProductColumnNames.resolution) == "PT15M")
     log.info("Filtered data retrieved")
     return hourly_data, quarterly_data
 
