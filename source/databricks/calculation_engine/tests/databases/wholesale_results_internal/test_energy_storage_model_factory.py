@@ -33,9 +33,7 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import (
-    hive_energy_results_schema,
-)
+from package.databases.wholesale_results_internal.schemas import energy_schema
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -357,17 +355,17 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
         TableColumnNames.calculation_id,
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_execution_time_start,
+        # TODO AJW TableColumnNames.calculation_type,
+        # TODO AJW TableColumnNames.calculation_execution_time_start,
         TableColumnNames.time_series_type,
-        TableColumnNames.aggregation_level,
+        # TODO AJW TableColumnNames.aggregation_level,
         # Data that does vary but does not define distinct results
         TableColumnNames.time,
         TableColumnNames.quantity_qualities,
         TableColumnNames.quantity,
         # The field that defines results
-        TableColumnNames.calculation_result_id,
-        TableColumnNames.metering_point_id,
+        TableColumnNames.result_id,
+        # TODO AJW TableColumnNames.metering_point_id,
         TableColumnNames.resolution,
     ]
 
@@ -403,4 +401,4 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
 
 
 def _get_energy_result_column_names() -> List[str]:
-    return [f.name for f in hive_energy_results_schema.fields]
+    return [f.name for f in energy_schema.fields]
