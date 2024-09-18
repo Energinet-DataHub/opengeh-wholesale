@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.RevisionLog.Integration;
 using Energinet.DataHub.Wholesale.Calculations.Application.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Outbox;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+using FluentAssertions.Execution;
 using NodaTime;
 using Xunit.Abstractions;
 
@@ -44,6 +49,7 @@ public class CalculationTriggerTests : IAsyncLifetime
 
         // Clear mappings etc. before each test
         Fixture.MockServer.Reset();
+        Fixture.MockServer.MockAuditLogEndpoint();
 
         return Task.CompletedTask;
     }
@@ -58,6 +64,7 @@ public class CalculationTriggerTests : IAsyncLifetime
     [Fact]
     public async Task WhenStartCalculationIsCalled_CorrectAuditLogIsAddedToOutbox()
     {
+        // Arrange
         var startCalculationRequest = new StartCalculationRequestDto(
             CalculationType.BalanceFixing,
             ["123"],
@@ -66,26 +73,77 @@ public class CalculationTriggerTests : IAsyncLifetime
             ScheduledAt: DateTimeOffset.UtcNow,
             false);
 
+        var jsonSerializer = new JsonSerializer();
+        var expectedAuditLogPayload = jsonSerializer.Serialize(startCalculationRequest);
         var outboxCreatedAfter = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromSeconds(1));
 
         // Act
         await Fixture.StartCalculationAsync(startCalculationRequest);
+        await Fixture.AppHostManager.TriggerFunctionAsync(OutboxPublisher.FunctionName);
 
         // Assert
         await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
-        var outboxMessages = await dbContext.Outbox
-            .Where(o => o.CreatedAt > outboxCreatedAfter)
-            .ToListAsync();
 
-        var outboxMessage = outboxMessages.Should().ContainSingle()
-            .Subject;
+        // => Wait for the outbox message to be published
+        var (success, outboxMessage) = await dbContext.WaitForPublishedOutboxMessageAsync(
+            outboxCreatedAfter,
+            Fixture.TestLogger,
+            TimeSpan.FromSeconds(30));
 
-        var jsonSerializer = new JsonSerializer();
-        var payload = jsonSerializer.Deserialize<AuditLogOutboxMessageV1Payload>(outboxMessage.Payload);
+        // => Asserts the outbox message was published successfully
+        using (new AssertionScope())
+        {
+            success.Should().BeTrue();
+            outboxMessage.Should().NotBeNull();
 
-        payload.Activity.Should().Be(AuditLogActivity.StartNewCalculation.Identifier);
+            var actualOutboxMessageState = new
+            {
+                outboxMessage?.PublishedAt,
+                outboxMessage?.ProcessingAt,
+                outboxMessage?.FailedAt,
+                outboxMessage?.ErrorMessage,
+            };
+            outboxMessage?.PublishedAt.Should().NotBeNull("because the outbox message should be published, " +
+                                                          $"but actual state was: {actualOutboxMessageState}");
+        }
 
-        var serializedRequest = jsonSerializer.Serialize(startCalculationRequest);
-        payload.Payload.Should().Be(serializedRequest);
+        // => Assert the audit log outbox message content was as expected
+        var actualOutboxMessage = jsonSerializer.Deserialize<AuditLogOutboxMessageV1Payload>(outboxMessage!.Payload);
+
+        actualOutboxMessage.Activity.Should().Be(AuditLogActivity.StartNewCalculation.Identifier);
+        actualOutboxMessage.Payload.Should().Be(expectedAuditLogPayload);
+
+        // => Assert that the request to the audit log mock server was as expected
+        RevisionLogEntry? deserializedBody;
+        using (new AssertionScope())
+        {
+            var actualAuditLogRequests = Fixture.MockServer.GetAuditLogCalls();
+            var actualAuditLogRequest = actualAuditLogRequests.Should().ContainSingle()
+                .Subject;
+
+            actualAuditLogRequest.Response.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            actualAuditLogRequest.Request.Body.Should().NotBeNull();
+
+            // => Ensure that the audit log request body can be deserialized to an instance of RevisionLogEntry
+            var deserializeBody = () =>
+                jsonSerializer.Deserialize<RevisionLogEntry>(actualAuditLogRequest.Request.Body ?? string.Empty);
+
+            deserializedBody = deserializeBody.Should().NotThrow().Subject;
+            deserializedBody.Should().NotBeNull();
+        }
+
+        using var assertionScope = new AssertionScope();
+        deserializedBody!.LogId.Should().Be(actualOutboxMessage.LogId);
+        deserializedBody.Activity.Should().Be(AuditLogActivity.StartNewCalculation.Identifier);
+        deserializedBody.Payload.Should().Be(expectedAuditLogPayload);
+        deserializedBody.SystemId.Should().Be(Guid.Parse("467ab87d-9494-4add-bf01-703540067b9e")); // Wholesale system id
+        deserializedBody.UserId.Should().Be(Fixture.UserId);
+        deserializedBody.ActorId.Should().Be(Fixture.ActorId);
+        deserializedBody.ActorNumber.Should().Be(Fixture.ActorNumber);
+        deserializedBody.MarketRoles.Should().Be(Fixture.ActorRole);
+        deserializedBody.Permissions.Should().Be(string.Join(", ", Fixture.Permissions));
+        deserializedBody.Origin.Should().Be($"{Fixture.AppHostManager.HttpClient.BaseAddress}api/StartCalculation");
+        deserializedBody.AffectedEntityType.Should().Be(AuditLogEntityType.Calculation.Identifier);
+        deserializedBody.AffectedEntityKey.Should().BeNull();
     }
 }

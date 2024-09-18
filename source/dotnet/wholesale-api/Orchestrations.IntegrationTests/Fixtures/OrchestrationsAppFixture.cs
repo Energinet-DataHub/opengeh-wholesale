@@ -31,6 +31,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Energinet.DataHub.RevisionLog.Integration.Options;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
@@ -38,7 +39,9 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Outbox;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Newtonsoft.Json;
@@ -84,6 +87,16 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         MockServer = WireMockServer.Start(port: 1024);
         OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings);
     }
+
+    public Guid UserId { get; } = Guid.NewGuid();
+
+    public Guid ActorId { get; } = Guid.NewGuid();
+
+    public string ActorNumber { get; } = "0000000000000";
+
+    public string ActorRole { get; } = "EnergySupplier";
+
+    public string[] Permissions { get; } = ["calculations:manage"];
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
@@ -270,11 +283,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     private Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync()
     {
         // Fake claims
-        var actorNumberClaim = new Claim("actornumber", "0000000000000");
-        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
+        var actorNumberClaim = new Claim("actornumber", ActorNumber);
+        var actorRoleClaim = new Claim("marketroles", ActorRole);
 
         return OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(
-            roles: ["calculations:manage"],
+            userId: UserId.ToString(),
+            actorId: ActorId.ToString(),
+            roles: Permissions,
             extraClaims: [actorNumberClaim, actorRoleClaim]);
     }
 
@@ -371,6 +386,17 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds)}",
             "20");
+
+        // Audit log
+        var auditLogUrl = $"{MockServer.Url}{AuditLogWireMockExtensions.AuditLogUrlSuffix}";
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{nameof(RevisionLogOptions)}__{nameof(RevisionLogOptions.ApiAddress)}",
+            auditLogUrl);
+
+        // Disable timer trigger (should be manually triggered in tests)
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"AzureWebJobs.{OutboxPublisher.FunctionName}.Disabled",
+            "true");
 
         return appHostSettings;
     }
