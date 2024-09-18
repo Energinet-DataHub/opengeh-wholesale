@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.D
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Energinet.DataHub.Wholesale.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 

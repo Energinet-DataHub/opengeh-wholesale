@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

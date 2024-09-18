@@ -19,9 +19,11 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Outbox;
 
 public class OutboxPublisher(IOutboxProcessor outboxProcessor)
 {
+    public const string FunctionName = nameof(OutboxPublisher);
+
     private readonly IOutboxProcessor _outboxProcessor = outboxProcessor;
 
-    [Function(nameof(OutboxPublisher))]
+    [Function(FunctionName)]
     public Task PublishOutboxAsync(
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
         FunctionContext context,

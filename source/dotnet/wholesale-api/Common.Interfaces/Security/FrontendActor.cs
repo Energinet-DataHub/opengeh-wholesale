@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+namespace Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 
-public enum FrontendActorMarketRole
+public sealed record FrontendActor(
+    Guid ActorId,
+    string ActorNumber,
+    FrontendActorMarketRole MarketRole,
+    IReadOnlyCollection<string> Permissions)
 {
-    /// <summary>
-    /// Other is used when a user's actor has a valid market role, but the role is currently irrelevant.
-    /// </summary>
-    Other,
-    GridAccessProvider,
-    EnergySupplier,
-    SystemOperator,
-    DataHubAdministrator,
+    public bool HasMarketRole(FrontendActorMarketRole marketRole)
+    {
+        return MarketRole == marketRole;
+    }
 }

@@ -14,6 +14,7 @@
 
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 

@@ -14,12 +14,11 @@
 
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Core.Outbox.Abstractions;
+using Energinet.DataHub.Core.Outbox.Extensions.DependencyInjection;
 using Energinet.DataHub.RevisionLog.Integration.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
@@ -108,8 +107,9 @@ public static class CalculationsExtensions
     private static void AddAuditLogging(IServiceCollection services, IConfiguration configuration)
     {
         services.TryAddTransient<IJsonSerializer, JsonSerializer>();
-        services.AddTransient<IAuditLogger, AuditLogger>();
-        services.AddTransient<IOutboxPublisher, AuditLogOutboxMessageV1Publisher>();
+        services.TryAddTransient<IAuditLogger, AuditLogger>();
+
+        services.AddOutboxClient<DatabaseContext>();
         services.AddRevisionLogIntegrationModule(configuration);
     }
 }
