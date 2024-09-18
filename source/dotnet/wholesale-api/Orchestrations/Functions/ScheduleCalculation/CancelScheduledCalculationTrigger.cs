@@ -27,13 +27,11 @@ using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribut
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
 internal class CancelScheduledCalculationTrigger(
-    ILogger<CancelScheduledCalculationTrigger> logger,
     IAuditLogger auditLogger,
     CalculationSchedulerHandler calculationSchedulerHandler)
 {
     private const string PermissionCalculationsManage = "calculations:manage";
 
-    private readonly ILogger<CancelScheduledCalculationTrigger> _logger = logger;
     private readonly IAuditLogger _auditLogger = auditLogger;
     private readonly CalculationSchedulerHandler _calculationSchedulerHandler = calculationSchedulerHandler;
 
