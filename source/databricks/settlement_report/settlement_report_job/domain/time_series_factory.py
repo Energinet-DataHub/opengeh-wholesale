@@ -26,7 +26,7 @@ from settlement_report_job.infrastructure.database_definitions import (
     get_metering_point_time_series_view_name,
 )
 from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.table_column_names import (
+from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
     EphemeralColumns,

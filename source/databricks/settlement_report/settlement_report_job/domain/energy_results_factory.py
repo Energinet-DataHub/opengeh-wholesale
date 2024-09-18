@@ -23,7 +23,7 @@ from settlement_report_job.infrastructure.database_definitions import (
     get_energy_view_name,
 )
 
-from settlement_report_job.infrastructure.table_column_names import (
+from settlement_report_job.infrastructure.column_names import (
     EnergyResultsCsvColumnNames,
     DataProductColumnNames,
 )

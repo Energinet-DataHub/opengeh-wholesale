@@ -23,7 +23,7 @@ from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
-from settlement_report_job.infrastructure.table_column_names import (
+from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
 )
 

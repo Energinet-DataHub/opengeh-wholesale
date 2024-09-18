@@ -1,7 +1,7 @@
 from datetime import datetime
 from pyspark.sql import functions as F, types as T
 from settlement_report_job.domain.time_series_factory import pad_array_col
-from settlement_report_job.infrastructure.table_column_names import (
+from settlement_report_job.infrastructure.column_names import (
     EphemeralColumns,
     DataProductColumnNames,
 )
