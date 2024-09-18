@@ -144,10 +144,6 @@ def _generate_time_series(
         "chronological_order", F.row_number().over(win)
     )
 
-    quantity_column_names = [
-        f"ENERGYQUANTITY{i}" for i in range(1, desired_number_of_quantity_columns)
-    ]
-
     pivoted_df = (
         filtered_time_series_points.groupBy(
             DataProductColumnNames.grid_area_code,
@@ -155,9 +151,17 @@ def _generate_time_series(
             DataProductColumnNames.metering_point_type,
             EphemeralColumns.start_of_day,
         )
-        .pivot("chronological_order", quantity_column_names)
+        .pivot(
+            "chronological_order",
+            list(range(1, desired_number_of_quantity_columns + 1)),
+        )
         .agg(F.first(DataProductColumnNames.quantity))
     )
+
+    quantity_column_names = [
+        F.col(str(i)).alias(f"ENERGYQUANTITY{i}")
+        for i in range(1, desired_number_of_quantity_columns + 1)
+    ]
 
     return pivoted_df.select(
         F.col(DataProductColumnNames.grid_area_code),
