@@ -17,13 +17,15 @@ from pathlib import Path
 import re
 import zipfile
 
-from settlement_report_job.table_column_names import DataProductColumnNames
-
 from typing import Any
 from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+
+from settlement_report_job.infrastructure.table_column_names import (
+    DataProductColumnNames,
+)
 
 
 @dataclass
