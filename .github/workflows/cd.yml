@@ -96,7 +96,7 @@ jobs:
           repository: ${{ vars.environment_repository_path }}
           event-type: wholesale-deployment-request-domain
           # yamllint disable-line rule:quoted-strings
-          client-payload: '{"pr_number": "${{ steps.find_pull_request.outputs.pull_request_number }}", "databricks": "${{ needs.changes.outputs.databricks }}", "dotnet": "${{ needs.changes.outputs.dotnet }}", "db_migrations": "${{ needs.changes.outputs.db_migrations }}"}'
+          client-payload: '{"pr_number": "${{ steps.find_pull_request.outputs.pull_request_number }}", "databricks": "${{ needs.changes.outputs.any_databricks }}", "dotnet": "${{ needs.changes.outputs.dotnet }}", "db_migrations": "${{ needs.changes.outputs.db_migrations }}"}'
 
   #
   # Send notification to teams channel if deployment dispatch failed
