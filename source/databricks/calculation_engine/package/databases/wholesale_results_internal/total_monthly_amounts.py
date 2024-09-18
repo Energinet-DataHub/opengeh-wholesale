@@ -48,11 +48,11 @@ def _write(
 ) -> None:
     with logging_configuration.start_span(name):
         df.drop(
-            # ToDo JMG: Remove when we are on Unity Catalog. AJW: Are you sure?
+            # ToDo JMG: Remove when we are on Unity Catalog.
             TableColumnNames.calculation_type,
             TableColumnNames.calculation_execution_time_start,
         ).withColumnRenamed(
-            # ToDo JMG: Remove when we are on Unity Catalog. AJW: Are you sure?
+            # ToDo JMG: Remove when we are on Unity Catalog.
             TableColumnNames.calculation_result_id,
             TableColumnNames.result_id,
         ).write.format(
