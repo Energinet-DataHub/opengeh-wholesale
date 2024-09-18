@@ -50,7 +50,7 @@ def create_time_series(
     resolution: DataProductMeteringPointResolution,
 ) -> list[str]:
     log.info("Creating time series points")
-    # dbutils = get_dbutils(spark)
+    dbutils = get_dbutils(spark)
     time_series_points = _get_filtered_time_series_points(spark, args, resolution)
     prepared_time_series = _generate_time_series(
         time_series_points,
