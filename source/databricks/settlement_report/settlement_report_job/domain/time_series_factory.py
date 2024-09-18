@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Union
-from pyspark.sql import DataFrame, Column, functions as F, types as T
+from pyspark.sql import DataFrame, Column, functions as F, types as T, Window
 from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.metering_point_resolution import (
@@ -98,77 +98,6 @@ def create_time_series(
 
 
 @logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.pad_array_col"
-)
-def pad_array_col(
-    value_col: Union[str, Column], size: Union[int, Column], prefix: str = "QUANTITY"
-) -> Column:
-    if isinstance(size, int):
-        size = F.lit(size) - F.size(value_col)
-    elif isinstance(size, Column):
-        size = F.coalesce(size, F.lit(0))
-    else:
-        raise ValueError("size must be an integer or a Column")
-    values = F.transform(
-        value_col,
-        lambda x: F.struct(
-            (
-                F.to_timestamp(x.getField(DataProductColumnNames.observation_time))
-                .cast(T.TimestampType())
-                .alias(DataProductColumnNames.observation_time)
-            ),
-            (
-                x.getField(DataProductColumnNames.quantity)
-                .cast(T.DoubleType())
-                .alias(DataProductColumnNames.quantity)
-            ),
-        ),
-    )
-    max_date = F.array_max(
-        F.transform(
-            value_col, lambda x: x.getField(DataProductColumnNames.observation_time)
-        )
-    ).cast(T.TimestampType())
-
-    padding = F.transform(
-        F.array_repeat(F.array_max(value_col), size),
-        lambda _, i: F.struct(
-            (
-                F.date_add(max_date, i + 1)
-                .cast(T.TimestampType())
-                .alias(DataProductColumnNames.observation_time)
-            ),
-            (F.lit(None).cast(T.DoubleType()).alias(DataProductColumnNames.quantity)),
-        ),
-    )
-
-    sorted_pad = F.array_sort(
-        F.concat(values, padding),
-        lambda x, y: F.when(
-            x[DataProductColumnNames.observation_time]
-            < y[DataProductColumnNames.observation_time],
-            -1,
-        )
-        .when(
-            x[DataProductColumnNames.observation_time]
-            > y[DataProductColumnNames.observation_time],
-            1,
-        )
-        .otherwise(0),
-    )
-
-    return F.transform(
-        sorted_pad,
-        lambda x, i: F.struct(
-            F.concat(F.lit(prefix), i).alias(EphemeralColumns.uid),
-            x.getField(DataProductColumnNames.quantity).alias(
-                DataProductColumnNames.quantity
-            ),
-        ),
-    )
-
-
-@logging_configuration.use_span(
     "settlement_report_job.time_series_factory._read_and_filter_from_view"
 )
 def _read_and_filter_from_view(
@@ -199,7 +128,7 @@ def _read_and_filter_from_view(
 )
 def _generate_time_series(
     filtered_time_series_points: DataFrame,
-    desired_number_of_observations: int,
+    desired_number_of_quantity_columns: int,
     time_zone: str,
 ) -> DataFrame:
     filtered_time_series_points = _add_start_of_day_column(
@@ -218,7 +147,7 @@ def _generate_time_series(
 
     quantity_column_names = [
         F.col(str(i)).alias(f"ENERGYQUANTITY{i}")
-        for i in range(1, desired_number_of_observations)
+        for i in range(1, desired_number_of_quantity_columns)
     ]
 
     pivoted_df = (
@@ -247,7 +176,7 @@ def _generate_time_series(
     )
 
 
-def _add_start_of_day_column(filtered_time_series_points, time_zone):
+def _add_start_of_day_column(filtered_time_series_points: DataFrame, time_zone: str):
     filtered_time_series_points = filtered_time_series_points.withColumn(
         EphemeralColumns.start_of_day,
         F.to_utc_timestamp(
@@ -257,51 +186,6 @@ def _add_start_of_day_column(filtered_time_series_points, time_zone):
                     DataProductColumnNames.observation_time, time_zone
                 ),
             ),
-        )
-        .groupBy(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.col(EphemeralColumns.start_of_day),
-        )
-        .agg(
-            F.array_agg(
-                F.struct(
-                    F.col(DataProductColumnNames.observation_time),
-                    F.col(DataProductColumnNames.quantity),
-                )
-            ).alias(EphemeralColumns.quantities)
-        )
-    )
-
-    padded_array_column = (
-        df_with_array_column.select(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.to_utc_timestamp(F.col(EphemeralColumns.start_of_day), time_zone).alias(
-                EphemeralColumns.start_of_day
-            ),
-            F.col(EphemeralColumns.quantities),
-        )
-        .select(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.metering_point_id),
-            F.col(DataProductColumnNames.metering_point_type),
-            F.col(EphemeralColumns.start_of_day),
-            F.explode(
-                pad_array_col(
-                    EphemeralColumns.quantities,
-                    desired_quantity_column_count,
-                    TimeSeriesPointCsvColumnNames.energy_prefix,
-                )
-            ).alias("exploded"),
-        )
-        .select("*", "exploded.*")
-        .drop("exploded")
-            time_zone,
         ),
     )
     return filtered_time_series_points
