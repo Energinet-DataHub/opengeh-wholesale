@@ -145,8 +145,7 @@ def _generate_time_series(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"ENERGYQUANTITY{i}")
-        for i in range(1, desired_number_of_quantity_columns)
+        f"ENERGYQUANTITY{i}" for i in range(1, desired_number_of_quantity_columns)
     ]
 
     pivoted_df = (
