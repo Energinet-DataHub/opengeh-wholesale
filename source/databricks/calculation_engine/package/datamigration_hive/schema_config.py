@@ -14,10 +14,12 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
+
 # calculation_input
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
+
 # calculation_output
 from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
     hive_wholesale_results_schema,
