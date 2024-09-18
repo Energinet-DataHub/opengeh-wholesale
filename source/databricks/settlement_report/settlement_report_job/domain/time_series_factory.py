@@ -186,6 +186,7 @@ def _add_start_of_day_column(
                     DataProductColumnNames.observation_time, time_zone
                 ),
             ),
+            time_zone,
         ),
     )
     return filtered_time_series_points
