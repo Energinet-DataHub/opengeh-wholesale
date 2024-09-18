@@ -25,6 +25,7 @@ from pyspark.sql.window import Window
 
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
+    EphemeralColumns,
 )
 
 
@@ -117,22 +118,27 @@ def write_files(
     Returns:
         list[str]: Headers for the csv file.
     """
-    grid_col = F.col(DataProductColumnNames.grid_area_code)
-    split_col = F.lit(0)
 
-    if split_large_files is True:
+    partition_columns = []
+    if split_large_files:
         w = Window().orderBy(*order_by)
         split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
-    if split_by_grid_area is False:
-        grid_col = F.lit("ALL")
+        df = df.withColumn(EphemeralColumns.large_files_split_column, split_col)
+        partition_columns.extend(EphemeralColumns.large_files_split_column)
 
-    df = df.withColumn(DataProductColumnNames.grid_area_code, grid_col)
-    df = df.withColumn("split", split_col)
+    if split_by_grid_area:
+        df = df.withColumn(
+            EphemeralColumns.grid_area_split_column,
+            DataProductColumnNames.grid_area_code,
+        )
+        partition_columns.extend(EphemeralColumns.grid_area_split_column)
 
-    df.write.mode("overwrite").partitionBy(
-        DataProductColumnNames.grid_area_code, "split"
-    ).csv(path)
-    return df.columns
+    if partition_columns:
+        df.write.mode("overwrite").partitionBy(*partition_columns).csv(path)
+    else:
+        df.write.mode("overwrite").csv(path)
+
+    return [c for c in df.columns if c not in partition_columns]
 
 
 def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
