@@ -128,13 +128,13 @@ def write_files(
             EphemeralColumns.grid_area_partition,
             F.col(DataProductColumnNames.grid_area_code),
         )
-        partition_columns.extend(EphemeralColumns.grid_area_partition)
+        partition_columns.append(EphemeralColumns.grid_area_partition)
 
     if partition_by_chunk_index:
         w = Window().orderBy(order_by)
         chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
-        partition_columns.extend(EphemeralColumns.chunk_index)
+        partition_columns.append(EphemeralColumns.chunk_index)
 
     df = df.orderBy(order_by)
 
