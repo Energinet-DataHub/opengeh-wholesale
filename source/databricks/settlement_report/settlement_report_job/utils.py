@@ -166,7 +166,12 @@ def get_new_files(
         partition_match = re.match(regex, str(f))
         if partition_match is None:
             raise ValueError(f"File {f} does not match the expected pattern")
-        grid_area, split = partition_match.groups()
+
+        if split_large_files:
+            grid_area, split = partition_match.groups()
+        else:
+            grid_area = partition_match.group()
+            split = "0"
         file_name = file_name_template.format(grid_area=grid_area, split=split)
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
