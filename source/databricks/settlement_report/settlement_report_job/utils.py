@@ -133,6 +133,8 @@ def write_files(
         )
         partition_columns.extend(EphemeralColumns.grid_area_split_column)
 
+    df = df.orderBy(*order_by)
+
     if partition_columns:
         df.write.mode("overwrite").partitionBy(*partition_columns).csv(path)
     else:
