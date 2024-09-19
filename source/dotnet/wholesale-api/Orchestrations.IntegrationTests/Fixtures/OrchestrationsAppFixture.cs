@@ -88,15 +88,12 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         OpenIdJwtManager = new OpenIdJwtManager(IntegrationTestConfiguration.B2CSettings);
     }
 
-    public Guid UserId { get; } = Guid.NewGuid();
-
-    public Guid ActorId { get; } = Guid.NewGuid();
-
-    public string ActorNumber { get; } = "0000000000000";
-
-    public string ActorRole { get; } = "EnergySupplier";
-
-    public string[] Permissions { get; } = ["calculations:manage"];
+    public TestUserInformation UserInformation { get; } = new TestUserInformation(
+        UserId: Guid.NewGuid(),
+        ActorId: Guid.NewGuid(),
+        ActorNumber: "0000000000000",
+        ActorRole: "EnergySupplier",
+        Permissions: ["calculations:manage"]);
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
@@ -283,13 +280,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     private Task<AuthenticationHeaderValue> CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync()
     {
         // Fake claims
-        var actorNumberClaim = new Claim("actornumber", ActorNumber);
-        var actorRoleClaim = new Claim("marketroles", ActorRole);
+        var actorNumberClaim = new Claim("actornumber", UserInformation.ActorNumber);
+        var actorRoleClaim = new Claim("marketroles", UserInformation.ActorRole);
 
         return OpenIdJwtManager.JwtProvider.CreateInternalTokenAuthenticationHeaderAsync(
-            userId: UserId.ToString(),
-            actorId: ActorId.ToString(),
-            roles: Permissions,
+            userId: UserInformation.UserId.ToString(),
+            actorId: UserInformation.ActorId.ToString(),
+            roles: UserInformation.Permissions,
             extraClaims: [actorNumberClaim, actorRoleClaim]);
     }
 

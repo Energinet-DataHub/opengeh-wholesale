@@ -34,6 +34,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationTriggerTests : IAsyncLifetime
 {
+    public static readonly Guid _wholesaleSystemId = Guid.Parse("467ab87d-9494-4add-bf01-703540067b9e");
+
     public CalculationTriggerTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
@@ -139,12 +141,12 @@ public class CalculationTriggerTests : IAsyncLifetime
         deserializedBody!.LogId.Should().Be(actualOutboxMessage.LogId);
         deserializedBody.Activity.Should().Be(AuditLogActivity.StartNewCalculation.Identifier);
         deserializedBody.Payload.Should().Be(expectedAuditLogPayload);
-        deserializedBody.SystemId.Should().Be(Guid.Parse("467ab87d-9494-4add-bf01-703540067b9e")); // Wholesale system id
-        deserializedBody.UserId.Should().Be(Fixture.UserId);
-        deserializedBody.ActorId.Should().Be(Fixture.ActorId);
-        deserializedBody.ActorNumber.Should().Be(Fixture.ActorNumber);
-        deserializedBody.MarketRoles.Should().Be(Fixture.ActorRole);
-        deserializedBody.Permissions.Should().Be(string.Join(", ", Fixture.Permissions));
+        deserializedBody.SystemId.Should().Be(_wholesaleSystemId); // Wholesale system id
+        deserializedBody.UserId.Should().Be(Fixture.UserInformation.UserId);
+        deserializedBody.ActorId.Should().Be(Fixture.UserInformation.ActorId);
+        deserializedBody.ActorNumber.Should().Be(Fixture.UserInformation.ActorNumber);
+        deserializedBody.MarketRoles.Should().Be(Fixture.UserInformation.ActorRole);
+        deserializedBody.Permissions.Should().Be(string.Join(", ", Fixture.UserInformation.Permissions));
         deserializedBody.Origin.Should().Be($"{Fixture.AppHostManager.HttpClient.BaseAddress}api/StartCalculation");
         deserializedBody.AffectedEntityType.Should().Be(AuditLogEntityType.Calculation.Identifier);
         deserializedBody.AffectedEntityKey.Should().BeNull();

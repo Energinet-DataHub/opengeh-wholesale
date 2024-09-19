@@ -64,8 +64,6 @@ public class AuditLogOutboxMessageV1
 
     public Task<string> SerializeAsync()
     {
-        ArgumentNullException.ThrowIfNull(Payload);
-
         var serialized = _serializer.Serialize(Payload);
 
         return Task.FromResult(serialized);

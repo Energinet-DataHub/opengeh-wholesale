@@ -36,6 +36,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
 public class CalculationControllerTests : WebApiTestBase
 {
+    private static readonly Guid _wholesaleSystemId = Guid.Parse("467ab87d-9494-4add-bf01-703540067b9e");
+
     public CalculationControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
@@ -117,7 +119,8 @@ public class CalculationControllerTests : WebApiTestBase
         actualOutboxPayload.Activity.Should().Be(AuditLogActivity.GetCalculation.Identifier);
         actualOutboxPayload.Payload.Should().Be(calculationDto.CalculationId.ToString());
         actualOutboxPayload.Origin.Should().Be($"{Client.BaseAddress}v3/calculations/{calculationDto.CalculationId}");
-        actualOutboxPayload.SystemId.Should().Be(Guid.Parse("467ab87d-9494-4add-bf01-703540067b9e")); // Wholesale system id
+
+        actualOutboxPayload.SystemId.Should().Be(_wholesaleSystemId); // Wholesale system id
         actualOutboxPayload.AffectedEntityType.Should().Be(AuditLogEntityType.Calculation.Identifier);
         actualOutboxPayload.AffectedEntityKey.Should().Be(calculationDto.CalculationId.ToString());
     }
@@ -165,7 +168,7 @@ public class CalculationControllerTests : WebApiTestBase
         actualOutboxPayload.Activity.Should().Be(AuditLogActivity.SearchCalculation.Identifier);
         actualOutboxPayload.Payload.Should().NotBeNullOrWhiteSpace();
         actualOutboxPayload.Origin.Should().Be($"{Client.BaseAddress}{searchRequestUrl}");
-        actualOutboxPayload.SystemId.Should().Be(Guid.Parse("467ab87d-9494-4add-bf01-703540067b9e")); // Wholesale system id
+        actualOutboxPayload.SystemId.Should().Be(_wholesaleSystemId); // Wholesale system id
         actualOutboxPayload.AffectedEntityType.Should().Be(AuditLogEntityType.Calculation.Identifier);
         actualOutboxPayload.AffectedEntityKey.Should().BeNull();
 
