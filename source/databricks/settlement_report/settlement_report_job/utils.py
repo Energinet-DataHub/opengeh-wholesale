@@ -103,9 +103,9 @@ def get_dbutils(spark: SparkSession) -> Any:
 def write_files(
     df: DataFrame,
     path: str,
-    split_large_files: bool = False,
+    split_large_files: bool,
+    order_by: list[str],
     rows_per_file: int = 1_000_000,
-    order_by: list[str] = [],
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -113,6 +113,8 @@ def write_files(
         df (DataFrame): DataFrame to write.
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
+        split_large_files (bool): Whether to split the files or not.
+        order_by (list[str]): Columns to order by.
 
     Returns:
         list[str]: Headers for the csv file.
@@ -120,12 +122,12 @@ def write_files(
 
     partition_columns: list[str] = [DataProductColumnNames.grid_area_code]
     if split_large_files:
-        w = Window().orderBy(*order_by)
+        w = Window().orderBy(order_by)
         split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.large_files_split_column, split_col)
         partition_columns.extend(EphemeralColumns.large_files_split_column)
 
-    df = df.orderBy(*order_by)
+    df = df.orderBy(order_by)
 
     if partition_columns:
         df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
@@ -147,6 +149,7 @@ def get_new_files(
         file_name_template (str): The template for the new file names. The template
             should contain two placeholders for the {grid_area} and {split}.
             For example: "TSSD1H-{grid_area}-{split}.csv"
+        split_large_files (bool): Whether the files are split or not.
 
     Returns:
         list[dict[str, Path]]: List of dictionaries with the source and destination
@@ -155,7 +158,7 @@ def get_new_files(
     files = [f for f in Path(result_path).rglob("*.csv")]
     new_files = []
 
-    regex = result_path
+    regex = f"{result_path}/{EphemeralColumns.grid_area_split_column}=(\\w{{3}})"
     if split_large_files:
         regex = f"{regex}/{EphemeralColumns.large_files_split_column}=(\\d+)"
 

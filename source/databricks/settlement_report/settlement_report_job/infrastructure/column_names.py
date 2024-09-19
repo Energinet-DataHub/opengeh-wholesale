@@ -35,4 +35,5 @@ class EphemeralColumns:
     uid = "uid"
     start_of_day = "start_of_day"
     quantities = "quantities"
+    grid_area_split_column = "grid_area_split"
     large_files_split_column = "large_files_split"
