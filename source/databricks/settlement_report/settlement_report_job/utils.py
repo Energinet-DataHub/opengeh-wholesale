@@ -103,7 +103,8 @@ def get_dbutils(spark: SparkSession) -> Any:
 def write_files(
     df: DataFrame,
     path: str,
-    split_large_files: bool,
+    partition_by_chunk_index: bool,
+    partition_by_grid_area: bool,
     order_by: list[str],
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
@@ -114,18 +115,26 @@ def write_files(
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
         split_large_files (bool): Whether to split the files or not.
+        split_by_grid_area (bool): Whether to split the files by grid area or not.
         order_by (list[str]): Columns to order by.
 
     Returns:
         list[str]: Headers for the csv file.
     """
 
-    partition_columns: list[str] = [DataProductColumnNames.grid_area_code]
-    if split_large_files:
+    partition_columns: list[str] = []
+    if partition_by_grid_area:
+        df = df.withColumn(
+            EphemeralColumns.grid_area_partition_column,
+            F.col(DataProductColumnNames.grid_area_code),
+        )
+        partition_columns.extend(EphemeralColumns.grid_area_partition_column)
+
+    if partition_by_chunk_index:
         w = Window().orderBy(order_by)
-        split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
-        df = df.withColumn(EphemeralColumns.large_files_split_column, split_col)
-        partition_columns.extend(EphemeralColumns.large_files_split_column)
+        chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
+        df = df.withColumn(EphemeralColumns.chunk_index_column, chunk_index_col)
+        partition_columns.extend(EphemeralColumns.chunk_index_column)
 
     df = df.orderBy(order_by)
 
@@ -140,7 +149,8 @@ def write_files(
 def get_new_files(
     result_path: str,
     file_name_template: str,
-    split_large_files: bool,
+    partition_by_chunk_index: bool,
+    partition_by_grid_area: bool,
 ) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
@@ -149,7 +159,8 @@ def get_new_files(
         file_name_template (str): The template for the new file names. The template
             should contain two placeholders for the {grid_area} and {split}.
             For example: "TSSD1H-{grid_area}-{split}.csv"
-        split_large_files (bool): Whether the files are split or not.
+        partition_by_chunk_index (bool): Whether the files are split or not.
+        partition_by_grid_area (bool): Whether the files are split by grid area or not.
 
     Returns:
         list[dict[str, Path]]: List of dictionaries with the source and destination
@@ -158,21 +169,22 @@ def get_new_files(
     files = [f for f in Path(result_path).rglob("*.csv")]
     new_files = []
 
-    regex = f"{result_path}/{EphemeralColumns.grid_area_split_column}=(\\w{{3}})"
-    if split_large_files:
-        regex = f"{regex}/{EphemeralColumns.large_files_split_column}=(\\d+)"
+    regex = result_path
+    if partition_by_grid_area:
+        regex = f"{regex}/{EphemeralColumns.grid_area_partition_column}=(\\w{{3}})"
+
+    if partition_by_chunk_index:
+        regex = f"{regex}/{EphemeralColumns.chunk_index_column}=(\\d+)"
 
     for f in files:
         partition_match = re.match(regex, str(f))
         if partition_match is None:
             raise ValueError(f"File {f} does not match the expected pattern")
 
-        if split_large_files:
-            grid_area, split = partition_match.groups()
-        else:
-            grid_area = partition_match.group()
-            split = "0"
-        file_name = file_name_template.format(grid_area=grid_area, split=split)
+        groups = partition_match.groups()
+        grid_area = groups[0]
+        chunk = groups[1] if len(groups) > 1 else "0"
+        file_name = file_name_template.format(grid_area=grid_area, chunk=chunk)
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))

@@ -64,7 +64,8 @@ def create_time_series(
     headers = write_files(
         df=prepared_time_series,
         path=result_path,
-        split_large_files=args.prevent_large_text_files,
+        partition_by_chunk_index=args.prevent_large_text_files,
+        partition_by_grid_area=True,  # always true for time series
         order_by=[
             DataProductColumnNames.grid_area_code,
             TimeSeriesPointCsvColumnNames.metering_point_type,
@@ -88,7 +89,8 @@ def create_time_series(
                 "{split}",
             ]
         ),
-        split_large_files=args.prevent_large_text_files,
+        partition_by_chunk_index=args.prevent_large_text_files,
+        partition_by_grid_area=True,  # always true for time series
     )
     files = merge_files(
         dbutils=dbutils,
