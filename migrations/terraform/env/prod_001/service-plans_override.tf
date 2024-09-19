@@ -14,5 +14,5 @@ module "message_processor_service_plan" {
 }
 
 module "webapp_service_plan" {
-  sku_name                     = "P1v3"
+  sku_name = "P1v3"
 }
