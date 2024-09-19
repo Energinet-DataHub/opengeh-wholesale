@@ -58,8 +58,6 @@ def parse_job_arguments(
             task_key=job_args.task_key,
         )
 
-        print("task_key:", job_args.task_key)
-
         return settlement_report_args
 
 
