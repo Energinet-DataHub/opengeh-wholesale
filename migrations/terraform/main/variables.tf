@@ -204,3 +204,8 @@ variable "function_app_sku_name" {
   description = "The SKU name of the function app."
   default     = "EP1"
 }
+
+variable "enable_audit_logs" {
+  type        = bool
+  description = "Should audit logs be enabled for the environment?"
+}

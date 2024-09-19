@@ -187,3 +187,8 @@ variable "setup_backup_sql_warehouse" {
   description = "Flag to determine if a SQL warehouse for executing Databricks back ups should be created."
   default     = false
 }
+
+variable "enable_audit_logs" {
+  type        = bool
+  description = "Should audit logs be enabled for the environment?"
+}

@@ -1,5 +1,5 @@
 module "st_dh2timeseries_audit" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_6.1.0"
 
   name                       = "dh2tsaudit"
   project_name               = var.domain_name_short
@@ -10,6 +10,9 @@ module "st_dh2timeseries_audit" {
   account_replication_type   = "LRS"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
 }
 
 #---- System Topic for all storage account events
@@ -90,16 +93,4 @@ resource "azurerm_storage_container" "timeseriesaudit" {
   name                  = "dh2-time-series-audit"
   storage_account_name  = module.st_dh2timeseries_audit.name
   container_access_type = "private"
-}
-
-#---- Diagnostic Settings
-
-resource "azurerm_monitor_diagnostic_setting" "ds_dh2timeseriesaudit_audit" {
-  name               = "ds-dh2timeseriesaudit-audit"
-  target_resource_id = "${module.st_dh2timeseries_audit.id}/blobServices/default"
-  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
-
-  enabled_log {
-    category = "StorageDelete"
-  }
 }

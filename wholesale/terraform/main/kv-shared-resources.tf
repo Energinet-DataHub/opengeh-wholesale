@@ -122,3 +122,8 @@ data "azurerm_key_vault_secret" "st_audit_shres_id" {
   name         = "st-audit-shres-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "st_audit_shres_name" {
+  name         = "st-audit-shres-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

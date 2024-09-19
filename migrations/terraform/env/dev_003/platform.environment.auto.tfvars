@@ -7,3 +7,4 @@ databricks_private_endpoints_subnet_address_prefix = "10.140.102.0/24"
 pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
 pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Dev-003-Contributor-Controlplane"
 pim_reader_group_name                              = "SEC-A-Datahub-Dev-003-Reader"
+enable_audit_logs                                  = false

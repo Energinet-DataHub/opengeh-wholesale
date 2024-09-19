@@ -1,5 +1,5 @@
 module "storage_settlement_reports" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.0.0"
 
   name                       = "reports"
   project_name               = var.domain_name_short
@@ -16,4 +16,7 @@ module "storage_settlement_reports" {
       name = local.BLOB_CONTAINER_SETTLEMENTREPORTS_NAME
     },
   ]
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
 }

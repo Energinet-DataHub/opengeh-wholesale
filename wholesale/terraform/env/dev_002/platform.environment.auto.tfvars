@@ -15,3 +15,4 @@ databricks_contributor_dataplane_group = {
   id   = "729028915538231"
   name = "SEC-G-Datahub-DevelopersAzure"
 }
+enable_audit_logs = false

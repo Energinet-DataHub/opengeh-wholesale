@@ -1,5 +1,5 @@
 module "st_dh2dropzone" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_6.1.0"
 
   name                         = "dh2dropzone"
   project_name                 = var.domain_name_short
@@ -12,6 +12,9 @@ module "st_dh2dropzone" {
   private_endpoint_subnet_id   = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                     = var.datahub2_ip_whitelist != null ? format("%s,%s", local.ip_restrictions_as_string, var.datahub2_ip_whitelist) : local.ip_restrictions_as_string
   antimalware_scanning_enabled = true
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
 }
 
 #---- Role assignments
@@ -70,17 +73,5 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "eventgrid_dropzone
   }
   delivery_identity {
     type = "SystemAssigned"
-  }
-}
-
-#---- Diagnostic Settings
-
-resource "azurerm_monitor_diagnostic_setting" "ds_dh2dropzone_audit" {
-  name               = "ds-dh2dropzone-audit"
-  target_resource_id = "${module.st_dh2dropzone.id}/blobServices/default"
-  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
-
-  enabled_log {
-    category = "StorageDelete"
   }
 }

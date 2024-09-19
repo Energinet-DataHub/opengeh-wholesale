@@ -5,3 +5,4 @@ b2c_spn_id                               = "4107ba3a-0eb2-4a06-9251-2a5f7782b565
 pim_contributor_data_plane_group_name    = "SEC-A-Datahub-PreProd-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-PreProd-001-Contributor-Controlplane"
 pim_reader_group_name                    = "SEC-A-Datahub-PreProd-001-Reader"
+enable_audit_logs                        = false

@@ -5,3 +5,4 @@ b2c_spn_id                                 = "7dbd7a6a-93e9-487d-b948-c0ddc0d7a8
 developer_security_group_name              = "SEC-G-Datahub-DevelopersAzure"
 platform_security_group_contributor_access = true
 platform_security_group_reader_access      = true
+enable_audit_logs                          = false

@@ -171,3 +171,8 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
+
+variable "enable_audit_logs" {
+  type        = bool
+  description = "Should audit logs be enabled for the environment?"
+}

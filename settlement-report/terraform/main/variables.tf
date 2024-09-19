@@ -105,9 +105,13 @@ variable "ip_restrictions" {
   default     = []
 }
 
-
 variable "alert_email_address" {
   type        = string
   description = "(Optional) The email address to which alerts are sent."
   default     = null
+}
+
+variable "enable_audit_logs" {
+  type        = bool
+  description = "Should audit logs be enabled for the environment?"
 }

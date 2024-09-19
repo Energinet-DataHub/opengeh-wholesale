@@ -5,3 +5,4 @@ biztalk_hybrid_connection_hostname       = "datahub.preproduction.biztalk.energi
 pim_contributor_data_plane_group_name    = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-Test-001-Contributor-Controlplane"
 developer_security_group_reader_access   = true
+enable_audit_logs                        = false

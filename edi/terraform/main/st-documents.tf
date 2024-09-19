@@ -11,8 +11,9 @@ module "st_documents" {
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
-  audit_storage_account                 = null #audit log disabled as part of debugging EDI backups
-
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
   prevent_deletion = false
 }
 
@@ -29,7 +30,7 @@ resource "azurerm_storage_container" "archived" {
 }
 
 module "st_documents_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_6.1.0"
 
   name                                  = "backupdocs"
   project_name                          = var.domain_name_short
@@ -41,6 +42,8 @@ module "st_documents_backup" {
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
-
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
   prevent_deletion = false
 }

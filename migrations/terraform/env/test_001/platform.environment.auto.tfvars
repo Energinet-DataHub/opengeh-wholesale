@@ -8,3 +8,4 @@ pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Test-001-Con
 pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Test-001-Contributor-Controlplane"
 developer_security_group_reader_access             = true
 function_app_sku_name                              = "EP3"
+enable_audit_logs                                  = false

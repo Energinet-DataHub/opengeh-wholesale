@@ -17,3 +17,4 @@ databricks_contributor_dataplane_group = {
   id   = "318888432738283"
   name = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
 }
+enable_audit_logs = false

@@ -6,3 +6,4 @@ databricks_public_subnet_address_prefix            = "10.140.101.0/24"
 databricks_private_endpoints_subnet_address_prefix = "10.140.102.0/24"
 developer_security_group_contributor_access        = true
 developer_security_group_reader_access             = true
+enable_audit_logs                                  = false

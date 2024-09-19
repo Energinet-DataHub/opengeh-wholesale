@@ -1,5 +1,5 @@
 module "st_migrations" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_6.1.0"
 
   name                       = "migrations"
   project_name               = var.domain_name_short
@@ -17,6 +17,9 @@ module "st_migrations" {
       role_definition_name = "Storage Blob Data Contributor"
     },
   ]
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
 }
 
 data "azurerm_key_vault_secret" "shared_access_connector_principal_id" {
@@ -129,17 +132,4 @@ resource "azurerm_role_assignment" "st_migrations_queue_data_sender" {
   scope                = module.st_migrations.id
   role_definition_name = "Storage Queue Data Message Sender"
   principal_id         = azurerm_eventgrid_system_topic.st_migrations.identity[0].principal_id
-}
-
-
-#---- Diagnostic Settings
-
-resource "azurerm_monitor_diagnostic_setting" "ds_migrations_audit" {
-  name               = "ds-migrations-audit"
-  target_resource_id = "${module.st_migrations.id}/blobServices/default"
-  storage_account_id = data.azurerm_key_vault_secret.st_audit_shres_id.value
-
-  enabled_log {
-    category = "StorageDelete"
-  }
 }

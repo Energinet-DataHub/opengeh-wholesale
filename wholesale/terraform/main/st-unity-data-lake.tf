@@ -1,5 +1,5 @@
 module "st_data_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_6.1.0"
 
   name                       = "data"
   project_name               = var.domain_name_short
@@ -16,6 +16,9 @@ module "st_data_wholesale" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
 }
 
 # The storage containers are not created in the module, as they are used in schema creation. I.e., we want it dynamically
