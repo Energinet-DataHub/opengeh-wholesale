@@ -7,10 +7,12 @@ module "mssql_database_application_access" {
     module.app_api.name,
     module.app_api.slot_name,
     module.func_settlement_reports_df.name,
+    module.func_settlement_reports_light_df.name
   ]
 
   depends_on = [
     module.app_api.name,
     module.func_settlement_reports_df.name,
+    module.func_settlement_reports_light_df.name,
   ]
 }

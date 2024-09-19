@@ -22,6 +22,7 @@ module "monitor_action_group_setr" {
                       exceptions
                       | where timestamp > ago(10m)
                         and (cloud_RoleName == 'func-settlement-reports-df-${local.NAME_SUFFIX}'
+                          or cloud_RoleName == 'light-df-${local.NAME_SUFFIX}'
                           or cloud_RoleName == 'app-api-${local.NAME_SUFFIX}')
                         and (operation_Name == "GET /monitor/ready")
                     QUERY

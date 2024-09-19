@@ -32,6 +32,7 @@ module "backend_for_frontend" {
     ApiClientSettings__WholesaleBaseUrl                               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-wholesale-webapi-base-url)"
     ApiClientSettings__WholesaleOrchestrationsBaseUrl                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-wholesale-orchestrationsdf-base-url)"
     ApiClientSettings__WholesaleOrchestrationSettlementReportsBaseUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-settlement-reports-df-base-url)"
+    ApiClientSettings__WholesaleOrchestrationSettlementReportsLightBaseUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-settlement-reports-light-df-base-url)"
     ApiClientSettings__ESettExchangeBaseUrl                           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-esett-webapi-base-url)"
     ApiClientSettings__EdiB2CWebApiBaseUrl                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-edi-b2cwebapi-base-url)"
     ApiClientSettings__ImbalancePricesBaseUrl                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-grid-loss-imbalance-prices-api-base-url)"

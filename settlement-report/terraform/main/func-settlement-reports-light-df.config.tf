@@ -1,10 +1,10 @@
 
 locals {
-  func_settlement_reports_df = {
+  func_settlement_reports_light_df = {
     app_settings = {
       # Timeout
       "AzureFunctionsJobHost__functionTimeout" = "11:00:00"
-      
+	  
       #Logging
       "Logging__ApplicationInsights__LogLevel__Default" = "Information"
       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Wholesale" = "Information"
@@ -30,7 +30,7 @@ locals {
 
       # Durable Functions Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
-      "OrchestrationsTaskHubName" = "SettlementReportTaskHub"
+      "OrchestrationsTaskHubName" = "SettlementReportLightTaskHub"
     }
   }
 }
