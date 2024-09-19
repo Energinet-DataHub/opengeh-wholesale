@@ -175,7 +175,7 @@ public class CalculationControllerTests : WebApiTestBase
 
     private record CalculationSearchParameters(
 #pragma warning disable SA1300
-        string[]? gridAreaCodes,
+        string[] gridAreaCodes,
         string? executionState,
         string? minExecutionTime,
         string? maxExecutionTime,
