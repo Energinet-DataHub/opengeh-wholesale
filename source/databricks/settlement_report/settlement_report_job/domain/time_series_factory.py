@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, functions as F, Window
+from pyspark.sql import DataFrame, functions as F, Window, Column
 from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.metering_point_resolution import (
@@ -130,8 +130,9 @@ def _generate_time_series(
     desired_number_of_quantity_columns: int,
     time_zone: str,
 ) -> DataFrame:
-    filtered_time_series_points = _add_start_of_day_column(
-        filtered_time_series_points, time_zone
+    filtered_time_series_points = filtered_time_series_points.withColumn(
+        EphemeralColumns.start_of_day,
+        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
     win = Window.partitionBy(
@@ -175,6 +176,13 @@ def _generate_time_series(
             TimeSeriesPointCsvColumnNames.start_of_day
         ),
         *quantity_column_names,
+    )
+
+
+def get_start_of_day(col: Column | str, time_zone: str) -> Column:
+    col = F.col(col) if isinstance(col, str) else col
+    return F.to_utc_timestamp(
+        F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
     )
 
 
