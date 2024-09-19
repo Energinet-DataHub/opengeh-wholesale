@@ -114,8 +114,8 @@ def write_files(
         df (DataFrame): DataFrame to write.
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
-        split_large_files (bool): Whether to split the files or not.
-        split_by_grid_area (bool): Whether to split the files by grid area or not.
+        partition_by_chunk_index (bool): Whether to split the files.
+        partition_by_grid_area (bool): Whether to split the files by grid area.
         order_by (list[str]): Columns to order by.
 
     Returns:
