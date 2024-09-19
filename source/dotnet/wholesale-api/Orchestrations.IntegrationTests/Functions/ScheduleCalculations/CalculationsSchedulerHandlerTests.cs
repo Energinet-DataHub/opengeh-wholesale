@@ -17,8 +17,8 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
@@ -357,7 +357,8 @@ public class CalculationsSchedulerHandlerTests : IClassFixture<CalculationSchedu
                 new FrontendActor(
                     Guid.NewGuid(),
                     "1",
-                    FrontendActorMarketRole.DataHubAdministrator)));
+                    FrontendActorMarketRole.DataHubAdministrator,
+                    [])));
 
         var scheduledCalculation = CreateCalculation(scheduledToRunAt);
         await using (var writeDbContext = Fixture.DatabaseManager.CreateDbContext())

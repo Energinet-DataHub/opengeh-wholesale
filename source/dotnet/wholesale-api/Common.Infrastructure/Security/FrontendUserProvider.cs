@@ -14,6 +14,7 @@
 
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
@@ -22,6 +23,7 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
 {
     private const string ActorNumberClaim = "actornumber";
     private const string MarketRolesClaim = "marketroles";
+    private const string RoleClaim = "role";
 
     public Task<FrontendUser?> ProvideUserAsync(
         Guid userId,
@@ -30,10 +32,22 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
         IEnumerable<Claim> claims)
     {
         var enumeratedClaims = claims.ToList();
-        var frontendActor = new FrontendActor(actorId, GetActorNumber(enumeratedClaims), GetMarketRole(enumeratedClaims));
+        var frontendActor = new FrontendActor(
+            actorId,
+            GetActorNumber(enumeratedClaims),
+            GetMarketRole(enumeratedClaims),
+            GetPermissions(enumeratedClaims));
         var frontendUser = new FrontendUser(userId, multiTenancy, frontendActor);
 
         return Task.FromResult<FrontendUser?>(frontendUser);
+    }
+
+    private IReadOnlyCollection<string> GetPermissions(List<Claim> enumeratedClaims)
+    {
+        return enumeratedClaims
+            .Where(c => c.Type == RoleClaim)
+            .Select(c => c.Value)
+            .ToArray();
     }
 
     private static string GetActorNumber(IEnumerable<Claim> claims)

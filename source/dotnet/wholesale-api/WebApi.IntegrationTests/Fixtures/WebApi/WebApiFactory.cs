@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -64,7 +64,7 @@ public class WebApiFactory : WebApplicationFactory<Program>
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
             defaultUserContext.Setup(x => x.CurrentUser)
-                .Returns(new FrontendUser(Guid.NewGuid(), false, new FrontendActor(Guid.NewGuid(), string.Empty, FrontendActorMarketRole.Other)));
+                .Returns(new FrontendUser(Guid.NewGuid(), false, new FrontendActor(Guid.NewGuid(), string.Empty, FrontendActorMarketRole.Other, [])));
             services.AddScoped(_ => UserContextMock?.Object ?? defaultUserContext.Object);
         });
     }
