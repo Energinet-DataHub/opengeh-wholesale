@@ -28,6 +28,7 @@ from settlement_report_job.infrastructure.environment_variables import (
     EnvironmentVariable,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report.settlement_report_job.domain.task_type import TaskType
 
 DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
@@ -124,7 +125,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
-        assert actual_args.task_key == "hourly"
+        assert actual_args.task_type == TaskType.HOURLY
 
 
 class TestWhenNoValidCalculationIdForGridArea:
