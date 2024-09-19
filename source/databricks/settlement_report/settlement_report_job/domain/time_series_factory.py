@@ -15,22 +15,8 @@ from typing import Union
 from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.session import SparkSession
 
-<<<<<<< HEAD
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.utils import (
-    map_from_dict,
-    get_dbutils,
-    write_files,
-    get_new_files,
-    merge_files,
-)
-from settlement_report_job.constants import (
-    METERING_POINT_TYPE_DICT,
-    get_metering_point_time_series_view_name,
-=======
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
->>>>>>> 6b01e4a3ab0db69137f0f4cfcb5bb4f261c8d7bc
 )
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
@@ -317,22 +303,13 @@ def _get_desired_quantity_column_count(
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
-<<<<<<< HEAD
-def _get_filtered_data(
-    spark: SparkSession, df: DataFrame, args: SettlementReportArgs
-=======
 def _get_filtered_time_series_points(
     spark: SparkSession,
     args: SettlementReportArgs,
     resolution: DataProductMeteringPointResolution,
->>>>>>> 6b01e4a3ab0db69137f0f4cfcb5bb4f261c8d7bc
 ) -> DataFrame:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
         spark, args, get_metering_point_time_series_view_name()
     )
-<<<<<<< HEAD
-    return df
-=======
     return df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
->>>>>>> 6b01e4a3ab0db69137f0f4cfcb5bb4f261c8d7bc
