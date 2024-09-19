@@ -344,6 +344,14 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             nameof(DataLakeOptions.STORAGE_CONTAINER_NAME),
             "wholesale");
 
+        // Dead-letter logging
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{BlobDeadLetterLoggerOptions.SectionName}__{nameof(BlobDeadLetterLoggerOptions.StorageAccountUrl)}",
+            AzuriteManager.BlobStorageServiceUri.OriginalString);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{BlobDeadLetterLoggerOptions.SectionName}__{nameof(BlobDeadLetterLoggerOptions.ContainerName)}",
+            "wholesale-orchestrations");
+
         // ServiceBus connection strings
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}",
