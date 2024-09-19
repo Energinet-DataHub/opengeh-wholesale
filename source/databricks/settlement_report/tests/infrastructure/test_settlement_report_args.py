@@ -73,7 +73,6 @@ def sys_argv_from_contract(contract_parameters: list[str]) -> list[str]:
 def job_environment_variables() -> dict:
     return {
         EnvironmentVariable.CATALOG_NAME.name: "some_catalog",
-        EnvironmentVariable.TASK_TYPE.name: "hourly",
     }
 
 
