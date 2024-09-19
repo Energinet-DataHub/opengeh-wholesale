@@ -65,7 +65,6 @@ def create_time_series(
         df=prepared_time_series,
         path=result_path,
         split_large_files=args.prevent_large_text_files,
-        split_by_grid_area=args.split_report_by_grid_area,
         order_by=[
             DataProductColumnNames.grid_area_code,
             TimeSeriesPointCsvColumnNames.metering_point_type,
@@ -90,7 +89,6 @@ def create_time_series(
             ]
         ),
         split_large_files=args.prevent_large_text_files,
-        split_by_grid_area=args.split_report_by_grid_area,
     )
     files = merge_files(
         dbutils=dbutils,
