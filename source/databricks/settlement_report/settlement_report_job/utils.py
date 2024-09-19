@@ -128,7 +128,7 @@ def write_files(
     df = df.orderBy(*order_by)
 
     if partition_columns:
-        df.write.mode("overwrite").partitionBy(*partition_columns).csv(path)
+        df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
     else:
         df.write.mode("overwrite").csv(path)
 
