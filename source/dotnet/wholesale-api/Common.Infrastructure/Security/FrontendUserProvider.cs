@@ -23,6 +23,7 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
 {
     private const string ActorNumberClaim = "actornumber";
     private const string MarketRolesClaim = "marketroles";
+    private const string RoleClaim = "role";
 
     public Task<FrontendUser?> ProvideUserAsync(
         Guid userId,
@@ -44,7 +45,7 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
     private IReadOnlyCollection<string> GetPermissions(List<Claim> enumeratedClaims)
     {
         return enumeratedClaims
-            .Where(c => c.Type == ClaimTypes.Role)
+            .Where(c => c.Type == RoleClaim)
             .Select(c => c.Value)
             .ToArray();
     }
