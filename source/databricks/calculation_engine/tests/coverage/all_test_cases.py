@@ -51,6 +51,7 @@ class Cases:
 
         class WholesaleResultsTests:
             Only_calculation_ids_in_internal_calculations_included: str
+            Only_external_calculation_ids_included: str
             Calculation_ids_without_calculation_succeeded_time_not_included: str
             Correct_mp_types_included_in_energy_v1_output: str
 
