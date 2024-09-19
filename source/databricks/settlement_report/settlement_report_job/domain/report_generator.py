@@ -5,9 +5,11 @@ from settlement_report_job.domain.metering_point_resolution import (
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.time_series_factory import create_time_series
+from settlement_report_job.infrastructure.database_definitions import (
+    get_output_volume_name,
+)
 
 from settlement_report_job.utils import create_zip_file, get_dbutils
-from settlement_report_job.constants import get_output_volume_name
 from settlement_report_job.logger import Logger
 
 log = Logger(__name__)

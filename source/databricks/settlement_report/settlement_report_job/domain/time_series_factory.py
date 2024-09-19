@@ -14,10 +14,22 @@
 from pyspark.sql import DataFrame, functions as F, Window, Column
 from pyspark.sql.session import SparkSession
 
+from settlement_report_job.domain.report_naming_convention import (
+    METERING_POINT_TYPES,
+)
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.database_definitions import (
+    get_metering_point_time_series_view_name,
+)
+from settlement_report_job.logger import Logger
+from settlement_report_job.infrastructure.column_names import (
+    DataProductColumnNames,
+    TimeSeriesPointCsvColumnNames,
+    EphemeralColumns,
+)
 from settlement_report_job.utils import (
     map_from_dict,
     get_dbutils,
@@ -25,17 +37,7 @@ from settlement_report_job.utils import (
     get_new_files,
     merge_files,
 )
-from settlement_report_job.constants import (
-    METERING_POINT_TYPE_DICT,
-    get_metering_point_time_series_view_name,
-)
-from settlement_report_job.table_column_names import (
-    DataProductColumnNames,
-    TimeSeriesPointCsvColumnNames,
-    EphemeralColumns,
-)
 from settlement_report_job.infrastructure import logging_configuration
-from settlement_report_job.logger import Logger
 
 log = Logger(__name__)
 
@@ -169,7 +171,7 @@ def _generate_time_series(
         F.col(DataProductColumnNames.metering_point_id).alias(
             TimeSeriesPointCsvColumnNames.metering_point_id
         ),
-        map_from_dict(METERING_POINT_TYPE_DICT)[
+        map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
         F.col(EphemeralColumns.start_of_day).alias(
