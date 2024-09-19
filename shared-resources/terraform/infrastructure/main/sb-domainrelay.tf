@@ -1,5 +1,5 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_4.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_5.0.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
@@ -30,6 +30,9 @@ module "sb_domain_relay" {
       manage = true
     },
   ]
+  audit_storage_account = var.enable_audit_logs ? {
+    id = module.st_audit_logs.id
+  } : null
 }
 
 resource "azurerm_role_assignment" "spn_sbns" {

@@ -1,5 +1,5 @@
 module "st_data_lake" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_6.0.0"
 
   name                       = "datalake"
   project_name               = var.domain_name_short
@@ -10,6 +10,9 @@ module "st_data_lake" {
   account_replication_type   = "LRS"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
+  audit_storage_account = var.enable_audit_logs ? {
+    id = module.st_audit_logs.id
+  } : null
   role_assignments = [
     {
       principal_id         = data.azurerm_client_config.current.object_id

@@ -290,3 +290,8 @@ variable "databricks_contributor_dataplane_group" {
   })
   description = "The Databricks group containing users with contributor permissions to the data plane."
 }
+
+variable "enable_audit_logs" {
+  type        = bool
+  description = "Should audit logs be enabled for the environment?"
+}

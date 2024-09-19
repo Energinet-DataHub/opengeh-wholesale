@@ -1,5 +1,5 @@
 module "mssql_data_additional" { # Needs to be a named like this or it would delete all databases
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=mssql-server_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=mssql-server_5.0.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -29,6 +29,10 @@ module "mssql_data_additional" { # Needs to be a named like this or it would del
     max_capacity = 100
   }
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
+  audit_storage_account = var.enable_audit_logs ? {
+    id                    = module.st_audit_logs.id
+    primary_blob_endpoint = "https://${module.st_audit_logs.name}.blob.core.windows.net/"
+  } : null
 }
 
 resource "azurerm_mssql_firewall_rule" "github_largerunner" {

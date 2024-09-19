@@ -8,6 +8,7 @@ private_endpoint_address_space           = "10.141.0.0/25"
 vnet_integration_address_space           = "10.141.0.128/25"
 biztalk_hybrid_connection_hostname       = "datahub.biztalk.energinet.local:443"
 apim_url                                 = "https://b2b.datahub3.dk"
+enable_audit_logs                        = true
 pim_contributor_data_plane_group_name    = "SEC-A-Datahub-Prod-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-Prod-001-Contributor-Controlplane"
 pim_reader_group_name                    = "SEC-A-Datahub-Prod-001-Reader"

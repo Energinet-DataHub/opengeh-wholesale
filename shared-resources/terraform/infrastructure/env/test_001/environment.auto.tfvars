@@ -8,6 +8,7 @@ private_endpoint_address_space           = "10.143.0.0/25"
 vnet_integration_address_space           = "10.143.0.128/25"
 biztalk_hybrid_connection_hostname       = "datahub.preproduction.biztalk.energinet.local:443"
 apim_url                                 = "https://test.b2b.datahub3.dk"
+enable_audit_logs                        = false
 pim_contributor_data_plane_group_name    = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-Test-001-Contributor-Controlplane"
 alert_email_address                      = "d01b5c85.energinet.onmicrosoft.com@emea.teams.ms"

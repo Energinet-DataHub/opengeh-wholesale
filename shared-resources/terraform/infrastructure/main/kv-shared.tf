@@ -1,5 +1,5 @@
 module "kv_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_5.0.0"
 
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
@@ -13,4 +13,7 @@ module "kv_shared" {
   allowed_subnet_ids = [
     data.azurerm_subnet.snet_vnet_integration.id,
   ]
+  audit_storage_account = var.enable_audit_logs ? {
+    id = module.st_audit_logs.id
+  } : null
 }

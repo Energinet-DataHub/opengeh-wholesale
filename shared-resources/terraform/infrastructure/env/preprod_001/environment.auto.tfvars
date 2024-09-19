@@ -8,6 +8,7 @@ private_endpoint_address_space           = "10.141.2.0/25"
 vnet_integration_address_space           = "10.141.2.128/25"
 biztalk_hybrid_connection_hostname       = "datahub.preproduction.biztalk.energinet.local:443"
 apim_url                                 = "https://preprod.b2b.datahub3.dk"
+enable_audit_logs                        = false
 pim_contributor_data_plane_group_name    = "SEC-A-Datahub-PreProd-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-PreProd-001-Contributor-Controlplane"
 pim_reader_group_name                    = "SEC-A-Datahub-PreProd-001-Reader"

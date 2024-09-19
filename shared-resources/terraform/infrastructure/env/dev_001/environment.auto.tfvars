@@ -11,6 +11,7 @@ apim_url                                 = "https://dev.b2b.datahub3.dk"
 pim_contributor_data_plane_group_name    = "SEC-A-Datahub-Dev-001-Contributor-Dataplane"
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-Dev-001-Contributor-Controlplane"
 alert_email_address                      = "d01b5c85.energinet.onmicrosoft.com@emea.teams.ms"
+enable_audit_logs                        = false
 developer_security_group_reader_access   = true
 databricks_readers_group = {
   id   = "729028915538231"

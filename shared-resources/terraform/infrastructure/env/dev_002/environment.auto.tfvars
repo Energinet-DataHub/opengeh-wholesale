@@ -9,6 +9,7 @@ vnet_integration_address_space              = "10.143.6.128/25"
 biztalk_hybrid_connection_hostname          = "datahub.preproduction.biztalk.energinet.local:443"
 apim_url                                    = "https://dev002.b2b.datahub3.dk"
 alert_email_address                         = "d01b5c85.energinet.onmicrosoft.com@emea.teams.ms"
+enable_audit_logs                           = false
 developer_security_group_contributor_access = true
 developer_security_group_reader_access      = true
 databricks_readers_group = {
