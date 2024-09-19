@@ -31,7 +31,7 @@ module "kvs_sql_ms_edi_database_name" {
 
   name         = "mssql-edi-database-name"
   value        = module.mssqldb_edi.name
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+  key_vault_id = module.kv_internal.id
 }
 
 locals {
