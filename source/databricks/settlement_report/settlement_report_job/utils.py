@@ -150,7 +150,9 @@ def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
     new_files = []
-    regex = f"{result_path}/{DataProductColumnNames.grid_area_code}=(\\d+)/split=(\\d+)"
+    regex = (
+        f"{result_path}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})/split=(\\d+)"
+    )
     for f in files:
         partition_match = re.match(regex, str(f))
         if partition_match is None:
