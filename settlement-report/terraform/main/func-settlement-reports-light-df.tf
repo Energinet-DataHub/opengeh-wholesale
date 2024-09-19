@@ -13,6 +13,7 @@ module "func_settlement_reports_light_df" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
+  is_durable_function                    = true
   health_check_path                      = "/api/monitor/ready"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
