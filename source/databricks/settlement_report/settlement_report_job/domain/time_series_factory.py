@@ -89,6 +89,8 @@ def create_time_series(
                 "{split}",
             ]
         ),
+        split_large_files=args.prevent_large_text_files,
+        split_by_grid_area=args.split_report_by_grid_area,
     )
     files = merge_files(
         dbutils=dbutils,
