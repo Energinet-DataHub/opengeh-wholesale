@@ -119,7 +119,7 @@ def write_files(
         list[str]: Headers for the csv file.
     """
 
-    partition_columns = []
+    partition_columns: list[str] = []
     if split_large_files:
         w = Window().orderBy(*order_by)
         split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
