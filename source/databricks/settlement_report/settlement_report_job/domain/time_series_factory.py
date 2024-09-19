@@ -162,7 +162,7 @@ def _generate_time_series(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"ENERGYQUANTITY{i}")
+        F.col(str(i)).alias(f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i}")
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 
