@@ -1,5 +1,5 @@
 module "st_dead_letter_logs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.0.0"
 
   name                                  = "deadltr"
   project_name                          = var.domain_name_short
@@ -11,6 +11,9 @@ module "st_dead_letter_logs" {
   private_endpoint_subnet_id            = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 30
+  audit_storage_account = var.enable_audit_logs ? {
+    id = module.st_audit_logs.id
+  } : null
   role_assignments = [
     {
       principal_id         = data.azurerm_client_config.current.object_id
