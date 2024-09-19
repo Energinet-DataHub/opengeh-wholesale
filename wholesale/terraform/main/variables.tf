@@ -181,3 +181,9 @@ variable "settlement_report_auto_stop_minutes" {
   description = "Auto termination for Settlement Report SQL Warehouse, 0 means no auto termination."
   default     = 0
 }
+
+variable "setup_backup_sql_warehouse" {
+  type        = bool
+  description = "Flag to determine if a SQL warehouse for executing Databricks back ups should be created."
+  default     = false
+}
