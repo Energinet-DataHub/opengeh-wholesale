@@ -13,13 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Core.Outbox.Extensions.DependencyInjection;
+using Energinet.DataHub.RevisionLog.Integration.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
@@ -27,6 +32,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 
@@ -49,6 +55,8 @@ public static class CalculationsExtensions
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
+        AddAuditLogging(services, configuration);
+
         return services;
     }
 
@@ -64,7 +72,6 @@ public static class CalculationsExtensions
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
 
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 configuration
@@ -75,6 +82,10 @@ public static class CalculationsExtensions
                     o.UseNodaTime();
                     o.EnableRetryOnFailure();
                 }));
+
+        // Make sure injection an IDatabaseContext will return the same instance as injection a DatabaseContext
+        services.AddTransient<IDatabaseContext>(sp => sp.GetRequiredService<DatabaseContext>());
+
         // Database Health check
         services.TryAddHealthChecks(
             registrationKey: HealthCheckNames.WholesaleDatabase,
@@ -88,6 +99,17 @@ public static class CalculationsExtensions
 
         services.AddScoped<IGridAreaOwnershipClient, GridAreaOwnershipClient>();
 
+        AddAuditLogging(services, configuration);
+
         return services;
+    }
+
+    private static void AddAuditLogging(IServiceCollection services, IConfiguration configuration)
+    {
+        services.TryAddTransient<IJsonSerializer, JsonSerializer>();
+        services.TryAddTransient<IAuditLogger, AuditLogger>();
+
+        services.AddOutboxClient<DatabaseContext>();
+        services.AddRevisionLogIntegrationModule(configuration);
     }
 }
