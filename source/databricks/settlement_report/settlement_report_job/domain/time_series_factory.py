@@ -188,24 +188,6 @@ def get_start_of_day(col: Column | str, time_zone: str) -> Column:
     )
 
 
-def _add_start_of_day_column(
-    filtered_time_series_points: DataFrame, time_zone: str
-) -> DataFrame:
-    filtered_time_series_points = filtered_time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        F.to_utc_timestamp(
-            F.date_trunc(
-                "DAY",
-                F.from_utc_timestamp(
-                    DataProductColumnNames.observation_time, time_zone
-                ),
-            ),
-            time_zone,
-        ),
-    )
-    return filtered_time_series_points
-
-
 def _get_desired_quantity_column_count(
     resolution: DataProductMeteringPointResolution,
 ) -> int:
