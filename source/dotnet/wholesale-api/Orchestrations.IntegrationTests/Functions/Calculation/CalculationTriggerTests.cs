@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Xunit.Abstractions;
 
@@ -43,7 +44,7 @@ public class CalculationTriggerTests : IAsyncLifetime
 
     private OrchestrationsAppFixture Fixture { get; }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         Fixture.AppHostManager.ClearHostLog();
 
@@ -52,7 +53,8 @@ public class CalculationTriggerTests : IAsyncLifetime
         Fixture.MockServer.MockAuditLogEndpoint();
         Fixture.MockServer.ResetLogEntries();
 
-        return Task.CompletedTask;
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        await dbContext.Outbox.ExecuteDeleteAsync();
     }
 
     public Task DisposeAsync()
