@@ -28,7 +28,7 @@ from settlement_report_job.infrastructure.environment_variables import (
     EnvironmentVariable,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report.settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.domain.task_type import TaskType
 
 DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
