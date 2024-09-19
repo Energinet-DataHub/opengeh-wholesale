@@ -58,9 +58,6 @@ locals {
     InternalGridLossMeteringPoints = {
       table_name = "grid_loss_metering_points"
     }
-    InternalSucceededExternalCalculationsV1 = {
-      table_name = "succeeded_external_calculations_v1"
-    }
   }
   backup_access_control = local.readers == {} ? [
     {
