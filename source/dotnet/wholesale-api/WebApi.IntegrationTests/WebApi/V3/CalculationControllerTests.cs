@@ -127,7 +127,7 @@ public class CalculationControllerTests : WebApiTestBase
     {
         // Arrange
         var calculationSearchParameters = new CalculationSearchParameters(
-            gridAreaCodes: null,
+            gridAreaCodes: [],
             executionState: CalculationState.Completed.ToString(),
             minExecutionTime: new DateTimeOffset(2024, 09, 18, 13, 37, 0, TimeSpan.Zero)
                 .ToString("O"),
