@@ -125,16 +125,16 @@ def write_files(
     partition_columns: list[str] = []
     if partition_by_grid_area:
         df = df.withColumn(
-            EphemeralColumns.grid_area_partition_column,
+            EphemeralColumns.grid_area_partition,
             F.col(DataProductColumnNames.grid_area_code),
         )
-        partition_columns.extend(EphemeralColumns.grid_area_partition_column)
+        partition_columns.extend(EphemeralColumns.grid_area_partition)
 
     if partition_by_chunk_index:
         w = Window().orderBy(order_by)
         chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
-        df = df.withColumn(EphemeralColumns.chunk_index_column, chunk_index_col)
-        partition_columns.extend(EphemeralColumns.chunk_index_column)
+        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+        partition_columns.extend(EphemeralColumns.chunk_index)
 
     df = df.orderBy(order_by)
 
@@ -171,10 +171,10 @@ def get_new_files(
 
     regex = result_path
     if partition_by_grid_area:
-        regex = f"{regex}/{EphemeralColumns.grid_area_partition_column}=(\\w{{3}})"
+        regex = f"{regex}/{EphemeralColumns.grid_area_partition}=(\\w{{3}})"
 
     if partition_by_chunk_index:
-        regex = f"{regex}/{EphemeralColumns.chunk_index_column}=(\\d+)"
+        regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
     for f in files:
         partition_match = re.match(regex, str(f))
@@ -183,8 +183,10 @@ def get_new_files(
 
         groups = partition_match.groups()
         grid_area = groups[0]
-        chunk = groups[1] if len(groups) > 1 else "0"
-        file_name = file_name_template.format(grid_area=grid_area, chunk=chunk)
+        chunk_index = groups[1] if len(groups) > 1 else "0"
+        file_name = file_name_template.format(
+            grid_area=grid_area, chunk_index=chunk_index
+        )
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))

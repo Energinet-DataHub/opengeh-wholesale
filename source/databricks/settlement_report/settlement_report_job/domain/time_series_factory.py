@@ -86,7 +86,7 @@ def create_time_series(
                 "{grid_area}",
                 args.period_start.strftime("%d-%m-%Y"),
                 args.period_end.strftime("%d-%m-%Y"),
-                "{split}",
+                "{chunk_index}",
             ]
         ),
         partition_by_chunk_index=args.prevent_large_text_files,
