@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 
-public enum FrontendActorMarketRole
+public interface IAuditLogger
 {
-    /// <summary>
-    /// Other is used when a user's actor has a valid market role, but the role is currently irrelevant.
-    /// </summary>
-    Other,
-    GridAccessProvider,
-    EnergySupplier,
-    SystemOperator,
-    DataHubAdministrator,
+    Task LogWithCommitAsync(
+        AuditLogActivity activity,
+        string origin,
+        object? payload,
+        AuditLogEntityType? affectedEntityType,
+        Guid? affectedEntityKey);
 }
