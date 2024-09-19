@@ -71,17 +71,17 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.1.0.0 (NJsonSchema v11.0.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class WholesaleClient_V3 : IWholesaleClient_V3
     {
-        #pragma warning disable 8618
+#pragma warning disable 8618
         private string _baseUrl;
-        #pragma warning restore 8618
+#pragma warning restore 8618
 
         private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
         private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
 
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public WholesaleClient_V3(string baseUrl, System.Net.Http.HttpClient httpClient)
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = baseUrl;
             _httpClient = httpClient;
@@ -138,7 +138,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
-                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    if (!string.IsNullOrEmpty(_baseUrl))
+                        urlBuilder_.Append(_baseUrl);
                     // Operation Path: "v3/calculations/{calculationId}"
                     urlBuilder_.Append("v3/calculations/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(calculationId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -213,13 +214,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
-                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    if (!string.IsNullOrEmpty(_baseUrl))
+                        urlBuilder_.Append(_baseUrl);
                     // Operation Path: "v3/calculations"
                     urlBuilder_.Append("v3/calculations");
                     urlBuilder_.Append('?');
                     if (gridAreaCodes != null)
                     {
-                        foreach (var item_ in gridAreaCodes) { urlBuilder_.Append(System.Uri.EscapeDataString("gridAreaCodes")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
+                        foreach (var item_ in gridAreaCodes)
+                        { urlBuilder_.Append(System.Uri.EscapeDataString("gridAreaCodes")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
                     }
                     if (executionState != null)
                     {
@@ -318,7 +321,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     var urlBuilder_ = new System.Text.StringBuilder();
-                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    if (!string.IsNullOrEmpty(_baseUrl))
+                        urlBuilder_.Append(_baseUrl);
                     // Operation Path: "v3/SettlementReport"
                     urlBuilder_.Append("v3/SettlementReport");
                     urlBuilder_.Append('?');
@@ -460,7 +464,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                     var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
                     if (field != null)
                     {
-                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute)) 
+                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
                             as System.Runtime.Serialization.EnumMemberAttribute;
                         if (attribute != null)
                         {
@@ -472,13 +476,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                     return converted == null ? string.Empty : converted;
                 }
             }
-            else if (value is bool) 
+            else if (value is bool)
             {
                 return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
             }
             else if (value is byte[])
             {
-                return System.Convert.ToBase64String((byte[]) value);
+                return System.Convert.ToBase64String((byte[])value);
             }
             else if (value is string[])
             {
@@ -534,7 +538,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         public System.DateTimeOffset? ExecutionTimeEnd { get; set; }
 
         [Newtonsoft.Json.JsonProperty("orchestrationState", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public CalculationOrchestrationState OrchestrationState { get; set; }
 
         [Newtonsoft.Json.JsonProperty("areSettlementReportsCreated", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -547,7 +550,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         /// Defines the wholesale calculation type
         /// </summary>
         [Newtonsoft.Json.JsonProperty("calculationType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public CalculationType CalculationType { get; set; }
 
         [Newtonsoft.Json.JsonProperty("createdByUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -565,35 +567,25 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
     public enum CalculationOrchestrationState
     {
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Scheduled")]
-        Scheduled = 0,
+        Scheduled = 1,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Calculating")]
-        Calculating = 1,
+        Calculating = 2,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Calculated")]
-        Calculated = 2,
+        Calculated = 3,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"CalculationFailed")]
-        CalculationFailed = 3,
+        CalculationFailed = 4,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"ActorMessagesEnqueuing")]
-        ActorMessagesEnqueuing = 4,
+        ActorMessagesEnqueuing = 5,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"ActorMessagesEnqueued")]
-        ActorMessagesEnqueued = 5,
+        ActorMessagesEnqueued = 6,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"ActorMessagesEnqueuingFailed")]
-        ActorMessagesEnqueuingFailed = 6,
+        ActorMessagesEnqueuingFailed = 7,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Completed")]
-        Completed = 7,
+        Completed = 8,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Canceled")]
-        Canceled = 8,
+        Canceled = 9,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Started")]
-        Started = 9,
+        Started = 11,
 
     }
 
@@ -601,16 +593,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
     public enum CalculationState
     {
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Pending")]
         Pending = 0,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Executing")]
         Executing = 1,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Completed")]
         Completed = 2,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Failed")]
         Failed = 3,
 
     }
@@ -622,22 +610,16 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
     public enum CalculationType
     {
 
-        [System.Runtime.Serialization.EnumMember(Value = @"BalanceFixing")]
         BalanceFixing = 0,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Aggregation")]
         Aggregation = 1,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"WholesaleFixing")]
         WholesaleFixing = 2,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"FirstCorrectionSettlement")]
         FirstCorrectionSettlement = 3,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"SecondCorrectionSettlement")]
         SecondCorrectionSettlement = 4,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"ThirdCorrectionSettlement")]
         ThirdCorrectionSettlement = 5,
 
     }
@@ -701,10 +683,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
 
 }
 
-#pragma warning restore  108
-#pragma warning restore  114
-#pragma warning restore  472
-#pragma warning restore  612
+#pragma warning restore 108
+#pragma warning restore 114
+#pragma warning restore 472
+#pragma warning restore 612
 #pragma warning restore 1573
 #pragma warning restore 1591
 #pragma warning restore 8073
