@@ -49,8 +49,7 @@ builder.Services.AddIntegrationEventsSubscription(builder.Configuration);
 
 // Http channels
 builder.Services
-    .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>());
 
 // => Open API generation
 builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "Wholesale Web API");
