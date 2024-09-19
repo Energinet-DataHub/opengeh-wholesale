@@ -96,7 +96,7 @@ public class CalculationControllerTests : WebApiTestBase
         Factory.CalculationsClientMock = mock;
 
         // Act
-        var response = await Client.GetAsync($"/v3/calculations/", CancellationToken.None);
+        var response = await Client.GetAsync($"/v3/calculations/{calculationDto.CalculationId}", CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
