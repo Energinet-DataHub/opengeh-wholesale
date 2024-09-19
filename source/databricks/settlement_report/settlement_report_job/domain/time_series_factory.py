@@ -74,9 +74,7 @@ def create_time_series(
         ],
     )
     resolution_name = (
-        "TSSD60"
-        if resolution == DataProductMeteringPointResolution.HOUR
-        else "TSSD15"
+        "TSSD60" if resolution == DataProductMeteringPointResolution.HOUR else "TSSD15"
     )
     new_files = get_new_files(
         result_path,
