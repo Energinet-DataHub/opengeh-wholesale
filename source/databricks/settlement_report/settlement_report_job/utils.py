@@ -164,7 +164,7 @@ def get_new_files(
 
     regex = result_path
     if split_by_grid_area:
-        regex = f"{regex}/{ EphemeralColumns.grid_area_split_column}=(\\d+)"
+        regex = f"{regex}/{ EphemeralColumns.grid_area_split_column}=(\\w{{3}})"
 
     if split_large_files:
         regex = f"{regex}/{EphemeralColumns.large_files_split_column}=(\\d+)"
