@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 
