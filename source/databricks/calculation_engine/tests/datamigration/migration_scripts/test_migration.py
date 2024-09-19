@@ -83,10 +83,6 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
         ]:
             continue
 
-        # Skip Hive Basis Data Database - it is not part of the schema config anymore
-        if db.name in [paths.HiveBasisDataDatabase.DATABASE_NAME]:
-            continue
-
         schema = next((x for x in schemas if x.name == db.name), None)
         assert schema is not None, f"Schema {db.name} is not in the schema config"
         tables = spark.catalog.listTables(db.name)
