@@ -55,7 +55,12 @@ module "func_receiver" {
       // ServiceBus EDI Incomming Messages Queue
       resource_id          = azurerm_servicebus_queue.edi_incoming_messages_queue.id
       role_definition_name = "Azure Service Bus Data Owner"
-    }
+    },
+    {
+      // Dead-letter logs
+      resource_id          = data.azurerm_key_vault_secret.st_deadltr_shres_id.value
+      role_definition_name = "Storage Blob Data Contributor"
+    },
   ]
 }
 
