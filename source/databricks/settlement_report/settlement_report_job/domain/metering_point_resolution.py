@@ -11,3 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from enum import Enum
+
+
+class DataProductMeteringPointResolution(Enum):
+    """Resolution values as defined for metering points in the data product(s)."""
+
+    HOUR = "PT1H"
+    QUARTER = "PT15M"

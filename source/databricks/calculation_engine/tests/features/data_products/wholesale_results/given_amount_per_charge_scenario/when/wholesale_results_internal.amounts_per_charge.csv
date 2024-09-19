@@ -1,3 +1,0 @@
-calculation_id;result_id;grid_area_code;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id
-0b15a420-9fc8-409a-a169-fbd49479d718;11111111-9fc8-409a-a169-fbd49479d718;804;8100000000115;360;kWh;['calculated'];2023-01-31 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552
-11111111-1111-1111-1111-111111111111;22222222-9fc8-409a-a169-fbd49479d718;804;8100000000108;2;kWh;['measured'];2023-01-31 23:00:00.000000;P1D;production;;1.756998;632.51928;false;41000;tariff;5790001330552

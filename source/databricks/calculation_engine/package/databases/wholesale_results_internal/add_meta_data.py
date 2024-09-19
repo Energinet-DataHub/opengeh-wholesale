@@ -42,9 +42,13 @@ def add_metadata(
 def _add_calculation_result_id(
     df: DataFrame, column_group_for_calculation_result_id: list[str]
 ) -> DataFrame:
+
+    # TODO AJW: Rename to result_id when we are on Unity Catalog.
     df = df.withColumn(TableColumnNames.calculation_result_id, f.expr("uuid()"))
     window = Window.partitionBy(column_group_for_calculation_result_id)
     return df.withColumn(
+        # TODO AJW: Rename to result_id when we are on Unity Catalog.
         TableColumnNames.calculation_result_id,
+        # TODO AJW: Rename to result_id when we are on Unity Catalog.
         first(col(TableColumnNames.calculation_result_id)).over(window),
     )

@@ -39,25 +39,3 @@ monthly_amounts_schema_uc = StructType(
         StructField(TableColumnNames.charge_owner_id, StringType(), False),
     ]
 )
-
-hive_monthly_amounts_schema = StructType(
-    [
-        StructField(TableColumnNames.calculation_id, StringType(), False),
-        StructField(TableColumnNames.calculation_type, StringType(), False),
-        StructField(
-            TableColumnNames.calculation_execution_time_start,
-            TimestampType(),
-            False,
-        ),
-        StructField(TableColumnNames.calculation_result_id, StringType(), False),
-        StructField(TableColumnNames.grid_area_code, StringType(), False),
-        StructField(TableColumnNames.energy_supplier_id, StringType(), False),
-        StructField(TableColumnNames.quantity_unit, StringType(), False),
-        StructField(TableColumnNames.time, TimestampType(), False),
-        StructField(TableColumnNames.amount, DecimalType(18, 6), True),
-        StructField(TableColumnNames.is_tax, BooleanType(), False),
-        StructField(TableColumnNames.charge_code, StringType(), False),
-        StructField(TableColumnNames.charge_type, StringType(), False),
-        StructField(TableColumnNames.charge_owner_id, StringType(), False),
-    ]
-)

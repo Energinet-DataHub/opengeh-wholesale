@@ -46,13 +46,13 @@ public class SettlementReportController : V3ControllerBase
     /// Returns a subset of calculations that are valid for use with settlement reports.
     /// Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
     /// </summary>
-    [HttpGet(Name = "GetApplicableCalculations")]
+    [HttpPost(Name = "GetApplicableCalculations")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(List<SettlementReportApplicableCalculationDto>))]
     [Authorize(Roles = Permissions.SettlementReportsManage)]
     public async Task<IActionResult> GetApplicableCalculationsAsync(
         [FromQuery] CalculationType calculationType,
-        [FromQuery] string[] gridAreaCodes,
+        [FromBody] string[] gridAreaCodes,
         [FromQuery] DateTimeOffset periodStart,
         [FromQuery] DateTimeOffset periodEnd)
     {

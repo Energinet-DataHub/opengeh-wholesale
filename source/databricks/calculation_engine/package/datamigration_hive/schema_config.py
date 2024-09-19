@@ -21,8 +21,6 @@ from package.databases.wholesale_internal.schemas import (
 )
 from package.databases.wholesale_results_internal.schemas import (
     hive_energy_results_schema,
-    hive_total_monthly_amounts_schema,
-    hive_monthly_amounts_schema,
 )
 
 # calculation_output
@@ -41,14 +39,6 @@ schema_config = [
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
                 schema=hive_energy_results_schema,
-            ),
-            Table(
-                name=paths.HiveOutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=hive_monthly_amounts_schema,
-            ),
-            Table(
-                name=paths.HiveOutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-                schema=hive_total_monthly_amounts_schema,
             ),
         ],
         views=[
