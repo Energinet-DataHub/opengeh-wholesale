@@ -127,3 +127,12 @@ data "azurerm_key_vault_secret" "st_audit_shres_name" {
   name         = "st-audit-shres-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+//
+// Dead-letter logs
+//
+
+data "azurerm_key_vault_secret" "st_deadltr_shres_id" {
+  name         = "st-deadltr-shres-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

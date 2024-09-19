@@ -41,6 +41,10 @@ locals {
       # Database
       "CONNECTIONSTRINGS__DB_CONNECTION_STRING" = local.DB_CONNECTION_STRING
 
+      # Dead-letter logs
+      DeadLetterLogging__StorageAccountUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-deadltr-shres-blob-url)"
+      DeadLetterLogging__ContainerName     = "wholesale-orchestrations"
+
       # Durable Functions Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
       "OrchestrationsTaskHubName" = "Wholesale01"
