@@ -16,10 +16,10 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 
 
 def create(args: CalculatorArgs, monthly_amounts: MonthlyAmountPerCharge) -> DataFrame:
@@ -36,10 +36,13 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
     # Note: The order of the columns must match the order of the columns in the Delta table
     return df.select(
         col(Colname.calculation_id).alias(TableColumnNames.calculation_id),
+        # AJW: Remove when we are on Unity Catalog.
         col(Colname.calculation_type).alias(TableColumnNames.calculation_type),
+        # AJW: Remove when we are on Unity Catalog.
         col(Colname.calculation_execution_time_start).alias(
             TableColumnNames.calculation_execution_time_start
         ),
+        # AJW: Rename to result_id when we are on Unity Catalog.
         col(TableColumnNames.calculation_result_id),
         col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
         col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
