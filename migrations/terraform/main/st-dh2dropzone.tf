@@ -12,6 +12,7 @@ module "st_dh2dropzone" {
   private_endpoint_subnet_id   = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                     = var.datahub2_ip_whitelist != null ? format("%s,%s", local.ip_restrictions_as_string, var.datahub2_ip_whitelist) : local.ip_restrictions_as_string
   antimalware_scanning_enabled = true
+  prevent_deletion             = false
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
