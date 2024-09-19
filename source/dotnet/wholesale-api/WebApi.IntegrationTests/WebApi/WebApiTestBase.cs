@@ -40,7 +40,7 @@ public abstract class WebApiTestBase :
         Client = factory.CreateClient();
     }
 
-    public Task InitializeAsync()
+    public virtual Task InitializeAsync()
     {
         return Task.CompletedTask;
     }
