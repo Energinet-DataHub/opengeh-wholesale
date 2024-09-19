@@ -47,7 +47,7 @@ of coverage overview.
 
 **All test scenarios must have a Coverage.py file**. Easiest is to copy and modify an existing Coverage-file from another scenario.
 
-See also [Confluece](https://energinet.atlassian.net/wiki/spaces/D3/pages/1081999392/Coverage).
+See also [Confluence](https://energinet.atlassian.net/wiki/spaces/D3/pages/1081999392/Coverage).
 
 ## Local test config settings
 

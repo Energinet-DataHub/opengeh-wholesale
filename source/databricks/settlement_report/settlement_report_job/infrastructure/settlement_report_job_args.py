@@ -26,6 +26,7 @@ from settlement_report_job.logger import Logger
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import settlement_report_job.infrastructure.environment_variables as env_vars
+from settlement_report_job.domain.task_type import TaskType
 
 
 def parse_command_line_arguments() -> Namespace:
@@ -54,8 +55,7 @@ def parse_job_arguments(
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
-            task_type=env_vars.get_task_type(),
-            task_key=job_args.task_key,
+            task_type=TaskType(job_args.task_type),
         )
 
         return settlement_report_args
@@ -82,7 +82,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
-    p.add("--task-key", type=str, required=True)
+    p.add("--task-type", type=str, required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):

@@ -35,4 +35,3 @@ class SettlementReportArgs:
     time_zone: str
     catalog_name: str
     task_type: TaskType
-    task_key: str

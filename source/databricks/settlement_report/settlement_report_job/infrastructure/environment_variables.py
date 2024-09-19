@@ -16,21 +16,13 @@ import os
 from enum import Enum
 from typing import Any
 
-from settlement_report_job.domain.task_type import TaskType
-
 
 class EnvironmentVariable(Enum):
     CATALOG_NAME = "CATALOG_NAME"
-    TASK_TYPE = "TASK_TYPE"
 
 
 def get_catalog_name() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.CATALOG_NAME)
-
-
-def get_task_type() -> TaskType:
-    task_type = get_env_variable_or_throw(EnvironmentVariable.TASK_TYPE)
-    return TaskType(task_type)
 
 
 def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:

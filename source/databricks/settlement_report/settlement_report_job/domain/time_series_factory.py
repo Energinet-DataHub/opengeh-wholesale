@@ -15,6 +15,7 @@ from typing import Union
 from pyspark.sql import DataFrame, Column, functions as F, types as T
 from pyspark.sql.session import SparkSession
 
+<<<<<<< HEAD
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.utils import (
     map_from_dict,
@@ -26,14 +27,32 @@ from settlement_report_job.utils import (
 from settlement_report_job.constants import (
     METERING_POINT_TYPE_DICT,
     get_metering_point_time_series_view_name,
+=======
+from settlement_report_job.domain.report_naming_convention import (
+    METERING_POINT_TYPES,
+>>>>>>> 6b01e4a3ab0db69137f0f4cfcb5bb4f261c8d7bc
 )
-from settlement_report_job.table_column_names import (
+from settlement_report_job.domain.metering_point_resolution import (
+    DataProductMeteringPointResolution,
+)
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.database_definitions import (
+    get_metering_point_time_series_view_name,
+)
+from settlement_report_job.logger import Logger
+from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
     EphemeralColumns,
 )
+from settlement_report_job.utils import (
+    map_from_dict,
+    get_dbutils,
+    write_files,
+    get_new_files,
+    merge_files,
+)
 from settlement_report_job.infrastructure import logging_configuration
-from settlement_report_job.logger import Logger
 
 log = Logger(__name__)
 
@@ -44,25 +63,21 @@ log = Logger(__name__)
 def create_time_series(
     spark: SparkSession,
     args: SettlementReportArgs,
-    query_directory: str,
+    report_directory: str,
+    resolution: DataProductMeteringPointResolution,
 ) -> list[str]:
     log.info("Creating time series points")
     dbutils = get_dbutils(spark)
-    df = _get_filtered_data(spark, get_metering_point_time_series_view_name(), args)
-    if args.task_type == "hourly":
-        time_series_points = _generate_hourly_ts(
-            df.filter(DataProductColumnNames.resolution == "PT1H"), args.time_zone
-        )
-    elif args.task_type == "quarterly":
-        time_series_points = _generate_quarterly_ts(
-            df.filter(DataProductColumnNames.resolution == "PT15M"), args.time_zone
-        )
-    else:
-        raise ValueError(f"Unknown time series type: {args.task_type}")
+    time_series_points = _get_filtered_time_series_points(spark, args, resolution)
+    prepared_time_series = _generate_time_series(
+        time_series_points,
+        _get_desired_quantity_column_count(resolution),
+        args.time_zone,
+    )
 
-    result_path = f"{query_directory}/{args.task_type}"
+    result_path = f"{report_directory}/time_series_{resolution.value}"
     headers = write_files(
-        df=time_series_points,
+        df=prepared_time_series,
         path=result_path,
         split_large_files=args.prevent_large_text_files,
         split_by_grid_area=args.split_report_by_grid_area,
@@ -73,7 +88,11 @@ def create_time_series(
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
     )
-    resolution_name = "TSSD60" if args.task_type == "hourly" else "TSSD15"
+    resolution_name = (
+        "TSSD60"
+        if resolution.value == DataProductMeteringPointResolution.HOUR
+        else "TSSD15"
+    )
     new_files = get_new_files(
         result_path,
         file_name_template="_".join(
@@ -172,8 +191,9 @@ def _read_and_filter_from_view(
     spark: SparkSession, args: SettlementReportArgs, view_name: str
 ) -> DataFrame:
     df = spark.read.table(view_name).where(
-        F.col(DataProductColumnNames.observation_time) >= args.period_start
-    ) & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+        (F.col(DataProductColumnNames.observation_time) >= args.period_start)
+        & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+    )
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
@@ -195,7 +215,7 @@ def _read_and_filter_from_view(
 )
 def _generate_time_series(
     filtered_metering_points: DataFrame,
-    desired_number_of_observations: int,
+    desired_quantity_column_count: int,
     time_zone: str,
 ) -> DataFrame:
     _result_columns = [
@@ -203,7 +223,7 @@ def _generate_time_series(
         F.col(DataProductColumnNames.metering_point_id).alias(
             TimeSeriesPointCsvColumnNames.metering_point_id
         ),
-        map_from_dict(METERING_POINT_TYPE_DICT)[
+        map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
         F.col(EphemeralColumns.start_of_day).alias(
@@ -211,7 +231,7 @@ def _generate_time_series(
         ),
     ] + [
         f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"
-        for i in range(desired_number_of_observations)
+        for i in range(desired_quantity_column_count)
     ]
 
     df_with_array_column = (
@@ -260,7 +280,7 @@ def _generate_time_series(
             F.explode(
                 pad_array_col(
                     EphemeralColumns.quantities,
-                    desired_number_of_observations,
+                    desired_quantity_column_count,
                     TimeSeriesPointCsvColumnNames.energy_prefix,
                 )
             ).alias("exploded"),
@@ -283,44 +303,36 @@ def _generate_time_series(
     return result.select(*_result_columns)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._generate_hourly_time_series"
-)
-def _generate_hourly_ts(df: DataFrame, time_zone: str) -> DataFrame:
-    log.info("Generating hourly time series")
-    ts = _generate_time_series(
-        df,
-        desired_number_of_observations=25,
-        time_zone=time_zone,
-    )
-    log.info("Hourly time series generated")
-    return ts
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._generate_quarterly_time_series"
-)
-def _generate_quarterly_ts(
-    filtered_metering_points: DataFrame, time_zone: str
-) -> DataFrame:
-    log.info("Generating quarterly time series")
-    ts = _generate_time_series(
-        filtered_metering_points,
-        desired_number_of_observations=25 * 4,
-        time_zone=time_zone,
-    )
-    log.info("Quarterly time series generated")
-    return ts
+def _get_desired_quantity_column_count(
+    resolution: DataProductMeteringPointResolution,
+) -> int:
+    if resolution == DataProductMeteringPointResolution.HOUR:
+        return 25
+    elif resolution == DataProductMeteringPointResolution.QUARTER:
+        return 25 * 4
+    else:
+        raise ValueError(f"Unknown time series resolution: {resolution.value}")
 
 
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory._get_filtered_data"
 )
+<<<<<<< HEAD
 def _get_filtered_data(
     spark: SparkSession, df: DataFrame, args: SettlementReportArgs
+=======
+def _get_filtered_time_series_points(
+    spark: SparkSession,
+    args: SettlementReportArgs,
+    resolution: DataProductMeteringPointResolution,
+>>>>>>> 6b01e4a3ab0db69137f0f4cfcb5bb4f261c8d7bc
 ) -> DataFrame:
     log.info("Getting filtered data")
     df = _read_and_filter_from_view(
         spark, args, get_metering_point_time_series_view_name()
     )
+<<<<<<< HEAD
     return df
+=======
+    return df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
+>>>>>>> 6b01e4a3ab0db69137f0f4cfcb5bb4f261c8d7bc
