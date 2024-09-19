@@ -35,14 +35,95 @@ from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
+
+@pytest.mark.parametrize(
+    "time_series_type, table_name",
+    [
+        (
+            TimeSeriesType.EXCHANGE.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.GRID_LOSS.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TOTAL_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+    ],
+)
+def test__wholesale_fixing_result_type__is_created(
+    spark: SparkSession,
+    wholesale_fixing_energy_results_df: None,
+    time_series_type: str,
+    table_name: str,
+) -> None:
+    actual = (
+        spark.read.table(
+            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
+        )
+        .where(
+            f.col(TableColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
+        )
+        .where(f.col(TableColumnNames.time_series_type) == time_series_type)
+    )
+
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
+
+
 ENERGY_RESULT_TYPES = {
     TimeSeriesType.EXCHANGE.value,
     TimeSeriesType.PRODUCTION.value,
     TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
     TimeSeriesType.FLEX_CONSUMPTION.value,
     TimeSeriesType.GRID_LOSS.value,
-    # TODO AJW TimeSeriesType.POSITIVE_GRID_LOSS.value,
-    # TODO AJW TimeSeriesType.NEGATIVE_GRID_LOSS.value,
     TimeSeriesType.TOTAL_CONSUMPTION.value,
     TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
     TimeSeriesType.TEMP_PRODUCTION.value,
@@ -84,7 +165,6 @@ def test__energy_result__has_expected_number_of_types(
         )
         .select(
             TableColumnNames.time_series_type,
-            # TODO AJW TableColumnNames.aggregation_level,
         )
         .distinct()
         .count()

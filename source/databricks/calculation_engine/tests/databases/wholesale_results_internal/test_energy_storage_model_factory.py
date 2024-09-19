@@ -355,17 +355,13 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
         TableColumnNames.calculation_id,
-        # TODO AJW TableColumnNames.calculation_type,
-        # TODO AJW TableColumnNames.calculation_execution_time_start,
         TableColumnNames.time_series_type,
-        # TODO AJW TableColumnNames.aggregation_level,
         # Data that does vary but does not define distinct results
         TableColumnNames.time,
         TableColumnNames.quantity_qualities,
         TableColumnNames.quantity,
         # The field that defines results
         TableColumnNames.result_id,
-        # TODO AJW TableColumnNames.metering_point_id,
         TableColumnNames.resolution,
     ]
 
