@@ -104,7 +104,6 @@ def write_files(
     df: DataFrame,
     path: str,
     split_large_files: bool = False,
-    split_by_grid_area: bool = True,
     rows_per_file: int = 1_000_000,
     order_by: list[str] = [],
 ) -> list[str]:
@@ -119,19 +118,12 @@ def write_files(
         list[str]: Headers for the csv file.
     """
 
-    partition_columns: list[str] = []
+    partition_columns: list[str] = [DataProductColumnNames.grid_area_code]
     if split_large_files:
         w = Window().orderBy(*order_by)
         split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.large_files_split_column, split_col)
         partition_columns.extend(EphemeralColumns.large_files_split_column)
-
-    if split_by_grid_area:
-        df = df.withColumn(
-            EphemeralColumns.grid_area_split_column,
-            DataProductColumnNames.grid_area_code,
-        )
-        partition_columns.extend(EphemeralColumns.grid_area_split_column)
 
     df = df.orderBy(*order_by)
 
@@ -147,7 +139,6 @@ def get_new_files(
     result_path: str,
     file_name_template: str,
     split_large_files: bool,
-    split_by_grid_area: bool,
 ) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
@@ -165,9 +156,6 @@ def get_new_files(
     new_files = []
 
     regex = result_path
-    if split_by_grid_area:
-        regex = f"{regex}/{ EphemeralColumns.grid_area_split_column}=(\\w{{3}})"
-
     if split_large_files:
         regex = f"{regex}/{EphemeralColumns.large_files_split_column}=(\\d+)"
 
