@@ -168,7 +168,7 @@ def get_new_files(
             paths for the new files.
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
-    print("Files: " + files)
+    print("Files: " + str(files))
     new_files = []
 
     regex = result_path
