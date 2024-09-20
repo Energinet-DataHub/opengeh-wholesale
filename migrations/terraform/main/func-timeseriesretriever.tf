@@ -1,5 +1,5 @@
 module "func_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_6.0.0"
 
   name                                   = "timeseriesretriever"
   project_name                           = var.domain_name_short
@@ -15,7 +15,6 @@ module "func_timeseriesretriever" {
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
-  #is_durable_function                    = true
   use_32_bit_worker                      = false
   app_settings                           = local.func_timeseriesretriever.app_settings
   pre_warmed_instance_count              = 1
