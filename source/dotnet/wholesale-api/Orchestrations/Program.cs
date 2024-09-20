@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.D
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
@@ -79,6 +80,8 @@ var host = new HostBuilder()
 
         // Calculation scheduler
         services.AddCalculationScheduler();
+
+        services.AddOutboxProcessing();
 
         // Modules
         services.AddEdiModule(context.Configuration); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
