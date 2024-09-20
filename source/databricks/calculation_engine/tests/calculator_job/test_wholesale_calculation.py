@@ -18,7 +18,6 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 from package.codelists import (
-    AggregationLevel,
     ChargeType,
     TimeSeriesType,
     WholesaleResultResolution,
@@ -36,80 +35,101 @@ from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from . import configuration as c
 
+
+@pytest.mark.parametrize(
+    "time_series_type, table_name",
+    [
+        (
+            TimeSeriesType.EXCHANGE.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.GRID_LOSS.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TOTAL_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+        (
+            TimeSeriesType.TEMP_PRODUCTION.value,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        ),
+    ],
+)
+def test__wholesale_fixing_result_type__is_created(
+    spark: SparkSession,
+    wholesale_fixing_energy_results_df: None,
+    time_series_type: str,
+    table_name: str,
+) -> None:
+    actual = (
+        spark.read.table(
+            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
+        )
+        .where(
+            f.col(TableColumnNames.calculation_id)
+            == c.executed_wholesale_calculation_id
+        )
+        .where(f.col(TableColumnNames.time_series_type) == time_series_type)
+    )
+
+    # Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
+
+
 ENERGY_RESULT_TYPES = {
-    (
-        TimeSeriesType.EXCHANGE.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.ENERGY_SUPPLIER.value,
-    ),
-    (
-        TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.ENERGY_SUPPLIER.value,
-    ),
-    (
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.ENERGY_SUPPLIER.value,
-    ),
-    (
-        TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
-    (
-        TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.GRID_AREA.value,
-    ),
+    TimeSeriesType.EXCHANGE.value,
+    TimeSeriesType.PRODUCTION.value,
+    TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+    TimeSeriesType.FLEX_CONSUMPTION.value,
+    TimeSeriesType.GRID_LOSS.value,
+    TimeSeriesType.TOTAL_CONSUMPTION.value,
+    TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+    TimeSeriesType.TEMP_PRODUCTION.value,
 }
 
 
 @pytest.mark.parametrize(
-    "time_series_type, aggregation_level",
+    "time_series_type",
     ENERGY_RESULT_TYPES,
 )
 def test__energy_result__is_created(
     wholesale_fixing_energy_results_df: DataFrame,
     time_series_type: str,
-    aggregation_level: str,
 ) -> None:
     # Arrange
-    result_df = (
-        wholesale_fixing_energy_results_df.where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_wholesale_calculation_id
-        )
-        .where(f.col(TableColumnNames.time_series_type) == time_series_type)
-        .where(f.col(TableColumnNames.aggregation_level) == aggregation_level)
-    )
+    result_df = wholesale_fixing_energy_results_df.where(
+        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
+    ).where(f.col(TableColumnNames.time_series_type) == time_series_type)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -133,7 +153,6 @@ def test__energy_result__has_expected_number_of_types(
         )
         .select(
             TableColumnNames.time_series_type,
-            TableColumnNames.aggregation_level,
         )
         .distinct()
         .count()
