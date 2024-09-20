@@ -49,10 +49,6 @@ from . import configuration as c
         ),
         (
             TimeSeriesType.PRODUCTION.value,
-            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-        ),
-        (
-            TimeSeriesType.PRODUCTION.value,
             paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
         ),
         (
@@ -61,19 +57,11 @@ from . import configuration as c
         ),
         (
             TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
-        ),
-        (
-            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
             paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
         ),
         (
             TimeSeriesType.FLEX_CONSUMPTION.value,
             paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
-        ),
-        (
-            TimeSeriesType.FLEX_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
         ),
         (
             TimeSeriesType.FLEX_CONSUMPTION.value,
@@ -109,7 +97,7 @@ def test__wholesale_fixing_result_type__is_created(
         )
         .where(
             f.col(TableColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
+            == c.executed_wholesale_calculation_id
         )
         .where(f.col(TableColumnNames.time_series_type) == time_series_type)
     )
