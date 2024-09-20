@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Castle.Components.DictionaryAdapter;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;

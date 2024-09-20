@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
