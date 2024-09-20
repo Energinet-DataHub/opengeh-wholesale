@@ -35,5 +35,4 @@ class EphemeralColumns:
     uid = "uid"
     start_of_day = "start_of_day"
     quantities = "quantities"
-    grid_area_partition = "grid_area_partition"
     chunk_index = "chunk_index_partition"

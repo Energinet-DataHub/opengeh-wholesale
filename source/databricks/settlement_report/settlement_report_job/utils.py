@@ -124,11 +124,7 @@ def write_files(
 
     partition_columns: list[str] = []
     if partition_by_grid_area:
-        df = df.withColumn(
-            EphemeralColumns.grid_area_partition,
-            F.col(DataProductColumnNames.grid_area_code),
-        )
-        partition_columns.append(EphemeralColumns.grid_area_partition)
+        partition_columns.append(DataProductColumnNames.grid_area_code)
 
     if partition_by_chunk_index:
         w = Window().orderBy(order_by)
@@ -168,12 +164,11 @@ def get_new_files(
             paths for the new files.
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
-    print("Files: " + str(files))
     new_files = []
 
     regex = result_path
     if partition_by_grid_area:
-        regex = f"{regex}/{EphemeralColumns.grid_area_partition}=(\\w{{3}})"
+        regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
 
     if partition_by_chunk_index:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
@@ -186,8 +181,9 @@ def get_new_files(
         groups = partition_match.groups()
         grid_area = groups[0]
         chunk_index = groups[1] if len(groups) > 1 else "0"
-        file_name = file_name_template.format(
-            grid_area=grid_area, chunk_index=chunk_index
+        file_name = (
+            file_name_template.format(grid_area=grid_area, chunk_index=chunk_index)
+            + ".csv"
         )
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
@@ -209,7 +205,7 @@ def merge_files(
     Returns:
         list[str]: List of the final file paths.
     """
-    print(new_files)
+    print("Files to merge: " + new_files)
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
