@@ -37,6 +37,11 @@ resource "azurerm_storage_container" "basis_data_internal" {
   storage_account_name = module.st_data_wholesale.name
 }
 
+resource "azurerm_storage_container" "basis_data" {
+  name                 = "basis-data"
+  storage_account_name = module.st_data_wholesale.name
+}
+
 resource "azurerm_storage_container" "results" {
   name                 = "results"
   storage_account_name = module.st_data_wholesale.name

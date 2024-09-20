@@ -84,6 +84,25 @@ resource "databricks_schema" "basis_data_internal" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
+resource "databricks_external_location" "basis_data" {
+  provider        = databricks.dbw
+  name            = "${azurerm_storage_container.basis_data.name}_${module.st_data_wholesale.name}"
+  url             = "abfss://${azurerm_storage_container.basis_data.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
+}
+
+resource "databricks_schema" "basis_data" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "wholesale_basis_data"
+  comment      = "wholesale_basis_data Schema"
+  storage_root = databricks_external_location.basis_data.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
+}
+
 resource "databricks_external_location" "settlement_reports" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.settlement_reports.name}_${module.st_data_wholesale.name}"
