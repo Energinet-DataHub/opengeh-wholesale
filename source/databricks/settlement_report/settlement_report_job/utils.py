@@ -219,8 +219,8 @@ def merge_files(
                 print("Appending " + str(_file.src) + " to " + str(_file.tmp_dst))
                 tmp_dst.write(src.read())
 
-    for tmp_dst, dst in set([(f.tmp_dist, f.dst) for f in new_files]):
+    for tmp_dst, dst in set([(f.tmp_dst, f.dst) for f in new_files]):
         print("Moving " + str(tmp_dst) + " to " + str(dst))
         dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
-    return set([str(_file.dst) for _file in new_files])
+    return list(set([str(_file.dst) for _file in new_files]))
