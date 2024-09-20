@@ -9,7 +9,7 @@ class ReportType(Enum):
     TimeSeriesQuarterly = "time_series_quarterly"
 
 
-class FilenameFactory:
+class ReportNameFactory:
     def __init__(self, report_type: ReportType, args: SettlementReportArgs):
         self.report_type = report_type
         self.args = args
@@ -23,9 +23,8 @@ class FilenameFactory:
     ) -> str:
 
         return (
-            f"TSSD60"
-            f"_{grid_area_code}"
-            f"_{self.args.gln}"
+            f"TSSD60" f"_{grid_area_code}"
+            # f"_{self.args.gln}" ToDo JMG: This is not in the args
             f"_{MARKET_ROLES[self.args.market_role]}"
             f"_{self.args.period_start.strftime('%d-%m-%Y')}"
             f"_{self.args.period_end.strftime('%d-%m-%Y')}"
