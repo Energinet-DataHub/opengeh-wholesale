@@ -24,6 +24,7 @@ from pyspark.sql.types import (
 
 from package.databases.table_column_names import TableColumnNames
 
+# TODO AJW: This schema is not used in the codebase. It should be removed.
 # Note: The order of the columns must match the order of the columns in the Delta table
 hive_wholesale_results_schema = StructType(
     [

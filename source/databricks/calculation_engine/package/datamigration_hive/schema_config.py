@@ -24,18 +24,11 @@ from package.databases.wholesale_results_internal.schemas import (
 )
 
 # calculation_output
-from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
-    hive_wholesale_results_schema,
-)
 
 schema_config = [
     Schema(
         name=paths.HiveOutputDatabase.DATABASE_NAME,
         tables=[
-            Table(
-                name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
-                schema=hive_wholesale_results_schema,
-            ),
             Table(
                 name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
                 schema=hive_energy_results_schema,
