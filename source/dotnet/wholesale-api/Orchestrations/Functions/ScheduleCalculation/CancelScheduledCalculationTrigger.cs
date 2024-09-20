@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask.Client;
@@ -25,12 +27,12 @@ using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribut
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.ScheduleCalculation;
 
 internal class CancelScheduledCalculationTrigger(
-    ILogger<CancelScheduledCalculationTrigger> logger,
+    IAuditLogger auditLogger,
     CalculationSchedulerHandler calculationSchedulerHandler)
 {
     private const string PermissionCalculationsManage = "calculations:manage";
 
-    private readonly ILogger<CancelScheduledCalculationTrigger> _logger = logger;
+    private readonly IAuditLogger _auditLogger = auditLogger;
     private readonly CalculationSchedulerHandler _calculationSchedulerHandler = calculationSchedulerHandler;
 
     [Function(nameof(CancelScheduledCalculation))]
@@ -41,6 +43,14 @@ internal class CancelScheduledCalculationTrigger(
         [FromBody] CancelScheduledCalculationRequestDto cancelScheduledCalculationRequestDto,
         FunctionContext executionContext)
     {
+        await _auditLogger.LogWithCommitAsync(
+                AuditLogActivity.CancelScheduledCalculation,
+                httpRequest.GetDisplayUrl(),
+                cancelScheduledCalculationRequestDto,
+                AuditLogEntityType.Calculation,
+                cancelScheduledCalculationRequestDto.CalculationId)
+            .ConfigureAwait(false);
+
         await _calculationSchedulerHandler.CancelScheduledCalculationAsync(
                 durableTaskClient,
                 new CalculationId(cancelScheduledCalculationRequestDto.CalculationId))

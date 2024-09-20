@@ -14,7 +14,9 @@
 
 using Asp.Versioning;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.AuditLog;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
@@ -26,11 +28,14 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 public class CalculationController : V3ControllerBase
 {
     private readonly ICalculationsClient _calculationsClient;
+    private readonly IAuditLogger _auditLogger;
 
     public CalculationController(
-        ICalculationsClient calculationsClient)
+        ICalculationsClient calculationsClient,
+        IAuditLogger auditLogger)
     {
         _calculationsClient = calculationsClient;
+        _auditLogger = auditLogger;
     }
 
     /// <summary>
@@ -43,6 +48,14 @@ public class CalculationController : V3ControllerBase
     [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> GetAsync([FromRoute] Guid calculationId)
     {
+        await _auditLogger.LogWithCommitAsync(
+                activity: AuditLogActivity.GetCalculation,
+                origin: HttpContext.Request.GetDisplayUrl(),
+                payload: calculationId.ToString(),
+                affectedEntityType: AuditLogEntityType.Calculation,
+                affectedEntityKey: calculationId)
+            .ConfigureAwait(false);
+
         var calculationDto = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
 
         return Ok(CalculationDtoMapper.Map(calculationDto));
@@ -70,8 +83,24 @@ public class CalculationController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
+        await _auditLogger.LogWithCommitAsync(
+                activity: AuditLogActivity.SearchCalculation,
+                origin: HttpContext.Request.GetDisplayUrl(),
+                payload: new
+                {
+                    gridAreaCodes,
+                    executionState = executionState?.ToString(),
+                    minExecutionTime = minExecutionTime?.ToString("O"),
+                    maxExecutionTime = maxExecutionTime?.ToString("O"),
+                    periodStart = periodStart?.ToString("O"),
+                    periodEnd = periodEnd?.ToString("O"),
+                },
+                affectedEntityType: AuditLogEntityType.Calculation,
+                affectedEntityKey: null)
+            .ConfigureAwait(false);
+
         var calculations = await _calculationsClient.SearchAsync(
-            gridAreaCodes ?? Array.Empty<string>(),
+            gridAreaCodes ?? [],
             CalculationStateMapper.MapState(executionState),
             minExecutionTime,
             maxExecutionTime,

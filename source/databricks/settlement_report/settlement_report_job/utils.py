@@ -25,6 +25,7 @@ from pyspark.sql.window import Window
 
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
+    EphemeralColumns,
 )
 
 
@@ -102,10 +103,10 @@ def get_dbutils(spark: SparkSession) -> Any:
 def write_files(
     df: DataFrame,
     path: str,
-    split_large_files: bool = False,
-    split_by_grid_area: bool = True,
+    partition_by_chunk_index: bool,
+    partition_by_grid_area: bool,
+    order_by: list[str],
     rows_per_file: int = 1_000_000,
-    order_by: list[str] = [],
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -113,29 +114,41 @@ def write_files(
         df (DataFrame): DataFrame to write.
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
+        partition_by_chunk_index (bool): Whether to split the files.
+        partition_by_grid_area (bool): Whether to split the files by grid area.
+        order_by (list[str]): Columns to order by.
 
     Returns:
         list[str]: Headers for the csv file.
     """
-    grid_col = F.col(DataProductColumnNames.grid_area_code)
-    split_col = F.lit(0)
 
-    if split_large_files is True:
-        w = Window().orderBy(*order_by)
-        split_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
-    if split_by_grid_area is False:
-        grid_col = F.lit("ALL")
+    partition_columns: list[str] = []
+    if partition_by_grid_area:
+        partition_columns.append(DataProductColumnNames.grid_area_code)
 
-    df = df.withColumn(DataProductColumnNames.grid_area_code, grid_col)
-    df = df.withColumn("split", split_col)
+    if partition_by_chunk_index:
+        w = Window().orderBy(order_by)
+        chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
+        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+        partition_columns.append(EphemeralColumns.chunk_index)
 
-    df.write.mode("overwrite").partitionBy(
-        DataProductColumnNames.grid_area_code, "split"
-    ).csv(path)
-    return df.columns
+    df = df.orderBy(order_by)
+
+    print("writing to path: " + path)
+    if partition_columns:
+        df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
+    else:
+        df.write.mode("overwrite").csv(path)
+
+    return [c for c in df.columns if c not in partition_columns]
 
 
-def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
+def get_new_files(
+    result_path: str,
+    file_name_template: str,
+    partition_by_chunk_index: bool,
+    partition_by_grid_area: bool,
+) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
     Args:
@@ -143,6 +156,8 @@ def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
         file_name_template (str): The template for the new file names. The template
             should contain two placeholders for the {grid_area} and {split}.
             For example: "TSSD1H-{grid_area}-{split}.csv"
+        partition_by_chunk_index (bool): Whether the files are split or not.
+        partition_by_grid_area (bool): Whether the files are split by grid area or not.
 
     Returns:
         list[dict[str, Path]]: List of dictionaries with the source and destination
@@ -150,13 +165,26 @@ def get_new_files(result_path: str, file_name_template: str) -> list[TmpFile]:
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
     new_files = []
-    regex = f"{result_path}/{DataProductColumnNames.grid_area_code}=(\\d+)/split=(\\d+)"
+
+    regex = result_path
+    if partition_by_grid_area:
+        regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
+
+    if partition_by_chunk_index:
+        regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
+
     for f in files:
         partition_match = re.match(regex, str(f))
         if partition_match is None:
             raise ValueError(f"File {f} does not match the expected pattern")
-        grid_area, split = partition_match.groups()
-        file_name = file_name_template.format(grid_area=grid_area, split=split)
+
+        groups = partition_match.groups()
+        grid_area = groups[0]
+        chunk_index = groups[1] if len(groups) > 1 else "0"
+        file_name = (
+            file_name_template.format(grid_area=grid_area, chunk_index=chunk_index)
+            + ".csv"
+        )
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))
@@ -177,18 +205,20 @@ def merge_files(
     Returns:
         list[str]: List of the final file paths.
     """
-    for dst in [f.tmp_dst for f in new_files]:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        with dst.open("w+") as f:
-            f.write(",".join(headers) + "\n")
+    print("Files to merge: " + str(new_files))
+    for tmp_dst in set([f.tmp_dst for f in new_files]):
+        tmp_dst.parent.mkdir(parents=True, exist_ok=True)
+        with tmp_dst.open("w+") as f_tmp_dst:
+            print("Creating " + str(tmp_dst))
+            f_tmp_dst.write(",".join(headers) + "\n")
 
     for _file in new_files:
-        with _file.src.open("r") as src:
-            with _file.tmp_dst.open("a") as tmp_dst:
-                tmp_dst.write(src.read())
+        with _file.src.open("r") as f_src:
+            with _file.tmp_dst.open("a") as f_tmp_dst:
+                f_tmp_dst.write(f_src.read())
 
-    for _file in new_files:
-        print("Moving " + str(_file.tmp_dst) + " to " + str(_file.dst))
-        dbutils.fs.mv("file:" + str(_file.tmp_dst), str(_file.dst))
+    for tmp_dst, dst in set([(f.tmp_dst, f.dst) for f in new_files]):
+        print("Moving " + str(tmp_dst) + " to " + str(dst))
+        dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
-    return [str(_file.dst) for _file in new_files]
+    return list(set([str(_file.dst) for _file in new_files]))
