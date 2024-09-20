@@ -1,4 +1,5 @@
 module "func_timeseriessynchronization" {
+  // Warning: Upgrading to function-app-elastic_6.0.0 from V5.x.x might reset orchestration state, contact MKQ or LANNI prior to upgrading
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_5.0.0"
 
   name                                   = "timeseriessynchronization"
