@@ -207,6 +207,7 @@ def merge_files(
     Returns:
         list[str]: List of the final file paths.
     """
+    print(new_files)
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
