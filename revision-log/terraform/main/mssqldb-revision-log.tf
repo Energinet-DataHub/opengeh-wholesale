@@ -13,7 +13,13 @@ module "mssqldb_revision_log" {
   environment_instance = var.environment_instance
   server_id            = data.azurerm_mssql_server.mssqlsrv.id
   sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
-  elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
+
+  # Find available SKU's for "single database" (not pooled) here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql
+  sku_name                    = "GP_S_Gen5_12" # General Purpose (GP) - serverless compute (S) - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1
+  min_capacity                = 1.5            #
+  max_size_gb                 = 10
+  auto_pause_delay_in_minutes = -1
+
   monitor_action_group = length(module.monitor_action_group) != 1 ? null : {
     id                  = module.monitor_action_group[0].id
     resource_group_name = azurerm_resource_group.this.name
@@ -23,15 +29,15 @@ module "mssqldb_revision_log" {
   prevent_deletion = true
 
   short_term_retention_policy = {
-    retention_days = 22
+    retention_days           = 22
     backup_interval_in_hours = 12
   }
 
   long_term_retention_policy = {
-    weekly_retention = "P22D"
+    weekly_retention  = "P22D"
     monthly_retention = "PT0S"
-    yearly_retention = "PT0S"
-    week_of_year = 1
+    yearly_retention  = "PT0S"
+    week_of_year      = 1
   }
 }
 
