@@ -23,12 +23,13 @@ class ReportNameFactory:
     ) -> str:
 
         return (
-            f"TSSD60" f"_{grid_area_code}"
+            f"TSSD60"
+            f"_{grid_area_code}"
             # f"_{self.args.gln}" ToDo JMG: This is not in the args
             f"_{MARKET_ROLES[self.args.market_role]}"
             f"_{self.args.period_start.strftime('%d-%m-%Y')}"
-            f"_{self.args.period_end.strftime('%d-%m-%Y')}"
-            f"_{split_index}"
-            if split_index is not None
-            else "" ".csv"
+            f"_{self.args.period_end.strftime('%d-%m-%Y')}"(
+                # f"_{split_index}" if split_index is not None else ""
+                ".csv"
+            )
         )

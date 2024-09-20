@@ -21,6 +21,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
@@ -47,6 +48,8 @@ def any_settlement_report_args() -> SettlementReportArgs:
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
+        energy_supplier_id="1234567890123",
+        market_role=MarketRole.DATAHUB_ADMINISTRATOR,
     )
 
 
