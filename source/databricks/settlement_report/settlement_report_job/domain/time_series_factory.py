@@ -64,8 +64,8 @@ def create_time_series(
     headers = write_files(
         df=prepared_time_series,
         path=result_path,
-        split_large_files=args.prevent_large_text_files,
-        split_by_grid_area=args.split_report_by_grid_area,
+        partition_by_chunk_index=args.prevent_large_text_files,
+        partition_by_grid_area=True,  # always true for time series
         order_by=[
             DataProductColumnNames.grid_area_code,
             TimeSeriesPointCsvColumnNames.metering_point_type,
@@ -74,9 +74,7 @@ def create_time_series(
         ],
     )
     resolution_name = (
-        "TSSD60"
-        if resolution.value == DataProductMeteringPointResolution.HOUR
-        else "TSSD15"
+        "TSSD60" if resolution == DataProductMeteringPointResolution.HOUR else "TSSD15"
     )
     new_files = get_new_files(
         result_path,
@@ -86,9 +84,11 @@ def create_time_series(
                 "{grid_area}",
                 args.period_start.strftime("%d-%m-%Y"),
                 args.period_end.strftime("%d-%m-%Y"),
-                "{split}",
+                "{chunk_index}",
             ]
         ),
+        partition_by_chunk_index=args.prevent_large_text_files,
+        partition_by_grid_area=True,  # always true for time series
     )
     files = merge_files(
         dbutils=dbutils,
@@ -186,24 +186,6 @@ def get_start_of_day(col: Column | str, time_zone: str) -> Column:
     return F.to_utc_timestamp(
         F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
     )
-
-
-def _add_start_of_day_column(
-    filtered_time_series_points: DataFrame, time_zone: str
-) -> DataFrame:
-    filtered_time_series_points = filtered_time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        F.to_utc_timestamp(
-            F.date_trunc(
-                "DAY",
-                F.from_utc_timestamp(
-                    DataProductColumnNames.observation_time, time_zone
-                ),
-            ),
-            time_zone,
-        ),
-    )
-    return filtered_time_series_points
 
 
 def _get_desired_quantity_column_count(
