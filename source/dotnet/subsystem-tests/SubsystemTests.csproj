@@ -80,10 +80,4 @@
     <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\SettlementReports\Fixtures\" />
-    <Folder Include="Features\SettlementReports\TestData\" />
-    <Folder Include="Features\SettlementReports\States\" />
-  </ItemGroup>
-
 </Project>
