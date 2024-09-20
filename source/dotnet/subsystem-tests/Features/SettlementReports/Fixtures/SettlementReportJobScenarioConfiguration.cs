@@ -28,6 +28,8 @@ public class SettlementReportJobScenarioConfiguration : SubsystemTestConfigurati
 {
     public SettlementReportJobScenarioConfiguration()
     {
+        InputCalculationId = Root.GetValue<string>("SETTLEMENT_REPORT_CALCULATION_ID")!;
+
         var databricksCatalogName = Root.GetValue<string>("DATABRICKS_CATALOG_NAME")!;
         DatabricksCatalogRoot = $"/Volumes/{databricksCatalogName}/";
 
@@ -36,7 +38,12 @@ public class SettlementReportJobScenarioConfiguration : SubsystemTestConfigurati
     }
 
     /// <summary>
-    /// Setting necessary for specifying the Databricks test catalog.
+    /// Calculation ID used for input parameter when starting Settlement Report Job.
+    /// </summary>
+    public string InputCalculationId { get; }
+
+    /// <summary>
+    /// Databricks DBFS catalog root.
     /// </summary>
     public string DatabricksCatalogRoot { get; }
 

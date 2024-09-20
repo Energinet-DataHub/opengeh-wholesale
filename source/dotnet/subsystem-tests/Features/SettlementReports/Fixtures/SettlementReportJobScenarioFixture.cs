@@ -35,7 +35,7 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
 
     public SettlementReportJobScenarioState ScenarioState { get; }
 
-    private SettlementReportJobScenarioConfiguration Configuration { get; }
+    public SettlementReportJobScenarioConfiguration Configuration { get; }
 
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
