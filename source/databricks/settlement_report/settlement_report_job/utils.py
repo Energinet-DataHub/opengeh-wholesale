@@ -209,14 +209,14 @@ def merge_files(
     """
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
-        with tmp_dst.open("w+") as f:
+        with tmp_dst.open("w+") as f_tmp_dst:
             print("Creating " + str(tmp_dst))
-            f.write(",".join(headers) + "\n")
+            f_tmp_dst.write(",".join(headers) + "\n")
 
     for _file in new_files:
-        with _file.src.open("r") as src:
-            with _file.tmp_dst.open("a") as tmp_dst:
-                tmp_dst.write(src.read())
+        with _file.src.open("r") as f_src:
+            with _file.tmp_dst.open("a") as f_tmp_dst:
+                f_tmp_dst.write(f_src.read())
 
     for tmp_dst, dst in set([(f.tmp_dst, f.dst) for f in new_files]):
         print("Moving " + str(tmp_dst) + " to " + str(dst))
