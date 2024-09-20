@@ -127,12 +127,6 @@ variable "biz_talk_receiver_code" {
   default     = null
 }
 
-variable "dh2_endpoint" {
-  type        = string
-  description = "Endpoint for DH2"
-  default     = null
-}
-
 variable "biz_talk_biz_talk_end_point" {
   type        = string
   description = "Endpoint for BizTalk"
