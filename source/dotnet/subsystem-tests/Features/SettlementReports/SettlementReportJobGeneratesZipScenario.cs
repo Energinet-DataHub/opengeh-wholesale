@@ -94,7 +94,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
     {
-        var outputFileExists = await Fixture.DatabricksClient.FileExistsAsync(Fixture.ScenarioState.ExpectedOutputFilePath);
+        var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedOutputFilePath);
 
         // Assert
         outputFileExists.Should().BeTrue();
