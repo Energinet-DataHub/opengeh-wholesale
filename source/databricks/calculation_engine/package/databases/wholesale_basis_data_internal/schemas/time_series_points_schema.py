@@ -29,5 +29,9 @@ time_series_points_schema = StructType(
         StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
         StructField(TableColumnNames.quality, StringType(), False),
         StructField(TableColumnNames.observation_time, TimestampType(), False),
+        StructField(TableColumnNames.metering_point_type, StringType(), False),
+        StructField(TableColumnNames.resolution, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), True),
     ]
 )
