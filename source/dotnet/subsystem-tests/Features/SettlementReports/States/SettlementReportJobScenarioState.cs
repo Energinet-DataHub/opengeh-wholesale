@@ -31,7 +31,7 @@ public class SettlementReportJobScenarioState
     public TimeSpan ExpectedJobTimeLimit { get; internal set; }
 
     [NotNull]
-    public string? ExpectedOutputFilePath { get; set; }
+    public string? ExpectedRelativeOutputFilePath { get; set; }
 
     public long JobId { get; set; }
 

@@ -86,11 +86,12 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     /// <summary>
     /// Determine if a file exists in DBFS.
     /// </summary>
-    public async Task<bool> FileExistsAsync(string filePath)
+    public async Task<bool> FileExistsAsync(string relativeFilePath)
     {
         try
         {
-            var fileStatus = await DatabricksClient.Dbfs.GetStatus(filePath);
+            var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
+            var fileStatus = await DatabricksClient.Dbfs.GetStatus(absoluteFilePath);
             return true;
         }
         catch (Exception ex)

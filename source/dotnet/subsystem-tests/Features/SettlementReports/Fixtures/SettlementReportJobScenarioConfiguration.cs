@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 
@@ -27,9 +28,17 @@ public class SettlementReportJobScenarioConfiguration : SubsystemTestConfigurati
 {
     public SettlementReportJobScenarioConfiguration()
     {
+        var databricksCatalogName = Root.GetValue<string>("DATABRICKS_CATALOG_NAME")!;
+        DatabricksCatalogRoot = $"/Volumes/{databricksCatalogName}/";
+
         var secretsConfiguration = Root.BuildSecretsConfiguration();
         DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
     }
+
+    /// <summary>
+    /// Setting necessary for specifying the Databricks test catalog.
+    /// </summary>
+    public string DatabricksCatalogRoot { get; }
 
     /// <summary>
     /// Settings necessary to manage the Databricks workspace.

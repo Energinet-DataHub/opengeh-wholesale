@@ -51,9 +51,8 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
 
         // Expectations
         Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(25);
-        var environmentFolder = "ctl_shres_d_we_002"; // TODO: XDAST - Need to handle this per environment
-        Fixture.ScenarioState.ExpectedOutputFilePath =
-            $"/Volumes/{environmentFolder}/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}/{Fixture.ScenarioState.ReportId}.zip";
+        Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
+            $"wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}/{Fixture.ScenarioState.ReportId}.zip";
     }
 
     [ScenarioStep(1)]
@@ -93,7 +92,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
     {
-        var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedOutputFilePath);
+        var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         // Assert
         outputFileExists.Should().BeTrue();
