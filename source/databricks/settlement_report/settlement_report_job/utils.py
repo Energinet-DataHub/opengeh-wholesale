@@ -216,7 +216,7 @@ def merge_files(
     for _file in new_files:
         with _file.src.open("r") as src:
             with _file.tmp_dst.open("a") as tmp_dst:
-                print("Appending " + str(_file.src) + " to " + str(_file.tmp_dst))
+                print("Appending from " + str(_file.src) + " to " + str(_file.tmp_dst))
                 tmp_dst.write(src.read())
 
     for tmp_dst, dst in set([(f.tmp_dst, f.dst) for f in new_files]):
