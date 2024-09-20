@@ -24,6 +24,15 @@ public class SettlementReportJobScenarioState
     [NotNull]
     public IList<string>? JobParameters { get; set; }
 
+    /// <summary>
+    /// The expected max. duration of the job.
+    /// Use this to monitor (set expectations for) the performance of the job.
+    /// </summary>
+    public TimeSpan ExpectedJobTimeLimit { get; internal set; }
+
+    [NotNull]
+    public string? ExpectedOutputFilePath { get; set; }
+
     public long JobId { get; set; }
 
     [NotNull]

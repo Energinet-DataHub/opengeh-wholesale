@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Castle.Components.DictionaryAdapter;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
@@ -81,6 +82,23 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
         DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'SettlementReportJob' with id '{settlementReportJobId}' completed with '{nameof(isCondition)}={isCondition}' and '{nameof(settlementReportJobState)}={settlementReportJobState}'.");
 
         return (settlementReportJobState == SettlementReportJobState.Completed, runState.Item1);
+    }
+
+    /// <summary>
+    /// Determine if a file exists in DBFS.
+    /// </summary>
+    public async Task<bool> FileExistsAsync(string filePath)
+    {
+        try
+        {
+            var fileStatus = await DatabricksClient.Dbfs.GetStatus(filePath);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticMessageSink.WriteDiagnosticMessage($"File exists failed with exception: {ex}.");
+            return false;
+        }
     }
 
     protected override Task OnInitializeAsync()

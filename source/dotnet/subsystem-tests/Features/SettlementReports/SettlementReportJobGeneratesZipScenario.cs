@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
@@ -33,8 +34,9 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
 
     [ScenarioStep(0)]
     [SubsystemFact]
-    public void Given_JobInput()
+    public void Given_ScenarioSetup()
     {
+        // Input
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
         Fixture.ScenarioState.JobParameters =
         [
@@ -47,6 +49,12 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
             "--split-report-by-grid-area",
             "--prevent-large-text-files",
         ];
+
+        // Expectations
+        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(25);
+        var environmentFolder = "ctl_shres_d_we_002"; // TODO: XDAST - Need to handle this per environment
+        Fixture.ScenarioState.ExpectedOutputFilePath =
+            $"/Volumes/{environmentFolder}/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}/{Fixture.ScenarioState.ReportId}.zip";
     }
 
     [ScenarioStep(1)]
@@ -72,7 +80,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         var (isCompleted, run) = await Fixture.WaitForSettlementReportJobCompletedAsync(
             Fixture.ScenarioState.JobId,
-            waitTimeLimit: TimeSpan.FromMinutes(30));
+            waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(10)));
 
         Fixture.ScenarioState.Run = run;
 
@@ -82,21 +90,28 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
         run.Should().NotBeNull();
     }
 
+    [ScenarioStep(3)]
+    [SubsystemFact]
+    public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
+    {
+        var outputFileExists = await Fixture.DatabricksClient.FileExistsAsync(Fixture.ScenarioState.ExpectedOutputFilePath);
+
+        // Assert
+        outputFileExists.Should().BeTrue();
+    }
+
     /// <summary>
     /// In this step we verify the 'duration' of the job is within our 'performance goal'.
     /// </summary>
-    [ScenarioStep(3)]
+    [ScenarioStep(4)]
     [SubsystemFact]
     public void AndThen_JobDurationIsLessThanOrEqualToTimeLimit()
     {
-        var jobTimeLimit = TimeSpan.FromMinutes(25);
-
-        // TODO XDAST: Verify if this is the correct way to measure the duration. See https://docs.databricks.com/api/azure/workspace/jobs/getrun
         var actualCalculationJobDuration =
             Fixture.ScenarioState.Run.EndTime - Fixture.ScenarioState.Run.StartTime;
 
         // Assert
         actualCalculationJobDuration.Should().BeGreaterThan(TimeSpan.Zero);
-        actualCalculationJobDuration.Should().BeLessThanOrEqualTo(jobTimeLimit);
+        actualCalculationJobDuration.Should().BeLessThanOrEqualTo(Fixture.ScenarioState.ExpectedJobTimeLimit);
     }
 }
