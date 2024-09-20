@@ -12,8 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Azure.Databricks.Client.Models;
 
-internal class JobGeneratesZipScenario
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
+
+public class SettlementReportJobScenarioState
 {
+    public Guid ReportId { get; set; }
+
+    [NotNull]
+    public IList<string>? JobParameters { get; set; }
+
+    public long JobId { get; set; }
+
+    [NotNull]
+    public Run? Run { get; set; }
 }

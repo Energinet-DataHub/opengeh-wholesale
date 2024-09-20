@@ -12,8 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 
-internal class JobScenarioFixture
+public enum SettlementReportJobState
 {
+    Pending,
+    Running,
+    Completed,
+    Canceled,
+    Failed,
 }
