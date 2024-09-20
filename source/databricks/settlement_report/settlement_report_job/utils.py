@@ -167,7 +167,6 @@ def get_new_files(
             paths for the new files.
     """
     files = [f for f in Path(result_path).rglob("*.csv")]
-    print("(get_new_files) Files found: " + str(files))
     new_files = []
 
     regex = result_path
@@ -191,7 +190,6 @@ def get_new_files(
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))
-    print("(get_new_files) New files found: " + str(new_files))
     return new_files
 
 
@@ -209,18 +207,20 @@ def merge_files(
     Returns:
         list[str]: List of the final file paths.
     """
-    for dst in [f.tmp_dst for f in new_files]:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        with dst.open("w+") as f:
+    for tmp_dst in set([f.tmp_dst for f in new_files]):
+        tmp_dst.parent.mkdir(parents=True, exist_ok=True)
+        with tmp_dst.open("w+") as f:
+            print("Creating " + str(tmp_dst))
             f.write(",".join(headers) + "\n")
 
     for _file in new_files:
         with _file.src.open("r") as src:
             with _file.tmp_dst.open("a") as tmp_dst:
+                print("Appending " + str(_file.src) + " to " + str(_file.tmp_dst))
                 tmp_dst.write(src.read())
 
-    for _file in new_files:
-        print("Moving " + str(_file.tmp_dst) + " to " + str(_file.dst))
-        dbutils.fs.mv("file:" + str(_file.tmp_dst), str(_file.dst))
+    for tmp_dst, dst in set([(f.tmp_dist, f.dst) for f in new_files]):
+        print("Moving " + str(tmp_dst) + " to " + str(dst))
+        dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
-    return [str(_file.dst) for _file in new_files]
+    return set([str(_file.dst) for _file in new_files])
