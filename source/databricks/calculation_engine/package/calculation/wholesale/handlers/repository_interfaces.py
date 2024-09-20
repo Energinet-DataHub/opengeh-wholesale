@@ -26,7 +26,7 @@ from package.databases.migrations_wholesale.schemas import metering_point_period
 from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 
-class MeteringPointPeriodRepositoryInterface(ABC):
+class IMeteringPointPeriodRepository(ABC):
     @abstractmethod
     def get_by(
         self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]
@@ -34,7 +34,7 @@ class MeteringPointPeriodRepositoryInterface(ABC):
         pass
 
 
-class MeteringPointPeriodRepository(MeteringPointPeriodRepositoryInterface):
+class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
 
     def get_by(
         self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]

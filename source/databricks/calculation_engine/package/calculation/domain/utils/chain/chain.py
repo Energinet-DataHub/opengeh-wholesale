@@ -15,32 +15,36 @@
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.domain.calculation_steps.calculate_not_profiled_consumption_es_step import (
+from package.calculation.domain.calculation_links.calculate_not_profiled_consumption_es_step import (
     CalculateNonProfiledConsumptionPerEsStep,
 )
 
-from package.calculation.domain.calculation_steps.calculate_not_profiled_consumption_grid_area_step import (
+from package.calculation.domain.calculation_links.calculate_not_profiled_consumption_grid_area_step import (
     CalculateNonProfiledConsumptionPerGridAreaStep,
 )
-from package.calculation.domain.calculation_steps.calculate_not_profiled_consumption_per_brp_step import (
+from package.calculation.domain.calculation_links.calculate_not_profiled_consumption_per_brp_step import (
     CalculateNonProfiledConsumptionPerBrpStep,
 )
-from package.calculation.domain.calculation_steps.create_calculation_meta_data_step import (
-    CreateCalculationMetaDataStep,
+from package.calculation.domain.calculation_links.create_calculation_meta_data_step import (
+    CreateCalculationMetaDataLink,
     SaveCalculationMetaDataStep,
 )
-from package.calculation.domain.calculation_steps.energy_total_consumption_step import (
+from package.calculation.domain.calculation_links.energy_total_consumption_step import (
     CalculateTotalEnergyConsumptionStep,
 )
-from package.calculation.domain.calculation_steps.start_step import StartCalculationStep
+from package.calculation.domain.calculation_links.start_link import StartCalculationLink
 from package.calculation.energy.data_structures.energy_results import EnergyResults
-from package.calculation.wholesale.handlers.calculation_step import (
-    BaseCalculationStep,
-    CacheBucket,
+from package.calculation.wholesale.handlers.calculation_link import (
+    CalculationLink,
 )
 from package.calculation.wholesale.handlers.repository_interfaces import (
-    MeteringPointPeriodRepositoryInterface,
+    IMeteringPointPeriodRepository,
+    CalculationMetaData,
 )
+
+
+class CacheBucket:
+    calculator_args: CalculationMetaData
 
 
 class Chain:
@@ -48,15 +52,15 @@ class Chain:
     def __init__(
         self,
         calculator_args: CalculatorArgs,
-        metering_point_period_repository: MeteringPointPeriodRepositoryInterface,
+        metering_point_period_repository: IMeteringPointPeriodRepository,
     ):
 
         prepared_data_reader: PreparedDataReader
         bucket = CacheBucket()
         non_profiled_consumption_per_es = EnergyResults()
 
-        start_step = StartCalculationStep()
-        create_calculation_meta_data_step = CreateCalculationMetaDataStep()
+        start_link = StartCalculationLink()
+        create_calculation_meta_data_link = CreateCalculationMetaDataLink()
         save_calculation_meta_data_step = SaveCalculationMetaDataStep()
         calculate_total_energy_consumption_step = CalculateTotalEnergyConsumptionStep(
             calculator_args,
@@ -77,11 +81,11 @@ class Chain:
             )
         )
 
-        end_step = BaseCalculationStep()
+        end_step = CalculationLink()
 
         # Set up the calculation chain
         (
-            start_step.set_next(create_calculation_meta_data_step)
+            start_link.set_next(create_calculation_meta_data_link)
             .set_next(save_calculation_meta_data_step)
             .set_next(calculate_total_energy_consumption_step)
             .set_next(calculate_non_profiled_consumption_per_es_step)
@@ -91,4 +95,4 @@ class Chain:
         )
 
         # Execute calculation chain
-        start_step.execute(CalculationOutput())
+        start_link.execute(CalculationOutput())

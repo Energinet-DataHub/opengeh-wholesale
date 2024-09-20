@@ -11,6 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from package.calculation.wholesale.handlers.calculation_step import (
+    CacheBucket,
+    CalculationLink,
+)
+from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
+    AddMeteringPointPeriodsToBucketStep,
+    CalculateGridLossResponsibleStep,
+)
+
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
@@ -23,16 +32,8 @@ from package.calculation.wholesale.handlers.calculation_parameters_step import (
 from package.calculation.wholesale.handlers.calculation_start_step import (
     CalculationStartStep,
 )
-from package.calculation.wholesale.handlers.calculation_step import (
-    CacheBucket,
-    BaseCalculationStep,
-)
-from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
-    AddMeteringPointPeriodsToBucketStep,
-    CalculateGridLossResponsibleStep,
-)
 from package.calculation.wholesale.handlers.repository_interfaces import (
-    MeteringPointPeriodRepositoryInterface,
+    IMeteringPointPeriodRepository,
 )
 
 
@@ -41,7 +42,7 @@ from package.calculation.wholesale.handlers.repository_interfaces import (
 # Inject needed dependencies in the constructors
 def chain(
     calculator_args: CalculatorArgs,
-    metering_point_period_repository: MeteringPointPeriodRepositoryInterface,
+    metering_point_period_repository: IMeteringPointPeriodRepository,
     prepared_data_reader: PreparedDataReader,
 ) -> None:
     bucket = CacheBucket()
@@ -62,7 +63,7 @@ def chain(
     calculate_grid_loss_responsible_step = CalculateGridLossResponsibleStep(
         metering_point_period_repository
     )
-    last_step = BaseCalculationStep()
+    last_step = CalculationLink()
 
     # Set up the chain
     (

@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from package.calculation.wholesale.handlers.calculation_step import CalculationLink
+
+import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import (
     CalculationOutput,
 )
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
-from package.calculation.wholesale.handlers.calculation_step import BaseCalculationStep
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType, AggregationLevel, CalculationType
 
 
-class CalculateNonProfiledConsumptionPerGridAreaStep(BaseCalculationStep):
+class CalculateNonProfiledConsumptionPerBrpStep(CalculationLink):
 
     def __init__(
         self,
@@ -35,11 +37,19 @@ class CalculateNonProfiledConsumptionPerGridAreaStep(BaseCalculationStep):
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
 
-        output.energy_results_output.non_profiled_consumption = factory.create(
-            self.args,
-            grouping_aggr.aggregate(self.non_profiled_consumption_per_es),
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.GRID_AREA,
-        )
+        if _is_aggregation_or_balance_fixing(self.args.calculation_type):
+            output.non_profiled_consumption_per_brp = factory.create(
+                self.args,
+                grouping_aggr.aggregate_per_brp(self.non_profiled_consumption_per_es),
+                TimeSeriesType.NON_PROFILED_CONSUMPTION,
+                AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
+            )
 
         return super().execute(output)
+
+
+def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
+    return (
+        calculation_type == CalculationType.AGGREGATION
+        or calculation_type == CalculationType.BALANCE_FIXING
+    )

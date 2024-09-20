@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from package.calculation.wholesale.handlers.calculation_step import CalculationLink
+
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import (
     CalculationOutput,
 )
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
-from package.calculation.wholesale.handlers.calculation_step import BaseCalculationStep
 from package.codelists import TimeSeriesType, AggregationLevel
 
 
-class CalculateNonProfiledConsumptionPerEsStep(BaseCalculationStep):
+class CalculateNonProfiledConsumptionPerGridAreaStep(CalculationLink):
 
     def __init__(
         self,
@@ -35,11 +36,11 @@ class CalculateNonProfiledConsumptionPerEsStep(BaseCalculationStep):
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
 
-        output.non_profiled_consumption_per_es = factory.create(
+        output.energy_results_output.non_profiled_consumption = factory.create(
             self.args,
-            self.non_profiled_consumption_per_es,
+            grouping_aggr.aggregate(self.non_profiled_consumption_per_es),
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.ENERGY_SUPPLIER,
+            AggregationLevel.GRID_AREA,
         )
 
         return super().execute(output)

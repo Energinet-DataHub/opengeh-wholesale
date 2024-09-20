@@ -14,11 +14,11 @@
 
 
 from package.calculation.wholesale.handlers.calculation_step import (
-    BaseCalculationStep,
+    CalculationLink,
 )
 
 
-class CalculationStartStep(BaseCalculationStep):
+class CalculationStartStep(CalculationLink):
 
     def __init__(
         self,

@@ -13,11 +13,12 @@
 # limitations under the License.
 from typing import Any
 
+from package.calculation.wholesale.handlers.calculation_step import CalculationLink
+
 from package.calculation.calculation_output import CalculationOutput
-from package.calculation.wholesale.handlers.calculation_step import BaseCalculationStep
 
 
-class ExampleStep(BaseCalculationStep):
+class ExampleStep(CalculationLink):
 
     def __init__(
         self,

@@ -18,19 +18,16 @@ from abc import ABC, abstractmethod
 from typing import TypeVar
 
 from package.calculation.calculation_output import CalculationOutput
-from package.calculation.wholesale.handlers.repository_interfaces import (
-    CalculationMetaData,
-)
 
 # Define generic type variables
 RequestType = TypeVar("RequestType")
 ResponseType = TypeVar("ResponseType")
 
 
-class CalculationStep(ABC):
+class Link(ABC):
 
     @abstractmethod
-    def set_next(self, handler: CalculationStep) -> CalculationStep:
+    def set_next(self, handler: Link) -> Link:
         pass
 
     @abstractmethod
@@ -38,7 +35,7 @@ class CalculationStep(ABC):
         pass
 
 
-class BaseCalculationStep(CalculationStep):
+class CalculationLink(Link):
     """
     The default chaining behavior can be implemented inside a base handler class.
     """
@@ -48,7 +45,7 @@ class BaseCalculationStep(CalculationStep):
     ):
         self._next_handler = None
 
-    def set_next(self, handler: CalculationStep) -> CalculationStep:
+    def set_next(self, handler: Link) -> Link:
         self._next_handler = handler
         return handler
 
@@ -56,7 +53,3 @@ class BaseCalculationStep(CalculationStep):
         if self._next_handler:
             return self._next_handler.execute(output)
         return output
-
-
-class CacheBucket:
-    calculator_args: CalculationMetaData

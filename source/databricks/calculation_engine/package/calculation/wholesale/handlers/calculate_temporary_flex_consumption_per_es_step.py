@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.handlers.calculation_step import (
-    BaseCalculationStep,
+from package.calculation.wholesale.handlers.calculation_link import (
+    CalculationLink,
 )
 
 
-class CalculateTemporaryFlexConsumptionPerEsStep(BaseCalculationStep):
+class CalculateTemporaryFlexConsumptionPerEsStep(CalculationLink):
 
     def __init__(
         self,

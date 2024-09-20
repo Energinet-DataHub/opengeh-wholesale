@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation.wholesale.handlers.calculation_step import BaseCalculationStep
+from package.calculation.wholesale.handlers.calculation_step import CalculationLink
 
 
-class CreateCalculationMetaDataStep(BaseCalculationStep):
+class CreateCalculationMetaDataLink(CalculationLink):
     pass
 
 
-class SaveCalculationMetaDataStep(BaseCalculationStep):
+class SaveCalculationMetaDataStep(CalculationLink):
     pass
