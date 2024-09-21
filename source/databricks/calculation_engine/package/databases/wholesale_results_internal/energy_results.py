@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dataclasses import fields
 
 import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
@@ -22,7 +23,11 @@ from package.calculation.calculation_output import EnergyResultsOutput
 from package.codelists import MeteringPointType
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_results_internal.schemas import (
+    hive_energy_results_schema,
+)
 from package.infrastructure import logging_configuration
+from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
@@ -110,6 +115,11 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
         schemas.grid_loss_metering_point_time_series_schema,
     )
 
+    # TODO BJM: Remove when we're on Unity Catalog
+    print("Writing energy results to Hive")
+    for field in fields(energy_results_output):
+        _write_to_hive(field.name, getattr(energy_results_output, field.name))
+
 
 def _union(*dfs: DataFrame) -> DataFrame | None:
     """
@@ -159,4 +169,19 @@ def _write(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
+        )
+
+
+def _write_to_hive(name: str, df: DataFrame) -> None:
+    with logging_configuration.start_span(name):
+        # Not all energy results have a value - it depends on the type of calculation
+        if df is None:
+            return None
+
+        df = df.select(hive_energy_results_schema.fieldNames())
+
+        df.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(
+            f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
         )
