@@ -33,7 +33,10 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import energy_schema
+from package.databases.wholesale_results_internal.schemas import (
+    hive_energy_results_schema,
+)
+from package.infrastructure.paths import HiveOutputDatabase
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -66,6 +69,11 @@ OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
 OTHER_OBSERVATION_TIME = datetime(2021, 1, 1, 0, 0)
 OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
+
+
+TABLE_NAME = (
+    f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+)
 
 
 @pytest.fixture(scope="module")
@@ -355,13 +363,17 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
         TableColumnNames.calculation_id,
+        TableColumnNames.calculation_type,
+        TableColumnNames.calculation_execution_time_start,
         TableColumnNames.time_series_type,
+        TableColumnNames.aggregation_level,
         # Data that does vary but does not define distinct results
         TableColumnNames.time,
         TableColumnNames.quantity_qualities,
         TableColumnNames.quantity,
         # The field that defines results
-        TableColumnNames.result_id,
+        TableColumnNames.calculation_result_id,
+        TableColumnNames.metering_point_id,
         TableColumnNames.resolution,
     ]
 
@@ -397,4 +409,4 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
 
 
 def _get_energy_result_column_names() -> List[str]:
-    return [f.name for f in energy_schema.fields]
+    return [f.name for f in hive_energy_results_schema.fields]
