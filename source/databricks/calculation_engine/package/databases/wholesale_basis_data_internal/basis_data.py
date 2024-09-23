@@ -66,6 +66,10 @@ def get_time_series_points_basis_data(
         .cast(DecimalType(18, 3)),
         f.col(Colname.quality).alias(TableColumnNames.quality),
         f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
+        f.lit(None).alias(TableColumnNames.metering_point_type),
+        f.lit(None).alias(TableColumnNames.resolution),
+        f.lit(None).alias(TableColumnNames.grid_area_code),
+        f.lit(None).alias(TableColumnNames.energy_supplier_id),
     )
 
 
