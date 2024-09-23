@@ -278,7 +278,7 @@ class TestWhenInvokedWithValidMarketRole:
                 actual_args = parse_job_arguments(command_line_args)
 
         # Assert
-        assert actual_args.market_role == market_role
+        assert actual_args.requesters_market_role == market_role
 
 
 class TestWhenInvokedWithInvalidMarketRole:

@@ -45,7 +45,7 @@ def parse_job_arguments(
             period_start=job_args.period_start,
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
-            market_role=job_args.market_role,
+            requesters_market_role=job_args.market_role,
             calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
                 job_args.calculation_id_by_grid_area
             ),

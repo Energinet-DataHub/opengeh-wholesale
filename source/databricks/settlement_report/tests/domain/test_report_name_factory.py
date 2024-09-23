@@ -7,8 +7,8 @@ from pyspark.sql import SparkSession
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_name_factory import (
-    ReportNameFactory,
-    ReportType,
+    FileNameFactory,
+    ReportDataType,
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
@@ -28,7 +28,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
         energy_supplier_id="1234567890123",
-        market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesters_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
     )
 
 
@@ -43,8 +43,10 @@ def test_create__when_applied_to_new_col__returns_df_with_new_col(
     expected_market_role_identifier: str,
 ):
     # Arrange
-    sut = ReportNameFactory(ReportType.TimeSeriesHourly, default_settlement_report_args)
-    default_settlement_report_args.market_role = market_role
+    sut = FileNameFactory(
+        ReportDataType.TimeSeriesHourly, default_settlement_report_args
+    )
+    default_settlement_report_args.requesters_market_role = market_role
     grid_area_code = "123"
 
     # Act

@@ -25,7 +25,8 @@ class SettlementReportArgs:
     period_start: datetime
     period_end: datetime
     calculation_type: CalculationType
-    market_role: MarketRole
+    requesters_market_role: MarketRole
+    requesters_id: str
     calculation_id_by_grid_area: dict[str, UUID]
     """A dictionary containing grid area codes (keys) and calculation ids (values)."""
     energy_supplier_id: str | None

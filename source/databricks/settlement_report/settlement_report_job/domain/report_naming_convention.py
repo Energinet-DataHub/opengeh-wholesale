@@ -49,10 +49,3 @@ DATAHUB_ADMINISTRATOR = "datahub_administrator"
 ENERGY_SUPPLIER = "energy_supplier"
 GRID_ACCESS_PROVIDER = "grid_access_provider"
 SYSTEM_OPERATOR = "system_operator"
-
-MARKET_ROLES = {
-    DATAHUB_ADMINISTRATOR: "FAS",
-    ENERGY_SUPPLIER: "DDQ",
-    GRID_ACCESS_PROVIDER: "DDM",
-    SYSTEM_OPERATOR: "SYO",
-}
