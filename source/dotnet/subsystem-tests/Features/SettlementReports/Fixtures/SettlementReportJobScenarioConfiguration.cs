@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 
 /// <summary>
-/// Responsible for retrieving settings necessary for performing tests of 'SettlementReportJob' in Databricks.
+/// Responsible for retrieving environment specific settings necessary for performing tests of 'SettlementReportJob' in Databricks.
 ///
 /// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
 /// On hosted agents we must set these using environment variables.
@@ -31,7 +31,7 @@ public class SettlementReportJobScenarioConfiguration : SubsystemTestConfigurati
         InputCalculationId = Root.GetValue<string>("SETTLEMENT_REPORT_CALCULATION_ID")!;
 
         var databricksCatalogName = Root.GetValue<string>("DATABRICKS_CATALOG_NAME")!;
-        DatabricksCatalogRoot = $"/Volumes/{databricksCatalogName}/";
+        DatabricksCatalogRoot = $"/Volumes/{databricksCatalogName}";
 
         var secretsConfiguration = Root.BuildSecretsConfiguration();
         DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
@@ -43,7 +43,7 @@ public class SettlementReportJobScenarioConfiguration : SubsystemTestConfigurati
     public string InputCalculationId { get; }
 
     /// <summary>
-    /// Databricks DBFS catalog root.
+    /// Databricks catalog root.
     /// </summary>
     public string DatabricksCatalogRoot { get; }
 

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures.Databricks;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
@@ -41,6 +42,11 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
     private DatabricksClient DatabricksClient { get; set; } = null!;
+
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
+    private FilesDatabricksClient FilesDatabricksClient { get; set; } = null!;
 
     public async Task<long> StartSettlementReportJobAsync(Guid reportId, IReadOnlyList<string> settlementReportJobParameters)
     {
@@ -84,15 +90,15 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     }
 
     /// <summary>
-    /// Determine if a file exists in DBFS.
+    /// Determine if a file exists in the Databricks Catalogue.
     /// </summary>
+    /// <param name="relativeFilePath">File path relative to the Databricks Catalogue root configured per environment.</param>
     public async Task<bool> FileExistsAsync(string relativeFilePath)
     {
         try
         {
             var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
-            var fileStatus = await DatabricksClient.Dbfs.GetStatus(absoluteFilePath);
-            return true;
+            return await FilesDatabricksClient.Files.FileExistsAsync(absoluteFilePath);
         }
         catch (Exception ex)
         {
@@ -104,6 +110,7 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     protected override Task OnInitializeAsync()
     {
         DatabricksClient = DatabricksClient.CreateClient(Configuration.DatabricksWorkspace.BaseUrl, Configuration.DatabricksWorkspace.Token);
+        FilesDatabricksClient = new FilesDatabricksClient(Configuration.DatabricksWorkspace.BaseUrl, Configuration.DatabricksWorkspace.Token);
 
         return Task.CompletedTask;
     }
@@ -111,6 +118,7 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     protected override Task OnDisposeAsync()
     {
         DatabricksClient.Dispose();
+        FilesDatabricksClient.Dispose();
 
         return Task.CompletedTask;
     }
