@@ -88,12 +88,13 @@ def _calculate_fees(
         args.calculation_period_start_datetime,
     )
 
+    # TODO AJW
     # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    wholesale_results_output.monthly_fee_per_co_es = wholesale_results_factory.create(
-        args,
-        monthly_fee_per_co_es,
-        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-    )
+    # wholesale_results_output.monthly_fee_per_co_es = wholesale_results_factory.create(
+    # args,
+    # monthly_fee_per_co_es,
+    # AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    # )
 
     monthly_fee_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
         monthly_fee_per_co_es.df
@@ -129,14 +130,15 @@ def _calculate_subscriptions(
         args.calculation_period_start_datetime,
     )
 
+    # TODO AJW
     # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    wholesale_results_output.monthly_subscription_per_co_es = (
-        wholesale_results_factory.create(
-            args,
-            monthly_subscription_per_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-        )
-    )
+    # wholesale_results_output.monthly_subscription_per_co_es = (
+    #   wholesale_results_factory.create(
+    #      args,
+    #     monthly_subscription_per_co_es,
+    #    AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    # )
+    # )
 
     monthly_subscription_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
         monthly_subscription_per_co_es.df
@@ -174,14 +176,15 @@ def _calculate_hourly_tariffs(
         args.calculation_period_start_datetime,
     )
 
+    # TODO AJW
     # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
-        wholesale_results_factory.create(
-            args,
-            monthly_tariff_from_hourly_per_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-        )
-    )
+    # wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
+    #   wholesale_results_factory.create(
+    #      args,
+    #     monthly_tariff_from_hourly_per_co_es,
+    #    AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    # )
+    # )
 
     monthly_tariff_from_hourly_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
         monthly_tariff_from_hourly_per_co_es.df
@@ -219,14 +222,15 @@ def _calculate_daily_tariffs(
         args.calculation_period_start_datetime,
     )
 
+    # TODO AJW
     # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    wholesale_results_output.monthly_tariff_from_daily_per_co_es = (
-        wholesale_results_factory.create(
-            args,
-            monthly_tariff_from_daily_per_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-        )
-    )
+    # wholesale_results_output.monthly_tariff_from_daily_per_co_es = (
+    #   wholesale_results_factory.create(
+    #      args,
+    #     monthly_tariff_from_daily_per_co_es,
+    #    AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    # )
+    # )
 
     monthly_tariff_from_daily_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
         monthly_tariff_from_daily_per_co_es.df

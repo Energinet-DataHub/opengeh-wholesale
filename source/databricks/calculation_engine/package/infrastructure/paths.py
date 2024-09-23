@@ -142,7 +142,6 @@ class HiveOutputDatabase:
 
     DATABASE_NAME = "wholesale_output"
     ENERGY_RESULT_TABLE_NAME = "energy_results"
-    WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
     SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
 
 
