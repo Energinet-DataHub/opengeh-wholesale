@@ -17,6 +17,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 def default_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
+        requesters_id="4123456789012",
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
@@ -34,7 +35,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
 
 @pytest.mark.parametrize(
     "market_role, expected_market_role_identifier",
-    [(MarketRole.DATAHUB_ADMINISTRATOR, "FAS")],
+    [(MarketRole.GRID_ACCESS_PROVIDER, "DDM")],
 )
 def test_create__when_applied_to_new_col__returns_df_with_new_col(
     spark: SparkSession,
@@ -55,5 +56,5 @@ def test_create__when_applied_to_new_col__returns_df_with_new_col(
     # Assert
     assert (
         actual
-        == f"TSSD60_123_1234567890123_expected_{expected_market_role_identifier}_01-01-2021_01-01-2021.csv"
+        == f"TSSD60_123_1234567890123_{expected_market_role_identifier}_01-01-2021_01-01-2021.csv"
     )

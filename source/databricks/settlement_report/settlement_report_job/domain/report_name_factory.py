@@ -33,12 +33,15 @@ class FileNameFactory:
         filename_parts = [
             "TSSD60",
             grid_area_code,
-            self._get_actor_id_for_filename(energy_supplier_id),
-            self._get_market_role_identifier(self.args.requesters_market_role),
-            self.args.period_start.strftime("%d-%m-%Y"),
-            self.args.period_end.strftime("%d-%m-%Y"),
-            split_index,
         ]
+
+        filename_parts.append(self._get_actor_id_for_filename(energy_supplier_id))
+
+        filename_parts.append(
+            self._get_market_role_identifier(self.args.requesters_market_role)
+        )
+        filename_parts.append(self.args.period_start.strftime("%d-%m-%Y"))
+        filename_parts.append(self.args.period_end.strftime("%d-%m-%Y"))
 
         return "_".join(filename_parts) + ".csv"
 
