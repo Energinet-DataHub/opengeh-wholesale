@@ -13,7 +13,7 @@
 # limitations under the License.
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import DecimalType
+from pyspark.sql.types import DecimalType, StringType
 
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
@@ -66,6 +66,10 @@ def get_time_series_points_basis_data(
         .cast(DecimalType(18, 3)),
         f.col(Colname.quality).alias(TableColumnNames.quality),
         f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
+        f.lit(None).alias(TableColumnNames.metering_point_type).cast(StringType()),
+        f.lit(None).alias(TableColumnNames.resolution).cast(StringType()),
+        f.lit(None).alias(TableColumnNames.grid_area_code).cast(StringType()),
+        f.lit(None).alias(TableColumnNames.energy_supplier_id).cast(StringType()),
     )
 
 
