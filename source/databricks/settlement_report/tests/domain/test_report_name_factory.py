@@ -56,5 +56,5 @@ def test_create__when_applied_to_new_col__returns_df_with_new_col(
     # Assert
     assert (
         actual
-        == f"TSSD60_123_1234567890123_{expected_market_role_identifier}_01-01-2021_01-01-2021.csv"
+        == f"TSSD60_123_1234567890123_{expected_market_role_identifier}_01-07-2024_01-08-2024.csv"
     )
