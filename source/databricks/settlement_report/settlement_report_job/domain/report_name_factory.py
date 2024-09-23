@@ -43,8 +43,8 @@ class FileNameFactory:
             self._get_pre_fix(),
             grid_area_code,
             (
-                self.args.requesters_id
-                if self.args.requesters_market_role is MarketRole.GRID_ACCESS_PROVIDER
+                self.args.requester_id
+                if self.args.requester_market_role is MarketRole.GRID_ACCESS_PROVIDER
                 else energy_supplier_id
             ),
             (

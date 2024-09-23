@@ -49,7 +49,7 @@ def any_settlement_report_args() -> SettlementReportArgs:
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
         energy_supplier_id="1234567890123",
-        requesters_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requester_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
     )
 
 
