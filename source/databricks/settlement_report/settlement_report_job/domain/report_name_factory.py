@@ -39,14 +39,17 @@ class FileNameFactory:
         filename_parts = [
             self._get_post_fix(),
             grid_area_code,
-            energy_supplier_id if not None else self.args.requesters_id,
+            (
+                self.args.requesters_id
+                if self.args.requesters_market_role is MarketRole.GRID_ACCESS_PROVIDER
+                else energy_supplier_id
+            ),
             self._get_market_role_identifier(self.args.requesters_market_role),
             self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
+            split_index
         ]
-
-        if split_index:
-            filename_parts.append(split_index)
+        filename_parts = [part for part in filename_parts if part is not None]
 
         return "_".join(filename_parts) + ".csv"
 
