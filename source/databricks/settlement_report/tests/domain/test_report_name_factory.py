@@ -38,12 +38,12 @@ def test_create__when_requesting_actor_is_energy_supplier__(
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    sut = FileNameFactory(
-        ReportDataType.TimeSeriesHourly, default_settlement_report_args
-    )
     default_settlement_report_args.requesters_market_role = MarketRole.ENERGY_SUPPLIER
     default_settlement_report_args.requesters_id = "1234567890123"
     grid_area_code = "123"
+    sut = FileNameFactory(
+        ReportDataType.TimeSeriesHourly, default_settlement_report_args
+    )
 
     # Act
     actual = sut.create(grid_area_code)
