@@ -21,14 +21,17 @@ class FileNameFactory:
         self.args = args
 
     def create(
-        self, grid_area_code: str, energy_supplier: str | None, split_index: str = None
+        self,
+        grid_area_code: str,
+        energy_supplier_id: str | None,
+        split_index: str = None,
     ) -> str:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
         }:
             return self._create_time_series_filename(
-                grid_area_code, energy_supplier, split_index
+                grid_area_code, energy_supplier_id, split_index
             )
 
     def _create_time_series_filename(
@@ -41,14 +44,18 @@ class FileNameFactory:
         time_zone_info = ZoneInfo(self.args.time_zone)
 
         filename_parts = [
-            self._get_post_fix(),
+            self._get_pre_fix(),
             grid_area_code,
             (
                 self.args.requesters_id
                 if self.args.requesters_market_role is MarketRole.GRID_ACCESS_PROVIDER
                 else energy_supplier_id
             ),
-            self._get_market_role_identifier(self.args.requesters_market_role),
+            (
+                MarketRoleInFileName.GRID_ACCESS_PROVIDER
+                if energy_supplier_id is None
+                else MarketRoleInFileName.ENERGY_SUPPLIER
+            ),
             self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             split_index,
@@ -57,34 +64,8 @@ class FileNameFactory:
 
         return "_".join(filename_parts) + ".csv"
 
-    def _get_market_role_identifier(self, requesters_market_role: MarketRole) -> str:
-        if requesters_market_role == MarketRole.ENERGY_SUPPLIER:
-            return MarketRoleInFileName.ENERGY_SUPPLIER
-        elif requesters_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-            return MarketRoleInFileName.GRID_ACCESS_PROVIDER
-        elif requesters_market_role in {
-            MarketRole.DATAHUB_ADMINISTRATOR,
-            MarketRole.SYSTEM_OPERATOR,
-        }:
-            return (
-                MarketRoleInFileName.ENERGY_SUPPLIER
-                if self.args.energy_supplier_id
-                else MarketRoleInFileName.GRID_ACCESS_PROVIDER
-            )
-        else:
-            raise ValueError(
-                f"Market role {requesters_market_role} is not supported for file naming"
-            )
-
-    def _get_post_fix(self) -> str:
+    def _get_pre_fix(self) -> str:
         if self.report_data_type == ReportDataType.TimeSeriesHourly:
             return "TSSD60"
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
-
-    def _get_actor_id_for_filename(self, energy_supplier_id: str) -> str | None:
-
-        if self.args.requesters_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-            return self.args.requesters_id
-        else:
-            return energy_supplier_id

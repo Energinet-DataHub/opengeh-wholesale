@@ -33,20 +33,111 @@ def default_settlement_report_args() -> SettlementReportArgs:
     )
 
 
-def test_create__when_requesting_actor_is_energy_supplier__(
+@pytest.mark.parametrize(
+    "report_data_type,expected_pre_fix",
+    [
+        (ReportDataType.TimeSeriesHourly, "TSSD60"),
+        (ReportDataType.TimeSeriesQuarterly, "TSSD15"),
+    ],
+)
+def test_create__when_energy_supplier__returns_expected_file_name(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    expected_pre_fix: str,
 ):
     # Arrange
     default_settlement_report_args.requesters_market_role = MarketRole.ENERGY_SUPPLIER
     energy_supplier = "1234567890123"
+    grid_area_code = "123"
+    sut = FileNameFactory(report_data_type, default_settlement_report_args)
+
+    # Act
+    actual = sut.create(grid_area_code, energy_supplier)
+
+    # Assert
+    assert (
+        actual == f"{expected_pre_fix}_123_1234567890123_DDQ_01-07-2024_01-08-2024.csv"
+    )
+
+
+def test_create__when_grid_access_provider__returns_expected_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.requesters_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    default_settlement_report_args.requesters_id = "1111111111111"
     grid_area_code = "123"
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
     )
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier)
+    actual = sut.create(grid_area_code, energy_supplier_id=None)
 
     # Assert
-    assert actual == f"TSSD60_123_1234567890123_DDQ_01-07-2024_01-08-2024.csv"
+    assert actual == f"TSSD60_123_1111111111111_DDM_01-07-2024_01-08-2024.csv"
+
+
+@pytest.mark.parametrize(
+    "market_role, energy_supplier_id, expected_file_name",
+    [
+        (MarketRole.SYSTEM_OPERATOR, None, "TSSD60_123_DDM_01-07-2024_01-08-2024.csv"),
+        (
+            MarketRole.DATAHUB_ADMINISTRATOR,
+            None,
+            "TSSD60_123_DDM_01-07-2024_01-08-2024.csv",
+        ),
+        (
+            MarketRole.SYSTEM_OPERATOR,
+            "1987654321123",
+            "TSSD60_123_1987654321123_DDQ_01-07-2024_01-08-2024.csv",
+        ),
+        (
+            MarketRole.DATAHUB_ADMINISTRATOR,
+            "1987654321123",
+            "TSSD60_123_1987654321123_DDQ_01-07-2024_01-08-2024.csv",
+        ),
+    ],
+)
+def test_create__when_system_operator_or_datahub_admin__returns_expected_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+    market_role: MarketRole,
+    energy_supplier_id: str,
+    expected_file_name: str,
+):
+    # Arrange
+    default_settlement_report_args.requesters_market_role = market_role
+    grid_area_code = "123"
+    sut = FileNameFactory(
+        ReportDataType.TimeSeriesHourly, default_settlement_report_args
+    )
+
+    # Act
+    actual = sut.create(grid_area_code, energy_supplier_id)
+
+    # Assert
+    assert actual == expected_file_name
+
+
+def test_create__when_split_index_is_set__returns_file_name_that_include_split_index(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.requesters_market_role = MarketRole.ENERGY_SUPPLIER
+    sut = FileNameFactory(
+        ReportDataType.TimeSeriesHourly, default_settlement_report_args
+    )
+
+    # Act
+    actual = sut.create(
+        grid_area_code="123", energy_supplier_id="222222222222", split_index="17"
+    )
+
+    # Assert
+    assert actual == "TSSD60_123_222222222222_DDQ_01-07-2024_01-08-2024_17.csv"
