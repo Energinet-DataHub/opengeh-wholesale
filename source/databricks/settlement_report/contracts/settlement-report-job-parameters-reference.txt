@@ -7,8 +7,9 @@
 --period-start=2022-05-31T22:00:00Z
 --period-end=2022-06-01T22:00:00Z
 --calculation-type=wholesale_fixing
---market-role=energy_supplier
+--requester-market-role=energy_supplier
 # market-role values: datahub_administrator, energy_supplier, grid_access_provider, system_operator
+--requester-id=1234567890123
 --calculation-id-by-grid-area={"804": "95bd2365-c09b-4ee7-8c25-8dd56b564811", "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"}
 
 # Optional parameters
