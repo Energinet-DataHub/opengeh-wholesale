@@ -50,7 +50,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
         // Expectations
         Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(25);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
-            $"wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}/final_report.zip";
+            $"wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}/{Fixture.ScenarioState.ReportId}.zip";
     }
 
     [ScenarioStep(1)]
