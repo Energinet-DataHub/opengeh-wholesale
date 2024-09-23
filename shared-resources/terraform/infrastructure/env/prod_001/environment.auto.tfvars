@@ -22,3 +22,4 @@ databricks_contributor_dataplane_group = {
   id   = "504707241967571"
   name = "SEC-A-Datahub-Prod-001-Contributor-Dataplane"
 }
+log_retention_in_days = 90
