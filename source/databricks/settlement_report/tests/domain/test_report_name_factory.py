@@ -136,7 +136,7 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
 
     # Act
     actual = sut.create(
-        grid_area_code="123", energy_supplier_id="222222222222", split_index="17"
+        grid_area_code="123", energy_supplier_id="222222222222", chunk_index="17"
     )
 
     # Assert

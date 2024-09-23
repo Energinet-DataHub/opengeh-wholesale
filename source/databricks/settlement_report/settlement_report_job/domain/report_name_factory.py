@@ -2,12 +2,8 @@ from enum import Enum
 from zoneinfo import ZoneInfo
 
 from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-
-
-class ReportDataType(Enum):
-    TimeSeriesHourly = "time_series_hourly"
-    TimeSeriesQuarterly = "time_series_quarterly"
 
 
 class MarketRoleInFileName:
@@ -24,21 +20,21 @@ class FileNameFactory:
         self,
         grid_area_code: str,
         energy_supplier_id: str | None,
-        split_index: str = None,
+        chunk_index: str = None,
     ) -> str:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
         }:
             return self._create_time_series_filename(
-                grid_area_code, energy_supplier_id, split_index
+                grid_area_code, energy_supplier_id, chunk_index
             )
 
     def _create_time_series_filename(
         self,
         grid_area_code: str,
         energy_supplier_id: str,
-        split_index: str = None,
+        chunk_index: str = None,
     ) -> str:
 
         time_zone_info = ZoneInfo(self.args.time_zone)
@@ -58,7 +54,7 @@ class FileNameFactory:
             ),
             self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
-            split_index,
+            chunk_index,
         ]
         filename_parts = [part for part in filename_parts if part is not None]
 
