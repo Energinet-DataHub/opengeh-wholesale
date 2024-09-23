@@ -44,8 +44,3 @@ CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS = {
 }
 
 RESOLUTION_NAMES = {"PT1H": "TSSD60", "PT15M": "TSSD15"}
-
-DATAHUB_ADMINISTRATOR = "datahub_administrator"
-ENERGY_SUPPLIER = "energy_supplier"
-GRID_ACCESS_PROVIDER = "grid_access_provider"
-SYSTEM_OPERATOR = "system_operator"
