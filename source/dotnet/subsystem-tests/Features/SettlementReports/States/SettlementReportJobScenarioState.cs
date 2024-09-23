@@ -22,7 +22,7 @@ public class SettlementReportJobScenarioState
     public Guid ReportId { get; set; }
 
     [NotNull]
-    public IList<string>? JobParameters { get; set; }
+    public IDictionary<string, string>? JobParameters { get; set; }
 
     /// <summary>
     /// The expected max. duration of the job.
