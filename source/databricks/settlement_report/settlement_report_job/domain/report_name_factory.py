@@ -34,25 +34,16 @@ class FileNameFactory:
         split_index: str = None,
     ) -> str:
 
+        time_zone_info = ZoneInfo(self.args.time_zone)
+
         filename_parts = [
             self._get_post_fix(),
             grid_area_code,
+            energy_supplier_id if not None else self.args.requesters_id,
+            self._get_market_role_identifier(self.args.requesters_market_role),
+            self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
+            self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
         ]
-
-        actor_id = self._get_actor_id_for_filename(energy_supplier_id)
-        if actor_id:
-            filename_parts.append(actor_id)
-
-        filename_parts.append(
-            self._get_market_role_identifier(self.args.requesters_market_role)
-        )
-        time_zone_info = ZoneInfo(self.args.time_zone)
-        filename_parts.append(
-            self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y")
-        )
-        filename_parts.append(
-            self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y")
-        )
 
         if split_index:
             filename_parts.append(split_index)
@@ -85,10 +76,8 @@ class FileNameFactory:
             return "TSSD15"
 
     def _get_actor_id_for_filename(self, energy_supplier_id: str) -> str | None:
-        if self.args.requesters_market_role in {
-            MarketRole.ENERGY_SUPPLIER,
-            MarketRole.GRID_ACCESS_PROVIDER,
-        }:
+
+        if self.args.requesters_market_role is MarketRole.GRID_ACCESS_PROVIDER:
             return self.args.requesters_id
-        elif energy_supplier_id is not None:
+        else:
             return energy_supplier_id
