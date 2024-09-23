@@ -1,4 +1,4 @@
-calculation_id;metering_point_id;quantity;quality;observation_time
+calculation_id;metering_point_id;quantity;quality;observation_time;metering_point_type;resolution;grid_area_code;energy_supplier_id
 0b15a420-9fc8-409a-a169-fbd49479d718;170000000150001000;1;calculated;2023-02-01 00:00:00
 0b15a420-9fc8-409a-a169-fbd49479d718;180000000150001000;0;calculated;2023-02-01 00:00:00
 0b15a420-9fc8-409a-a169-fbd49479d718;170000000150000101;3;measured;2023-02-01 00:00:00
