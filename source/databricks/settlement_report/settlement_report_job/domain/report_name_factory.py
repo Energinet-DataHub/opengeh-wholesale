@@ -20,17 +20,21 @@ class FileNameFactory:
         self.report_data_type = report_data_type
         self.args = args
 
-    def create(self, grid_area_code: str) -> str:
+    def create(
+        self, grid_area_code: str, energy_supplier: str | None, split_index: str = None
+    ) -> str:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
         }:
-            return self._create_time_series_filename(grid_area_code)
+            return self._create_time_series_filename(
+                grid_area_code, energy_supplier, split_index
+            )
 
     def _create_time_series_filename(
         self,
         grid_area_code: str,
-        energy_supplier_id: str = None,
+        energy_supplier_id: str,
         split_index: str = None,
     ) -> str:
 
@@ -47,7 +51,7 @@ class FileNameFactory:
             self._get_market_role_identifier(self.args.requesters_market_role),
             self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
-            split_index
+            split_index,
         ]
         filename_parts = [part for part in filename_parts if part is not None]
 

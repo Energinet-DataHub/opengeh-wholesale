@@ -39,14 +39,14 @@ def test_create__when_requesting_actor_is_energy_supplier__(
 ):
     # Arrange
     default_settlement_report_args.requesters_market_role = MarketRole.ENERGY_SUPPLIER
-    default_settlement_report_args.requesters_id = "1234567890123"
+    energy_supplier = "1234567890123"
     grid_area_code = "123"
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
     )
 
     # Act
-    actual = sut.create(grid_area_code)
+    actual = sut.create(grid_area_code, energy_supplier)
 
     # Assert
     assert actual == f"TSSD60_123_1234567890123_DDQ_01-07-2024_01-08-2024.csv"
