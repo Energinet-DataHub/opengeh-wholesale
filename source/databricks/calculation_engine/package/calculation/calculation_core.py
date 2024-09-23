@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import coalesce, lit
 
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
@@ -32,6 +34,7 @@ from .calculation_output import (
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .preparation import PreparedDataReader
+from .preparation.data_structures import PreparedMeteringPointTimeSeries
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
 from ..constants import Colname
@@ -121,6 +124,10 @@ class CalculationCore:
                     )
                 )
 
+                metering_point_time_series = add_energy_supplier_id_to_metering_point_time_series_with_child_metering_point(
+                    metering_point_time_series, metering_point_periods_for_basis_data
+                )
+
                 metering_point_periods_for_wholesale_calculation = (
                     get_metering_point_periods_for_wholesale_calculation(
                         metering_point_periods_for_basis_data
@@ -157,3 +164,42 @@ class CalculationCore:
         )
 
         return calculation_output
+
+
+def add_energy_supplier_id_to_metering_point_time_series_with_child_metering_point(
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    metering_point_periods_for_basis_data: DataFrame,
+) -> PreparedMeteringPointTimeSeries:
+    metering_point_time_series_df = metering_point_time_series.df
+
+    # Drop the existing energy_supplier_id column
+    metering_point_time_series_df = metering_point_time_series_df.drop(
+        Colname.energy_supplier_id
+    )
+
+    # Perform the left join on the specified columns
+    joined_df = metering_point_time_series_df.join(
+        metering_point_periods_for_basis_data.select(
+            Colname.metering_point_id,
+            Colname.metering_point_type,
+            Colname.resolution,
+            Colname.grid_area_code,
+            Colname.energy_supplier_id,
+        ),
+        on=[
+            Colname.metering_point_id,
+            Colname.metering_point_type,
+            Colname.resolution,
+            Colname.grid_area_code,
+        ],
+        how="left",
+    )
+
+    # Add the energy_supplier_id column from the joined DataFrame
+    updated_df = joined_df.withColumn(
+        Colname.energy_supplier_id,
+        coalesce(joined_df[Colname.energy_supplier_id], lit(None)),
+    )
+
+    metering_point_time_series_df = updated_df
+    return PreparedMeteringPointTimeSeries(metering_point_time_series_df)
