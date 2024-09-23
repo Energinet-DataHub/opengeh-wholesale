@@ -33,28 +33,20 @@ def default_settlement_report_args() -> SettlementReportArgs:
     )
 
 
-@pytest.mark.parametrize(
-    "market_role, expected_market_role_identifier",
-    [(MarketRole.GRID_ACCESS_PROVIDER, "DDM")],
-)
-def test_create__when_applied_to_new_col__returns_df_with_new_col(
+def test_create__when_requesting_actor_is_energy_supplier__(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
-    market_role: MarketRole,
-    expected_market_role_identifier: str,
 ):
     # Arrange
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
     )
-    default_settlement_report_args.requesters_market_role = market_role
+    default_settlement_report_args.requesters_market_role = MarketRole.ENERGY_SUPPLIER
+    default_settlement_report_args.requesters_id = "1234567890123"
     grid_area_code = "123"
 
     # Act
     actual = sut.create(grid_area_code)
 
     # Assert
-    assert (
-        actual
-        == f"TSSD60_123_1234567890123_{expected_market_role_identifier}_01-07-2024_01-08-2024.csv"
-    )
+    assert actual == f"TSSD60_123_1234567890123_DDQ_01-07-2024_01-08-2024.csv"
