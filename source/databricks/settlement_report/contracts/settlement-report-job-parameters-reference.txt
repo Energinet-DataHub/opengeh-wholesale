@@ -15,5 +15,5 @@
 
 # Optional parameters
 --energy-supplier-id=1234567890123
---split-report-by-grid-area
---prevent-large-text-files
+--split-report-by-grid-area=False
+--prevent-large-text-files=False
