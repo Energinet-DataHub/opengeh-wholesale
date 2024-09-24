@@ -32,10 +32,6 @@ from settlement_report_job.infrastructure.column_names import (
 )
 from settlement_report_job.utils import (
     map_from_dict,
-    get_dbutils,
-    write_files,
-    get_new_files,
-    merge_files,
 )
 from settlement_report_job.infrastructure import logging_configuration
 
@@ -48,54 +44,16 @@ log = Logger(__name__)
 def create_time_series(
     spark: SparkSession,
     args: SettlementReportArgs,
-    report_directory: str,
     resolution: DataProductMeteringPointResolution,
-) -> list[str]:
+) -> DataFrame:
     log.info("Creating time series points")
-    dbutils = get_dbutils(spark)
     time_series_points = _get_filtered_time_series_points(spark, args, resolution)
     prepared_time_series = _generate_time_series(
         time_series_points,
         _get_desired_quantity_column_count(resolution),
         args.time_zone,
     )
-
-    result_path = f"{report_directory}/time_series_{resolution.value}"
-    headers = write_files(
-        df=prepared_time_series,
-        path=result_path,
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
-        order_by=[
-            DataProductColumnNames.grid_area_code,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.start_of_day,
-        ],
-    )
-    resolution_name = (
-        "TSSD60" if resolution == DataProductMeteringPointResolution.HOUR else "TSSD15"
-    )
-    new_files = get_new_files(
-        result_path,
-        file_name_template="_".join(
-            [
-                resolution_name,
-                "{grid_area}",
-                args.period_start.strftime("%d-%m-%Y"),
-                args.period_end.strftime("%d-%m-%Y"),
-                "{chunk_index}",
-            ]
-        ),
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
-    )
-    files = merge_files(
-        dbutils=dbutils,
-        new_files=new_files,
-        headers=headers,
-    )
-    return files
+    return prepared_time_series
 
 
 @logging_configuration.use_span(
