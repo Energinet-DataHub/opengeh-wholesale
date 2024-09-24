@@ -58,6 +58,14 @@ class CalculationCore:
                 )
             )
 
+            if is_wholesale_calculation_type(args.calculation_type):
+                with logging_configuration.start_span("calculation.wholesale.prepare"):
+                    all_metering_point_periods = (
+                        get_metering_points_periods_for_wholesale_basis_data(
+                            all_metering_point_periods
+                        )
+                    )
+
             grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
                 args.calculation_grid_areas, all_metering_point_periods
             )
@@ -117,11 +125,7 @@ class CalculationCore:
                     metering_point_period_ids,
                 )
 
-                metering_point_periods_for_basis_data = (
-                    get_metering_points_periods_for_wholesale_basis_data(
-                        all_metering_point_periods
-                    )
-                )
+                metering_point_periods_for_basis_data = all_metering_point_periods
 
                 metering_point_periods_for_wholesale_calculation = (
                     get_metering_point_periods_for_wholesale_calculation(
