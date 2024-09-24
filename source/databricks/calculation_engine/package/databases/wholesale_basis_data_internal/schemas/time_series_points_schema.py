@@ -35,3 +35,18 @@ time_series_points_schema = StructType(
         StructField(TableColumnNames.energy_supplier_id, StringType(), True),
     ]
 )
+
+# TODO JVM: Schema need for a test and need to be removed when delta table is fixed
+time_series_points_schema_temp = StructType(
+    [
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_id, StringType(), False),
+        StructField(TableColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(TableColumnNames.quality, StringType(), False),
+        StructField(TableColumnNames.observation_time, TimestampType(), False),
+        StructField(TableColumnNames.metering_point_type, StringType(), False),
+        StructField(TableColumnNames.resolution, StringType(), False),
+        StructField(TableColumnNames.grid_area_code, StringType(), False),
+        StructField(TableColumnNames.energy_supplier_id, StringType(), True),
+    ]
+)

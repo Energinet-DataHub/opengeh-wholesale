@@ -28,6 +28,9 @@ from package.databases.wholesale_basis_data_internal.schemas import (
 from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
+from package.databases.wholesale_basis_data_internal.schemas.time_series_points_schema import (
+    time_series_points_schema_temp,
+)
 
 
 @pytest.mark.parametrize(
@@ -39,7 +42,7 @@ from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods
         ),
         (
             "time_series_points",
-            time_series_points_schema,
+            time_series_points_schema_temp,
         ),
         ("charge_link_periods", charge_link_periods_schema),
         (
