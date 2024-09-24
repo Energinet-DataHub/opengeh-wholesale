@@ -48,10 +48,10 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     /// </summary>
     private FilesDatabricksClient FilesDatabricksClient { get; set; } = null!;
 
-    public async Task<long> StartSettlementReportJobAsync(Guid reportId, IReadOnlyDictionary<string, string> settlementReportJobParameters)
+    public async Task<long> StartSettlementReportJobAsync(Guid reportId, IReadOnlyList<string> settlementReportJobParameters)
     {
         var settlementReportJobId = await DatabricksClient.GetSettlementReportJobIdAsync();
-        var runParameters = RunParameters.CreateJobParams(settlementReportJobParameters.ToDictionary());
+        var runParameters = RunParameters.CreatePythonParams(settlementReportJobParameters);
 
         var runId = await DatabricksClient
             .Jobs

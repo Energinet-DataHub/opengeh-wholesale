@@ -37,18 +37,18 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         // Input
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
-        Fixture.ScenarioState.JobParameters = new Dictionary<string, string>
+        Fixture.ScenarioState.JobParameters = new[]
         {
-            ["report-id"] = Fixture.ScenarioState.ReportId.ToString(),
-            ["calculation-type"] = "wholesale_fixing",
-            ["calculation-id-by-grid-area"] = $"{{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
-            ["period-start"] = "2023-01-31T23:00:00Z",
-            ["period-end"] = "2023-02-28T23:00:00Z",
-            ["market-role"] = "datahub_administrator",
+          $"--report-id={Fixture.ScenarioState.ReportId}",
+          "--calculation-type=wholesale_fixing",
+          $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
+          "--period-start=2023-01-31T23:00:00Z",
+          "--period-end=2023-02-28T23:00:00Z",
+          "--market-role=datahub_administrator",
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(25);
+        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(15);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
             $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
     }
@@ -76,7 +76,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         var (isCompleted, run) = await Fixture.WaitForSettlementReportJobCompletedAsync(
             Fixture.ScenarioState.JobId,
-            waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(10)));
+            waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(5)));
 
         Fixture.ScenarioState.Run = run;
 
