@@ -124,7 +124,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
-        assert actual_args.task_type == TaskType.HOURLY
+        assert actual_args.task_type == TaskType.HOURLY_TIME_SERIES
 
 
 class TestWhenNoValidCalculationIdForGridArea:
