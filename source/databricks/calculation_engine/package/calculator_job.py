@@ -25,13 +25,7 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 
 
 def start() -> None:
-    applicationinsights_connection_string = os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    )
-
-    start_with_deps(
-        applicationinsights_connection_string=applicationinsights_connection_string
-    )
+    start_with_deps()
 
 
 @log_execution(
