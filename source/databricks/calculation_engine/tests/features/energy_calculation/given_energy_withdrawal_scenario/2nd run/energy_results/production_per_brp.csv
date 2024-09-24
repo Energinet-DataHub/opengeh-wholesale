@@ -7,7 +7,7 @@
 800;;2200000000000;0.501;['measured', 'calculated'];2023-07-02 02:15;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;2200000000000;0.5;['measured', 'calculated'];2023-07-02 02:30;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;2200000000000;0.501;['measured', 'calculated'];2023-07-02 02:45;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
-111;;2200000000000;50;['calculated'];2023-07-02 02:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
-111;;2200000000000;50;['calculated'];2023-07-02 02:15;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
-111;;2200000000000;50;['calculated'];2023-07-02 02:30;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
-111;;2200000000000;50;['calculated'];2023-07-02 02:45;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
+111;;2200000000000;0;['calculated'];2023-07-02 02:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
+111;;2200000000000;0;['calculated'];2023-07-02 02:15;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
+111;;2200000000000;0;['calculated'];2023-07-02 02:30;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M
+111;;2200000000000;0;['calculated'];2023-07-02 02:45;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;IGNORED;;PT15M

@@ -1,25 +1,22 @@
-from test_coverage.all_test_cases import Cases
+from coverage.all_test_cases.py import Cases
 
 """
 ## PURPOSE
-The purpose of this test is to test every energy result calculation (along with basis data) with the smallest meaningful
-time period (one hour).
+The purpose is to test that we can properly withdraw energy results based on changes in metering_point_periods table between test runs.
 
 ## DESIGN CONSIDERATIONS
-- Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
-  metering point type
-- Input quantities have been set so production, flex, and nonprofiled do not produce the same result.
-- Input data has MPs not included in calculation
-- Energy Supplier and Balance Responsible id's have set so that ga_es, ga_brp and ga_brp_es do not produce the same
-  result/rows.
-- Oracle Excel-sheet included (Oracle - minimal standard calculation.xlsx)
-- Metering point id's denote the type
-    - Production metering points start with e.g. '18' for production metering points
-    - Metering points with resolution 15M have a 15 in them
-    - Nonprofiled metering points end with 1xx, flex with 2xx
-    - Example - flex metering point with resolution 15M: '**17**000000**15**00000**2**01'
+- Input data for 1st run is based on minimal standard energy scenario, except that grid area 111 is included in the calculation.
+- Changes between 1st and 2nd run:
+  - An MP changes energy supplier
+  - An MP changes energy supplier and balance responsible
+  - An MP is closed down
+- In the 2nd run, the changes are propagated to results where the appropriate result rows are marked as withdrawn based on the changes in combinations of input parameters
 
 ## CASES TESTED
 """
-Cases.CalculationTests.Typical_energy_scenario
-Cases.CalculationTests.Calculation_input_data_includes_other_ga
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_mp_changes_es
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_mp_changes_es_and_brp
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_mp_changes_settlement_method
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_mp_is_closed_down
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_combination_previously_missing_reintroduced
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_time_series_removed_which_were_previously_withdrawn
