@@ -1,4 +1,4 @@
-from enum import Enum
+from collections.abc import Iterable
 from zoneinfo import ZoneInfo
 
 from settlement_report_job.domain.market_role import MarketRole
@@ -61,7 +61,7 @@ class FileNameFactory:
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             chunk_index,
         ]
-        filename_parts: list[str] = [
+        filename_parts: Iterable[str] = [
             part for part in filename_parts if part is not None
         ]
 
