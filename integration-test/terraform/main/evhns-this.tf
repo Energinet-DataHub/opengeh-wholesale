@@ -20,8 +20,26 @@ resource "azurerm_eventhub_namespace" "this" {
   tags = local.tags
 }
 
-resource "azurerm_key_vault_secret" "kvs_evhns_name" {
-  name         = "AZURE-EVENTHUB-NAME"
+resource "azurerm_role_assignment" "evhns_self" {
+  scope                = azurerm_eventhub_namespace.this.id
+  role_definition_name = "Azure Event Hubs Data Owner"
+  principal_id         = data.azurerm_client_config.this.object_id
+}
+
+resource "azurerm_role_assignment" "evhns_spn_ci" {
+  scope                = azurerm_eventhub_namespace.this.id
+  role_definition_name = "Azure Event Hubs Data Owner"
+  principal_id         = azuread_service_principal.spn_ci.id
+}
+
+resource "azurerm_role_assignment" "evhns_developers" {
+  scope                = azurerm_eventhub_namespace.this.id
+  role_definition_name = "Azure Event Hubs Data Owner"
+  principal_id         = var.omada_developers_security_group_object_id
+}
+
+resource "azurerm_key_vault_secret" "kvs_evhns_namespace" {
+  name         = "AZURE-EVENTHUB-NAMESPACE"
   value        = azurerm_eventhub_namespace.this.name
   key_vault_id = azurerm_key_vault.this.id
 
