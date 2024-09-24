@@ -17,6 +17,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.
 public enum SettlementReportJobState
 {
     Pending,
+    Queued,
     Running,
     Completed,
     Canceled,

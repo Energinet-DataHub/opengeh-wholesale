@@ -128,6 +128,7 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
         return run.State.LifeCycleState switch
         {
             RunLifeCycleState.PENDING => SettlementReportJobState.Pending,
+            RunLifeCycleState.QUEUED => SettlementReportJobState.Queued,
             RunLifeCycleState.RUNNING => SettlementReportJobState.Running,
             RunLifeCycleState.TERMINATING => SettlementReportJobState.Running,
             RunLifeCycleState.SKIPPED => SettlementReportJobState.Canceled,
