@@ -75,12 +75,12 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--market-role", type=MarketRole, required=True)
 
     p.add("--calculation-id-by-grid-area", type=str, required=True)
-    p.add("--energy-supplier-id", type=str, required=False)
+    p.add("--energy-supplier-id", type=str, required=False, default=None)
     p.add(
-        "--split-report-by-grid-area", action="store_true"
+        "--split-report-by-grid-area", type=bool, required=False, default=False
     )  # true if present, false otherwise
     p.add(
-        "--prevent-large-text-files", action="store_true"
+        "--prevent-large-text-files", type=bool, required=False, default=False
     )  # true if present, false otherwise
     p.add("--task-type", type=str, required=True)
 
