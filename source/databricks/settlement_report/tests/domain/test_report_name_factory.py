@@ -55,7 +55,7 @@ def test_create__when_energy_supplier__returns_expected_file_name(
     sut = FileNameFactory(report_data_type, default_settlement_report_args)
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier)
+    actual = sut.create(grid_area_code, energy_supplier, chunk_index=None)
 
     # Assert
     assert (
@@ -78,7 +78,7 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     )
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier_id=None)
+    actual = sut.create(grid_area_code, energy_supplier_id=None, chunk_index=None)
 
     # Assert
     assert actual == "TSSD60_123_1111111111111_DDM_01-07-2024_01-08-2024.csv"
@@ -120,7 +120,7 @@ def test_create__when_system_operator_or_datahub_admin__returns_expected_file_na
     )
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier_id)
+    actual = sut.create(grid_area_code, energy_supplier_id, chunk_index=None)
 
     # Assert
     assert actual == expected_file_name
