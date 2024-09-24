@@ -30,9 +30,7 @@ def start() -> None:
 
 @log_execution(
     cloud_role_name="dbr-calculation-engine",
-    applicationinsights_connection_string=os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    ),
+    applicationinsights_connection_string=config.get_application_insights_connection_string(),
 )
 def start_with_deps(
     *,

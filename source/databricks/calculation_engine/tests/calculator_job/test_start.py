@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import argparse
-import os
 import sys
 import time
 import uuid
@@ -88,11 +87,9 @@ class TestWhenInvokedWithValidArguments:
 
         # Act
         with pytest.raises(SystemExit):
-            with patch.dict(
-                os.environ,
-                {
-                    "APPLICATIONINSIGHTS_CONNECTION_STRING": integration_test_configuration.get_applicationinsights_connection_string()
-                },
+            with patch(
+                "package.infrastructure.logging_configuration.get_application_insights_connection_string",
+                return_value=integration_test_configuration.get_applicationinsights_connection_string(),
             ):
                 start_with_deps()
 
@@ -144,11 +141,9 @@ AppTraces
 
         # Act
         with pytest.raises(SystemExit):
-            with patch.dict(
-                os.environ,
-                {
-                    "APPLICATIONINSIGHTS_CONNECTION_STRING": integration_test_configuration.get_applicationinsights_connection_string()
-                },
+            with patch(
+                "package.infrastructure.logging_configuration.get_application_insights_connection_string",
+                return_value=integration_test_configuration.get_applicationinsights_connection_string(),
             ):
                 start_with_deps()
 
@@ -200,11 +195,9 @@ AppDependencies
 
         with pytest.raises(SystemExit):
             # Act
-            with patch.dict(
-                os.environ,
-                {
-                    "APPLICATIONINSIGHTS_CONNECTION_STRING": integration_test_configuration.get_applicationinsights_connection_string()
-                },
+            with patch(
+                "package.infrastructure.logging_configuration.get_application_insights_connection_string",
+                return_value=integration_test_configuration.get_applicationinsights_connection_string(),
             ):
                 start_with_deps()
 

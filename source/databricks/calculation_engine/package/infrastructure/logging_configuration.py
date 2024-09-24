@@ -66,6 +66,10 @@ def configure_logging(
     logging.getLogger("py4j").setLevel(logging.WARNING)
 
 
+def get_application_insights_connection_string() -> str:
+    return os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+
+
 def get_extras() -> dict[str, Any]:
     return _EXTRAS.copy()
 
