@@ -49,7 +49,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedMaxConcurrentRuns = 2;
+        Fixture.ScenarioState.ExpectedMaxConcurrentRuns = 40;
     }
 
     [ScenarioStep(1)]
