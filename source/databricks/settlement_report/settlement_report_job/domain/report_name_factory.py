@@ -61,7 +61,7 @@ class FileNameFactory:
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             chunk_index,
         ]
-        filename_parts = [part for part in filename_parts if part is not None]
+        filename_parts = [str(part) for part in filename_parts if part is not None]
 
         return "_".join(filename_parts) + ".csv"
 
