@@ -7,7 +7,7 @@ The purpose is checking views related to amount per charge view.
 ## DESIGN CONSIDERATIONS
 - wholesale_internal.calculations table has three calculation_id's, only one of which is valid.
 - The two others are either internal or doesn't have an end date.
-- These three ids are used across all 6 basis_data tables.
+- These three ids are used across all 6 basis_data tables, with only 1 being filtered for the data product.
 
 ## CASES TESTED
 """
