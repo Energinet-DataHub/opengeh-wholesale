@@ -26,18 +26,28 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     hourly_time_series_df = create_time_series(
         spark,
         args,
-        report_directory,
         DataProductMeteringPointResolution.HOUR,
     )
-    hourly_time_series_files = time_series_writer.write(hourly_time_series_df)
+    hourly_time_series_files = time_series_writer.write(
+        dbutils,
+        args,
+        report_directory,
+        hourly_time_series_df,
+        DataProductMeteringPointResolution.HOUR,
+    )
 
     quarterly_time_series_df = create_time_series(
         spark,
         args,
-        report_directory,
         DataProductMeteringPointResolution.QUARTER,
     )
-    quarterly_time_series_files = time_series_writer.write(quarterly_time_series_df)
+    quarterly_time_series_files = time_series_writer.write(
+        dbutils,
+        args,
+        report_directory,
+        quarterly_time_series_df,
+        DataProductMeteringPointResolution.QUARTER,
+    )
 
     files_to_zip = []
     files_to_zip.extend(hourly_time_series_files)
