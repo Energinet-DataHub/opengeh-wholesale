@@ -29,6 +29,10 @@ class FileNameFactory:
             return self._create_time_series_filename(
                 grid_area_code, energy_supplier_id, chunk_index
             )
+        else:
+            raise NotImplementedError(
+                f"Report data type {self.report_data_type} is not supported."
+            )
 
     def _create_time_series_filename(
         self,
