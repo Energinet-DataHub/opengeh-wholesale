@@ -14,9 +14,8 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;

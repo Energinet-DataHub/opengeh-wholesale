@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 
@@ -73,4 +75,43 @@ public static class DbContextExtensions
             logger,
             timeLimit,
             disallowedStates);
+
+    public static async Task<(bool Success, OutboxMessage? OutboxMessage)> WaitForPublishedOutboxMessageAsync(
+        this DatabaseContext dbContext,
+        Instant createdAfter,
+        ITestDiagnosticsLogger logger,
+        TimeSpan? timeLimit = null)
+    {
+        OutboxMessage? outboxMessage = null;
+        var success = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                outboxMessage = await dbContext.Outbox
+                    .AsNoTracking() // .AsNoTracking() is important, else the result is cached
+                    .SingleAsync(c => c.CreatedAt > createdAfter);
+
+                logger.WriteLine($"Waiting for outbox message to be published, current state is: " +
+                                 $"Id={outboxMessage.Id.Id}, " +
+                                 $"PublishedAt={outboxMessage.PublishedAt}, " +
+                                 $"ProcessingAt={outboxMessage.ProcessingAt}, " +
+                                 $"FailedAt={outboxMessage.FailedAt}, " +
+                                 $"ErrorMessage={outboxMessage.ErrorMessage}");
+
+                return outboxMessage.PublishedAt != null;
+            },
+            timeLimit: timeLimit ?? TimeSpan.FromSeconds(30),
+            delay: TimeSpan.FromSeconds(1));
+
+        if (!success)
+        {
+            logger.WriteLine($"Timeout waiting for outbox message to be published, current state is: " +
+                             $"Id={outboxMessage?.Id.Id}, " +
+                             $"PublishedAt={outboxMessage?.PublishedAt}, " +
+                             $"ProcessingAt={outboxMessage?.ProcessingAt}, " +
+                             $"FailedAt={outboxMessage?.FailedAt}, " +
+                             $"ErrorMessage={outboxMessage?.ErrorMessage}");
+        }
+
+        return (success, outboxMessage);
+    }
 }

@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.D
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
 using Energinet.DataHub.Wholesale.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 
@@ -49,8 +50,7 @@ builder.Services.AddIntegrationEventsSubscription(builder.Configuration);
 
 // Http channels
 builder.Services
-    .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+    .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>());
 
 // => Open API generation
 builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "Wholesale Web API");
