@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 
+from settlement_report_job.domain import time_series_writer
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
@@ -22,18 +23,21 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     dbutils = get_dbutils(spark)
     report_directory = f"{get_output_volume_name()}/{args.report_id}"
 
-    hourly_time_series_files = create_time_series(
+    hourly_time_series_df = create_time_series(
         spark,
         args,
         report_directory,
         DataProductMeteringPointResolution.HOUR,
     )
-    quarterly_time_series_files = create_time_series(
+    hourly_time_series_files = time_series_writer.write(hourly_time_series_df)
+
+    quarterly_time_series_df = create_time_series(
         spark,
         args,
         report_directory,
         DataProductMeteringPointResolution.QUARTER,
     )
+    quarterly_time_series_files = time_series_writer.write(quarterly_time_series_df)
 
     files_to_zip = []
     files_to_zip.extend(hourly_time_series_files)
