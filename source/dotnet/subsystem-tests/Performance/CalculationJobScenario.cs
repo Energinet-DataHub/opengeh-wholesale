@@ -94,7 +94,6 @@ public class CalculationJobScenario : SubsystemTestsBase<CalculationJobScenarioF
     {
         var calculationJobTimeLimit = TimeSpan.FromMinutes(70);
 
-        // TODO XDAST: Verify if this is the correct way to measure the duration. See https://docs.databricks.com/api/azure/workspace/jobs/getrun
         var actualCalculationJobDuration =
             Fixture.ScenarioState.Run.EndTime - Fixture.ScenarioState.Run.StartTime;
 
