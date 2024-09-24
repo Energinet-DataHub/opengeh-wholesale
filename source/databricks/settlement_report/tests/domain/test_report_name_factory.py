@@ -17,7 +17,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 def default_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
-        requester_id="4123456789012",
+        requesting_actor_id="4123456789012",
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
@@ -29,7 +29,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
         energy_supplier_id="1234567890123",
-        requester_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
     )
 
 
@@ -47,7 +47,9 @@ def test_create__when_energy_supplier__returns_expected_file_name(
     expected_pre_fix: str,
 ):
     # Arrange
-    default_settlement_report_args.requester_market_role = MarketRole.ENERGY_SUPPLIER
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
+    )
     energy_supplier = "1234567890123"
     grid_area_code = "123"
     sut = FileNameFactory(report_data_type, default_settlement_report_args)
@@ -66,10 +68,10 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.requester_market_role = (
+    default_settlement_report_args.requesting_actor_market_role = (
         MarketRole.GRID_ACCESS_PROVIDER
     )
-    default_settlement_report_args.requester_id = "1111111111111"
+    default_settlement_report_args.requesting_actor_id = "1111111111111"
     grid_area_code = "123"
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
@@ -111,7 +113,7 @@ def test_create__when_system_operator_or_datahub_admin__returns_expected_file_na
     expected_file_name: str,
 ):
     # Arrange
-    default_settlement_report_args.requester_market_role = market_role
+    default_settlement_report_args.requesting_actor_market_role = market_role
     grid_area_code = "123"
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
@@ -129,7 +131,9 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.requester_market_role = MarketRole.ENERGY_SUPPLIER
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
+    )
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
     )
