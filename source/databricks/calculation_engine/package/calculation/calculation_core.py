@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame
-from pyspark.sql.functions import coalesce, lit
 
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
