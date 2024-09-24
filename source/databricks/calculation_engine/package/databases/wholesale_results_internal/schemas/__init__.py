@@ -20,6 +20,7 @@ from .exchange_per_neighbor_schema import exchange_per_neighbor_schema
 from .grid_loss_metering_point_time_series_schema import (
     grid_loss_metering_point_time_series_schema,
 )
+from .hive_energy_results_schema import hive_energy_results_schema
 from .hive_wholesale_results_schema import hive_wholesale_results_schema
 from .monthly_amounts_schema import (
     monthly_amounts_schema_uc,
