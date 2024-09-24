@@ -43,12 +43,16 @@ def _get_contract_parameters(filename: str) -> list[str]:
         )
 
 
-def _substitute_market_role(sys_argv: list[str], market_role: str) -> list[str]:
-    pattern = r"--market-role=(\w+)"
+def _substitute_requesting_actor_market_role(
+    sys_argv: list[str], market_role: str
+) -> list[str]:
+    pattern = r"--requesting-actor-market-role=(\w+)"
 
     for i, item in enumerate(sys_argv):
         if re.search(pattern, item):
-            sys_argv[i] = re.sub(pattern, f"--market-role={market_role}", item)
+            sys_argv[i] = re.sub(
+                pattern, f"--requesting-actor-market-role={market_role}", item
+            )
             break
 
     return sys_argv
@@ -259,14 +263,14 @@ class TestWhenInvokedWithValidMarketRole:
         "market_role",
         [market_role for market_role in MarketRole],
     )
-    def test_returns_expected_market_role(
+    def test_returns_expected_requesting_actor_market_role(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract: list[str],
         market_role: MarketRole,
     ) -> None:
         # Arrange
-        test_sys_args = _substitute_market_role(
+        test_sys_args = _substitute_requesting_actor_market_role(
             sys_argv_from_contract.copy(), market_role.value
         )
 
@@ -289,7 +293,7 @@ class TestWhenInvokedWithInvalidMarketRole:
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        test_sys_args = _substitute_market_role(
+        test_sys_args = _substitute_requesting_actor_market_role(
             sys_argv_from_contract.copy(), "invalid_market_role"
         )
 

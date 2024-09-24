@@ -50,6 +50,7 @@ def any_settlement_report_args() -> SettlementReportArgs:
         catalog_name="catalog_name",
         energy_supplier_id="1234567890123",
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id="1111111111111",
     )
 
 
