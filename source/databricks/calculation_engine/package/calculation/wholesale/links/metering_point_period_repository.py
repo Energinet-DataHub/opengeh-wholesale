@@ -16,7 +16,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
+from dependency_injector.wiring import inject, Provide, Container
 from pyspark.sql import DataFrame
+from pyspark.sql.connect.session import SparkSession
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
@@ -36,13 +38,24 @@ class IMeteringPointPeriodRepository(ABC):
 
 class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
 
+    @inject
+    def __init__(
+        self,
+        spark: SparkSession = Provide[Container.spark_session],
+        infrastructure_settings=Provide[Container.infrastructure_settings],
+    ):
+
+        super().__init__()
+        self.spark = spark
+        self.infrastructure_settings = infrastructure_settings
+
     def get_by(
         self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]
     ) -> DataFrame:
         metering_point_periods_df = read_table(
-            self._spark,
-            self._catalog_name,
-            self._calculation_input_database_name,
+            self.spark,
+            self.infrastructure_settings.catalog_name,
+            self.infrastructure_settings.calculation_input_database_name,
             MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
             metering_point_periods_schema,
         )

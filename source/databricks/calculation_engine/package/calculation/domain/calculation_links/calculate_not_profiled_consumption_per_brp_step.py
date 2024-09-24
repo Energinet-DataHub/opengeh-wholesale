@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.handlers.calculation_step import CalculationLink
+from package.calculation.wholesale.links.calculation_step import CalculationLink
 
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory

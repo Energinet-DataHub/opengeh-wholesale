@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.handlers.calculation_step import CalculationLink
+from package.calculation.wholesale.links.calculation_step import CalculationLink
 
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import (
@@ -23,7 +23,7 @@ from package.calculation.energy.data_structures.energy_results import EnergyResu
 from package.codelists import TimeSeriesType, AggregationLevel
 
 
-class CalculateNonProfiledConsumptionPerGridAreaStep(CalculationLink):
+class CalculateNonProfiledConsumptionPerGridAreaLink(CalculationLink):
 
     def __init__(
         self,

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from package.calculation.wholesale.handlers.calculation_step import (
+from package.calculation.wholesale.links.calculation_step import (
     CalculationLink,
 )
 

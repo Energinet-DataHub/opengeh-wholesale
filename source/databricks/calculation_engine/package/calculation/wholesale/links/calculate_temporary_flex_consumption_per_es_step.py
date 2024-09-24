@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.handlers.calculation_link import (
+from package.calculation.wholesale.links.calculation_link import (
     CalculationLink,
 )
 

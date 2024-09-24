@@ -13,7 +13,7 @@
 # limitations under the License.
 from typing import Any
 
-from package.calculation.wholesale.handlers.calculation_step import CalculationLink
+from package.calculation.wholesale.links.calculation_step import CalculationLink
 
 from package.calculation.calculation_output import CalculationOutput
 

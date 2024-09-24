@@ -16,8 +16,8 @@ from dependency_injector.wiring import Provide, Container
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.handlers.calculation_step import CalculationLink
-from package.calculation.wholesale.handlers.repository_interfaces import MeteringPointPeriodRepository, IMeteringPointPeriodRepository
+from package.calculation.wholesale.links.calculation_step import CalculationLink
+from package.calculation.wholesale.links.repository_interfaces import MeteringPointPeriodRepository, IMeteringPointPeriodRepository
 from package.codelists import TimeSeriesType, AggregationLevel
 
 from package.calculation.energy.aggregators.grid_loss_aggregators import as grid_loss_aggr

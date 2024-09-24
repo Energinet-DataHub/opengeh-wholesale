@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation.wholesale.handlers.calculation_step import (
+from package.calculation.wholesale.links.calculation_step import (
     CacheBucket,
     CalculationLink,
 )
-from package.calculation.wholesale.handlers.get_metering_point_periods_handler import (
+from package.calculation.wholesale.links.get_metering_point_periods_handler import (
     AddMeteringPointPeriodsToBucketStep,
     CalculateGridLossResponsibleStep,
 )
@@ -23,16 +23,16 @@ from package.calculation.wholesale.handlers.get_metering_point_periods_handler i
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.handlers.calculate_temporary_flex_consumption_per_es_step import (
+from package.calculation.wholesale.links.calculate_temporary_flex_consumption_per_es_step import (
     CalculateTemporaryFlexConsumptionPerEsStep,
 )
-from package.calculation.wholesale.handlers.calculation_parameters_step import (
+from package.calculation.wholesale.links.calculation_parameters_step import (
     CreateCalculationMetaDataOutputStep,
 )
-from package.calculation.wholesale.handlers.calculation_start_step import (
+from package.calculation.wholesale.links.calculation_start_step import (
     CalculationStartStep,
 )
-from package.calculation.wholesale.handlers.repository_interfaces import (
+from package.calculation.wholesale.links.repository_interfaces import (
     IMeteringPointPeriodRepository,
 )
 

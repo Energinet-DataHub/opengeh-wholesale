@@ -13,13 +13,14 @@
 # limitations under the License.
 
 
+from package.calculation.wholesale.links.calculationstep import (
+    BaseCalculationStep,
+)
+
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.handlers.calculationstep import (
-    BaseCalculationStep,
-)
-from package.calculation.wholesale.handlers.repository_interfaces import (
+from package.calculation.wholesale.links.repository_interfaces import (
     CalculationMetaData,
 )
 
@@ -44,8 +45,6 @@ class CreateCalculationMetaDataOutputStep(BaseCalculationStep):
         # Next version begins with 1 and increments by 1
         next_version = (latest_version or 0) + 1
 
-        output.calculation_meta_data = CalculationMetaData(
-            self.calculator_args
-        )
+        output.calculation_meta_data = CalculationMetaData(self.calculator_args)
 
         return output

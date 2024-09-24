@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from pyspark.sql.functions import col
 
 from package.calculation.preparation.data_structures import GridLossResponsible
-from package.calculation.wholesale.handlers.repository_interfaces import (
+from package.calculation.wholesale.links.repository_interfaces import (
     IMeteringPointPeriodRepository,
 )
 from package.constants import Colname
