@@ -10,8 +10,8 @@
 --market-role=energy_supplier
 # market-role values: datahub_administrator, energy_supplier, grid_access_provider, system_operator
 --calculation-id-by-grid-area={"804": "95bd2365-c09b-4ee7-8c25-8dd56b564811", "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"}
---task-type=hourly
-# task-type values: hourly, quarterly, rest, zip
+--task-type=hourly_time_series
+# task-type values: hourly_time_series, quarterly_time_series, zip
 
 # Optional parameters
 --energy-supplier-id=1234567890123

@@ -23,8 +23,8 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
     dbutils = get_dbutils(spark)
     report_directory = f"{get_output_volume_name()}/{args.report_id}"
 
+    log.info(f"Running task type: {args.task_type}")
     if args.task_type == TaskType.HOURLY:
-        print("running hourly task")
         hourly_time_series_files = create_time_series(
             spark,
             args,
@@ -35,7 +35,6 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
             key="hourly_time_series_files", value=hourly_time_series_files
         )
     elif args.task_type == TaskType.QUARTERLY:
-        print("running quarterly task")
         quarterly_time_series_files = create_time_series(
             spark,
             args,
@@ -45,10 +44,7 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
         dbutils.jobs.taskValues.set(
             key="quarterly_time_series_files", value=quarterly_time_series_files
         )
-    elif args.task_type == TaskType.REST:
-        print("Rest task type")
     elif args.task_type == TaskType.ZIP:
-        print("Zip task type")
         files_to_zip = []
         files_to_zip.extend(
             dbutils.jobs.taskValues.get(
@@ -66,4 +62,5 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
         create_zip_file(dbutils, args.report_id, zip_file_path, files_to_zip)
         log.info(f"Finished creating '{zip_file_path}'")
     else:
+        log.error(f"Unknown task type: {args.task_type}")
         raise ValueError(f"Unknown task type: {args.task_type}")
