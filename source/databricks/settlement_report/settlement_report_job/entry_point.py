@@ -16,6 +16,7 @@ import os
 import sys
 from argparse import Namespace
 from typing import Callable
+from pyspark.sql.session import SparkSession
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
@@ -27,23 +28,48 @@ from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_command_line_arguments,
 )
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
+from settlement_report_job.domain.task_type import TaskType
 
 
 # The start() method should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
-def start() -> None:
+def start_hourly_time_series() -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
 
-    start_with_deps(
-        applicationinsights_connection_string=applicationinsights_connection_string
+    start_task_with_deps(
+        task_type=TaskType.HOURLY_TIME_SERIES,
+        applicationinsights_connection_string=applicationinsights_connection_string,
     )
 
 
-def start_with_deps(
+def start_quarterly_time_series() -> None:
+    applicationinsights_connection_string = os.getenv(
+        "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    )
+
+    start_task_with_deps(
+        task_type=TaskType.QUARTERLY_TIME_SERIES,
+        applicationinsights_connection_string=applicationinsights_connection_string,
+    )
+
+
+def start_zip() -> None:
+    applicationinsights_connection_string = os.getenv(
+        "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    )
+
+    start_task_with_deps(
+        task_type=TaskType.ZIP,
+        applicationinsights_connection_string=applicationinsights_connection_string,
+    )
+
+
+def start_task_with_deps(
     *,
+    task_type: TaskType,
     cloud_role_name: str = "dbr-settlement-report",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
@@ -74,20 +100,33 @@ def start_with_deps(
             span.set_attributes(config.get_extras())
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            report_generator.execute(spark, args)
+            _execute_task_type(task_type, spark, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
             if e.code != 0:
-                record_exception(e, span)
+                _record_exception(e, span)
             sys.exit(e.code)
 
         except Exception as e:
-            record_exception(e, span)
+            _record_exception(e, span)
             sys.exit(4)
 
 
-def record_exception(exception: SystemExit | Exception, span: Span) -> None:
+def _execute_task_type(
+    task_type: TaskType, spark: SparkSession, args: SettlementReportArgs
+) -> None:
+    if task_type == TaskType.HOURLY_TIME_SERIES:
+        report_generator.execute_hourly_time_series(spark, args)
+    elif task_type == TaskType.QUARTERLY_TIME_SERIES:
+        report_generator.execute_quarterly_time_series(spark, args)
+    elif task_type == TaskType.ZIP:
+        report_generator.execute_zip(spark, args)
+    else:
+        raise ValueError(f"Unknown task type: {task_type}")
+
+
+def _record_exception(exception: SystemExit | Exception, span: Span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
         exception,

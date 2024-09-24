@@ -19,7 +19,7 @@ from unittest.mock import patch
 import pytest
 
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.entrypoint import (
+from settlement_report_job.entry_point import (
     parse_job_arguments,
     parse_command_line_arguments,
 )

@@ -32,7 +32,9 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "create_settlement_report = settlement_report_job.entrypoint:start",
+            "start_hourly_time_series    = settlement_report_job.entry_point:start_hourly_time_series",
+            "start_quarterly_time_series = settlement_report_job.entry_point:start_quarterly_time_series",
+            "start_zip                   = settlement_report_job.entry_point:start_zip",
         ]
     },
 )
