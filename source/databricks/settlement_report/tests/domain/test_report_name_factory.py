@@ -81,7 +81,7 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     actual = sut.create(grid_area_code, energy_supplier_id=None)
 
     # Assert
-    assert actual == f"TSSD60_123_1111111111111_DDM_01-07-2024_01-08-2024.csv"
+    assert actual == "TSSD60_123_1111111111111_DDM_01-07-2024_01-08-2024.csv"
 
 
 @pytest.mark.parametrize(

@@ -20,7 +20,7 @@ class FileNameFactory:
         self,
         grid_area_code: str,
         energy_supplier_id: str | None,
-        chunk_index: str = None,
+        chunk_index: str | None,
     ) -> str:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
@@ -33,8 +33,8 @@ class FileNameFactory:
     def _create_time_series_filename(
         self,
         grid_area_code: str,
-        energy_supplier_id: str,
-        chunk_index: str = None,
+        energy_supplier_id: str | None,
+        chunk_index: str | None,
     ) -> str:
 
         time_zone_info = ZoneInfo(self.args.time_zone)
