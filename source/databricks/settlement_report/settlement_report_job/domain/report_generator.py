@@ -4,6 +4,7 @@ from settlement_report_job.domain import time_series_writer
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.time_series_factory import create_time_series
 from settlement_report_job.infrastructure.database_definitions import (
@@ -33,7 +34,7 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
         args,
         report_directory,
         hourly_time_series_df,
-        DataProductMeteringPointResolution.HOUR,
+        ReportDataType.TimeSeriesHourly,
     )
 
     quarterly_time_series_df = create_time_series(
@@ -46,7 +47,7 @@ def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
         args,
         report_directory,
         quarterly_time_series_df,
-        DataProductMeteringPointResolution.QUARTER,
+        ReportDataType.TimeSeriesQuarterly,
     )
 
     files_to_zip = []
