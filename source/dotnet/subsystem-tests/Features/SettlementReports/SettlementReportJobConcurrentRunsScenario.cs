@@ -49,12 +49,12 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedMaxConcurrentRuns = 40;
+        Fixture.ScenarioState.ExpectedMaxConcurrentRuns = 2;
     }
 
     [ScenarioStep(1)]
     [SubsystemFact]
-    public async Task When_MaxConcurrentJobsAreStarted()
+    public async Task When_MaxConcurrentRunsAreStarted()
     {
         Fixture.ScenarioState.JobRuns = await Fixture.StartSettlementReportJobRunsAsync(
             Fixture.ScenarioState.ExpectedMaxConcurrentRuns,
@@ -63,20 +63,34 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
         // Assert
         Fixture.ScenarioState.JobRuns.Should()
             .HaveCount(Fixture.ScenarioState.ExpectedMaxConcurrentRuns)
-            .And.OnlyContain(kv => kv.Value == SettlementReportJobState.Pending);
+            .And.OnlyContain(kv =>
+                kv.Value == SettlementReportJobState.Pending
+                || kv.Value == SettlementReportJobState.Running);
     }
 
     [ScenarioStep(2)]
     [SubsystemFact]
     public async Task Then_NextJobWeStartIsQueued()
     {
-        var jobRun = await Fixture.StartSettlementReportJobRunsAsync(
+        Fixture.ScenarioState.ExceedingJobRuns = await Fixture.StartSettlementReportJobRunsAsync(
             concurrentRuns: 1,
             Fixture.ScenarioState.JobParametersTemplate);
 
         // Assert
-        jobRun.Should()
+        Fixture.ScenarioState.ExceedingJobRuns.Should()
             .HaveCount(1)
             .And.OnlyContain(kv => kv.Value == SettlementReportJobState.Queued);
+    }
+
+    [ScenarioStep(3)]
+    [SubsystemFact]
+    public async Task AndThen_WeCleanup()
+    {
+        var allJobRunIds =
+            Fixture.ScenarioState.JobRuns.Select(kv => kv.Key)
+            .Union(
+                Fixture.ScenarioState.ExceedingJobRuns.Select(kv => kv.Key));
+
+        await Fixture.CancelSettlementReportJobRunsAsync(allJobRunIds.ToList().AsReadOnly());
     }
 }

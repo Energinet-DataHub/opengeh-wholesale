@@ -32,6 +32,12 @@ public class ConcurrentRunsScenarioState
     public IReadOnlyDictionary<long, SettlementReportJobState>? JobRuns { get; set; }
 
     /// <summary>
+    /// A list of job runs (started jobs) above the <see cref="ExpectedMaxConcurrentRuns"/>.
+    /// </summary>
+    [NotNull]
+    public IReadOnlyDictionary<long, SettlementReportJobState>? ExceedingJobRuns { get; set; }
+
+    /// <summary>
     /// The expected max. concurrent runs possible.
     /// The test will try to start one more to verify that it is queued.
     /// </summary>

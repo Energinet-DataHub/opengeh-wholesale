@@ -49,6 +49,20 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
     /// </summary>
     private FilesDatabricksClient FilesDatabricksClient { get; set; } = null!;
 
+    public async Task CancelSettlementReportJobRunsAsync(IReadOnlyList<long> jobRunIds)
+    {
+        foreach (var jobRunId in jobRunIds)
+        {
+            try
+            {
+                await DatabricksClient.Jobs.RunsCancel(jobRunId);
+            }
+            catch
+            {
+            }
+        }
+    }
+
     public async Task<IReadOnlyDictionary<long, SettlementReportJobState>> StartSettlementReportJobRunsAsync(int concurrentRuns, IReadOnlyCollection<string> jobParametersTemplate)
     {
         var jobRuns = new Dictionary<long, SettlementReportJobState>();
