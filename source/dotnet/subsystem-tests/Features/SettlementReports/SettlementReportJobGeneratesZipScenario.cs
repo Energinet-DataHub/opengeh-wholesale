@@ -93,7 +93,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
         var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         // Assert
-        outputFileExists.Should().BeTrue();
+        outputFileExists.Should().BeTrue($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
     /// <summary>
