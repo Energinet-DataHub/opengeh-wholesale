@@ -1,14 +1,15 @@
 from functools import wraps
+from typing import Callable, Any
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 import package.infrastructure.logging_configuration as config
 
 
 def log_execution(
     cloud_role_name: str, applicationinsights_connection_string: str | None
-):
-    def decorator(func):
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             config.configure_logging(
                 cloud_role_name=cloud_role_name,
                 applicationinsights_connection_string=applicationinsights_connection_string,
