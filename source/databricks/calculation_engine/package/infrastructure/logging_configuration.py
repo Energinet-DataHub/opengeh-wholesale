@@ -66,7 +66,7 @@ def configure_logging(
     logging.getLogger("py4j").setLevel(logging.WARNING)
 
 
-def get_application_insights_connection_string() -> str:
+def get_application_insights_connection_string() -> str | None:
     return os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
 
 
