@@ -65,7 +65,7 @@ def execute_quarterly_time_series(
     )
 
     dbutils.jobs.taskValues.set(
-        key="hourly_time_series_files", value=quarterly_time_series_files
+        key="quarterly_time_series_files", value=quarterly_time_series_files
     )
 
 
