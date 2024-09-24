@@ -17,12 +17,12 @@ using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 
-public class SettlementReportJobScenarioState
+public class GeneratesZipScenarioState
 {
     public Guid ReportId { get; set; }
 
     [NotNull]
-    public IList<string>? JobParameters { get; set; }
+    public IReadOnlyCollection<string>? JobParameters { get; set; }
 
     /// <summary>
     /// The expected max. duration of the job.
@@ -33,7 +33,7 @@ public class SettlementReportJobScenarioState
     [NotNull]
     public string? ExpectedRelativeOutputFilePath { get; set; }
 
-    public long JobId { get; set; }
+    public long JobRunId { get; set; }
 
     [NotNull]
     public Run? Run { get; set; }
