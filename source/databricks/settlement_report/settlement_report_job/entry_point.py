@@ -35,34 +35,24 @@ from settlement_report_job.domain.task_type import TaskType
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start_hourly_time_series() -> None:
-    applicationinsights_connection_string = os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    )
-
-    start_task_with_deps(
-        task_type=TaskType.HOURLY_TIME_SERIES,
-        applicationinsights_connection_string=applicationinsights_connection_string,
-    )
+    _start_task(TaskType.HOURLY_TIME_SERIES)
 
 
 def start_quarterly_time_series() -> None:
-    applicationinsights_connection_string = os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    )
-
-    start_task_with_deps(
-        task_type=TaskType.QUARTERLY_TIME_SERIES,
-        applicationinsights_connection_string=applicationinsights_connection_string,
-    )
+    _start_task(TaskType.QUARTERLY_TIME_SERIES)
 
 
 def start_zip() -> None:
+    _start_task(TaskType.ZIP)
+
+
+def _start_task(task_type: TaskType) -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
 
     start_task_with_deps(
-        task_type=TaskType.ZIP,
+        task_type=task_type,
         applicationinsights_connection_string=applicationinsights_connection_string,
     )
 
