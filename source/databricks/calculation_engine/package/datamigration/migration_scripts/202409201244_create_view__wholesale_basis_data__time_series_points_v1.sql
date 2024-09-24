@@ -8,6 +8,10 @@ SELECT c.calculation_id,
        t.metering_point_id,
        t.quantity,
        t.quality,
-       t.observation_time
+       t.observation_time,
+       t.metering_point_type,
+       t.resolution,
+       t.grid_area_code,
+       t.energy_supplier_id
 FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_series_points as t
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = t.calculation_id 

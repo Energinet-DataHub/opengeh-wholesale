@@ -1,4 +1,4 @@
-calculation_id;calculation_type;calculation_version;metering_point_id;quantity;quality;observation_time
-0b15a420-9fc8-409a-a169-111111111111;wholesale_fixing;000000001;170000000150001000;0;calculated;2023-01-31 23:00:00
-0b15a420-9fc8-409a-a169-111111111111;wholesale_fixing;000000001;170000000150001000;0;calculated;2023-01-31 23:15:00
-0b15a420-9fc8-409a-a169-111111111111;wholesale_fixing;000000001;170000000150001000;0;calculated;2023-01-31 23:30:00
+calculation_id;calculation_type;calculation_version;metering_point_id;quantity;quality;observation_time;metering_point_type;resolution;grid_area_code;energy_supplier_id
+0b15a420-9fc8-409a-a169-111111111111;wholesale_fixing;000000001;170000000150001000;0;calculated;2023-01-31 23:00:00;production;PT15M;804;8100000000115
+0b15a420-9fc8-409a-a169-111111111111;wholesale_fixing;000000001;170000000150001000;0;calculated;2023-01-31 23:15:00;production;PT15M;804;8100000000115
+0b15a420-9fc8-409a-a169-111111111111;wholesale_fixing;000000001;170000000150001000;0;calculated;2023-01-31 23:30:00;production;PT15M;804;8100000000115
