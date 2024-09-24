@@ -76,4 +76,16 @@ public static class DatabricksClientExtensions
 
         return job.JobId;
     }
+
+    /// <summary>
+    /// Retrieve settlement report job id from databricks.
+    /// </summary>
+    public static async Task<long> GetSettlementReportJobIdAsync(this DatabricksClient databricksClient)
+    {
+        var job = await databricksClient.Jobs
+            .ListPageable(name: "SettlementReportJob")
+            .SingleAsync();
+
+        return job.JobId;
+    }
 }
