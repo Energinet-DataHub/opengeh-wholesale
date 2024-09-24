@@ -44,11 +44,13 @@ def _get_contract_parameters(filename: str) -> list[str]:
 
 
 def _substitute_market_role(sys_argv: list[str], market_role: str) -> list[str]:
-    pattern = r"--market-role=(\w+)"
+    pattern = r"--requesting-actor-market-role=(\w+)"
 
     for i, item in enumerate(sys_argv):
         if re.search(pattern, item):
-            sys_argv[i] = re.sub(pattern, f"--market-role={market_role}", item)
+            sys_argv[i] = re.sub(
+                pattern, f"--requesting-actor-market-role={market_role}", item
+            )
             break
 
     return sys_argv
