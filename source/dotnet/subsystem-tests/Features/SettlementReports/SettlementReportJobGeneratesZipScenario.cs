@@ -58,12 +58,12 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task When_JobIsStarted()
     {
-        Fixture.ScenarioState.JobId = await Fixture.StartSettlementReportJobAsync(
+        Fixture.ScenarioState.JobRunId = await Fixture.StartSettlementReportJobRunAsync(
             Fixture.ScenarioState.ReportId,
-            Fixture.ScenarioState.JobParameters.AsReadOnly());
+            Fixture.ScenarioState.JobParameters);
 
         // Assert
-        Fixture.ScenarioState.JobId.Should().BePositive();
+        Fixture.ScenarioState.JobRunId.Should().BePositive();
     }
 
     /// <summary>
@@ -75,8 +75,8 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task Then_JobIsCompletedWithinWaitTime()
     {
-        var (isCompleted, run) = await Fixture.WaitForSettlementReportJobCompletedAsync(
-            Fixture.ScenarioState.JobId,
+        var (isCompleted, run) = await Fixture.WaitForSettlementReportJobRunCompletedAsync(
+            Fixture.ScenarioState.JobRunId,
             waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(5)));
 
         Fixture.ScenarioState.Run = run;
