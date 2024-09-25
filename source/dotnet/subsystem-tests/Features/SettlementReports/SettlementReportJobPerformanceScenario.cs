@@ -106,7 +106,7 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
         Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromHours(8);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
             $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
-        Fixture.ScenarioState.ExpectedMinimumOutputFileSizeInBytes = 1; // XDAST - TODO: Update
+        Fixture.ScenarioState.ExpectedMinimumOutputFileSizeInBytes = 4000000000;
     }
 
     [ScenarioStep(1)]
@@ -146,18 +146,18 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
     [SubsystemFact]
     public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
     {
-        var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
+        Fixture.ScenarioState.OutputFileInfo = await Fixture.GetFileInfoAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         // Assert
-        outputFileExists.Should().BeTrue($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
+        Fixture.ScenarioState.OutputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
     [ScenarioStep(3)]
     [SubsystemFact]
-    public async Task AndThen_OutputFileSizeIsGreatherThan()
+    public void AndThen_OutputFileSizeIsGreatherThan()
     {
-        // XDAST - TODO: Update
-        await Task.Delay(100);
+        // Assert
+        Fixture.ScenarioState.OutputFileInfo.ContentLength.Should().BeGreaterThan(Fixture.ScenarioState.ExpectedMinimumOutputFileSizeInBytes);
     }
 
     /// <summary>

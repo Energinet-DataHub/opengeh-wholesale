@@ -33,11 +33,13 @@ public class PerformanceScenarioState
     [NotNull]
     public string? ExpectedRelativeOutputFilePath { get; set; }
 
-    [NotNull]
-    public long? ExpectedMinimumOutputFileSizeInBytes { get; set; }
+    public long ExpectedMinimumOutputFileSizeInBytes { get; set; }
 
     public long JobRunId { get; set; }
 
     [NotNull]
     public Run? Run { get; set; }
+
+    [NotNull]
+    public Fixtures.Databricks.FileInfo? OutputFileInfo { get; set; }
 }

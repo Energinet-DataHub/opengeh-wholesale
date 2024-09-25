@@ -92,10 +92,10 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
     {
-        var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
+        var outputFileInfo = await Fixture.GetFileInfoAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         // Assert
-        outputFileExists.Should().BeTrue($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
+        outputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
     /// <summary>

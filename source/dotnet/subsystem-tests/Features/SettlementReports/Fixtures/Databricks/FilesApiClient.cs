@@ -44,6 +44,9 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
             throw CreateApiException(response);
         }
 
-        return new FileInfo("x", 1, "y");
+        return new FileInfo(
+            ContentType: response.Content.Headers.ContentType?.ToString() ?? string.Empty,
+            ContentLength: response.Content.Headers.ContentLength ?? -1,
+            LastModified: response.Content.Headers.LastModified?.ToString() ?? string.Empty);
     }
 }
