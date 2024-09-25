@@ -21,6 +21,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 
+[Collection(nameof(SettlementReportJobCollectionDefinition))]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
@@ -88,7 +89,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     [SubsystemFact]
     public async Task AndThen_AllJobRunsAreRunningWithinWaitTime()
     {
-        // TODO: Wait for running state
+        // XDAST - TODO: Wait for running state
         await Task.Delay(100);
     }
 
