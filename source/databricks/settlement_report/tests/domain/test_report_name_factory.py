@@ -50,16 +50,17 @@ def test_create__when_energy_supplier__returns_expected_file_name(
     default_settlement_report_args.requesting_actor_market_role = (
         MarketRole.ENERGY_SUPPLIER
     )
-    energy_supplier = "1234567890123"
+    energy_supplier_id = "1234567890123"
     grid_area_code = "123"
     sut = FileNameFactory(report_data_type, default_settlement_report_args)
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier, chunk_index=None)
+    actual = sut.create(grid_area_code, energy_supplier_id, chunk_index=None)
 
     # Assert
     assert (
-        actual == f"{expected_pre_fix}_123_1234567890123_DDQ_01-07-2024_01-08-2024.csv"
+        actual
+        == f"{expected_pre_fix}_{grid_area_code}_{energy_supplier_id}_DDQ_01-07-2024_31-07-2024.csv"
     )
 
 
@@ -81,27 +82,27 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     actual = sut.create(grid_area_code, energy_supplier_id=None, chunk_index=None)
 
     # Assert
-    assert actual == "TSSD60_123_1111111111111_DDM_01-07-2024_01-08-2024.csv"
+    assert actual == "TSSD60_123_1111111111111_DDM_01-07-2024_31-07-2024.csv"
 
 
 @pytest.mark.parametrize(
     "market_role, energy_supplier_id, expected_file_name",
     [
-        (MarketRole.SYSTEM_OPERATOR, None, "TSSD60_123_DDM_01-07-2024_01-08-2024.csv"),
+        (MarketRole.SYSTEM_OPERATOR, None, "TSSD60_123_DDM_01-07-2024_31-07-2024.csv"),
         (
             MarketRole.DATAHUB_ADMINISTRATOR,
             None,
-            "TSSD60_123_DDM_01-07-2024_01-08-2024.csv",
+            "TSSD60_123_DDM_01-07-2024_31-07-2024.csv",
         ),
         (
             MarketRole.SYSTEM_OPERATOR,
             "1987654321123",
-            "TSSD60_123_1987654321123_DDQ_01-07-2024_01-08-2024.csv",
+            "TSSD60_123_1987654321123_DDQ_01-07-2024_31-07-2024.csv",
         ),
         (
             MarketRole.DATAHUB_ADMINISTRATOR,
             "1987654321123",
-            "TSSD60_123_1987654321123_DDQ_01-07-2024_01-08-2024.csv",
+            "TSSD60_123_1987654321123_DDQ_01-07-2024_31-07-2024.csv",
         ),
     ],
 )
@@ -144,4 +145,4 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
     )
 
     # Assert
-    assert actual == "TSSD60_123_222222222222_DDQ_01-07-2024_01-08-2024_17.csv"
+    assert actual == "TSSD60_123_222222222222_DDQ_01-07-2024_31-07-2024_17.csv"

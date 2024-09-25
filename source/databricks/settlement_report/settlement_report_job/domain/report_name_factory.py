@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from settlement_report_job.domain.market_role import MarketRole
@@ -41,8 +42,6 @@ class FileNameFactory:
         chunk_index: str | None,
     ) -> str:
 
-        time_zone_info = ZoneInfo(self.args.time_zone)
-
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code,
@@ -57,8 +56,8 @@ class FileNameFactory:
                 if energy_supplier_id is None
                 else MarketRoleInFileName.ENERGY_SUPPLIER
             ),
-            self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
-            self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
+            self._get_start_date(),
+            self._get_end_date(),
             chunk_index,
         ]
 
@@ -67,6 +66,16 @@ class FileNameFactory:
         ]
 
         return "_".join(filename_parts_without_none) + ".csv"
+
+    def _get_start_date(self) -> str:
+        time_zone_info = ZoneInfo(self.args.time_zone)
+        return self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y")
+
+    def _get_end_date(self) -> str:
+        time_zone_info = ZoneInfo(self.args.time_zone)
+        return (
+            self.args.period_end.astimezone(time_zone_info) - timedelta(days=1)
+        ).strftime("%d-%m-%Y")
 
     def _get_pre_fix(self) -> str:
         if self.report_data_type == ReportDataType.TimeSeriesHourly:
