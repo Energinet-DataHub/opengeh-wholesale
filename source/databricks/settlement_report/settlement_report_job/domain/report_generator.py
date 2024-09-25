@@ -18,49 +18,6 @@ from settlement_report_job.logger import Logger
 log = Logger(__name__)
 
 
-def execute(spark: SparkSession, args: SettlementReportArgs) -> None:
-    """
-    Entry point for the logic of creating settlement reports.
-    """
-    dbutils = get_dbutils(spark)
-    report_directory = f"{get_output_volume_name()}/{args.report_id}"
-
-    hourly_time_series_df = create_time_series(
-        spark,
-        args,
-        DataProductMeteringPointResolution.HOUR,
-    )
-    hourly_time_series_files = time_series_writer.write(
-        dbutils,
-        args,
-        report_directory,
-        hourly_time_series_df,
-        ReportDataType.TimeSeriesHourly,
-    )
-
-    quarterly_time_series_df = create_time_series(
-        spark,
-        args,
-        DataProductMeteringPointResolution.QUARTER,
-    )
-    quarterly_time_series_files = time_series_writer.write(
-        dbutils,
-        args,
-        report_directory,
-        quarterly_time_series_df,
-        ReportDataType.TimeSeriesQuarterly,
-    )
-
-    files_to_zip = []
-    files_to_zip.extend(hourly_time_series_files)
-    files_to_zip.extend(quarterly_time_series_files)
-    log.info(f"Files to zip: {files_to_zip}")
-    zip_file_path = f"{get_output_volume_name()}/{args.report_id}.zip"
-    log.info(f"Creating zip file: '{zip_file_path}'")
-    create_zip_file(dbutils, args.report_id, zip_file_path, files_to_zip)
-    log.info(f"Finished creating '{zip_file_path}'")
-
-
 def execute_hourly_time_series(spark: SparkSession, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating hourly time series.
