@@ -43,7 +43,7 @@ class FileNameFactory:
 
         time_zone_info = ZoneInfo(self.args.time_zone)
 
-        filename_parts = [
+        filename_parts = {
             self._get_pre_fix(),
             grid_area_code,
             (
@@ -60,12 +60,13 @@ class FileNameFactory:
             self.args.period_start.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             self.args.period_end.astimezone(time_zone_info).strftime("%d-%m-%Y"),
             chunk_index,
-        ]
-        filename_parts: Iterable[str] = [
-            part for part in filename_parts if part is not None
-        ]
+        }
 
-        return "_".join(filename_parts) + ".csv"
+        filename_parts_without_none = {
+            part for part in filename_parts if part is not None
+        }
+
+        return "_".join(filename_parts_without_none) + ".csv"
 
     def _get_pre_fix(self) -> str:
         if self.report_data_type == ReportDataType.TimeSeriesHourly:
