@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures.Databricks;
@@ -40,11 +39,6 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
         var request = new HttpRequestMessage(HttpMethod.Head, url);
         using var response = await HttpClient.SendAsync(request, cancellationToken);
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw CreateApiException(response);
-        }
-
-        return true;
+        return !response.IsSuccessStatusCode ? throw CreateApiException(response) : true;
     }
 }
