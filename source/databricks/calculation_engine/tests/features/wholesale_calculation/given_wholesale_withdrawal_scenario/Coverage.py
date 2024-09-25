@@ -1,69 +1,23 @@
-from test_coverage.all_test_cases import Cases
+from coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
-The purpose of this test is to check a minimal, but representative sample of all wholesale calculation results.
+The purpose is to test that we can properly withdraw wholesale results based on changes in metering_point_periods, charge_price_information_periods and charge_link_periods tables between test runs.
 
-Fees
-- Charge Masterdata
-    - 3 fees, start date before calculation period, no end date.
-
-- Charge Link Periods
-    - Fees with quantity > 1.
-    - Both a parent and a child MP has a fee.
-    - A fee that ends before end of calculation period.
-    - A fee that starts before end of calculation period, but not at the beginning of the calculation period.
-
-- Charge Price
-    - A fee charge in calculation period.
-    - A fee charge link in calculation period, but no charge price for that period (price and amount = null).
-    - A fee charge outside calculation period (no rows in results).
-
-Subscriptions
-- Charge Masterdata
-    - 3 subscriptions, start date before calculation period, no end date.
-
-- Charge Link Periods
-    - Subscription with quantity > 1.
-    - Both a parent and a child MP has a subscription.
-    - A subscription that ends before end of calculation period.
-    - A subscription that starts before end of calculation period, but not at beginning.
-
-- Charge Price
-    - Calculation period is covered by all subscription charge price periods.
-    - Includes a price point to check correct rounding.
-
-Hourly Tariffs
-- Charge Masterdata
-    - 4 tariffs, 1 of which has charge owner System Operator and is_tax = true.
-    - All start dates before calculation period, no end date.
-
-- Energy calculations
-    - Energy time series for 1 hour.
-    - That hour has positive grid loss for 3 quarters and negative grid loss for 1 quarter.
-
-- Charge Link Periods
-    - Both a parent and a child MP has a tariff.
-    - Grid Loss MP has has a tariff.
-    - System Correction MP has a tariff.
-    - A tariff that ends before end of calculation period.
-    - A tariff that starts before end of calculation period, but not at beginning.
-
-- Charge Price
-    - The charge price times match up with the energy time series (02.00 on the first day of the calculation period).
-
-Daily Tariffs
-- Charge Masterdata
-    - 4 tariffs, 2 of which has charge owner System Operator, 1 of these is_tax = true and 1 of these is_tax = false.
-    - All start dates before calculation period, no end date.
-
-- Charge Link Periods
-    - Both a parent and a child MP has a tariff.
-    - Grid Loss MP has has a tariff.
-    - System Correction MP has a tariff.
-    - A tariff that ends before end of calculation period.
-    - A tariff that starts before end of calculation period, but not at beginning.
+## DESIGN CONSIDERATIONS
+- Input data for 1st run is based on minimal standard wholesale scenario, except that grid area 111 is included in the calculation.
+- Changes between 1st and 2nd run:
+  - An MP changes energy supplier
+  - An MP changes settlement method
+  - A child MP ends in calculation period, but charge link not updated
+  - A price element is removed
+  - An MP is closed down
+- In the 2nd run, the changes are propagated to results where the appropriate result rows are marked as withdrawn based on the changes in combinations of input parameters
 
 ## CASES TESTED
 """
-Cases.CalculationTests.Typical_wholesale_scenario
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_mp_changes_es
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_mp_changes_settlement_method
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_child_mp_relation_to_parent_ends_in_period_but_chargelink_not_updated
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_price_element_disappears_but_chargelink_remains
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_price_element_disappears

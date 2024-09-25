@@ -1,4 +1,4 @@
-from coverage.all_test_cases.py import Cases
+from coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
