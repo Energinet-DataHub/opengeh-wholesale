@@ -86,3 +86,6 @@ class FileNameFactory:
             return "TSSD60"
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
+        raise NotImplementedError(
+            f"Report data type {self.report_data_type} is not supported."
+        )
