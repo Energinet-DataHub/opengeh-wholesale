@@ -1,4 +1,3 @@
-from collections.abc import Iterable
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
@@ -8,6 +7,11 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 
 
 class MarketRoleInFileName:
+    """
+    Market role identifiers used in the csv file name in the settlement report.
+    This is not the role of the requesting actor, but the role of the actor that the data is related to.
+    """
+
     ENERGY_SUPPLIER = "DDQ"
     GRID_ACCESS_PROVIDER = "DDM"
 
