@@ -45,7 +45,8 @@ def parse_job_arguments(
             period_start=job_args.period_start,
             period_end=job_args.period_end,
             calculation_type=job_args.calculation_type,
-            market_role=job_args.market_role,
+            requesting_actor_market_role=job_args.requesting_actor_market_role,
+            requesting_actor_id=job_args.requesting_actor_id,
             calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
                 job_args.calculation_id_by_grid_area
             ),
@@ -70,8 +71,10 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-start", type=valid_date, required=True)
     p.add("--period-end", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
-    p.add("--market-role", type=MarketRole, required=True)
-
+    # TODO JMG: remove market-role and make requesting_actor id and role required
+    p.add("--market-role", type=MarketRole, required=False)
+    p.add("--requesting-actor-market-role", type=MarketRole, required=False)
+    p.add("--requesting-actor-id", type=str, required=False)
     p.add("--calculation-id-by-grid-area", type=str, required=True)
     p.add("--energy-supplier-id", type=str, required=False)
     p.add(
