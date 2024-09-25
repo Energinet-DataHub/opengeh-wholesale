@@ -20,6 +20,9 @@ from settlement_report_job.domain.metering_point_resolution import (
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.database_definitions import (
+    get_report_directory,
+)
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -41,14 +44,14 @@ log = Logger(__name__)
 def write(
     dbutils: Any,
     args: SettlementReportArgs,
-    report_directory: str,
     prepared_time_series: DataFrame,
     report_data_type: ReportDataType,
 ) -> list[str]:
-    result_path = f"{report_directory}/{_get_folder_name(report_data_type)}"
+
+    report_directory = get_report_directory(args.catalog_name, args.report_id)
     headers = write_files(
         df=prepared_time_series,
-        path=result_path,
+        path=report_directory,
         partition_by_chunk_index=args.prevent_large_text_files,
         partition_by_grid_area=True,  # always true for time series
         order_by=[
@@ -60,7 +63,7 @@ def write(
     )
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
-        result_path,
+        report_directory,
         file_name_factory,
         partition_by_chunk_index=args.prevent_large_text_files,
         partition_by_grid_area=True,  # always true for time series
@@ -71,12 +74,3 @@ def write(
         headers=headers,
     )
     return files
-
-
-def _get_folder_name(report_data_type: ReportDataType) -> str:
-    if report_data_type == ReportDataType.TimeSeriesHourly:
-        return "time_series_hourly"
-    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
-        return "time_series_quarterly"
-    else:
-        raise ValueError(f"Unsupported report data type: {report_data_type}")

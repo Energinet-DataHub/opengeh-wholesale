@@ -30,7 +30,6 @@ from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_command_line_arguments,
 )
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
-from settlement_report_job.domain.task_type import TaskType
 from settlement_report_job.utils import get_dbutils
 
 

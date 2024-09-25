@@ -22,5 +22,10 @@ def get_metering_point_time_series_view_name() -> str:
     return f"{get_catalog_name()}.wholesale_settlement_reports.metering_point_time_series_v1"  # noqa: E501
 
 
-def get_output_volume_name() -> str:
-    return f"/Volumes/{get_catalog_name()}/wholesale_settlement_report_output/settlement_reports"  # noqa: E501
+def get_report_directory(catalog_name: str, report_id: str) -> str:
+    volume_path = get_output_volume_name(catalog_name)
+    return f"{volume_path}/{report_id}"  # noqa: E501
+
+
+def get_output_volume_name(catalog_name: str) -> str:
+    return f"/Volumes/{catalog_name}/wholesale_settlement_report_output/settlement_reports"  # noqa: E501
