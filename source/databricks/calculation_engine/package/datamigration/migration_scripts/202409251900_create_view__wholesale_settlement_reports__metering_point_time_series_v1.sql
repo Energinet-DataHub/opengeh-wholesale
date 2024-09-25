@@ -1,4 +1,7 @@
-CREATE OR REPLACE VIEW {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.metering_point_time_series_v1 AS
+DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.metering_point_time_series_v1
+GO
+
+CREATE VIEW {CATALOG_NAME}.{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT t.calculation_id,
        c.calculation_type as calculation_type,
        c.calculation_version,
