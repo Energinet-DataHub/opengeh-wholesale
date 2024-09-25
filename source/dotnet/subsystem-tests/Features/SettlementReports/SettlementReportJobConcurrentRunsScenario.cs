@@ -81,8 +81,8 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     }
 
     /// <summary>
-    /// It is not until a job run is actually running that the cluster is created and we can
-    /// now if we are allowed to create the VM's based on the configured quotas.
+    /// It is not until a job run is actually running that the cluster is created and we
+    /// know if we are allowed to create the VM's based on the configured quotas.
     /// </summary>
     [ScenarioStep(3)]
     [SubsystemFact]
