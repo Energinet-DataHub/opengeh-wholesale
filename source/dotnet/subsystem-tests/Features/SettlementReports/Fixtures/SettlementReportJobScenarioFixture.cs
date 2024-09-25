@@ -25,16 +25,17 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 
-public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
+public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFixtureBase
+    where TScenarioState : new()
 {
     public SettlementReportJobScenarioFixture(IMessageSink diagnosticMessageSink)
         : base(diagnosticMessageSink)
     {
         Configuration = new SettlementReportJobScenarioConfiguration();
-        ScenarioState = new GeneratesZipScenarioState();
+        ScenarioState = new TScenarioState();
     }
 
-    public GeneratesZipScenarioState ScenarioState { get; }
+    public TScenarioState ScenarioState { get; }
 
     public SettlementReportJobScenarioConfiguration Configuration { get; }
 
