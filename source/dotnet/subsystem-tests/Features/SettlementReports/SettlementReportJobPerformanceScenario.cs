@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Xunit;
@@ -22,9 +23,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture>
+public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<PerformanceScenarioState>>
 {
-    public SettlementReportJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture> lazyFixtureFactory)
+    public SettlementReportJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<PerformanceScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
