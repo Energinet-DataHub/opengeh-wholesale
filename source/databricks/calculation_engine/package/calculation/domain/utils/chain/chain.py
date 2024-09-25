@@ -99,14 +99,12 @@ class Chain:
             )
         )
 
-        get_metering_point_periods_link = GetMeteringPointPeriodsLink()
-
         end_step = CalculationLink()
 
         # Set up the calculation chain
         (
             start_link.set_next(create_calculation_meta_data_link)
-            .set_next(get_metering_point_periods_link)
+            .set_next(GetMeteringPointPeriodsLink())
             .set_next(save_calculation_meta_data_step)
             .set_next(calculate_total_energy_consumption_step)
             .set_next(calculate_non_profiled_consumption_per_es_step)
