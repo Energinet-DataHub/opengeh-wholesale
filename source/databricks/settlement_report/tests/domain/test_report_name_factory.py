@@ -151,3 +151,50 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
 
     # Assert
     assert actual == "TSSD60_123_222222222222_DDQ_01-07-2024_31-07-2024_17.csv"
+
+
+@pytest.mark.parametrize(
+    "period_start,period_end,expected_start_date,expected_end_date",
+    [
+        (
+            datetime(2024, 2, 29, 23, 0, 0),
+            datetime(2024, 3, 31, 22, 0, 0),
+            "01-03-2024",
+            "31-03-2024",
+        ),
+        (
+            datetime(2024, 9, 30, 22, 0, 0),
+            datetime(2024, 10, 31, 23, 0, 0),
+            "10-01-2024",
+            "10-31-2024",
+        ),
+    ],
+)
+def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+    period_start: datetime,
+    period_end: datetime,
+    expected_start_date: str,
+    expected_end_date: str,
+):
+    # Arrange
+    default_settlement_report_args.period_start = period_start
+    default_settlement_report_args.period_end = period_end
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
+    )
+    sut = FileNameFactory(
+        ReportDataType.TimeSeriesHourly, default_settlement_report_args
+    )
+
+    # Act
+    actual = sut.create(
+        grid_area_code="123", energy_supplier_id="222222222222", chunk_index="17"
+    )
+
+    # Assert
+    assert (
+        actual
+        == f"TSSD60_123_222222222222_DDQ_{expected_start_date}_{expected_end_date}_17.csv"
+    )
