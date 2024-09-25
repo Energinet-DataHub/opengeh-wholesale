@@ -99,7 +99,8 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
         try
         {
             var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
-            return await FilesDatabricksClient.Files.FileExistsAsync(absoluteFilePath);
+            await FilesDatabricksClient.Files.GetFileInfoAsync(absoluteFilePath);
+            return true;
         }
         catch (Exception ex)
         {

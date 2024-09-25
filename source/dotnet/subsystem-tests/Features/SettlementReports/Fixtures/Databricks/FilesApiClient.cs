@@ -32,13 +32,18 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
     }
 
     /// <inheritdoc cref="IFilesApi"/>
-    public async Task<bool> FileExistsAsync(string filePath, CancellationToken cancellationToken = default)
+    public async Task<FileInfo> GetFileInfoAsync(string filePath, CancellationToken cancellationToken = default)
     {
         var url = $"{ApiVersion}/fs/files{filePath}";
 
         var request = new HttpRequestMessage(HttpMethod.Head, url);
         using var response = await HttpClient.SendAsync(request, cancellationToken);
 
-        return !response.IsSuccessStatusCode ? throw CreateApiException(response) : true;
+        if (!response.IsSuccessStatusCode)
+        {
+            throw CreateApiException(response);
+        }
+
+        return new FileInfo("x", 1, "y");
     }
 }
