@@ -69,11 +69,12 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
+    grid_area_code = "123"
+    requesting_actor_id = "1111111111111"
     default_settlement_report_args.requesting_actor_market_role = (
         MarketRole.GRID_ACCESS_PROVIDER
     )
-    default_settlement_report_args.requesting_actor_id = "1111111111111"
-    grid_area_code = "123"
+    default_settlement_report_args.requesting_actor_id = requesting_actor_id
     sut = FileNameFactory(
         ReportDataType.TimeSeriesHourly, default_settlement_report_args
     )
@@ -82,7 +83,10 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     actual = sut.create(grid_area_code, energy_supplier_id=None, chunk_index=None)
 
     # Assert
-    assert actual == "TSSD60_123_1111111111111_DDM_01-07-2024_31-07-2024.csv"
+    assert (
+        actual
+        == f"TSSD60_{grid_area_code}_{requesting_actor_id}_DDM_01-07-2024_31-07-2024.csv"
+    )
 
 
 @pytest.mark.parametrize(
