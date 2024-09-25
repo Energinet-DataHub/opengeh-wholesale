@@ -35,7 +35,7 @@ def execute_hourly_time_series(spark: SparkSession, args: SettlementReportArgs) 
         args,
         report_directory,
         hourly_time_series_df,
-        DataProductMeteringPointResolution.HOUR,
+        ReportDataType.TimeSeriesHourly,
     )
 
     dbutils.jobs.taskValues.set(
@@ -62,7 +62,7 @@ def execute_quarterly_time_series(
         args,
         report_directory,
         quarterly_time_series_df,
-        DataProductMeteringPointResolution.QUARTER,
+        ReportDataType.TimeSeriesQuarterly,
     )
 
     dbutils.jobs.taskValues.set(
