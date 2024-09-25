@@ -35,11 +35,11 @@ from settlement_report_job.domain.task_type import TaskType
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start_hourly_time_series() -> None:
-    _start_task(report_generator.execute_zip)
+    _start_task(report_generator.execute_hourly_time_series)
 
 
 def start_quarterly_time_series() -> None:
-    _start_task(report_generator.execute_zip)
+    _start_task(report_generator.execute_quarterly_time_series)
 
 
 def start_zip() -> None:
