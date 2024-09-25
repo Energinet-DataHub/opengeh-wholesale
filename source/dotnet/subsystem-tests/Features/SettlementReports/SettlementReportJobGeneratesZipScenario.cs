@@ -40,13 +40,13 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
         Fixture.ScenarioState.JobParameters = new[]
         {
-          $"--report-id={Fixture.ScenarioState.ReportId}",
-          "--calculation-type=wholesale_fixing",
-          $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
-          "--period-start=2023-01-31T23:00:00Z",
-          "--period-end=2023-02-28T23:00:00Z",
-          "--requesting-actor-market-role=datahub_administrator",
-          "--requesting-actor-id=1234567890123",
+            $"--report-id={Fixture.ScenarioState.ReportId}",
+            "--period-start=2023-01-31T23:00:00Z",
+            "--period-end=2023-02-28T23:00:00Z",
+            "--calculation-type=wholesale_fixing",
+            "--requesting-actor-market-role=datahub_administrator",
+            "--requesting-actor-id=1234567890123",
+            $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
         };
 
         // Expectations
@@ -109,6 +109,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
             Fixture.ScenarioState.Run.EndTime - Fixture.ScenarioState.Run.StartTime;
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actualCalculationJobDuration.Should().BeGreaterThan(TimeSpan.Zero);
         actualCalculationJobDuration.Should().BeLessThanOrEqualTo(Fixture.ScenarioState.ExpectedJobTimeLimit);
     }
