@@ -167,8 +167,8 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
         (
             datetime(2024, 9, 30, 22, 0, 0),
             datetime(2024, 10, 31, 23, 0, 0),
-            "10-01-2024",
-            "10-31-2024",
+            "01-10-2024",
+            "31-10-2024",
         ),
     ],
 )
