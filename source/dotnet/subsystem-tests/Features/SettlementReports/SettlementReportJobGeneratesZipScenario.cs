@@ -44,7 +44,8 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
           $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
           "--period-start=2023-01-31T23:00:00Z",
           "--period-end=2023-02-28T23:00:00Z",
-          "--market-role=datahub_administrator",
+          "--requesting-actor-market-role=datahub_administrator",
+          "--requesting-actor-id=1234567890123",
         };
 
         // Expectations
