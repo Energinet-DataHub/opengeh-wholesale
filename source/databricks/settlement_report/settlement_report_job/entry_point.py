@@ -34,7 +34,7 @@ from settlement_report_job.domain.task_type import TaskType
 # The start() method should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
-def start_settlement_report_job() -> None:
+def start_settlement_report() -> None:
     _start_task(report_generator.execute)
 
 
