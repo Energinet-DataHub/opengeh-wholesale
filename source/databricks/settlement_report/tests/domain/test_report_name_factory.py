@@ -18,6 +18,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
         requesting_actor_id="4123456789012",
+        # The tests depend on period dates, so they cannot be any value
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
