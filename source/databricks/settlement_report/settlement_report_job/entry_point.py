@@ -16,6 +16,8 @@ import os
 import sys
 from argparse import Namespace
 from collections.abc import Callable
+from typing import Any
+
 from pyspark.sql.session import SparkSession
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
@@ -29,6 +31,7 @@ from settlement_report_job.infrastructure.settlement_report_job_args import (
 )
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
 from settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.utils import get_dbutils
 
 
 # The start_x() methods should only have its name updated in correspondence with the
@@ -47,7 +50,7 @@ def start_zip() -> None:
 
 
 def _start_task(
-    execute_task: Callable[[SparkSession, SettlementReportArgs], None]
+    execute_task: Callable[[SparkSession, Any, SettlementReportArgs], None]
 ) -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -61,7 +64,7 @@ def _start_task(
 
 def start_task_with_deps(
     *,
-    execute_task: Callable[[SparkSession, SettlementReportArgs], None],
+    execute_task: Callable[[SparkSession, Any, SettlementReportArgs], None],
     cloud_role_name: str = "dbr-settlement-report",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
@@ -92,7 +95,8 @@ def start_task_with_deps(
             span.set_attributes(config.get_extras())
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            execute_task(spark, args)
+            dbutils = get_dbutils(spark)
+            execute_task(spark, dbutils, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:

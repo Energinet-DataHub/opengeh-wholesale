@@ -1,3 +1,5 @@
+from typing import Any
+
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain import time_series_writer
@@ -18,11 +20,13 @@ from settlement_report_job.logger import Logger
 log = Logger(__name__)
 
 
-def execute_hourly_time_series(spark: SparkSession, args: SettlementReportArgs) -> None:
+def execute_hourly_time_series(
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
+) -> None:
     """
     Entry point for the logic of creating hourly time series.
     """
-    dbutils = get_dbutils(spark)
+
     report_directory = f"{get_output_volume_name()}/{args.report_id}"
 
     hourly_time_series_df = create_time_series(
@@ -44,12 +48,11 @@ def execute_hourly_time_series(spark: SparkSession, args: SettlementReportArgs) 
 
 
 def execute_quarterly_time_series(
-    spark: SparkSession, args: SettlementReportArgs
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
     """
     Entry point for the logic of creating quarterly time series.
     """
-    dbutils = get_dbutils(spark)
     report_directory = f"{get_output_volume_name()}/{args.report_id}"
 
     quarterly_time_series_df = create_time_series(
@@ -70,7 +73,7 @@ def execute_quarterly_time_series(
     )
 
 
-def execute_zip(spark: SparkSession, args: SettlementReportArgs) -> None:
+def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating the final zip file.
     """
