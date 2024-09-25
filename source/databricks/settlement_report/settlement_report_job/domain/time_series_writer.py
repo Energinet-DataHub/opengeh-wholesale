@@ -45,7 +45,7 @@ def write(
     prepared_time_series: DataFrame,
     report_data_type: ReportDataType,
 ) -> list[str]:
-    result_path = f"{report_directory}/{report_data_type.value}"
+    result_path = f"{report_directory}/{_get_folder_name(report_data_type)}"
     headers = write_files(
         df=prepared_time_series,
         path=result_path,
@@ -71,3 +71,12 @@ def write(
         headers=headers,
     )
     return files
+
+
+def _get_folder_name(report_data_type: ReportDataType) -> str:
+    if report_data_type == ReportDataType.TimeSeriesHourly:
+        return "time_series_hourly"
+    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
+        return "time_series_quarterly"
+    else:
+        raise ValueError(f"Unsupported report data type: {report_data_type}")
