@@ -31,6 +31,7 @@ class DBUtilsFixture:
     """
 
     def __init__(self):
+        self.jobs = None
         self.fs = self
         self.secrets = DBUtilsSecretsFixture()
 
