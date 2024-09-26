@@ -41,14 +41,15 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def any_settlement_report_args() -> SettlementReportArgs:
+def default_wholesale_fixing_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_id_by_grid_area={
-            "016": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373")
+            "804": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
+            "805": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
         },
         split_report_by_grid_area=True,
         prevent_large_text_files=False,

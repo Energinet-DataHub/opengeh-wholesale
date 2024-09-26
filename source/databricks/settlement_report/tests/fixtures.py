@@ -25,13 +25,29 @@ class DBUtilsSecretsFixture:
         return os.environ.get(name)
 
 
+class TaskValuesFixture:
+    def __init__(self):
+        self.values = {}
+
+    def get(self, key):
+        return self.values[key]
+
+    def set(self, key, value):
+        self.values[key] = value
+
+
+class DBUtilsJobsFixture:
+    def __init__(self):
+        self.taskValues = TaskValuesFixture()
+
+
 class DBUtilsFixture:
     """
     This class is used for mocking the behaviour of DBUtils inside tests.
     """
 
     def __init__(self):
-        self.jobs = None
+        self.jobs = DBUtilsJobsFixture()
         self.fs = self
         self.secrets = DBUtilsSecretsFixture()
 
