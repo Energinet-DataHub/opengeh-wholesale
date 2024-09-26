@@ -12,7 +12,6 @@ def test_execute_hourly_time_series(
     metering_point_time_series_written_to_delta_table: None,
 ):
     # Arrange
-    expected
 
     # Act
     execute_hourly_time_series(

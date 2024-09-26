@@ -43,10 +43,11 @@ def write(
     report_data_type: ReportDataType,
 ) -> list[str]:
 
-    report_directory = f"{args.output_volume_path}/{args.report_id}"
+    output_path = _get_output_path(args, report_data_type)
+    spark_output_path = f"{output_path}/spark_output"
     headers = write_files(
         df=prepared_time_series,
-        path=report_directory,
+        path=spark_output_path,
         partition_by_chunk_index=args.prevent_large_text_files,
         partition_by_grid_area=True,  # always true for time series
         order_by=[
@@ -58,7 +59,8 @@ def write(
     )
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
-        report_directory,
+        spark_output_path,
+        output_path,
         file_name_factory,
         partition_by_chunk_index=args.prevent_large_text_files,
         partition_by_grid_area=True,  # always true for time series
@@ -69,3 +71,16 @@ def write(
         headers=headers,
     )
     return files
+
+
+def _get_output_path(
+    args: SettlementReportArgs, report_data_type: ReportDataType
+) -> str:
+    if report_data_type == ReportDataType.TimeSeriesHourly:
+        folder_name = "hourly_time_series"
+    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
+        folder_name = "quarterly_time_series"
+    else:
+        raise ValueError(f"Unsupported report data type: {report_data_type}")
+
+    return f"{args.output_volume_path}/{args.report_id}/{folder_name}"
