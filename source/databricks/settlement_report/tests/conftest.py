@@ -41,7 +41,9 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def default_wholesale_fixing_settlement_report_args() -> SettlementReportArgs:
+def default_wholesale_fixing_settlement_report_args(
+    output_volume_path: str,
+) -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
         period_start=datetime(2024, 6, 30, 22, 0, 0),
@@ -58,6 +60,7 @@ def default_wholesale_fixing_settlement_report_args() -> SettlementReportArgs:
         energy_supplier_id="1234567890123",
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
+        output_volume_path=output_volume_path,
     )
 
 
@@ -173,6 +176,11 @@ def contracts_path(settlement_report_path: str) -> str:
 @pytest.fixture(scope="session")
 def test_files_folder_path(tests_path: str) -> str:
     return f"{tests_path}/test_files"
+
+
+@pytest.fixture(scope="session")
+def output_volume_path(data_lake_path: str) -> str:
+    return f"{data_lake_path}/output_volume"
 
 
 @pytest.fixture(scope="session")

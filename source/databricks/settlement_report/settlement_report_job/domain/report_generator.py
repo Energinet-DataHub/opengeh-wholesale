@@ -11,7 +11,7 @@ from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.time_series_factory import create_time_series
 from settlement_report_job.infrastructure.database_definitions import (
-    get_output_volume_name,
+    get_output_volume_path,
 )
 from settlement_report_job.domain.task_type import TaskType
 
@@ -89,7 +89,7 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
         )
     )
     log.info(f"Files to zip: {files_to_zip}")
-    zip_file_path = f"{get_output_volume_name(args.catalog_name)}/{args.report_id}.zip"
+    zip_file_path = f"{args.output_volume_path}/{args.report_id}.zip"
     log.info(f"Creating zip file: '{zip_file_path}'")
     create_zip_file(dbutils, args.report_id, zip_file_path, files_to_zip)
     log.info(f"Finished creating '{zip_file_path}'")

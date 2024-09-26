@@ -34,3 +34,4 @@ class SettlementReportArgs:
     prevent_large_text_files: bool
     time_zone: str
     catalog_name: str
+    output_volume_path: str

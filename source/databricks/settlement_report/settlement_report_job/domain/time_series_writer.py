@@ -14,15 +14,10 @@
 from typing import Any
 
 from pyspark.sql import DataFrame
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
-)
+
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.database_definitions import (
-    get_report_directory,
-)
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -48,7 +43,7 @@ def write(
     report_data_type: ReportDataType,
 ) -> list[str]:
 
-    report_directory = get_report_directory(args.catalog_name, args.report_id)
+    report_directory = f"{args.output_volume_path}/{args.report_id}"
     headers = write_files(
         df=prepared_time_series,
         path=report_directory,
