@@ -47,7 +47,7 @@ def any_settlement_report_args() -> SettlementReportArgs:
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
-        catalog_name="catalog_name",
+        catalog_name="spark_catalog",
         energy_supplier_id="1234567890123",
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",

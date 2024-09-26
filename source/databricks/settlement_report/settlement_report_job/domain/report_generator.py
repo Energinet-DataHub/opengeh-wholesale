@@ -15,7 +15,7 @@ from settlement_report_job.infrastructure.database_definitions import (
 )
 from settlement_report_job.domain.task_type import TaskType
 
-from settlement_report_job.utils import create_zip_file, get_dbutils
+from settlement_report_job.utils import create_zip_file
 from settlement_report_job.logger import Logger
 
 log = Logger(__name__)
