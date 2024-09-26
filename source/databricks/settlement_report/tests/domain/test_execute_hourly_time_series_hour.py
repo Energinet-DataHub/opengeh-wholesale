@@ -8,13 +8,15 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 def test_execute_hourly_time_series(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    any_settlement_report_args: SettlementReportArgs,
+    default_wholesale_fixing_settlement_report_args: SettlementReportArgs,
     metering_point_time_series_written_to_delta_table: None,
 ):
     # Arrange
-    dbutils.jobs.taskValues.set = MagicMock()
 
     # Act
-    execute_hourly_time_series(spark, dbutils, any_settlement_report_args)
+    execute_hourly_time_series(
+        spark, dbutils, default_wholesale_fixing_settlement_report_args
+    )
 
     # Assert
+    print(dbutils.jobs.taskValues.get("hourly_time_series_files"))
