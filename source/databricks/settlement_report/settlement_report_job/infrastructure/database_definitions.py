@@ -14,12 +14,14 @@
 from settlement_report_job.infrastructure.environment_variables import get_catalog_name
 
 
-def get_energy_view_name() -> str:
-    return f"{get_catalog_name()}.wholesale_results.energy_v1"  # noqa: E501
+class WholesaleSettlementReportDatabase:
+    DATABASE_NAME = "wholesale_settlement_reports"
+    METERING_POINT_TIME_SERIES_VIEW_NAME = "metering_point_time_series_v1"
 
 
-def get_metering_point_time_series_view_name() -> str:
-    return f"{get_catalog_name()}.wholesale_settlement_reports.metering_point_time_series_v1"  # noqa: E501
+class WholesaleWholesaleResultsDatabase:
+    DATABASE_NAME = "wholesale_results"
+    ENERGY_V1_VIEW_NAME = "energy_v1"
 
 
 def get_output_volume_name() -> str:
