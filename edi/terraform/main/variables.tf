@@ -116,3 +116,9 @@ variable "enable_audit_logs" {
   type        = bool
   description = "Should audit logs be enabled for the environment?"
 }
+
+variable "create_azure_load_testing_resource" {
+  type        = bool
+  description = "Should an Azure Load Testing resource be created for the environment?"
+  default     = false
+}
