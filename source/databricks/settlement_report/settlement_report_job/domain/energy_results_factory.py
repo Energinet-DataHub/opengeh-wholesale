@@ -13,15 +13,12 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.session import SparkSession
 import pyspark.sql.functions as F
 
 
 import settlement_report_job.domain.report_naming_convention as market_naming
+from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.database_definitions import (
-    get_energy_view_name,
-)
 
 from settlement_report_job.infrastructure.column_names import (
     EnergyResultsCsvColumnNames,
@@ -31,11 +28,11 @@ from settlement_report_job.utils import map_from_dict
 
 
 def create_energy_results(
-    spark: SparkSession,
     args: SettlementReportArgs,
+    repository: WholesaleRepository,
 ) -> DataFrame:
 
-    energy = _read_and_filter_from_view(spark, args, get_energy_view_name())
+    energy = _read_and_filter_from_view(args, repository)
 
     # return relevant columns with market naming convention
     return energy.select(
@@ -62,11 +59,9 @@ def create_energy_results(
 
 
 def _read_and_filter_from_view(
-    spark: SparkSession, args: SettlementReportArgs, view_name: str
+    args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
-    df = spark.read.table(view_name)
-
-    df = df.where(
+    df = repository.read_energy().where(
         (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
     )
