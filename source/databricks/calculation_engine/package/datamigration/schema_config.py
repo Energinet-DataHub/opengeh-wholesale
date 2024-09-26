@@ -178,4 +178,28 @@ schema_config = [
             ),
         ],
     ),
+    Schema(
+        name=paths.WholesaleBasisDataDatabase,
+        tables=[],
+        views=[
+            View(
+                name=paths.WholesaleBasisDataDatabase.CHARGE_LINK_PERIODS_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleBasisDataDatabase.CHARGE_PRICE_POINTS_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleBasisDataDatabase.GRID_LOSS_METERING_POINTS_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleBasisDataDatabase.METERING_POINT_PERIODS_VIEW_NAME,
+            ),
+            View(
+                name=paths.WholesaleBasisDataDatabase.TIME_SERIES_POINTS_VIEW_NAME,
+            ),
+        ],
+    ),
 ]
