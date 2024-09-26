@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures.Databricks;
 
-public record FileInfo(string ContentType, long ContentLength, string LastModified);
+public record FileInfo(string ContentType, long ContentLength, DateTimeOffset? LastModified);
