@@ -23,6 +23,7 @@ from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
+from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     EphemeralColumns,
@@ -145,7 +146,7 @@ def write_files(
 
 def get_new_files(
     result_path: str,
-    file_name_template: str,
+    file_name_factory: FileNameFactory,
     partition_by_chunk_index: bool,
     partition_by_grid_area: bool,
 ) -> list[TmpFile]:
@@ -153,9 +154,7 @@ def get_new_files(
 
     Args:
         result_path (str): The path where the files are written.
-        file_name_template (str): The template for the new file names. The template
-            should contain two placeholders for the {grid_area} and {split}.
-            For example: "TSSD1H-{grid_area}-{split}.csv"
+        file_name_factory (FileNameFactory): Factory class for creating file names for the csv files.
         partition_by_chunk_index (bool): Whether the files are split or not.
         partition_by_grid_area (bool): Whether the files are split by grid area or not.
 
@@ -180,10 +179,10 @@ def get_new_files(
 
         groups = partition_match.groups()
         grid_area = groups[0]
-        chunk_index = groups[1] if len(groups) > 1 else "0"
-        file_name = (
-            file_name_template.format(grid_area=grid_area, chunk_index=chunk_index)
-            + ".csv"
+        chunk_index = groups[1] if len(groups) > 1 else None
+
+        file_name = file_name_factory.create(
+            grid_area, energy_supplier_id=None, chunk_index=chunk_index
         )
         new_name = Path(result_path) / file_name
         tmp_dst = Path("/tmp") / file_name
