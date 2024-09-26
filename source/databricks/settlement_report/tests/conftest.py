@@ -58,18 +58,16 @@ def any_settlement_report_args() -> SettlementReportArgs:
 
 
 @pytest.fixture(scope="session")
-def metering_point_periods_written_to_delta_table(spark: SparkSession) -> str:
-    table_name = "metering_point_periods"
-    file_name = ""
+def metering_point_periods_written_to_delta_table(
+    spark: SparkSession, input_database_location: str
+) -> None:
     _write_input_test_data_to_table(
         spark,
         file_name,
         database_definitions.WholesaleWholesaleResultsDatabase.DATABASE_NAME,
         database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
-        table_location=f"{calculation_input_path}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
+        table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
     )
-
-    return table_name
 
 
 def _write_input_test_data_to_table(
@@ -165,6 +163,21 @@ def contracts_path(settlement_report_path: str) -> str:
     actually located in a file located directly in the tests folder.
     """
     return f"{settlement_report_path}/contracts"
+
+
+@pytest.fixture(scope="session")
+def test_files_folder_path(tests_path: str) -> str:
+    return f"{tests_path}/test_files"
+
+
+@pytest.fixture(scope="session")
+def input_database_location(data_lake_path: str) -> str:
+    return f"{data_lake_path}/input_database"
+
+
+@pytest.fixture(scope="session")
+def data_lake_path(tests_path: str, worker_id: str) -> str:
+    return f"{tests_path}/__data_lake__/{worker_id}"
 
 
 @pytest.fixture(scope="session")
