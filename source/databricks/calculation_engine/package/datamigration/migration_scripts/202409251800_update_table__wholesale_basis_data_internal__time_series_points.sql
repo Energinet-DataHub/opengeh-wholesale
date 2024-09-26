@@ -4,11 +4,11 @@ MERGE INTO {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_ser
         *,
         ROW_NUMBER() OVER (PARTITION BY calculation_id, metering_point_id, from_date, to_date ORDER BY energy_supplier_id) AS row_num
     FROM
-        (SELECT DISTINCT * FROM ctl_shres_d_we_003.wholesale_basis_data_internal.metering_point_periods)
+        (SELECT DISTINCT * FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods))
     WHERE
         calculation_id IN (
             SELECT calculation_id
-            FROM ctl_shres_d_we_003.wholesale_basis_data_internal.metering_point_periods
+            FROM (SELECT DISTINCT * FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods)
             GROUP BY calculation_id, metering_point_id, from_date, to_date
             HAVING COUNT(DISTINCT energy_supplier_id) > 1
         )
@@ -19,6 +19,7 @@ FROM
     ranked_rows
 WHERE
     row_num = 1) AS m
+USING (SELECT DISTINCT(*) FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods) AS m
 ON t.calculation_id = m.calculation_id
    AND t.metering_point_id = m.metering_point_id
    AND t.observation_time >= m.from_date
