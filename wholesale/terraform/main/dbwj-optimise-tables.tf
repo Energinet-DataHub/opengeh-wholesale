@@ -2,7 +2,6 @@ resource "databricks_job" "optimise_tables_job" {
   provider            = databricks.dbw
   name                = "OptimiseTablesJob"
   max_concurrent_runs = 1
-  always_running      = false
 
   task {
     task_key    = "optimise_tables_job_${uuid()}"
@@ -23,14 +22,14 @@ resource "databricks_job" "optimise_tables_job" {
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
       }
       spark_env_vars = {
-        "TENANT_ID"                         = var.tenant_id,
-        "SPN_APP_ID"                        = databricks_secret.spn_app_id.config_reference
-        "SPN_APP_SECRET"                    = databricks_secret.spn_app_secret.config_reference
-        "DATA_STORAGE_ACCOUNT_NAME"         = data.azurerm_key_vault_secret.st_data_lake_name.value
-        "TIME_ZONE"                         = local.TIME_ZONE
-        "CATALOG_NAME"                      = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-        "CALCULATION_INPUT_FOLDER_NAME"     = var.calculation_input_folder
-        "CALCULATION_INPUT_DATABASE_NAME"   = var.calculation_input_database
+        "TENANT_ID"                       = var.tenant_id,
+        "SPN_APP_ID"                      = databricks_secret.spn_app_id.config_reference
+        "SPN_APP_SECRET"                  = databricks_secret.spn_app_secret.config_reference
+        "DATA_STORAGE_ACCOUNT_NAME"       = data.azurerm_key_vault_secret.st_data_lake_name.value
+        "TIME_ZONE"                       = local.TIME_ZONE
+        "CATALOG_NAME"                    = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+        "CALCULATION_INPUT_FOLDER_NAME"   = var.calculation_input_folder
+        "CALCULATION_INPUT_DATABASE_NAME" = var.calculation_input_database
       }
     }
 
@@ -44,11 +43,11 @@ resource "databricks_job" "optimise_tables_job" {
       entry_point = "optimize_delta_tables"
     }
   }
-  
+
   schedule {
     quartz_cron_expression = "0 0 20 ? * *"
-    timezone_id = "UTC"
-	pause_status = "UNPAUSED"
+    timezone_id            = "UTC"
+    pause_status           = "UNPAUSED"
   }
 
   email_notifications {
