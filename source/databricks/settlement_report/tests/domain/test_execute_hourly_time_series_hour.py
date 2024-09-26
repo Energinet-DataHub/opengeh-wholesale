@@ -9,6 +9,7 @@ def test_execute_hourly_time_series(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     any_settlement_report_args: SettlementReportArgs,
+    metering_point_time_series_written_to_delta_table: None,
 ):
     # Arrange
     # dbutils.jobs.taskValues.set = MagicMock()
