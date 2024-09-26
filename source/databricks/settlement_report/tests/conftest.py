@@ -27,6 +27,9 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 from tests.fixtures import DBUtilsFixture
 
 from settlement_report_job.infrastructure import database_definitions
+from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
+    metering_point_time_series_v1,
+)
 
 
 @pytest.fixture(scope="session")
@@ -58,15 +61,16 @@ def any_settlement_report_args() -> SettlementReportArgs:
 
 
 @pytest.fixture(scope="session")
-def metering_point_periods_written_to_delta_table(
-    spark: SparkSession, input_database_location: str
+def metering_point_time_series_written_to_delta_table(
+    spark: SparkSession, input_database_location: str, test_files_folder_path: str
 ) -> None:
     _write_input_test_data_to_table(
         spark,
-        file_name,
-        database_definitions.WholesaleWholesaleResultsDatabase.DATABASE_NAME,
-        database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
+        file_name=f"{test_files_folder_path}/metering_point_time_series_v1.csv",
+        database_name=database_definitions.WholesaleWholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
         table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
+        schema=metering_point_time_series_v1,
     )
 
 
