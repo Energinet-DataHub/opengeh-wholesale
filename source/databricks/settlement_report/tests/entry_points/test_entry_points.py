@@ -38,7 +38,9 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
 @pytest.mark.parametrize(
     "entry_point_name",
     [
-        "create_settlement_report",
+        "create_hourly_time_series",
+        "create_quarterly_time_series",
+        "create_zip",
     ],
 )
 def test__installed_package__can_load_entry_point(
