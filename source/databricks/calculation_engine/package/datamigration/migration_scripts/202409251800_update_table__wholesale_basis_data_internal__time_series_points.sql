@@ -1,5 +1,5 @@
 MERGE INTO {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_series_points AS t
-USING {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods AS m
+USING (SELECT DISTINCT(*) FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods) AS m
 ON t.calculation_id = m.calculation_id
    AND t.metering_point_id = m.metering_point_id
    AND t.observation_time >= m.from_date
