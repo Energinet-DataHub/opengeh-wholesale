@@ -1,18 +1,16 @@
-data "azurerm_mssql_server" "mssqlsrv" {
-  name                = data.azurerm_key_vault_secret.mssql_data_name.value
-  resource_group_name = data.azurerm_resource_group.shared.name
-}
-
 module "mssqldb_edi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_6.0.0"
 
   name                 = "edi"
   location             = azurerm_resource_group.this.location
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
-  server_id            = data.azurerm_mssql_server.mssqlsrv.id
-  sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
+
+  server = {
+    name                = data.azurerm_key_vault_secret.mssql_data_name.value
+    resource_group_name = data.azurerm_resource_group.shared.name
+  }
 
   # Find available SKU's for "single database" (not pooled) here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql
   sku_name                    = "GP_S_Gen5_12" # General Purpose (GP) - serverless compute (S) - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1

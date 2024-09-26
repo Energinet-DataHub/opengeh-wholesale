@@ -1,7 +1,7 @@
 module "mssql_database_application_access" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_4.0.1"
 
-  sql_server_name = data.azurerm_mssql_server.mssqlsrv.name
+  sql_server_name = module.mssqldb_edi.server_name
   database_name   = module.mssqldb_edi.name
   application_hosts_names = [
     module.func_receiver.name,
