@@ -12,6 +12,7 @@ def test_execute_hourly_time_series__when_default_wholesale_scenario__returns_ex
     metering_point_time_series_written_to_delta_table: None,
 ):
     # Arrange
+    expected_file_count = 2
 
     # Act
     execute_hourly_time_series(
@@ -20,4 +21,4 @@ def test_execute_hourly_time_series__when_default_wholesale_scenario__returns_ex
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
-    assert len(actual_files) == 2
+    assert len(actual_files) == expected_file_count
