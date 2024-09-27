@@ -25,6 +25,6 @@ public interface IFilesApi : IDisposable
     /// </summary>
     /// <param name="filePath">The absolute path of the file. Example: "/Volumes/my-catalog/my-schema/my-volume/directory/file.txt"</param>
     /// <param name="cancellationToken"></param>
-    /// <returns><see langword="true"/> if we can get metadata for the file; otherwise throws an exception.</returns>
-    Task<bool> FileExistsAsync(string filePath, CancellationToken cancellationToken = default);
+    /// <returns>File information if we can get metadata for the file; otherwise throws an exception.</returns>
+    Task<FileInfo> GetFileInfoAsync(string filePath, CancellationToken cancellationToken = default);
 }
