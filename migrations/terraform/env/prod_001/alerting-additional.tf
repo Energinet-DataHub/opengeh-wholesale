@@ -27,35 +27,6 @@ resource "azurerm_monitor_metric_alert" "dropzoneunzipper_mp_metric_alert" {
   window_size = "P1D"
 }
 
-resource "azurerm_monitor_metric_alert" "dropzoneunzipper_ch_metric_alert" {
-  name                = "alert-dropzoneunzipper-not-received-ch-metric-${local.resources_suffix}"
-  resource_group_name = azurerm_resource_group.this.name
-  scopes              = [azurerm_eventgrid_system_topic.st_dh2data.id]
-  description         = "Triggers if there has been no CH data received within the last 24 hours"
-  severity            = 1
-  enabled             = true
-
-  criteria {
-    metric_namespace = "Microsoft.EventGrid/systemTopics"
-    metric_name      = "DeliverySuccessCount"
-    aggregation      = "Count"
-    operator         = "LessThanOrEqual"
-    threshold        = 0
-    dimension {
-      name     = "EventSubscriptionName"
-      operator = "Include"
-      values   = [azurerm_eventgrid_system_topic_event_subscription.dh2data_charges.name]
-    }
-  }
-
-  action {
-    action_group_id = module.monitor_action_group_mig[0].id
-  }
-
-  frequency   = "PT1H"
-  window_size = "P1D"
-}
-
 resource "azurerm_monitor_metric_alert" "dropzoneunzipper_cl_metric_alert" {
   name                = "alert-dropzoneunzipper-not-received-cl-metric-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
