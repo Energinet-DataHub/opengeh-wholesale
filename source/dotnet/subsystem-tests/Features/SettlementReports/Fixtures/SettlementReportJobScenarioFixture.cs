@@ -22,19 +22,21 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
+using FileInfo = Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures.Databricks.FileInfo;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 
-public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
+public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFixtureBase
+    where TScenarioState : new()
 {
     public SettlementReportJobScenarioFixture(IMessageSink diagnosticMessageSink)
         : base(diagnosticMessageSink)
     {
         Configuration = new SettlementReportJobScenarioConfiguration();
-        ScenarioState = new SettlementReportJobScenarioState();
+        ScenarioState = new TScenarioState();
     }
 
-    public SettlementReportJobScenarioState ScenarioState { get; }
+    public TScenarioState ScenarioState { get; }
 
     public SettlementReportJobScenarioConfiguration Configuration { get; }
 
@@ -48,10 +50,10 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
     /// </summary>
     private FilesDatabricksClient FilesDatabricksClient { get; set; } = null!;
 
-    public async Task<long> StartSettlementReportJobAsync(Guid reportId, IReadOnlyList<string> settlementReportJobParameters)
+    public async Task<long> StartSettlementReportJobRunAsync(Guid reportId, IReadOnlyCollection<string> jobParameters)
     {
         var settlementReportJobId = await DatabricksClient.GetSettlementReportJobIdAsync();
-        var runParameters = RunParameters.CreatePythonParams(settlementReportJobParameters);
+        var runParameters = RunParameters.CreatePythonParams(jobParameters);
 
         var runId = await DatabricksClient
             .Jobs
@@ -62,18 +64,18 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
         return runId;
     }
 
-    public async Task<(bool IsCompleted, Run? Run)> WaitForSettlementReportJobCompletedAsync(
-        long settlementReportJobId,
+    public async Task<(bool IsCompleted, Run? Run)> WaitForSettlementReportJobRunCompletedAsync(
+        long runId,
         TimeSpan waitTimeLimit)
     {
-        var delay = TimeSpan.FromMinutes(2);
+        var delay = TimeSpan.FromMinutes(1);
 
         (Run, RepairHistory) runState = default;
         SettlementReportJobState? settlementReportJobState = SettlementReportJobState.Pending;
         var isCondition = await Awaiter.TryWaitUntilConditionAsync(
             async () =>
             {
-                runState = await DatabricksClient.Jobs.RunsGet(settlementReportJobId);
+                runState = await DatabricksClient.Jobs.RunsGet(runId);
                 settlementReportJobState = ConvertToSettlementReportJobState(runState.Item1);
 
                 return
@@ -84,26 +86,27 @@ public sealed class SettlementReportJobScenarioFixture : LazyFixtureBase
             waitTimeLimit,
             delay);
 
-        DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'SettlementReportJob' with id '{settlementReportJobId}' completed with '{nameof(isCondition)}={isCondition}' and '{nameof(settlementReportJobState)}={settlementReportJobState}'.");
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'SettlementReportJob' with run id '{runId}' completed with '{nameof(isCondition)}={isCondition}' and '{nameof(settlementReportJobState)}={settlementReportJobState}'.");
 
         return (settlementReportJobState == SettlementReportJobState.Completed, runState.Item1);
     }
 
     /// <summary>
-    /// Determine if a file exists in the Databricks Catalogue.
+    /// Get file information for at file in the Databricks Catalogue.
     /// </summary>
     /// <param name="relativeFilePath">File path relative to the Databricks Catalogue root configured per environment.</param>
-    public async Task<bool> FileExistsAsync(string relativeFilePath)
+    /// <returns>File information if file exists; otherwise null.</returns>
+    public async Task<FileInfo?> GetFileInfoAsync(string relativeFilePath)
     {
         try
         {
             var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
-            return await FilesDatabricksClient.Files.FileExistsAsync(absoluteFilePath);
+            return await FilesDatabricksClient.Files.GetFileInfoAsync(absoluteFilePath);
         }
         catch (Exception ex)
         {
             DiagnosticMessageSink.WriteDiagnosticMessage($"File exists failed with exception: {ex}.");
-            return false;
+            return null;
         }
     }
 
