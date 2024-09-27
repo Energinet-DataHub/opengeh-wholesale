@@ -44,6 +44,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
       selector       = "variables."
     }
 
+    # Exclude GraphQL body payloads from evaluation, as WAF blocks false positives
+    exclusion {
+      match_variable = "RequestBodyJsonArgNames"
+      operator       = "Equals"
+      selector       = "query"
+    }
+
     override {
       rule_group_name = "PROTOCOL-ENFORCEMENT"
       # Missing User Agent Header, not sent from BizTalk
