@@ -76,8 +76,8 @@ def write(
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
     if report_data_type == ReportDataType.TimeSeriesHourly:
-        return "hourly_time_series"
+        return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
-        return "quarterly_time_series"
+        return "time_series_quarterly"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
