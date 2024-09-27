@@ -11,6 +11,10 @@ terraform {
       source  = "scottwinkler/shell"
       version = "1.7.10"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "2.47.0"
+    }
   }
 }
 

@@ -3,7 +3,7 @@ terraform {
     # It is recommended to pin to a given version of the Azure provider
     azurerm = "3.113.0"
 
-    azuread = "2.39.0"
+    azuread = "2.47.0"
 
     azapi = {
       source  = "Azure/azapi"
