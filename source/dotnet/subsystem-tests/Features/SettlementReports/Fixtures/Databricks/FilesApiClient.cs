@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures.Databricks;
@@ -33,7 +32,7 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
     }
 
     /// <inheritdoc cref="IFilesApi"/>
-    public async Task<bool> FileExistsAsync(string filePath, CancellationToken cancellationToken = default)
+    public async Task<FileInfo> GetFileInfoAsync(string filePath, CancellationToken cancellationToken = default)
     {
         var url = $"{ApiVersion}/fs/files{filePath}";
 
@@ -45,6 +44,9 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
             throw CreateApiException(response);
         }
 
-        return true;
+        return new FileInfo(
+            ContentType: response.Content.Headers.ContentType?.ToString() ?? string.Empty,
+            ContentLength: response.Content.Headers.ContentLength ?? -1,
+            LastModified: response.Content.Headers.LastModified);
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
@@ -24,9 +25,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture>
+public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>>
 {
-    public SettlementReportJobGeneratesZipScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture> lazyFixtureFactory)
+    public SettlementReportJobGeneratesZipScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
@@ -39,13 +40,13 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
         Fixture.ScenarioState.JobParameters = new[]
         {
-          $"--report-id={Fixture.ScenarioState.ReportId}",
-          "--calculation-type=wholesale_fixing",
-          $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
-          "--period-start=2023-01-31T23:00:00Z",
-          "--period-end=2023-02-28T23:00:00Z",
-          "--requesting-actor-market-role=datahub_administrator",
-          "--requesting-actor-id=1234567890123",
+            $"--report-id={Fixture.ScenarioState.ReportId}",
+            "--period-start=2023-01-31T23:00:00Z",
+            "--period-end=2023-02-28T23:00:00Z",
+            "--calculation-type=wholesale_fixing",
+            "--requesting-actor-market-role=datahub_administrator",
+            "--requesting-actor-id=1234567890123",
+            $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
         };
 
         // Expectations
@@ -58,12 +59,12 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task When_JobIsStarted()
     {
-        Fixture.ScenarioState.JobId = await Fixture.StartSettlementReportJobAsync(
+        Fixture.ScenarioState.JobRunId = await Fixture.StartSettlementReportJobRunAsync(
             Fixture.ScenarioState.ReportId,
-            Fixture.ScenarioState.JobParameters.AsReadOnly());
+            Fixture.ScenarioState.JobParameters);
 
         // Assert
-        Fixture.ScenarioState.JobId.Should().BePositive();
+        Fixture.ScenarioState.JobRunId.Should().BePositive();
     }
 
     /// <summary>
@@ -75,8 +76,8 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task Then_JobIsCompletedWithinWaitTime()
     {
-        var (isCompleted, run) = await Fixture.WaitForSettlementReportJobCompletedAsync(
-            Fixture.ScenarioState.JobId,
+        var (isCompleted, run) = await Fixture.WaitForSettlementReportJobRunCompletedAsync(
+            Fixture.ScenarioState.JobRunId,
             waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(5)));
 
         Fixture.ScenarioState.Run = run;
@@ -91,10 +92,10 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     [SubsystemFact]
     public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
     {
-        var outputFileExists = await Fixture.FileExistsAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
+        var outputFileInfo = await Fixture.GetFileInfoAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         // Assert
-        outputFileExists.Should().BeTrue($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
+        outputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
     /// <summary>
@@ -108,6 +109,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
             Fixture.ScenarioState.Run.EndTime - Fixture.ScenarioState.Run.StartTime;
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actualCalculationJobDuration.Should().BeGreaterThan(TimeSpan.Zero);
         actualCalculationJobDuration.Should().BeLessThanOrEqualTo(Fixture.ScenarioState.ExpectedJobTimeLimit);
     }
