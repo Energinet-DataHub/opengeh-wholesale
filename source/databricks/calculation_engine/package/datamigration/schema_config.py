@@ -179,7 +179,7 @@ schema_config = [
         ],
     ),
     Schema(
-        name=paths.WholesaleBasisDataDatabase,
+        name=paths.WholesaleBasisDataDatabase.DATABASE_NAME,
         tables=[],
         views=[
             View(
