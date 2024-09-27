@@ -111,6 +111,8 @@ class ViewColumns:
             False,
         ),
     )
+
+    # Quantity can be an integer or decimal depending on the context.
     quantity = Column("quantity", DecimalType(18, 3))
     quantity_qualities = Column("quantity_qualities", ArrayType(StringType(), True))
     quantity_unit = Column("quantity_unit", StringType())

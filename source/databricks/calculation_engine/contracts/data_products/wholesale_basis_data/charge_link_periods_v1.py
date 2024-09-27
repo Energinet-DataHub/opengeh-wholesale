@@ -26,7 +26,8 @@ charge_link_periods_v1 = t.StructType(
         # GSRN number
         t.StructField("metering_point_id", t.StringType(), not nullable),
         #
-        t.StructField("quantity", t.DecimalType(18, 6), not nullable),
+        # The original type is integer, but in some contexts the quantity type is decimal.
+        t.StructField("quantity", t.IntegerType(), not nullable),
         #
         # UTC time
         t.StructField("from_date", t.TimestampType(), not nullable),

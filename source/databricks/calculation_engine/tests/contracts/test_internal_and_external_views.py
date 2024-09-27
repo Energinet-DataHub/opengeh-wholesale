@@ -118,7 +118,7 @@ def _assert_name_and_data_type(column_name: str, df: DataFrame) -> None:
     actual_type = actual_schema.dataType
 
     # Because quantity can be a DecimalType or IntegerType depending on context the following check is necessary.
-    if column_name == "quantity":
+    if column_name == ViewColumns.quantity.name:
         if expected_type == actual_type or actual_type == IntegerType():
             return
 
