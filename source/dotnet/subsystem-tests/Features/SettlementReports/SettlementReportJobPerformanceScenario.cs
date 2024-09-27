@@ -103,7 +103,7 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromHours(8);
+        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromHours(2);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
             $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
         Fixture.ScenarioState.ExpectedMinimumOutputFileSizeInBytes = 4000000000;
