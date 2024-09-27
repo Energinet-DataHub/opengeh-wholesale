@@ -12,8 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Azure.Databricks.Client.Models;
+
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 
 public class PerformanceScenarioState
 {
+    public Guid ReportId { get; set; }
+
+    [NotNull]
+    public IReadOnlyCollection<string>? JobParameters { get; set; }
+
+    /// <summary>
+    /// The expected max. duration of the job.
+    /// Use this to monitor (set expectations for) the performance of the job.
+    /// </summary>
+    public TimeSpan ExpectedJobTimeLimit { get; internal set; }
+
+    [NotNull]
+    public string? ExpectedRelativeOutputFilePath { get; set; }
+
+    public long ExpectedMinimumOutputFileSizeInBytes { get; set; }
+
+    public long JobRunId { get; set; }
+
+    [NotNull]
+    public Run? Run { get; set; }
+
+    [NotNull]
+    public Fixtures.Databricks.FileInfo? OutputFileInfo { get; set; }
 }

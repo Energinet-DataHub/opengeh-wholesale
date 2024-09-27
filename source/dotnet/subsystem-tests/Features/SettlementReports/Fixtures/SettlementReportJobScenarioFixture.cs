@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
+using FileInfo = Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures.Databricks.FileInfo;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 
@@ -49,7 +50,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
     /// </summary>
     private FilesDatabricksClient FilesDatabricksClient { get; set; } = null!;
 
-    public async Task CancelSettlementReportJobRunsAsync(IReadOnlyList<long> jobRunIds)
+    public async Task CancelSettlementReportJobRunsAsync(IReadOnlyCollection<long> jobRunIds)
     {
         foreach (var jobRunId in jobRunIds)
         {
@@ -125,20 +126,21 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
     }
 
     /// <summary>
-    /// Determine if a file exists in the Databricks Catalogue.
+    /// Get file information for at file in the Databricks Catalogue.
     /// </summary>
     /// <param name="relativeFilePath">File path relative to the Databricks Catalogue root configured per environment.</param>
-    public async Task<bool> FileExistsAsync(string relativeFilePath)
+    /// <returns>File information if file exists; otherwise null.</returns>
+    public async Task<FileInfo?> GetFileInfoAsync(string relativeFilePath)
     {
         try
         {
             var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
-            return await FilesDatabricksClient.Files.FileExistsAsync(absoluteFilePath);
+            return await FilesDatabricksClient.Files.GetFileInfoAsync(absoluteFilePath);
         }
         catch (Exception ex)
         {
             DiagnosticMessageSink.WriteDiagnosticMessage($"File exists failed with exception: {ex}.");
-            return false;
+            return null;
         }
     }
 

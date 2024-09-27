@@ -11,18 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.infrastructure.environment_variables import get_catalog_name
+
+from enum import Enum
 
 
-class WholesaleSettlementReportDatabase:
-    DATABASE_NAME = "wholesale_settlement_reports"
-    METERING_POINT_TIME_SERIES_VIEW_NAME = "metering_point_time_series_v1"
+class ReportDataType(Enum):
+    """
+    Types of data that can be included in a settlement report.
+    Used to distinguish between different types of data in the report.
+    """
 
-
-class WholesaleWholesaleResultsDatabase:
-    DATABASE_NAME = "wholesale_results"
-    ENERGY_V1_VIEW_NAME = "energy_v1"
-
-
-def get_output_volume_name() -> str:
-    return f"/Volumes/{get_catalog_name()}/wholesale_settlement_report_output/settlement_reports"  # noqa: E501
+    TimeSeriesHourly = 1
+    TimeSeriesQuarterly = 2
