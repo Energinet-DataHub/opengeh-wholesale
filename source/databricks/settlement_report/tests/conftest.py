@@ -19,11 +19,19 @@ from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType
 
+import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
+
+from settlement_report_job.infrastructure import database_definitions
+from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
+    metering_point_time_series_v1,
+)
+from test_data_helper import write_input_test_data_to_table
 
 
 @pytest.fixture(scope="session")
@@ -35,22 +43,52 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def any_settlement_report_args() -> SettlementReportArgs:
+def default_wholesale_fixing_settlement_report_args(
+    output_volume_path: str,
+) -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_id_by_grid_area={
-            "016": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373")
+            "804": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
+            "805": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
         },
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
-        catalog_name="catalog_name",
+        catalog_name="spark_catalog",
         energy_supplier_id="1234567890123",
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
+        output_volume_path=output_volume_path,
+    )
+
+
+@pytest.fixture(scope="session")
+def metering_point_time_series_written_to_delta_table(
+    spark: SparkSession, input_database_location: str
+) -> None:
+
+    data_spec = metering_point_time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+        calculation_id="6aea02f6-6f20-40c5-9a95-f419a1245d7e",
+        calculation_type=CalculationType.WHOLESALE_FIXING,
+        calculation_version="1",
+        metering_point_id="123456789012345678901234567",
+        metering_point_type="consumption",
+        resolution="PT15M",
+        grid_area_code="804",
+        energy_supplier_id="1234567890123",
+
+    df = metering_point_time_series_factory.create(spark, data_spec)
+    write_input_test_data_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleSettlementReportDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
+        table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
+        schema=metering_point_time_series_v1,
     )
 
 
@@ -111,6 +149,21 @@ def contracts_path(settlement_report_path: str) -> str:
     actually located in a file located directly in the tests folder.
     """
     return f"{settlement_report_path}/contracts"
+
+
+@pytest.fixture(scope="session")
+def output_volume_path(data_lake_path: str) -> str:
+    return f"{data_lake_path}/output_volume"
+
+
+@pytest.fixture(scope="session")
+def input_database_location(data_lake_path: str) -> str:
+    return f"{data_lake_path}/input_database"
+
+
+@pytest.fixture(scope="session")
+def data_lake_path(tests_path: str, worker_id: str) -> str:
+    return f"{tests_path}/__data_lake__/{worker_id}"
 
 
 @pytest.fixture(scope="session")
