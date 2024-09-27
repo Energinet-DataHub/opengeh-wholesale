@@ -152,7 +152,7 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
         Fixture.ScenarioState.OutputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
-    [ScenarioStep(3)]
+    [ScenarioStep(4)]
     [SubsystemFact]
     public void AndThen_OutputFileSizeIsGreatherThan()
     {
@@ -163,7 +163,7 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
     /// <summary>
     /// In this step we verify the 'duration' of the job is within our 'performance goal'.
     /// </summary>
-    [ScenarioStep(4)]
+    [ScenarioStep(5)]
     [SubsystemFact]
     public void AndThen_JobDurationIsLessThanOrEqualToTimeLimit()
     {
