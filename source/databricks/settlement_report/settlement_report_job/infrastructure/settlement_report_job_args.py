@@ -71,10 +71,8 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-start", type=valid_date, required=True)
     p.add("--period-end", type=valid_date, required=True)
     p.add("--calculation-type", type=CalculationType, required=True)
-    # TODO JMG: remove market-role and make requesting_actor id and role required
-    p.add("--market-role", type=MarketRole, required=False)
-    p.add("--requesting-actor-market-role", type=MarketRole, required=False)
-    p.add("--requesting-actor-id", type=str, required=False)
+    p.add("--requesting-actor-market-role", type=MarketRole, required=True)
+    p.add("--requesting-actor-id", type=str, required=True)
     p.add("--calculation-id-by-grid-area", type=str, required=True)
     p.add("--energy-supplier-id", type=str, required=False)
     p.add(
