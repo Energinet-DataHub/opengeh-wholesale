@@ -28,9 +28,12 @@ def execute_hourly_time_series(spark: SparkSession, args: SettlementReportArgs) 
 
     repository = WholesaleRepository(spark, args.catalog_name)
     hourly_time_series_df = create_time_series(
-        args,
-        DataProductMeteringPointResolution.HOUR,
-        repository,
+        period_start=args.period_start,
+        period_end=args.period_end,
+        calculation_id_by_grid_area=args.calculation_id_by_grid_area,
+        time_zone=args.time_zone,
+        resolution=DataProductMeteringPointResolution.HOUR,
+        repository=repository,
     )
     hourly_time_series_files = time_series_writer.write(
         dbutils,
