@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import Mock
 
 import pytest
@@ -28,12 +28,12 @@ DEFAULT_CALCULATION_BY_GRID_AREA = {
         DataProductMeteringPointResolution.QUARTER,
     ],
 )
-def test_create_time_series__returns_expected_number_of_rows(
+def test_create_time_series__when_two_days_of_data__returns_two_rows(
     spark: SparkSession, resolution: DataProductMeteringPointResolution
 ) -> None:
     # Arrange
     from_date = datetime(2024, 1, 1, 23)
-    to_date = datetime(2024, 1, 3, 23)
+    to_date = from_date + timedelta(days=1)
     expected_rows = to_date.day - from_date.day
     spec = factory.MeteringPointTimeSeriesTestDataSpec(
         from_date=from_date, to_date=to_date, resolution=resolution
@@ -58,3 +58,45 @@ def test_create_time_series__returns_expected_number_of_rows(
     assert result_df.count() == expected_rows
 
 
+@pytest.mark.parametrize(
+    "resolution, energy_quantity_column_count",
+    [
+        (DataProductMeteringPointResolution.HOUR, 25),
+        (DataProductMeteringPointResolution.QUARTER, 100),
+    ],
+)
+def test_create_time_series__returns_expected_energy_quantity_columns(
+    spark: SparkSession,
+    resolution: DataProductMeteringPointResolution,
+    energy_quantity_column_count,
+) -> None:
+    # Arrange
+    expected_columns = [
+        f"ENERGYQUANTITY{i}" for i in range(1, energy_quantity_column_count + 1)
+    ]
+    from_date = datetime(2024, 1, 1, 23)
+    to_date = from_date + timedelta(days=1)
+    spec = factory.MeteringPointTimeSeriesTestDataSpec(
+        from_date=from_date, to_date=to_date, resolution=resolution
+    )
+    df = factory.create(spark, spec)
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=from_date,
+        period_end=to_date,
+        calculation_id_by_grid_area={
+            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+        },
+        resolution=resolution,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    actual_columns = [
+        col for col in actual_df.columns if col.startswith("ENERGYQUANTITY")
+    ]
+    assert set(actual_columns) == set(expected_columns)
