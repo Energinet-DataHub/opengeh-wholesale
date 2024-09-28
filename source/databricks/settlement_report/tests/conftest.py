@@ -27,12 +27,6 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from settlement_report_job.infrastructure import database_definitions
-from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
-    metering_point_time_series_v1,
-)
-from test_data_helper import write_input_test_data_to_table
-
 
 @pytest.fixture(scope="session")
 def dbutils() -> DBUtilsFixture:
@@ -66,30 +60,30 @@ def default_wholesale_fixing_settlement_report_args(
     )
 
 
-@pytest.fixture(scope="session")
-def metering_point_time_series_written_to_delta_table(
-    spark: SparkSession, input_database_location: str
-) -> None:
-
-    data_spec = metering_point_time_series_factory.MeteringPointTimeSeriesTestDataSpec(
-        calculation_id="6aea02f6-6f20-40c5-9a95-f419a1245d7e",
-        calculation_type=CalculationType.WHOLESALE_FIXING,
-        calculation_version="1",
-        metering_point_id="123456789012345678901234567",
-        metering_point_type="consumption",
-        resolution="PT15M",
-        grid_area_code="804",
-        energy_supplier_id="1234567890123",
-
-    df = metering_point_time_series_factory.create(spark, data_spec)
-    write_input_test_data_to_table(
-        spark,
-        df=df,
-        database_name=database_definitions.WholesaleSettlementReportDatabase.DATABASE_NAME,
-        table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
-        table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
-        schema=metering_point_time_series_v1,
-    )
+# @pytest.fixture(scope="session")
+# def metering_point_time_series_written_to_delta_table(
+#     spark: SparkSession, input_database_location: str
+# ) -> None:
+#
+#     data_spec = metering_point_time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+#         calculation_id="6aea02f6-6f20-40c5-9a95-f419a1245d7e",
+#         calculation_type=CalculationType.WHOLESALE_FIXING,
+#         calculation_version="1",
+#         metering_point_id="123456789012345678901234567",
+#         metering_point_type="consumption",
+#         resolution="PT15M",
+#         grid_area_code="804",
+#         energy_supplier_id="1234567890123",
+#
+#     df = metering_point_time_series_factory.create(spark, data_spec)
+#     write_input_test_data_to_table(
+#         spark,
+#         df=df,
+#         database_name=database_definitions.WholesaleSettlementReportDatabase.DATABASE_NAME,
+#         table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
+#         table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
+#         schema=metering_point_time_series_v1,
+#     )
 
 
 @pytest.fixture(scope="session")
