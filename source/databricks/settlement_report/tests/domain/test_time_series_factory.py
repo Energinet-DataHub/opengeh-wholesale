@@ -126,20 +126,46 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
 
 
 @pytest.mark.parametrize(
-    "resolution, expected_columns_with_data",
+    "from_date,to_date,resolution,expected_columns_with_data",
     [
-        (DataProductMeteringPointResolution.HOUR, 23),
-        (DataProductMeteringPointResolution.QUARTER, 92),
+        (
+            # Entering daylight saving time for hourly resolution
+            datetime(2023, 3, 25, 23),
+            datetime(2023, 3, 27, 22),
+            DataProductMeteringPointResolution.HOUR,
+            23,
+        ),
+        (
+            # Entering daylight saving time for quarterly resolution
+            datetime(2023, 3, 25, 23),
+            datetime(2023, 3, 27, 22),
+            DataProductMeteringPointResolution.QUARTER,
+            92,
+        ),
+        (
+            # Exiting daylight saving time for hourly resolution
+            datetime(2023, 10, 28, 22),
+            datetime(2023, 10, 30, 23),
+            DataProductMeteringPointResolution.HOUR,
+            25,
+        ),
+        (
+            # Exiting daylight saving time for quarterly resolution
+            datetime(2023, 10, 28, 22),
+            datetime(2023, 10, 30, 23),
+            DataProductMeteringPointResolution.QUARTER,
+            100,
+        ),
     ],
 )
-def test_create_time_series__when_entering_daylight_saving_time__returns_expected_energy_quantities(
+def test_create_time_series__when_daylight_saving_tim_transition__returns_expected_energy_quantities(
     spark: SparkSession,
+    from_date: datetime,
+    to_date: datetime,
     resolution: DataProductMeteringPointResolution,
     expected_columns_with_data: int,
 ) -> None:
     # Arrange
-    from_date = datetime(2023, 3, 25, 23)
-    to_date = datetime(2023, 3, 27, 22)
     df = _create_time_series_with_increasing_quantity(
         spark=spark,
         from_date=from_date,
@@ -173,4 +199,59 @@ def test_create_time_series__when_entering_daylight_saving_time__returns_expecte
         assert dst_day[f"ENERGYQUANTITY{i}"] == expected_value
 
 
-# def test_create_time_series__when_input_has_both_resoltution__returns_only_data_with_expected_resolution() -> None:
+@pytest.mark.parametrize(
+    "resolution",
+    [
+        DataProductMeteringPointResolution.HOUR,
+        DataProductMeteringPointResolution.QUARTER,
+    ],
+)
+def test_create_time_series__when_input_has_both_resolution_types__returns_only_data_with_expected_resolution(
+    spark: SparkSession,
+    resolution: DataProductMeteringPointResolution,
+) -> None:
+    # Arrange
+    from_date = datetime(2024, 1, 1, 23)
+    to_date = from_date + timedelta(days=1)
+    hourly_metering_point_id = "1111111111111"
+    quarterly_metering_point_id = "1515151515115"
+    expected_metering_point_id = (
+        hourly_metering_point_id
+        if resolution == DataProductMeteringPointResolution.HOUR
+        else quarterly_metering_point_id
+    )
+    spec_hour = factory.MeteringPointTimeSeriesTestDataSpec(
+        from_date=from_date,
+        to_date=to_date,
+        metering_point_id=hourly_metering_point_id,
+        resolution=DataProductMeteringPointResolution.HOUR,
+    )
+    spec_quarter = factory.MeteringPointTimeSeriesTestDataSpec(
+        from_date=from_date,
+        to_date=to_date,
+        metering_point_id=quarterly_metering_point_id,
+        resolution=DataProductMeteringPointResolution.QUARTER,
+    )
+    df = factory.create(spark, spec_hour).union(factory.create(spark, spec_quarter))
+
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=from_date,
+        period_end=to_date,
+        calculation_id_by_grid_area={
+            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+        },
+        resolution=resolution,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+    assert (
+        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.metering_point_id]
+        == expected_metering_point_id
+    )
