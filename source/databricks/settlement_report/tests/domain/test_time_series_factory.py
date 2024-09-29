@@ -255,3 +255,38 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         actual_df.collect()[0][TimeSeriesPointCsvColumnNames.metering_point_id]
         == expected_metering_point_id
     )
+
+
+def test_create_time_series__returns_only_days_within_selected_period(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    from_date = datetime(2024, 1, 2, 23)
+    to_date = from_date + timedelta(days=1)
+
+    df = _create_time_series_with_increasing_quantity(
+        spark=spark,
+        from_date=from_date - timedelta(days=1),
+        to_date=to_date + timedelta(days=1),
+        resolution=DataProductMeteringPointResolution.HOUR,
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=from_date,
+        period_end=to_date,
+        calculation_id_by_grid_area={
+            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+        },
+        resolution=DataProductMeteringPointResolution.HOUR,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+    assert (
+        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.start_of_day] == from_date
+    )
