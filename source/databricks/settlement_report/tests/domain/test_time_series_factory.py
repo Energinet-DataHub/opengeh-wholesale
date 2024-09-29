@@ -125,19 +125,19 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
     assert set(actual_columns) == set(expected_columns)
 
 
-# @pytest.mark.parametrize(
-#     "from_date, to_date",
-#     [
-#         (DataProductMeteringPointResolution.QUARTER, 100),
-#     ],
-# )
+@pytest.mark.parametrize(
+    "resolution, expected_columns_with_data",
+    [
+        (DataProductMeteringPointResolution.HOUR, 23),
+        (DataProductMeteringPointResolution.QUARTER, 92),
+    ],
+)
 def test_create_time_series__when_entering_daylight_saving_time__returns_expected_energy_quantities(
     spark: SparkSession,
-    # resolution: DataProductMeteringPointResolution,
-    # energy_quantity_column_count,
+    resolution: DataProductMeteringPointResolution,
+    expected_columns_with_data: int,
 ) -> None:
     # Arrange
-    resolution = DataProductMeteringPointResolution.HOUR
     from_date = datetime(2023, 3, 25, 23)
     to_date = datetime(2023, 3, 27, 22)
     df = _create_time_series_with_increasing_quantity(
@@ -146,6 +146,7 @@ def test_create_time_series__when_entering_daylight_saving_time__returns_expecte
         to_date=to_date,
         resolution=resolution,
     )
+    total_columns = 25 if resolution == DataProductMeteringPointResolution.HOUR else 100
 
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
@@ -167,8 +168,8 @@ def test_create_time_series__when_entering_daylight_saving_time__returns_expecte
     dst_day = actual_df.where(
         F.col(TimeSeriesPointCsvColumnNames.start_of_day) == from_date
     ).collect()[0]
-    for i in range(1, 25):
-        expected_value = None if i == 24 else Decimal(i - 1)
+    for i in range(1, total_columns):
+        expected_value = None if i > expected_columns_with_data else Decimal(i - 1)
         assert dst_day[f"ENERGYQUANTITY{i}"] == expected_value
 
 
