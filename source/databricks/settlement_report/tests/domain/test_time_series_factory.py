@@ -264,11 +264,11 @@ def test_create_time_series__returns_only_days_within_selected_period(
     from_date = datetime(2024, 1, 2, 23)
     to_date = from_date + timedelta(days=1)
 
-    df = _create_time_series_with_increasing_quantity(
-        spark=spark,
-        from_date=from_date - timedelta(days=1),
-        to_date=to_date + timedelta(days=1),
-        resolution=DataProductMeteringPointResolution.HOUR,
+    df = factory.create(
+        spark,
+        factory.MeteringPointTimeSeriesTestDataSpec(
+            from_date=from_date, to_date=to_date
+        ),
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
@@ -289,4 +289,104 @@ def test_create_time_series__returns_only_days_within_selected_period(
     assert actual_df.count() == 1
     assert (
         actual_df.collect()[0][TimeSeriesPointCsvColumnNames.start_of_day] == from_date
+    )
+
+
+def test_create_time_series__returns_only_selected_grid_area(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    selected_grid_area_code = "805"
+    not_selected_grid_area_code = "806"
+    from_date = datetime(2024, 1, 2, 23)
+    to_date = from_date + timedelta(days=1)
+    df = factory.create(
+        spark,
+        factory.MeteringPointTimeSeriesTestDataSpec(
+            from_date=from_date,
+            to_date=to_date,
+            grid_area_code=selected_grid_area_code,
+        ),
+    ).union(
+        factory.create(
+            spark,
+            factory.MeteringPointTimeSeriesTestDataSpec(
+                from_date=from_date,
+                to_date=to_date,
+                grid_area_code=not_selected_grid_area_code,
+            ),
+        )
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=from_date,
+        period_end=to_date,
+        calculation_id_by_grid_area={
+            selected_grid_area_code: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+        },
+        resolution=DataProductMeteringPointResolution.HOUR,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+    assert (
+        actual_df.collect()[0][DataProductColumnNames.grid_area_code]
+        == selected_grid_area_code
+    )
+
+
+def test_create_time_series__returns_only_selected_calculation_id(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    selected_calculation_id = "11111111-9fc8-409a-a169-fbd49479d718"
+    not_selected_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
+    expected_metering_point_id = "123456789012345678901234567"
+    other_metering_point_id = "765432109876543210987654321"
+    from_date = datetime(2024, 1, 2, 23)
+    to_date = from_date + timedelta(days=1)
+    df = factory.create(
+        spark,
+        factory.MeteringPointTimeSeriesTestDataSpec(
+            from_date=from_date,
+            to_date=to_date,
+            calculation_id=selected_calculation_id,
+            metering_point_id=expected_metering_point_id,
+        ),
+    ).union(
+        factory.create(
+            spark,
+            factory.MeteringPointTimeSeriesTestDataSpec(
+                from_date=from_date,
+                to_date=to_date,
+                calculation_id=not_selected_calculation_id,
+                metering_point_id=other_metering_point_id,
+            ),
+        )
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=from_date,
+        period_end=to_date,
+        calculation_id_by_grid_area={
+            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
+        },
+        resolution=DataProductMeteringPointResolution.HOUR,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+    assert (
+        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.metering_point_id]
+        == expected_metering_point_id
     )
