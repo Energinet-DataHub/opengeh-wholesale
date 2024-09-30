@@ -35,3 +35,4 @@ class SettlementReportArgs:
     time_zone: str
     catalog_name: str
     settlement_reports_path: str
+    """The path to the folder where the settlement reports are stored."""
