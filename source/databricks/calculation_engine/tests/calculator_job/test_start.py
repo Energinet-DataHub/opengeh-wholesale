@@ -87,9 +87,11 @@ class TestWhenInvokedWithValidArguments:
 
         # Act
         with pytest.raises(SystemExit):
-            start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
-            )
+            with patch(
+                "package.infrastructure.logging_configuration.get_application_insights_connection_string",
+                return_value=integration_test_configuration.get_applicationinsights_connection_string(),
+            ):
+                start_with_deps()
 
         # Assert
         # noinspection PyTypeChecker
@@ -139,9 +141,11 @@ AppTraces
 
         # Act
         with pytest.raises(SystemExit):
-            start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
-            )
+            with patch(
+                "package.infrastructure.logging_configuration.get_application_insights_connection_string",
+                return_value=integration_test_configuration.get_applicationinsights_connection_string(),
+            ):
+                start_with_deps()
 
         # Assert
         # noinspection PyTypeChecker
@@ -191,9 +195,11 @@ AppDependencies
 
         with pytest.raises(SystemExit):
             # Act
-            start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
-            )
+            with patch(
+                "package.infrastructure.logging_configuration.get_application_insights_connection_string",
+                return_value=integration_test_configuration.get_applicationinsights_connection_string(),
+            ):
+                start_with_deps()
 
         # Assert
         # noinspection PyTypeChecker
