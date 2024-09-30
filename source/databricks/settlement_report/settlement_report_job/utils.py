@@ -146,7 +146,7 @@ def write_files(
 
 def get_new_files(
     spark_output_path: str,
-    output_path: str,
+    report_output_path: str,
     file_name_factory: FileNameFactory,
     partition_by_chunk_index: bool,
     partition_by_grid_area: bool,
@@ -155,7 +155,7 @@ def get_new_files(
 
     Args:
         spark_output_path (str): The path where the files are written.
-        output_path: The path where the files will be moved.
+        report_output_path: The path where the files will be moved.
         file_name_factory (FileNameFactory): Factory class for creating file names for the csv files.
         partition_by_chunk_index (bool): Whether the files are split or not.
         partition_by_grid_area (bool): Whether the files are split by grid area or not.
@@ -186,7 +186,7 @@ def get_new_files(
         file_name = file_name_factory.create(
             grid_area, energy_supplier_id=None, chunk_index=chunk_index
         )
-        new_name = Path(output_path) / file_name
+        new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))
     return new_files
