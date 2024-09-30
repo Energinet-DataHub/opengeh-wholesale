@@ -65,9 +65,12 @@ class ViewColumns:
     calculation_succeeded_time = Column("calculation_succeeded_time", TimestampType())
     calculation_version = Column("calculation_version", LongType())
     charge_code = Column("charge_code", StringType())
+    charge_key = Column("charge_key", StringType())
+    charge_time = Column("charge_time", TimestampType())
     charge_type = Column("charge_type", StringType())
     charge_link_quantity = Column("charge_link_quantity", IntegerType())
     charge_owner_id = Column("charge_owner_id", StringType())
+    charge_price = Column("charge_price", DecimalType(18, 6))
     currency = Column("currency", StringType())
     energy_supplier_id = Column("energy_supplier_id", StringType())
     from_date = Column("from_date", TimestampType())
@@ -81,6 +84,7 @@ class ViewColumns:
     metering_point_type = Column("metering_point_type", StringType())
     neighbor_grid_area_code = Column("neighbor_grid_area_code", StringType())
     observation_time = Column("observation_time", TimestampType())
+    parent_metering_point_id = Column("parent_metering_point_id", StringType())
     price = Column("price", DecimalType(18, 6))
     price_points = Column(
         "price_points",
@@ -94,6 +98,7 @@ class ViewColumns:
             False,
         ),
     )
+    quality = Column("quality", StringType())
     quantities = Column(
         "quantities",
         ArrayType(
@@ -106,6 +111,8 @@ class ViewColumns:
             False,
         ),
     )
+
+    # Quantity can be an integer or decimal depending on the context.
     quantity = Column("quantity", DecimalType(18, 3))
     quantity_qualities = Column("quantity_qualities", ArrayType(StringType(), True))
     quantity_unit = Column("quantity_unit", StringType())
