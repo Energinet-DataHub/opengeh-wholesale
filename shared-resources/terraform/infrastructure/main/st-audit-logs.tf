@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "audit_logs" {
 }
 
 module "st_audit_logs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.1.0"
 
   name                       = "audit"
   project_name               = var.domain_name_short
@@ -24,7 +24,6 @@ module "st_audit_logs" {
   access_tier                = "Hot"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints_002.id
   ip_rules                   = local.ip_restrictions_as_string
-  prevent_deletion           = true
   audit_storage_account      = null # We disable audit logging on the audit storage account
   role_assignments = [
     {

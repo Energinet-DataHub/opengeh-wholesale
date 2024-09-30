@@ -1,5 +1,5 @@
 module "st_dead_letter_logs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.1.0"
 
   name                                  = "deadltr"
   project_name                          = var.domain_name_short
