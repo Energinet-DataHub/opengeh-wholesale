@@ -7,7 +7,7 @@ charge_price_points_v1 = t.StructType(
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
         #
-        # 'wholesale_fixing' | 'first_correction_settlement' |
+        # 'wholesale_fixing' | 'aggregation' | 'first_correction_settlement' |
         # 'second_correction_settlement' | 'third_correction_settlement'
         t.StructField("calculation_type", t.StringType(), not nullable),
         #

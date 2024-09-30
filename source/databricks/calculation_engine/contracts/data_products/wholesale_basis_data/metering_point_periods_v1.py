@@ -7,7 +7,7 @@ metering_point_periods_v1 = t.StructType(
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),
         #
-        # 'balance_fixing' | 'wholesale_fixing' | 'first_correction_settlement' |
+        # 'balance_fixing' | 'aggregation' | 'wholesale_fixing' | 'first_correction_settlement' |
         # 'second_correction_settlement' | 'third_correction_settlement'
         t.StructField("calculation_type", t.StringType(), not nullable),
         #
