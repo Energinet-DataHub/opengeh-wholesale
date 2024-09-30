@@ -19,9 +19,7 @@ from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType
 
-import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -37,17 +35,14 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def default_wholesale_fixing_settlement_report_args(
-    output_volume_path: str,
-) -> SettlementReportArgs:
+def any_settlement_report_args() -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_id_by_grid_area={
-            "804": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
-            "805": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
+            "016": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373")
         },
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
@@ -116,21 +111,6 @@ def contracts_path(settlement_report_path: str) -> str:
     actually located in a file located directly in the tests folder.
     """
     return f"{settlement_report_path}/contracts"
-
-
-@pytest.fixture(scope="session")
-def output_volume_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/output_volume"
-
-
-@pytest.fixture(scope="session")
-def input_database_location(data_lake_path: str) -> str:
-    return f"{data_lake_path}/input_database"
-
-
-@pytest.fixture(scope="session")
-def data_lake_path(tests_path: str, worker_id: str) -> str:
-    return f"{tests_path}/__data_lake__/{worker_id}"
 
 
 @pytest.fixture(scope="session")
