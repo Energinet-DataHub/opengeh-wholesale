@@ -42,7 +42,7 @@ def _create_metering_point_time_series(spark: SparkSession) -> DataFrame:
                 data_spec = metering_point_time_series_factory.MeteringPointTimeSeriesTestDataSpec(
                     calculation_id=CALCULATION_ID,
                     calculation_type=CalculationType.WHOLESALE_FIXING,
-                    calculation_version="1",
+                    calculation_version=1,
                     metering_point_id=str(1000000000000 + count),
                     metering_point_type=MeteringPointType.CONSUMPTION,
                     resolution=resolution,

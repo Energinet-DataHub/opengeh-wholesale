@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 import pytest
 from pyspark.sql import SparkSession
@@ -48,7 +47,6 @@ def test_execute_quarterly_time_series__when_default_wholesale_scenario__returns
 ):
     # Arrange
     expected_file_count = 2
-
     test_data_generators.write_metering_point_time_series(
         spark, input_database_location
     )
