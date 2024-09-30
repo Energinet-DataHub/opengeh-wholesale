@@ -20,6 +20,8 @@ from settlement_report_job.infrastructure.column_names import (
 )
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
+DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
 
 
 def _create_time_series_with_increasing_quantity(
@@ -49,11 +51,9 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
     spark: SparkSession, resolution: DataProductMeteringPointResolution
 ) -> None:
     # Arrange
-    from_date = datetime(2024, 1, 1, 23)
-    to_date = from_date + timedelta(days=1)
-    expected_rows = to_date.day - from_date.day
+    expected_rows = DEFAULT_TO_DATE.day - DEFAULT_FROM_DATE.day
     spec = factory.MeteringPointTimeSeriesTestDataSpec(
-        from_date=from_date, to_date=to_date, resolution=resolution
+        from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
     )
     df = factory.create(spark, spec)
     mock_repository = Mock()
@@ -61,8 +61,8 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
 
     # Act
     result_df = create_time_series(
-        period_start=from_date,
-        period_end=to_date,
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
@@ -91,10 +91,8 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
     expected_columns = [
         f"ENERGYQUANTITY{i}" for i in range(1, energy_quantity_column_count + 1)
     ]
-    from_date = datetime(2024, 1, 1, 23)
-    to_date = from_date + timedelta(days=1)
     spec = factory.MeteringPointTimeSeriesTestDataSpec(
-        from_date=from_date, to_date=to_date, resolution=resolution
+        from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
     )
     df = factory.create(spark, spec)
     mock_repository = Mock()
@@ -102,8 +100,8 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
 
     # Act
     actual_df = create_time_series(
-        period_start=from_date,
-        period_end=to_date,
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
@@ -205,8 +203,6 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
     resolution: DataProductMeteringPointResolution,
 ) -> None:
     # Arrange
-    from_date = datetime(2024, 1, 1, 23)
-    to_date = from_date + timedelta(days=1)
     hourly_metering_point_id = "1111111111111"
     quarterly_metering_point_id = "1515151515115"
     expected_metering_point_id = (
@@ -215,14 +211,14 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         else quarterly_metering_point_id
     )
     spec_hour = factory.MeteringPointTimeSeriesTestDataSpec(
-        from_date=from_date,
-        to_date=to_date,
+        from_date=DEFAULT_FROM_DATE,
+        to_date=DEFAULT_TO_DATE,
         metering_point_id=hourly_metering_point_id,
         resolution=DataProductMeteringPointResolution.HOUR,
     )
     spec_quarter = factory.MeteringPointTimeSeriesTestDataSpec(
-        from_date=from_date,
-        to_date=to_date,
+        from_date=DEFAULT_FROM_DATE,
+        to_date=DEFAULT_TO_DATE,
         metering_point_id=quarterly_metering_point_id,
         resolution=DataProductMeteringPointResolution.QUARTER,
     )
@@ -233,8 +229,8 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
 
     # Act
     actual_df = create_time_series(
-        period_start=from_date,
-        period_end=to_date,
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
@@ -255,13 +251,10 @@ def test_create_time_series__returns_only_days_within_selected_period(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    from_date = datetime(2024, 1, 2, 23)
-    to_date = from_date + timedelta(days=1)
-
     df = factory.create(
         spark,
         factory.MeteringPointTimeSeriesTestDataSpec(
-            from_date=from_date, to_date=to_date
+            from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE
         ),
     )
     mock_repository = Mock()
@@ -269,8 +262,8 @@ def test_create_time_series__returns_only_days_within_selected_period(
 
     # Act
     actual_df = create_time_series(
-        period_start=from_date,
-        period_end=to_date,
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
@@ -282,7 +275,8 @@ def test_create_time_series__returns_only_days_within_selected_period(
     # Assert
     assert actual_df.count() == 1
     assert (
-        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.start_of_day] == from_date
+        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.start_of_day]
+        == DEFAULT_FROM_DATE
     )
 
 
@@ -292,21 +286,19 @@ def test_create_time_series__returns_only_selected_grid_area(
     # Arrange
     selected_grid_area_code = "805"
     not_selected_grid_area_code = "806"
-    from_date = datetime(2024, 1, 2, 23)
-    to_date = from_date + timedelta(days=1)
     df = factory.create(
         spark,
         factory.MeteringPointTimeSeriesTestDataSpec(
-            from_date=from_date,
-            to_date=to_date,
+            from_date=DEFAULT_FROM_DATE,
+            to_date=DEFAULT_TO_DATE,
             grid_area_code=selected_grid_area_code,
         ),
     ).union(
         factory.create(
             spark,
             factory.MeteringPointTimeSeriesTestDataSpec(
-                from_date=from_date,
-                to_date=to_date,
+                from_date=DEFAULT_FROM_DATE,
+                to_date=DEFAULT_TO_DATE,
                 grid_area_code=not_selected_grid_area_code,
             ),
         )
@@ -316,8 +308,8 @@ def test_create_time_series__returns_only_selected_grid_area(
 
     # Act
     actual_df = create_time_series(
-        period_start=from_date,
-        period_end=to_date,
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             selected_grid_area_code: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
@@ -342,13 +334,11 @@ def test_create_time_series__returns_only_selected_calculation_id(
     not_selected_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
     expected_metering_point_id = "123456789012345678901234567"
     other_metering_point_id = "765432109876543210987654321"
-    from_date = datetime(2024, 1, 2, 23)
-    to_date = from_date + timedelta(days=1)
     df = factory.create(
         spark,
         factory.MeteringPointTimeSeriesTestDataSpec(
-            from_date=from_date,
-            to_date=to_date,
+            from_date=DEFAULT_FROM_DATE,
+            to_date=DEFAULT_TO_DATE,
             calculation_id=selected_calculation_id,
             metering_point_id=expected_metering_point_id,
         ),
@@ -356,8 +346,8 @@ def test_create_time_series__returns_only_selected_calculation_id(
         factory.create(
             spark,
             factory.MeteringPointTimeSeriesTestDataSpec(
-                from_date=from_date,
-                to_date=to_date,
+                from_date=DEFAULT_FROM_DATE,
+                to_date=DEFAULT_TO_DATE,
                 calculation_id=not_selected_calculation_id,
                 metering_point_id=other_metering_point_id,
             ),
@@ -368,8 +358,8 @@ def test_create_time_series__returns_only_selected_calculation_id(
 
     # Act
     actual_df = create_time_series(
-        period_start=from_date,
-        period_end=to_date,
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
         },
