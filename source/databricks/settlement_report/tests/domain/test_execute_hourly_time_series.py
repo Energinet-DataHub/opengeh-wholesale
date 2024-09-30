@@ -8,15 +8,14 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 def test_execute_hourly_time_series__when_default_wholesale_scenario__returns_expected_number_of_files(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    default_wholesale_fixing_settlement_report_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
     expected_file_count = 2
 
     # Act
-    execute_hourly_time_series(
-        spark, dbutils, default_wholesale_fixing_settlement_report_args
-    )
+    execute_hourly_time_series(spark, dbutils, standard_wholesale_fixing_scenario_args)
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
