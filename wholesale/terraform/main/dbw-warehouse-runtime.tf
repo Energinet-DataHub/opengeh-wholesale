@@ -25,7 +25,7 @@ resource "databricks_permissions" "databricks_sql_endpoint" {
     for_each = local.readers
     content {
       group_name       = access_control.key
-      permission_level = "CAN_USE"
+      permission_level = "CAN_MONITOR"
     }
   }
   depends_on = [module.dbw]
