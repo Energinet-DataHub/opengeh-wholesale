@@ -22,6 +22,9 @@ from configargparse import argparse
 from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.infrastructure.args_helper import valid_date
 from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.infrastructure.database_definitions import (
+    get_settlement_reports_output_path,
+)
 from settlement_report_job.logger import Logger
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -55,6 +58,9 @@ def parse_job_arguments(
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
             catalog_name=env_vars.get_catalog_name(),
+            settlement_reports_output_path=get_settlement_reports_output_path(
+                env_vars.get_catalog_name()
+            ),
         )
 
         return settlement_report_args
