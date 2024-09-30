@@ -1,7 +1,7 @@
 DROP VIEW IF EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points_v1
 GO
 
-CREATE VIEW {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points_v1 AS
+CREATE VIEW IF NOT EXISTS {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
        c.calculation_version,
