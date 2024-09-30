@@ -63,6 +63,7 @@ def test__views_have_the_expected_column_names_and_types(
     [
         "wholesale_internal",
         "data_products/wholesale_results",
+        "data_products/wholesale_basis_data",
         "data_products/wholesale_settlement_reports",
         "data_products/wholesale_sap",
     ],
