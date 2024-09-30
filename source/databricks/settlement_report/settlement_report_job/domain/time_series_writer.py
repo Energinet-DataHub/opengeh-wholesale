@@ -43,7 +43,7 @@ def write(
     report_data_type: ReportDataType,
 ) -> list[str]:
 
-    report_output_path = f"{args.settlement_reports_path}/{args.report_id}"
+    report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
     headers = write_files(

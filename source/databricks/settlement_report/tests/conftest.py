@@ -61,7 +61,7 @@ def default_wholesale_fixing_settlement_report_args(
         energy_supplier_id="1234567890123",
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
-        settlement_reports_path=settlement_reports_output_path,
+        settlement_reports_output_path=settlement_reports_output_path,
     )
 
 
