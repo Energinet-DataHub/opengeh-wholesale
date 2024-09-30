@@ -10,9 +10,6 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.time_series_factory import create_time_series
-from settlement_report_job.infrastructure.database_definitions import (
-    get_output_volume_path,
-)
 from settlement_report_job.domain.task_type import TaskType
 
 from settlement_report_job.utils import create_zip_file
