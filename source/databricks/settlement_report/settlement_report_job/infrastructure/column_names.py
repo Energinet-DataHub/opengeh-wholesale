@@ -1,12 +1,14 @@
 class DataProductColumnNames:
-    grid_area_code = "grid_area_code"
-    observation_time = "observation_time"
-    resolution = "resolution"
-    calculation_type = "calculation_type"
     calculation_id = "calculation_id"
+    calculation_type = "calculation_type"
+    calculation_version = "calculation_version"
+    energy_supplier_id = "energy_supplier_id"
+    grid_area_code = "grid_area_code"
     metering_point_id = "metering_point_id"
     metering_point_type = "metering_point_type"
+    observation_time = "observation_time"
     quantity = "quantity"
+    resolution = "resolution"
     settlement_method = "settlement_method"
     time = "time"
 

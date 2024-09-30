@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
+from uuid import UUID
+
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
 from settlement_report_job.domain.report_naming_convention import (
@@ -20,7 +23,6 @@ from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -39,16 +41,21 @@ log = Logger(__name__)
     "settlement_report_job.time_series_factory.create_time_series"
 )
 def create_time_series(
-    args: SettlementReportArgs,
+    period_start: datetime,
+    period_end: datetime,
+    calculation_id_by_grid_area: dict[str, UUID],
     resolution: DataProductMeteringPointResolution,
+    time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
-    time_series_points = _read_and_filter_from_view(args, repository, resolution)
+    time_series_points = _read_and_filter_from_view(
+        period_start, period_end, calculation_id_by_grid_area, repository, resolution
+    )
     prepared_time_series = _generate_time_series(
         time_series_points,
         _get_desired_quantity_column_count(resolution),
-        args.time_zone,
+        time_zone,
     )
     return prepared_time_series
 
@@ -57,20 +64,22 @@ def create_time_series(
     "settlement_report_job.time_series_factory._read_and_filter_from_view"
 )
 def _read_and_filter_from_view(
-    args: SettlementReportArgs,
+    period_start: datetime,
+    period_end: datetime,
+    calculation_id_by_grid_area: dict[str, UUID],
     repository: WholesaleRepository,
     resolution: DataProductMeteringPointResolution,
 ) -> DataFrame:
     df = repository.read_metering_point_time_series().where(
-        (F.col(DataProductColumnNames.observation_time) >= args.period_start)
-        & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+        (F.col(DataProductColumnNames.observation_time) >= period_start)
+        & (F.col(DataProductColumnNames.observation_time) < period_end)
     )
 
     df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
+        for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
     ]
 
     df_filtered = df.where(
