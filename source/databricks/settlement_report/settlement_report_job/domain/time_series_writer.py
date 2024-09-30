@@ -43,8 +43,8 @@ def write(
     report_data_type: ReportDataType,
 ) -> list[str]:
 
-    report_root_path = f"{args.output_volume_path}/{args.report_id}"
-    spark_output_path = f"{report_root_path}/{_get_folder_name(report_data_type)}"
+    report_output_path = f"{args.output_volume_path}/{args.report_id}"
+    spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
     headers = write_files(
         df=prepared_time_series,
@@ -61,7 +61,7 @@ def write(
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
         spark_output_path,
-        report_root_path,
+        report_output_path,
         file_name_factory,
         partition_by_chunk_index=args.prevent_large_text_files,
         partition_by_grid_area=True,  # always true for time series
