@@ -9,7 +9,7 @@ def test_execute_quarterly_time_series__when_default_wholesale_scenario__returns
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-        standard_wholesale_fixing_scenario_data_written_to_delta,
+    standard_wholesale_fixing_scenario_data_written_to_delta,
 ):
     # Arrange
     expected_file_count = 2

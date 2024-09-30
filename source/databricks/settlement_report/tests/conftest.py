@@ -14,7 +14,6 @@
 import os
 import uuid
 import pytest
-from datetime import datetime
 from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
@@ -42,15 +41,15 @@ def standard_wholesale_fixing_scenario_args(
 ) -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
-        period_start=standard_wholesale_fixing_data_generator.FROM_DATE,
-        period_end=standard_wholesale_fixing_data_generator.TO_DATE,
+        period_start=standard_wholesale_fixing_scenario_data_generator.FROM_DATE,
+        period_end=standard_wholesale_fixing_scenario_data_generator.TO_DATE,
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_id_by_grid_area={
-            standard_wholesale_fixing_data_generator.GRID_AREAS[0]: uuid.UUID(
-                standard_wholesale_fixing_data_generator.CALCULATION_ID
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[0]: uuid.UUID(
+                standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
             ),
-            standard_wholesale_fixing_data_generator.GRID_AREAS[1]: uuid.UUID(
-                standard_wholesale_fixing_data_generator.CALCULATION_ID
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[1]: uuid.UUID(
+                standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
             ),
         },
         split_report_by_grid_area=True,
@@ -69,7 +68,7 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     spark: SparkSession,
     input_database_location: str,
 ) -> None:
-    df = standard_wholesale_fixing_data_generator.create_metering_point_time_series(
+    df = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
         spark
     )
     write_metering_point_time_series_to_delta_table(spark, df, input_database_location)
