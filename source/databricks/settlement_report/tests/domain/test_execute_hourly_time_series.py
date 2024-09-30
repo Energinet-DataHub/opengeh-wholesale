@@ -8,7 +8,7 @@ from settlement_report_job.infrastructure.column_names import (
 )
 
 
-def test_execute_hourly_time_series__when_default_wholesale_scenario__returns_expected_number_of_files_and_content(
+def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
