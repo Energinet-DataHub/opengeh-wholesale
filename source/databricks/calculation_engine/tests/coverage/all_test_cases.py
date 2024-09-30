@@ -77,3 +77,8 @@ class Cases:
             MP_with_same_masterdata_but_different_to_and_from_only_one_entry_in_charge_prices: str
             Calculation_versions_different: str
             Calculation_types_different: str
+
+        class WholesaleBasisDataTests:
+            Only_calculation_ids_in_internal_calculations_included: str
+            Only_external_calculation_ids_included: str
+            Calculation_ids_without_calculation_succeeded_time_not_included: str
