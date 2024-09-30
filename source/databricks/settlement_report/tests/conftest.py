@@ -24,7 +24,7 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from test_data import standard_wholesale_fixing_data_generator
+from test_data import standard_wholesale_fixing_scenario_data_generator
 from test_data.write_test_data import write_metering_point_time_series_to_delta_table
 
 
@@ -37,7 +37,7 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def standard_wholesale_fixing_args(
+def standard_wholesale_fixing_scenario_args(
     settlement_reports_output_path: str,
 ) -> SettlementReportArgs:
     return SettlementReportArgs(
@@ -65,7 +65,7 @@ def standard_wholesale_fixing_args(
 
 
 @pytest.fixture(scope="session")
-def standard_wholesale_fixing_data_written_to_delta_table(
+def standard_wholesale_fixing_scenario_data_written_to_delta(
     spark: SparkSession,
     input_database_location: str,
 ) -> None:
