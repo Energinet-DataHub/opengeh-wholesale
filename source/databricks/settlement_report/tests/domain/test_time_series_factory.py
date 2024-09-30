@@ -19,13 +19,7 @@ from settlement_report_job.infrastructure.column_names import (
     TimeSeriesPointCsvColumnNames,
 )
 
-DEFAULT_PERIOD_START = datetime(2024, 1, 2, 22)
-DEFAULT_PERIOD_END = datetime(2024, 5, 31, 2)
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-DEFAULT_CALCULATION_BY_GRID_AREA = {
-    "804": uuid.UUID("11111111-1111-1111-1111-111111111111"),
-    "805": uuid.UUID("22222222-2222-2222-2222-222222222222"),
-}
 
 
 def _create_time_series_with_increasing_quantity(
