@@ -18,9 +18,10 @@ from datetime import datetime
 from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
+from helpers.delta_table_utils import write_dataframe_to_table
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
