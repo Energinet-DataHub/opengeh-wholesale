@@ -9,7 +9,6 @@ def test_execute_hourly_time_series__when_default_wholesale_scenario__returns_ex
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     default_wholesale_fixing_settlement_report_args: SettlementReportArgs,
-    metering_point_time_series_written_to_delta_table: None,
 ):
     # Arrange
     expected_file_count = 2

@@ -8,7 +8,6 @@ from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.metering_point_type import MeteringPointType
-from test_data_helper import write_metering_point_time_series_to_delta_table
 
 GRID_AREAS = ["804", "805"]
 CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
@@ -17,15 +16,7 @@ FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
 
 
-def write_metering_point_time_series(
-    spark: SparkSession,
-    table_location: str,
-):
-    df = _create_metering_point_time_series(spark)
-    write_metering_point_time_series_to_delta_table(spark, df, table_location)
-
-
-def _create_metering_point_time_series(spark: SparkSession) -> DataFrame:
+def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with metering point time series data for testing purposes.
     There is one row for each combination of resolution, grid area code, and energy supplier id.
