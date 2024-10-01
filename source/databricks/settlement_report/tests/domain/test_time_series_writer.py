@@ -15,7 +15,7 @@ from settlement_report_job.domain.time_series_writer import write
 
 from pyspark.sql import SparkSession
 
-from fixtures import DBUtilsFixture
+from tests.fixtures import DBUtilsFixture
 import pytest
 from settlement_report_job.domain.metering_point_type import MeteringPointType
 from settlement_report_job.domain.metering_point_resolution import (

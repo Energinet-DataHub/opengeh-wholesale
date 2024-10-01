@@ -34,3 +34,5 @@ class SettlementReportArgs:
     prevent_large_text_files: bool
     time_zone: str
     catalog_name: str
+    settlement_reports_output_path: str
+    """The path to the folder where the settlement reports are stored."""
