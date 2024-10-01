@@ -20,7 +20,10 @@ import configargparse
 from configargparse import argparse
 
 from settlement_report_job.infrastructure import logging_configuration
-from settlement_report_job.infrastructure.args_helper import valid_date
+from settlement_report_job.infrastructure.args_helper import (
+    valid_date,
+    valid_energy_supplier_ids,
+)
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.infrastructure.database_definitions import (
     get_settlement_reports_output_path,
@@ -80,7 +83,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--requesting-actor-id", type=str, required=True)
     p.add("--calculation-id-by-grid-area", type=str, required=True)
     p.add("--energy-supplier-id", type=str, required=False)
-    p.add("--energy-supplier-ids", type=valid_list, required=False)
+    p.add("--energy-supplier-ids", type=valid_energy_supplier_ids, required=False)
     p.add(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise
