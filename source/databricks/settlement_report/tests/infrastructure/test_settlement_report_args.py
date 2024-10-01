@@ -278,39 +278,6 @@ def test_when_energy_supplier_ids_are_specified__returns_expected_energy_supplie
 
 
 @pytest.mark.parametrize(
-    "energy_supplier_ids_argument, expected_energy_suppliers_ids",
-    [
-        ("[1234567890123]", ["1234567890123"]),
-        ("[1234567890123]", ["1234567890123"]),
-        ("[1234567890123, 2345678901234]", ["1234567890123", "2345678901234"]),
-        ("[1234567890123,2345678901234]", ["1234567890123", "2345678901234"]),
-        ("[ 1234567890123,2345678901234 ]", ["1234567890123", "2345678901234"]),
-    ],
-)
-def test_when_energy_supplier_ids_are_specified__returns_expected_energy_supplier_ids(
-    sys_argv_from_contract: list[str],
-    job_environment_variables: dict,
-    energy_supplier_ids_argument: str,
-    expected_energy_suppliers_ids: list[str],
-) -> None:
-    # Arrange
-    test_sys_args = sys_argv_from_contract.copy()
-    test_sys_args = _substitute_energy_supplier_ids(
-        test_sys_args, energy_supplier_ids_argument
-    )
-
-    with patch.dict("os.environ", job_environment_variables):
-        with patch("sys.argv", test_sys_args):
-            command_line_args = parse_command_line_arguments()
-
-            # Act
-            actual_args = parse_job_arguments(command_line_args)
-
-    # Assert
-    assert actual_args.energy_supplier_ids == expected_energy_suppliers_ids
-
-
-@pytest.mark.parametrize(
     "energy_supplier_ids_argument",
     [
         "1234567890123",  # not a list
