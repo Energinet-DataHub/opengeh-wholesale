@@ -38,7 +38,8 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
         var integrationTestConfiguration = new IntegrationTestConfiguration();
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
             new TestDiagnosticsLogger(),
-            integrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            integrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            integrationTestConfiguration.Credential);
 
         ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
 

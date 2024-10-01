@@ -43,7 +43,8 @@ public class WholesaleWebApiFixture : WebApiFixture
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            IntegrationTestConfiguration.Credential);
     }
 
     public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
