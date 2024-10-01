@@ -42,7 +42,9 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
 
     # Cache all dataframes from energy_results_output due to incident INC0409592 (testing the fix).
     for field in fields(energy_results_output):
-        getattr(energy_results_output, field.name).cache()
+        field_value = getattr(energy_results_output, field.name)
+        if field_value is not None:
+            field_value.cache()
 
     # Write exchange per neighbor grid area
     _write(
