@@ -67,6 +67,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
+        energy_supplier_ids=None,
         resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -106,6 +107,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
+        energy_supplier_ids=None,
         resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -177,6 +179,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
+        energy_supplier_ids=None,
         resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -235,6 +238,7 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
+        energy_supplier_ids=None,
         resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -268,6 +272,7 @@ def test_create_time_series__returns_only_days_within_selected_period(
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
+        energy_supplier_ids=None,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -314,6 +319,7 @@ def test_create_time_series__returns_only_selected_grid_area(
         calculation_id_by_grid_area={
             selected_grid_area_code: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
+        energy_supplier_ids=None,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -364,6 +370,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
         },
+        energy_supplier_ids=None,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
