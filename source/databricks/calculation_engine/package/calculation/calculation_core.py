@@ -32,6 +32,7 @@ from .calculation_output import (
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .preparation import PreparedDataReader
+from .preparation.data_structures import PreparedMeteringPointTimeSeries
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
 from ..constants import Colname
@@ -145,6 +146,11 @@ class CalculationCore:
             metering_point_periods_for_basis_data = (
                 get_metering_point_periods_for_energy_basis_data(
                     all_metering_point_periods
+                )
+            )
+            metering_point_time_series = PreparedMeteringPointTimeSeries(
+                get_metering_point_periods_for_energy_basis_data(
+                    metering_point_time_series.df
                 )
             )
 
