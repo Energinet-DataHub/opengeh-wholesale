@@ -58,6 +58,16 @@ def _substitute_requesting_actor_market_role(
     return sys_argv
 
 
+def _substitute_energy_supplier_ids(
+    sys_argv: list[str], energy_supplier_ids: str
+) -> list[str]:
+    for i, item in enumerate(sys_argv):
+        if item.startswith("--energy-supplier-ids="):
+            sys_argv[i] = f"--energy-supplier-ids={energy_supplier_ids}"
+            break
+    return sys_argv
+
+
 @pytest.fixture(scope="session")
 def contract_parameters(contracts_path: str) -> list[str]:
     job_parameters = _get_contract_parameters(
@@ -232,6 +242,37 @@ def test_returns_expected_value_for_split_report_by_grid_area(
 
     # Assert
     assert actual_args.split_report_by_grid_area is split_report_by_grid_area
+
+
+@pytest.mark.parametrize(
+    "energy_supplier_ids_argument, expected_energy_suppliers_ids",
+    [
+        ("[1234567890123]", ["1234567890123"]),
+        ("[1234567890123]", ["1234567890123"]),
+        ("[1234567890123, 2345678901234]", ["1234567890123", "2345678901234"]),
+    ],
+)
+def test_when_energy_supplier_ids_are_specified__returns_expected_energy_supplier_ids(
+    sys_argv_from_contract: list[str],
+    job_environment_variables: dict,
+    energy_supplier_ids_argument: str,
+    expected_energy_suppliers_ids: list[str],
+) -> None:
+    # Arrange
+    test_sys_args = sys_argv_from_contract.copy()
+    test_sys_args = _substitute_energy_supplier_ids(
+        test_sys_args, energy_supplier_ids_argument
+    )
+
+    with patch.dict("os.environ", job_environment_variables):
+        with patch("sys.argv", test_sys_args):
+            command_line_args = parse_command_line_arguments()
+
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert
+    assert actual_args.energy_supplier_ids == expected_energy_suppliers_ids
 
 
 class TestNoEnergySupplierId:
