@@ -14,6 +14,7 @@
 
 import pytest
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import IntegerType
 
 from contracts.databases_and_schemas import (
     get_expected_schemas,
@@ -30,6 +31,7 @@ from package.common import assert_schema
         "wholesale_results",
         "wholesale_settlement_reports",
         "wholesale_sap",
+        "wholesale_basis_data",
     ],
 )
 def test__views_have_the_expected_column_names_and_types(
@@ -65,6 +67,7 @@ def test__views_have_the_expected_column_names_and_types(
         "data_products/wholesale_results",
         "data_products/wholesale_settlement_reports",
         "data_products/wholesale_sap",
+        "data_products/wholesale_basis_data",
     ],
 )
 def test__views_have_the_expected_schemas(
@@ -113,6 +116,12 @@ def _assert_name_and_data_type(column_name: str, df: DataFrame) -> None:
     ), f"Column '{column_name}' is missing in class `ViewColumns`."
     expected_type = expected_column.data_type
     actual_type = actual_schema.dataType
+
+    # Because quantity can be a DecimalType or IntegerType depending on context the following check is necessary.
+    if column_name == ViewColumns.quantity.name:
+        if expected_type == actual_type or actual_type == IntegerType():
+            return
+
     assert (
         expected_type == actual_type
     ), f"Column '{column_name}' has wrong type. Is '{actual_type}', expected '{expected_type}'."

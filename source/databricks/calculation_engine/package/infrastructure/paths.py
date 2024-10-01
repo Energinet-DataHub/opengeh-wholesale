@@ -22,6 +22,7 @@ class UnityCatalogDatabaseNames:
 
     WHOLESALE_RESULTS = "wholesale_results"
     WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
+    WHOLESALE_BASIS_DATA = "wholesale_basis_data"
     WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
@@ -143,6 +144,16 @@ class HiveOutputDatabase:
     DATABASE_NAME = "wholesale_output"
     WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
     SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
+
+
+class WholesaleBasisDataDatabase:
+    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA
+    METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods_v1"
+    TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
+    CHARGE_LINK_PERIODS_VIEW_NAME = "charge_link_periods_v1"
+    CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
+    CHARGE_PRICE_POINTS_VIEW_NAME = "charge_price_points_v1"
+    GRID_LOSS_METERING_POINTS_VIEW_NAME = "grid_loss_metering_points_v1"
 
 
 class WholesaleBasisDataInternalDatabase:
