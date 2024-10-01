@@ -14,24 +14,19 @@
 import os
 import uuid
 import pytest
-from datetime import datetime
 from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType
-
-from tests.test_factories import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from settlement_report_job.infrastructure import database_definitions
-from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
-    metering_point_time_series_v1,
+from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
+from tests.data_seeding.write_test_data import (
+    write_metering_point_time_series_to_delta_table,
 )
-from tests.test_data_helper import write_input_test_data_to_table
 
 
 @pytest.fixture(scope="session")
@@ -43,23 +38,27 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def default_wholesale_fixing_settlement_report_args(
+def standard_wholesale_fixing_scenario_args(
     settlement_reports_output_path: str,
 ) -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
-        period_start=datetime(2024, 6, 30, 22, 0, 0),
-        period_end=datetime(2024, 7, 31, 22, 0, 0),
+        period_start=standard_wholesale_fixing_scenario_data_generator.FROM_DATE,
+        period_end=standard_wholesale_fixing_scenario_data_generator.TO_DATE,
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_id_by_grid_area={
-            "804": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
-            "805": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[0]: uuid.UUID(
+                standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
+            ),
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[1]: uuid.UUID(
+                standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
+            ),
         },
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="spark_catalog",
-        energy_supplier_id="1234567890123",
+        energy_supplier_id=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
         settlement_reports_output_path=settlement_reports_output_path,
@@ -67,17 +66,14 @@ def default_wholesale_fixing_settlement_report_args(
 
 
 @pytest.fixture(scope="session")
-def metering_point_time_series_written_to_delta_table(
-    spark: SparkSession, input_database_location: str, test_files_folder_path: str
+def standard_wholesale_fixing_scenario_data_written_to_delta(
+    spark: SparkSession,
+    input_database_location: str,
 ) -> None:
-    write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/metering_point_time_series_v1.csv",
-        database_name=database_definitions.WholesaleSettlementReportDatabase.DATABASE_NAME,
-        table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
-        table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
-        schema=metering_point_time_series_v1,
+    df = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
+        spark
     )
+    write_metering_point_time_series_to_delta_table(spark, df, input_database_location)
 
 
 @pytest.fixture(scope="session")

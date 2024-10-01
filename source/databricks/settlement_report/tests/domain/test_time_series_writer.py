@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.domain.time_series_writer import write
+from settlement_report_job.domain import time_series_writer
 
 from pyspark.sql import SparkSession
 
@@ -23,7 +23,10 @@ from settlement_report_job.domain.metering_point_resolution import (
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import tests.test_factories.time_series_points_csv_factory as factory
-import datetime
+from datetime import datetime
+from settlement_report_job.infrastructure.database_definitions import (
+    get_output_volume_name,
+)
 
 
 def test_write_files(
@@ -33,6 +36,7 @@ def test_write_files(
 ):
     # Arrange
     expected_files = 2
+    report_directory = f"{get_output_volume_name()}/{standard_wholesale_fixing_scenario_args.report_id}"
     resolution = DataProductMeteringPointResolution.HOUR
     test_spec = factory.TimeSeriesPointCsvTestDataSpec(
         metering_point_ids=[
@@ -41,15 +45,16 @@ def test_write_files(
         ],
         metering_point_type=MeteringPointType.CONSUMPTION,
         start_of_day=datetime(2024, 1, 1, 23),
-        quantity=235.0,
+        energy_quantity=235.0,
+        resolution=resolution,
     )
     mock_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = write(
+    result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        report_directory="some_report_directory",
+        report_directory=report_directory,
         prepared_time_series=mock_prepared_time_series,
         resolution=resolution,
     )

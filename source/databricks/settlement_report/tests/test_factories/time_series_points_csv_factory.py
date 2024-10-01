@@ -20,6 +20,9 @@ class TimeSeriesPointCsvTestDataSpec:
     metering_point_type: MeteringPointType
     start_of_day: datetime
     energy_quantity: float
+    resolution: DataProductMeteringPointResolution = (
+        DataProductMeteringPointResolution.HOUR
+    )
 
 
 def create(spark: SparkSession, data_spec: TimeSeriesPointCsvTestDataSpec) -> DataFrame:
