@@ -60,6 +60,7 @@ class Cases:
             WithDrawal_when_previous_calculation_was_internal: str
             WithDrawal_when_current_calculation_is_internal: str
             WithDrawal_when_new_calculation_period_only_partially_covers_previous_calculation: str
+            WithDrawal_when_new_calculation_period_before_quarterly_transition: str
 
     class DataProductTests:
 

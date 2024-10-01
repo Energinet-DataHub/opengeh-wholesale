@@ -45,4 +45,4 @@ Combinations disappears on day 2 and after day 3:
 
 ## CASES TESTED
 """
-Cases.CalculationTests.WithDrawalTests.WithDrawal_when_new_calculation_period_only_partially_covers_previous
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_new_calculation_period_only_partially_covers_previous_calculation
