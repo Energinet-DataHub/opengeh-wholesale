@@ -16,5 +16,5 @@ from package.calculation.domain.calculation_links.calculation_link import (
 )
 
 
-class StartCalculationLink(CalculationLink):
+class CreateCalculationMetaDataLink(CalculationLink):
     pass

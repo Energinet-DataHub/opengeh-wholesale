@@ -11,58 +11,70 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dependency_injector.wiring import Provide, Container, inject
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.calculation_output import CalculationOutput
-from package.calculation.wholesale.links.calculation_link import (
+from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.domain.calculation_links.calculation_link import (
     CalculationLink,
 )
+from package.calculation.domain.chains.cache_bucket import CacheBucket
 from package.codelists import MeteringPointType
 from package.constants import Colname
 from package.databases.wholesale_internal import WholesaleInternalRepository
+from package.infrastructure import logging_configuration
 
 
-class CalculateGridLossResponsibleLink(CalculationLink):
+class GetGridLossResponsibleLink(CalculationLink):
 
+    @inject
     def __init__(
         self,
-        grid_areas: list[str],
-        metering_point_periods_df: DataFrame,
-        grid_loss_responsible_repository: WholesaleInternalRepository,
+        args: CalculatorArgs = Provide[Container.args],
+        repository: WholesaleInternalRepository = Provide[
+            Container.metering_point_period_repository
+        ],
+        metering_point_periods: DataFrame = Provide[
+            Container.buckets.metering_point_periods
+        ],
+        cache_bucket: CacheBucket = Provide[Container.bucket],
     ):
         super().__init__()
-        self.grid_areas = grid_areas
-        self.metering_point_periods_df = metering_point_periods_df
-        self.grid_loss_responsible_repository = grid_loss_responsible_repository
+        self.repository = repository
+        self.args = args
+        self.metering_point_periods = metering_point_periods
+        self.cache_bucket = cache_bucket
 
-    def execute(self, calculation_output: CalculationOutput) -> CalculationOutput:
+    @logging_configuration.use_span("get_metering_point_periods")
+    def execute(self, output: CalculationOutput) -> CalculationOutput:
 
-        grid_loss_metering_points = (
-            self.grid_loss_responsible_repository.read_grid_loss_metering_points()
+        grid_loss_responsible = (
+            self.repository.read_grid_loss_metering_points()
+            .join(
+                self.metering_point_periods,
+                Colname.metering_point_id,
+                "inner",
+            )
+            .select(
+                col(Colname.metering_point_id),
+                col(Colname.grid_area_code),
+                col(Colname.from_date),
+                col(Colname.to_date),
+                col(Colname.metering_point_type),
+                col(Colname.energy_supplier_id),
+                col(Colname.balance_responsible_party_id),
+            )
         )
 
-        grid_loss_responsible = grid_loss_metering_points.join(
-            self.metering_point_periods_df,
-            Colname.metering_point_id,
-            "inner",
-        ).select(
-            col(Colname.metering_point_id),
-            col(Colname.grid_area_code),
-            col(Colname.from_date),
-            col(Colname.to_date),
-            col(Colname.metering_point_type),
-            col(Colname.energy_supplier_id),
-            col(Colname.balance_responsible_party_id),
+        _throw_if_no_grid_loss_responsible(
+            self.args.calculation_grid_areas, grid_loss_responsible
         )
 
-        _throw_if_no_grid_loss_responsible(self.grid_areas, grid_loss_responsible)
+        self.cache_bucket.grid_loss_responsible = grid_loss_responsible
 
-        calculation_output.basis_data_output.grid_loss_metering_points = (
-            grid_loss_metering_points
-        )
-
-        return super().execute(calculation_output)
+        return super().execute(output)
 
 
 def _throw_if_no_grid_loss_responsible(

@@ -15,8 +15,10 @@ from dependency_injector.wiring import Provide, Container, inject
 
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.domain.utils.chain.chain import CacheBucket
-from package.calculation.wholesale.links.calculation_link import CalculationLink
+from package.calculation.domain.calculation_links.calculation_link import (
+    CalculationLink,
+)
+from package.calculation.domain.chains.cache_bucket import CacheBucket
 from package.calculation.wholesale.links.metering_point_period_repository import (
     IMeteringPointPeriodRepository,
 )

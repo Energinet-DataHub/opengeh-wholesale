@@ -15,19 +15,14 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar
 
 from package.calculation.calculation_output import CalculationOutput
 
-# Define generic type variables
-RequestType = TypeVar("RequestType")
-ResponseType = TypeVar("ResponseType")
 
-
-class Link(ABC):
+class CalculationLink(ABC):
 
     @abstractmethod
-    def set_next(self, handler: Link) -> Link:
+    def set_next(self, calculation_link: CalculationLink) -> CalculationLink:
         pass
 
     @abstractmethod
@@ -35,21 +30,18 @@ class Link(ABC):
         pass
 
 
-class CalculationLink(Link):
-    """
-    The default chaining behavior can be implemented inside a base handler class.
-    """
+class BaseCalculationLink(CalculationLink):
 
     def __init__(
         self,
-    ):
-        self._next_handler = None
+    ) -> None:
+        self._next_link: CalculationLink | None = None
 
-    def set_next(self, handler: Link) -> Link:
-        self._next_handler = handler
-        return handler
+    def set_next(self, calculation_link: CalculationLink) -> CalculationLink:
+        self._next_link = calculation_link
+        return calculation_link
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
-        if self._next_handler:
-            return self._next_handler.execute(output)
+        if self._next_link:
+            return self._next_link.execute(output)
         return output

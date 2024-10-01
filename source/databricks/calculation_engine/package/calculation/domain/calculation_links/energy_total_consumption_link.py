@@ -16,26 +16,34 @@ from dependency_injector.wiring import Provide, Container
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.links.calculation_step import CalculationLink
-from package.calculation.wholesale.links.repository_interfaces import MeteringPointPeriodRepository, IMeteringPointPeriodRepository
+from package.calculation.domain.calculation_links.calculation_link import CalculationLink
+from package.calculation.wholesale.links.metering_point_period_repository import IMeteringPointPeriodRepository
 from package.codelists import TimeSeriesType, AggregationLevel
 
 from package.calculation.energy.aggregators.grid_loss_aggregators import as grid_loss_aggr
 
-class CalculateTotalEnergyConsumptionStep(CalculationLink):
+class CalculateTotalEnergyConsumptionLink(CalculationLink):
 
     def __init__(
         self,
-        calculator_args: CalculatorArgs,
+        calculator_args: CalculatorArgs = Provide[Container.args],
         metering_point_periods_repository: IMeteringPointPeriodRepository=Provide[Container.service]
     ):
         super().__init__()
+
         if calculator_args is None:
-            raise ValueError("calculator_args cannot be None")
+            raise ValueError("calculator_args cannot be None.")
+
+        if metering_point_periods_repository is None:
+            raise ValueError("metering_point_periods_repository cannot be None.")
 
         self.calculator_args = calculator_args
+        self.metering_point_periods_repository = metering_point_periods_repository
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
+
+        self.metering_point_periods_repository.get_by()
+
         total_consumption = factory.create(
             self.calculator_args,
             grid_loss_aggr.calculate_total_consumption(production, exchange),

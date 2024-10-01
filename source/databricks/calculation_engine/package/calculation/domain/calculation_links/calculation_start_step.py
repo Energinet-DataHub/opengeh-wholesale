@@ -16,5 +16,9 @@ from package.calculation.domain.calculation_links.calculation_link import (
 )
 
 
-class StartCalculationLink(CalculationLink):
-    pass
+class CalculationStartLink(CalculationLink):
+
+    def __init__(
+        self,
+    ):
+        super().__init__()

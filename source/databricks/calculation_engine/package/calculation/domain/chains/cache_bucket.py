@@ -11,10 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation.domain.calculation_links.calculation_link import (
-    CalculationLink,
-)
 
 
-class StartCalculationLink(CalculationLink):
-    pass
+class CacheBucket:
+
+    def __init__(self) -> None:
+        self._metering_points = None
+
+    @property
+    def metering_points(self):
+        return self._metering_points
+
+    @metering_points.setter
+    def metering_points(self, value) -> None:
+        if self._metering_points is not None:
+            raise AttributeError("metering_points can only be set once.")
+        self._metering_points = value

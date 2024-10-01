@@ -13,9 +13,10 @@
 # limitations under the License.
 from typing import Any
 
-from package.calculation.wholesale.links.calculation_step import CalculationLink
-
 from package.calculation.calculation_output import CalculationOutput
+from package.calculation.domain.calculation_links.calculation_link import (
+    CalculationLink,
+)
 
 
 class ExampleStep(CalculationLink):

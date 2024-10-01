@@ -11,10 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from package.calculation.domain.calculation_links.calculation_link import (
     CalculationLink,
 )
 
 
-class StartCalculationLink(CalculationLink):
-    pass
+class CalculateTemporaryFlexConsumptionPerEsLink(CalculationLink):
+
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__()

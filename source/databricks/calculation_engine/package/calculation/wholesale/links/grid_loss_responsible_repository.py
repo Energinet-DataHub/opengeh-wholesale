@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from pyspark.sql.functions import col
 
 from package.calculation.preparation.data_structures import GridLossResponsible
-from package.calculation.wholesale.links.repository_interfaces import (
+from package.calculation.wholesale.links.metering_point_period_repository import (
     IMeteringPointPeriodRepository,
 )
 from package.constants import Colname
@@ -36,8 +36,8 @@ class GridLossResponsibleRepository(IGridLossResponsibleRepository):
         metering_point_periods_repository: IMeteringPointPeriodRepository,
         repository: WholesaleInternalRepository,
     ):
-        self.metering_point_periods_repository = metering_point_periods_repository
         self.repository = repository
+        self.metering_point_periods_repository = metering_point_periods_repository
 
     def get_by(self, grid_areas: list[str]) -> GridLossResponsible:
 

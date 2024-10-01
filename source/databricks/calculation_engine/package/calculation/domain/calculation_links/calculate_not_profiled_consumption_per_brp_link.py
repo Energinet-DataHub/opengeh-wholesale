@@ -12,18 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.wholesale.links.calculation_step import CalculationLink
-
+import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
 from package.calculation.calculation_output import (
     CalculationOutput,
 )
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.domain.calculation_links.calculation_link import (
+    CalculationLink,
+)
 from package.calculation.energy.data_structures.energy_results import EnergyResults
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType, AggregationLevel, CalculationType
 
 
-class CalculateNonProfiledConsumptionPerEsStep(CalculationLink):
+class CalculateNonProfiledConsumptionPerBrpLink(CalculationLink):
 
     def __init__(
         self,
@@ -36,11 +38,19 @@ class CalculateNonProfiledConsumptionPerEsStep(CalculationLink):
 
     def execute(self, output: CalculationOutput) -> CalculationOutput:
 
-        output.non_profiled_consumption_per_es = factory.create(
-            self.args,
-            self.non_profiled_consumption_per_es,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.ENERGY_SUPPLIER,
-        )
+        if _is_aggregation_or_balance_fixing(self.args.calculation_type):
+            output.non_profiled_consumption_per_brp = factory.create(
+                self.args,
+                grouping_aggr.aggregate_per_brp(self.non_profiled_consumption_per_es),
+                TimeSeriesType.NON_PROFILED_CONSUMPTION,
+                AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
+            )
 
         return super().execute(output)
+
+
+def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
+    return (
+        calculation_type == CalculationType.AGGREGATION
+        or calculation_type == CalculationType.BALANCE_FIXING
+    )
