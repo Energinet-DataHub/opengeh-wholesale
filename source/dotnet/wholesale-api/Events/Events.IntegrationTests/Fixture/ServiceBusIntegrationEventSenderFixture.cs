@@ -41,7 +41,9 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
             integrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
             integrationTestConfiguration.Credential);
 
-        ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
+        ServiceBusClient = new ServiceBusClient(
+            integrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            integrationTestConfiguration.Credential);
 
         IntegrationEventsOptions = Options.Create(
             new IntegrationEventsOptions
