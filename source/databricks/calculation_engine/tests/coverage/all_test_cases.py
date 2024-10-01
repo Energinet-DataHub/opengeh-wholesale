@@ -57,6 +57,7 @@ class Cases:
             WithDrawal_when_price_element_disappears_but_chargelink_remains: str
             WithDrawal_when_time_series_removed_which_were_previously_withdrawn: str
             WithDrawal_when_previous_calculation_was_internal: str
+            WithDrawal_when_current_calculation_is_internal: str
             WithDrawal_when_new_calculation_period_only_partially_covers_previous: str
 
     class DataProductTests:
