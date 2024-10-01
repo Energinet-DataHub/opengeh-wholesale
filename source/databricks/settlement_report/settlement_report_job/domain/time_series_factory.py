@@ -11,8 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
+from uuid import UUID
+
 from pyspark.sql import DataFrame, functions as F, Window, Column
-from pyspark.sql.session import SparkSession
 
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
@@ -20,10 +22,7 @@ from settlement_report_job.domain.report_naming_convention import (
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.database_definitions import (
-    get_metering_point_time_series_view_name,
-)
+from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -32,10 +31,6 @@ from settlement_report_job.infrastructure.column_names import (
 )
 from settlement_report_job.utils import (
     map_from_dict,
-    get_dbutils,
-    write_files,
-    get_new_files,
-    merge_files,
 )
 from settlement_report_job.infrastructure import logging_configuration
 
@@ -46,72 +41,45 @@ log = Logger(__name__)
     "settlement_report_job.time_series_factory.create_time_series"
 )
 def create_time_series(
-    spark: SparkSession,
-    args: SettlementReportArgs,
-    report_directory: str,
+    period_start: datetime,
+    period_end: datetime,
+    calculation_id_by_grid_area: dict[str, UUID],
     resolution: DataProductMeteringPointResolution,
-) -> list[str]:
+    time_zone: str,
+    repository: WholesaleRepository,
+) -> DataFrame:
     log.info("Creating time series points")
-    dbutils = get_dbutils(spark)
-    time_series_points = _get_filtered_time_series_points(spark, args, resolution)
+    time_series_points = _read_and_filter_from_view(
+        period_start, period_end, calculation_id_by_grid_area, repository, resolution
+    )
     prepared_time_series = _generate_time_series(
         time_series_points,
         _get_desired_quantity_column_count(resolution),
-        args.time_zone,
+        time_zone,
     )
-
-    result_path = f"{report_directory}/time_series_{resolution.value}"
-    headers = write_files(
-        df=prepared_time_series,
-        path=result_path,
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
-        order_by=[
-            DataProductColumnNames.grid_area_code,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.start_of_day,
-        ],
-    )
-    resolution_name = (
-        "TSSD60" if resolution == DataProductMeteringPointResolution.HOUR else "TSSD15"
-    )
-    new_files = get_new_files(
-        result_path,
-        file_name_template="_".join(
-            [
-                resolution_name,
-                "{grid_area}",
-                args.period_start.strftime("%d-%m-%Y"),
-                args.period_end.strftime("%d-%m-%Y"),
-                "{chunk_index}",
-            ]
-        ),
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
-    )
-    files = merge_files(
-        dbutils=dbutils,
-        new_files=new_files,
-        headers=headers,
-    )
-    return files
+    return prepared_time_series
 
 
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory._read_and_filter_from_view"
 )
 def _read_and_filter_from_view(
-    spark: SparkSession, args: SettlementReportArgs, view_name: str
+    period_start: datetime,
+    period_end: datetime,
+    calculation_id_by_grid_area: dict[str, UUID],
+    repository: WholesaleRepository,
+    resolution: DataProductMeteringPointResolution,
 ) -> DataFrame:
-    df = spark.read.table(view_name).where(
-        (F.col(DataProductColumnNames.observation_time) >= args.period_start)
-        & (F.col(DataProductColumnNames.observation_time) < args.period_end)
+    df = repository.read_metering_point_time_series().where(
+        (F.col(DataProductColumnNames.observation_time) >= period_start)
+        & (F.col(DataProductColumnNames.observation_time) < period_end)
     )
+
+    df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
+        for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
     ]
 
     df_filtered = df.where(
@@ -134,7 +102,7 @@ def _generate_time_series(
 ) -> DataFrame:
     filtered_time_series_points = filtered_time_series_points.withColumn(
         EphemeralColumns.start_of_day,
-        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
+        _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
     win = Window.partitionBy(
@@ -181,7 +149,7 @@ def _generate_time_series(
     )
 
 
-def get_start_of_day(col: Column | str, time_zone: str) -> Column:
+def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
     col = F.col(col) if isinstance(col, str) else col
     return F.to_utc_timestamp(
         F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
@@ -197,18 +165,3 @@ def _get_desired_quantity_column_count(
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution.value}")
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._get_filtered_data"
-)
-def _get_filtered_time_series_points(
-    spark: SparkSession,
-    args: SettlementReportArgs,
-    resolution: DataProductMeteringPointResolution,
-) -> DataFrame:
-    log.info("Getting filtered data")
-    df = _read_and_filter_from_view(
-        spark, args, get_metering_point_time_series_view_name()
-    )
-    return df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
