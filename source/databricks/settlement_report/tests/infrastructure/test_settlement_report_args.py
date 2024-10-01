@@ -362,30 +362,6 @@ def test_when_no_energy_supplier_specified__returns_none_energy_supplier_ids(
     assert actual_args.energy_supplier_ids is None
 
 
-class TestNoEnergySupplierId:
-    def test_returns_none_for_energy_supplier_id(
-        self,
-        job_environment_variables: dict,
-        sys_argv_from_contract: list[str],
-    ) -> None:
-        # Arrange
-        test_sys_args = [
-            item
-            for item in sys_argv_from_contract
-            if not item.startswith("--energy-supplier-ids")
-        ]
-
-        with patch("sys.argv", test_sys_args):
-            with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
-
-                # Act
-                actual_args = parse_job_arguments(command_line_args)
-
-        # Assert
-        assert actual_args.energy_supplier_ids is None
-
-
 class TestWhenInvokedWithValidMarketRole:
     @pytest.mark.parametrize(
         "market_role",
