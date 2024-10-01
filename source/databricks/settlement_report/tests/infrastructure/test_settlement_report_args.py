@@ -112,7 +112,7 @@ class TestWhenInvokedWithValidParameters:
                 # Act
                 actual_args = parse_job_arguments(command_line_args)
 
-        # Assert
+        print(actual_args.energy_supplier_ids)
 
         # Assert - settlement report arguments
         assert actual_args.report_id == DEFAULT_REPORT_ID
@@ -123,7 +123,7 @@ class TestWhenInvokedWithValidParameters:
             "804": uuid.UUID("95bd2365-c09b-4ee7-8c25-8dd56b564811"),
             "805": uuid.UUID("d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"),
         }
-        assert actual_args.energy_supplier_id == "1234567890123"
+        assert actual_args.energy_supplier_ids == ["1234567890123"]
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
@@ -244,7 +244,7 @@ class TestNoEnergySupplierId:
         test_sys_args = [
             item
             for item in sys_argv_from_contract
-            if not item.startswith("--energy-supplier-id")
+            if not item.startswith("--energy-supplier-ids")
         ]
 
         with patch("sys.argv", test_sys_args):
@@ -255,7 +255,7 @@ class TestNoEnergySupplierId:
                 actual_args = parse_job_arguments(command_line_args)
 
         # Assert
-        assert actual_args.energy_supplier_id is None
+        assert actual_args.energy_supplier_ids is None
 
 
 class TestWhenInvokedWithValidMarketRole:

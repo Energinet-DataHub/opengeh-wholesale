@@ -40,7 +40,6 @@ def parse_job_arguments(
 ) -> SettlementReportArgs:
     logger = Logger(__name__)
     logger.info(f"Command line arguments: {repr(job_args)}")
-
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
         settlement_report_args = SettlementReportArgs(
@@ -53,7 +52,7 @@ def parse_job_arguments(
             calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
                 job_args.calculation_id_by_grid_area
             ),
-            energy_supplier_id=job_args.energy_supplier_id,
+            energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
@@ -81,6 +80,8 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--requesting-actor-id", type=str, required=True)
     p.add("--calculation-id-by-grid-area", type=str, required=True)
     p.add("--energy-supplier-id", type=str, required=False)
+    # p.add("--energy-supplier-ids", type=str, nargs="+", required=False)
+    p.add("--energy-supplier-ids", type=str, required=False)
     p.add(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise
@@ -89,6 +90,10 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     )  # true if present, false otherwise
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
+
+    print(args)
+    print(args.energy_supplier_ids)
+
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")
