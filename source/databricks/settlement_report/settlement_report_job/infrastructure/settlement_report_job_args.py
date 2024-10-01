@@ -80,8 +80,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--requesting-actor-id", type=str, required=True)
     p.add("--calculation-id-by-grid-area", type=str, required=True)
     p.add("--energy-supplier-id", type=str, required=False)
-    # p.add("--energy-supplier-ids", type=str, nargs="+", required=False)
-    p.add("--energy-supplier-ids", type=str, required=False)
+    p.add("--energy-supplier-ids", type=valid_list, required=False)
     p.add(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise
