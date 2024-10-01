@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
+from functools import reduce
 from unittest.mock import Mock
 
 import pytest
@@ -374,3 +375,64 @@ def test_create_time_series__returns_only_selected_calculation_id(
         actual_df.collect()[0][TimeSeriesPointCsvColumnNames.metering_point_id]
         == expected_metering_point_id
     )
+
+
+ENERGY_SUPPLIER_A = "1000000000000"
+ENERGY_SUPPLIER_B = "2000000000000"
+ENERGY_SUPPLIER_C = "3000000000000"
+ENERGY_SUPPLIERS_ABC = [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B, ENERGY_SUPPLIER_C]
+
+
+@pytest.mark.parametrize(
+    "selected_energy_supplier_ids,expected_energy_supplier_ids",
+    [
+        (None, ENERGY_SUPPLIERS_ABC),
+        ([ENERGY_SUPPLIER_B], [ENERGY_SUPPLIER_B]),
+        (
+            [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B],
+            [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B],
+        ),
+        (ENERGY_SUPPLIERS_ABC, ENERGY_SUPPLIERS_ABC),
+    ],
+)
+def test_create_time_series__when_no_energy_supplier_selected__returns_for_all_energy_suppliers(
+    spark: SparkSession,
+    selected_energy_supplier_ids: list[str] | None,
+    expected_energy_supplier_ids: list[str],
+) -> None:
+    # Arrange
+    df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            factory.create(
+                spark,
+                factory.MeteringPointTimeSeriesTestDataSpec(
+                    from_date=DEFAULT_FROM_DATE,
+                    to_date=DEFAULT_TO_DATE,
+                    energy_supplier_id=energy_supplier_id,
+                ),
+            )
+            for energy_supplier_id in ENERGY_SUPPLIERS_ABC
+        ],
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        calculation_id_by_grid_area={
+            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+        },
+        energy_supplier_ids=selected_energy_supplier_ids,
+        resolution=DataProductMeteringPointResolution.HOUR,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+    actual_df.show()
+
+    # Assert
+    assert set(
+        row[DataProductColumnNames.energy_supplier_id] for row in actual_df.collect()
+    ) == set(expected_energy_supplier_ids)
