@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession, DataFrame
 
-import metering_point_time_series_factory
+from test_factories import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 
 GRID_AREAS = ["804", "805"]
@@ -9,7 +9,6 @@ ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 
 
 def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
-
     dataframes = []
     for grid_area in GRID_AREAS:
         for energy_supplier_id in ENERGY_SUPPLIER_IDS:

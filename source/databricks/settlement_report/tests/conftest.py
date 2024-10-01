@@ -19,9 +19,8 @@ from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType
 
-import metering_point_time_series_factory
+from tests.test_factories import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -80,7 +79,7 @@ def metering_point_time_series_written_to_delta_table(
         resolution="PT15M",
         grid_area_code="804",
         energy_supplier_id="1234567890123",
-
+    )
     df = metering_point_time_series_factory.create(spark, data_spec)
     write_input_test_data_to_table(
         spark,
