@@ -10,6 +10,7 @@ biztalk_hybrid_connection_hostname          = "datahub.preproduction.biztalk.ene
 apim_url                                    = "https://dev002.b2b.datahub3.dk"
 alert_email_address                         = "d01b5c85.energinet.onmicrosoft.com@emea.teams.ms"
 enable_audit_logs                           = false
+platform_security_group_contributor_access  = true
 developer_security_group_contributor_access = true
 developer_security_group_reader_access      = true
 databricks_readers_group = {

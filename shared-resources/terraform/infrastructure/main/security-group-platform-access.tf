@@ -33,19 +33,6 @@ module "platform_security_group_permissions_reader" {
 }
 
 #
-# Terraform state resource group
-#
-data "azurerm_resource_group" "rg_tfstate" {
-  name = "rg-tfs-${var.environment_short}-${local.region_code}-${var.environment_instance}"
-}
-
-resource "azurerm_role_assignment" "omada_platform_team_tfstate_access" {
-  scope                = data.azurerm_resource_group.rg_tfstate.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = data.azuread_group.platform_security_group_name.object_id
-}
-
-#
 # CCP Network resource group
 #
 data "azurerm_resource_group" "rg_ccp_network" {
