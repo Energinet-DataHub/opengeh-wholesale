@@ -75,19 +75,21 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     )
 
     # Run parameters
-    p.add("--report-id", type=str, required=True)
-    p.add("--period-start", type=valid_date, required=True)
-    p.add("--period-end", type=valid_date, required=True)
-    p.add("--calculation-type", type=CalculationType, required=True)
-    p.add("--requesting-actor-market-role", type=MarketRole, required=True)
-    p.add("--requesting-actor-id", type=str, required=True)
-    p.add("--calculation-id-by-grid-area", type=str, required=True)
-    p.add("--energy-supplier-id", type=str, required=False)
-    p.add("--energy-supplier-ids", type=valid_energy_supplier_ids, required=False)
-    p.add(
+    p.add_argument("--report-id", type=str, required=True)
+    p.add_argument("--period-start", type=valid_date, required=True)
+    p.add_argument("--period-end", type=valid_date, required=True)
+    p.add_argument("--calculation-type", type=CalculationType, required=True)
+    p.add_argument("--requesting-actor-market-role", type=MarketRole, required=True)
+    p.add_argument("--requesting-actor-id", type=str, required=True)
+    p.add_argument("--calculation-id-by-grid-area", type=str, required=True)
+    p.add_argument("--energy-supplier-id", type=str, required=False)
+    p.add_argument(
+        "--energy-supplier-ids", type=valid_energy_supplier_ids, required=False
+    )
+    p.add_argument(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise
-    p.add(
+    p.add_argument(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
 
