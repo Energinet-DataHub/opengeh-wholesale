@@ -20,6 +20,8 @@ def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with metering point time series data for testing purposes.
     There is one row for each combination of resolution, grid area code, and energy supplier id.
+    There is one calculation with two grid areas, and each grid area has two energy suppliers and each energy supplier
+    has one metering point in the grid area
     """
     df = None
     count = 0

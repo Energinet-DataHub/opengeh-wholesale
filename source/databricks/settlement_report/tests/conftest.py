@@ -23,8 +23,8 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from test_data import standard_wholesale_fixing_scenario_data_generator
-from test_data.write_test_data import write_metering_point_time_series_to_delta_table
+from data_seeding import standard_wholesale_fixing_scenario_data_generator
+from data_seeding.write_test_data import write_metering_point_time_series_to_delta_table
 
 
 @pytest.fixture(scope="session")
