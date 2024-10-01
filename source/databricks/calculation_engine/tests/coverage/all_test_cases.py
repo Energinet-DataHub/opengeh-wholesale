@@ -46,6 +46,7 @@ class Cases:
         class MultipleGridAreasInCalculations:
             Calculation_covers_multiple_grid_areas: str
             Calculation_includes_2_out_of_3_MP_grid_areas_in_input_data: str
+
         class WithDrawalTests:
             WithDrawal_when_child_mp_relation_to_parent_ends_in_period_but_chargelink_not_updated: str
             WithDrawal_when_combination_previously_missing_reintroduced: str
