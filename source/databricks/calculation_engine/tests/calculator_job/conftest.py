@@ -140,7 +140,7 @@ def wholesale_fixing_energy_results_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.HiveOutputDatabase.DATABASE_NAME}.{paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME}"
     )
     return results_df.where(
         F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id

@@ -19,9 +19,6 @@ import package.infrastructure.paths as paths
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
 )
-from package.databases.wholesale_results_internal.schemas import (
-    hive_energy_results_schema,
-)
 
 # calculation_output
 from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
@@ -35,10 +32,6 @@ schema_config = [
             Table(
                 name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
                 schema=hive_wholesale_results_schema,
-            ),
-            Table(
-                name=paths.HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME,
-                schema=hive_energy_results_schema,
             ),
         ],
         views=[
