@@ -216,6 +216,45 @@ resource "databricks_job" "migration_workflow" {
   ]
 }
 
+resource "databricks_job" "migration_pooled_cluster_sustainer" {
+  name = "Pooled cluster sustainer"
+
+  job_cluster {
+    job_cluster_key = "sustainer_job_cluster"
+    new_cluster {
+      instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
+      spark_version    = local.databricks_runtime_version
+      spark_conf = {
+        "spark.master" : "local[*, 4]"
+      }
+    }
+  }
+
+  git_source {
+    url      = "https://github.com/Energinet-DataHub/opengeh-migration.git"
+    provider = "gitHub"
+    branch   = "main"
+  }
+
+  task {
+    task_key = "version_info"
+
+    notebook_task {
+      notebook_path = "source/DataMigration/config/version_info"
+    }
+    job_cluster_key = "sustainer_job_cluster"
+  }
+
+  schedule {
+    quartz_cron_expression = "0 0 5-17 ? * MON-FRI"
+    timezone_id            = "UTC"
+  }
+
+  depends_on = [
+    time_sleep.wait_for_instance_pool, azurerm_databricks_workspace.this, databricks_token.pat
+  ]
+}
+
 resource "databricks_permissions" "jobs" {
   job_id = databricks_job.migration_workflow.id
 
