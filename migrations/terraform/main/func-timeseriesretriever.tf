@@ -52,6 +52,10 @@ module "func_timeseriesretriever" {
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = azurerm_servicebus_topic.time_series_imported_messages_topic.id
+      role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
 }
