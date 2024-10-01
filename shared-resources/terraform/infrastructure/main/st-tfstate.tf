@@ -1,3 +1,5 @@
+# Add backup and access to tfstate storage accounts created in the initialize script
+
 data "azurerm_resource_group" "tfstate" {
   name = "rg-tfs-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
 }
@@ -67,4 +69,10 @@ resource "azurerm_role_assignment" "tfstate_reader_outlaws" {
   scope                = data.azurerm_storage_account.tfstate.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = data.azuread_group.platform_security_group_name.object_id
+}
+
+resource "azurerm_management_lock" "tfstate_lock" {
+  name       = "tfstate-lock"
+  scope      = data.azurerm_storage_account.tfstate.id
+  lock_level = "CanNotDelete"
 }
