@@ -24,8 +24,7 @@ from settlement_report_job.domain.metering_point_resolution import (
 from settlement_report_job.domain.report_data_type import ReportDataType
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-import tests.test_factories.time_series_points_csv_factory as factory
-from datetime import datetime
+import tests.test_factories.time_series_csv_factory as factory
 
 
 @pytest.mark.parametrize(
@@ -51,7 +50,7 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         if resolution == DataProductMeteringPointResolution.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
-    test_spec = factory.TimeSeriesPointCsvTestDataSpec(
+    test_spec = factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointType.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=grid_area_codes,
