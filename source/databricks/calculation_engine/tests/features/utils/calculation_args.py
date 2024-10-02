@@ -25,6 +25,7 @@ class ArgsName:
     period_start = "period_start"
     period_end = "period_end"
     grid_area_codes = "grid_areas"
+    is_internal_calculation = "is_internal_calculation"
 
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -61,5 +62,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
         created_by_user_id=calculation_args[Colname.created_by_user_id],
         time_zone=time_zone,
         quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
-        is_internal_calculation=False,
+        is_internal_calculation=calculation_args.get(
+            ArgsName.is_internal_calculation, False
+        ),
     )
