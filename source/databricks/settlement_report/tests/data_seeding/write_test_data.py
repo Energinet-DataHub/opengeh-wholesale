@@ -15,9 +15,9 @@ def write_metering_point_time_series_to_delta_table(
     write_dataframe_to_table(
         spark,
         df=df,
-        database_name=database_definitions.WholesaleSettlementReportDatabase.DATABASE_NAME,
-        table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
-        table_location=f"{table_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
+        database_name=database_definitions.WholesaleBasisDataDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleBasisDataDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleBasisDataDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
         schema=metering_point_time_series_v1,
     )
 
