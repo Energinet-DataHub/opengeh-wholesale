@@ -402,7 +402,7 @@ ENERGY_SUPPLIERS_ABC = [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B, ENERGY_SUPPLIER_C]
         (ENERGY_SUPPLIERS_ABC, ENERGY_SUPPLIERS_ABC),
     ],
 )
-def test_create_time_series__when_no_energy_supplier_selected__returns_for_all_energy_suppliers(
+def test_create_time_series__returns_data_for_expected_energy_suppliers(
     spark: SparkSession,
     selected_energy_supplier_ids: list[str] | None,
     expected_energy_supplier_ids: list[str],

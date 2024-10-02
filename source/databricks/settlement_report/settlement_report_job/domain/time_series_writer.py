@@ -51,7 +51,6 @@ def write(
         path=spark_output_path,
         partition_by_chunk_index=args.prevent_large_text_files,
         partition_by_grid_area=True,  # always true for time series
-        partition_by_energy_supplier_id=,
         order_by=[
             DataProductColumnNames.grid_area_code,
             TimeSeriesPointCsvColumnNames.metering_point_type,

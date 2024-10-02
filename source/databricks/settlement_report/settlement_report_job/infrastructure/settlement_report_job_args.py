@@ -43,6 +43,7 @@ def parse_job_arguments(
 ) -> SettlementReportArgs:
     logger = Logger(__name__)
     logger.info(f"Command line arguments: {repr(job_args)}")
+
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
         settlement_report_args = SettlementReportArgs(
@@ -94,10 +95,6 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     )  # true if present, false otherwise
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
-
-    print(args)
-    print(args.energy_supplier_ids)
-
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")

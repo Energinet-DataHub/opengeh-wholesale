@@ -41,7 +41,6 @@ def start_hourly_time_series() -> None:
 
 
 def start_quarterly_time_series() -> None:
-
     _start_task(report_generator.execute_quarterly_time_series)
 
 
