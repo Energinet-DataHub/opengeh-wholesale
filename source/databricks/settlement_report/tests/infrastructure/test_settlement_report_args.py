@@ -122,8 +122,6 @@ class TestWhenInvokedWithValidParameters:
                 # Act
                 actual_args = parse_job_arguments(command_line_args)
 
-        print(actual_args.energy_supplier_ids)
-
         # Assert - settlement report arguments
         assert actual_args.report_id == DEFAULT_REPORT_ID
         assert actual_args.period_start == datetime(2022, 5, 31, 22)
