@@ -56,7 +56,7 @@ def standard_wholesale_fixing_scenario_args(
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="spark_catalog",
-        energy_supplier_ids=["1234567890123"],
+        energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
         settlement_reports_output_path=settlement_reports_output_path,

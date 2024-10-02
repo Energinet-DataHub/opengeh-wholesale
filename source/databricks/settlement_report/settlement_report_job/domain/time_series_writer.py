@@ -48,6 +48,12 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
+    if args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        prepared_time_series = prepared_time_series.drop(
+            DataProductColumnNames.energy_supplier_id
+        )
+    prepared_time_series.show()
+
     partition_columns = [DataProductColumnNames.grid_area_code]
 
     if _is_partitioning_by_energy_supplier_id_needed(args):
