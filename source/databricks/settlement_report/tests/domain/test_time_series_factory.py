@@ -440,5 +440,6 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
 
     # Assert
     assert set(
-        row[DataProductColumnNames.energy_supplier_id] for row in actual_df.collect()
+        row[TimeSeriesPointCsvColumnNames.energy_supplier_id]
+        for row in actual_df.collect()
     ) == set(expected_energy_supplier_ids)
