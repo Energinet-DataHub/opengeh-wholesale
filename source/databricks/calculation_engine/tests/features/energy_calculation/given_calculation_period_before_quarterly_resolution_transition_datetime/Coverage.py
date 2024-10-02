@@ -1,8 +1,8 @@
-from test_coverage.all_test_cases import Cases
+from coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
-The purpose is to test a calculation on a period before the transition to quarterly results.
+The purpose is to test withdrawal on a period before the transition to quarterly results.
 
 ## DESIGN CONSIDERATIONS
 - Period is before the calculation result resolution change

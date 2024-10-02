@@ -76,11 +76,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            IntegrationTestConfiguration.Credential);
 
         ServiceBusListenerMock = new ServiceBusListenerMock(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            IntegrationTestConfiguration.Credential);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
