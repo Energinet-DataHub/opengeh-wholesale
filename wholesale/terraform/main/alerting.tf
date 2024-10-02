@@ -62,9 +62,9 @@ module "monitor_action_group_wholesale" {
                         | where customDimensions["EventName"] != "HealthCheckEnd"
                     QUERY
       severity    = 1
-      frequency   = 10
-      time_window = 60
-      threshold   = 2
+      frequency   = 5
+      time_window = 5
+      threshold   = 0
       operator    = "GreaterThan"
     },
     //
@@ -105,9 +105,9 @@ module "monitor_action_group_wholesale" {
                         | where customDimensions["EventName"] != "HealthCheckEnd"
                     QUERY
       severity    = 1
-      frequency   = 10
-      time_window = 60
-      threshold   = 2
+      frequency   = 5
+      time_window = 5
+      threshold   = 0
       operator    = "GreaterThan"
     },
   ]
