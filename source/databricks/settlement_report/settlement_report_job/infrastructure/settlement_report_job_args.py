@@ -61,7 +61,7 @@ def parse_job_arguments(
             settlement_reports_output_path=get_settlement_reports_output_path(
                 env_vars.get_catalog_name()
             ),
-            locale=job_args.locale,
+            locale=job_args.locale if job_args.locale is not None else "da-DK",
         )
 
         return settlement_report_args
