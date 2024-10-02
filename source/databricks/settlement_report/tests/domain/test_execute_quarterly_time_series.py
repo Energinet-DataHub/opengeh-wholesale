@@ -11,7 +11,7 @@ from settlement_report_job.infrastructure.column_names import (
 def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    datahub_admin_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
@@ -25,7 +25,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
 
     # Act
     execute_quarterly_time_series(
-        spark, dbutils, standard_wholesale_fixing_scenario_args
+        spark, dbutils, datahub_admin_wholesale_fixing_scenario_args
     )
 
     # Assert

@@ -50,13 +50,13 @@ def write(
 
     if args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
         prepared_time_series = prepared_time_series.drop(
-            DataProductColumnNames.energy_supplier_id
+            TimeSeriesPointCsvColumnNames.energy_supplier_id
         )
 
     partition_columns = [DataProductColumnNames.grid_area_code]
 
     if _is_partitioning_by_energy_supplier_id_needed(args):
-        partition_columns.append(DataProductColumnNames.energy_supplier_id)
+        partition_columns.append(TimeSeriesPointCsvColumnNames.energy_supplier_id)
 
     if args.prevent_large_text_files:
         partition_columns.append(EphemeralColumns.chunk_index)
