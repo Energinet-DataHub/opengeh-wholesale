@@ -34,7 +34,7 @@ class MeteringPointTimeSeriesTestDataSpec:
 
     calculation_id: str = DEFAULT_CALCULATION_ID
     calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING
-    calculation_version: str = DEFAULT_CALCULATION_VERSION
+    calculation_version: int = DEFAULT_CALCULATION_VERSION
     metering_point_id: str = DEFAULT_METERING_POINT_ID
     metering_point_type: MeteringPointType = MeteringPointType.CONSUMPTION
     resolution: DataProductMeteringPointResolution = (
