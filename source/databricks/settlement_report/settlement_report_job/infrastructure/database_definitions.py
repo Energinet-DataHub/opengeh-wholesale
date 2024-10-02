@@ -14,7 +14,7 @@
 
 
 class WholesaleSettlementReportDatabase:
-    DATABASE_NAME = "wholesale_settlement_reports"
+    DATABASE_NAME = "wholesale_basis_data"
     METERING_POINT_TIME_SERIES_VIEW_NAME = "metering_point_time_series_v1"
 
 
