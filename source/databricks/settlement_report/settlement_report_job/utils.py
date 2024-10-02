@@ -130,7 +130,7 @@ def write_files(
     path: str,
     partition_columns: list[str],
     order_by: list[str],
-    rows_per_file: int = 1_000_000,
+    rows_per_file: int,
     locale: str = "en-us",
 ) -> list[str]:
     """Write a DataFrame to multiple files.
@@ -148,9 +148,10 @@ def write_files(
 
     if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
-        chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
+        chunk_index_col = F.floor(
+            (F.row_number().over(w) - F.lit(1)) / F.lit(rows_per_file)
+        )  # Subtract one as row_number starts at 1
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
-        partition_columns.append(EphemeralColumns.chunk_index)
 
     df = df.orderBy(order_by)
 
