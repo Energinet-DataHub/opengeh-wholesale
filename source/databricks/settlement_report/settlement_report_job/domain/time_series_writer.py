@@ -68,6 +68,7 @@ def write(
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
         rows_per_file=rows_per_file,
+        locale=args.locale,
     )
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
