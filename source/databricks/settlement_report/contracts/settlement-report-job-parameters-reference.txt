@@ -16,4 +16,8 @@
 --energy-supplier-id=1234567890123
 --split-report-by-grid-area
 --prevent-large-text-files
+<<<<<<< HEAD
 --skip-basis-data-csv-files
+=======
+--locale=da-DK
+>>>>>>> main

@@ -37,3 +37,4 @@ class SettlementReportArgs:
     settlement_reports_output_path: str
     """The path to the folder where the settlement reports are stored."""
     skip_basis_data_csv_files: bool
+    locale: str

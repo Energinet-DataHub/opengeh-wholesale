@@ -62,6 +62,7 @@ def parse_job_arguments(
                 env_vars.get_catalog_name()
             ),
             skip_basis_data_csv_files=job_args.skip_basis_data_csv_files,
+            locale=job_args.locale,
         )
 
         return settlement_report_args
@@ -91,6 +92,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add(
         "--skip-basis-data-csv-files", action="store_true"
     )  # true if present, false otherwise
+    p.add("--locale", type=str, required=False)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
