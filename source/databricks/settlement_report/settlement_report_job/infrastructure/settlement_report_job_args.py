@@ -64,6 +64,7 @@ def parse_job_arguments(
             settlement_reports_output_path=get_settlement_reports_output_path(
                 env_vars.get_catalog_name()
             ),
+            locale=job_args.locale,
         )
 
         return settlement_report_args
@@ -93,6 +94,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
+    p.add("--locale", type=str, required=False)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):

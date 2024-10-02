@@ -72,6 +72,7 @@ def write(
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
+        locale=args.locale,
     )
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
