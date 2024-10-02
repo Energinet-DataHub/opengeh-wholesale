@@ -156,9 +156,11 @@ def _generate_time_series(
 
     return pivoted_df.select(
         F.col(DataProductColumnNames.grid_area_code),
-        F.col(DataProductColumnNames.energy_supplier_id),
         F.col(DataProductColumnNames.metering_point_id).alias(
             TimeSeriesPointCsvColumnNames.metering_point_id
+        ),
+        F.col(DataProductColumnNames.energy_supplier_id).alias(
+            TimeSeriesPointCsvColumnNames.energy_supplier_id
         ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
