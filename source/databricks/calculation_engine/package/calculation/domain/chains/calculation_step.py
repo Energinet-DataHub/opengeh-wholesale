@@ -26,7 +26,7 @@ class CalculationLink(ABC):
         pass
 
     @abstractmethod
-    def execute(self, output: CalculationOutput) -> CalculationOutput:
+    def execute(self, calculation_output: CalculationOutput) -> CalculationOutput:
         pass
 
 
@@ -41,7 +41,7 @@ class BaseCalculationLink(CalculationLink):
         self._next_link = calculation_link
         return calculation_link
 
-    def execute(self, output: CalculationOutput) -> CalculationOutput:
+    def execute(self, calculation_output: CalculationOutput) -> CalculationOutput:
         if self._next_link:
-            return self._next_link.execute(output)
-        return output
+            return self._next_link.execute(calculation_output)
+        return calculation_output
