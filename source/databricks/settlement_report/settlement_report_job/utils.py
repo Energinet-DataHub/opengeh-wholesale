@@ -22,6 +22,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+from pyspark.sql.types import DecimalType, DoubleType, FloatType
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.infrastructure.column_names import (
@@ -101,12 +102,36 @@ def get_dbutils(spark: SparkSession) -> Any:
     return dbutils
 
 
+def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
+    if locale.lower() == "en-gb":
+        return {"locale": "en-gb", "delimiter": ","}
+    if locale.lower() == "da-dk":
+        return {"locale": "da-dk", "delimiter": ";"}
+    else:
+        return {"locale": "en-us", "delimiter": ","}
+
+
+def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
+    data_types_to_convert = [FloatType(), DecimalType(), DoubleType()]
+    fields_to_convert = [
+        field for field in df.schema if field.dataType in data_types_to_convert
+    ]
+
+    for field in fields_to_convert:
+        df = df.withColumn(
+            field.name, F.regexp_replace(F.col(field.name).cast("string"), "\\.", ",")
+        )
+
+    return df
+
+
 def write_files(
     df: DataFrame,
     path: str,
     partition_columns: list[str],
     order_by: list[str],
     rows_per_file: int = 1_000_000,
+    locale: str = "en-us",
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -129,11 +154,18 @@ def write_files(
 
     df = df.orderBy(order_by)
 
+    if locale.lower() == "da-dk":
+        df = _convert_all_floats_to_danish_csv_format(df)
+
+    csv_writer_options = _get_csv_writer_options_based_on_locale(locale)
+
     print("writing to path: " + path)
     if partition_columns:
-        df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
+        df.write.mode("overwrite").options(**csv_writer_options).partitionBy(
+            partition_columns
+        ).csv(path)
     else:
-        df.write.mode("overwrite").csv(path)
+        df.write.mode("overwrite").options(**csv_writer_options).csv(path)
 
     return [c for c in df.columns if c not in partition_columns]
 
