@@ -95,7 +95,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
             waitTimeLimit: Fixture.ScenarioState.ExpectedClusterWarmupTimeLimit);
 
         // Assert
-        allAreRunning.Should().BeTrue();
+        allAreRunning.Should().BeTrue("because we expect all job runs to be running at the same time");
     }
 
     [ScenarioStep(4)]
