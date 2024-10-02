@@ -28,6 +28,10 @@ module "backend_for_frontend" {
   }
 
   app_settings = {
+    #Logging
+    "Logging__ApplicationInsights__LogLevel__Default"                 = "Information"
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core"  = "Information"
+
     ApiClientSettings__MarketParticipantBaseUrl                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-api-base-url)"
     ApiClientSettings__WholesaleBaseUrl                               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-wholesale-webapi-base-url)"
     ApiClientSettings__WholesaleOrchestrationsBaseUrl                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-wholesale-orchestrationsdf-base-url)"
