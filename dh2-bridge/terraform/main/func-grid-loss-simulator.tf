@@ -30,6 +30,10 @@ module "func_entrypoint_grid_loss_simulator" {
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
   app_settings = local.entrypoint_grid_loss_simulator.app_settings
