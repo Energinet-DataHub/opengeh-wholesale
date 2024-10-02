@@ -33,7 +33,6 @@ def execute_hourly_time_series(
         time_zone=args.time_zone,
         energy_supplier_ids=args.energy_supplier_ids,
         resolution=DataProductMeteringPointResolution.HOUR,
-        market_role=args.requesting_actor_market_role,
         repository=repository,
     )
     hourly_time_series_files = time_series_writer.write(
@@ -63,7 +62,6 @@ def execute_quarterly_time_series(
         energy_supplier_ids=args.energy_supplier_ids,
         time_zone=args.time_zone,
         resolution=DataProductMeteringPointResolution.QUARTER,
-        market_role=args.requesting_actor_market_role,
         repository=repository,
     )
     quarterly_time_series_files = time_series_writer.write(

@@ -16,7 +16,6 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
@@ -48,7 +47,6 @@ def create_time_series(
     energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
     time_zone: str,
-    market_role: MarketRole,
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
@@ -66,7 +64,6 @@ def create_time_series(
             resolution
         ),
         time_zone=time_zone,
-        market_role=market_role,
     )
     return prepared_time_series
 
@@ -116,7 +113,6 @@ def _generate_time_series(
     filtered_time_series_points: DataFrame,
     desired_number_of_quantity_columns: int,
     time_zone: str,
-    market_role: MarketRole,
 ) -> DataFrame:
     filtered_time_series_points = filtered_time_series_points.withColumn(
         EphemeralColumns.start_of_day,

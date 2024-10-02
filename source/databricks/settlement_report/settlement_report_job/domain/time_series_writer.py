@@ -52,7 +52,6 @@ def write(
         prepared_time_series = prepared_time_series.drop(
             DataProductColumnNames.energy_supplier_id
         )
-    prepared_time_series.show()
 
     partition_columns = [DataProductColumnNames.grid_area_code]
 

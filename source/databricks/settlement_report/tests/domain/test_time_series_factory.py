@@ -437,7 +437,6 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
-    actual_df.show()
 
     # Assert
     assert set(
