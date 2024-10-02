@@ -123,7 +123,14 @@ def test_write_files__when_locale_set_to_danish(spark: SparkSession):
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    write_files(df, csv_path, partition_columns=[], order_by=[], locale="da-dk")
+    write_files(
+        df,
+        csv_path,
+        partition_columns=[],
+        order_by=[],
+        locale="da-dk",
+        rows_per_file=1000,
+    )
 
     # Assert
     assert Path(csv_path).exists()
@@ -148,7 +155,12 @@ def test_write_files__when_locale_set_to_english(spark: SparkSession):
 
     # Act
     columns = write_files(
-        df, csv_path, partition_columns=[], order_by=[], locale="en-gb"
+        df,
+        csv_path,
+        partition_columns=[],
+        order_by=[],
+        locale="en-gb",
+        rows_per_file=1000,
     )
 
     # Assert
@@ -176,7 +188,12 @@ def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSe
 
     # Act
     columns = write_files(
-        df, csv_path, partition_columns=[], order_by=["value"], locale="da-dk"
+        df,
+        csv_path,
+        partition_columns=[],
+        order_by=["value"],
+        locale="da-dk",
+        rows_per_file=1000,
     )
 
     # Assert
@@ -209,7 +226,12 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
 
     # Act
     columns = write_files(
-        df, csv_path, partition_columns=["key"], order_by=["value"], locale="da-dk"
+        df,
+        csv_path,
+        partition_columns=["key"],
+        order_by=["value"],
+        locale="da-dk",
+        rows_per_file=1000,
     )
 
     # Assert
