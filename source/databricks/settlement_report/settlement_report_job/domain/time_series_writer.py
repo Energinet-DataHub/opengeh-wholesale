@@ -68,8 +68,7 @@ def write(
         spark_output_path,
         report_output_path,
         file_name_factory,
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
+        partition_columns=partition_columns,
     )
     files = merge_files(
         dbutils=dbutils,
