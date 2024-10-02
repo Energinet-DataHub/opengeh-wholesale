@@ -72,7 +72,7 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
     assert len(result_files) == expected_file_count
 
 
-def test_write__when_higher_default_parallelism_amount_of_files_is_unchanged(
+def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -106,7 +106,7 @@ def test_write__when_higher_default_parallelism_amount_of_files_is_unchanged(
 
 
 @pytest.mark.parametrize(
-    "amount_of_rows,rows_per_file,expected_file_count",
+    "number_of_rows,rows_per_file,expected_file_count",
     [
         (201, 100, 3),
         (101, 100, 2),
@@ -118,7 +118,7 @@ def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-    amount_of_rows: int,
+    number_of_rows: int,
     rows_per_file: int,
     expected_file_count: int,
 ):
@@ -132,7 +132,7 @@ def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
         grid_area_codes=["804"],
         energy_quantity=235.0,
         resolution=resolution,
-        num_metering_points=amount_of_rows,
+        num_metering_points=number_of_rows,
     )
     mock_prepared_time_series = factory.create(spark, test_spec)
 
@@ -146,6 +146,6 @@ def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
     )
 
     # Assert
-    assert mock_prepared_time_series.count() == amount_of_rows
+    assert mock_prepared_time_series.count() == number_of_rows
     assert len(result_files) > 0
     assert len(result_files) == expected_file_count
