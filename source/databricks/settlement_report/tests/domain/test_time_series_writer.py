@@ -70,3 +70,82 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
     # Assert
     assert len(result_files) > 0
     assert len(result_files) == expected_files
+
+
+def test_write__when_higher_default_parallelism_amount_of_files_is_unchanged(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    spark.conf.set("spark.sql.shuffle.partitions", "10")
+    spark.conf.set("spark.default.parallelism", "10")
+    report_data_type = ReportDataType.TimeSeriesHourly
+    resolution = DataProductMeteringPointResolution.HOUR
+    expected_files = 2
+    test_spec = factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=MeteringPointType.CONSUMPTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        grid_area_codes=["804", "805"],
+        energy_quantity=235.0,
+        resolution=resolution,
+    )
+    mock_prepared_time_series = factory.create(spark, test_spec)
+
+    # Act
+    result_files = time_series_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        prepared_time_series=mock_prepared_time_series,
+        report_data_type=report_data_type,
+    )
+
+    # Assert
+    assert len(result_files) > 0
+    assert len(result_files) == expected_files
+
+
+@pytest.mark.parametrize(
+    "amount_of_rows,rows_per_file,expected_files",
+    [
+        (201, 100, 3),
+        (101, 100, 2),
+        (100, 100, 1),
+        (99, 100, 1),
+    ],
+)
+def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    amount_of_rows: int,
+    rows_per_file: int,
+    expected_files: int,
+):
+    # Arrange
+    report_data_type = ReportDataType.TimeSeriesHourly
+    resolution = DataProductMeteringPointResolution.HOUR
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    test_spec = factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=MeteringPointType.CONSUMPTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        grid_area_codes=["804"],
+        energy_quantity=235.0,
+        resolution=resolution,
+        num_metering_points=amount_of_rows,
+    )
+    mock_prepared_time_series = factory.create(spark, test_spec)
+
+    # Act
+    result_files = time_series_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        prepared_time_series=mock_prepared_time_series,
+        report_data_type=report_data_type,
+        rows_per_file=rows_per_file,
+    )
+
+    # Assert
+    assert mock_prepared_time_series.count() == amount_of_rows
+    assert len(result_files) > 0
+    assert len(result_files) == expected_files
