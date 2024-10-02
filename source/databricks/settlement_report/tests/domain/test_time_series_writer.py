@@ -28,7 +28,7 @@ import tests.test_factories.time_series_csv_factory as factory
 
 
 @pytest.mark.parametrize(
-    "resolution,grid_area_codes,expected_files",
+    "resolution,grid_area_codes,expected_file_count",
     [
         (DataProductMeteringPointResolution.HOUR, ["804", "805"], 2),
         (DataProductMeteringPointResolution.QUARTER, ["804", "805"], 2),
@@ -42,7 +42,7 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     resolution: DataProductMeteringPointResolution,
     grid_area_codes: list[str],
-    expected_files: int,
+    expected_file_count: int,
 ):
     # Arrange
     report_data_type = (
@@ -69,7 +69,7 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
 
     # Assert
     assert len(result_files) > 0
-    assert len(result_files) == expected_files
+    assert len(result_files) == expected_file_count
 
 
 def test_write__when_higher_default_parallelism_amount_of_files_is_unchanged(
@@ -82,7 +82,7 @@ def test_write__when_higher_default_parallelism_amount_of_files_is_unchanged(
     spark.conf.set("spark.default.parallelism", "10")
     report_data_type = ReportDataType.TimeSeriesHourly
     resolution = DataProductMeteringPointResolution.HOUR
-    expected_files = 2
+    expected_file_count = 2
     test_spec = factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointType.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -102,11 +102,11 @@ def test_write__when_higher_default_parallelism_amount_of_files_is_unchanged(
 
     # Assert
     assert len(result_files) > 0
-    assert len(result_files) == expected_files
+    assert len(result_files) == expected_file_count
 
 
 @pytest.mark.parametrize(
-    "amount_of_rows,rows_per_file,expected_files",
+    "amount_of_rows,rows_per_file,expected_file_count",
     [
         (201, 100, 3),
         (101, 100, 2),
@@ -120,7 +120,7 @@ def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     amount_of_rows: int,
     rows_per_file: int,
-    expected_files: int,
+    expected_file_count: int,
 ):
     # Arrange
     report_data_type = ReportDataType.TimeSeriesHourly
@@ -148,4 +148,4 @@ def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
     # Assert
     assert mock_prepared_time_series.count() == amount_of_rows
     assert len(result_files) > 0
-    assert len(result_files) == expected_files
+    assert len(result_files) == expected_file_count
