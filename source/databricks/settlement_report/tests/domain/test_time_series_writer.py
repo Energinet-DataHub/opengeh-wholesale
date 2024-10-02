@@ -114,7 +114,7 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
         (99, 100, 1),
     ],
 )
-def test_write__when_prevent_large_files_are_returned_files_are_as_expected(
+def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_files(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
