@@ -2,6 +2,8 @@ locals {
   func_timeseriessynchronization = {
     app_settings = {
       WEBSITE_LOAD_CERTIFICATES                                              = local.datahub2_certificate_thumbprint
+      "AzureWebJobs.ProcessMessageOrchestrationTrigger.Disabled"             = true
+
       "StorageAccount__Dh2StorageAccountUri"                                 = "https://${module.st_dh2data.name}.blob.core.windows.net"
       "StorageAccount__TimeSeriesContainerName"                              = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
       "StorageAccount__Dh2TimeSeriesSynchronizationContainerName"            = azurerm_storage_container.dh2_timeseries_synchronization.name
