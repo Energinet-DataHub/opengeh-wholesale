@@ -42,4 +42,9 @@ public class ConcurrentRunsScenarioState
     /// The test will try to start one more to verify that it is queued.
     /// </summary>
     public int ExpectedMaxConcurrentRuns { get; set; }
+
+    /// <summary>
+    /// The expected max. time before all job runs are in `Running` state.
+    /// </summary>
+    public TimeSpan ExpectedClusterWarmupTimeLimit { get; set; }
 }

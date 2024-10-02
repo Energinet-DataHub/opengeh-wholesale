@@ -84,6 +84,53 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
         return jobRuns.AsReadOnly();
     }
 
+    public async Task<bool> WaitForSettlementReportJobRunsAreRunningAsync(IReadOnlyDictionary<long, SettlementReportJobState> jobRuns, TimeSpan waitTimeLimit)
+    {
+        var delay = TimeSpan.FromMinutes(1);
+
+        var allAreRunning = false;
+        var runIds = jobRuns
+            .Select(kv => kv.Key)
+            .ToList();
+        var isCondition = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                // We can only verify clusters and quotas if we have all jobs running at the same time,
+                // so we want to verify them all whenever we check the awaiter condition.
+                foreach (var runId in runIds)
+                {
+                    var runState = await DatabricksClient.Jobs.RunsGet(runId);
+                    var settlementReportJobState = ConvertToSettlementReportJobState(runState.Item1);
+                    switch (settlementReportJobState)
+                    {
+                        case SettlementReportJobState.Running:
+                            // Not pending anymore: Continue for loop and verify the next run
+                            continue;
+                        case SettlementReportJobState.Pending:
+                            // Not running yet: Skip verifying other runs for the moment
+                            return false;
+                        case SettlementReportJobState.Completed:
+                        case SettlementReportJobState.Queued:
+                        case SettlementReportJobState.Canceled:
+                        case SettlementReportJobState.Failed:
+                            // Failure: We can only verify clusters and quotas if we have all jobs running at the same time
+                            // => Break out of awaiter loop
+                            return true;
+                        default:
+                            throw new InvalidOperationException($"Unexpected state '{settlementReportJobState}'.");
+                    }
+                }
+
+                // All runs are now running
+                allAreRunning = true;
+                return allAreRunning;
+            },
+            waitTimeLimit,
+            delay);
+
+        return allAreRunning;
+    }
+
     public async Task<long> StartSettlementReportJobRunAsync(Guid reportId, IReadOnlyCollection<string> jobParameters)
     {
         var settlementReportJobId = await DatabricksClient.GetSettlementReportJobIdAsync();

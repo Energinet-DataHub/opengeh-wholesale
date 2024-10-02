@@ -49,6 +49,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
 
         // Expectations
         Fixture.ScenarioState.ExpectedMaxConcurrentRuns = 40;
+        Fixture.ScenarioState.ExpectedClusterWarmupTimeLimit = TimeSpan.FromMinutes(10);
     }
 
     [ScenarioStep(1)]
@@ -89,8 +90,12 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     [SubsystemFact]
     public async Task AndThen_AllJobRunsAreRunningWithinWaitTime()
     {
-        // XDAST - TODO: Wait for running state
-        await Task.Delay(100);
+        var allAreRunning = await Fixture.WaitForSettlementReportJobRunsAreRunningAsync(
+            Fixture.ScenarioState.JobRuns,
+            waitTimeLimit: Fixture.ScenarioState.ExpectedClusterWarmupTimeLimit);
+
+        // Assert
+        allAreRunning.Should().BeTrue();
     }
 
     [ScenarioStep(4)]
