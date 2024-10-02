@@ -68,6 +68,7 @@ def write(
         partition_columns=partition_columns,
         order_by=[
             DataProductColumnNames.grid_area_code,
+            TimeSeriesPointCsvColumnNames.energy_supplier_id,
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
