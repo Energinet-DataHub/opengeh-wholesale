@@ -29,20 +29,23 @@ from datetime import datetime
 
 
 @pytest.mark.parametrize(
-    "resolution",
+    "resolution,grid_area_codes,expected_files",
     [
-        DataProductMeteringPointResolution.HOUR,
-        DataProductMeteringPointResolution.QUARTER,
+        (DataProductMeteringPointResolution.HOUR, ["804", "805"], 2),
+        (DataProductMeteringPointResolution.QUARTER, ["804", "805"], 2),
+        (DataProductMeteringPointResolution.HOUR, ["804"], 1),
+        (DataProductMeteringPointResolution.QUARTER, ["804", "805", "806"], 3),
     ],
 )
-def test_write_files(
+def test_write__returns_files_corresponding_to_grid_area_codes(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     resolution: DataProductMeteringPointResolution,
+    grid_area_codes: list[str],
+    expected_files: int,
 ):
     # Arrange
-    expected_files = 2
     report_data_type = (
         ReportDataType.TimeSeriesHourly
         if resolution == DataProductMeteringPointResolution.HOUR
@@ -51,6 +54,7 @@ def test_write_files(
     test_spec = factory.TimeSeriesPointCsvTestDataSpec(
         metering_point_type=MeteringPointType.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        grid_area_codes=grid_area_codes,
         energy_quantity=235.0,
         resolution=resolution,
     )
