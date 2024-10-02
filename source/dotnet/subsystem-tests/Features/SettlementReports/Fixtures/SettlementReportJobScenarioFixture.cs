@@ -104,7 +104,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
                     switch (settlementReportJobState)
                     {
                         case SettlementReportJobState.Running:
-                            // Not pending anymore: Continue for loop and verify the next run
+                            // Not pending anymore: Continue 'for' loop and verify the next run
                             continue;
                         case SettlementReportJobState.Pending:
                             // Not running yet: Skip verifying other runs for the moment
@@ -114,7 +114,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
                         case SettlementReportJobState.Canceled:
                         case SettlementReportJobState.Failed:
                             // Failure: We can only verify clusters and quotas if we have all jobs running at the same time
-                            // => Break out of awaiter loop
+                            // => Break out of 'awaiter' loop
                             return true;
                         default:
                             throw new InvalidOperationException($"Unexpected state '{settlementReportJobState}'.");
