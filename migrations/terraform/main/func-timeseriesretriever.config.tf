@@ -15,7 +15,7 @@ locals {
       "ServiceBus__ConnectionString"                                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
       "ServiceBus__FullyQualifiedNamespace"                                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
       "ServiceBus__TimeSeriesMessagesTopicName"                              = azurerm_servicebus_topic.time_series_imported_messages_topic.name
-      "ServiceBus__TimeSeriesProcessingSubscriptionName"                     = module.sbtsub_time_series_sync_processing.name
+      "ServiceBus__TimeSeriesProcessingSubscriptionName"                     = module.sbtsub_time_series_processing.name
       "ServiceBus__TimeSeriesAuditSubscriptionName"                          = module.sbtsub_time_series_sync_audit.name
       "DataHub2Client__EndpointAddress"                                      = var.datahub2_migration_url,
       "FeatureManagement__DataHub2HealthCheck"                               = var.feature_flag_datahub2_healthcheck
