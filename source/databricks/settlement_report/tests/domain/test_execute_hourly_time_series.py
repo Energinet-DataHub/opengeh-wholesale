@@ -21,11 +21,11 @@ def test_execute_hourly_time_series__when_datahub_administrator_or_system_operat
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     requesting_actor_market_role: MarketRole,
-    datahub_admin_wholesale_fixing_scenario_args: SettlementReportArgs,
+    wholesale_args_datahub_admin: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = datahub_admin_wholesale_fixing_scenario_args
+    args = wholesale_args_datahub_admin
     args.requesting_actor_market_role = requesting_actor_market_role
     expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     expected_columns = [
@@ -47,10 +47,10 @@ def test_execute_hourly_time_series__when_datahub_administrator_or_system_operat
         assert df.columns == expected_columns
 
 
-def test_execute_hourly_time_series__when_energy_supplier__returns_expected_number_of_files_and_content(
+def test_execute_hourly_time_series__when_datahub_administrator_as_energy_supplier__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    energy_supplier_wholesale_fixing_scenario_args: SettlementReportArgs,
+    wholesale_args_datahub_admin_as_energy_supplier: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
@@ -63,8 +63,34 @@ def test_execute_hourly_time_series__when_energy_supplier__returns_expected_numb
 
     # Act
     execute_hourly_time_series(
-        spark, dbutils, energy_supplier_wholesale_fixing_scenario_args
+        spark, dbutils, wholesale_args_datahub_admin_as_energy_supplier
     )
+
+    # Assert
+    actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
+    assert len(actual_files) == expected_file_count
+    for file_path in actual_files:
+        df = spark.read.csv(file_path, header=True)
+        assert df.count() > 0
+        assert df.columns == expected_columns
+
+
+def test_execute_hourly_time_series__when_energy_supplier__returns_expected_number_of_files_and_content(
+    spark: SparkSession,
+    dbutils: DBUtilsFixture,
+    wholesale_args_energy_supplier: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_data_written_to_delta: None,
+):
+    # Arrange
+    expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+    expected_columns = [
+        TimeSeriesPointCsvColumnNames.metering_point_id,
+        TimeSeriesPointCsvColumnNames.metering_point_type,
+        TimeSeriesPointCsvColumnNames.start_of_day,
+    ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
+
+    # Act
+    execute_hourly_time_series(spark, dbutils, wholesale_args_energy_supplier)
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
@@ -78,7 +104,7 @@ def test_execute_hourly_time_series__when_energy_supplier__returns_expected_numb
 def test_execute_hourly_time_series__when_grid_access_provider__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    grid_access_provider_wholesale_fixing_scenario_args: SettlementReportArgs,
+    wholesale_args_grid_access_provider: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
@@ -90,9 +116,7 @@ def test_execute_hourly_time_series__when_grid_access_provider__returns_expected
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
 
     # Act
-    execute_hourly_time_series(
-        spark, dbutils, grid_access_provider_wholesale_fixing_scenario_args
-    )
+    execute_hourly_time_series(spark, dbutils, wholesale_args_grid_access_provider)
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")

@@ -36,7 +36,7 @@ def dbutils() -> DBUtilsFixture:
 
 
 @pytest.fixture(scope="session")
-def datahub_admin_wholesale_fixing_scenario_args(
+def wholesale_args_datahub_admin(
     settlement_reports_output_path: str,
 ) -> SettlementReportArgs:
     return SettlementReportArgs(
@@ -65,42 +65,53 @@ def datahub_admin_wholesale_fixing_scenario_args(
 
 
 @pytest.fixture(scope="session")
-def energy_supplier_wholesale_fixing_scenario_args(
+def wholesale_args_datahub_admin_as_energy_supplier(
     settlement_reports_output_path: str,
-    datahub_admin_wholesale_fixing_scenario_args: SettlementReportArgs,
+    wholesale_args_datahub_admin: SettlementReportArgs,
 ) -> SettlementReportArgs:
-    energy_supplier_wholesale_fixing_scenario_args = (
-        datahub_admin_wholesale_fixing_scenario_args
-    )
-    energy_supplier_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
+    wholesale_args_datahub_admin_as_energy_supplier = wholesale_args_datahub_admin
 
-    energy_supplier_wholesale_fixing_scenario_args.requesting_actor_id = (
+    wholesale_args_datahub_admin_as_energy_supplier.energy_supplier_ids = (
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
     )
-    energy_supplier_wholesale_fixing_scenario_args.energy_supplier_ids = [
-        energy_supplier_wholesale_fixing_scenario_args.requesting_actor_id
-    ]
 
-    return energy_supplier_wholesale_fixing_scenario_args
+    return wholesale_args_datahub_admin_as_energy_supplier
 
 
 @pytest.fixture(scope="session")
-def grid_access_provider_wholesale_fixing_scenario_args(
+def wholesale_args_energy_supplier(
     settlement_reports_output_path: str,
-    datahub_admin_wholesale_fixing_scenario_args: SettlementReportArgs,
+    wholesale_args_datahub_admin: SettlementReportArgs,
 ) -> SettlementReportArgs:
-    grid_access_provider_wholesale_fixing_scenario_args = (
-        datahub_admin_wholesale_fixing_scenario_args
+    wholesale_args_energy_supplier = wholesale_args_datahub_admin
+    wholesale_args_energy_supplier.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
     )
-    grid_access_provider_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+
+    wholesale_args_energy_supplier.requesting_actor_id = (
+        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
+    )
+    wholesale_args_energy_supplier.energy_supplier_ids = [
+        wholesale_args_energy_supplier.requesting_actor_id
+    ]
+
+    return wholesale_args_energy_supplier
+
+
+@pytest.fixture(scope="session")
+def wholesale_args_grid_access_provider(
+    settlement_reports_output_path: str,
+    wholesale_args_datahub_admin: SettlementReportArgs,
+) -> SettlementReportArgs:
+    wholesale_args_grid_access_provider = wholesale_args_datahub_admin
+    wholesale_args_grid_access_provider.requesting_actor_market_role = (
         MarketRole.GRID_ACCESS_PROVIDER
     )
+    wholesale_args_grid_access_provider.requesting_actor_id = "2222222222222"
 
-    grid_access_provider_wholesale_fixing_scenario_args.energy_supplier_ids = None
+    wholesale_args_grid_access_provider.energy_supplier_ids = None
 
-    return grid_access_provider_wholesale_fixing_scenario_args
+    return wholesale_args_grid_access_provider
 
 
 @pytest.fixture(scope="session")

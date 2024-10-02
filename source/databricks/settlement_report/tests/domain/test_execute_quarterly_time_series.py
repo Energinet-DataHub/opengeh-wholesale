@@ -11,7 +11,7 @@ from settlement_report_job.infrastructure.column_names import (
 def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    datahub_admin_wholesale_fixing_scenario_args: SettlementReportArgs,
+    wholesale_args_datahub_admin: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
@@ -24,9 +24,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
-    execute_quarterly_time_series(
-        spark, dbutils, datahub_admin_wholesale_fixing_scenario_args
-    )
+    execute_quarterly_time_series(spark, dbutils, wholesale_args_datahub_admin)
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
