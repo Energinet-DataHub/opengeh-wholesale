@@ -35,7 +35,11 @@ from settlement_report_job.infrastructure import logging_configuration
 log = Logger(__name__)
 
 
-def _should_partition_by_energy_supplier_id(args: SettlementReportArgs) -> bool:
+def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) -> bool:
+    """
+    When this partitioning by energy_supplier_id, the energy_supplier_id will be included in the file name
+
+    """
     if args.requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
@@ -66,7 +70,7 @@ def write(
 
     partition_columns = [DataProductColumnNames.grid_area_code]
 
-    if _should_partition_by_energy_supplier_id(args):
+    if _is_partitioning_by_energy_supplier_id_needed(args):
         partition_columns.append(DataProductColumnNames.energy_supplier_id)
 
     if args.prevent_large_text_files:
