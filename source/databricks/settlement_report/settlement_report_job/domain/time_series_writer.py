@@ -22,6 +22,7 @@ from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     write_files,
@@ -46,11 +47,15 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
+    partition_columns = [DataProductColumnNames.grid_area_code]
+
+    if args.prevent_large_text_files:
+        partition_columns.append(EphemeralColumns.chunk_index)
+
     headers = write_files(
         df=prepared_time_series,
         path=spark_output_path,
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
+        partition_columns=partition_columns,
         order_by=[
             DataProductColumnNames.grid_area_code,
             TimeSeriesPointCsvColumnNames.metering_point_type,
