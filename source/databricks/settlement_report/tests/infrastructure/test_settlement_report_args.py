@@ -127,6 +127,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
+        assert actual_args.skip_basis_data_csv_files is True
 
 
 class TestWhenNoValidCalculationIdForGridArea:
@@ -232,6 +233,38 @@ def test_returns_expected_value_for_split_report_by_grid_area(
 
     # Assert
     assert actual_args.split_report_by_grid_area is split_report_by_grid_area
+
+
+@pytest.mark.parametrize(
+    "skip_basis_data_csv_files",
+    [
+        True,
+        False,
+    ],
+)
+def test_returns_expected_value_for_skip_basis_data_csv_files(
+    job_environment_variables: dict,
+    sys_argv_from_contract: list[str],
+    skip_basis_data_csv_files: bool,
+) -> None:
+    # Arrange
+    test_sys_args = sys_argv_from_contract.copy()
+    if not skip_basis_data_csv_files:
+        test_sys_args = [
+            item
+            for item in sys_argv_from_contract
+            if not item.startswith("--skip-basis-data-csv-files")
+        ]
+
+    with patch("sys.argv", test_sys_args):
+        with patch.dict("os.environ", job_environment_variables):
+            command_line_args = parse_command_line_arguments()
+
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert
+    assert actual_args.skip_basis_data_csv_files is skip_basis_data_csv_files
 
 
 class TestNoEnergySupplierId:

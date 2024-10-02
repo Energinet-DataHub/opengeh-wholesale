@@ -24,6 +24,8 @@ def execute_hourly_time_series(
     """
     Entry point for the logic of creating hourly time series.
     """
+    if args.skip_basis_data_csv_files:
+        return
 
     repository = WholesaleRepository(spark, args.catalog_name)
     hourly_time_series_df = create_time_series(
@@ -52,6 +54,8 @@ def execute_quarterly_time_series(
     """
     Entry point for the logic of creating quarterly time series.
     """
+    if args.skip_basis_data_csv_files:
+        return
 
     repository = WholesaleRepository(spark, args.catalog_name)
     quarterly_time_series_df = create_time_series(

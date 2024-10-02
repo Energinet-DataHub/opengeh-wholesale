@@ -34,6 +34,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
         energy_supplier_id="1234567890123",
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         settlement_reports_output_path="some_output_volume_path",
+        skip_basis_data_csv_files=False,
     )
 
 

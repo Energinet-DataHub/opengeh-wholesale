@@ -60,6 +60,7 @@ def standard_wholesale_fixing_scenario_args(
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
         settlement_reports_output_path=settlement_reports_output_path,
+        skip_basis_data_csv_files=False,
     )
 
 

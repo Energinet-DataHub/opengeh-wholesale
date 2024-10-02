@@ -61,6 +61,7 @@ def parse_job_arguments(
             settlement_reports_output_path=get_settlement_reports_output_path(
                 env_vars.get_catalog_name()
             ),
+            skip_basis_data_csv_files=job_args.skip_basis_data_csv_files,
         )
 
         return settlement_report_args
@@ -86,6 +87,9 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     )  # true if present, false otherwise
     p.add(
         "--prevent-large-text-files", action="store_true"
+    )  # true if present, false otherwise
+    p.add(
+        "--skip-basis-data-csv-files", action="store_true"
     )  # true if present, false otherwise
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
