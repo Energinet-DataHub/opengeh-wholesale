@@ -43,7 +43,8 @@ public class WholesaleWebApiFixture : WebApiFixture
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            IntegrationTestConfiguration.Credential);
     }
 
     public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
@@ -118,13 +119,13 @@ public class WholesaleWebApiFixture : WebApiFixture
     }
 
     /// <summary>
-    /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+    /// Create storage container. Note: Azurite is based on the Blob Storage API, but since Data Lake Storage Gen2 is built on top of it, we can still create the container like this
     /// </summary>
     private async Task EnsureCalculationStorageContainerExistsAsync()
     {
         var dataLakeServiceClient = new DataLakeServiceClient(
             serviceUri: AzuriteManager.BlobStorageServiceUri,
-            credential: new DefaultAzureCredential());
+            credential: IntegrationTestConfiguration.Credential);
 
         var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
             Environment.GetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME)));
