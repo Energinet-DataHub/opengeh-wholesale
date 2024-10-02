@@ -15,6 +15,6 @@
 # Optional parameters
 --energy-supplier-id=1234567890123
 --split-report-by-grid-area
---prevent-large-text-files 
---skip-basis-data-csv-files 
---locale=da-DK 
+--prevent-large-text-files
+--skip-basis-data-csv-files
+--locale=da-DK
