@@ -106,6 +106,7 @@ def write_files(
     path: str,
     partition_by_chunk_index: bool,
     partition_by_grid_area: bool,
+    partition_by_energy_supplier_id: bool,
     order_by: list[str],
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
@@ -117,6 +118,7 @@ def write_files(
         rows_per_file (int): Number of rows per file.
         partition_by_chunk_index (bool): Whether to split the files.
         partition_by_grid_area (bool): Whether to split the files by grid area.
+        partition_by_energy_supplier_id: Whether to split the files by energy supplier id.
         order_by (list[str]): Columns to order by.
 
     Returns:
@@ -126,6 +128,9 @@ def write_files(
     partition_columns: list[str] = []
     if partition_by_grid_area:
         partition_columns.append(DataProductColumnNames.grid_area_code)
+
+    if partition_by_energy_supplier_id:
+        partition_columns.append(DataProductColumnNames.energy_supplier_id)
 
     if partition_by_chunk_index:
         w = Window().orderBy(order_by)
