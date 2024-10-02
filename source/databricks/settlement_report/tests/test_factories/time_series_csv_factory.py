@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import DecimalType
 
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
@@ -12,7 +11,6 @@ from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
 )
 from settlement_report_job.domain.metering_point_type import MeteringPointType
-from typing import List
 
 
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
