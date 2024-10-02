@@ -15,6 +15,7 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -34,6 +35,22 @@ from settlement_report_job.infrastructure import logging_configuration
 log = Logger(__name__)
 
 
+def _should_partition_by_energy_supplier_id(args: SettlementReportArgs) -> bool:
+    if args.requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.DATAHUB_ADMINISTRATOR,
+    ]:
+        return args.energy_supplier_id is not None
+    elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
+        return True
+    elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        return False
+    else:
+        raise ValueError(
+            f"Unsupported requesting actor market role: {args.requesting_actor_market_role}"
+        )
+
+
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.create_time_series"
 )
@@ -48,6 +65,9 @@ def write(
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
     partition_columns = [DataProductColumnNames.grid_area_code]
+
+    if _should_partition_by_energy_supplier_id(args):
+        partition_columns.append(DataProductColumnNames.energy_supplier_id)
 
     if args.prevent_large_text_files:
         partition_columns.append(EphemeralColumns.chunk_index)
