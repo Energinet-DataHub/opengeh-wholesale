@@ -123,7 +123,7 @@ def test_write_files__when_locale_set_to_danish(spark: SparkSession):
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    write_files(df, csv_path, False, False, order_by=[], locale="da-dk")
+    write_files(df, csv_path, partition_columns=[], order_by=[], locale="da-dk")
 
     # Assert
     assert Path(csv_path).exists()
@@ -147,7 +147,9 @@ def test_write_files__when_locale_set_to_english(spark: SparkSession):
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    write_files(df, csv_path, False, False, order_by=[], locale="en-gb")
+    columns = write_files(
+        df, csv_path, partition_columns=[], order_by=[], locale="en-gb"
+    )
 
     # Assert
     assert Path(csv_path).exists()
@@ -161,6 +163,8 @@ def test_write_files__when_locale_set_to_english(spark: SparkSession):
                 assert all_lines_written[1] == "b,2.2\n"
                 assert all_lines_written[2] == "c,3.3\n"
 
+    assert columns == ["key", "value"]
+
     tmp_dir.cleanup()
 
 
@@ -171,7 +175,9 @@ def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSe
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    write_files(df, csv_path, False, False, order_by=["value"], locale="da-dk")
+    columns = write_files(
+        df, csv_path, partition_columns=[], order_by=["value"], locale="da-dk"
+    )
 
     # Assert
     assert Path(csv_path).exists()
@@ -185,6 +191,8 @@ def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSe
                 assert all_lines_written[1] == "b;2,2\n"
                 assert all_lines_written[2] == "c;3,3\n"
 
+    assert columns == ["key", "value"]
+
     tmp_dir.cleanup()
 
 
@@ -194,13 +202,15 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
     # Arrange
     df = spark.createDataFrame(
         [("b", 2.2), ("b", 1.1), ("c", 3.3)],
-        [DataProductColumnNames.grid_area_code, "value"],
+        ["key", "value"],
     )
     tmp_dir = TemporaryDirectory()
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    write_files(df, csv_path, False, True, order_by=["value"], locale="da-dk")
+    columns = write_files(
+        df, csv_path, partition_columns=["key"], order_by=["value"], locale="da-dk"
+    )
 
     # Assert
     assert Path(csv_path).exists()
@@ -217,5 +227,7 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
                     assert all_lines_written[1] == "b;2,2\n"
                 else:
                     raise AssertionError("Found unexpected csv file.")
+
+    assert columns == ["value"]
 
     tmp_dir.cleanup()
