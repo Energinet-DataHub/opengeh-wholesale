@@ -11,4 +11,4 @@ The purpose is to test withdrawal on a period before the transition to quarterly
 
 ## CASES TESTED
 """
-Cases.CalculationTests.Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change
+Cases.CalculationTests.WithDrawalTests.WithDrawal_when_new_calculation_period_before_quarterly_transition
