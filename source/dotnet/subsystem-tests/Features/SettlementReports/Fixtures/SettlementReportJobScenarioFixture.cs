@@ -92,7 +92,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
         var runIds = jobRuns
             .Select(kv => kv.Key)
             .ToList();
-        var isCondition = await Awaiter.TryWaitUntilConditionAsync(
+        await Awaiter.TryWaitUntilConditionAsync(
             async () =>
             {
                 // We can only verify clusters and quotas if we have all jobs running at the same time,
