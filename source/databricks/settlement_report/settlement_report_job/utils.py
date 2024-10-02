@@ -101,6 +101,15 @@ def get_dbutils(spark: SparkSession) -> Any:
     return dbutils
 
 
+def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
+    if locale.lower() == "en-gb":
+        return {"locale": "en-gb", "delimiter": ","}
+    if locale.lower() == "da-dk":
+        return {"locale": "da-dk", "delimiter": ";"}
+    else:
+        return {"locale": "en-us", "delimiter": ","}
+
+
 def write_files(
     df: DataFrame,
     path: str,
@@ -108,6 +117,7 @@ def write_files(
     partition_by_grid_area: bool,
     order_by: list[str],
     rows_per_file: int = 1_000_000,
+    locale: str = "en-us",
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -135,11 +145,15 @@ def write_files(
 
     df = df.orderBy(order_by)
 
+    csv_writer_options = _get_csv_writer_options_based_on_locale(locale)
+
     print("writing to path: " + path)
     if partition_columns:
-        df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
+        df.write.mode("overwrite").options(*csv_writer_options).partitionBy(
+            partition_columns
+        ).csv(path)
     else:
-        df.write.mode("overwrite").csv(path)
+        df.write.mode("overwrite").options(*csv_writer_options).csv(path)
 
     return [c for c in df.columns if c not in partition_columns]
 
