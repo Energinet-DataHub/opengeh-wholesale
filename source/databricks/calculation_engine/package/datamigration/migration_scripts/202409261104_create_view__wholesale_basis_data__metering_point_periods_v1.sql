@@ -14,7 +14,7 @@ SELECT c.calculation_id,
        m.to_grid_area_code,
        m.parent_metering_point_id,
        m.energy_supplier_id,
-       m.balance_responsible_id as balance_responsible_party_id,
+       m.balance_responsible_party_id,
        m.from_date,
        m.to_date
 FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods as m
