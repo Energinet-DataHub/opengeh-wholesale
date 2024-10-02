@@ -21,30 +21,36 @@ from settlement_report_job.domain.metering_point_type import MeteringPointType
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
+from settlement_report_job.domain.report_data_type import ReportDataType
+
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import tests.test_factories.time_series_points_csv_factory as factory
 from datetime import datetime
-from settlement_report_job.infrastructure.database_definitions import (
-    get_output_volume_name,
+
+
+@pytest.mark.parametrize(
+    "resolution",
+    [
+        DataProductMeteringPointResolution.HOUR,
+        DataProductMeteringPointResolution.QUARTER,
+    ],
 )
-
-
 def test_write_files(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    resolution: DataProductMeteringPointResolution,
 ):
     # Arrange
     expected_files = 2
-    report_directory = f"{get_output_volume_name()}/{standard_wholesale_fixing_scenario_args.report_id}"
-    resolution = DataProductMeteringPointResolution.HOUR
+    report_data_type = (
+        ReportDataType.TimeSeriesHourly
+        if resolution == DataProductMeteringPointResolution.HOUR
+        else ReportDataType.TimeSeriesQuarterly
+    )
     test_spec = factory.TimeSeriesPointCsvTestDataSpec(
-        metering_point_ids=[
-            "123456789012345678901234567",
-            "123456789012345678901234568",
-        ],
         metering_point_type=MeteringPointType.CONSUMPTION,
-        start_of_day=datetime(2024, 1, 1, 23),
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         energy_quantity=235.0,
         resolution=resolution,
     )
@@ -54,10 +60,10 @@ def test_write_files(
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        report_directory=report_directory,
         prepared_time_series=mock_prepared_time_series,
-        resolution=resolution,
+        report_data_type=report_data_type,
     )
 
     # Assert
+    assert len(result_files) > 0
     assert len(result_files) == expected_files

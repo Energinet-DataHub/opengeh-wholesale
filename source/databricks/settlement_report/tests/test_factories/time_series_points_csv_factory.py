@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from pyspark.sql import SparkSession, DataFrame
@@ -9,38 +9,51 @@ from settlement_report_job.domain.metering_point_resolution import (
 )
 from settlement_report_job.infrastructure.column_names import (
     TimeSeriesPointCsvColumnNames,
+    DataProductColumnNames,
 )
 from settlement_report_job.domain.metering_point_type import MeteringPointType
 from typing import List
 
 
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_START_OF_DAY = datetime(2024, 1, 1, 23)
+DEFAULT_GRID_AREA_CODES = ["804", "805"]
+DEFAULT_ENERGY_QUANTITY = 235.0
+DEFAULT_RESOLUTION = DataProductMeteringPointResolution.HOUR
+DEFAULT_NUM_METERING_POINTS = 10
+
+
 @dataclass
 class TimeSeriesPointCsvTestDataSpec:
-    metering_point_ids: List[str]
-    metering_point_type: MeteringPointType
-    start_of_day: datetime
-    energy_quantity: float
-    resolution: DataProductMeteringPointResolution = (
-        DataProductMeteringPointResolution.HOUR
-    )
+    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE
+    start_of_day: datetime = DEFAULT_START_OF_DAY
+    grid_area_codes: list = field(default_factory=lambda: DEFAULT_GRID_AREA_CODES)
+    energy_quantity: float = DEFAULT_ENERGY_QUANTITY
+    resolution: DataProductMeteringPointResolution = DEFAULT_RESOLUTION
+    num_metering_points: int = DEFAULT_NUM_METERING_POINTS
 
 
 def create(spark: SparkSession, data_spec: TimeSeriesPointCsvTestDataSpec) -> DataFrame:
     rows = []
-
-    for metering_point_id in data_spec.metering_point_ids:
-        row = {
-            TimeSeriesPointCsvColumnNames.metering_point_id: metering_point_id,
-            TimeSeriesPointCsvColumnNames.metering_point_type: data_spec.metering_point_type,
-            TimeSeriesPointCsvColumnNames.start_of_day: data_spec.start_of_day,
-        }
-        for i in range(
-            24
-            if data_spec.resolution == DataProductMeteringPointResolution.HOUR
-            else 96
-        ):
-            row[f"energy_quantity_{i+1}"] = data_spec.energy_quantity
-        rows.append(row)
+    counter = 0
+    for grid_area_code in data_spec.grid_area_codes:
+        for _ in range(data_spec.num_metering_points):
+            counter += 1
+            row = {
+                TimeSeriesPointCsvColumnNames.metering_point_id: str(
+                    1000000000000 + counter
+                ),
+                TimeSeriesPointCsvColumnNames.metering_point_type: data_spec.metering_point_type,
+                DataProductColumnNames.grid_area_code: grid_area_code,
+                TimeSeriesPointCsvColumnNames.start_of_day: data_spec.start_of_day,
+            }
+            for i in range(
+                24
+                if data_spec.resolution == DataProductMeteringPointResolution.HOUR
+                else 96
+            ):
+                row[f"energy_quantity_{i+1}"] = data_spec.energy_quantity
+            rows.append(row)
 
     df = spark.createDataFrame(rows)
     return df
