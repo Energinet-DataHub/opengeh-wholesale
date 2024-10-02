@@ -100,7 +100,7 @@ def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) ->
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
-        return args.energy_supplier_id is not None
+        return args.energy_supplier_ids is not None
     elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
         return True
     elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
