@@ -25,21 +25,8 @@ def execute_hourly_time_series(
     Entry point for the logic of creating hourly time series.
     """
 
-    repository = WholesaleRepository(spark, args.catalog_name)
-    hourly_time_series_df = create_time_series(
-        period_start=args.period_start,
-        period_end=args.period_end,
-        calculation_id_by_grid_area=args.calculation_id_by_grid_area,
-        time_zone=args.time_zone,
-        energy_supplier_ids=args.energy_supplier_ids,
-        resolution=DataProductMeteringPointResolution.HOUR,
-        repository=repository,
-    )
-    hourly_time_series_files = time_series_writer.write(
-        dbutils,
-        args,
-        hourly_time_series_df,
-        ReportDataType.TimeSeriesHourly,
+    hourly_time_series_files = _execute_time_series(
+        spark, dbutils, args, ReportDataType.TimeSeriesHourly
     )
 
     dbutils.jobs.taskValues.set(
@@ -54,26 +41,48 @@ def execute_quarterly_time_series(
     Entry point for the logic of creating quarterly time series.
     """
 
-    repository = WholesaleRepository(spark, args.catalog_name)
-    quarterly_time_series_df = create_time_series(
-        period_start=args.period_start,
-        period_end=args.period_end,
-        calculation_id_by_grid_area=args.calculation_id_by_grid_area,
-        energy_supplier_ids=args.energy_supplier_ids,
-        time_zone=args.time_zone,
-        resolution=DataProductMeteringPointResolution.QUARTER,
-        repository=repository,
-    )
-    quarterly_time_series_files = time_series_writer.write(
-        dbutils,
-        args,
-        quarterly_time_series_df,
-        ReportDataType.TimeSeriesQuarterly,
+    quarterly_time_series_files = _execute_time_series(
+        spark, dbutils, args, ReportDataType.TimeSeriesQuarterly
     )
 
     dbutils.jobs.taskValues.set(
         key="quarterly_time_series_files", value=quarterly_time_series_files
     )
+
+
+def _execute_time_series(
+    spark: SparkSession,
+    dbutils: Any,
+    args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+) -> list[str]:
+
+    if report_data_type == ReportDataType.TimeSeriesHourly:
+        resolution = DataProductMeteringPointResolution.HOUR
+    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
+        resolution = DataProductMeteringPointResolution.QUARTER
+    else:
+        raise ValueError(
+            f"Unexpected report data type for time series: {report_data_type}"
+        )
+
+    repository = WholesaleRepository(spark, args.catalog_name)
+    time_series_df = create_time_series(
+        period_start=args.period_start,
+        period_end=args.period_end,
+        calculation_id_by_grid_area=args.calculation_id_by_grid_area,
+        energy_supplier_ids=args.energy_supplier_ids,
+        time_zone=args.time_zone,
+        resolution=resolution,
+        repository=repository,
+    )
+    time_series_files = time_series_writer.write(
+        dbutils,
+        args,
+        time_series_df,
+        report_data_type=report_data_type,
+    )
+    return time_series_files
 
 
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
