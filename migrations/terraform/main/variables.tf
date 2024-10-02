@@ -209,3 +209,9 @@ variable "enable_audit_logs" {
   type        = bool
   description = "Should audit logs be enabled for the environment?"
 }
+
+variable "enable_timeseriesmessageprocessor" {
+  type        = bool
+  description = "Should the TimeSeriesMessageProcessor be enabled?"
+  default = true
+}
