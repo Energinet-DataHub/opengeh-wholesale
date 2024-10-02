@@ -104,8 +104,7 @@ def get_dbutils(spark: SparkSession) -> Any:
 def write_files(
     df: DataFrame,
     path: str,
-    partition_by_chunk_index: bool,
-    partition_by_grid_area: bool,
+    partition_columns: list[str],
     order_by: list[str],
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
@@ -115,19 +114,14 @@ def write_files(
         df (DataFrame): DataFrame to write.
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
-        partition_by_chunk_index (bool): Whether to split the files.
-        partition_by_grid_area (bool): Whether to split the files by grid area.
+        partition_columns: list[str]: Columns to partition by.
         order_by (list[str]): Columns to order by.
 
     Returns:
         list[str]: Headers for the csv file.
     """
 
-    partition_columns: list[str] = []
-    if partition_by_grid_area:
-        partition_columns.append(DataProductColumnNames.grid_area_code)
-
-    if partition_by_chunk_index:
+    if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
         chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
@@ -148,17 +142,15 @@ def get_new_files(
     spark_output_path: str,
     report_output_path: str,
     file_name_factory: FileNameFactory,
-    partition_by_chunk_index: bool,
-    partition_by_grid_area: bool,
+    partition_columns: list[str],
 ) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
     Args:
+        partition_columns:
         spark_output_path (str): The path where the files are written.
         report_output_path: The path where the files will be moved.
         file_name_factory (FileNameFactory): Factory class for creating file names for the csv files.
-        partition_by_chunk_index (bool): Whether the files are split or not.
-        partition_by_grid_area (bool): Whether the files are split by grid area or not.
 
     Returns:
         list[dict[str, Path]]: List of dictionaries with the source and destination
@@ -168,10 +160,10 @@ def get_new_files(
     new_files = []
 
     regex = spark_output_path
-    if partition_by_grid_area:
+    if DataProductColumnNames.grid_area_code in partition_columns:
         regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
 
-    if partition_by_chunk_index:
+    if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
     for f in files:
