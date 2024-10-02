@@ -160,10 +160,10 @@ def get_new_files(
     new_files = []
 
     regex = spark_output_path
-    if DataProductColumnNames.grid_area_code is in partition_columns:
+    if DataProductColumnNames.grid_area_code in partition_columns:
         regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
 
-    if EphemeralColumns.chunk_index is in partition_columns:
+    if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
     for f in files:
