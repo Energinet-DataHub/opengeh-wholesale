@@ -37,7 +37,7 @@ def dbutils() -> DBUtilsFixture:
     return DBUtilsFixture()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def standard_wholesale_fixing_scenario_args(
     settlement_reports_output_path: str,
 ) -> SettlementReportArgs:
