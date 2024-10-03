@@ -17,31 +17,44 @@ using Xunit.Sdk;
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 
 /// <summary>
-/// Apply attribute on xUnit test class to specify in which Azure environment
-/// the containing tests should be executed. Multiple attributes can be applied
+/// Apply attribute on xUnit test class for subsystem tests to specify in
+/// which Azure environment the containing tests should be executed, and if
+/// they are executed as part of the deployment pipeline, scheduled or just
+/// any situation is allowed. Multiple attributes can be applied
 /// to specify execution in multiple environments.
 ///
-/// GitHub workflows can then use xUnit trait filter expressions to execute
+/// GitHub workflows should then use xUnit trait filter expressions to execute
 /// tests accordingly.
 ///
 /// See xUnit filter possibilities: https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
-///
-/// Inspired by: https://github.com/xunit/samples.xunit/blob/main/v2/TraitExtensibility/CategoryAttribute.cs
 /// </summary>
 [TraitDiscoverer(
     typeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.TraitDiscoverers.ExecutionEnvironmentDiscoverer",
     assemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class ExecutionEnvironmentAttribute : Attribute, ITraitAttribute
+public class ExecutionContextAttribute : Attribute, ITraitAttribute
 {
-    public ExecutionEnvironmentAttribute(AzureEnvironment environment)
+    public ExecutionContextAttribute(AzureEnvironment environment, WorkflowTrigger trigger = WorkflowTrigger.Deployment)
     {
     }
 }
 
+/// <summary>
+/// Azure environment in which we support executing subsystem tests.
+/// </summary>
 public enum AzureEnvironment
 {
     Dev001,
     Dev002,
     Dev003,
+}
+
+/// <summary>
+/// GitHub workflow types in which we support executing subsystem tests.
+/// </summary>
+public enum WorkflowTrigger
+{
+    Any,
+    Deployment,
+    Scheduled,
 }

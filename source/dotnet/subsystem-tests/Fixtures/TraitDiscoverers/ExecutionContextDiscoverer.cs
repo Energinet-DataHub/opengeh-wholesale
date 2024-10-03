@@ -20,18 +20,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.TraitDiscoverers;
 
 /// <summary>
 /// This class discovers all of the xUnit test classes that have applied
-/// the <see cref="ExecutionEnvironmentAttribute"/> attribute.
-///
-/// Inspired by: https://github.com/xunit/samples.xunit/blob/main/v2/TraitExtensibility/CategoryDiscoverer.cs
+/// the <see cref="ExecutionContextAttribute"/> attribute. It then configures
+/// xUnit 'traits' based on the parameters given to the attribute.
+/// Traits should be used in filters to control which tests we execute in a given
+/// context.
 /// </summary>
-public class ExecutionEnvironmentDiscoverer : ITraitDiscoverer
+public class ExecutionContextDiscoverer : ITraitDiscoverer
 {
-    /// <summary>
-    /// Name used in the trait filter expression.
-    /// See xUnit filter possibilities: https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
-    /// </summary>
-    public const string Key = "ExecutionEnvironment";
-
     public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
     {
         var constructorArgs = traitAttribute
@@ -39,7 +34,8 @@ public class ExecutionEnvironmentDiscoverer : ITraitDiscoverer
             .ToList();
 
 #pragma warning disable CS8604 // Possible null reference argument.
-        yield return new KeyValuePair<string, string>(Key, constructorArgs[0].ToString());
+        yield return new KeyValuePair<string, string>("ExecutionEnvironment", constructorArgs[0].ToString());
+        yield return new KeyValuePair<string, string>("ExecutionTrigger", constructorArgs[1].ToString());
 #pragma warning restore CS8604 // Possible null reference argument.
     }
 }

@@ -29,9 +29,9 @@ public class AuthorizationFeatureTests
     /// <summary>
     /// These tests uses an unauthorized http client to perform requests.
     /// </summary>
-    [ExecutionEnvironment(AzureEnvironment.Dev001)]
-    [ExecutionEnvironment(AzureEnvironment.Dev002)]
-    [ExecutionEnvironment(AzureEnvironment.Dev003)]
+    [ExecutionContext(AzureEnvironment.Dev001)]
+    [ExecutionContext(AzureEnvironment.Dev002, WorkflowTrigger.Scheduled)]
+    [ExecutionContext(AzureEnvironment.Dev003)]
     public class Given_Unauthorized : SubsystemTestsBase<UnauthorizedClientFixture>
     {
         public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
@@ -75,9 +75,9 @@ public class AuthorizationFeatureTests
     /// <summary>
     /// These tests uses an authorized Wholesale client to perform requests.
     /// </summary>
-    [ExecutionEnvironment(AzureEnvironment.Dev001)]
-    [ExecutionEnvironment(AzureEnvironment.Dev002)]
-    [ExecutionEnvironment(AzureEnvironment.Dev003)]
+    [ExecutionContext(AzureEnvironment.Dev001)]
+    [ExecutionContext(AzureEnvironment.Dev002, WorkflowTrigger.Any)]
+    [ExecutionContext(AzureEnvironment.Dev003)]
     public class Given_Authorized : SubsystemTestsBase<AuthorizedClientFixture>
     {
         public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)

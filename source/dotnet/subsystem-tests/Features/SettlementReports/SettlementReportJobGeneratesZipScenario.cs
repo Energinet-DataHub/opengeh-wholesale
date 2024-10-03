@@ -22,9 +22,9 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 
-[ExecutionEnvironment(AzureEnvironment.Dev001)]
-[ExecutionEnvironment(AzureEnvironment.Dev002)]
-[ExecutionEnvironment(AzureEnvironment.Dev003)]
+[ExecutionContext(AzureEnvironment.Dev001)]
+[ExecutionContext(AzureEnvironment.Dev002)]
+[ExecutionContext(AzureEnvironment.Dev003)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
