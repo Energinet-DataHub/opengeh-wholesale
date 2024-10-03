@@ -16,6 +16,7 @@ def get_substitutions(catalog_name: str, is_testing: bool) -> dict[str, str]:
         "{WHOLESALE_RESULTS_DATABASE_NAME}": paths.WholesaleResultsDatabase.DATABASE_NAME,
         "{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}": paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
         "{WHOLESALE_SAP_DATABASE_NAME}": paths.WholesaleSapDatabase.DATABASE_NAME,
+        "{SHARED_WHOLESALE_INPUT_DATABASE_NAME}": paths.MigrationsWholesaleDatabase.DATABASE_NAME,
         # Remove this substitution when the old hive migration is removed
         "{INPUT_DATABASE_NAME}": paths.InputDatabase.DATABASE_NAME,
         # Flags
