@@ -20,7 +20,7 @@ class WholesaleSettlementReportDatabase:
 
 class WholesaleBasisDataDatabase:
     DATABASE_NAME = "wholesale_basis_data"
-    CHARGE_LINKS_VIEW_NAME = "charge_links_v1"
+    CHARGE_LINKS_VIEW_NAME = "charge_link_periods_v1"
 
 
 class WholesaleWholesaleResultsDatabase:
