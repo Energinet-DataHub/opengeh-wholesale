@@ -282,6 +282,7 @@ def test_when_energy_supplier_ids_are_specified__returns_expected_energy_supplie
         "1234567890123",  # not a list
         "1234567890123 2345678901234",  # not a list
         "[123]",  # neither 13 nor 16 characters
+        "[12345678901234]",  # neither 13 nor 16 characters
     ],
 )
 def test_when_invalid_energy_supplier_ids__raise_exception(
