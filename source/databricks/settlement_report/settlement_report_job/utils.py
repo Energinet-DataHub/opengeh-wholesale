@@ -22,6 +22,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+from pyspark.sql.types import DecimalType, DoubleType, FloatType
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.infrastructure.column_names import (
@@ -101,13 +102,36 @@ def get_dbutils(spark: SparkSession) -> Any:
     return dbutils
 
 
+def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
+    if locale.lower() == "en-gb":
+        return {"locale": "en-gb", "delimiter": ","}
+    if locale.lower() == "da-dk":
+        return {"locale": "da-dk", "delimiter": ";"}
+    else:
+        return {"locale": "en-us", "delimiter": ","}
+
+
+def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
+    data_types_to_convert = [FloatType(), DecimalType(), DoubleType()]
+    fields_to_convert = [
+        field for field in df.schema if field.dataType in data_types_to_convert
+    ]
+
+    for field in fields_to_convert:
+        df = df.withColumn(
+            field.name, F.regexp_replace(F.col(field.name).cast("string"), "\\.", ",")
+        )
+
+    return df
+
+
 def write_files(
     df: DataFrame,
     path: str,
-    partition_by_chunk_index: bool,
-    partition_by_grid_area: bool,
+    partition_columns: list[str],
     order_by: list[str],
-    rows_per_file: int = 1_000_000,
+    rows_per_file: int,
+    locale: str = "en-us",
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -115,31 +139,34 @@ def write_files(
         df (DataFrame): DataFrame to write.
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
-        partition_by_chunk_index (bool): Whether to split the files.
-        partition_by_grid_area (bool): Whether to split the files by grid area.
+        partition_columns: list[str]: Columns to partition by.
         order_by (list[str]): Columns to order by.
 
     Returns:
         list[str]: Headers for the csv file.
     """
 
-    partition_columns: list[str] = []
-    if partition_by_grid_area:
-        partition_columns.append(DataProductColumnNames.grid_area_code)
-
-    if partition_by_chunk_index:
+    if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
-        chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
+        chunk_index_col = F.floor(
+            (F.row_number().over(w) - F.lit(1)) / F.lit(rows_per_file)
+        )  # Subtract one as row_number starts at 1
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
-        partition_columns.append(EphemeralColumns.chunk_index)
 
     df = df.orderBy(order_by)
 
+    if locale.lower() == "da-dk":
+        df = _convert_all_floats_to_danish_csv_format(df)
+
+    csv_writer_options = _get_csv_writer_options_based_on_locale(locale)
+
     print("writing to path: " + path)
     if partition_columns:
-        df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
+        df.write.mode("overwrite").options(**csv_writer_options).partitionBy(
+            partition_columns
+        ).csv(path)
     else:
-        df.write.mode("overwrite").csv(path)
+        df.write.mode("overwrite").options(**csv_writer_options).csv(path)
 
     return [c for c in df.columns if c not in partition_columns]
 
@@ -148,17 +175,15 @@ def get_new_files(
     spark_output_path: str,
     report_output_path: str,
     file_name_factory: FileNameFactory,
-    partition_by_chunk_index: bool,
-    partition_by_grid_area: bool,
+    partition_columns: list[str],
 ) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
     Args:
+        partition_columns:
         spark_output_path (str): The path where the files are written.
         report_output_path: The path where the files will be moved.
         file_name_factory (FileNameFactory): Factory class for creating file names for the csv files.
-        partition_by_chunk_index (bool): Whether the files are split or not.
-        partition_by_grid_area (bool): Whether the files are split by grid area or not.
 
     Returns:
         list[dict[str, Path]]: List of dictionaries with the source and destination
@@ -168,10 +193,10 @@ def get_new_files(
     new_files = []
 
     regex = spark_output_path
-    if partition_by_grid_area:
+    if DataProductColumnNames.grid_area_code in partition_columns:
         regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
 
-    if partition_by_chunk_index:
+    if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
     for f in files:

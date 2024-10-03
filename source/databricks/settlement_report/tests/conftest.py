@@ -23,8 +23,10 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from data_seeding import standard_wholesale_fixing_scenario_data_generator
-from data_seeding.write_test_data import write_metering_point_time_series_to_delta_table
+from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
+from tests.data_seeding.write_test_data import (
+    write_metering_point_time_series_to_delta_table,
+)
 
 
 @pytest.fixture(scope="session")
@@ -60,6 +62,7 @@ def standard_wholesale_fixing_scenario_args(
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
         settlement_reports_output_path=settlement_reports_output_path,
+        locale="da-dk",
     )
 
 

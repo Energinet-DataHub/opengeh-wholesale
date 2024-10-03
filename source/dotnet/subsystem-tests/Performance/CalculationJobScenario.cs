@@ -24,6 +24,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance;
 
+// For the moment we don't use this test, so it's not marked with an 'ExecutionEnvironment' attribute
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
