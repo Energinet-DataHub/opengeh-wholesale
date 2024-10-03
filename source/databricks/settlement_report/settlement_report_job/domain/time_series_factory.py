@@ -199,6 +199,15 @@ def _filter_by_charge_owner(
             DataProductColumnNames.metering_point_id,
         ],
         how="inner",
+    ).where(
+        (
+            F.col(DataProductColumnNames.observation_time)
+            >= DataProductColumnNames.from_date
+        )
+        & (
+            F.col(DataProductColumnNames.observation_time)
+            < DataProductColumnNames.to_date
+        )
     )
 
     return filtered_time_series_points

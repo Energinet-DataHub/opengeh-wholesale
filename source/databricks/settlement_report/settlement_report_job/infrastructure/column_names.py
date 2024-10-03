@@ -5,6 +5,7 @@ class DataProductColumnNames:
     charge_key = "charge_key"
     charge_owner = "charge_owner"
     energy_supplier_id = "energy_supplier_id"
+    from_date = "from_date"
     grid_area_code = "grid_area_code"
     is_tax = "is_tax"
     metering_point_id = "metering_point_id"
@@ -14,6 +15,7 @@ class DataProductColumnNames:
     resolution = "resolution"
     settlement_method = "settlement_method"
     time = "time"
+    to_date = "to_date"
 
 
 class EnergyResultsCsvColumnNames:
