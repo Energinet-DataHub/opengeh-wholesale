@@ -266,9 +266,9 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
 @pytest.mark.parametrize(
     "number_of_rows,rows_per_file,expected_file_count",
     [
-        (21, 10, 3),
-        (11, 10, 2),
-        (9, 10, 1),
+        (201, 100, 3),
+        (101, 100, 2),
+        (99, 100, 1),
     ],
 )
 def test_write__files_have_correct_sorting_across_multiple_files(
@@ -307,6 +307,7 @@ def test_write__files_have_correct_sorting_across_multiple_files(
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
+    result_files.sort()
 
     # Assert
     assert len(result_files) == expected_file_count
