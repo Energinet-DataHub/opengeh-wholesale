@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 
-from fixtures import DBUtilsFixture
+from tests.fixtures import DBUtilsFixture
 from settlement_report_job.domain.report_generator import execute_hourly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.column_names import (

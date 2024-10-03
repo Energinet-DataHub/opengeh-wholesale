@@ -9,7 +9,7 @@ from pyspark.sql.functions import monotonically_increasing_id
 import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 
-import metering_point_time_series_factory as factory
+import tests.test_factories.metering_point_time_series_factory as factory
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
