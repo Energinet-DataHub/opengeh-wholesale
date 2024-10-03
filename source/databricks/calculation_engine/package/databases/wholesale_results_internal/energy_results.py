@@ -41,23 +41,57 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     print("Writing energy results to Unity Catalog")
 
     # Cache all dataframes from energy_results_output due to incident INC0409592 (testing the fix).
-    energy_results_output.total_consumption.cache()
-    energy_results_output.exchange.cache()
-    energy_results_output.production.cache()
-    energy_results_output.flex_consumption.cache()
-    energy_results_output.non_profiled_consumption.cache()
-    energy_results_output.temporary_production.cache()
-    energy_results_output.temporary_flex_consumption.cache()
-    energy_results_output.grid_loss.cache()
-    energy_results_output.exchange_per_neighbor.cache()
-    energy_results_output.production_per_brp.cache()
-    energy_results_output.flex_consumption_per_brp.cache()
-    energy_results_output.non_profiled_consumption_per_brp.cache()
-    energy_results_output.production_per_es.cache()
-    energy_results_output.flex_consumption_per_es.cache()
-    energy_results_output.non_profiled_consumption_per_es.cache()
-    energy_results_output.positive_grid_loss.cache()
-    energy_results_output.negative_grid_loss.cache()
+
+    if energy_results_output.total_consumption is not None:
+        energy_results_output.total_consumption.cache()
+
+    if energy_results_output.exchange is not None:
+        energy_results_output.exchange.cache()
+
+    if energy_results_output.production is not None:
+        energy_results_output.production.cache()
+
+    if energy_results_output.flex_consumption is not None:
+        energy_results_output.flex_consumption.cache()
+
+    if energy_results_output.non_profiled_consumption is not None:
+        energy_results_output.non_profiled_consumption.cache()
+
+    if energy_results_output.temporary_production is not None:
+        energy_results_output.temporary_production.cache()
+
+    if energy_results_output.temporary_flex_consumption is not None:
+        energy_results_output.temporary_flex_consumption.cache()
+
+    if energy_results_output.grid_loss is not None:
+        energy_results_output.grid_loss.cache()
+
+    if energy_results_output.exchange_per_neighbor is not None:
+        energy_results_output.exchange_per_neighbor.cache()
+
+    if energy_results_output.production_per_brp is not None:
+        energy_results_output.production_per_brp.cache()
+
+    if energy_results_output.flex_consumption_per_brp is not None:
+        energy_results_output.flex_consumption_per_brp.cache()
+
+    if energy_results_output.non_profiled_consumption_per_brp is not None:
+        energy_results_output.non_profiled_consumption_per_brp.cache()
+
+    if energy_results_output.production_per_es is not None:
+        energy_results_output.production_per_es.cache()
+
+    if energy_results_output.flex_consumption_per_es is not None:
+        energy_results_output.flex_consumption_per_es.cache()
+
+    if energy_results_output.non_profiled_consumption_per_es is not None:
+        energy_results_output.non_profiled_consumption_per_es.cache()
+
+    if energy_results_output.positive_grid_loss is not None:
+        energy_results_output.positive_grid_loss.cache()
+
+    if energy_results_output.negative_grid_loss is not None:
+        energy_results_output.negative_grid_loss.cache()
 
     # Write exchange per neighbor grid area
     _write(
