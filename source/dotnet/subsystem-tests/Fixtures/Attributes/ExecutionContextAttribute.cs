@@ -19,9 +19,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 /// <summary>
 /// Apply attribute on xUnit test class for subsystem tests to specify in
 /// which Azure environment the containing tests should be executed, and if
-/// they are executed as part of the deployment pipeline, scheduled or just
-/// any situation is allowed. Multiple attributes can be applied
-/// to specify execution in multiple environments.
+/// they are executed as part of the 'Deployment' pipeline, 'Scheduled' or both ('Always').
+/// Multiple attributes can be applied to specify execution in multiple environments.
 ///
 /// GitHub workflows should then use xUnit trait filter expressions to execute
 /// tests accordingly.
@@ -29,32 +28,33 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 /// See xUnit filter possibilities: https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
 /// </summary>
 [TraitDiscoverer(
-    typeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.TraitDiscoverers.ExecutionEnvironmentDiscoverer",
+    typeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.TraitDiscoverers.ExecutionContextDiscoverer",
     assemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class ExecutionContextAttribute : Attribute, ITraitAttribute
 {
-    public ExecutionContextAttribute(AzureEnvironment environment, WorkflowTrigger trigger = WorkflowTrigger.Deployment)
+    public ExecutionContextAttribute(AzureEnvironment environment = AzureEnvironment.AnyDev, WorkflowTrigger trigger = WorkflowTrigger.Deployment)
     {
     }
 }
 
 /// <summary>
-/// Azure environment in which we support executing subsystem tests.
+/// Azure environment filter.
 /// </summary>
 public enum AzureEnvironment
 {
+    AnyDev,
     Dev001,
     Dev002,
     Dev003,
 }
 
 /// <summary>
-/// GitHub workflow types in which we support executing subsystem tests.
+/// GitHub workflow trigger filter.
 /// </summary>
 public enum WorkflowTrigger
 {
-    Any,
+    Always,
     Deployment,
     Scheduled,
 }

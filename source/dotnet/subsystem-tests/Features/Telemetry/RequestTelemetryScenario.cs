@@ -26,9 +26,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry;
 /// Verify telemetry is configured correctly so we can track http requests, dependencies, exceptions and traces.
 /// See also: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
 /// </summary>
-[ExecutionContext(AzureEnvironment.Dev001)]
-[ExecutionContext(AzureEnvironment.Dev002)]
-[ExecutionContext(AzureEnvironment.Dev003)]
+[ExecutionContext(AzureEnvironment.AnyDev)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
