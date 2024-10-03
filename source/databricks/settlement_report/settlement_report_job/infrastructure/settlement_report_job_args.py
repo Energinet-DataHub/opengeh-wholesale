@@ -62,7 +62,7 @@ def parse_job_arguments(
                 env_vars.get_catalog_name()
             ),
             skip_basis_data_csv_files=job_args.skip_basis_data_csv_files,
-            locale=job_args.locale,
+            locale=job_args.locale if job_args.locale is not None else "da-DK",
         )
 
         return settlement_report_args
