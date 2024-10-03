@@ -1,5 +1,5 @@
 module "results_internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_1.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -14,12 +14,13 @@ module "results_internal_backup" {
   source_schema_name            = databricks_schema.results_internal.name
   backup_sql_endpoint_id        = databricks_sql_endpoint.backup_warehouse[local.warehouse_key].id
   access_control                = local.backup_access_control
+  backup_email_on_failure       = var.alert_email_address != null ? [var.alert_email_address] : []
 
   depends_on = [module.dbw]
 }
 
 module "basis_data_internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_1.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -34,12 +35,13 @@ module "basis_data_internal_backup" {
   source_schema_name            = databricks_schema.basis_data_internal.name
   backup_sql_endpoint_id        = databricks_sql_endpoint.backup_warehouse[local.warehouse_key].id
   access_control                = local.backup_access_control
+  backup_email_on_failure       = var.alert_email_address != null ? [var.alert_email_address] : []
 
   depends_on = [module.dbw]
 }
 
 module "internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_1.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -54,6 +56,7 @@ module "internal_backup" {
   source_schema_name            = databricks_schema.internal.name
   backup_sql_endpoint_id        = databricks_sql_endpoint.backup_warehouse[local.warehouse_key].id
   access_control                = local.backup_access_control
+  backup_email_on_failure       = var.alert_email_address != null ? [var.alert_email_address] : []
 
   depends_on = [module.dbw]
 }
