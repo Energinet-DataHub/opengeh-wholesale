@@ -16,6 +16,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
@@ -45,12 +46,18 @@ def create_time_series(
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     resolution: DataProductMeteringPointResolution,
+    requesting_actor_market_role: MarketRole,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
     time_series_points = _read_and_filter_from_view(
-        period_start, period_end, calculation_id_by_grid_area, repository, resolution
+        period_start,
+        period_end,
+        calculation_id_by_grid_area,
+        resolution,
+        requesting_actor_market_role,
+        repository,
     )
     prepared_time_series = _generate_time_series(
         time_series_points,
@@ -67,13 +74,18 @@ def _read_and_filter_from_view(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
-    repository: WholesaleRepository,
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     resolution: DataProductMeteringPointResolution,
+    repository: WholesaleRepository,
 ) -> DataFrame:
     df = repository.read_metering_point_time_series().where(
         (F.col(DataProductColumnNames.observation_time) >= period_start)
         & (F.col(DataProductColumnNames.observation_time) < period_end)
     )
+
+    if requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
+        df = _filter_by_charge_owner(repository, df, requesting_actor_id)
 
     df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
@@ -154,6 +166,38 @@ def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
     return F.to_utc_timestamp(
         F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
     )
+
+
+def _filter_by_charge_owner(
+    time_series_points: DataFrame,
+    requesting_actor_id: str,
+    repository: WholesaleRepository,
+) -> DataFrame:
+    charge_link_periods = repository.read_charge_link_periods()
+    charge_price_information_periods = (
+        (repository.read_charge_price_information_periods())
+        .where(F.col(DataProductColumnNames.is_tax) == False)
+        .where(
+            F.col(DataProductColumnNames.charge_owner) == requesting_actor_id,
+        )
+    )
+
+    filtered_charge_link_periods = charge_link_periods.join(
+        charge_price_information_periods,
+        on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
+        how="inner",
+    )
+
+    filtered_time_series_points = time_series_points.join(
+        filtered_charge_link_periods,
+        on=[
+            DataProductColumnNames.calculation_id,
+            DataProductColumnNames.metering_point_id,
+        ],
+        how="inner",
+    )
+
+    return filtered_time_series_points
 
 
 def _get_desired_quantity_column_count(

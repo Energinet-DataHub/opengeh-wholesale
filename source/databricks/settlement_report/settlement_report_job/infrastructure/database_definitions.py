@@ -23,6 +23,11 @@ class WholesaleBasisDataDatabase:
     CHARGE_LINKS_VIEW_NAME = "charge_link_periods_v1"
 
 
+class WholesaleBasisDataDatabase:
+    DATABASE_NAME = "wholesale_basis_data"
+    CHARGE_LINKS_VIEW_NAME = "charge_price_information_periods_v1"
+
+
 class WholesaleWholesaleResultsDatabase:
     DATABASE_NAME = "wholesale_results"
     ENERGY_V1_VIEW_NAME = "energy_v1"
