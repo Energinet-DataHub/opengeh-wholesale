@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public class ExecutionContextAttribute : Attribute, ITraitAttribute
 {
-    public ExecutionContextAttribute(AzureEnvironment environment = AzureEnvironment.AnyDev, WorkflowTrigger trigger = WorkflowTrigger.Deployment)
+    public ExecutionContextAttribute(AzureEnvironment environment = AzureEnvironment.AllDev, WorkflowTrigger trigger = WorkflowTrigger.Deployment)
     {
     }
 }
@@ -43,7 +43,7 @@ public class ExecutionContextAttribute : Attribute, ITraitAttribute
 /// </summary>
 public enum AzureEnvironment
 {
-    AnyDev,
+    AllDev,
     Dev001,
     Dev002,
     Dev003,
