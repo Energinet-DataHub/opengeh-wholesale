@@ -21,6 +21,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 /// the containing tests should be executed. Multiple attributes can be applied
 /// to specify execution in multiple environments.
 ///
+/// GitHub workflows can then use xUnit trait filter expressions to execute
+/// tests accordingly.
+///
+/// See xUnit filter possibilities: https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+///
 /// Inspired by: https://github.com/xunit/samples.xunit/blob/main/v2/TraitExtensibility/CategoryAttribute.cs
 /// </summary>
 [TraitDiscoverer(

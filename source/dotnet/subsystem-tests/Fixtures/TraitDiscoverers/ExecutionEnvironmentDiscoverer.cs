@@ -19,13 +19,17 @@ using Xunit.Sdk;
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.TraitDiscoverers;
 
 /// <summary>
-/// This class discovers all of the xUnit test classes that have
-/// applied the <see cref="ExecutionEnvironmentAttribute"/> attribute.
+/// This class discovers all of the xUnit test classes that have applied
+/// the <see cref="ExecutionEnvironmentAttribute"/> attribute.
 ///
 /// Inspired by: https://github.com/xunit/samples.xunit/blob/main/v2/TraitExtensibility/CategoryDiscoverer.cs
 /// </summary>
 public class ExecutionEnvironmentDiscoverer : ITraitDiscoverer
 {
+    /// <summary>
+    /// Name used in the trait filter expression.
+    /// See xUnit filter possibilities: https://learn.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests?pivots=xunit
+    /// </summary>
     public const string Key = "ExecutionEnvironment";
 
     public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)

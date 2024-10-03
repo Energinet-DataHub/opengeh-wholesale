@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
+using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization;
 
@@ -74,6 +75,9 @@ public class AuthorizationFeatureTests
     /// <summary>
     /// These tests uses an authorized Wholesale client to perform requests.
     /// </summary>
+    [ExecutionEnvironment(AzureEnvironment.Dev001)]
+    [ExecutionEnvironment(AzureEnvironment.Dev002)]
+    [ExecutionEnvironment(AzureEnvironment.Dev003)]
     public class Given_Authorized : SubsystemTestsBase<AuthorizedClientFixture>
     {
         public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
