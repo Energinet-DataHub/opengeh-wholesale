@@ -48,7 +48,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedMaxConcurrentRuns = 40;
+        Fixture.ScenarioState.ExpectedConcurrentRuns = 40;
         Fixture.ScenarioState.ExpectedClusterWarmupTimeLimit = TimeSpan.FromMinutes(10);
     }
 
@@ -57,12 +57,12 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     public async Task When_MaxConcurrentRunsAreStarted()
     {
         Fixture.ScenarioState.JobRuns = await Fixture.StartSettlementReportJobRunsAsync(
-            Fixture.ScenarioState.ExpectedMaxConcurrentRuns,
+            Fixture.ScenarioState.ExpectedConcurrentRuns,
             Fixture.ScenarioState.JobParametersTemplate);
 
         // Assert
         Fixture.ScenarioState.JobRuns.Should()
-            .HaveCount(Fixture.ScenarioState.ExpectedMaxConcurrentRuns)
+            .HaveCount(Fixture.ScenarioState.ExpectedConcurrentRuns)
             .And.OnlyContain(kv =>
                 kv.Value == SettlementReportJobState.Pending
                 || kv.Value == SettlementReportJobState.Running);
