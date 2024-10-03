@@ -43,6 +43,7 @@ def write(
     args: SettlementReportArgs,
     prepared_time_series: DataFrame,
     report_data_type: ReportDataType,
+    rows_per_file: int = 1_000_000,
 ) -> list[str]:
 
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
@@ -66,6 +67,8 @@ def write(
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
+        rows_per_file=rows_per_file,
+        locale=args.locale,
     )
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
