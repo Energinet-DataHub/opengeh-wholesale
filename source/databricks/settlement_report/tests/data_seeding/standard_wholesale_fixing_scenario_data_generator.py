@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from pyspark.sql import SparkSession, DataFrame
 
-import metering_point_time_series_factory
+from tests.test_factories import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
