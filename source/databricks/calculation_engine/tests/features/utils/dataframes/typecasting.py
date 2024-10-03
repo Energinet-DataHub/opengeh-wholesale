@@ -31,6 +31,9 @@ from package.databases.table_column_names import TableColumnNames
 
 
 def cast_column_types(df: DataFrame, table_or_view_name: str = "") -> DataFrame:
+    """
+    Cast the columns of a DataFrame to the correct types.
+    """
     for column in df.schema:
         df = _cast_column(df, column.name, table_or_view_name)
     return df

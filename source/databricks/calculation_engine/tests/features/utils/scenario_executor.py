@@ -38,6 +38,7 @@ class ScenarioExecutor:
         self.spark = spark
         self.migrations_wholesale_repository = Mock()
         self.wholesale_internal_repository = Mock()
+        self.wholesale_results_internal_repository = Mock()
 
     def execute(
         self, scenario_folder_path: str
@@ -50,7 +51,9 @@ class ScenarioExecutor:
         actual = CalculationCore().execute(
             self.test_calculation_args,
             PreparedDataReader(
-                self.migrations_wholesale_repository, self.wholesale_internal_repository
+                self.migrations_wholesale_repository,
+                self.wholesale_internal_repository,
+                self.wholesale_results_internal_repository,
             ),
         )
         expected = self._get_expected_results(self.spark)
@@ -61,7 +64,9 @@ class ScenarioExecutor:
         self.output_path = scenario_path + "/then/"
 
         correlations = get_data_input_specifications(
-            self.migrations_wholesale_repository, self.wholesale_internal_repository
+            self.migrations_wholesale_repository,
+            self.wholesale_internal_repository,
+            self.wholesale_results_internal_repository,
         )
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
@@ -79,8 +84,12 @@ class ScenarioExecutor:
         if not os.path.exists(path_to_csv):
             return None
 
-        # Read the CSV file to check column names.
+        # Reading the CSV file without applying the schema means all types are strings.
+        # We do this because some types are not supported by the CSV reader fx. ArrayType.
         df = spark_session.read.csv(path_to_csv, header=True, sep=";")
+
+        # Cast the column types to match the schema
+        df = cast_column_types(df, table_or_view_name=csv_file_name)
 
         # Verify column names match with those in the schema
         schema_column_names = [field.name for field in schema.fields]
@@ -89,12 +98,6 @@ class ScenarioExecutor:
                 f"Schema mismatch {path_to_csv}. Expected: {schema_column_names} Found: {df.columns}"
             )
 
-        # When the schema is provided, the column names from the schema are used
-        # despite the header naming in the CSV file. The data types must, however,
-        # comply with the schema.
-        df = spark_session.read.csv(path_to_csv, header=True, sep=";", schema=schema)
-
-        # Behind the scenes the dataframe is wrapped using DataFrameWrapper and verified for nullability and precision.
         return spark_session.createDataFrame(df.rdd, schema=schema, verifySchema=True)
 
     def _read_files_in_parallel(

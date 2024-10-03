@@ -37,6 +37,14 @@ class CsvToDataframeParser:
             return None
 
         df = spark_session.read.csv(file_path, header=True, sep=";")
+
+        # Verify column names match with those in the schema
+        # schema_column_names = [field.name for field in schema.fields]
+        # if schema_column_names != df.columns:
+        #   raise ValueError(
+        #      f"Schema mismatch {file_path}. Expected: {schema_column_names} Found: {df.columns}"
+        #  )
+
         name, extension = os.path.splitext(file_name)
 
         return DataframeWrapper(key=file_name, name=name, df=df)
