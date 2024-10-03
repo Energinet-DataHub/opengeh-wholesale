@@ -25,8 +25,6 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
 
     try:
         # Arrange
-        reset_task_values_quarterly(dbutils)
-
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
             TimeSeriesPointCsvColumnNames.metering_point_id,
@@ -60,8 +58,6 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
 ):
     try:
         # Arrange
-        reset_task_values_quarterly(dbutils)
-
         standard_wholesale_fixing_scenario_args.include_basis_data = include_basis_data
 
         if include_basis_data:

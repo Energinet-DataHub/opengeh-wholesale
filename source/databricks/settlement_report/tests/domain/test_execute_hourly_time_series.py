@@ -24,8 +24,6 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
 ):
     try:
         # Arrange
-        reset_task_values(dbutils)
-
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
             TimeSeriesPointCsvColumnNames.metering_point_id,
@@ -59,7 +57,6 @@ def test_execute_hourly_time_series__when_include_basis_data__returns_valid_csv_
 ):
     try:
         # Arrange
-        reset_task_values(dbutils)
         standard_wholesale_fixing_scenario_args.include_basis_data = include_basis_data
         dbutils.jobs.taskValues.set(
             "hourly_time_series_files", []
