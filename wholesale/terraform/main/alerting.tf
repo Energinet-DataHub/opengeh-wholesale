@@ -56,8 +56,6 @@ module "monitor_action_group_wholesale" {
                       exceptions
                         | where timestamp > ago(10m)
                         | where customDimensions["Subsystem"] == "wholesale-aggregations"
-                        // avoid triggering alert when exception is logged as a warning or lower
-                        | where severityLevel >= 3
                         // avoid triggering alert when exception is logged by health check
                         | where customDimensions["EventName"] != "HealthCheckEnd"
                     QUERY
