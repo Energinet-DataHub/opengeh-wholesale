@@ -13,9 +13,9 @@
 # limitations under the License.
 
 
-class WholesaleSettlementReportDatabase:
-    DATABASE_NAME = "wholesale_settlement_reports"
-    METERING_POINT_TIME_SERIES_VIEW_NAME = "metering_point_time_series_v1"
+class WholesaleBasisDataDatabase:
+    DATABASE_NAME = "wholesale_basis_data"
+    TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
 
 
 class WholesaleWholesaleResultsDatabase:
