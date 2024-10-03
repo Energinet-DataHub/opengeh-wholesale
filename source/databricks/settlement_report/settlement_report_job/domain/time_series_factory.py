@@ -85,7 +85,11 @@ def _read_and_filter_from_view(
     )
 
     if requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
-        df = _filter_by_charge_owner(repository, df, requesting_actor_id)
+        df = _filter_by_charge_owner(
+            time_series_points=df,
+            requesting_actor_id=requesting_actor_id,
+            repository=repository,
+        )
 
     df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
