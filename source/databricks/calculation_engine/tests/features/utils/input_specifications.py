@@ -13,7 +13,6 @@
 # limitations under the License.
 from pyspark.sql.types import StructType
 
-from contracts.data_products.wholesale_results.energy_v1 import energy_v1
 from package.databases import wholesale_internal
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import (
@@ -27,8 +26,12 @@ from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_points_schema,
     calculations_schema,
 )
-from package.databases.wholesale_results.wholesale_results_repository import (
-    WholesaleResultsInternalRepository,
+from package.databases.wholesale_results import WholesaleResultsInternalRepository
+from package.databases.wholesale_results_internal.schemas import (
+    energy_schema,
+    energy_per_es_schema,
+    energy_per_brp_schema,
+    amounts_per_charge_schema,
 )
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
@@ -72,7 +75,19 @@ def get_data_input_specifications(
             migrations_wholesale_repository.read_charge_price_points,
         ),
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME}.csv": (
-            energy_v1,
+            energy_schema,
             wholesale_results_internal_repository.read_energy_results,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME}.csv": (
+            energy_per_es_schema,
+            wholesale_results_internal_repository.read_energy_per_es_results,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME}.csv": (
+            energy_per_brp_schema,
+            wholesale_results_internal_repository.read_energy_per_brp_results,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}.csv": (
+            amounts_per_charge_schema,
+            wholesale_results_internal_repository.read_amount_per_charge_results,
         ),
     }

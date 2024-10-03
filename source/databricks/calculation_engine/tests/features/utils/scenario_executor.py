@@ -53,7 +53,6 @@ class ScenarioExecutor:
             PreparedDataReader(
                 self.migrations_wholesale_repository,
                 self.wholesale_internal_repository,
-                self.wholesale_results_internal_repository,
             ),
         )
         expected = self._get_expected_results(self.spark)

@@ -1,0 +1,6 @@
+calculation_id;result_id;grid_area_code;energy_supplier_id;quantity;quantity_qualities;time;resolution;metering_point_type;settlement_point;price;amount;is_tax;charge_code;charge_type;charge_owner_id
+0b15a420-9fc8-409a-a169-fbd49479d718;11111111-9fc8-409a-a169-fbd49479d718;804;2000000000000;1.125;['measured'];2023-02-02 02:00;PT15M;production;flex;1.756998;632.51928;false;fee-1;fee;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;22222222-9fc8-409a-a169-fbd49479d718;804;1000000000000;1.125;['measured'];2023-02-02 02:00;PT15M;production;flex;1.756998;632.51928;false;subscription-1;subscription;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;33333333-9fc8-409a-a169-fbd49479d718;804;3000000000000;1.125;['measured'];2023-02-02 02:00;PT15M;production;flex;1.756998;632.51928;false;tariff-hourly-1;tariff;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;44444444-9fc8-409a-a169-fbd49479d718;804;2000000000000;1.125;['measured'];2023-02-02 02:00;PT15M;production;flex;1.756998;632.51928;false;subscription-2;subscription;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;55555555-9fc8-409a-a169-fbd49479d718;804;1000000000000;1.125;['measured'];2023-02-02 02:00;PT15M;production;flex;1.756998;632.51928;false;subscription-3;subscription;0000000000800
