@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
@@ -26,6 +25,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
 
+[ExecutionContext(AzureEnvironment.AllDev)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
