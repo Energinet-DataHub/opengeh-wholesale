@@ -36,4 +36,5 @@ class SettlementReportArgs:
     catalog_name: str
     settlement_reports_output_path: str
     """The path to the folder where the settlement reports are stored."""
+    include_basis_data: bool
     locale: str

@@ -135,6 +135,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.prevent_large_text_files is True
         assert actual_args.split_report_by_grid_area is True
         assert actual_args.time_zone == "Europe/Copenhagen"
+        assert actual_args.include_basis_data is True
         assert actual_args.locale == "da-DK"
 
 
@@ -241,6 +242,38 @@ def test_returns_expected_value_for_split_report_by_grid_area(
 
     # Assert
     assert actual_args.split_report_by_grid_area is split_report_by_grid_area
+
+
+@pytest.mark.parametrize(
+    "include_basis_data",
+    [
+        True,
+        False,
+    ],
+)
+def test_returns_expected_value_for_include_basis_data(
+    job_environment_variables: dict,
+    sys_argv_from_contract: list[str],
+    include_basis_data: bool,
+) -> None:
+    # Arrange
+    test_sys_args = sys_argv_from_contract.copy()
+    if not include_basis_data:
+        test_sys_args = [
+            item
+            for item in sys_argv_from_contract
+            if not item.startswith("--include-basis-data")
+        ]
+
+    with patch("sys.argv", test_sys_args):
+        with patch.dict("os.environ", job_environment_variables):
+            command_line_args = parse_command_line_arguments()
+
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert
+    assert actual_args.include_basis_data is include_basis_data
 
 
 @pytest.mark.parametrize(

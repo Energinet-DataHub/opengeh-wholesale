@@ -64,6 +64,7 @@ def parse_job_arguments(
             settlement_reports_output_path=get_settlement_reports_output_path(
                 env_vars.get_catalog_name()
             ),
+            include_basis_data=job_args.include_basis_data,
             locale=job_args.locale if job_args.locale is not None else "da-DK",
         )
 
@@ -92,6 +93,9 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     )  # true if present, false otherwise
     p.add_argument(
         "--prevent-large-text-files", action="store_true"
+    )  # true if present, false otherwise
+    p.add(
+        "--include-basis-data", action="store_true"
     )  # true if present, false otherwise
     p.add("--locale", type=str, required=False)
 
