@@ -6,7 +6,7 @@ from settlement_report_job.infrastructure.column_names import DataProductColumnN
 
 def filter_by_charge_owner_on_metering_point(
     df: DataFrame,
-    requesting_actor_id: str,
+    system_operator_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
 
@@ -15,7 +15,7 @@ def filter_by_charge_owner_on_metering_point(
         (repository.read_charge_price_information_periods())
         .where(F.col(DataProductColumnNames.is_tax) == False)
         .where(
-            F.col(DataProductColumnNames.charge_owner) == requesting_actor_id,
+            F.col(DataProductColumnNames.charge_owner) == system_operator_id,
         )
     )
 

@@ -97,7 +97,7 @@ def _read_and_filter_from_view(
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
         df = filter_by_charge_owner_on_metering_point(
             df=df,
-            requesting_actor_id=requesting_actor_id,
+            system_operator_id=requesting_actor_id,
             repository=repository,
         )
 
