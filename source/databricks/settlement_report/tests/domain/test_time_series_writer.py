@@ -18,7 +18,9 @@ import pyspark.sql.functions as F
 from tests.fixtures import DBUtilsFixture
 from functools import reduce
 import pytest
-from settlement_report_job.domain.DataProductValues.metering_point_type import MeteringPointType
+from settlement_report_job.domain.DataProductValues.metering_point_type import (
+    MeteringPointType,
+)
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )

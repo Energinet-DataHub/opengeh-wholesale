@@ -5,7 +5,9 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import LongType
 
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_type import MeteringPointType
+from settlement_report_job.domain.DataProductValues.metering_point_type import (
+    MeteringPointType,
+)
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from settlement_report_job.infrastructure.schemas.charge_link_periods_v1 import (
     charge_link_periods_v1,
