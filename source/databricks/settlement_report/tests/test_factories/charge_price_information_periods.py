@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import DecimalType
 
 from settlement_report_job.domain.DataProductValues.charge_resolution import (
     ChargeResolution,
@@ -13,8 +12,8 @@ from settlement_report_job.domain.DataProductValues.metering_point_type import (
     MeteringPointType,
 )
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
-from settlement_report_job.infrastructure.schemas.price_information_periods_v1 import (
-    price_information_periods_v1,
+from settlement_report_job.infrastructure.schemas.charge_price_information_periods_v1 import (
+    charge_price_information_periods_v1,
 )
 
 DEFAULT_PERIOD_START = datetime(2024, 1, 1, 22)
@@ -25,7 +24,6 @@ DEFAULT_METERING_POINT_ID = "12345678-1111-1111-1111-111111111111"
 DEFAULT_METERING_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_GRID_AREA_CODE = "804"
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
-DEFAULT_PRICE = DecimalType(10, 2)(0.0)
 
 
 @dataclass
@@ -68,4 +66,4 @@ def create(
             }
         )
 
-    return spark.createDataFrame(rows, price_information_periods_v1)
+    return spark.createDataFrame(rows, charge_price_information_periods_v1)
