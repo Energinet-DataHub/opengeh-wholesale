@@ -13,23 +13,24 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, Column
 
 from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-def get_metering_point_periods_for_energy_basis_data(
-    all_metering_point_periods: DataFrame,
-) -> DataFrame:
-    """
-    Returns all metering point periods that should be included in an energy calculations basis data.
-    """
-    return all_metering_point_periods.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+def is_parent_metering_point(col: Column | str) -> bool:
+    col = f.col(col) if isinstance(col, str) else col
+    return (
+        (col == MeteringPointType.CONSUMPTION.value)
+        | (col == MeteringPointType.PRODUCTION.value)
+        | (col == MeteringPointType.EXCHANGE.value)
     )
+
+
+def is_child_metering_point(col: Column | str) -> bool:
+    col = f.col(col) if isinstance(col, str) else col
+    return not is_parent_metering_point(col)
 
 
 def get_metering_points_periods_for_wholesale_basis_data(
