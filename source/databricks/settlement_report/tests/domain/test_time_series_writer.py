@@ -352,7 +352,7 @@ def test_write__files_have_correct_ordering_for_different_metering_point_types_a
         args=standard_wholesale_fixing_scenario_args,
         prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
-        rows_per_file=limit_rows_per_file,
+        rows_per_file=rows_per_file,
     )
 
     # Assert
