@@ -181,6 +181,7 @@ def test_write__files_have_correct_ordering_for_each_file(
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     resolution = DataProductMeteringPointResolution.HOUR
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
     test_spec = factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointType.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -335,6 +336,7 @@ def test_write__files_have_correct_ordering_for_different_metering_point_types_a
         if resolution == DataProductMeteringPointResolution.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
     test_spec = factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=metering_point_type,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
