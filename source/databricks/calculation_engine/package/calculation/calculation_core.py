@@ -51,50 +51,48 @@ class CalculationCore:
             return CalculationCore._execute_energy(args, prepared_data_reader)
 
     @staticmethod
+    @logging_configuration.use_span("calculation.wholesale.prepare")
     def _execute_wholesale(
         args: CalculatorArgs,
         prepared_data_reader: PreparedDataReader,
     ) -> CalculationOutput:
         calculation_output = CalculationOutput()
 
-        with logging_configuration.start_span("calculation.prepare"):
-            # cache of metering_point_time_series had no effect on performance (01-12-2023)
-            all_metering_point_periods = (
-                prepared_data_reader.get_metering_point_periods_df(
-                    args.calculation_period_start_datetime,
-                    args.calculation_period_end_datetime,
-                    args.calculation_grid_areas,
-                )
-            )
+        # cache of metering_point_time_series had no effect on performance (01-12-2023)
+        all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
+            args.calculation_grid_areas,
+        )
 
-            all_metering_point_periods = (
-                get_metering_points_periods_for_wholesale_basis_data(
-                    all_metering_point_periods
-                )
+        all_metering_point_periods = (
+            get_metering_points_periods_for_wholesale_basis_data(
+                all_metering_point_periods
             )
+        )
 
-            grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-                args.calculation_grid_areas, all_metering_point_periods
-            )
+        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
+            args.calculation_grid_areas, all_metering_point_periods
+        )
 
-            metering_point_periods_df_without_grid_loss = (
-                prepared_data_reader.get_metering_point_periods_without_grid_loss(
-                    all_metering_point_periods
-                )
+        metering_point_periods_df_without_grid_loss = (
+            prepared_data_reader.get_metering_point_periods_without_grid_loss(
+                all_metering_point_periods
             )
+        )
 
-            grid_loss_metering_points_df = get_grid_loss_metering_points(
-                grid_loss_responsible_df
-            )
+        grid_loss_metering_points_df = get_grid_loss_metering_points(
+            grid_loss_responsible_df
+        )
 
-            metering_point_time_series = (
-                prepared_data_reader.get_metering_point_time_series(
-                    args.calculation_period_start_datetime,
-                    args.calculation_period_end_datetime,
-                    metering_point_periods_df_without_grid_loss,
-                )
+        metering_point_time_series = (
+            prepared_data_reader.get_metering_point_time_series(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+                metering_point_periods_df_without_grid_loss,
             )
-            metering_point_time_series.cache_internal()
+        )
+        metering_point_time_series.cache_internal()
 
         (
             calculation_output.energy_results_output,
@@ -117,34 +115,32 @@ class CalculationCore:
             )
         )
 
-        with logging_configuration.start_span("calculation.wholesale.prepare"):
+        # Extract metering point ids from all metering point periods in
+        # the grid areas specified in the calculation arguments.
+        metering_point_period_ids = all_metering_point_periods.select(
+            Colname.metering_point_id
+        ).distinct()
 
-            # Extract metering point ids from all metering point periods in
-            # the grid areas specified in the calculation arguments.
-            metering_point_period_ids = all_metering_point_periods.select(
-                Colname.metering_point_id
-            ).distinct()
+        input_charges = prepared_data_reader.get_input_charges(
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
+            metering_point_period_ids,
+        )
 
-            input_charges = prepared_data_reader.get_input_charges(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-                metering_point_period_ids,
+        metering_point_periods_for_basis_data = all_metering_point_periods
+
+        metering_point_periods_for_wholesale_calculation = (
+            get_metering_point_periods_for_wholesale_calculation(
+                metering_point_periods_for_basis_data
             )
+        )
 
-            metering_point_periods_for_basis_data = all_metering_point_periods
-
-            metering_point_periods_for_wholesale_calculation = (
-                get_metering_point_periods_for_wholesale_calculation(
-                    metering_point_periods_for_basis_data
-                )
-            )
-
-            prepared_charges = prepared_data_reader.get_prepared_charges(
-                metering_point_periods_for_wholesale_calculation,
-                metering_point_time_series,
-                input_charges,
-                args.time_zone,
-            )
+        prepared_charges = prepared_data_reader.get_prepared_charges(
+            metering_point_periods_for_wholesale_calculation,
+            metering_point_time_series,
+            input_charges,
+            args.time_zone,
+        )
 
         calculation_output.wholesale_results_output = wholesale_calculation.execute(
             args,
@@ -163,44 +159,42 @@ class CalculationCore:
         return calculation_output
 
     @staticmethod
+    @logging_configuration.use_span("calculation.energy.prepare")
     def _execute_energy(
         args: CalculatorArgs,
         prepared_data_reader: PreparedDataReader,
     ) -> CalculationOutput:
         calculation_output = CalculationOutput()
 
-        with logging_configuration.start_span("calculation.prepare"):
-            # cache of metering_point_time_series had no effect on performance (01-12-2023)
-            all_metering_point_periods = (
-                prepared_data_reader.get_metering_point_periods_df(
-                    args.calculation_period_start_datetime,
-                    args.calculation_period_end_datetime,
-                    args.calculation_grid_areas,
-                )
-            )
+        # cache of metering_point_time_series had no effect on performance (01-12-2023)
+        all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
+            args.calculation_grid_areas,
+        )
 
-            grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-                args.calculation_grid_areas, all_metering_point_periods
-            )
+        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
+            args.calculation_grid_areas, all_metering_point_periods
+        )
 
-            metering_point_periods_df_without_grid_loss = (
-                prepared_data_reader.get_metering_point_periods_without_grid_loss(
-                    all_metering_point_periods
-                )
+        metering_point_periods_df_without_grid_loss = (
+            prepared_data_reader.get_metering_point_periods_without_grid_loss(
+                all_metering_point_periods
             )
+        )
 
-            grid_loss_metering_points_df = get_grid_loss_metering_points(
-                grid_loss_responsible_df
-            )
+        grid_loss_metering_points_df = get_grid_loss_metering_points(
+            grid_loss_responsible_df
+        )
 
-            metering_point_time_series = (
-                prepared_data_reader.get_metering_point_time_series(
-                    args.calculation_period_start_datetime,
-                    args.calculation_period_end_datetime,
-                    metering_point_periods_df_without_grid_loss,
-                )
+        metering_point_time_series = (
+            prepared_data_reader.get_metering_point_time_series(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+                metering_point_periods_df_without_grid_loss,
             )
-            metering_point_time_series.cache_internal()
+        )
+        metering_point_time_series.cache_internal()
 
         (
             calculation_output.energy_results_output,
