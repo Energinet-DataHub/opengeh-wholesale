@@ -231,7 +231,7 @@ class CalculationCore:
             args,
             metering_point_periods_for_basis_data,
             metering_point_time_series,
-            input_charges=None,
+            input_charges_container=None,
             grid_loss_metering_points_df=grid_loss_metering_points_df,
         )
 
