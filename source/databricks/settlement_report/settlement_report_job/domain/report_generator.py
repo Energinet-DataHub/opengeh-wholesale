@@ -24,6 +24,8 @@ def execute_hourly_time_series(
     """
     Entry point for the logic of creating hourly time series.
     """
+    if not args.include_basis_data:
+        return
 
     repository = WholesaleRepository(spark, args.catalog_name)
     hourly_time_series_df = create_time_series(
@@ -31,6 +33,7 @@ def execute_hourly_time_series(
         period_end=args.period_end,
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,
         time_zone=args.time_zone,
+        energy_supplier_ids=args.energy_supplier_ids,
         resolution=DataProductMeteringPointResolution.HOUR,
         repository=repository,
     )
@@ -52,12 +55,15 @@ def execute_quarterly_time_series(
     """
     Entry point for the logic of creating quarterly time series.
     """
+    if not args.include_basis_data:
+        return
 
     repository = WholesaleRepository(spark, args.catalog_name)
     quarterly_time_series_df = create_time_series(
         period_start=args.period_start,
         period_end=args.period_end,
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,
+        energy_supplier_ids=args.energy_supplier_ids,
         time_zone=args.time_zone,
         resolution=DataProductMeteringPointResolution.QUARTER,
         repository=repository,

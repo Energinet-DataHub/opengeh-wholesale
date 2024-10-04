@@ -31,9 +31,10 @@ def default_settlement_report_args() -> SettlementReportArgs:
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="catalog_name",
-        energy_supplier_id="1234567890123",
+        energy_supplier_ids=["1234567890123"],
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         settlement_reports_output_path="some_output_volume_path",
+        include_basis_data=True,
         locale="da-dk",
     )
 

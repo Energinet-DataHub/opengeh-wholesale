@@ -37,7 +37,7 @@ def dbutils() -> DBUtilsFixture:
     return DBUtilsFixture()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def standard_wholesale_fixing_scenario_args(
     settlement_reports_output_path: str,
 ) -> SettlementReportArgs:
@@ -58,10 +58,11 @@ def standard_wholesale_fixing_scenario_args(
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="spark_catalog",
-        energy_supplier_id=None,
+        energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id="1111111111111",
         settlement_reports_output_path=settlement_reports_output_path,
+        include_basis_data=True,
         locale="da-dk",
     )
 

@@ -28,7 +28,7 @@ public class PerformanceScenarioState
     /// The expected max. duration of the job.
     /// Use this to monitor (set expectations for) the performance of the job.
     /// </summary>
-    public TimeSpan ExpectedJobTimeLimit { get; internal set; }
+    public TimeSpan ExpectedJobTimeLimit { get; set; }
 
     [NotNull]
     public string? ExpectedRelativeOutputFilePath { get; set; }
