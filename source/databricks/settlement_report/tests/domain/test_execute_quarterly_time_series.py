@@ -27,6 +27,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
             TimeSeriesPointCsvColumnNames.metering_point_id,
+            TimeSeriesPointCsvColumnNames.energy_supplier_id,
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
@@ -63,6 +64,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
             expected_file_count = 2
             expected_columns = [
                 TimeSeriesPointCsvColumnNames.metering_point_id,
+                TimeSeriesPointCsvColumnNames.energy_supplier_id,
                 TimeSeriesPointCsvColumnNames.metering_point_type,
                 TimeSeriesPointCsvColumnNames.start_of_day,
             ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
