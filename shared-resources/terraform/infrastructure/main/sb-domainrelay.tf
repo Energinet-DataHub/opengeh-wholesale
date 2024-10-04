@@ -43,7 +43,7 @@ resource "azurerm_role_assignment" "spn_sbns" {
 
 # TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_listen_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-listen-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["listen"]
@@ -52,7 +52,7 @@ module "kvs_sb_domain_relay_listen_connection_string" {
 
 # TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_send_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-send-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["send"]
@@ -61,7 +61,7 @@ module "kvs_sb_domain_relay_send_connection_string" {
 
 # TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_transceiver_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-transceiver-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["transceiver"]
@@ -70,7 +70,7 @@ module "kvs_sb_domain_relay_transceiver_connection_string" {
 
 # TODO: remove this when subsystems use RBAC
 module "kvs_sb_domain_relay_manage_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-manage-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["manage"]
@@ -78,7 +78,7 @@ module "kvs_sb_domain_relay_manage_connection_string" {
 }
 
 module "kvs_sb_domain_relay_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-namespace-id"
   value        = module.sb_domain_relay.id
@@ -86,7 +86,7 @@ module "kvs_sb_domain_relay_id" {
 }
 
 module "kvs_sb_domain_relay_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-namespace-name"
   value        = module.sb_domain_relay.name
@@ -94,7 +94,7 @@ module "kvs_sb_domain_relay_name" {
 }
 
 module "kvs_sb_domain_relay_endpoint" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sb-domain-relay-namespace-endpoint"
   value        = module.sb_domain_relay.endpoint

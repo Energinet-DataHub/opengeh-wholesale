@@ -1,5 +1,5 @@
 module "st_dead_letter_logs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_5.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.0.0"
 
   name                                  = "deadltr"
   project_name                          = var.domain_name_short
@@ -29,7 +29,7 @@ module "st_dead_letter_logs" {
 }
 
 module "kvs_st_deadltr_shres_blob_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "st-deadltr-shres-blob-url"
   value        = "https://${module.st_dead_letter_logs.name}.blob.core.windows.net"
@@ -37,7 +37,7 @@ module "kvs_st_deadltr_shres_blob_url" {
 }
 
 module "kvs_st_deadltr_shres_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "st-deadltr-shres-id"
   value        = module.st_dead_letter_logs.id

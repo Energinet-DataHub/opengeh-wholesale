@@ -1,5 +1,5 @@
 module "backup_vault" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/backup-vault?ref=backup-vault_4.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/backup-vault?ref=backup-vault_5.0.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -11,7 +11,7 @@ module "backup_vault" {
 }
 
 module "kvs_bvault_policy_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "bvault-policy-id"
   value        = module.backup_vault.blob_storage_backup_policy_id
@@ -19,7 +19,7 @@ module "kvs_bvault_policy_id" {
 }
 
 module "kvs_bvault_vault_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "bvault-vault-id"
   value        = module.backup_vault.id
@@ -27,7 +27,7 @@ module "kvs_bvault_vault_id" {
 }
 
 module "kvs_bvault_vault_location" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "bvault-vault-location"
   value        = azurerm_resource_group.this.location
@@ -35,7 +35,7 @@ module "kvs_bvault_vault_location" {
 }
 
 module "kvs_bvault_vault_principal_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "bvault-vault-principal-id"
   value        = module.backup_vault.identity.0.principal_id

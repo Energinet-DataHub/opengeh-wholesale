@@ -33,7 +33,7 @@ resource "azurerm_data_protection_backup_instance_blob_storage" "github_tfstate"
 module "pim_contributor_control_plane_security_group_permissions_github_tfstate" {
   count = var.pim_contributor_control_plane_group_name != "" ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_4.3.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_5.0.0"
 
   resource_group_name = data.azurerm_resource_group.github_tfstate.name
   security_group_name = var.pim_contributor_control_plane_group_name

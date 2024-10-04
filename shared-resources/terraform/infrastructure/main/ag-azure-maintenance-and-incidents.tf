@@ -1,7 +1,7 @@
 module "monitor_action_group_azuremaintenance" {
   count = var.azure_maintenance_alerts_email_address != null ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_5.0.0"
 
   name                 = "azure-maintenance"
   project_name         = var.domain_name_short
@@ -19,6 +19,7 @@ resource "azurerm_monitor_activity_log_alert" "main" {
   count = var.azure_maintenance_alerts_email_address != null ? 1 : 0
 
   name                = "ala-shared-servicenotifications-${local.resources_suffix}"
+  location            = "Global"
   resource_group_name = azurerm_resource_group.this.name
 
   scopes = [

@@ -1,5 +1,5 @@
 module "log_workspace_shared" {
-  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/log-workspace?ref=log-workspace_4.0.1"
+  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/log-workspace?ref=log-workspace_5.0.0"
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
   resource_group_name  = azurerm_resource_group.this.name
@@ -10,7 +10,7 @@ module "log_workspace_shared" {
 }
 
 module "kvs_log_shared_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "log-shared-name"
   value        = module.log_workspace_shared.name
@@ -18,7 +18,7 @@ module "kvs_log_shared_name" {
 }
 
 module "kvs_log_shared_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "log-shared-id"
   value        = module.log_workspace_shared.id
@@ -26,7 +26,7 @@ module "kvs_log_shared_id" {
 }
 
 module "kvs_log_shared_workspace_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "log-shared-workspace-id"
   value        = module.log_workspace_shared.workspace_id
