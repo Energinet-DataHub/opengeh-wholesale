@@ -49,6 +49,11 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
+    if args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        prepared_time_series = prepared_time_series.drop(
+            DataProductColumnNames.energy_supplier_id
+        )
+
     partition_columns = [DataProductColumnNames.grid_area_code]
 
     if _is_partitioning_by_energy_supplier_id_needed(args):
@@ -103,7 +108,7 @@ def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) ->
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
-        return args.energy_supplier_id is not None
+        return args.energy_supplier_ids is not None
     elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
         return True
     elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
