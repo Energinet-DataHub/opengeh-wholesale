@@ -30,6 +30,7 @@ locals {
     "Ready_For_Calculation_Balance_Fixing",
     "Alert_Gold_Charge_Links_Changed",
     "Alert_Gold_Metering_Points_Changed",
-    "Alert_Gold_Time_Series_Changed"
+    "Alert_Gold_Time_Series_Changed",
+    "Bulk_Consumption_Statement_to_Bronze"
   ]
 }
