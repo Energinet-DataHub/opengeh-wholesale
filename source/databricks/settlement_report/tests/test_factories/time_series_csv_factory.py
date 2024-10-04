@@ -15,7 +15,7 @@ from settlement_report_job.domain.metering_point_type import MeteringPointType
 
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_START_OF_DAY = datetime(2024, 1, 1, 23)
-DEFAULT_GRID_AREA_CODES = ["804", "805"]
+DEFAULT_GRID_AREA_CODES = ["804"]
 DEFAULT_ENERGY_QUANTITY = 235.0
 DEFAULT_RESOLUTION = DataProductMeteringPointResolution.HOUR
 DEFAULT_NUM_METERING_POINTS = 10
