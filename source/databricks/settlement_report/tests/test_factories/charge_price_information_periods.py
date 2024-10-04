@@ -29,7 +29,7 @@ DEFAULT_PRICE = DecimalType(10, 2)(0.0)
 
 
 @dataclass
-class PriceInformationPeriodsTestDataSpec:
+class ChargePriceInformationPeriodsTestDataSpec:
     """
     Data specification for creating a price information periods test data.
     """
@@ -48,7 +48,7 @@ class PriceInformationPeriodsTestDataSpec:
 
 
 def create(
-    spark: SparkSession, data_specs: list[PriceInformationPeriodsTestDataSpec]
+    spark: SparkSession, data_specs: list[ChargePriceInformationPeriodsTestDataSpec]
 ) -> DataFrame:
     rows = []
     for data_spec in data_specs:
