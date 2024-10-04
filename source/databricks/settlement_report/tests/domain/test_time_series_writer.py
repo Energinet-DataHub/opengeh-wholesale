@@ -14,6 +14,7 @@
 from settlement_report_job.domain import time_series_writer
 
 from pyspark.sql import SparkSession, DataFrame
+import pyspark.sql.functions as F
 from tests.fixtures import DBUtilsFixture
 from functools import reduce
 import pytest
@@ -61,13 +62,13 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         energy_quantity=235.0,
         resolution=resolution,
     )
-    mock_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=mock_prepared_time_series,
+        prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -94,13 +95,13 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
         energy_quantity=235.0,
         resolution=resolution,
     )
-    mock_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=mock_prepared_time_series,
+        prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -138,19 +139,19 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
         resolution=resolution,
         num_metering_points=number_of_rows,
     )
-    mock_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=mock_prepared_time_series,
+        prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
 
     # Assert
-    assert mock_prepared_time_series.count() == number_of_rows
+    assert df_prepared_time_series.count() == number_of_rows
     assert len(result_files) > 0
     assert len(result_files) == expected_file_count
 
@@ -189,13 +190,14 @@ def test_write__files_have_correct_ordering_for_each_file(
         num_metering_points=number_of_metering_points,
         num_days_per_metering_point=number_of_days_for_each_mp,
     )
-    mock_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=mock_prepared_time_series,
+        prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
@@ -242,14 +244,115 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         resolution=resolution,
         num_metering_points=number_of_rows,
     )
-    mock_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=mock_prepared_time_series,
+        prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
+    )
+
+    # Assert
+    assert len(result_files) == expected_file_count
+
+    # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
+    # Asserting that the dataframe is unchanged
+    for file in result_files:
+        df_actual = spark.read.csv(file, header=True)
+        df_expected = df_actual.orderBy(expected_order_by)
+        assert df_actual.collect() == df_expected.collect()
+
+
+@pytest.mark.parametrize(
+    "number_of_rows,rows_per_file,metering_point_type,resolution,expected_file_count",
+    [
+        (
+            20,
+            10,
+            MeteringPointType.PRODUCTION,
+            DataProductMeteringPointResolution.HOUR,
+            2,
+        ),
+        (
+            20,
+            10,
+            MeteringPointType.CONSUMPTION,
+            DataProductMeteringPointResolution.HOUR,
+            2,
+        ),
+        (
+            20,
+            10,
+            MeteringPointType.EXCHANGE,
+            DataProductMeteringPointResolution.HOUR,
+            2,
+        ),
+        (
+            20,
+            10,
+            MeteringPointType.PRODUCTION,
+            DataProductMeteringPointResolution.QUARTER,
+            2,
+        ),
+        (
+            20,
+            10,
+            MeteringPointType.CONSUMPTION,
+            DataProductMeteringPointResolution.QUARTER,
+            2,
+        ),
+        (
+            20,
+            10,
+            MeteringPointType.EXCHANGE,
+            DataProductMeteringPointResolution.QUARTER,
+            2,
+        ),
+    ],
+)
+def test_write__files_have_correct_ordering_for_different_metering_point_types_and_resolutions(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    number_of_rows: int,
+    rows_per_file: int,
+    metering_point_type: MeteringPointType,
+    resolution: DataProductMeteringPointResolution,
+    expected_file_count: int,
+):
+    # Arrange
+    expected_order_by = [
+        TimeSeriesPointCsvColumnNames.metering_point_type,
+        TimeSeriesPointCsvColumnNames.metering_point_id,
+        TimeSeriesPointCsvColumnNames.start_of_day,
+    ]
+    resolution = resolution
+    report_data_type = (
+        ReportDataType.TimeSeriesHourly
+        if resolution == DataProductMeteringPointResolution.HOUR
+        else ReportDataType.TimeSeriesQuarterly
+    )
+    test_spec = factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=metering_point_type,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        grid_area_codes=["804"],
+        energy_quantity=235.0,
+        resolution=resolution,
+        num_metering_points=number_of_rows,
+    )
+    df_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+
+    # Act
+    result_files = time_series_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        prepared_time_series=df_prepared_time_series,
+        report_data_type=report_data_type,
+        rows_per_file=limit_rows_per_file,
     )
 
     # Assert
@@ -297,13 +400,14 @@ def test_write__files_have_correct_sorting_across_multiple_files(
         resolution=resolution,
         num_metering_points=number_of_rows,
     )
-    mock_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = factory.create(spark, test_spec)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
     result_files = time_series_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=mock_prepared_time_series,
+        prepared_time_series=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
