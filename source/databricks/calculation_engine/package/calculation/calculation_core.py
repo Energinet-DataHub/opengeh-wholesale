@@ -218,11 +218,11 @@ class CalculationCore:
         )
 
         metering_point_periods_for_basis_data = all_metering_point_periods.where(
-            Colname.metering_point_type, is_parent_metering_point
+            is_parent_metering_point(Colname.metering_point_type)
         )
         metering_point_time_series = PreparedMeteringPointTimeSeries(
             metering_point_time_series.df.where(
-                Colname.metering_point_type, is_parent_metering_point
+                is_parent_metering_point(Colname.metering_point_type)
             )
         )
 
