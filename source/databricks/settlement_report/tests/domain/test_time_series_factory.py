@@ -462,3 +462,60 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         row[TimeSeriesPointCsvColumnNames.energy_supplier_id]
         for row in actual_df.collect()
     ) == set(expected_energy_supplier_ids)
+
+
+@pytest.mark.parametrize(
+    "selected_energy_supplier_ids,expected_energy_supplier_ids",
+    [
+        (None, ENERGY_SUPPLIERS_ABC),
+        ([ENERGY_SUPPLIER_B], [ENERGY_SUPPLIER_B]),
+        (
+            [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B],
+            [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B],
+        ),
+        (ENERGY_SUPPLIERS_ABC, ENERGY_SUPPLIERS_ABC),
+    ],
+)
+def test_create_time_series__returns_data_for_expected_energy_suppliers(
+    spark: SparkSession,
+    selected_energy_supplier_ids: list[str] | None,
+    expected_energy_supplier_ids: list[str],
+) -> None:
+    # Arrange
+    df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            factory.create(
+                spark,
+                factory.MeteringPointTimeSeriesTestDataSpec(
+                    from_date=DEFAULT_FROM_DATE,
+                    to_date=DEFAULT_TO_DATE,
+                    energy_supplier_id=energy_supplier_id,
+                ),
+            )
+            for energy_supplier_id in ENERGY_SUPPLIERS_ABC
+        ],
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = create_time_series(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        calculation_id_by_grid_area={
+            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+        },
+        energy_supplier_ids=selected_energy_supplier_ids,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        resolution=DataProductMeteringPointResolution.HOUR,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert set(
+        row[TimeSeriesPointCsvColumnNames.energy_supplier_id]
+        for row in actual_df.collect()
+    ) == set(expected_energy_supplier_ids)

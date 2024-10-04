@@ -24,6 +24,9 @@ from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.domain.system_operator_filter import (
+    filter_by_charge_owner_on_metering_point,
+)
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -92,8 +95,8 @@ def _read_and_filter_from_view(
     )
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
-        df = _filter_by_charge_owner(
-            time_series_points=df,
+        df = filter_by_charge_owner_on_metering_point(
+            df=df,
             requesting_actor_id=requesting_actor_id,
             repository=repository,
         )
@@ -187,47 +190,6 @@ def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
     return F.to_utc_timestamp(
         F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
     )
-
-
-def _filter_by_charge_owner(
-    time_series_points: DataFrame,
-    requesting_actor_id: str,
-    repository: WholesaleRepository,
-) -> DataFrame:
-    charge_link_periods = repository.read_charge_link_periods()
-    charge_price_information_periods = (
-        (repository.read_charge_price_information_periods())
-        .where(F.col(DataProductColumnNames.is_tax) == False)
-        .where(
-            F.col(DataProductColumnNames.charge_owner) == requesting_actor_id,
-        )
-    )
-
-    filtered_charge_link_periods = charge_link_periods.join(
-        charge_price_information_periods,
-        on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
-        how="inner",
-    )
-
-    filtered_time_series_points = time_series_points.join(
-        filtered_charge_link_periods,
-        on=[
-            DataProductColumnNames.calculation_id,
-            DataProductColumnNames.metering_point_id,
-        ],
-        how="leftsemi",
-    ).where(
-        (
-            F.col(DataProductColumnNames.observation_time)
-            >= DataProductColumnNames.from_date
-        )
-        & (
-            F.col(DataProductColumnNames.observation_time)
-            < DataProductColumnNames.to_date
-        )
-    )
-
-    return filtered_time_series_points
 
 
 def _get_desired_quantity_column_count(
