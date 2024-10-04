@@ -47,6 +47,7 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
             "--calculation-type=wholesale_fixing",
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
+            "--include-basis-data",
             "--calculation-id-by-grid-area=" +
                 "{" +
                     "\"003\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
