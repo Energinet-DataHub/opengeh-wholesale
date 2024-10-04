@@ -22,6 +22,8 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 
+[Collection(nameof(SettlementReportJobCollectionDefinition))]
+[ExecutionContext(AzureEnvironment.AllDev)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
@@ -46,6 +48,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
             "--calculation-type=wholesale_fixing",
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
+            "--include-basis-data",
             $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
         };
 

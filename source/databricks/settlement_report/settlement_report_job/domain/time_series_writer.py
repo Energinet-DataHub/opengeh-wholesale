@@ -15,6 +15,7 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -22,6 +23,7 @@ from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     write_files,
@@ -41,30 +43,44 @@ def write(
     args: SettlementReportArgs,
     prepared_time_series: DataFrame,
     report_data_type: ReportDataType,
+    rows_per_file: int = 1_000_000,
 ) -> list[str]:
 
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
+    if args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        prepared_time_series = prepared_time_series.drop(
+            DataProductColumnNames.energy_supplier_id
+        )
+
+    partition_columns = [DataProductColumnNames.grid_area_code]
+
+    if _is_partitioning_by_energy_supplier_id_needed(args):
+        partition_columns.append(DataProductColumnNames.energy_supplier_id)
+
+    if args.prevent_large_text_files:
+        partition_columns.append(EphemeralColumns.chunk_index)
+
     headers = write_files(
         df=prepared_time_series,
         path=spark_output_path,
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
+        partition_columns=partition_columns,
         order_by=[
             DataProductColumnNames.grid_area_code,
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ],
+        rows_per_file=rows_per_file,
+        locale=args.locale,
     )
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
         spark_output_path,
         report_output_path,
         file_name_factory,
-        partition_by_chunk_index=args.prevent_large_text_files,
-        partition_by_grid_area=True,  # always true for time series
+        partition_columns=partition_columns,
     )
     files = merge_files(
         dbutils=dbutils,
@@ -81,3 +97,23 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_quarterly"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
+
+
+def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) -> bool:
+    """
+    When this partitioning by energy_supplier_id, the energy_supplier_id will be included in the file name
+
+    """
+    if args.requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.DATAHUB_ADMINISTRATOR,
+    ]:
+        return args.energy_supplier_ids is not None
+    elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
+        return True
+    elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        return False
+    else:
+        raise ValueError(
+            f"Unsupported requesting actor market role: {args.requesting_actor_market_role}"
+        )
