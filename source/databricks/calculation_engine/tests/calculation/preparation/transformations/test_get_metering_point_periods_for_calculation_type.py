@@ -363,63 +363,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         )
 
 
-class TestGetMeteringPointPeriodsWholesaleCalculation:
-    def test__returns_metering_point_periods_without_exchange(
-        self,
-        spark: SparkSession,
-    ):
-        # Arrange
-        rows = [
-            factory.create_row(
-                metering_point_id="parent_metering_point_id",
-                metering_point_type=MeteringPointType.CONSUMPTION,
-                energy_supplier_id="es_parent_1",
-                from_date=datetime(2019, 12, 31, 23),
-                to_date=datetime(2020, 1, 15, 23),
-            ),
-            factory.create_row(
-                metering_point_id="parent_metering_point_id",
-                metering_point_type=MeteringPointType.PRODUCTION,
-                energy_supplier_id="es_parent_1",
-                from_date=datetime(2019, 12, 31, 23),
-                to_date=datetime(2020, 1, 15, 23),
-            ),
-            factory.create_row(
-                metering_point_id="parent_metering_point_id",
-                metering_point_type=MeteringPointType.EXCHANGE,
-                energy_supplier_id=None,
-                from_date=datetime(2019, 12, 31, 23),
-                to_date=datetime(2020, 1, 15, 23),
-            ),
-            factory.create_row(
-                parent_metering_point_id="parent_metering_point_id",
-                metering_point_type=MeteringPointType.NET_CONSUMPTION,
-                energy_supplier_id=None,
-                from_date=datetime(2019, 12, 31, 23),
-                to_date=datetime(2020, 1, 31, 23),
-                settlement_method=None,
-            ),
-        ]
-        metering_point_periods = factory.create(spark, rows)
-        metering_points_periods_for_wholesale_basis_data = (
-            get_metering_points_periods_for_wholesale_basis_data(metering_point_periods)
-        )
-
-        # Act
-        actual = get_metering_point_periods_for_wholesale_calculation(
-            metering_points_periods_for_wholesale_basis_data,
-        )
-
-        # Assert
-        assert actual.count() == 4
-        assert (
-            actual.filter(
-                (col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
-            ).count()
-            == 0
-        )
-
-
 class TestWhenNoMeteringPointIdMatchingParentMeteringPointId:
     def test__returns_no_child_metering_points(
         self,

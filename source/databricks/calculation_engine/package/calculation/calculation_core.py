@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pyspark.sql.functions as f
+
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
@@ -21,7 +23,6 @@ from package.calculation.preparation.transformations.grid_loss_metering_points i
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     get_metering_points_periods_for_wholesale_basis_data,
     is_parent_metering_point,
-    get_metering_point_periods_for_wholesale_calculation,
 )
 from package.databases.wholesale_basis_data_internal import basis_data_factory
 
@@ -34,6 +35,7 @@ from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .preparation.data_structures import PreparedMeteringPointTimeSeries
 from .wholesale import wholesale_calculation
+from ..codelists import MeteringPointType
 from ..codelists.calculation_type import is_wholesale_calculation_type
 from ..constants import Colname
 
@@ -130,8 +132,8 @@ class CalculationCore:
         metering_point_periods_for_basis_data = all_metering_point_periods
 
         metering_point_periods_for_wholesale_calculation = (
-            get_metering_point_periods_for_wholesale_calculation(
-                metering_point_periods_for_basis_data
+            metering_point_periods_for_basis_data.where(
+                f.col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value
             )
         )
 

@@ -54,19 +54,6 @@ def get_metering_points_periods_for_wholesale_basis_data(
     return metering_point_periods_union
 
 
-def get_metering_point_periods_for_wholesale_calculation(
-    metering_points_periods_for_wholesale_basis_data: DataFrame,
-) -> DataFrame:
-    """
-    Returns all metering point periods that should be included in a wholesale calculation.
-    This is every metering point type except exchange.
-    The incoming metering point periods are with updated child metering points, that now have energy supplier id.
-    """
-    return metering_points_periods_for_wholesale_basis_data.filter(
-        (f.col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value)
-    )
-
-
 def _get_child_metering_points_with_energy_suppliers(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
