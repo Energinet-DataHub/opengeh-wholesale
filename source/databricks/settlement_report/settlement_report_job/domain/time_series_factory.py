@@ -48,19 +48,20 @@ def create_time_series(
     energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
     requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
     time_series_points = _read_and_filter_from_view(
         period_start,
-    period_end,
-    calculation_id_by_grid_area,
-    requesting_actor_market_role,
-    requesting_actor_id,
-    energy_supplier_ids,
-    resolution,
-    repository,
+        period_end,
+        calculation_id_by_grid_area,
+        requesting_actor_market_role,
+        requesting_actor_id,
+        energy_supplier_ids,
+        resolution,
+        repository,
     )
     prepared_time_series = _generate_time_series(
         filtered_time_series_points=time_series_points,
@@ -90,7 +91,7 @@ def _read_and_filter_from_view(
         & (F.col(DataProductColumnNames.observation_time) < period_end)
     )
 
-    if requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
+    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
         df = _filter_by_charge_owner(
             time_series_points=df,
             requesting_actor_id=requesting_actor_id,
@@ -214,7 +215,7 @@ def _filter_by_charge_owner(
             DataProductColumnNames.calculation_id,
             DataProductColumnNames.metering_point_id,
         ],
-        how="inner",
+        how="leftsemi",
     ).where(
         (
             F.col(DataProductColumnNames.observation_time)

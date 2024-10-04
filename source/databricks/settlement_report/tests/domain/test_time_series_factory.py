@@ -11,6 +11,8 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 
 import tests.test_factories.metering_point_time_series_factory as factory
+
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
@@ -23,6 +25,7 @@ from settlement_report_job.infrastructure.column_names import (
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
+DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 
 
 def _create_time_series_with_increasing_quantity(
@@ -69,6 +72,8 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
         },
         energy_supplier_ids=None,
         resolution=resolution,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -109,6 +114,8 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
         },
         energy_supplier_ids=None,
         resolution=resolution,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -181,6 +188,8 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
         },
         energy_supplier_ids=None,
         resolution=resolution,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -239,6 +248,8 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -273,6 +284,8 @@ def test_create_time_series__returns_only_days_within_selected_period(
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -320,6 +333,8 @@ def test_create_time_series__returns_only_selected_grid_area(
             selected_grid_area_code: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -371,6 +386,8 @@ def test_create_time_series__returns_only_selected_calculation_id(
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
         },
         energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
@@ -433,6 +450,8 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=selected_energy_supplier_ids,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
