@@ -9,7 +9,7 @@ from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
-from settlement_report_job.domain.metering_point_type import MeteringPointType
+from settlement_report_job.domain.DataProductValues.metering_point_type import MeteringPointType
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
     metering_point_time_series_v1,
