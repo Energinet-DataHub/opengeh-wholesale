@@ -31,6 +31,7 @@ class EnergyResultsCsvColumnNames:
 class TimeSeriesPointCsvColumnNames:
     metering_point_id = "METERINGPOINTID"
     metering_point_type = "TYPEOFMP"
+    energy_supplier_id = "ENERGYSUPPLIERID"
     start_of_day = "STARTDATETIME"
     energy_prefix = "ENERGYQUANTITY"
 

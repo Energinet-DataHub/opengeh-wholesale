@@ -45,6 +45,7 @@ def create_time_series(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
+    energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
     requesting_actor_market_role: MarketRole,
     time_zone: str,
@@ -53,16 +54,20 @@ def create_time_series(
     log.info("Creating time series points")
     time_series_points = _read_and_filter_from_view(
         period_start,
-        period_end,
-        calculation_id_by_grid_area,
-        resolution,
-        requesting_actor_market_role,
-        repository,
+    period_end,
+    calculation_id_by_grid_area,
+    requesting_actor_market_role,
+    requesting_actor_id,
+    energy_supplier_ids,
+    resolution,
+    repository,
     )
     prepared_time_series = _generate_time_series(
-        time_series_points,
-        _get_desired_quantity_column_count(resolution),
-        time_zone,
+        filtered_time_series_points=time_series_points,
+        desired_number_of_quantity_columns=_get_desired_quantity_column_count(
+            resolution
+        ),
+        time_zone=time_zone,
     )
     return prepared_time_series
 
@@ -76,6 +81,7 @@ def _read_and_filter_from_view(
     calculation_id_by_grid_area: dict[str, UUID],
     requesting_actor_market_role: MarketRole,
     requesting_actor_id: str,
+    energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -105,6 +111,11 @@ def _read_and_filter_from_view(
         ).isin(calculation_id_by_grid_area_structs)
     )
 
+    if energy_supplier_ids:
+        df_filtered = df_filtered.where(
+            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
+        )
+
     return df_filtered
 
 
@@ -123,6 +134,7 @@ def _generate_time_series(
 
     win = Window.partitionBy(
         DataProductColumnNames.grid_area_code,
+        DataProductColumnNames.energy_supplier_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
         EphemeralColumns.start_of_day,
@@ -134,6 +146,7 @@ def _generate_time_series(
     pivoted_df = (
         filtered_time_series_points.groupBy(
             DataProductColumnNames.grid_area_code,
+            DataProductColumnNames.energy_supplier_id,
             DataProductColumnNames.metering_point_id,
             DataProductColumnNames.metering_point_type,
             EphemeralColumns.start_of_day,
@@ -154,6 +167,9 @@ def _generate_time_series(
         F.col(DataProductColumnNames.grid_area_code),
         F.col(DataProductColumnNames.metering_point_id).alias(
             TimeSeriesPointCsvColumnNames.metering_point_id
+        ),
+        F.col(DataProductColumnNames.energy_supplier_id).alias(
+            TimeSeriesPointCsvColumnNames.energy_supplier_id
         ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)

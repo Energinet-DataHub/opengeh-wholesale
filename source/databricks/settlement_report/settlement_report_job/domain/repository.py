@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from settlement_report_job.infrastructure.database_definitions import (
-    WholesaleSettlementReportDatabase,
+    WholesaleBasisDataDatabase,
     WholesaleWholesaleResultsDatabase,
     WholesaleBasisDataDatabase,
 )
@@ -31,8 +31,8 @@ class WholesaleRepository:
 
     def read_metering_point_time_series(self) -> DataFrame:
         return self._read_view_or_table(
-            WholesaleSettlementReportDatabase.DATABASE_NAME,
-            WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
+            WholesaleBasisDataDatabase.DATABASE_NAME,
+            WholesaleBasisDataDatabase.TIME_SERIES_POINTS_VIEW_NAME,
         )
 
     def read_charge_link_periods(self) -> DataFrame:
