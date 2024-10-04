@@ -40,15 +40,13 @@ def get_metering_points_periods_for_wholesale_basis_data(
     Returns all metering point periods that should be included in an energy and wholesale calculations basis data.
     All child metering points are updated with the energy supplier id of its parent metering point.
     """
-    non_child_metering_points_periods = all_metering_point_periods.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+    parent_metering_points_periods = all_metering_point_periods.where(
+        is_parent_metering_point(Colname.metering_point_type)
     )
     child_metering_points_with_energy_suppliers = (
         _get_child_metering_points_with_energy_suppliers(all_metering_point_periods)
     )
-    metering_point_periods_union = non_child_metering_points_periods.union(
+    metering_point_periods_union = parent_metering_points_periods.union(
         child_metering_points_with_energy_suppliers
     )
     return metering_point_periods_union
@@ -79,8 +77,8 @@ def _get_child_metering_points_with_energy_suppliers(
         )
     )
 
-    all_child_metering_points = _get_all_child_metering_points(
-        all_metering_point_periods
+    all_child_metering_points = all_metering_point_periods.where(
+        is_child_metering_point(Colname.metering_point_type)
     )
 
     child_metering_points_with_energy_suppliers = all_child_metering_points.join(
@@ -153,43 +151,3 @@ def _get_child_metering_points_with_energy_suppliers(
     )
 
     return child_metering_points_with_energy_suppliers
-
-
-def _get_all_child_metering_points(
-    metering_points_periods_df: DataFrame,
-) -> DataFrame:
-    """
-    Returns all child metering points.
-    """
-    return metering_points_periods_df.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.VE_PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.NET_PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.SUPPLY_TO_GRID.value)
-        | (
-            f.col(Colname.metering_point_type)
-            == MeteringPointType.CONSUMPTION_FROM_GRID.value
-        )
-        | (
-            f.col(Colname.metering_point_type)
-            == MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value
-        )
-        | (f.col(Colname.metering_point_type) == MeteringPointType.OWN_PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.NET_FROM_GRID.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.NET_TO_GRID.value)
-        | (
-            f.col(Colname.metering_point_type)
-            == MeteringPointType.TOTAL_CONSUMPTION.value
-        )
-        | (
-            f.col(Colname.metering_point_type)
-            == MeteringPointType.ELECTRICAL_HEATING.value
-        )
-        | (
-            f.col(Colname.metering_point_type)
-            == MeteringPointType.NET_CONSUMPTION.value
-        )
-        | (
-            f.col(Colname.metering_point_type)
-            == MeteringPointType.EFFECT_SETTLEMENT.value
-        )
-    )
