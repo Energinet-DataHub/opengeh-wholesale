@@ -43,8 +43,12 @@ class ChargeLinkPeriodsTestDataSpec:
 
 
 def create(
-    spark: SparkSession, data_specs: list[ChargeLinkPeriodsTestDataSpec]
+    spark: SparkSession,
+    data_specs: ChargeLinkPeriodsTestDataSpec | list[ChargeLinkPeriodsTestDataSpec],
 ) -> DataFrame:
+    if not isinstance(data_specs, list):
+        data_specs = [data_specs]
+
     rows = []
     for data_spec in data_specs:
         rows.append(

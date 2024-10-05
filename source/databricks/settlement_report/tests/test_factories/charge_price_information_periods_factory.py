@@ -46,8 +46,15 @@ class ChargePriceInformationPeriodsTestDataSpec:
 
 
 def create(
-    spark: SparkSession, data_specs: list[ChargePriceInformationPeriodsTestDataSpec]
+    spark: SparkSession,
+    data_specs: (
+        ChargePriceInformationPeriodsTestDataSpec
+        | list[ChargePriceInformationPeriodsTestDataSpec]
+    ),
 ) -> DataFrame:
+    if not isinstance(data_specs, list):
+        data_specs = [data_specs]
+
     rows = []
     for data_spec in data_specs:
         rows.append(

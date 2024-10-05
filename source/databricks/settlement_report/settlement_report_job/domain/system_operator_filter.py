@@ -15,7 +15,7 @@ def filter_by_charge_owner_on_metering_point(
         (repository.read_charge_price_information_periods())
         .where(F.col(DataProductColumnNames.is_tax) == False)
         .where(
-            F.col(DataProductColumnNames.charge_owner) == system_operator_id,
+            F.col(DataProductColumnNames.charge_owner_id) == system_operator_id,
         )
     )
 
