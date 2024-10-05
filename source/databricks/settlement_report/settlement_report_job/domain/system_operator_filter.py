@@ -7,16 +7,14 @@ from settlement_report_job.infrastructure.column_names import DataProductColumnN
 def filter_by_charge_owner_on_metering_point(
     df: DataFrame,
     system_operator_id: str,
-    repository: WholesaleRepository,
+    charge_link_periods: DataFrame,
+    charge_price_information_periods: DataFrame,
 ) -> DataFrame:
 
-    charge_link_periods = repository.read_charge_link_periods()
-    charge_price_information_periods = (
-        (repository.read_charge_price_information_periods())
-        .where(F.col(DataProductColumnNames.is_tax) == False)
-        .where(
-            F.col(DataProductColumnNames.charge_owner_id) == system_operator_id,
-        )
+    charge_price_information_periods = charge_price_information_periods.where(
+        F.col(DataProductColumnNames.is_tax) == False
+    ).where(
+        F.col(DataProductColumnNames.charge_owner_id) == system_operator_id,
     )
 
     filtered_charge_link_periods = charge_link_periods.join(

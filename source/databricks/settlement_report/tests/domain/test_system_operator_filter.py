@@ -3,83 +3,107 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import monotonically_increasing_id
-from pyspark.sql.types import DecimalType
-
+from pyspark.sql import SparkSession
 import test_factories.metering_point_time_series_factory as time_series_factory
 import test_factories.charge_link_periods_factory as charge_link_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
-
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from test_factories.charge_price_information_periods_factory import (
+    ChargePriceInformationPeriodsTestDataSpec,
 )
+from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
+
+from settlement_report_job.domain.DataProductValues.charge_resolution import (
+    ChargeResolution,
+)
+from settlement_report_job.domain.DataProductValues.charge_type import ChargeType
+from settlement_report_job.domain.DataProductValues.metering_point_type import (
+    MeteringPointType,
+)
+from settlement_report_job.domain.calculation_type import CalculationType
+
 from settlement_report_job.domain.system_operator_filter import (
     filter_by_charge_owner_on_metering_point,
-)
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
 )
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
+DEFAULT_PERIOD_START = datetime(2024, 1, 1, 22)
+DEFAULT_PERIOD_END = datetime(2024, 1, 2, 22)
+DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
+DEFAULT_CALCULATION_VERSION = 1
+DEFAULT_METERING_POINT_ID = "12345678-1111-1111-1111-111111111111"
+DEFAULT_METERING_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_GRID_AREA_CODE = "804"
+DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
+DEFAULT_CHARGE_CODE = "41000"
+DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
+DEFAULT_CHARGE_OWNER_ID = "3333333333333"
+DEFAULT_CHARGE_KEY = "41000-tariff-3333333333333"
 
 
-# def _create_time_series_with_increasing_quantity(
-#     spark: SparkSession,
-#     from_date: datetime,
-#     to_date: datetime,
-#     resolution: DataProductMeteringPointResolution,
-# ) -> DataFrame:
-#     spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
-#         from_date=from_date, to_date=to_date, resolution=resolution
-#     )
-#     df = time_series_factory.create(spark, spec)
-#     return df.withColumn(  # just set quantity equal to its row number
-#         DataProductColumnNames.quantity,
-#         monotonically_increasing_id().cast(DecimalType(18, 3)),
-#     )
+@pytest.fixture
+def default_charge_link_periods_test_data_spec() -> (
+    charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec
+):
+    return charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec(
+        calculation_id=DEFAULT_CALCULATION_ID,
+        calculation_type=CalculationType.WHOLESALE_FIXING,
+        calculation_version=DEFAULT_CALCULATION_VERSION,
+        charge_key=DEFAULT_CHARGE_KEY,
+        charge_code=DEFAULT_CHARGE_CODE,
+        charge_type=DEFAULT_CHARGE_TYPE,
+        charge_owner_id=DEFAULT_CHARGE_OWNER_ID,
+        metering_point_id=DEFAULT_METERING_POINT_ID,
+        from_date=DEFAULT_PERIOD_START,
+        to_date=DEFAULT_PERIOD_END,
+    )
 
 
-def test_create_time_series__when_two_days_of_data__returns_two_rows(
-    spark: SparkSession, resolution: DataProductMeteringPointResolution
+@pytest.fixture
+def default_charge_price_information_periods_test_data_spec() -> (
+    ChargePriceInformationPeriodsTestDataSpec
+):
+    return ChargePriceInformationPeriodsTestDataSpec(
+        calculation_id=DEFAULT_CALCULATION_ID,
+        calculation_type=CalculationType.WHOLESALE_FIXING,
+        calculation_version=DEFAULT_CALCULATION_VERSION,
+        charge_key=DEFAULT_CHARGE_KEY,
+        charge_code=DEFAULT_CHARGE_CODE,
+        charge_type=DEFAULT_CHARGE_TYPE,
+        charge_owner_id=DEFAULT_CHARGE_OWNER_ID,
+        resolution=ChargeResolution.HOUR,
+        is_tax=False,
+        from_date=DEFAULT_PERIOD_START,
+        to_date=DEFAULT_PERIOD_END,
+    )
+
+
+def test_(
+    spark: SparkSession,
+    default_charge_price_information_periods_test_data_spec: ChargePriceInformationPeriodsTestDataSpec,
+    default_charge_link_periods_test_data_spec: ChargeLinkPeriodsTestDataSpec,
 ) -> None:
     # Arrange
-    time_series_factory.create(
-        spark, data_spec=time_series_factory.MeteringPointTimeSeriesTestDataSpec()
+    time_series_df = time_series_factory.create(
+        spark, data_spec=MeteringPointTimeSeriesTestDataSpec()
     )
-    charge_link_periods_factory.create(
-        spark, charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec()
+    charge_link_periods_df = charge_link_periods_factory.create(
+        spark, default_charge_link_periods_test_data_spec
     )
-    charge_price_information_periods = charge_price_information_periods_factory.create(
-        spark,
-        charge_price_information_periods_factory.ChargePriceInformationPeriodsTestDataSpec(),
-    )
-
-    # expected_rows = DEFAULT_TO_DATE.day - DEFAULT_FROM_DATE.day
-    # spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
-    #     from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
-    # )
-    charge_price_information_periods = charge_price_information_periods_factory.create(
-        spark
-    )
-    mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
-    mock_repository.read_charge_link_periods.return_value = charge_link_periods_df
-    mock_repository.read_charge_price_information_periods.return_value = (
-        charge_price_information_periods
+    charge_price_information_periods_df = (
+        charge_price_information_periods_factory.create(
+            spark, default_charge_price_information_periods_test_data_spec
+        )
     )
 
     # Act
-
-    result_df = filter_by_charge_owner_on_metering_point(
-        df=df,
-        system_operator_id=system_operator_id,
-        repository=mock_repository,
+    actual = filter_by_charge_owner_on_metering_point(
+        df=time_series_df,
+        system_operator_id=DEFAULT_CHARGE_OWNER_ID,
+        charge_link_periods=charge_link_periods_df,
+        charge_price_information_periods=charge_price_information_periods_df,
     )
 
     # Assert
-    assert result_df.count() == expected_rows

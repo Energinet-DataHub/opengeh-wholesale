@@ -4,23 +4,12 @@ from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import LongType
 
+from settlement_report_job.domain.DataProductValues.charge_type import ChargeType
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointType,
-)
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from settlement_report_job.infrastructure.schemas.charge_link_periods_v1 import (
     charge_link_periods_v1,
 )
-
-DEFAULT_PERIOD_START = datetime(2024, 1, 1, 22)
-DEFAULT_PERIOD_END = datetime(2024, 1, 2, 22)
-DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
-DEFAULT_CALCULATION_VERSION = 1
-DEFAULT_METERING_POINT_ID = "12345678-1111-1111-1111-111111111111"
-DEFAULT_METERING_TYPE = MeteringPointType.CONSUMPTION
-DEFAULT_GRID_AREA_CODE = "804"
-DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 
 
 @dataclass
@@ -29,17 +18,17 @@ class ChargeLinkPeriodsTestDataSpec:
     Data specification for creating a charge link periods test data.
     """
 
-    calculation_id: str = DEFAULT_CALCULATION_ID
-    calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING
-    calculation_version: int = DEFAULT_CALCULATION_VERSION
-    charge_key: str = DEFAULT_CHARGE_KEY
-    charge_code: str = DEFAULT_CHARGE_CODE
-    charge_type: ChargeType = DEFAULT_CHARGE_TYPE
-    charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID
-    metering_point_id: str = DEFAULT_METERING_POINT_ID
-    quantity: LongType = 1
-    from_date: datetime = DEFAULT_PERIOD_START
-    to_date: datetime = DEFAULT_PERIOD_END
+    calculation_id: str
+    calculation_type: CalculationType
+    calculation_version: int
+    charge_key: str
+    charge_code: str
+    charge_type: ChargeType
+    charge_owner_id: str
+    metering_point_id: str
+    quantity: LongType
+    from_date: datetime
+    to_date: datetime
 
 
 def create(
