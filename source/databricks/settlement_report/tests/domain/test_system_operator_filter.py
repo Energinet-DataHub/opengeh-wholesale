@@ -80,15 +80,18 @@ def default_charge_price_information_periods_test_data_spec() -> (
 
 
 def _create_data_frame_with_metering_point_id(
-    spark: SparkSession, metering_point_ids: str | list[str]
+    spark: SparkSession, calculation_id: str, metering_point_ids: str | list[str]
 ) -> DataFrame:
     if not isinstance(metering_point_ids, list):
         metering_point_ids = [metering_point_ids]
 
-    count = 0
     return spark.createDataFrame(
-        [(mp_id, i) for i, mp_id in enumerate(metering_point_ids)],
-        [DataProductColumnNames.metering_point_id, "other_column"],
+        [(calculation_id, mp_id, i) for i, mp_id in enumerate(metering_point_ids)],
+        [
+            DataProductColumnNames.calculation_id,
+            DataProductColumnNames.metering_point_id,
+            "other_column",
+        ],
     )
 
 
@@ -99,7 +102,7 @@ def test_(
 ) -> None:
     # Arrange
     df_with_metering_point_id = _create_data_frame_with_metering_point_id(
-        spark, DEFAULT_METERING_POINT_ID
+        spark, DEFAULT_CALCULATION_ID, DEFAULT_METERING_POINT_ID
     )
 
     charge_link_periods_df = charge_link_periods_factory.create(
