@@ -32,17 +32,17 @@ class ChargePriceInformationPeriodsTestDataSpec:
     Data specification for creating a price information periods test data.
     """
 
-    calculation_id: str = DEFAULT_CALCULATION_ID
-    calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING
-    calculation_version: int = DEFAULT_CALCULATION_VERSION
-    charge_key: str = DEFAULT_CHARGE_KEY
-    charge_code: str = DEFAULT_CHARGE_CODE
-    charge_type: ChargeType = DEFAULT_CHARGE_TYPE
-    charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID
-    resolution: ChargeResolution = ChargeResolution.HOUR
-    is_tax: bool = False
-    from_date: datetime = DEFAULT_PERIOD_START
-    to_date: datetime = DEFAULT_PERIOD_END
+    calculation_id: str
+    calculation_type: CalculationType
+    calculation_version: int
+    charge_key: str
+    charge_code: str
+    charge_type: ChargeType
+    charge_owner_id: str
+    resolution: ChargeResolution
+    is_tax: bool
+    from_date: datetime
+    to_date: datetime
 
 
 def create(

@@ -1,12 +1,10 @@
-import uuid
 from datetime import datetime, timedelta
-from unittest.mock import Mock
 
 import pytest
-from pyspark.sql import SparkSession
-import test_factories.metering_point_time_series_factory as time_series_factory
+from pyspark.sql import SparkSession, DataFrame
 import test_factories.charge_link_periods_factory as charge_link_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
+from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsTestDataSpec,
 )
@@ -47,7 +45,7 @@ DEFAULT_CHARGE_KEY = "41000-tariff-3333333333333"
 def default_charge_link_periods_test_data_spec() -> (
     charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec
 ):
-    return charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec(
+    return ChargeLinkPeriodsTestDataSpec(
         calculation_id=DEFAULT_CALCULATION_ID,
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_version=DEFAULT_CALCULATION_VERSION,
@@ -58,6 +56,7 @@ def default_charge_link_periods_test_data_spec() -> (
         metering_point_id=DEFAULT_METERING_POINT_ID,
         from_date=DEFAULT_PERIOD_START,
         to_date=DEFAULT_PERIOD_END,
+        quantity=1,
     )
 
 
@@ -80,15 +79,29 @@ def default_charge_price_information_periods_test_data_spec() -> (
     )
 
 
+def _create_data_frame_with_metering_point_id(
+    spark: SparkSession, metering_point_ids: str | list[str]
+) -> DataFrame:
+    if not isinstance(metering_point_ids, list):
+        metering_point_ids = [metering_point_ids]
+
+    count = 0
+    return spark.createDataFrame(
+        [(mp_id, i) for i, mp_id in enumerate(metering_point_ids)],
+        [DataProductColumnNames.metering_point_id, "other_column"],
+    )
+
+
 def test_(
     spark: SparkSession,
     default_charge_price_information_periods_test_data_spec: ChargePriceInformationPeriodsTestDataSpec,
     default_charge_link_periods_test_data_spec: ChargeLinkPeriodsTestDataSpec,
 ) -> None:
     # Arrange
-    time_series_df = time_series_factory.create(
-        spark, data_spec=MeteringPointTimeSeriesTestDataSpec()
+    df_with_metering_point_id = _create_data_frame_with_metering_point_id(
+        spark, DEFAULT_METERING_POINT_ID
     )
+
     charge_link_periods_df = charge_link_periods_factory.create(
         spark, default_charge_link_periods_test_data_spec
     )
@@ -100,10 +113,11 @@ def test_(
 
     # Act
     actual = filter_by_charge_owner_on_metering_point(
-        df=time_series_df,
+        df=df_with_metering_point_id,
         system_operator_id=DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
     )
 
     # Assert
+    assert actual.count() == 1

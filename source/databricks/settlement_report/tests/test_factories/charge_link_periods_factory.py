@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import LongType
 
 from settlement_report_job.domain.DataProductValues.charge_type import ChargeType
 from settlement_report_job.domain.calculation_type import CalculationType
@@ -26,7 +25,7 @@ class ChargeLinkPeriodsTestDataSpec:
     charge_type: ChargeType
     charge_owner_id: str
     metering_point_id: str
-    quantity: LongType
+    quantity: int
     from_date: datetime
     to_date: datetime
 
