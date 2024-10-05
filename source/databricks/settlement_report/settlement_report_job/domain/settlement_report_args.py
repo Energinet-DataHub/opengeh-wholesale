@@ -29,7 +29,7 @@ class SettlementReportArgs:
     requesting_actor_id: str
     calculation_id_by_grid_area: dict[str, UUID]
     """A dictionary containing grid area codes (keys) and calculation ids (values)."""
-    energy_supplier_id: str | None
+    energy_supplier_ids: list[str] | None
     split_report_by_grid_area: bool
     prevent_large_text_files: bool
     time_zone: str
