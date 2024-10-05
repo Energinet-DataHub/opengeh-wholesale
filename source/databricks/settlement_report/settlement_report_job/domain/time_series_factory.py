@@ -25,7 +25,7 @@ from settlement_report_job.domain.metering_point_resolution import (
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
-    filter_by_charge_owner_on_metering_point,
+    filter_time_series_on_charge_owner,
 )
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
@@ -95,7 +95,7 @@ def _read_and_filter_from_view(
     )
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
-        df = filter_by_charge_owner_on_metering_point(
+        df = filter_time_series_on_charge_owner(
             df=df,
             system_operator_id=requesting_actor_id,
             repository=repository,

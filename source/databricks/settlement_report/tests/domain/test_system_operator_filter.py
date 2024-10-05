@@ -20,7 +20,7 @@ from settlement_report_job.domain.DataProductValues.metering_point_type import (
 from settlement_report_job.domain.calculation_type import CalculationType
 
 from settlement_report_job.domain.system_operator_filter import (
-    filter_by_charge_owner_on_metering_point,
+    filter_time_series_on_charge_owner,
 )
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
@@ -115,7 +115,7 @@ def test_(
     )
 
     # Act
-    actual = filter_by_charge_owner_on_metering_point(
+    actual = filter_time_series_on_charge_owner(
         df=df_with_metering_point_id,
         system_operator_id=DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,

@@ -4,7 +4,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 
 
-def filter_by_charge_owner_on_metering_point(
+def filter_time_series_on_charge_owner(
     df: DataFrame,
     system_operator_id: str,
     charge_link_periods: DataFrame,
