@@ -95,10 +95,12 @@ def _read_and_filter_from_view(
     )
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
+
         df = filter_time_series_on_charge_owner(
             df=df,
             system_operator_id=requesting_actor_id,
-            repository=repository,
+            charge_link_periods=repository.read_charge_link_periods(),
+            charge_price_information_periods=repository.read_charge_price_information_periods(),
         )
 
     df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
