@@ -10,6 +10,7 @@ from package.codelists import MeteringPointResolution
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
+from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsTestDataSpec,
 )
@@ -46,14 +47,12 @@ DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "3333333333333"
-DEFAULT_CHARGE_KEY = "41000-tariff-3333333333333"
 
 
 def create_charge_link_periods_test_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
-    charge_key: str = DEFAULT_CHARGE_KEY,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
     charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
@@ -62,6 +61,7 @@ def create_charge_link_periods_test_data_spec(
     to_date: datetime = DEFAULT_PERIOD_END,
     quantity: int = 1,
 ) -> charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec:
+    charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
     return ChargeLinkPeriodsTestDataSpec(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
@@ -81,7 +81,6 @@ def create_default_charge_price_information_periods_test_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
-    charge_key: str = DEFAULT_CHARGE_KEY,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
     charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
@@ -90,6 +89,8 @@ def create_default_charge_price_information_periods_test_data_spec(
     from_date: datetime = DEFAULT_PERIOD_START,
     to_date: datetime = DEFAULT_PERIOD_END,
 ) -> ChargePriceInformationPeriodsTestDataSpec:
+    charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
+
     return ChargePriceInformationPeriodsTestDataSpec(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
@@ -307,8 +308,127 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_where_the_
     )
 
     # Assert
-    assert actual.select("metering_point_id").distinct().count() == 1
     assert (
-        actual.select("metering_point_id").distinct().first()[0]
+        actual.select(DataProductColumnNames.metering_point_id).distinct().count() == 1
+    )
+    assert (
+        actual.select(DataProductColumnNames.metering_point_id).distinct().first()[0]
         == "matching_metering_point_id"
+    )
+
+
+def test_filter_time_series_on_charge_owner__when_multiple_links_matches_on_metering_point_id__returns_expected_number_of_time_series_points(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    charge_price_information_periods_df = (
+        charge_price_information_periods_factory.create(
+            spark,
+            create_default_charge_price_information_periods_test_data_spec(
+                charge_code="code1"
+            ),
+        )
+    ).union(
+        charge_price_information_periods_factory.create(
+            spark,
+            create_default_charge_price_information_periods_test_data_spec(
+                charge_code="code2"
+            ),
+        )
+    )
+    charge_link_periods_df = charge_link_periods_factory.create(
+        spark,
+        create_charge_link_periods_test_data_spec(charge_code="code1"),
+    ).union(
+        charge_link_periods_factory.create(
+            spark,
+            create_charge_link_periods_test_data_spec(charge_code="code2"),
+        )
+    )
+
+    time_series_df = time_series_factory.create(
+        spark,
+        create_time_series_test_data_spec(),
+    )
+
+    # Act
+    actual = filter_time_series_on_charge_owner(
+        time_series=time_series_df,
+        system_operator_id=DEFAULT_CHARGE_OWNER_ID,
+        charge_link_periods=charge_link_periods_df,
+        charge_price_information_periods=charge_price_information_periods_df,
+    )
+
+    # Assert
+    assert actual.count() == 24
+
+
+def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_operator__returns_time_series_without_that_metering_point(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    system_operator_id = "1234567890123"
+    not_system_operator_id = "9876543210123"
+    system_operator_metering_point_id = "1111111111111"
+    not_system_operator_metering_point_id = "2222222222222"
+    charge_price_information_periods_df = (
+        charge_price_information_periods_factory.create(
+            spark,
+            create_default_charge_price_information_periods_test_data_spec(
+                charge_owner_id=system_operator_id
+            ),
+        )
+    ).union(
+        charge_price_information_periods_factory.create(
+            spark,
+            create_default_charge_price_information_periods_test_data_spec(
+                charge_owner_id=not_system_operator_id
+            ),
+        )
+    )
+    charge_link_periods_df = charge_link_periods_factory.create(
+        spark,
+        create_charge_link_periods_test_data_spec(
+            metering_point_id=system_operator_metering_point_id,
+            charge_owner_id=system_operator_id,
+        ),
+    ).union(
+        charge_link_periods_factory.create(
+            spark,
+            create_charge_link_periods_test_data_spec(
+                metering_point_id=not_system_operator_metering_point_id,
+                charge_owner_id=not_system_operator_id,
+            ),
+        )
+    )
+
+    time_series_df = time_series_factory.create(
+        spark,
+        create_time_series_test_data_spec(
+            metering_point_id=system_operator_metering_point_id
+        ),
+    ).union(
+        time_series_factory.create(
+            spark,
+            create_time_series_test_data_spec(
+                metering_point_id=not_system_operator_metering_point_id
+            ),
+        )
+    )
+
+    # Act
+    actual = filter_time_series_on_charge_owner(
+        time_series=time_series_df,
+        system_operator_id=system_operator_id,
+        charge_link_periods=charge_link_periods_df,
+        charge_price_information_periods=charge_price_information_periods_df,
+    )
+
+    # Assert
+    assert (
+        actual.select(DataProductColumnNames.metering_point_id).distinct().count() == 1
+    )
+    assert (
+        actual.select(DataProductColumnNames.metering_point_id).distinct().first()[0]
+        == system_operator_metering_point_id
     )
