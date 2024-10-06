@@ -22,23 +22,34 @@ def filter_time_series_on_charge_owner(
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
         how="inner",
     )
+    filtered_charge_link_periods.show()
 
-    filtered_df = df.join(
-        filtered_charge_link_periods,
-        on=[
-            DataProductColumnNames.calculation_id,
-            DataProductColumnNames.metering_point_id,
-        ],
-        how="leftsemi",
-    ).where(
-        (
-            F.col(DataProductColumnNames.observation_time)
-            >= DataProductColumnNames.from_date
+    filtered_df = (
+        df.join(
+            filtered_charge_link_periods,
+            on=[
+                DataProductColumnNames.calculation_id,
+                DataProductColumnNames.metering_point_id,
+            ],
+            # how="leftsemi",
+            how="inner",
         )
-        & (
-            F.col(DataProductColumnNames.observation_time)
-            < DataProductColumnNames.to_date
-        )
+        # .where(
+        #     (
+        #         F.col(DataProductColumnNames.observation_time)
+        #         >= DataProductColumnNames.from_date
+        #     )
+        #     | (
+        #         F.col(DataProductColumnNames.observation_time)
+        #         < DataProductColumnNames.from_date
+        #     )
+        #     & (
+        #         F.col(DataProductColumnNames.observation_time)
+        #         < DataProductColumnNames.to_date
+        #     )
+        # )
+        # )
     )
+    filtered_df.show()
 
     return filtered_df
