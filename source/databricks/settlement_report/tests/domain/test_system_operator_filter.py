@@ -111,9 +111,14 @@ def test_(
     default_charge_link_periods_test_data_spec: ChargeLinkPeriodsTestDataSpec,
 ) -> None:
     # Arrange
-    time_series_df = time_series_factory.create(
-        spark, default_time_series_test_data_spec
+    time_series_spec_1 = default_time_series_test_data_spec
+    time_series_spec_2 = default_time_series_test_data_spec
+    time_series_spec_2.metering_point_id = "other_id"
+
+    time_series_df = time_series_factory.create(spark, time_series_spec_1).union(
+        time_series_factory.create(spark, time_series_spec_2)
     )
+
     charge_link_periods_df = charge_link_periods_factory.create(
         spark, default_charge_link_periods_test_data_spec
     )
@@ -123,13 +128,13 @@ def test_(
         )
     )
 
-    charge_link_periods_df.show()
-    charge_price_information_periods_df.show()
-    time_series_df.show()
+    # charge_link_periods_df.show()
+    # charge_price_information_periods_df.show()
+    # time_series_df.show()
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        df=time_series_df,
+        time_series=time_series_df,
         system_operator_id=DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -137,3 +142,42 @@ def test_(
 
     # Assert
     assert actual.count() == 1
+
+
+def test_when_observation_time_not_within_link_period__return_dataframe_without_that_metering_point(
+    spark: SparkSession,
+    default_time_series_test_data_spec: MeteringPointTimeSeriesTestDataSpec,
+    default_charge_price_information_periods_test_data_spec: ChargePriceInformationPeriodsTestDataSpec,
+    default_charge_link_periods_test_data_spec: ChargeLinkPeriodsTestDataSpec,
+) -> None:
+    # Arrange
+    from_date = default_charge_link_periods_test_data_spec.to_date
+    time_series_test_data_spec = default_time_series_test_data_spec
+    time_series_test_data_spec.from_date = from_date
+    time_series_test_data_spec.to_date = from_date + timedelta(days=1)
+
+    time_series_df = time_series_factory.create(spark, time_series_test_data_spec)
+
+    charge_link_periods_df = charge_link_periods_factory.create(
+        spark, default_charge_link_periods_test_data_spec
+    )
+    charge_price_information_periods_df = (
+        charge_price_information_periods_factory.create(
+            spark, default_charge_price_information_periods_test_data_spec
+        )
+    )
+
+    # charge_link_periods_df.show()
+    # charge_price_information_periods_df.show()
+    # time_series_df.show()
+
+    # Act
+    actual = filter_time_series_on_charge_owner(
+        time_series=time_series_df,
+        system_operator_id=DEFAULT_CHARGE_OWNER_ID,
+        charge_link_periods=charge_link_periods_df,
+        charge_price_information_periods=charge_price_information_periods_df,
+    )
+
+    # Assert
+    assert actual.count() == 0

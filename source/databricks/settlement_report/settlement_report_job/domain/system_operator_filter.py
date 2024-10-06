@@ -5,7 +5,7 @@ from settlement_report_job.infrastructure.column_names import DataProductColumnN
 
 
 def filter_time_series_on_charge_owner(
-    df: DataFrame,
+    time_series: DataFrame,
     system_operator_id: str,
     charge_link_periods: DataFrame,
     charge_price_information_periods: DataFrame,
@@ -21,34 +21,37 @@ def filter_time_series_on_charge_owner(
         charge_price_information_periods,
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
         how="inner",
+    ).select(
+        DataProductColumnNames.calculation_id,
+        DataProductColumnNames.metering_point_id,
+        charge_link_periods[DataProductColumnNames.from_date],
+        charge_link_periods[DataProductColumnNames.to_date],
     )
-    filtered_charge_link_periods.show()
 
-    filtered_df = (
-        df.join(
-            filtered_charge_link_periods,
-            on=[
-                DataProductColumnNames.calculation_id,
-                DataProductColumnNames.metering_point_id,
-            ],
-            # how="leftsemi",
-            how="inner",
+    filtered_charge_link_periods.show()
+    time_series.show()
+
+    filtered_df = time_series.join(
+        filtered_charge_link_periods,
+        (
+            F.col(DataProductColumnNames.observation_time)
+            >= F.col(DataProductColumnNames.from_date)
         )
-        # .where(
-        #     (
-        #         F.col(DataProductColumnNames.observation_time)
-        #         >= DataProductColumnNames.from_date
-        #     )
-        #     | (
-        #         F.col(DataProductColumnNames.observation_time)
-        #         < DataProductColumnNames.from_date
-        #     )
-        #     & (
-        #         F.col(DataProductColumnNames.observation_time)
-        #         < DataProductColumnNames.to_date
-        #     )
-        # )
-        # )
+        & (
+            F.col(DataProductColumnNames.observation_time)
+            < F.col(DataProductColumnNames.to_date)
+        ),
+        # on=[
+        #     DataProductColumnNames.calculation_id,
+        #     DataProductColumnNames.metering_point_id,
+        #     time_series[DataProductColumnNames.observation_time]
+        #     >= filtered_charge_link_periods[DataProductColumnNames.from_date],
+        #     # time_series[DataProductColumnNames.observation_time].between(
+        #     #     filtered_charge_link_periods[DataProductColumnNames.from_date],
+        #     #     filtered_charge_link_periods[DataProductColumnNames.to_date],
+        #     # ),
+        # ],
+        how="leftsemi",
     )
     filtered_df.show()
 
