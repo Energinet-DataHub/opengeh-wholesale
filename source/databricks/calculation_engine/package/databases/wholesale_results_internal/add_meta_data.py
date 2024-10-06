@@ -14,7 +14,7 @@
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit, first
+from pyspark.sql.functions import col, lit
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
@@ -39,16 +39,47 @@ def add_metadata(
     return df
 
 
+# def _add_calculation_result_id(
+#     df: DataFrame, column_group_for_calculation_result_id: list[str]
+# ) -> DataFrame:
+#
+#     # TODO AJW: Rename to result_id when we are on Unity Catalog.
+#     df = df.withColumn(TableColumnNames.calculation_result_id, f.expr("uuid()"))
+#     window = Window.partitionBy(column_group_for_calculation_result_id)
+#     return df.withColumn(
+#         # TODO AJW: Rename to result_id when we are on Unity Catalog.
+#         TableColumnNames.calculation_result_id,
+#         # TODO AJW: Rename to result_id when we are on Unity Catalog.
+#         first(col(TableColumnNames.calculation_result_id)).over(window),
+#     )
+
+
 def _add_calculation_result_id(
     df: DataFrame, column_group_for_calculation_result_id: list[str]
 ) -> DataFrame:
-
-    # TODO AJW: Rename to result_id when we are on Unity Catalog.
-    df = df.withColumn(TableColumnNames.calculation_result_id, f.expr("uuid()"))
-    window = Window.partitionBy(column_group_for_calculation_result_id)
-    return df.withColumn(
-        # TODO AJW: Rename to result_id when we are on Unity Catalog.
+    return add_calculation_result_id(
+        df,
+        column_group_for_calculation_result_id,
         TableColumnNames.calculation_result_id,
-        # TODO AJW: Rename to result_id when we are on Unity Catalog.
-        first(col(TableColumnNames.calculation_result_id)).over(window),
+    )
+
+
+def add_calculation_result_id(
+    df: DataFrame, column_group_for_calculation_result_id: list[str], result_id_col: str
+) -> DataFrame:
+    # Concatenate the values of the partition columns
+    concat_columns = f.concat(*[col(c) for c in column_group_for_calculation_result_id])
+
+    # Generate a deterministic hash based on partition columns
+    df = df.withColumn(
+        result_id_col,
+        f.sha2(concat_columns, 256),
+    )
+
+    window = Window.partitionBy(*column_group_for_calculation_result_id)
+
+    # Ensure the calculation result ID is consistent within each partition
+    return df.withColumn(
+        result_id_col,
+        f.first(col(result_id_col)).over(window),
     )
