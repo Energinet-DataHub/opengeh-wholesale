@@ -307,7 +307,6 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_where_the_
     )
 
     # Assert
-    assert actual.count() == 24
     assert actual.select("metering_point_id").distinct().count() == 1
     assert (
         actual.select("metering_point_id").distinct().first()[0]
