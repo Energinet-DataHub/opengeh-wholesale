@@ -28,9 +28,6 @@ def filter_time_series_on_charge_owner(
         charge_link_periods[DataProductColumnNames.to_date],
     )
 
-    filtered_charge_link_periods.show()
-    time_series.show()
-
     filtered_df = time_series.join(
         filtered_charge_link_periods,
         on=[
@@ -45,6 +42,5 @@ def filter_time_series_on_charge_owner(
         ],
         how="leftsemi",
     )
-    filtered_df.show()
 
     return filtered_df
