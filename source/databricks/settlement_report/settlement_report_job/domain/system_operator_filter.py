@@ -33,24 +33,16 @@ def filter_time_series_on_charge_owner(
 
     filtered_df = time_series.join(
         filtered_charge_link_periods,
-        (
+        on=[
+            time_series[DataProductColumnNames.calculation_id]
+            == filtered_charge_link_periods[DataProductColumnNames.calculation_id],
+            time_series[DataProductColumnNames.metering_point_id]
+            == filtered_charge_link_periods[DataProductColumnNames.metering_point_id],
             F.col(DataProductColumnNames.observation_time)
-            >= F.col(DataProductColumnNames.from_date)
-        )
-        & (
+            >= F.col(DataProductColumnNames.from_date),
             F.col(DataProductColumnNames.observation_time)
-            < F.col(DataProductColumnNames.to_date)
-        ),
-        # on=[
-        #     DataProductColumnNames.calculation_id,
-        #     DataProductColumnNames.metering_point_id,
-        #     time_series[DataProductColumnNames.observation_time]
-        #     >= filtered_charge_link_periods[DataProductColumnNames.from_date],
-        #     # time_series[DataProductColumnNames.observation_time].between(
-        #     #     filtered_charge_link_periods[DataProductColumnNames.from_date],
-        #     #     filtered_charge_link_periods[DataProductColumnNames.to_date],
-        #     # ),
-        # ],
+            < F.col(DataProductColumnNames.to_date),
+        ],
         how="leftsemi",
     )
     filtered_df.show()
