@@ -59,6 +59,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
     try:
         # Arrange
         standard_wholesale_fixing_scenario_args.include_basis_data = include_basis_data
+        reset_task_values_quarterly(dbutils)
 
         if include_basis_data:
             expected_file_count = 2
@@ -78,10 +79,14 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
 
         # Assert
         actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-        assert len(actual_files) == expected_file_count
-        for file_path in actual_files:
-            df = spark.read.csv(file_path, header=True)
-            assert df.count() > 0
-            assert df.columns == expected_columns
+        if include_basis_data:
+            assert len(actual_files) == expected_file_count
+            for file_path in actual_files:
+                df = spark.read.csv(file_path, header=True)
+                assert df.count() > 0
+                assert df.columns == expected_columns
+        else:
+            assert actual_files is None or len(actual_files) == 0
+
     finally:
         reset_task_values_quarterly(dbutils)
