@@ -72,8 +72,8 @@ def _add_calculation_result_id(
             f"concat(substr(md5({concat_placeholder}), 1, 8), '-', \
                       substr(md5({concat_placeholder}), 9, 4), '-', \
                       '4', substr(md5({concat_placeholder}), 13, 3), '-', \
-                      substr(md5({concat_placeholder}), 16, 4), '-', \
-                      substr(md5({concat_placeholder}), 20))"
+                      substr(md5({concat_placeholder}), 17, 4), '-', \
+                      substr(md5({concat_placeholder}), 21, 12))"
         ),
     )
 
