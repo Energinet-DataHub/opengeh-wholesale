@@ -15,7 +15,7 @@
 
 class ChargeResolution:
     """
-    Time resolution of the charges, which is read from input delta table
+    Time resolution of the charges, which is read from the Wholesale data product
     """
 
     MONTH = "P1M"
