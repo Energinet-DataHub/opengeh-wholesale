@@ -11,7 +11,7 @@ def filter_time_series_on_charge_owner(
 ) -> DataFrame:
 
     charge_price_information_periods = charge_price_information_periods.where(
-        (F.col(DataProductColumnNames.is_tax) is False)
+        (F.col(DataProductColumnNames.is_tax) == False)
         & (F.col(DataProductColumnNames.charge_owner_id) == system_operator_id)
     )
 
@@ -20,8 +20,8 @@ def filter_time_series_on_charge_owner(
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
         how="inner",
     ).select(
-        DataProductColumnNames.calculation_id,
-        DataProductColumnNames.metering_point_id,
+        charge_link_periods[DataProductColumnNames.calculation_id],
+        charge_link_periods[DataProductColumnNames.metering_point_id],
         charge_link_periods[DataProductColumnNames.from_date],
         charge_link_periods[DataProductColumnNames.to_date],
     )

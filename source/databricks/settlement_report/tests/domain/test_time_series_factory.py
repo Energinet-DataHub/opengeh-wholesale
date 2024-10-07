@@ -487,9 +487,9 @@ def test_create_time_series__when_system_operator__returns_only_time_series_with
             charge_owner_id=SYSTEM_OPERATOR_ID
         ),
     )
-    charge_link_periods_df = charge_price_information_periods.create(
+    charge_link_periods_df = charge_links_factory.create(
         spark,
-        default_data.create_charge_price_information_periods_data_spec(
+        default_data.create_charge_link_periods_data_spec(
             charge_owner_id=SYSTEM_OPERATOR_ID
         ),
     )
