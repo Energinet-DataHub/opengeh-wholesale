@@ -1,0 +1,1420 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "description": "The dashboard provides insights of Azure Apps via different metrics for app monitoring through Application Insights.",
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 14,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource",
+                "uid": "azure-monitor-oob"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "#5794F2",
+                        "mode": "continuous-BlPu"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 16,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "normal"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Page load network connect time"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "dark-blue",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Client processing time"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "green",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Send request time"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "purple",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Receiving response time"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "orange",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 6,
+                "x": 0,
+                "y": 0
+            },
+            "id": 32,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "mean"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Average",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "Microsoft.Insights/components",
+                        "metricName": "browserTimings/networkDuration",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Page load network connect time",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                },
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Average",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "Microsoft.Insights/components",
+                        "metricName": "browserTimings/processingDuration",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Client processing time",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                },
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Average",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "Microsoft.Insights/components",
+                        "metricName": "browserTimings/sendDuration",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Send request time",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                },
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Average",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "Microsoft.Insights/components",
+                        "metricName": "browserTimings/receiveDuration",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Receiving response time",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                }
+            ],
+            "title": "Average page load time breakdown",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "decimals": 2,
+                    "displayName": "$${__series.name}",
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "index": 0,
+                                    "text": "0"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "percentage",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "percentunit"
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Percentage of 5xx"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "dark-red",
+                                    "mode": "fixed"
+                                }
+                            },
+                            {
+                                "id": "displayName"
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Percentage of 2xx"
+                        },
+                        "properties": [
+                            {
+                                "id": "displayName"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 6,
+                "x": 6,
+                "y": 0
+            },
+            "id": 57,
+            "maxDataPoints": 150,
+            "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "mean"
+                    ],
+                    "fields": "/.*/",
+                    "values": false
+                },
+                "showThresholdLabels": true,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Total",
+                        "alias": "",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "customNamespace": "microsoft.apimanagement/service",
+                        "dimensionFilters": [
+                            {
+                                "dimension": "GatewayResponseCodeCategory",
+                                "filters": [
+                                    "2xx",
+                                    "5xx",
+                                    "4xx",
+                                    "None"
+                                ],
+                                "operator": "eq"
+                            },
+                            {
+                                "dimension": "",
+                                "filters": [],
+                                "operator": "eq"
+                            }
+                        ],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "Requests",
+                        "metricNamespace": "microsoft.apimanagement/service",
+                        "region": "westeurope",
+                        "resources": [
+                            {
+                                "metricNamespace": "Microsoft.ApiManagement/service",
+                                "region": "westeurope",
+                                "resourceGroup": "rg-shres-${env_short}-we-${instance}",
+                                "resourceName": "apim-shres-${env_short}-we-${instance}",
+                                "subscription": "${subscription}"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Server Exceptions",
+                    "subscription": "${subscription}",
+                    "subscriptions": []
+                }
+            ],
+            "title": "API Management (5xx and 2xx percentages)",
+            "transformations": [
+                {
+                    "id": "calculateField",
+                    "options": {
+                        "mode": "reduceRow",
+                        "reduce": {
+                            "include": [
+                                "Requests 2xx",
+                                "Requests 4xx",
+                                "Requests None",
+                                "Requests 5xx"
+                            ],
+                            "reducer": "sum"
+                        }
+                    }
+                },
+                {
+                    "id": "calculateField",
+                    "options": {
+                        "alias": "Percentage of 2xx",
+                        "binary": {
+                            "left": "Requests 2xx",
+                            "operator": "/",
+                            "right": "Total"
+                        },
+                        "mode": "binary",
+                        "reduce": {
+                            "reducer": "sum"
+                        }
+                    }
+                },
+                {
+                    "id": "calculateField",
+                    "options": {
+                        "alias": "Percentage of 5xx",
+                        "binary": {
+                            "left": "Requests 5xx",
+                            "operator": "/",
+                            "right": "Total"
+                        },
+                        "mode": "binary",
+                        "reduce": {
+                            "reducer": "sum"
+                        }
+                    }
+                },
+                {
+                    "id": "filterFieldsByName",
+                    "options": {
+                        "include": {
+                            "names": [
+                                "Percentage of 2xx",
+                                "Percentage of 5xx"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "type": "gauge"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource",
+                "uid": "azure-monitor-oob"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "green",
+                        "mode": "fixed"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "axisWidth": 50,
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 14,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineStyle": {
+                            "fill": "solid"
+                        },
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "links": [],
+                    "mappings": [],
+                    "max": 100,
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Availability"
+                        },
+                        "properties": [
+                            {
+                                "id": "links",
+                                "value": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 6,
+                "x": 12,
+                "y": 0
+            },
+            "id": 8,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "mean"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Average",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "availabilityResults/availabilityPercentage",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "A",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                }
+            ],
+            "title": "Average availability",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource",
+                "uid": "azure-monitor-oob"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "#7e58ff",
+                        "mode": "fixed"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "axisSoftMin": 0,
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineStyle": {
+                            "fill": "solid"
+                        },
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 9,
+                "w": 6,
+                "x": 18,
+                "y": 0
+            },
+            "id": 4,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "mean"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Average",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "requests/duration",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "A",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                }
+            ],
+            "title": "Server response time",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "#ec008c",
+                        "mode": "fixed"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineStyle": {
+                            "fill": "solid"
+                        },
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 9,
+                "w": 6,
+                "x": 18,
+                "y": 9
+            },
+            "id": 2,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "sum"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Count",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "dimensionFilters": [],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "requests/failed",
+                        "metricNamespace": "microsoft.insights/components",
+                        "resources": [
+                            {
+                                "resourceGroup": "$rg",
+                                "resourceName": "$res"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Failed requests",
+                    "subscription": "$sub",
+                    "subscriptions": []
+                }
+            ],
+            "title": "Failed requests (4xx + 5xx)",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "dark-purple",
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "index": 0,
+                                    "text": "0"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Server exceptions"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#ec008c",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 6,
+                "x": 6,
+                "y": 10
+            },
+            "id": 55,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "sum"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Total",
+                        "alias": "",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "customNamespace": "microsoft.apimanagement/service",
+                        "dimensionFilters": [
+                            {
+                                "dimension": "GatewayResponseCodeCategory",
+                                "filters": [
+                                    "2xx",
+                                    "5xx"
+                                ],
+                                "operator": "eq"
+                            }
+                        ],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "Requests",
+                        "metricNamespace": "microsoft.apimanagement/service",
+                        "region": "westeurope",
+                        "resources": [
+                            {
+                                "metricNamespace": "Microsoft.ApiManagement/service",
+                                "region": "westeurope",
+                                "resourceGroup": "rg-shres-${env_short}-we-${instance}",
+                                "resourceName": "apim-shres-${env_short}-we-${instance}",
+                                "subscription": "${subscription}"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Server Exceptions",
+                    "subscription": "${subscription}",
+                    "subscriptions": []
+                }
+            ],
+            "title": "API Management Response Overview",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource",
+                "uid": "azure-monitor-oob"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "dark-red",
+                        "mode": "fixed"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "fieldMinMax": false,
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "index": 0,
+                                    "text": "0"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "noValue": "No 503 errors for the given time range",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "none"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 6,
+                "x": 12,
+                "y": 10
+            },
+            "id": 56,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "sum"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Total",
+                        "alias": "",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "customNamespace": "microsoft.apimanagement/service",
+                        "dimensionFilters": [
+                            {
+                                "dimension": "GatewayResponseCode",
+                                "filters": [
+                                    "503"
+                                ],
+                                "operator": "eq"
+                            }
+                        ],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "Requests",
+                        "metricNamespace": "microsoft.apimanagement/service",
+                        "region": "westeurope",
+                        "resources": [
+                            {
+                                "metricNamespace": "Microsoft.ApiManagement/service",
+                                "region": "westeurope",
+                                "resourceGroup": "rg-shres-${env_short}-we-${instance}",
+                                "resourceName": "apim-shres-${env_short}-we-${instance}",
+                                "subscription": "${subscription}"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Server Exceptions",
+                    "subscription": "${subscription}",
+                    "subscriptions": []
+                }
+            ],
+            "title": "API Management 503 errors",
+            "type": "timeseries"
+        }
+    ],
+    "refresh": "",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "Azure Monitor",
+                    "value": "azure-monitor-oob"
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": "Datasource",
+                "multi": false,
+                "name": "ds",
+                "options": [],
+                "query": "grafana-azure-monitor-datasource",
+                "queryValue": "",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "type": "datasource"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "sub-datahub-online-${environment}-${instance}",
+                    "value": "${subscription}"
+                },
+                "datasource": {
+                    "type": "grafana-azure-monitor-datasource",
+                    "uid": "azure-monitor-oob"
+                },
+                "definition": "Subscriptions()",
+                "hide": 0,
+                "includeAll": false,
+                "label": "Subscription",
+                "multi": false,
+                "name": "sub",
+                "options": [],
+                "query": "Subscriptions()",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 5,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "rg-shres-${env_short}-we-${instance}",
+                    "value": "rg-shres-${env_short}-we-${instance}"
+                },
+                "datasource": {
+                    "type": "grafana-azure-monitor-datasource",
+                    "uid": "azure-monitor-oob"
+                },
+                "definition": "ResourceGroups($sub)",
+                "hide": 0,
+                "includeAll": false,
+                "label": "Resource Group",
+                "multi": false,
+                "name": "rg",
+                "options": [],
+                "query": "ResourceGroups($sub)",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 5,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "microsoft.insights/components",
+                    "value": "microsoft.insights/components"
+                },
+                "datasource": {
+                    "type": "grafana-azure-monitor-datasource",
+                    "uid": "azure-monitor-oob"
+                },
+                "definition": "Namespaces($sub, $rg)",
+                "hide": 2,
+                "includeAll": false,
+                "label": "Namespace",
+                "multi": false,
+                "name": "ns",
+                "options": [],
+                "query": "Namespaces($sub, $rg)",
+                "refresh": 1,
+                "regex": "([mM](icrosoft)\\.[iI](nsights)/(components))",
+                "skipUrlSync": false,
+                "sort": 5,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "appi-shres-${env_short}-we-${instance}",
+                    "value": "appi-shres-${env_short}-we-${instance}"
+                },
+                "datasource": {
+                    "type": "grafana-azure-monitor-datasource",
+                    "uid": "azure-monitor-oob"
+                },
+                "definition": "ResourceNames($sub, $rg, $ns)",
+                "hide": 0,
+                "includeAll": false,
+                "label": "Resource",
+                "multi": false,
+                "name": "res",
+                "options": [],
+                "query": "ResourceNames($sub, $rg, $ns)",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 5,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "f7619355-6c67-4100-9a78-1847f30742e2",
+                    "value": "f7619355-6c67-4100-9a78-1847f30742e2"
+                },
+                "datasource": {
+                    "type": "grafana-azure-monitor-datasource",
+                    "uid": "azure-monitor-oob"
+                },
+                "definition": "resources\n| project tenantId",
+                "hide": 2,
+                "includeAll": false,
+                "label": "tenantId",
+                "multi": false,
+                "name": "tenant",
+                "options": [],
+                "query": {
+                    "azureLogAnalytics": {
+                        "query": "",
+                        "resource": ""
+                    },
+                    "azureResourceGraph": {
+                        "query": "Resources\r\n|project tenantId"
+                    },
+                    "queryType": "Azure Resource Graph",
+                    "refId": "A",
+                    "subscriptions": [
+                        "$sub"
+                    ]
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 5,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-24h",
+        "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "DataHub Overview",
+    "uid": "edznwpvyvltkwe",
+    "version": 10,
+    "weekStart": ""
+}

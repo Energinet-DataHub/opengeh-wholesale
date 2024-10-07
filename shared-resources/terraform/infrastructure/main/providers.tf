@@ -9,7 +9,22 @@ terraform {
       source  = "databricks/databricks"
       version = "1.49.1"
     }
+
+    shell = {
+      source  = "scottwinkler/shell"
+      version = "1.7.10"
+    }
+
+    grafana = {
+      source  = "grafana/grafana"
+      version = "3.8.2"
+    }
   }
+}
+
+provider "grafana" {
+  url  = azurerm_dashboard_grafana.this.endpoint
+  auth = shell_script.create_key.output["key"]
 }
 
 provider "databricks" {

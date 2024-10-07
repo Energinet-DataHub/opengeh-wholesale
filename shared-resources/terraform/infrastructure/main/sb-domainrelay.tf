@@ -1,5 +1,5 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_6.0.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
