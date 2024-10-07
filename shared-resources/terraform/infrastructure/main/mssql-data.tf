@@ -44,6 +44,22 @@ resource "azurerm_mssql_firewall_rule" "github_largerunner" {
   end_ip_address   = cidrhost(split(",", local.ip_restrictions_as_string)[count.index], -1) #Last IP in range
 }
 
+module "kvs_mssql_data_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-data-name"
+  value        = module.mssql_data_additional.name
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_mssql_data_resource_group_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-data-resource-group-name"
+  value        = azurerm_resource_group.this.name
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_mssql_data_elastic_pool_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
@@ -52,18 +68,26 @@ module "kvs_mssql_data_elastic_pool_id" {
   key_vault_id = module.kv_shared.id
 }
 
+module "kvs_mssql_data_elastic_pool_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-data-elastic-pool-name"
+  value        = module.mssql_data_additional.elastic_pool_name
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_mssql_data_elastic_pool_resource_group_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-data-elastic-pool-resource-group-name"
+  value        = module.mssql_data_additional.elastic_pool_resource_group_name
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_mssql_data_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "mssql-data-url"
   value        = module.mssql_data_additional.fully_qualified_domain_name
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_mssql_data_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
-
-  name         = "mssql-data-name"
-  value        = module.mssql_data_additional.name
   key_vault_id = module.kv_shared.id
 }
