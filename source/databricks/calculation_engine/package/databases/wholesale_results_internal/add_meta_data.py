@@ -38,21 +38,6 @@ def add_metadata(
     return df
 
 
-# def _add_calculation_result_id(
-#     df: DataFrame, column_group_for_calculation_result_id: list[str]
-# ) -> DataFrame:
-#
-#     # TODO AJW: Rename to result_id when we are on Unity Catalog.
-#     df = df.withColumn(TableColumnNames.calculation_result_id, f.expr("uuid()"))
-#     window = Window.partitionBy(column_group_for_calculation_result_id)
-#     return df.withColumn(
-#         # TODO AJW: Rename to result_id when we are on Unity Catalog.
-#         TableColumnNames.calculation_result_id,
-#         # TODO AJW: Rename to result_id when we are on Unity Catalog.
-#         first(col(TableColumnNames.calculation_result_id)).over(window),
-#     )
-
-
 def _add_calculation_result_id(
     df: DataFrame, column_group_for_calculation_result_id: list[str]
 ) -> DataFrame:
@@ -60,6 +45,7 @@ def _add_calculation_result_id(
     To avoid using the non-deterministic uuid() function the values of selected partition columns are concatenated
     and converted into a deterministic uuid.
     """
+
     concat_placeholder = "concat_placeholder"
     df = df.withColumn(
         concat_placeholder,
@@ -67,6 +53,7 @@ def _add_calculation_result_id(
     )
 
     df_with_uuid = df.withColumn(
+        # TODO AJW: Rename to result_id when we are on Unity Catalog.
         TableColumnNames.calculation_result_id,
         f.expr(
             f"concat(substr(md5({concat_placeholder}), 1, 8), '-', \

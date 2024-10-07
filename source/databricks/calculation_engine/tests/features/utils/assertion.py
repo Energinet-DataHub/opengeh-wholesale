@@ -32,13 +32,6 @@ def assert_output(
     actual_result = _get_actual_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
-    columns_to_skip = []
-
-    # if TableColumnNames.calculation_result_id in expected_result.columns:
-    #   columns_to_skip.append(TableColumnNames.calculation_result_id)
-    # if "result_id" in expected_result.columns:
-    #   columns_to_skip.append("result_id")
-
     # Sort actual_result and expected_result
     actual_result = actual_result.sort(actual_result.columns)
     expected_result = expected_result.sort(expected_result.columns)
@@ -50,7 +43,6 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
-        columns_to_skip=columns_to_skip,
     )
 
 
