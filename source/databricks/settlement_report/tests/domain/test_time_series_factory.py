@@ -106,9 +106,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
     expected_columns = [
         f"ENERGYQUANTITY{i}" for i in range(1, energy_quantity_column_count + 1)
     ]
-    spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
-        from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
-    )
+    spec = default_data.create_time_series_data_spec(resolution=resolution)
     df = time_series_factory.create(spark, spec)
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
