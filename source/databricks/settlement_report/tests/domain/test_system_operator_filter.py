@@ -312,3 +312,47 @@ def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_ope
         actual.select(DataProductColumnNames.metering_point_id).distinct().first()[0]
         == system_operator_metering_point_id
     )
+
+
+@pytest.mark.parametrize(
+    "is_tax, returns_rows",
+    [
+        (True, False),
+        (False, True),
+    ],
+)
+def test_filter_time_series_on_charge_owner__returns_only_time_series_where_metering_point_has_tax_true(
+    spark: SparkSession, is_tax: bool, returns_rows: bool
+) -> None:
+    # Arrange
+    system_operator_id = "1234567890123"
+    charge_price_information_periods_df = (
+        charge_price_information_periods_factory.create(
+            spark,
+            default_data.create_charge_price_information_periods_data_spec(
+                charge_owner_id=system_operator_id, is_tax=is_tax
+            ),
+        )
+    )
+    charge_link_periods_df = charge_link_periods_factory.create(
+        spark,
+        default_data.create_charge_link_periods_data_spec(
+            charge_owner_id=system_operator_id
+        ),
+    )
+
+    time_series_df = time_series_factory.create(
+        spark,
+        default_data.create_time_series_data_spec(),
+    )
+
+    # Act
+    actual = filter_time_series_on_charge_owner(
+        time_series=time_series_df,
+        system_operator_id=system_operator_id,
+        charge_link_periods=charge_link_periods_df,
+        charge_price_information_periods=charge_price_information_periods_df,
+    )
+
+    # Assert
+    assert (actual.count() > 0) == returns_rows
