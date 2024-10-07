@@ -5,11 +5,11 @@ resource "databricks_job" "calculator_job" {
 
   task {
     task_key    = "calculator_task_${uuid()}"
-    max_retries = 0
+    max_retries = 1
 
     new_cluster {
       spark_version = local.spark_version
-      node_type_id  = "Standard_D8as_v4"
+      node_type_id  = "Standard_D16as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 4
