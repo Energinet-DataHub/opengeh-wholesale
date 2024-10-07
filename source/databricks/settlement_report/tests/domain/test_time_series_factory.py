@@ -10,6 +10,7 @@ from pyspark.sql.functions import monotonically_increasing_id
 import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 
+import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_time_series_factory as time_series_factory
 import test_factories.charge_link_periods_factory as charge_links_factory
 
@@ -25,8 +26,8 @@ from settlement_report_job.infrastructure.column_names import (
 )
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
-DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
+DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
+DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 
 
@@ -36,7 +37,7 @@ def _create_time_series_with_increasing_quantity(
     to_date: datetime,
     resolution: DataProductMeteringPointResolution,
 ) -> DataFrame:
-    spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+    spec = default_data.create_time_series_data_spec(
         from_date=from_date, to_date=to_date, resolution=resolution
     )
     df = time_series_factory.create(spark, spec)
@@ -58,7 +59,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
 ) -> None:
     # Arrange
     expected_rows = DEFAULT_TO_DATE.day - DEFAULT_FROM_DATE.day
-    spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+    spec = default_data.create_time_series_data_spec(
         from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
     )
     df = time_series_factory.create(spark, spec)
@@ -70,7 +71,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         resolution=resolution,
@@ -112,7 +113,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         resolution=resolution,
@@ -186,7 +187,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
         period_start=from_date,
         period_end=to_date,
         calculation_id_by_grid_area={
-            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         resolution=resolution,
@@ -247,7 +248,7 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -283,7 +284,7 @@ def test_create_time_series__returns_only_days_within_selected_period(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -332,7 +333,7 @@ def test_create_time_series__returns_only_selected_grid_area(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            selected_grid_area_code: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
+            selected_grid_area_code: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -360,7 +361,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
     other_metering_point_id = "765432109876543210987654321"
     df = time_series_factory.create(
         spark,
-        time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+        default_data.create_time_series_data_spec(
             from_date=DEFAULT_FROM_DATE,
             to_date=DEFAULT_TO_DATE,
             calculation_id=selected_calculation_id,
@@ -369,7 +370,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
     ).union(
         time_series_factory.create(
             spark,
-            time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+            default_data.create_time_series_data_spec(
                 from_date=DEFAULT_FROM_DATE,
                 to_date=DEFAULT_TO_DATE,
                 calculation_id=not_selected_calculation_id,
@@ -385,7 +386,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -432,7 +433,7 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         [
             time_series_factory.create(
                 spark,
-                time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+                default_data.create_time_series_data_spec(
                     from_date=DEFAULT_FROM_DATE,
                     to_date=DEFAULT_TO_DATE,
                     energy_supplier_id=energy_supplier_id,
@@ -449,7 +450,7 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=selected_energy_supplier_ids,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -472,7 +473,7 @@ def test_create_time_series__when_system_operator__returns_only_time_series_with
     # Arrange
     time_series_df = time_series_factory.create(
         spark,
-        time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+        default_data.create_time_series_data_spec(
             from_date=DEFAULT_FROM_DATE,
             to_date=DEFAULT_TO_DATE,
         ),
