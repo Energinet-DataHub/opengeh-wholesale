@@ -11,6 +11,7 @@ module "st_dh2timeseries_intermediary" {
   access_tier                = "Hot"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
+  prevent_deletion           = false
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
@@ -21,7 +22,7 @@ module "st_dh2timeseries_intermediary" {
 resource "azurerm_role_assignment" "ra_dh2timeseriesintermediary_contributor" {
   scope                = module.st_dh2timeseries_intermediary.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 #---- Containers

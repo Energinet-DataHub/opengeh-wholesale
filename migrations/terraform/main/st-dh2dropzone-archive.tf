@@ -9,6 +9,7 @@ module "st_dh2dropzone_archive" {
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
   access_tier                = "Cool"
+  prevent_deletion           = false
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {
@@ -21,7 +22,7 @@ module "st_dh2dropzone_archive" {
 resource "azurerm_role_assignment" "ra_dh2dropzonearch_contributor" {
   scope                = module.st_dh2dropzone_archive.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 #---- Containers

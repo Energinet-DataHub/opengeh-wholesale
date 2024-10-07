@@ -8,6 +8,7 @@ module "st_dh2timeseries_audit" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
+  prevent_deletion           = false
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {
@@ -65,19 +66,19 @@ resource "azurerm_storage_queue" "timeseries_audit" {
 resource "azurerm_role_assignment" "ra_dh2timeseriesaudit_contributor" {
   scope                = module.st_dh2timeseries_audit.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_dh2timeseries_queue_data_contributor" {
   scope                = module.st_dh2timeseries_audit.id
   role_definition_name = "Storage Queue Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_dh2timeseries_queue_data_reader" {
   scope                = module.st_dh2timeseries_audit.id
   role_definition_name = "Storage Queue Data Reader"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "st_dh2timeseries_audit_queue_data_sender" {

@@ -42,7 +42,7 @@ module "monitor_action_group_mig" {
       threshold   = 0
       query       = <<QUERY
         exceptions
-        | where cloud_RoleName in ("${module.func_timeseriesretriever.name}")
+        | where cloud_RoleName in ("${module.func_timeseriesretriever_v2.name}")
         | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException")
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | summarize exceptionCount = count() by type
@@ -59,7 +59,7 @@ module "monitor_action_group_mig" {
       threshold   = 0
       query       = <<QUERY
         traces
-        | where cloud_RoleName in ("${module.func_timeseriesretriever.name}")
+        | where cloud_RoleName in ("${module.func_timeseriesretriever_v2.name}")
         | where severityLevel == 3
         | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "DurableTask.Core.Exceptions.OrchestrationFailureException", "HealthCheckEnd")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])

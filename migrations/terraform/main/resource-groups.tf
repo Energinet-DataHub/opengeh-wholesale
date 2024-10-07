@@ -17,6 +17,12 @@ resource "azurerm_resource_group" "this" {
   tags = local.tags
 }
 
+resource "azurerm_role_assignment" "this" {
+  scope                = azurerm_resource_group.this.id
+  role_definition_name = "Contributor"
+  principal_id         = "e1834474-72e9-4edd-b49a-d8b959e2b6c3"
+}
+
 data "azurerm_resource_group" "shared" {
   name = "rg-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
 }

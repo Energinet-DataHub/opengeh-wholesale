@@ -1,5 +1,5 @@
 locals {
-  func_timeseriesretriever = {
+  func_timeseriesretriever_v2 = {
     app_settings = {
       WEBSITE_LOAD_CERTIFICATES                                              = local.datahub2_certificate_thumbprint
       "StorageAccount__Dh2StorageAccountUri"                                 = "https://${module.st_dh2data.name}.blob.core.windows.net"

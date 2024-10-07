@@ -10,6 +10,7 @@ module "st_dh2data" {
   account_replication_type   = "LRS"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
+  prevent_deletion           = false
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
@@ -35,31 +36,31 @@ resource "azurerm_eventgrid_system_topic" "st_dh2data" {
 resource "azurerm_role_assignment" "ra_dh2data_contributor" {
   scope                = module.st_dh2data.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_dh2data_queue_data_contributor" {
   scope                = module.st_dh2data.id
   role_definition_name = "Storage Queue Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_dh2data_queue_data_reader" {
   scope                = module.st_dh2data.id
   role_definition_name = "Storage Queue Data Reader"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_dh2data_queue_data_message_processor" {
   scope                = module.st_dh2data.id
   role_definition_name = "Storage Queue Data Message Processor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_dh2data_blob_data_owner" {
   scope                = module.st_dh2data.id
   role_definition_name = "Storage Blob Data Owner"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "st_dh2data_queue_data_sender" {

@@ -8,6 +8,7 @@ module "st_migrations" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
+  prevent_deletion           = false
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   role_assignments = [
@@ -112,19 +113,19 @@ resource "azurerm_storage_queue" "bronze" {
 resource "azurerm_role_assignment" "ra_migrations_contributor" {
   scope                = module.st_migrations.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_migrations_queue_data_contributor" {
   scope                = module.st_migrations.id
   role_definition_name = "Storage Queue Data Contributor"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "ra_migrations_queue_data_reader" {
   scope                = module.st_migrations.id
   role_definition_name = "Storage Queue Data Reader"
-  principal_id         = azuread_service_principal.spn_databricks.id
+  principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
 resource "azurerm_role_assignment" "st_migrations_queue_data_sender" {

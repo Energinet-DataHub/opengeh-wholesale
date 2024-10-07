@@ -1,5 +1,5 @@
 module "func_timeseriesprocessor" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_8.0.0"
 
   name                                   = "timeseriesprocessor"
   project_name                           = var.domain_name_short
