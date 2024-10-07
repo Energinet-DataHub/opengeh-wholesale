@@ -10,7 +10,9 @@ from pyspark.sql.functions import monotonically_increasing_id
 import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 
-import test_factories.metering_point_time_series_factory as factory
+import test_factories.metering_point_time_series_factory as time_series_factory
+import test_factories.charge_link_periods_factory as charge_links_factory
+
 
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.metering_point_resolution import (
@@ -34,10 +36,10 @@ def _create_time_series_with_increasing_quantity(
     to_date: datetime,
     resolution: DataProductMeteringPointResolution,
 ) -> DataFrame:
-    spec = factory.MeteringPointTimeSeriesTestDataSpec(
+    spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
         from_date=from_date, to_date=to_date, resolution=resolution
     )
-    df = factory.create(spark, spec)
+    df = time_series_factory.create(spark, spec)
     return df.withColumn(  # just set quantity equal to its row number
         DataProductColumnNames.quantity,
         monotonically_increasing_id().cast(DecimalType(18, 3)),
@@ -56,10 +58,10 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
 ) -> None:
     # Arrange
     expected_rows = DEFAULT_TO_DATE.day - DEFAULT_FROM_DATE.day
-    spec = factory.MeteringPointTimeSeriesTestDataSpec(
+    spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
         from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
     )
-    df = factory.create(spark, spec)
+    df = time_series_factory.create(spark, spec)
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
 
@@ -68,7 +70,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         resolution=resolution,
@@ -98,10 +100,10 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
     expected_columns = [
         f"ENERGYQUANTITY{i}" for i in range(1, energy_quantity_column_count + 1)
     ]
-    spec = factory.MeteringPointTimeSeriesTestDataSpec(
+    spec = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
         from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
     )
-    df = factory.create(spark, spec)
+    df = time_series_factory.create(spark, spec)
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
 
@@ -110,7 +112,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         resolution=resolution,
@@ -184,7 +186,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
         period_start=from_date,
         period_end=to_date,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         resolution=resolution,
@@ -223,19 +225,19 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         if resolution == DataProductMeteringPointResolution.HOUR
         else quarterly_metering_point_id
     )
-    spec_hour = factory.MeteringPointTimeSeriesTestDataSpec(
+    spec_hour = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
         from_date=DEFAULT_FROM_DATE,
         to_date=DEFAULT_TO_DATE,
         metering_point_id=hourly_metering_point_id,
         resolution=DataProductMeteringPointResolution.HOUR,
     )
-    spec_quarter = factory.MeteringPointTimeSeriesTestDataSpec(
+    spec_quarter = time_series_factory.MeteringPointTimeSeriesTestDataSpec(
         from_date=DEFAULT_FROM_DATE,
         to_date=DEFAULT_TO_DATE,
         metering_point_id=quarterly_metering_point_id,
         resolution=DataProductMeteringPointResolution.QUARTER,
     )
-    df = factory.create(spark, spec_hour).union(factory.create(spark, spec_quarter))
+    df = time_series_factory.create(spark, spec_hour).union(time_series_factory.create(spark, spec_quarter))
 
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
@@ -245,7 +247,7 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -267,9 +269,9 @@ def test_create_time_series__returns_only_days_within_selected_period(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    df = factory.create(
+    df = time_series_factory.create(
         spark,
-        factory.MeteringPointTimeSeriesTestDataSpec(
+        time_series_factory.MeteringPointTimeSeriesTestDataSpec(
             from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE
         ),
     )
@@ -281,7 +283,7 @@ def test_create_time_series__returns_only_days_within_selected_period(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -305,17 +307,17 @@ def test_create_time_series__returns_only_selected_grid_area(
     # Arrange
     selected_grid_area_code = "805"
     not_selected_grid_area_code = "806"
-    df = factory.create(
+    df = time_series_factory.create(
         spark,
-        factory.MeteringPointTimeSeriesTestDataSpec(
+        time_series_factory.MeteringPointTimeSeriesTestDataSpec(
             from_date=DEFAULT_FROM_DATE,
             to_date=DEFAULT_TO_DATE,
             grid_area_code=selected_grid_area_code,
         ),
     ).union(
-        factory.create(
+        time_series_factory.create(
             spark,
-            factory.MeteringPointTimeSeriesTestDataSpec(
+            time_series_factory.MeteringPointTimeSeriesTestDataSpec(
                 from_date=DEFAULT_FROM_DATE,
                 to_date=DEFAULT_TO_DATE,
                 grid_area_code=not_selected_grid_area_code,
@@ -330,7 +332,7 @@ def test_create_time_series__returns_only_selected_grid_area(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            selected_grid_area_code: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
+            selected_grid_area_code: uuid.UUID(time_series_factory.DEFAULT_CALCULATION_ID)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -356,18 +358,18 @@ def test_create_time_series__returns_only_selected_calculation_id(
     not_selected_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
     expected_metering_point_id = "123456789012345678901234567"
     other_metering_point_id = "765432109876543210987654321"
-    df = factory.create(
+    df = time_series_factory.create(
         spark,
-        factory.MeteringPointTimeSeriesTestDataSpec(
+        time_series_factory.MeteringPointTimeSeriesTestDataSpec(
             from_date=DEFAULT_FROM_DATE,
             to_date=DEFAULT_TO_DATE,
             calculation_id=selected_calculation_id,
             metering_point_id=expected_metering_point_id,
         ),
     ).union(
-        factory.create(
+        time_series_factory.create(
             spark,
-            factory.MeteringPointTimeSeriesTestDataSpec(
+            time_series_factory.MeteringPointTimeSeriesTestDataSpec(
                 from_date=DEFAULT_FROM_DATE,
                 to_date=DEFAULT_TO_DATE,
                 calculation_id=not_selected_calculation_id,
@@ -383,7 +385,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
-            factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
+            time_series_factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(selected_calculation_id)
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -428,9 +430,9 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
     df = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            factory.create(
+            time_series_factory.create(
                 spark,
-                factory.MeteringPointTimeSeriesTestDataSpec(
+                time_series_factory.MeteringPointTimeSeriesTestDataSpec(
                     from_date=DEFAULT_FROM_DATE,
                     to_date=DEFAULT_TO_DATE,
                     energy_supplier_id=energy_supplier_id,
@@ -464,40 +466,20 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
     ) == set(expected_energy_supplier_ids)
 
 
-@pytest.mark.parametrize(
-    "selected_energy_supplier_ids,expected_energy_supplier_ids",
-    [
-        (None, ENERGY_SUPPLIERS_ABC),
-        ([ENERGY_SUPPLIER_B], [ENERGY_SUPPLIER_B]),
-        (
-            [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B],
-            [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B],
-        ),
-        (ENERGY_SUPPLIERS_ABC, ENERGY_SUPPLIERS_ABC),
-    ],
-)
-def test_create_time_series__returns_data_for_expected_energy_suppliers(
+def test_create_time_series__when_system_operator__returns_only_time_series_with_system_operator_as_charge_owner(
     spark: SparkSession,
-    selected_energy_supplier_ids: list[str] | None,
-    expected_energy_supplier_ids: list[str],
 ) -> None:
     # Arrange
-    df = reduce(
-        lambda df1, df2: df1.union(df2),
-        [
-            factory.create(
-                spark,
-                factory.MeteringPointTimeSeriesTestDataSpec(
-                    from_date=DEFAULT_FROM_DATE,
-                    to_date=DEFAULT_TO_DATE,
-                    energy_supplier_id=energy_supplier_id,
-                ),
-            )
-            for energy_supplier_id in ENERGY_SUPPLIERS_ABC
-        ],
+    time_series_df = time_series_factory.create(
+        spark,
+        time_series_factory.MeteringPointTimeSeriesTestDataSpec(
+            from_date=DEFAULT_FROM_DATE,
+            to_date=DEFAULT_TO_DATE,
+        ),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = df
+    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_charge_link_periods.return_value = spark.createDataFrame(
 
     # Act
     actual_df = create_time_series(
@@ -506,16 +488,13 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         calculation_id_by_grid_area={
             factory.DEFAULT_GRID_AREA_CODE: uuid.UUID(factory.DEFAULT_CALCULATION_ID)
         },
-        energy_supplier_ids=selected_energy_supplier_ids,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
+        requesting_actor_id=SYSTEM_OPERATOR_ID,
         resolution=DataProductMeteringPointResolution.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
 
     # Assert
-    assert set(
-        row[TimeSeriesPointCsvColumnNames.energy_supplier_id]
-        for row in actual_df.collect()
-    ) == set(expected_energy_supplier_ids)
+
