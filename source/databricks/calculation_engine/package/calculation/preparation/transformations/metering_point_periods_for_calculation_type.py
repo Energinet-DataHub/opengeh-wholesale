@@ -30,7 +30,7 @@ def is_parent_metering_point(col: Column | str) -> bool:
 
 def is_child_metering_point(col: Column | str) -> bool:
     col = f.col(col) if isinstance(col, str) else col
-    return not is_parent_metering_point(col)
+    return ~is_parent_metering_point(col)  # type: ignore
 
 
 def get_metering_points_periods_for_wholesale_basis_data(
