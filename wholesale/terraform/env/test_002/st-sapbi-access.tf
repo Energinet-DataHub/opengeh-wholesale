@@ -14,3 +14,9 @@ resource "azurerm_role_assignment" "xrss_aadadmin_st_sapbi_blob_contributor" {
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = data.azuread_user.xrss_aadadmin.object_id
 }
+
+resource "azurerm_role_assignment" "xrss_aadadmin_st_sapbi_controlplane_reader" {
+  scope                = module.st_sapbi.id
+  role_definition_name = "Reader"
+  principal_id         = data.azuread_user.xrss_aadadmin.object_id
+}
