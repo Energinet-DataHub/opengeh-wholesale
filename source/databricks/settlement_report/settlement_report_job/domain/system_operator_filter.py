@@ -9,6 +9,10 @@ def filter_time_series_on_charge_owner(
     charge_link_periods: DataFrame,
     charge_price_information_periods: DataFrame,
 ) -> DataFrame:
+    """
+    Filters away all time series data that is not related to the system operator, and which is not a tax.
+    """
+
     charge_price_information_periods = charge_price_information_periods.where(
         (~F.col(DataProductColumnNames.is_tax))
         & (F.col(DataProductColumnNames.charge_owner_id) == system_operator_id)
