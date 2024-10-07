@@ -20,7 +20,10 @@ import configargparse
 from configargparse import argparse
 
 from settlement_report_job.infrastructure import logging_configuration
-from settlement_report_job.infrastructure.args_helper import valid_date
+from settlement_report_job.infrastructure.args_helper import (
+    valid_date,
+    valid_energy_supplier_ids,
+)
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.infrastructure.database_definitions import (
     get_settlement_reports_output_path,
@@ -53,7 +56,7 @@ def parse_job_arguments(
             calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
                 job_args.calculation_id_by_grid_area
             ),
-            energy_supplier_id=job_args.energy_supplier_id,
+            energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
             time_zone="Europe/Copenhagen",
@@ -75,18 +78,20 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     )
 
     # Run parameters
-    p.add("--report-id", type=str, required=True)
-    p.add("--period-start", type=valid_date, required=True)
-    p.add("--period-end", type=valid_date, required=True)
-    p.add("--calculation-type", type=CalculationType, required=True)
-    p.add("--requesting-actor-market-role", type=MarketRole, required=True)
-    p.add("--requesting-actor-id", type=str, required=True)
-    p.add("--calculation-id-by-grid-area", type=str, required=True)
-    p.add("--energy-supplier-id", type=str, required=False)
-    p.add(
+    p.add_argument("--report-id", type=str, required=True)
+    p.add_argument("--period-start", type=valid_date, required=True)
+    p.add_argument("--period-end", type=valid_date, required=True)
+    p.add_argument("--calculation-type", type=CalculationType, required=True)
+    p.add_argument("--requesting-actor-market-role", type=MarketRole, required=True)
+    p.add_argument("--requesting-actor-id", type=str, required=True)
+    p.add_argument("--calculation-id-by-grid-area", type=str, required=True)
+    p.add_argument(
+        "--energy-supplier-ids", type=valid_energy_supplier_ids, required=False
+    )
+    p.add_argument(
         "--split-report-by-grid-area", action="store_true"
     )  # true if present, false otherwise
-    p.add(
+    p.add_argument(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
     p.add(
