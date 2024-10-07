@@ -17,9 +17,6 @@ import pyspark.sql.functions as f
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
-from package.calculation.preparation.transformations.grid_loss_metering_points import (
-    get_grid_loss_metering_points,
-)
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     get_metering_points_periods_for_wholesale_basis_data,
     is_parent_metering_point,
@@ -34,6 +31,7 @@ from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .preparation.data_structures import PreparedMeteringPointTimeSeries
+from .preparation.transformations import get_grid_loss_metering_point_ids
 from .wholesale import wholesale_calculation
 from ..codelists import MeteringPointType
 from ..codelists.calculation_type import is_wholesale_calculation_type
@@ -73,18 +71,10 @@ class CalculationCore:
             )
         )
 
-        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-            args.calculation_grid_areas, all_metering_point_periods
-        )
-
         metering_point_periods_df_without_grid_loss = (
             prepared_data_reader.get_metering_point_periods_without_grid_loss(
                 all_metering_point_periods
             )
-        )
-
-        grid_loss_metering_points_df = get_grid_loss_metering_points(
-            grid_loss_responsible_df
         )
 
         metering_point_time_series = (
@@ -96,6 +86,12 @@ class CalculationCore:
         )
         metering_point_time_series.cache_internal()
 
+        grid_loss_metering_point_periods = (
+            prepared_data_reader.get_grid_loss_metering_point_periods(
+                args.calculation_grid_areas, all_metering_point_periods
+            )
+        )
+
         (
             calculation_output.energy_results_output,
             positive_grid_loss,
@@ -103,7 +99,7 @@ class CalculationCore:
         ) = energy_calculation.execute(
             args,
             metering_point_time_series,
-            grid_loss_responsible_df,
+            grid_loss_metering_point_periods,
         )
 
         # This extends the content of metering_point_time_series with calculated grid loss,
@@ -149,6 +145,10 @@ class CalculationCore:
             prepared_charges,
         )
 
+        grid_loss_metering_points_df = get_grid_loss_metering_point_ids(
+            grid_loss_metering_point_periods
+        )
+
         # Add basis data to results
         calculation_output.basis_data_output = basis_data_factory.create(
             args,
@@ -175,18 +175,16 @@ class CalculationCore:
             args.calculation_grid_areas,
         )
 
-        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-            args.calculation_grid_areas, all_metering_point_periods
+        grid_loss_metering_point_periods = (
+            prepared_data_reader.get_grid_loss_metering_point_periods(
+                args.calculation_grid_areas, all_metering_point_periods
+            )
         )
 
         metering_point_periods_df_without_grid_loss = (
             prepared_data_reader.get_metering_point_periods_without_grid_loss(
                 all_metering_point_periods
             )
-        )
-
-        grid_loss_metering_points_df = get_grid_loss_metering_points(
-            grid_loss_responsible_df
         )
 
         metering_point_time_series = (
@@ -205,7 +203,7 @@ class CalculationCore:
         ) = energy_calculation.execute(
             args,
             metering_point_time_series,
-            grid_loss_responsible_df,
+            grid_loss_metering_point_periods,
         )
 
         # This extends the content of metering_point_time_series with calculated grid loss,
@@ -228,13 +226,17 @@ class CalculationCore:
             )
         )
 
+        grid_loss_metering_point_ids = get_grid_loss_metering_point_ids(
+            grid_loss_metering_point_periods
+        )
+
         # Add basis data to results
         calculation_output.basis_data_output = basis_data_factory.create(
             args,
             metering_point_periods_for_basis_data,
             metering_point_time_series,
             input_charges_container=None,
-            grid_loss_metering_points_df=grid_loss_metering_points_df,
+            grid_loss_metering_points_ids=grid_loss_metering_point_ids,
         )
 
         return calculation_output
