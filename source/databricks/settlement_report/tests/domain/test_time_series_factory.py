@@ -333,6 +333,8 @@ def test_create_time_series__returns_only_selected_grid_area(
 
     # Act
     actual_df = create_time_series(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
             selected_grid_area_code: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
         },
