@@ -11,9 +11,8 @@ def filter_time_series_on_charge_owner(
 ) -> DataFrame:
 
     charge_price_information_periods = charge_price_information_periods.where(
-        F.col(DataProductColumnNames.is_tax) == False
-    ).where(
-        F.col(DataProductColumnNames.charge_owner_id) == system_operator_id,
+        (F.col(DataProductColumnNames.is_tax) is False)
+        & (F.col(DataProductColumnNames.charge_owner_id) == system_operator_id)
     )
 
     filtered_charge_link_periods = charge_link_periods.join(
