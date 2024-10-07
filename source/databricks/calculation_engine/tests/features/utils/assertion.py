@@ -32,53 +32,6 @@ def assert_output(
     actual_result = _get_actual_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
-    output_name_list = [
-        "exchange",
-        "exchange_per_neighbor",
-        "flex_consumption",
-        "flex_consumption_per_brp",
-        "flex_consumption_per_es",
-        "grid_loss",
-        "negative_grid_loss",
-        "non_profiled_consumption",
-        "non_profiled_consumption_per_brp",
-        "non_profiled_consumption_per_es",
-        "positive_grid_loss",
-        "production",
-        "production_per_brp",
-        "production_per_es",
-        "temporary_flex_consumption",
-        "temporary_production",
-        "total_consumption",
-        "daily_tariff_per_co_es",
-        "fee_per_co_es",
-        "hourly_tariff_per_co_es",
-        "monthly_fee_per_co_es",
-        "monthly_subscription_per_co_es",
-        "monthly_tariff_from_daily_per_co_es",
-        "monthly_tariff_from_hourly_per_co_es",
-        "subscription_per_co_es",
-        "total_monthly_amounts_per_co_es",
-        "total_monthly_amounts_per_es",
-    ]
-
-    if output_name in output_name_list:
-        import csv
-
-        # Convert the DataFrame to RDD
-        actual_result_rdd = actual_result.rdd.map(lambda x: [c for c in x])
-
-        # Define the CSV file path
-        csv_file_path = f"then/energy_results/{output_name}.csv"
-
-        header = [col for col in actual_result.columns]
-
-        # Write the RDD to a CSV file
-        with open(csv_file_path, "w") as f:
-            writer = csv.writer(f, delimiter=";")
-            writer.writerow(header)  # write the header
-            writer.writerows(actual_result_rdd.collect())
-
     # if TableColumnNames.calculation_result_id in expected_result.columns:
     #   columns_to_skip.append(TableColumnNames.calculation_result_id)
     # if "result_id" in expected_result.columns:
