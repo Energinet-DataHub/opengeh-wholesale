@@ -40,12 +40,6 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
 
     print("Writing energy results to Unity Catalog")
 
-    # Cache all dataframes from energy_results_output due to incident INC0409592 (testing the fix).
-    for field in fields(energy_results_output):
-        field_value = getattr(energy_results_output, field.name)
-        if field_value is not None:
-            field_value.cache()
-
     # Write exchange per neighbor grid area
     _write(
         "exchange_per_neighbor",
