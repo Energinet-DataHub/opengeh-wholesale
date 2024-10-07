@@ -5,7 +5,10 @@ resource "databricks_job" "calculator_job" {
 
   task {
     task_key    = "calculator_task_${uuid()}"
-    max_retries = 1
+    # Do not retry:
+    # Business logic in the job should prevent running twice with the same calculation_id,
+    # because we'd otherwise risk creating duplicate data.
+    max_retries = 0
 
     new_cluster {
       spark_version = local.spark_version
