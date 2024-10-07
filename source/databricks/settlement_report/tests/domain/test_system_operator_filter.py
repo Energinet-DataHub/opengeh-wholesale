@@ -321,7 +321,7 @@ def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_ope
         (False, True),
     ],
 )
-def test_filter_time_series_on_charge_owner__returns_only_time_series_where_metering_point_has_tax_true(
+def test_filter_time_series_on_charge_owner__returns_only_time_series_from_metering_points_without_tax_associated(
     spark: SparkSession, is_tax: bool, returns_rows: bool
 ) -> None:
     # Arrange
