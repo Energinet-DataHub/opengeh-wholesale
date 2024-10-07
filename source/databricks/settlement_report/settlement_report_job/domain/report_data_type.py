@@ -23,3 +23,4 @@ class ReportDataType(Enum):
 
     TimeSeriesHourly = 1
     TimeSeriesQuarterly = 2
+    EnergyResults = 3

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
+from typing import Any, List
 
 from pyspark.sql import DataFrame
 
@@ -35,13 +35,11 @@ from settlement_report_job.infrastructure import logging_configuration
 log = Logger(__name__)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.create_time_series"
-)
+@logging_configuration.use_span("settlement_report_job.time_series_writer.write")
 def write(
     dbutils: Any,
     args: SettlementReportArgs,
-    prepared_time_series: DataFrame,
+    df: DataFrame,
     report_data_type: ReportDataType,
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
@@ -49,32 +47,21 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    if args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        prepared_time_series = prepared_time_series.drop(
-            DataProductColumnNames.energy_supplier_id
-        )
+    df_ready_for_writing = apply_report_type_df_changes(df, args, report_data_type)
 
-    partition_columns = [DataProductColumnNames.grid_area_code]
+    partition_columns = get_partition_columns_for_report_type(report_data_type, args)
 
-    if _is_partitioning_by_energy_supplier_id_needed(args):
-        partition_columns.append(DataProductColumnNames.energy_supplier_id)
-
-    if args.prevent_large_text_files:
-        partition_columns.append(EphemeralColumns.chunk_index)
+    order_by_columns = get_order_by_columns_for_report_type(report_data_type)
 
     headers = write_files(
-        df=prepared_time_series,
+        df=df_ready_for_writing,
         path=spark_output_path,
         partition_columns=partition_columns,
-        order_by=[
-            DataProductColumnNames.grid_area_code,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.start_of_day,
-        ],
+        order_by=order_by_columns,
         rows_per_file=rows_per_file,
         locale=args.locale,
     )
+
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
         spark_output_path,
@@ -90,11 +77,61 @@ def write(
     return files
 
 
+def get_partition_columns_for_report_type(
+    report_type: ReportDataType, args: SettlementReportArgs
+) -> List[str]:
+    partition_columns = []
+    if report_type in [
+        ReportDataType.TimeSeriesHourly,
+        ReportDataType.TimeSeriesQuarterly,
+    ]:
+        partition_columns = [DataProductColumnNames.grid_area_code]
+        if _is_partitioning_by_energy_supplier_id_needed(args):
+            partition_columns.append(DataProductColumnNames.energy_supplier_id)
+
+        if args.prevent_large_text_files:
+            partition_columns.append(EphemeralColumns.chunk_index)
+
+    return partition_columns
+
+
+def get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[str]:
+    if report_type in [
+        ReportDataType.TimeSeriesHourly,
+        ReportDataType.TimeSeriesQuarterly,
+    ]:
+        return [
+            DataProductColumnNames.grid_area_code,
+            TimeSeriesPointCsvColumnNames.metering_point_type,
+            TimeSeriesPointCsvColumnNames.metering_point_id,
+            TimeSeriesPointCsvColumnNames.start_of_day,
+        ]
+
+    return []
+
+
+def apply_report_type_df_changes(
+    df: DataFrame,
+    args: SettlementReportArgs,
+    report_type: ReportDataType,
+) -> DataFrame:
+    if (
+        report_type
+        in [ReportDataType.TimeSeriesHourly, ReportDataType.TimeSeriesQuarterly]
+        and args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER
+    ):
+        df = df.drop(DataProductColumnNames.energy_supplier_id)
+
+    return df
+
+
 def _get_folder_name(report_data_type: ReportDataType) -> str:
     if report_data_type == ReportDataType.TimeSeriesHourly:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.EnergyResults:
+        return "energy_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
 

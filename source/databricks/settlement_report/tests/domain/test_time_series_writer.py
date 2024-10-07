@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.domain import time_series_writer
+from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
 import pyspark.sql.functions as F
@@ -67,10 +67,10 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
     df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -96,10 +96,10 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
     df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -135,10 +135,10 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
     df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
@@ -183,10 +183,10 @@ def test_write__files_have_correct_ordering_for_each_file(
     df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
@@ -233,10 +233,10 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
     df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -284,10 +284,10 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     ).orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=10,
     )
@@ -340,10 +340,10 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
