@@ -34,10 +34,6 @@ on:
         value: ${{ jobs.changes.outputs.ui_ci }}
       wholesale_ci:
         value: ${{ jobs.changes.outputs.wholesale_ci }}
-      render_c4model_deployment:
-        value: ${{ jobs.changes.outputs.render_c4model_deployment }}
-      render_c4model_ownership_views:
-        value: ${{ jobs.changes.outputs.render_c4model_ownership_views }}
       integration_test_ci:
         value: ${{ jobs.changes.outputs.integration_test_ci }}
       esett_deprecated_ci:
@@ -65,8 +61,6 @@ jobs:
       shared_resources_healthcheck_app_ci: ${{ steps.filter.outputs.shared_resources_healthcheck_app_ci }}
       ui_ci: ${{ steps.filter.outputs.ui_ci }}
       wholesale_ci: ${{ steps.filter.outputs.wholesale_ci }}
-      render_c4model_deployment: ${{ steps.filter.outputs.render_c4model_deployment }}
-      render_c4model_ownership_views: ${{ steps.filter.outputs.render_c4model_ownership_views }}
       integration_test_ci: ${{ steps.filter.outputs.integration_test_ci }}
       esett_deprecated_ci: ${{ steps.filter.outputs.esett_deprecated_ci }}
       sauron_ci: ${{ steps.filter.outputs.sauron_ci }}
@@ -155,12 +149,6 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
-            render_c4model_deployment:
-              - 'docs/diagrams/c4-model/deployment.dsl'
-              - 'docs/diagrams/c4-model/deployment.json'
-            render_c4model_ownership_views:
-              - 'docs/diagrams/c4-model/ownership-views.dsl'
-              - 'docs/diagrams/c4-model/ownership-views.json'
             integration_test_ci:
               - integration-test/**
               - .github/workflows/integration-test-*.yml

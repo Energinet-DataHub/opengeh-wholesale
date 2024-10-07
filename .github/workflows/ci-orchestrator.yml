@@ -175,31 +175,6 @@ jobs:
       infrastructure_path: ./sauron-healthchecks-api/terraform
     secrets: inherit
 
-  # If we have multiple Structurizr DSL files in the same repository, we can support rendering them by:
-  #  1. Adding a job per file
-  #  2. Ensure these jobs are executed in serial (by using 'needs')
-  #  3. Ensure that later jobs are executed even if some are skipped (by using 'if' and 'always()')
-  #
-  # If the jobs where instead executed in parallel and more than one needed to make an auto commit,
-  # the second commit would fail.
-  render_c4model_deployment:
-    needs: changes
-    if: ${{ needs.changes.outputs.render_c4model_deployment == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v14
-    with:
-      structurizr_workspace_filename: deployment
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
-
-  render_c4model_ownership_views:
-    needs: [changes, render_c4model_deployment]
-    if: ${{ always() && needs.changes.outputs.render_c4model_ownership_views == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v14
-    with:
-      structurizr_workspace_filename: ownership-views
-    secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
-
   #
   # Branch policy status check
   #
@@ -223,8 +198,6 @@ jobs:
         wholesale_ci,
         integration_test_ci,
         sauron_ci,
-        render_c4model_deployment,
-        render_c4model_ownership_views,
         esett_deprecated_ci,
         integration_test_terraform_ci,
         sauron_healthchecks_api_ci,
