@@ -32,7 +32,6 @@ def assert_output(
     actual_result = _get_actual_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
-    columns_to_skip = []
     output_name_list = [
         "exchange",
         "exchange_per_neighbor",
@@ -96,7 +95,6 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
-        columns_to_skip=columns_to_skip,
     )
 
 
