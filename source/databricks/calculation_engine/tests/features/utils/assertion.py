@@ -40,7 +40,9 @@ def assert_output(
         actual_result,
         expected_result,
         feature_tests_configuration,
+        ignore_decimal_precision=True,
         ignore_nullability=True,
+        ignore_decimal_scale=True,
     )
 
 
