@@ -18,9 +18,6 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput
-from package.databases.wholesale_results_internal.add_meta_data import (
-    add_calculation_result_id,
-)
 from testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
@@ -36,17 +33,6 @@ def assert_output(
     expected_result = _get_expected_for_output(expected_results, output_name)
 
     columns_to_skip = []
-
-    # Check if 'calculation_result_id' column exists
-    if "calculation_result_id" in expected_result.columns:
-        # Apply SHA-256 hash calculation
-        print("Adding calculation_result_id")
-
-        expected_result = add_calculation_result_id(
-            expected_result,
-            [col for col in expected_result.columns if col != "calculation_result_id"],
-            "calculation_result_id",
-        )
 
     # if TableColumnNames.calculation_result_id in expected_result.columns:
     #   columns_to_skip.append(TableColumnNames.calculation_result_id)

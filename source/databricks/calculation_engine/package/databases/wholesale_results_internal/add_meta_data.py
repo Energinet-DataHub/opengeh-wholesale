@@ -67,19 +67,22 @@ def _add_calculation_result_id(
 def add_calculation_result_id(
     df: DataFrame, column_group_for_calculation_result_id: list[str], result_id_col: str
 ) -> DataFrame:
-    # Concatenate the values of the partition columns
-    concat_columns = f.concat(*[col(c) for c in column_group_for_calculation_result_id])
-
+    # Concatenate the values of the all columns in dataframe
     # Generate a deterministic hash based on partition columns
+
+    df.show()
+
+    b = f.concat_ws("", *[col(c) for c in df.columns])
+    print(b)
+
     df = df.withColumn(
         result_id_col,
-        f.sha2(concat_columns, 256),
+        f.sha2(f.concat_ws("", *[col(c) for c in df.columns]), 256),
     )
 
-    window = Window.partitionBy(*column_group_for_calculation_result_id)
+    df.show()
+
+    window = Window.partitionBy(column_group_for_calculation_result_id)
 
     # Ensure the calculation result ID is consistent within each partition
-    return df.withColumn(
-        result_id_col,
-        f.first(col(result_id_col)).over(window),
-    )
+    return df.withColumn(result_id_col, f.first(col(result_id_col)).over(window))
