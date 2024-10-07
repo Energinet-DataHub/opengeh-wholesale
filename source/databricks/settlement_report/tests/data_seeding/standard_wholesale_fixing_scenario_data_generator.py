@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from tests.test_factories import metering_point_time_series_factory
+from test_factories import metering_point_time_series_factory
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
@@ -45,6 +46,7 @@ def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
                     energy_supplier_id=energy_supplier_id,
                     from_date=FROM_DATE,
                     to_date=TO_DATE,
+                    quantity=Decimal("1.005"),
                 )
                 next_df = metering_point_time_series_factory.create(spark, data_spec)
                 if df is None:
