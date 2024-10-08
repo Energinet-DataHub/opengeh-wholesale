@@ -19,8 +19,8 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    GridLossResponsible,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
 )
 from package.codelists import (
     MeteringPointType,
@@ -108,22 +108,24 @@ def calculate_grid_loss(
 
 
 def calculate_negative_grid_loss(
-    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+    grid_loss: EnergyResults,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> EnergyResults:
     return _calculate_negative_or_positive(
         grid_loss,
-        grid_loss_responsible,
+        grid_loss_metering_point_periods,
         MeteringPointType.PRODUCTION,
         f.when(f.col(Colname.quantity) < 0, -f.col(Colname.quantity)).otherwise(0),
     )
 
 
 def calculate_positive_grid_loss(
-    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+    grid_loss: EnergyResults,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> EnergyResults:
     return _calculate_negative_or_positive(
         grid_loss,
-        grid_loss_responsible,
+        grid_loss_metering_point_periods,
         MeteringPointType.CONSUMPTION,
         f.when(f.col(Colname.quantity) > 0, f.col(Colname.quantity)).otherwise(0),
     )
@@ -131,12 +133,12 @@ def calculate_positive_grid_loss(
 
 def _calculate_negative_or_positive(
     grid_loss: EnergyResults,
-    grid_loss_responsible: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
     metering_point_type: MeteringPointType,
     value_expr: Any,
 ) -> EnergyResults:
     gl = grid_loss.df
-    glr = grid_loss_responsible.df.where(
+    glr = grid_loss_metering_point_periods.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
     ).alias("glr")
 
@@ -219,7 +221,7 @@ def calculate_total_consumption(
 def apply_grid_loss_adjustment(
     results: EnergyResults,
     grid_loss_result: EnergyResults,
-    grid_loss_responsible: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
     metering_point_type: MeteringPointType,
 ) -> EnergyResults:
     grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
@@ -231,7 +233,7 @@ def apply_grid_loss_adjustment(
     grid_loss_result_df = grid_loss_result_df.drop(Colname.energy_supplier_id)
     grid_loss_result_df = grid_loss_result_df.drop(Colname.balance_responsible_party_id)
 
-    grid_loss_responsible_df = grid_loss_responsible.df.where(
+    grid_loss_metering_point_periods = grid_loss_metering_point_periods.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
     ).select(
         Colname.from_date,
@@ -243,7 +245,7 @@ def apply_grid_loss_adjustment(
     )
 
     joined_grid_loss_result_and_responsible = grid_loss_result_df.join(
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
         f.when(
             f.col(Colname.to_date).isNotNull(),
             f.col(Colname.observation_time) <= f.col(Colname.to_date),

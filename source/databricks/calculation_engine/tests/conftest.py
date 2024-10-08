@@ -43,7 +43,7 @@ from package.databases.migrations_wholesale.schemas import (
 from package.codelists import CalculationType
 from package.container import create_and_configure_container, Container
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
 )
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -425,7 +425,7 @@ def grid_loss_metering_points_input_data_written_to_delta(
     df = spark.read.csv(
         f"{test_files_folder_path}/GridLossResponsible.csv",
         header=True,
-        schema=grid_loss_metering_points_schema,
+        schema=grid_loss_metering_point_ids_schema,
     )
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
