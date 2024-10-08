@@ -132,3 +132,9 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
+
+variable "localhost_url" {
+  type        = string
+  description = "The URL of the localhost."
+  default     = null
+}

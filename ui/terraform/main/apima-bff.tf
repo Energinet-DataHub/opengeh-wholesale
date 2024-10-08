@@ -64,6 +64,7 @@ module "apima_bff" {
             <cors allow-credentials="true">
                 <allowed-origins>
                     <origin>https://${local.frontend_url}</origin>
+                    ${var.localhost_url != null ? "<origin>${var.localhost_url}</origin>" : ""}
                 </allowed-origins>
                 <allowed-methods preflight-result-max-age="300">
                     <method>*</method>
