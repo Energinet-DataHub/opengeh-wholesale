@@ -23,63 +23,61 @@ log = Logger(__name__)
 def execute_hourly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
-    """
-    Entry point for the logic of creating hourly time series.
-    """
-    if not args.include_basis_data:
-        return
-
-    repository = WholesaleRepository(spark, args.catalog_name)
-    hourly_time_series_df = create_time_series_for_wholesale(
-        period_start=args.period_start,
-        period_end=args.period_end,
-        calculation_id_by_grid_area=args.calculation_id_by_grid_area,
-        time_zone=args.time_zone,
-        energy_supplier_ids=args.energy_supplier_ids,
-        resolution=DataProductMeteringPointResolution.HOUR,
-        repository=repository,
-    )
-    hourly_time_series_files = time_series_writer.write(
+    _execute_time_series(
+        spark,
         dbutils,
         args,
-        hourly_time_series_df,
+        DataProductMeteringPointResolution.HOUR,
         ReportDataType.TimeSeriesHourly,
-    )
-
-    dbutils.jobs.taskValues.set(
-        key="hourly_time_series_files", value=hourly_time_series_files
+        "hourly_time_series_files",
     )
 
 
 def execute_quarterly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
+    _execute_time_series(
+        spark,
+        dbutils,
+        args,
+        DataProductMeteringPointResolution.QUARTER,
+        ReportDataType.TimeSeriesQuarterly,
+        "quarterly_time_series_files",
+    )
+
+
+def _execute_time_series(
+    spark: SparkSession,
+    dbutils: Any,
+    args: SettlementReportArgs,
+    resolution: DataProductMeteringPointResolution,
+    report_data_type: ReportDataType,
+    task_key: str,
+) -> None:
     """
-    Entry point for the logic of creating quarterly time series.
+    Entry point for the logic of creating time series.
     """
     if not args.include_basis_data:
         return
 
     repository = WholesaleRepository(spark, args.catalog_name)
-    quarterly_time_series_df = create_time_series_for_wholesale(
+    time_series_df = create_time_series_for_wholesale(
         period_start=args.period_start,
         period_end=args.period_end,
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,
-        energy_supplier_ids=args.energy_supplier_ids,
         time_zone=args.time_zone,
-        resolution=DataProductMeteringPointResolution.QUARTER,
+        energy_supplier_ids=args.energy_supplier_ids,
+        resolution=resolution,
         repository=repository,
     )
-    quarterly_time_series_files = time_series_writer.write(
+    time_series_files = time_series_writer.write(
         dbutils,
         args,
-        quarterly_time_series_df,
-        ReportDataType.TimeSeriesQuarterly,
+        time_series_df,
+        report_data_type,
     )
 
-    dbutils.jobs.taskValues.set(
-        key="quarterly_time_series_files", value=quarterly_time_series_files
-    )
+    dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
 
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
