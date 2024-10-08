@@ -76,18 +76,18 @@ def get_data_input_specifications(
         ),
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME}.csv": (
             energy_schema,
-            wholesale_results_internal_repository.read_energy_results,
+            wholesale_results_internal_repository.read_energy,
         ),
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME}.csv": (
             energy_per_es_schema,
-            wholesale_results_internal_repository.read_energy_per_es_results,
+            wholesale_results_internal_repository.read_energy_per_es,
         ),
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME}.csv": (
             energy_per_brp_schema,
-            wholesale_results_internal_repository.read_energy_per_brp_results,
+            wholesale_results_internal_repository.read_energy_per_brp,
         ),
         f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}.csv": (
             amounts_per_charge_schema,
-            wholesale_results_internal_repository.read_amount_per_charge_results,
+            wholesale_results_internal_repository.read_amount_per_charge,
         ),
     }

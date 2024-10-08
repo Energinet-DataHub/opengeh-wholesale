@@ -34,7 +34,7 @@ class WholesaleResultsInternalRepository:
         self._spark = spark
         self._catalog_name = catalog_name
 
-    def read_energy_results(self) -> DataFrame:
+    def read_energy(self) -> DataFrame:
         return read_table(
             self._spark,
             self._catalog_name,
@@ -43,7 +43,7 @@ class WholesaleResultsInternalRepository:
             energy_schema,
         )
 
-    def read_energy_per_es_results(self) -> DataFrame:
+    def read_energy_per_es(self) -> DataFrame:
         return read_table(
             self._spark,
             self._catalog_name,
@@ -52,7 +52,7 @@ class WholesaleResultsInternalRepository:
             energy_per_es_schema,
         )
 
-    def read_energy_per_brp_results(self) -> DataFrame:
+    def read_energy_per_brp(self) -> DataFrame:
         return read_table(
             self._spark,
             self._catalog_name,
@@ -61,7 +61,7 @@ class WholesaleResultsInternalRepository:
             energy_per_brp_schema,
         )
 
-    def read_amount_per_charge_results(self) -> DataFrame:
+    def read_amount_per_charge(self) -> DataFrame:
         return read_table(
             self._spark,
             self._catalog_name,
