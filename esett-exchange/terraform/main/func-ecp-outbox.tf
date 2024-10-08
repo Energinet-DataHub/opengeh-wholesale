@@ -1,5 +1,5 @@
 module "func_entrypoint_ecp_outbox" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
 
   name                                   = "ecp-outbox"
   project_name                           = var.domain_name_short

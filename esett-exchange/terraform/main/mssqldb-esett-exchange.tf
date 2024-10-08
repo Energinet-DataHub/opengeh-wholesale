@@ -1,10 +1,5 @@
-data "azurerm_mssql_server" "mssqlsrv" {
-  name                = data.azurerm_key_vault_secret.mssql_data_name.value
-  resource_group_name = data.azurerm_resource_group.shared.name
-}
-
 module "mssqldb_esett_exchange" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_8.0.0"
 
   name                 = "esett-exchange"
   enclave_type         = null
@@ -12,9 +7,16 @@ module "mssqldb_esett_exchange" {
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
-  server_id            = data.azurerm_mssql_server.mssqlsrv.id
-  sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
-  elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
+
+  server = {
+    name                = data.azurerm_key_vault_secret.mssql_data_name.value
+    resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
+  }
+
+  elastic_pool = {
+    name                = data.azurerm_key_vault_secret.mssql_data_elastic_pool_name.value
+    resource_group_name = data.azurerm_key_vault_secret.mssql_data_elastic_pool_resource_group_name.value
+  }
 
   monitor_action_group = length(module.monitor_action_group_esett) != 1 ? null : {
     id                  = module.monitor_action_group_esett[0].id
@@ -25,7 +27,7 @@ module "mssqldb_esett_exchange" {
 }
 
 module "kvs_sql_ms_esett_exchange_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "mssql-esett-exchange-database-name"
   value        = module.mssqldb_esett_exchange.name
@@ -33,7 +35,7 @@ module "kvs_sql_ms_esett_exchange_database_name" {
 }
 
 module "kvs_sql_ms_esett_exchange_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "mssql-esett-exchange-connection-string"
   value        = local.CONNECTION_STRING_DB_MIGRATIONS

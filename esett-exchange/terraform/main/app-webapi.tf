@@ -1,5 +1,5 @@
 module "app_webapi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_6.1.0"
 
   name                                   = "webapi"
   project_name                           = var.domain_name_short
@@ -36,7 +36,7 @@ module "app_webapi" {
 }
 
 module "kvs_app_esett_webapi_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "app-esett-webapi-base-url"
   value        = "https://${module.app_webapi.default_hostname}"
