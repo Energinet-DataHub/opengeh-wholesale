@@ -60,10 +60,10 @@ def create_time_series_for_wholesale(
     prepared_time_series = _create_time_series(
         period_start=period_start,
         period_end=period_end,
-        calculations_filter=lambda df: _filter_on_calculation_id_by_grid_area(
+        filter_on_calculations=lambda df: _filter_on_calculation_id_by_grid_area(
             df, calculation_id_by_grid_area
         ),
-        actor_filter=lambda df: _actor_filter_wholesale(
+        filter_on_actor=lambda df: _actor_filter_wholesale(
             time_series=df,
             energy_supplier_ids=energy_supplier_ids,
             requesting_actor_market_role=requesting_actor_market_role,
@@ -81,8 +81,8 @@ def create_time_series_for_wholesale(
 def _create_time_series(
     period_start: datetime,
     period_end: datetime,
-    calculations_filter: Callable[[DataFrame], DataFrame],
-    actor_filter: Callable[[DataFrame], DataFrame],
+    filter_on_calculations: Callable[[DataFrame], DataFrame],
+    filter_on_actor: Callable[[DataFrame], DataFrame],
     resolution: DataProductMeteringPointResolution,
     time_zone: str,
     repository: WholesaleRepository,
@@ -95,8 +95,8 @@ def _create_time_series(
         repository,
     )
 
-    time_series_points = calculations_filter(time_series_points)
-    time_series_points = actor_filter(time_series_points)
+    time_series_points = filter_on_calculations(time_series_points)
+    time_series_points = filter_on_actor(time_series_points)
 
     prepared_time_series = _generate_time_series(
         filtered_time_series_points=time_series_points,
