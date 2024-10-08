@@ -27,6 +27,7 @@ from data_seeding import standard_wholesale_fixing_scenario_data_generator
 from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
+    write_charge_price_information_periods_to_delta_table,
 )
 
 
@@ -85,7 +86,6 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
             spark
         )
     )
-
     write_charge_link_periods_to_delta_table(
         spark, charge_link_periods_df, input_database_location
     )
@@ -93,9 +93,8 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     charge_price_information_periods_df = standard_wholesale_fixing_scenario_data_generator.create_charge_price_information_periods(
         spark
     )
-
-    write_charge_link_periods_to_delta_table(
-        spark, charge_link_periods_df, input_database_location
+    write_charge_price_information_periods_to_delta_table(
+        spark, charge_price_information_periods_df, input_database_location
     )
 
 
