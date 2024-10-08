@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 
 
-class CsvToDataframeParser:
+class CsvToDataframeWrapperParser:
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
@@ -38,7 +38,6 @@ class CsvToDataframeParser:
 
         df = spark_session.read.csv(file_path, header=True, sep=";")
         name, extension = os.path.splitext(file_name)
-
         return DataframeWrapper(key=file_name, name=name, df=df)
 
     def parse_csv_files_concurrently(self, path: str) -> list[DataframeWrapper]:

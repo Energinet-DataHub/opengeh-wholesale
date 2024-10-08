@@ -17,8 +17,8 @@ from datetime import datetime
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    GridLossResponsible,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
 )
 from package.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,
@@ -62,11 +62,11 @@ class PreparedDataReader:
             grid_areas,
         )
 
-    @logging_configuration.use_span("get_grid_loss_responsible")
-    def get_grid_loss_responsible(
+    @logging_configuration.use_span("get_grid_loss_metering_point_periods")
+    def get_grid_loss_metering_point_periods(
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
-    ) -> GridLossResponsible:
-        return T.get_grid_loss_responsible(
+    ) -> GridLossMeteringPointPeriods:
+        return T.get_grid_loss_metering_point_periods(
             grid_areas, metering_point_periods_df, self._wholesale_internal_repository
         )
 
@@ -211,7 +211,7 @@ class PreparedDataReader:
     ) -> DataFrame:
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
-            self._wholesale_internal_repository.read_grid_loss_metering_points(),
+            self._wholesale_internal_repository.read_grid_loss_metering_point_ids(),
             Colname.metering_point_id,
             "left_anti",
         )

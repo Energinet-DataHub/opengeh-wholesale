@@ -17,22 +17,22 @@ import pytest
 from pyspark.sql import SparkSession
 from unittest.mock import patch
 
-from package.databases import migrations_wholesale
-from package.calculation.preparation.transformations.grid_loss_responsible import (
-    get_grid_loss_responsible,
+from package.databases import wholesale_internal
+from package.calculation.preparation.transformations.grid_loss_metering_point_periods import (
+    get_grid_loss_metering_point_periods,
 )
 import metering_point_periods_factory as factory
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.databases.wholesale_internal import WholesaleInternalRepository
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
 )
 
 
-@patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
-def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
-    repository_mock: MigrationsWholesaleRepository, spark: SparkSession
+@patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
+def test__get_grid_loss_metering_point_periods__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
+    repository_mock: WholesaleInternalRepository, spark: SparkSession
 ) -> None:
     # Arrange
     grid_areas = ["804"]
@@ -56,39 +56,39 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_loss_metering_points = spark.createDataFrame(
+    grid_loss_metering_point_ids = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_loss_metering_points_schema,
+        grid_loss_metering_point_ids_schema,
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_points.return_value = (
-        grid_loss_metering_points
+    repository_mock.read_grid_loss_metering_point_ids.return_value = (
+        grid_loss_metering_point_ids
     )
-    grid_loss_responsible = get_grid_loss_responsible(
+    grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
         metering_point_period,
         repository_mock,
     )
 
     # Assert
-    assert grid_loss_responsible.df.count() == 2
+    assert grid_loss_metering_point_periods.df.count() == 2
     assert (
-        grid_loss_responsible.df.collect()[0][Colname.metering_point_id]
+        grid_loss_metering_point_periods.df.collect()[0][Colname.metering_point_id]
         == metering_point_id_1
     )
     assert (
-        grid_loss_responsible.df.collect()[1][Colname.metering_point_id]
+        grid_loss_metering_point_periods.df.collect()[1][Colname.metering_point_id]
         == metering_point_id_2
     )
 
 
-@patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
-def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
-    repository_mock: MigrationsWholesaleRepository,
+@patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
+def test__get_grid_loss_metering_point_periods__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
+    repository_mock: WholesaleInternalRepository,
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -121,30 +121,30 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_loss_metering_points_schema,
+        grid_loss_metering_point_ids_schema,
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_points.return_value = (
+    repository_mock.read_grid_loss_metering_point_ids.return_value = (
         grid_loss_metering_points
     )
-    grid_loss_responsible = get_grid_loss_responsible(
+    grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
         metering_point_period,
         repository_mock,
     )
 
     # Assert
-    assert grid_loss_responsible.df.count() == 3
+    assert grid_loss_metering_point_periods.df.count() == 3
 
 
 @pytest.mark.acceptance_test
-def test__get_grid_loss_responsible__when_no_grid_loss_responsible_in_grid_area__raise_exception() -> (
+def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point_id_in_grid_area__raise_exception() -> (
     None
 ):
     # Arrange
-    grid_areas = ["grid_area_without_grid_loss_responsible"]
+    grid_areas = ["grid_area_without_grid_loss_metering_point"]
 
     # Act and Assert
     with pytest.raises(Exception):
-        get_grid_loss_responsible(grid_areas)
+        get_grid_loss_metering_point_periods(grid_areas)
