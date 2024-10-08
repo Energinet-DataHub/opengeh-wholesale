@@ -423,7 +423,7 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 ) -> None:
     # grid loss
     df = spark.read.csv(
-        f"{test_files_folder_path}/GridLossResponsible.csv",
+        f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
         header=True,
         schema=grid_loss_metering_point_ids_schema,
     )
