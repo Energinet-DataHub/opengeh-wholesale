@@ -69,6 +69,8 @@ def _execute_time_series(
         energy_supplier_ids=args.energy_supplier_ids,
         resolution=resolution,
         repository=repository,
+        requesting_actor_market_role=args.requesting_actor_market_role,
+        requesting_actor_id=args.requesting_actor_id,
     )
     time_series_files = time_series_writer.write(
         dbutils,
