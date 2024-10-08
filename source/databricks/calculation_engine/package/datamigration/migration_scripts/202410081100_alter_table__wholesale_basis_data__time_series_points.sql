@@ -5,4 +5,4 @@ SET TBLPROPERTIES (
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
     delta.constraints.resolution_chk = "resolution IN ( 'PT1H' , 'PT15M' )",
     delta.constraints.energy_supplier_id_chk = "energy_supplier_id IS NULL OR LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
-);
+)
