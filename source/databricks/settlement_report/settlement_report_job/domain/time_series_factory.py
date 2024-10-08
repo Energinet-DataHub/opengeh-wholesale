@@ -76,8 +76,6 @@ def _create_time_series(
     calculations_filter: Callable[..., Column],
     actor_filter: Callable[..., Column],
     resolution: DataProductMeteringPointResolution,
-    requesting_actor_market_role: MarketRole,
-    requesting_actor_id: str,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -117,15 +115,6 @@ def _read_from_view(
         & (F.col(DataProductColumnNames.resolution) == resolution.value)
     )
 
-    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
-        df = filter_time_series_on_charge_owner(
-            time_series=df,
-            system_operator_id=requesting_actor_id,
-            charge_link_periods=repository.read_charge_link_periods(),
-            charge_price_information_periods=repository.read_charge_price_information_periods(),
-        )
-
-    df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
 def _filter_on_calculation_id_by_grid_area(
     calculation_id_by_grid_area: dict[str, UUID],
@@ -147,6 +136,13 @@ def _actor_filter_wholesale(energy_supplier_ids: list[str] | None) -> Column:
             energy_supplier_ids
         )
 
+    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
+        df = filter_time_series_on_charge_owner(
+            time_series=df,
+            system_operator_id=requesting_actor_id,
+            charge_link_periods=repository.read_charge_link_periods(),
+            charge_price_information_periods=repository.read_charge_price_information_periods(),
+        )
     return F.lit(True)
 
 
