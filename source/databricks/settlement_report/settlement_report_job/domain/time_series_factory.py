@@ -16,6 +16,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
@@ -23,6 +24,9 @@ from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.domain.system_operator_filter import (
+    filter_time_series_on_charge_owner,
+)
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -46,6 +50,8 @@ def create_time_series(
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -54,9 +60,11 @@ def create_time_series(
         period_start,
         period_end,
         calculation_id_by_grid_area,
+        requesting_actor_market_role,
+        requesting_actor_id,
         energy_supplier_ids,
-        repository,
         resolution,
+        repository,
     )
     prepared_time_series = _generate_time_series(
         filtered_time_series_points=time_series_points,
@@ -75,14 +83,24 @@ def _read_and_filter_from_view(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     energy_supplier_ids: list[str] | None,
-    repository: WholesaleRepository,
     resolution: DataProductMeteringPointResolution,
+    repository: WholesaleRepository,
 ) -> DataFrame:
     df = repository.read_metering_point_time_series().where(
         (F.col(DataProductColumnNames.observation_time) >= period_start)
         & (F.col(DataProductColumnNames.observation_time) < period_end)
     )
+
+    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
+        df = filter_time_series_on_charge_owner(
+            time_series=df,
+            system_operator_id=requesting_actor_id,
+            charge_link_periods=repository.read_charge_link_periods(),
+            charge_price_information_periods=repository.read_charge_price_information_periods(),
+        )
 
     df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
