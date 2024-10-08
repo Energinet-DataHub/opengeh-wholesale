@@ -50,8 +50,8 @@ module "monitor_action_group_mig" {
         QUERY
     },
     {
-      name        = "timeseriessynchronization-error-trace-severity"
-      description = "Triggers if there has been any traces with error severity in the past hour in the timeseriessynchronization function"
+      name        = "timeseriesretriever-error-trace-severity"
+      description = "Triggers if there has been any traces with error severity in the past hour in the timeseriesretriever function"
       severity    = 1
       frequency   = 60
       time_window = 60
@@ -79,6 +79,8 @@ module "monitor_action_group_mig" {
         | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
         | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException")
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
+        | where innermostMessage !contains "The operation was canceled."
+        | where tostring(customDimensions["EventName"]) !in ("ProcessWorkItemFailed")
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
@@ -95,7 +97,7 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
         | where severityLevel == 3
-        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "DurableTask.Core.Exceptions.OrchestrationFailureException", "HealthCheckEnd")
+        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "DurableTask.Core.Exceptions.OrchestrationFailureException", "HealthCheckEnd", "PartitionManagerError")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
