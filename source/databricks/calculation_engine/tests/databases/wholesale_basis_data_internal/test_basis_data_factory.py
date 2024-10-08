@@ -70,7 +70,7 @@ time_series_points_schema_temp = StructType(
         ),
         ("charge_price_points", charge_price_points_schema),
         (
-            "grid_loss_metering_point_ids",
+            "grid_loss_metering_points",
             grid_loss_metering_point_ids_schema,
         ),
     ],
