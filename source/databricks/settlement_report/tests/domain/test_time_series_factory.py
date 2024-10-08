@@ -505,7 +505,7 @@ def test_create_time_series__when_system_operator__returns_only_time_series_with
     mock_repository.read_charge_link_periods.return_value = charge_link_periods_df
 
     # Act
-    actual = create_time_series(
+    actual = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
