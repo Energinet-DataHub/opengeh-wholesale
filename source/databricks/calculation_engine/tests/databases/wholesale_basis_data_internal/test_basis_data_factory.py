@@ -28,7 +28,7 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
     charge_price_points_schema,
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
     hive_metering_point_period_schema,
     time_series_points_schema,
 )
@@ -71,7 +71,7 @@ time_series_points_schema_temp = StructType(
         ("charge_price_points", charge_price_points_schema),
         (
             "grid_loss_metering_points",
-            grid_loss_metering_points_schema,
+            grid_loss_metering_point_ids_schema,
         ),
     ],
 )

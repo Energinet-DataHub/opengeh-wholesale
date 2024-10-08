@@ -145,7 +145,7 @@ class CalculationCore:
             prepared_charges,
         )
 
-        grid_loss_metering_points_df = get_grid_loss_metering_point_ids(
+        grid_loss_metering_point_ids = get_grid_loss_metering_point_ids(
             grid_loss_metering_point_periods
         )
 
@@ -155,7 +155,7 @@ class CalculationCore:
             metering_point_periods_for_basis_data,
             metering_point_time_series,
             input_charges,
-            grid_loss_metering_points_df,
+            grid_loss_metering_point_ids,
         )
 
         return calculation_output
@@ -236,7 +236,7 @@ class CalculationCore:
             metering_point_periods_for_basis_data,
             metering_point_time_series,
             input_charges_container=None,
-            grid_loss_metering_points_ids=grid_loss_metering_point_ids,
+            grid_loss_metering_point_ids=grid_loss_metering_point_ids,
         )
 
         return calculation_output
