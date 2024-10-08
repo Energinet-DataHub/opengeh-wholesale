@@ -29,7 +29,7 @@ from package.calculation.preparation.data_structures.charge_price_information im
     ChargePriceInformation,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
-from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
     GridLossMeteringPointIds,
 )
 from package.codelists import ChargeType
@@ -38,7 +38,7 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
 )
 from tests.calculation.preparation.transformations import metering_point_periods_factory
 from tests.calculation.preparation.transformations import (
@@ -150,7 +150,7 @@ def create_charge_link_row(
     return Row(**row)
 
 
-def create_grid_loss_metering_points_row(
+def create_grid_loss_metering_point_id_row(
     calculation_id: str = DefaultValues.CALCULATION_ID,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
 ) -> Row:
@@ -224,15 +224,15 @@ def create_prepared_metering_point_time_series(
     return metering_point_time_series_df
 
 
-def create_grid_loss_metering_points(
+def create_grid_loss_metering_point_ids(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> GridLossMeteringPointIds:
     if data is None:
-        data = [create_grid_loss_metering_points_row()]
+        data = [create_grid_loss_metering_point_id_row()]
     elif isinstance(data, Row):
         data = [data]
     return GridLossMeteringPointIds(
-        spark.createDataFrame(data, grid_loss_metering_points_schema)
+        spark.createDataFrame(data, grid_loss_metering_point_ids_schema)
     )
 
 
@@ -240,7 +240,7 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
     calculation_args = create_calculation_args()
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
-    grid_loss_metering_points = create_grid_loss_metering_points(spark)
+    grid_loss_metering_point_ids = create_grid_loss_metering_point_ids(spark)
     charge_links = create_charge_links(spark)
     charge_prices = create_charge_prices(spark)
     charge_price_information = create_charge_price_information(spark)
@@ -256,5 +256,5 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
-        grid_loss_metering_points_ids=grid_loss_metering_points,
+        grid_loss_metering_point_ids=grid_loss_metering_point_ids,
     )

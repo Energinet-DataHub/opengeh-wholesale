@@ -57,11 +57,11 @@ def _write_basis_data(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 
-    with logging_configuration.start_span("grid_loss_metering_points"):
-        basis_data_output.grid_loss_metering_points.write.format("delta").mode(
+    with logging_configuration.start_span("grid_loss_metering_point_ids"):
+        basis_data_output.grid_loss_metering_point_ids.write.format("delta").mode(
             "append"
         ).option("mergeSchema", "false").insertInto(
-            f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+            f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
         )
 
     if basis_data_output.charge_price_information_periods:

@@ -56,7 +56,7 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_loss_metering_points = spark.createDataFrame(
+    grid_loss_metering_point_ids = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
@@ -65,8 +65,8 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_points.return_value = (
-        grid_loss_metering_points
+    repository_mock.read_grid_loss_metering_point_ids.return_value = (
+        grid_loss_metering_point_ids
     )
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
