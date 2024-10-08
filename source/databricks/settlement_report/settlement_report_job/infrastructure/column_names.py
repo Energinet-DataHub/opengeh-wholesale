@@ -18,6 +18,7 @@ class DataProductColumnNames:
     settlement_method = "settlement_method"
     time = "time"
     to_date = "to_date"
+    result_id = "result_id"
 
 
 class EnergyResultsCsvColumnNames:
