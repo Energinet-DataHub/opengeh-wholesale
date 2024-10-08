@@ -17,22 +17,22 @@ import pytest
 from pyspark.sql import SparkSession
 from unittest.mock import patch
 
-from package.databases import migrations_wholesale
+from package.databases import wholesale_internal
 from package.calculation.preparation.transformations.grid_loss_metering_point_periods import (
     get_grid_loss_metering_point_periods,
 )
 import metering_point_periods_factory as factory
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.databases.wholesale_internal import WholesaleInternalRepository
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
 
 
-@patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+@patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
 def test__get_grid_loss_metering_point_periods__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
-    repository_mock: MigrationsWholesaleRepository, spark: SparkSession
+    repository_mock: WholesaleInternalRepository, spark: SparkSession
 ) -> None:
     # Arrange
     grid_areas = ["804"]
@@ -56,7 +56,7 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_loss_metering_points = spark.createDataFrame(
+    grid_loss_metering_point_ids = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
@@ -65,8 +65,8 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_points.return_value = (
-        grid_loss_metering_points
+    repository_mock.read_grid_loss_metering_point_ids.return_value = (
+        grid_loss_metering_point_ids
     )
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
@@ -86,9 +86,9 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     )
 
 
-@patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
+@patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
 def test__get_grid_loss_metering_point_periods__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
-    repository_mock: MigrationsWholesaleRepository,
+    repository_mock: WholesaleInternalRepository,
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -125,7 +125,7 @@ def test__get_grid_loss_metering_point_periods__given_metering_point_period_with
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_points.return_value = (
+    repository_mock.read_grid_loss_metering_point_ids.return_value = (
         grid_loss_metering_points
     )
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(

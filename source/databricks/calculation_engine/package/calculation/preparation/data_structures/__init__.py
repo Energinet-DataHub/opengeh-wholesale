@@ -22,4 +22,4 @@ from .prepared_subscriptions import PreparedSubscriptions
 from .prepared_tariffs import PreparedTariffs
 from .prepared_charges import PreparedChargesContainer
 from .input_charges import InputChargesContainer
-from .grid_loss_metering_points import GridLossMeteringPointIds
+from .grid_loss_metering_point_ids import GridLossMeteringPointIds
