@@ -15,17 +15,17 @@ from typing import Tuple
 
 from pyspark.sql import SparkSession
 
-from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
+from features.utils.csv_to_dataframe_parser import CsvToDataframeWrapperParser
 from features.utils.dataframes.typecasting import cast_column_types
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 
 
 class ViewScenarioExecutor:
-    parser: CsvToDataframeParser
+    parser: CsvToDataframeWrapperParser
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
-        self.parser = CsvToDataframeParser(spark)
+        self.parser = CsvToDataframeWrapperParser(spark)
 
     def execute(
         self, scenario_folder_path: str
