@@ -13,6 +13,11 @@
 # limitations under the License.
 
 
+class WholesaleInternalDatabase:
+    DATABASE_NAME = "wholesale_internal"
+    SUCCEEDED_EXTERNAL_CALCULATIONS_VIEW_NAME = "succeeded_external_calculations_v1"
+
+
 class WholesaleBasisDataDatabase:
     DATABASE_NAME = "wholesale_basis_data"
     TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
@@ -20,7 +25,7 @@ class WholesaleBasisDataDatabase:
     CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
 
 
-class WholesaleWholesaleResultsDatabase:
+class WholesaleResultsDatabase:
     DATABASE_NAME = "wholesale_results"
     ENERGY_V1_VIEW_NAME = "energy_v1"
 

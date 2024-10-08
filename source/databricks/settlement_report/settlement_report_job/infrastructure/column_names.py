@@ -2,6 +2,8 @@ class DataProductColumnNames:
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
     calculation_version = "calculation_version"
+    calculation_period_start = "calculation_period_start"
+    calculation_period_end = "calculation_period_end"
     charge_key = "charge_key"
     charge_code = "charge_code"
     charge_owner_id = "charge_owner_id"

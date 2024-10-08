@@ -44,6 +44,65 @@ log = Logger(__name__)
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
 )
+def create_time_series_for_balance_fixing(
+    period_start: datetime,
+    period_end: datetime,
+    grid_area_codes: list[str],
+    energy_supplier_ids: list[str] | None,
+    resolution: DataProductMeteringPointResolution,
+    time_zone: str,
+    repository: WholesaleRepository,
+) -> DataFrame:
+    log.info("Creating time series points")
+    time_series_points = _read_from_view(
+        period_start,
+        period_end,
+        resolution,
+        repository,
+    )
+
+    calculations = repository.read_calculations()
+    calculations = calculations.withColumn(
+        "calculation_day",
+        F.explode(
+            F.sequence(
+                F.col(DataProductColumnNames.calculation_period_start),
+                F.col(DataProductColumnNames.calculation_period_end),
+                F.expr("INTERVAL 1 DAY")
+            )
+        )
+    ).where(F.col("calculation_day") < F.col(DataProductColumnNames.calculation_period_end))
+
+    window_spec = Window.partitionBy(
+        DataProductColumnNames.calculation_type,DataProductColumnNames.grid_area_code, "calculation_day"
+    ).orderBy(F.desc(DataProductColumnNames.calculation_version))
+
+    calculations = calculations.withColumn(
+        "rank", F.rank().over(window_spec)
+    )
+    calculations = calculations.where(F.col("rank") == 1).drop("rank")
+
+
+    # time_series_points = time_series_points.where(
+    #     filter_on_calculation_id_by_grid_area_and_day(calculation_id_by_grid_area)
+    # )
+
+    if energy_supplier_ids:
+        time_series_points = time_series_points.where(
+            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
+        )
+
+    prepared_time_series = _generate_time_series(
+        filtered_time_series_points=time_series_points,
+        resolution=resolution,
+        time_zone=time_zone,
+    )
+    return prepared_time_series
+
+
+@logging_configuration.use_span(
+    "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
+)
 def create_time_series_for_wholesale(
     period_start: datetime,
     period_end: datetime,
@@ -116,6 +175,15 @@ def _filter_on_calculation_id_by_grid_area(
         F.col(DataProductColumnNames.grid_area_code),
         F.col(DataProductColumnNames.calculation_id),
     ).isin(calculation_id_by_grid_area_structs)
+
+
+
+def filter_on_calculation_id_by_grid_area_and_day(
+    grid_area_codes: list[str],
+
+) -> None:
+
+
 
 
 @logging_configuration.use_span(
