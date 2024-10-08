@@ -1,4 +1,4 @@
-from pyspark.sql import DataFrame, functions as F, Column
+from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 
