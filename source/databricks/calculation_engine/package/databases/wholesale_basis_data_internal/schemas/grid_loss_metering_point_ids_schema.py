@@ -12,18 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.constants import Colname
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    GridLossResponsible,
-)
-from package.calculation.preparation.data_structures.grid_loss_metering_points import (
-    GridLossMeteringPoints,
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    StructType,
 )
 
+from package.databases.table_column_names import TableColumnNames
 
-def get_grid_loss_metering_points(
-    grid_loss_responsible_df: GridLossResponsible,
-) -> GridLossMeteringPoints:
-    return GridLossMeteringPoints(
-        grid_loss_responsible_df.df.select(Colname.metering_point_id).distinct()
-    )
+grid_loss_metering_point_ids_schema = StructType(
+    [
+        StructField(TableColumnNames.calculation_id, StringType(), False),
+        StructField(TableColumnNames.metering_point_id, StringType(), False),
+    ]
+)

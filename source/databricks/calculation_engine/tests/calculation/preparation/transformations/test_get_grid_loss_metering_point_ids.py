@@ -15,18 +15,18 @@ from datetime import datetime
 import pytest
 from pyspark.sql import SparkSession, DataFrame, Row
 import metering_point_periods_factory as factory
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    GridLossResponsible,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
 )
-from package.calculation.preparation.transformations.grid_loss_metering_points import (
-    get_grid_loss_metering_points,
+from package.calculation.preparation.transformations.grid_loss_metering_point_ids import (
+    get_grid_loss_metering_point_ids,
 )
 from package.codelists import MeteringPointType
 
 from typing import List
 
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
 )
 
 
@@ -38,7 +38,7 @@ class DefaultValues:
     DEFAULT_ENERGY_SUPPLIER_ID = "test"
 
 
-def _create_grid_loss_responsible_data(data: List[str]) -> List[Row]:
+def _create_grid_loss_metering_point_periods(data: List[str]) -> List[Row]:
     resulting_data_frame = []
     for entry in data:
         resulting_data_frame.append(
@@ -51,18 +51,18 @@ def _create_grid_loss_responsible_data(data: List[str]) -> List[Row]:
     return resulting_data_frame
 
 
-def _get_grid_loss_responsible_dataframe(
+def _get_grid_loss_metering_point_periods(
     spark: SparkSession, data: List[str]
-) -> GridLossResponsible:
-    grid_loss_responsible_list = _create_grid_loss_responsible_data(data)
+) -> GridLossMeteringPointPeriods:
+    grid_loss_metering_point_periods = _create_grid_loss_metering_point_periods(data)
 
-    metering_point_period = factory.create(spark, data=grid_loss_responsible_list)
+    metering_point_period = factory.create(spark, data=grid_loss_metering_point_periods)
 
-    return GridLossResponsible(metering_point_period)
+    return GridLossMeteringPointPeriods(metering_point_period)
 
 
 def _get_metering_point_dataframe(spark: SparkSession, data: List[str]) -> DataFrame:
-    return spark.createDataFrame(data, grid_loss_metering_points_schema)
+    return spark.createDataFrame(data, grid_loss_metering_point_ids_schema)
 
 
 @pytest.mark.parametrize(
@@ -94,18 +94,18 @@ def _get_metering_point_dataframe(spark: SparkSession, data: List[str]) -> DataF
         ([], 0),
     ],
 )
-def test__get_grid_loss_metering_points__count_is_correct(
+def test__get_grid_loss_metering_point_ids__count_is_correct(
     spark: SparkSession,
-    grid_loss_metering_points: List[str],
+    grid_loss_metering_points: list[str],
     expected_count: int,
-):
+) -> None:
     # Arrange
-    grid_loss_responsible = _get_grid_loss_responsible_dataframe(
+    grid_loss_metering_point_periods = _get_grid_loss_metering_point_periods(
         spark, grid_loss_metering_points
     )
 
     # Act
-    result = get_grid_loss_metering_points(grid_loss_responsible)
+    result = get_grid_loss_metering_point_ids(grid_loss_metering_point_periods)
 
     # Assert
     assert result.df.count() == expected_count
