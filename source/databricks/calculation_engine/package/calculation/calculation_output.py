@@ -76,7 +76,7 @@ class BasisDataOutput:
     charge_price_information_periods: DataFrame | None
     charge_price_points: DataFrame | None
     charge_link_periods: DataFrame | None
-    grid_loss_metering_point_ids: DataFrame
+    grid_loss_metering_points: DataFrame
 
 
 @dataclass

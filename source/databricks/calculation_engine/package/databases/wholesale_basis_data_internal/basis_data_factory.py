@@ -76,5 +76,5 @@ def create(
         charge_price_information_periods=charge_price_information_basis_data,
         charge_price_points=charge_prices_basis_data,
         charge_link_periods=charge_links_basis_data,
-        grid_loss_metering_point_ids=grid_loss_metering_point_ids_basis_data,
+        grid_loss_metering_points=grid_loss_metering_point_ids_basis_data,
     )
