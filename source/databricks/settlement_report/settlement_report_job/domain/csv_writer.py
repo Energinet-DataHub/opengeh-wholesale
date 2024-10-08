@@ -23,6 +23,7 @@ from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
+    EnergyResultsCsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
@@ -91,6 +92,8 @@ def get_partition_columns_for_report_type(
 
         if args.prevent_large_text_files:
             partition_columns.append(EphemeralColumns.chunk_index)
+    if report_type in [ReportDataType.EnergyResults]:
+        partition_columns = [DataProductColumnNames.grid_area_code]
 
     return partition_columns
 
@@ -105,6 +108,14 @@ def get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[st
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
+        ]
+    if report_type in [ReportDataType.EnergyResults]:
+        return [
+            EnergyResultsCsvColumnNames.grid_area_code,
+            DataProductColumnNames.energy_supplier_id,
+            EnergyResultsCsvColumnNames.metering_point_type,
+            EnergyResultsCsvColumnNames.settlement_method,
+            EnergyResultsCsvColumnNames.time,
         ]
 
     return []
@@ -121,6 +132,11 @@ def apply_report_type_df_changes(
         and args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER
     ):
         df = df.drop(DataProductColumnNames.energy_supplier_id)
+    if (
+        report_type in [ReportDataType.EnergyResults]
+        and len(args.calculation_id_by_grid_area) > 1
+    ):
+        df = df.drop(DataProductColumnNames.grid_area_code)
 
     return df
 
