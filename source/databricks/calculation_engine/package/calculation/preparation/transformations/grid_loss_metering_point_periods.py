@@ -19,20 +19,20 @@ defined in the geh_stream directory in our tests.
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    GridLossResponsible,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
 from package.databases import wholesale_internal
 
 
-def get_grid_loss_responsible(
+def get_grid_loss_metering_point_periods(
     grid_areas: list[str],
     metering_point_periods_df: DataFrame,
     repository: wholesale_internal.WholesaleInternalRepository,
-) -> GridLossResponsible:
-    grid_loss_responsible = (
+) -> GridLossMeteringPointPeriods:
+    grid_loss_metering_point_periods = (
         repository.read_grid_loss_metering_points()
         .join(
             metering_point_periods_df,
@@ -50,16 +50,18 @@ def get_grid_loss_responsible(
         )
     )
 
-    _throw_if_no_grid_loss_responsible(grid_areas, grid_loss_responsible)
+    _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
+        grid_areas, grid_loss_metering_point_periods
+    )
 
-    return GridLossResponsible(grid_loss_responsible)
+    return GridLossMeteringPointPeriods(grid_loss_metering_point_periods)
 
 
-def _throw_if_no_grid_loss_responsible(
-    grid_areas: list[str], grid_loss_responsible_df: DataFrame
+def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
+    grid_areas: list[str], grid_loss_metering_point_periods: DataFrame
 ) -> None:
     for grid_area in grid_areas:
-        current_grid_loss_metering_points = grid_loss_responsible_df.filter(
+        current_grid_loss_metering_points = grid_loss_metering_point_periods.filter(
             col(Colname.grid_area_code) == grid_area
         )
         if (
@@ -69,7 +71,7 @@ def _throw_if_no_grid_loss_responsible(
             == 0
         ):
             raise ValueError(
-                f"No responsible for negative grid loss found for grid area {grid_area}"
+                f"No metering point for negative grid loss found for grid area {grid_area}"
             )
         if (
             current_grid_loss_metering_points.filter(
@@ -78,5 +80,5 @@ def _throw_if_no_grid_loss_responsible(
             == 0
         ):
             raise ValueError(
-                f"No responsible for positive grid loss found for grid area {grid_area}"
+                f"No metering point for positive grid loss found for grid area {grid_area}"
             )
