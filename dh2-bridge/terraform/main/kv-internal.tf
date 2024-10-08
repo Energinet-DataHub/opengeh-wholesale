@@ -1,5 +1,5 @@
 module "kv_internal" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_6.0.0"
 
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
@@ -16,7 +16,7 @@ module "kv_internal" {
 }
 
 module "kvs_sendgrid_api_key" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sendgrid-api-key"
   value        = var.sendgrid_api_key
@@ -24,7 +24,7 @@ module "kvs_sendgrid_api_key" {
 }
 
 module "kvs_sendgrid_to_email" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sendgrid-to-email"
   value        = var.sendgrid_to_email
@@ -32,7 +32,7 @@ module "kvs_sendgrid_to_email" {
 }
 
 module "kvs_sendgrid_from_email" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "sendgrid-from-email"
   value        = var.sendgrid_from_email

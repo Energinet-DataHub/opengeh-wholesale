@@ -1,19 +1,21 @@
-data "azurerm_mssql_server" "mssqlsrv" {
-  name                = data.azurerm_key_vault_secret.mssql_data_name.value
-  resource_group_name = data.azurerm_resource_group.shared.name
-}
-
 module "mssqldb_dh2_bridge" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_8.0.0"
 
   name                 = "dh2-bridge"
   location             = azurerm_resource_group.this.location
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
-  server_id            = data.azurerm_mssql_server.mssqlsrv.id
-  sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
-  elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
+
+  server = {
+    name                = data.azurerm_key_vault_secret.mssql_data_name.value
+    resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
+  }
+
+  elastic_pool = {
+    name                = data.azurerm_key_vault_secret.mssql_data_elastic_pool_name.value
+    resource_group_name = data.azurerm_key_vault_secret.mssql_data_elastic_pool_resource_group_name.value
+  }
 
   monitor_action_group = length(module.monitor_action_group_dh2bridge) != 1 ? null : {
     id                  = module.monitor_action_group_dh2bridge[0].id
@@ -22,7 +24,7 @@ module "mssqldb_dh2_bridge" {
 }
 
 module "kvs_sql_ms_dh2_bridge_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "mssql-dh2-bridge-database-name"
   value        = module.mssqldb_dh2_bridge.name
