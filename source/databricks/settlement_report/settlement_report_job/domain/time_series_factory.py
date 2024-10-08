@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
+from typing import Callable
 from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
@@ -50,37 +51,30 @@ def create_time_series(
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
-    time_series_points = _read_from_view(
-        period_start,
-        period_end,
-        resolution,
-        repository,
-    )
-
-    filtered_time_series_points = time_series_points.where(
-        _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
-    )
-
-    if energy_supplier_ids:
-        filtered_time_series_points = filtered_time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
-
-    prepared_time_series = _generate_time_series(
-        filtered_time_series_points=filtered_time_series_points,
-        desired_number_of_quantity_columns=_get_desired_quantity_column_count(
-            resolution
+    prepared_time_series = _create_time_series(
+        period_start=period_start,
+        period_end=period_end,
+        calculations_filter=_filter_on_calculation_id_by_grid_area(
+            calculation_id_by_grid_area
         ),
+        actor_filter=_actor_filter(energy_supplier_ids),
+        energy_supplier_ids=energy_supplier_ids,
+        resolution=resolution,
         time_zone=time_zone,
+        repository=repository,
     )
+
     return prepared_time_series
 
 
-def create_time_series_for_balance_fixing(
+@logging_configuration.use_span(
+    "settlement_report_job.time_series_factory.create_time_series"
+)
+def _create_time_series(
     period_start: datetime,
     period_end: datetime,
-    grid_area_codes: list[str],
-    energy_supplier_ids: list[str] | None,
+    calculations_filter: Callable[..., Column],
+    actor_filter: Callable[..., Column],
     resolution: DataProductMeteringPointResolution,
     time_zone: str,
     repository: WholesaleRepository,
@@ -93,22 +87,11 @@ def create_time_series_for_balance_fixing(
         repository,
     )
 
-    filtered_time_series_points = time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
-    )
-
-    filtered_time_series_points = time_series_points.where(
-        _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
-    )
-
-    if energy_supplier_ids:
-        filtered_time_series_points = filtered_time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
+    time_series_points = time_series_points.where(calculations_filter())
+    time_series_points = time_series_points.where(actor_filter())
 
     prepared_time_series = _generate_time_series(
-        filtered_time_series_points=filtered_time_series_points,
+        time_series_points=time_series_points,
         desired_number_of_quantity_columns=_get_desired_quantity_column_count(
             resolution
         ),
@@ -147,11 +130,11 @@ def _filter_on_calculation_id_by_grid_area(
     ).isin(calculation_id_by_grid_area_structs)
 
 
-# def _filter_on_calculation_id_by_grid_area_and_day(
-#     df: DataFrame,
-#     calculation_id_by_grid_area_and_day: dict[str, UUID],
-#     resolution: DataProductMeteringPointResolution,
-# ) -> DataFrame:
+def _actor_filter(energy_supplier_ids: list[str] | None) -> Column:
+    if energy_supplier_ids:
+        return F.col(DataProductColumnNames.energy_supplier_id).isin(
+            energy_supplier_ids
+        )
 
 
 @logging_configuration.use_span(
