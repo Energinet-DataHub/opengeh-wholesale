@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.types import (
-    StructField,
-    StringType,
-    StructType,
+from package.constants import Colname
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
+)
+from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
+    GridLossMeteringPointIds,
 )
 
-from package.databases.table_column_names import TableColumnNames
 
-grid_loss_metering_points_schema = StructType(
-    [
-        StructField(TableColumnNames.calculation_id, StringType(), False),
-        StructField(TableColumnNames.metering_point_id, StringType(), False),
-    ]
-)
+def get_grid_loss_metering_point_ids(
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
+) -> GridLossMeteringPointIds:
+    return GridLossMeteringPointIds(
+        grid_loss_metering_point_periods.df.select(Colname.metering_point_id).distinct()
+    )

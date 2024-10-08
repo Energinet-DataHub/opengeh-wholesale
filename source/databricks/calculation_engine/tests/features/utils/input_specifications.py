@@ -60,7 +60,7 @@ def get_data_input_specifications(
         ),
         "grid_loss_metering_points.csv": (
             grid_loss_metering_point_ids_schema,
-            wholesale_internal_repository.read_grid_loss_metering_points,
+            wholesale_internal_repository.read_grid_loss_metering_point_ids,
         ),
         "charge_price_information_periods.csv": (
             charge_price_information_periods_schema,
