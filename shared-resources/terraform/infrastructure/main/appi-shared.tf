@@ -19,7 +19,7 @@ resource "azurerm_application_insights_standard_web_test" "datahub3dk" {
   geo_locations           = ["emea-nl-ams-azr", "emea-gb-db3-azr"] # WE, NE, see https://learn.microsoft.com/da-dk/previous-versions/azure/azure-monitor/app/monitor-web-app-availability#location-population-tags
 
   request {
-    url = "https://datahub3.dk"
+    url = var.environment_instance == "001" ? (var.environment == "prod" ? "https://datahub3.dk" : "https://${var.environment}.datahub3.dk") : "https://${var.environment}${var.environment_instance}.datahub3.dk"
   }
 
   validation_rules {
@@ -38,7 +38,7 @@ resource "azurerm_application_insights_standard_web_test" "b2b" {
   geo_locations           = ["emea-nl-ams-azr", "emea-gb-db3-azr"] # West Europe, see https://learn.microsoft.com/da-dk/previous-versions/azure/azure-monitor/app/monitor-web-app-availability#location-population-tags
 
   request {
-    url = "https://test002.b2b.datahub3.dk/ping/get" # "https://b2b.datahub3.dk/ping/get"
+    url = var.environment_instance == "001" ? (var.environment == "prod" ? "https://b2b.datahub3.dk/ping/get" : "https://${var.environment}.b2b.datahub3.dk/ping/get") : "https://${var.environment}${var.environment_instance}.b2b.datahub3.dk/ping/get"
   }
 
   validation_rules {

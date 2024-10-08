@@ -295,3 +295,8 @@ variable "enable_audit_logs" {
   type        = bool
   description = "Should audit logs be enabled for the environment?"
 }
+
+variable "sendgrid_api_key" {
+  type        = string
+  description = "API key for SendGrid"
+}

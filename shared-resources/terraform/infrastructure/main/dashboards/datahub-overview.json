@@ -146,7 +146,7 @@
                 ]
             },
             "gridPos": {
-                "h": 10,
+                "h": 9,
                 "w": 6,
                 "x": 0,
                 "y": 0
@@ -388,8 +388,8 @@
                 ]
             },
             "gridPos": {
-                "h": 10,
-                "w": 6,
+                "h": 8,
+                "w": 10,
                 "x": 6,
                 "y": 0
             },
@@ -614,9 +614,9 @@
                 ]
             },
             "gridPos": {
-                "h": 10,
-                "w": 6,
-                "x": 12,
+                "h": 8,
+                "w": 8,
+                "x": 16,
                 "y": 0
             },
             "id": 8,
@@ -675,6 +675,172 @@
                 }
             ],
             "title": "Average availability",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "grafana-azure-monitor-datasource"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "fixedColor": "dark-purple",
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [
+                        {
+                            "options": {
+                                "match": "null",
+                                "result": {
+                                    "index": 0,
+                                    "text": "0"
+                                }
+                            },
+                            "type": "special"
+                        }
+                    ],
+                    "noValue": "--",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Server exceptions"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#ec008c",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 6,
+                "x": 6,
+                "y": 8
+            },
+            "id": 55,
+            "maxDataPoints": 150,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "sum"
+                    ],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "azureMonitor": {
+                        "aggOptions": [],
+                        "aggregation": "Total",
+                        "alias": "",
+                        "allowedTimeGrainsMs": [
+                            60000,
+                            300000,
+                            900000,
+                            1800000,
+                            3600000,
+                            21600000,
+                            43200000,
+                            86400000
+                        ],
+                        "customNamespace": "microsoft.apimanagement/service",
+                        "dimensionFilters": [
+                            {
+                                "dimension": "GatewayResponseCodeCategory",
+                                "filters": [
+                                    "2xx",
+                                    "5xx"
+                                ],
+                                "operator": "eq"
+                            }
+                        ],
+                        "metricDefinition": "microsoft.insights/components",
+                        "metricName": "Requests",
+                        "metricNamespace": "microsoft.apimanagement/service",
+                        "region": "westeurope",
+                        "resources": [
+                            {
+                                "metricNamespace": "Microsoft.ApiManagement/service",
+                                "region": "westeurope",
+                                "resourceGroup": "rg-shres-${env_short}-we-${instance}",
+                                "resourceName": "apim-shres-${env_short}-we-${instance}",
+                                "subscription": "${subscription}"
+                            }
+                        ],
+                        "timeGrain": "auto",
+                        "timeGrains": [],
+                        "top": "50"
+                    },
+                    "datasource": {
+                        "type": "grafana-azure-monitor-datasource",
+                        "uid": "azure-monitor-oob"
+                    },
+                    "queryType": "Azure Monitor",
+                    "refId": "Server Exceptions",
+                    "subscription": "${subscription}",
+                    "subscriptions": []
+                }
+            ],
+            "title": "API Management Response Overview",
             "type": "timeseries"
         },
         {
@@ -745,8 +911,8 @@
             "gridPos": {
                 "h": 9,
                 "w": 6,
-                "x": 18,
-                "y": 0
+                "x": 12,
+                "y": 8
             },
             "id": 4,
             "maxDataPoints": 150,
@@ -869,7 +1035,7 @@
                 "h": 9,
                 "w": 6,
                 "x": 18,
-                "y": 9
+                "y": 8
             },
             "id": 2,
             "maxDataPoints": 150,
@@ -927,172 +1093,6 @@
                 }
             ],
             "title": "Failed requests (4xx + 5xx)",
-            "type": "timeseries"
-        },
-        {
-            "datasource": {
-                "type": "grafana-azure-monitor-datasource"
-            },
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "fixedColor": "dark-purple",
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisBorderShow": false,
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "drawStyle": "line",
-                        "fillOpacity": 0,
-                        "gradientMode": "none",
-                        "hideFrom": {
-                            "legend": false,
-                            "tooltip": false,
-                            "viz": false
-                        },
-                        "insertNulls": false,
-                        "lineInterpolation": "linear",
-                        "lineWidth": 1,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                            "type": "linear"
-                        },
-                        "showPoints": "never",
-                        "spanNulls": true,
-                        "stacking": {
-                            "group": "A",
-                            "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                            "mode": "off"
-                        }
-                    },
-                    "mappings": [
-                        {
-                            "options": {
-                                "match": "null",
-                                "result": {
-                                    "index": 0,
-                                    "text": "0"
-                                }
-                            },
-                            "type": "special"
-                        }
-                    ],
-                    "noValue": "--",
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "red",
-                                "value": 80
-                            }
-                        ]
-                    }
-                },
-                "overrides": [
-                    {
-                        "matcher": {
-                            "id": "byName",
-                            "options": "Server exceptions"
-                        },
-                        "properties": [
-                            {
-                                "id": "color",
-                                "value": {
-                                    "fixedColor": "#ec008c",
-                                    "mode": "fixed"
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            "gridPos": {
-                "h": 10,
-                "w": 6,
-                "x": 6,
-                "y": 10
-            },
-            "id": 55,
-            "maxDataPoints": 150,
-            "options": {
-                "legend": {
-                    "calcs": [
-                        "sum"
-                    ],
-                    "displayMode": "list",
-                    "placement": "bottom",
-                    "showLegend": true
-                },
-                "tooltip": {
-                    "mode": "single",
-                    "sort": "none"
-                }
-            },
-            "targets": [
-                {
-                    "azureMonitor": {
-                        "aggOptions": [],
-                        "aggregation": "Total",
-                        "alias": "",
-                        "allowedTimeGrainsMs": [
-                            60000,
-                            300000,
-                            900000,
-                            1800000,
-                            3600000,
-                            21600000,
-                            43200000,
-                            86400000
-                        ],
-                        "customNamespace": "microsoft.apimanagement/service",
-                        "dimensionFilters": [
-                            {
-                                "dimension": "GatewayResponseCodeCategory",
-                                "filters": [
-                                    "2xx",
-                                    "5xx"
-                                ],
-                                "operator": "eq"
-                            }
-                        ],
-                        "metricDefinition": "microsoft.insights/components",
-                        "metricName": "Requests",
-                        "metricNamespace": "microsoft.apimanagement/service",
-                        "region": "westeurope",
-                        "resources": [
-                            {
-                                "metricNamespace": "Microsoft.ApiManagement/service",
-                                "region": "westeurope",
-                                "resourceGroup": "rg-shres-${env_short}-we-${instance}",
-                                "resourceName": "apim-shres-${env_short}-we-${instance}",
-                                "subscription": "${subscription}"
-                            }
-                        ],
-                        "timeGrain": "auto",
-                        "timeGrains": [],
-                        "top": "50"
-                    },
-                    "datasource": {
-                        "type": "grafana-azure-monitor-datasource",
-                        "uid": "azure-monitor-oob"
-                    },
-                    "queryType": "Azure Monitor",
-                    "refId": "Server Exceptions",
-                    "subscription": "${subscription}",
-                    "subscriptions": []
-                }
-            ],
-            "title": "API Management Response Overview",
             "type": "timeseries"
         },
         {
@@ -1172,8 +1172,8 @@
             "gridPos": {
                 "h": 10,
                 "w": 6,
-                "x": 12,
-                "y": 10
+                "x": 0,
+                "y": 9
             },
             "id": 56,
             "maxDataPoints": 150,
@@ -1346,7 +1346,7 @@
             },
             {
                 "current": {
-                    "selected": false,
+                    "selected": true,
                     "text": "appi-shres-${env_short}-we-${instance}",
                     "value": "appi-shres-${env_short}-we-${instance}"
                 },
@@ -1415,6 +1415,6 @@
     "timezone": "",
     "title": "DataHub Overview",
     "uid": "edznwpvyvltkwe",
-    "version": 10,
+    "version": 11,
     "weekStart": ""
 }

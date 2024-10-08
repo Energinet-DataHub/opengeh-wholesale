@@ -6,6 +6,15 @@ resource "azurerm_dashboard_grafana" "this" {
   api_key_enabled               = true
   public_network_access_enabled = true
 
+  smtp {
+    enabled          = true
+    user             = "apikey"
+    password         = var.sendgrid_api_key
+    start_tls_policy = "OpportunisticStartTLS"
+    from_address     = "no-reply@datahub.dk"
+    host             = "smtp.sendgrid.net:465"
+  }
+
   identity {
     type = "SystemAssigned"
   }
@@ -85,3 +94,35 @@ resource "grafana_dashboard" "datahub_overview" {
   config_json = data.template_file.dashboard_json.rendered
 }
 
+# Only create grafana reports on 001 environments
+# Send report for the previous month at the first day of the month
+resource "grafana_report" "datahub_overview" {
+  count = var.environment_instance == "001" ? 1 : 0
+
+  name       = "Report of DataHub Overview ${lower(var.environment)}_${lower(var.environment_instance)}"
+  recipients = ["nhq@energinet.dk;xbspo@energinet.dk;tni@energinet.dk;mrk@energinet.dk"]
+  formats    = ["pdf"]
+  message    = "The monthly report PDF of the DataHub Overview dashboard for ${lower(var.environment)}_${lower(var.environment_instance)}"
+  dashboards {
+    uid = grafana_dashboard.datahub_overview.uid
+
+    # https://grafana.com/docs/grafana/latest/dashboards/use-dashboards/#time-units-and-relative-ranges
+    time_range {
+      from = "now-1M/M"
+      to   = "now-1M/M"
+    }
+    report_variables = {
+      ds  = "azure-monitor-oob"
+      sub = var.subscription_id
+      rg  = azurerm_resource_group.this.name
+      res = module.appi_shared.name
+    }
+  }
+  schedule {
+    timezone   = "Europe/Copenhagen"
+    frequency  = "monthly"
+    start_time = "2024-10-01T08:00:00"
+  }
+
+  depends_on = [azurerm_dashboard_grafana.this]
+}

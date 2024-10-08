@@ -51,6 +51,7 @@ module "pim_contributor_control_plane_security_group_permissions" {
     azurerm_role_definition.contributor_app_developers.name,
     azurerm_role_definition.apim_groups_contributor_access.name,
     azurerm_role_definition.locks_contributor_access.name,
+    "Grafana Admin"
   ]
 
   depends_on = [azurerm_role_definition.contributor_app_developers, azurerm_role_definition.apim_groups_contributor_access, azurerm_role_definition.locks_contributor_access]
