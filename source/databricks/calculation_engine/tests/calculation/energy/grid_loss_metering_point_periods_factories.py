@@ -16,9 +16,9 @@ from datetime import datetime
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    grid_loss_responsible_schema,
-    GridLossResponsible,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    grid_loss_metering_point_periods_schema,
+    GridLossMeteringPointPeriods,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -56,10 +56,10 @@ def create_row(
 
 def create(
     spark: SparkSession, data: None | Row | list[Row] = None
-) -> GridLossResponsible:
+) -> GridLossMeteringPointPeriods:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, schema=grid_loss_responsible_schema)
-    return GridLossResponsible(df)
+    df = spark.createDataFrame(data, schema=grid_loss_metering_point_periods_schema)
+    return GridLossMeteringPointPeriods(df)

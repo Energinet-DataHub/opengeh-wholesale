@@ -22,7 +22,7 @@ from pyspark.sql import SparkSession
 from package.constants import Colname
 from package.databases import wholesale_internal
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
 )
 from package.infrastructure.paths import WholesaleInternalDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
@@ -46,7 +46,9 @@ class TestWhenContractMismatch:
         reader = wholesale_internal.WholesaleInternalRepository(
             mock.Mock(), "dummy_catalog_name"
         )
-        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
+        df = spark.createDataFrame(
+            data=[row], schema=grid_loss_metering_point_ids_schema
+        )
         df = df.drop(Colname.metering_point_id)
         df = df.withColumn("test", f.lit("test"))
 
@@ -70,14 +72,16 @@ class TestWhenValidInput:
         calculation_input_path = f"{str(tmp_path)}/calculation_input"
         table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
         row = _create_grid_loss_metering_point_row()
-        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
+        df = spark.createDataFrame(
+            data=[row], schema=grid_loss_metering_point_ids_schema
+        )
         write_dataframe_to_table(
             spark,
             df,
             WholesaleInternalDatabase.DATABASE_NAME,
             WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
             table_location,
-            grid_loss_metering_points_schema,
+            grid_loss_metering_point_ids_schema,
         )
         expected = df
         reader = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
@@ -98,7 +102,9 @@ class TestWhenValidInputAndExtraColumns:
         reader = wholesale_internal.WholesaleInternalRepository(
             mock.Mock(), "spark_catalog"
         )
-        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
+        df = spark.createDataFrame(
+            data=[row], schema=grid_loss_metering_point_ids_schema
+        )
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert

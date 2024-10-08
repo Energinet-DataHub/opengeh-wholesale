@@ -17,7 +17,7 @@ import pytest
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import col
 
-from calculation.energy import grid_loss_responsible_factories
+from calculation.energy import grid_loss_metering_point_periods_factories
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_negative_grid_loss,
 )
@@ -38,44 +38,44 @@ def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
         energy_results_factories.create_grid_loss_row(
             grid_area="001",
             quantity=Decimal(-12.567),
-            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+            observation_time=grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE,
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="002",
             quantity=Decimal(34.32),
-            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+            observation_time=grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE,
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="003",
             quantity=Decimal(0.0),
-            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+            observation_time=grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE,
         ),
     ]
 
     grid_loss = energy_results_factories.create(spark, rows)
 
     responsible_rows = [
-        grid_loss_responsible_factories.create_row(
+        grid_loss_metering_point_periods_factories.create_row(
             grid_area="001",
             metering_point_id="a",
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
-        grid_loss_responsible_factories.create_row(
+        grid_loss_metering_point_periods_factories.create_row(
             grid_area="002",
             metering_point_id="b",
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
-        grid_loss_responsible_factories.create_row(
+        grid_loss_metering_point_periods_factories.create_row(
             grid_area="003",
             metering_point_id="c",
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
     ]
-    grid_loss_responsible = grid_loss_responsible_factories.create(
-        spark, responsible_rows
+    grid_loss_metering_point_periods = (
+        grid_loss_metering_point_periods_factories.create(spark, responsible_rows)
     )
 
-    return calculate_negative_grid_loss(grid_loss, grid_loss_responsible)
+    return calculate_negative_grid_loss(grid_loss, grid_loss_metering_point_periods)
 
 
 class TestWhenValidInput:
@@ -121,9 +121,9 @@ class TestWhenValidInput:
             Colname.grid_area_code: "001",
             Colname.to_grid_area_code: None,
             Colname.from_grid_area_code: None,
-            Colname.balance_responsible_party_id: grid_loss_responsible_factories.DEFAULT_BALANCE_RESPONSIBLE_ID,
-            Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
-            Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE.replace(
+            Colname.balance_responsible_party_id: grid_loss_metering_point_periods_factories.DEFAULT_BALANCE_RESPONSIBLE_ID,
+            Colname.energy_supplier_id: grid_loss_metering_point_periods_factories.DEFAULT_ENERGY_SUPPLIER_ID,
+            Colname.observation_time: grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE.replace(
                 tzinfo=None
             ),
             Colname.quantity: Decimal("12.567000"),

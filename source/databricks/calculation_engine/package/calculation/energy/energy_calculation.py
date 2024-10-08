@@ -26,8 +26,8 @@ from package.calculation.energy.data_structures.energy_results import (
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution_adjusted_metering_point_time_series,
 )
-from package.calculation.preparation.data_structures.grid_loss_responsible import (
-    GridLossResponsible,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
 )
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
@@ -48,7 +48,7 @@ from package.infrastructure import logging_configuration
 def execute(
     args: CalculatorArgs,
     prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
-    grid_loss_responsible_df: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> Tuple[EnergyResultsOutput, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
         metering_point_time_series = (
@@ -61,14 +61,14 @@ def execute(
     return _calculate(
         args,
         metering_point_time_series,
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
     )
 
 
 def _calculate(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
-    grid_loss_responsible_df: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> Tuple[EnergyResultsOutput, EnergyResults, EnergyResults]:
     energy_results_output = EnergyResultsOutput()
 
@@ -98,20 +98,20 @@ def _calculate(
         temporary_production_per_es,
         temporary_flex_consumption_per_es,
         non_profiled_consumption_per_es,
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
         energy_results_output,
     )
 
     production_per_es = _calculate_adjust_production_per_es(
         temporary_production_per_es,
         negative_grid_loss,
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
     )
 
     flex_consumption_per_es = _calculate_adjust_flex_consumption_per_es(
         temporary_flex_consumption_per_es,
         positive_grid_loss,
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
     )
 
     _calculate_non_profiled_consumption(
@@ -234,7 +234,7 @@ def _calculate_grid_loss(
     temporary_production_per_es: EnergyResults,
     temporary_flex_consumption_per_es: EnergyResults,
     non_profiled_consumption_per_es: EnergyResults,
-    grid_loss_responsible_df: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
     energy_results_output: EnergyResultsOutput,
 ) -> tuple[EnergyResults, EnergyResults]:
     grid_loss = grid_loss_aggr.calculate_grid_loss(
@@ -250,7 +250,7 @@ def _calculate_grid_loss(
     )
 
     positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(
-        grid_loss, grid_loss_responsible_df
+        grid_loss, grid_loss_metering_point_periods
     )
 
     energy_results_output.positive_grid_loss = factory.create(
@@ -261,7 +261,7 @@ def _calculate_grid_loss(
     )
 
     negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(
-        grid_loss, grid_loss_responsible_df
+        grid_loss, grid_loss_metering_point_periods
     )
 
     energy_results_output.negative_grid_loss = factory.create(
@@ -278,12 +278,12 @@ def _calculate_grid_loss(
 def _calculate_adjust_production_per_es(
     temporary_production_per_es: EnergyResults,
     negative_grid_loss: EnergyResults,
-    grid_loss_responsible_df: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> EnergyResults:
     production_per_es = grid_loss_aggr.apply_grid_loss_adjustment(
         temporary_production_per_es,
         negative_grid_loss,
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
         MeteringPointType.PRODUCTION,
     )
 
@@ -294,12 +294,12 @@ def _calculate_adjust_production_per_es(
 def _calculate_adjust_flex_consumption_per_es(
     temporary_flex_consumption_per_es: EnergyResults,
     positive_grid_loss: EnergyResults,
-    grid_loss_responsible_df: GridLossResponsible,
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> EnergyResults:
     flex_consumption_per_es = grid_loss_aggr.apply_grid_loss_adjustment(
         temporary_flex_consumption_per_es,
         positive_grid_loss,
-        grid_loss_responsible_df,
+        grid_loss_metering_point_periods,
         MeteringPointType.CONSUMPTION,
     )
 

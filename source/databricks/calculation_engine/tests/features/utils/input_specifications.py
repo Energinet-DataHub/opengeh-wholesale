@@ -23,7 +23,7 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
 )
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
     calculations_schema,
 )
 from package.databases.wholesale_results import WholesaleResultsInternalRepository
@@ -59,7 +59,7 @@ def get_data_input_specifications(
             migrations_wholesale_repository.read_time_series_points,
         ),
         "grid_loss_metering_points.csv": (
-            grid_loss_metering_points_schema,
+            grid_loss_metering_point_ids_schema,
             wholesale_internal_repository.read_grid_loss_metering_points,
         ),
         "charge_price_information_periods.csv": (
