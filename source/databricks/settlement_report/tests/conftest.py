@@ -23,9 +23,10 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
-from tests.data_seeding.write_test_data import (
+from data_seeding import standard_wholesale_fixing_scenario_data_generator
+from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
+    write_charge_link_periods_to_delta_table,
 )
 
 
@@ -59,7 +60,7 @@ def standard_wholesale_fixing_scenario_args(
         time_zone="Europe/Copenhagen",
         catalog_name="spark_catalog",
         energy_supplier_ids=None,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,  # using system operator since it is more complex (requires filter based on charge owner)
         requesting_actor_id="1111111111111",
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
@@ -72,10 +73,30 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     spark: SparkSession,
     input_database_location: str,
 ) -> None:
-    df = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
+    time_series_df = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
         spark
     )
-    write_metering_point_time_series_to_delta_table(spark, df, input_database_location)
+    write_metering_point_time_series_to_delta_table(
+        spark, time_series_df, input_database_location
+    )
+
+    charge_link_periods_df = (
+        standard_wholesale_fixing_scenario_data_generator.create_charge_link_periods(
+            spark
+        )
+    )
+
+    write_charge_link_periods_to_delta_table(
+        spark, charge_link_periods_df, input_database_location
+    )
+
+    charge_price_information_periods_df = standard_wholesale_fixing_scenario_data_generator.create_charge_price_information_periods(
+        spark
+    )
+
+    write_charge_link_periods_to_delta_table(
+        spark, charge_link_periods_df, input_database_location
+    )
 
 
 @pytest.fixture(scope="session")
