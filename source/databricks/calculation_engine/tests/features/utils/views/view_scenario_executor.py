@@ -30,10 +30,21 @@ class ViewScenarioExecutor:
     def execute(
         self, scenario_folder_path: str
     ) -> Tuple[list[DataframeWrapper], list[DataframeWrapper]]:
+        import time
+
+        # Start the timer
+        start_time = time.time()
 
         input_dataframes_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/when"
         )
+
+        # End the timer
+        end_time = time.time()
+
+        # Calculate the elapsed time
+        elapsed_time = end_time - start_time
+        print(f"Time taken to parse CSV files: {elapsed_time} seconds")
 
         input_dataframes_wrappers = self.correct_dataframe_types(
             input_dataframes_wrappers
