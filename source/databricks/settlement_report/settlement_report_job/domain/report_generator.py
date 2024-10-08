@@ -9,7 +9,9 @@ from settlement_report_job.domain.metering_point_resolution import (
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.domain.time_series_factory import create_time_series
+from settlement_report_job.domain.time_series_factory import (
+    create_time_series_for_wholesale,
+)
 from settlement_report_job.domain.task_type import TaskType
 
 from settlement_report_job.utils import create_zip_file
@@ -28,7 +30,7 @@ def execute_hourly_time_series(
         return
 
     repository = WholesaleRepository(spark, args.catalog_name)
-    hourly_time_series_df = create_time_series(
+    hourly_time_series_df = create_time_series_for_wholesale(
         period_start=args.period_start,
         period_end=args.period_end,
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,
@@ -59,7 +61,7 @@ def execute_quarterly_time_series(
         return
 
     repository = WholesaleRepository(spark, args.catalog_name)
-    quarterly_time_series_df = create_time_series(
+    quarterly_time_series_df = create_time_series_for_wholesale(
         period_start=args.period_start,
         period_end=args.period_end,
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,

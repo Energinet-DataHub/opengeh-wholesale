@@ -14,7 +14,9 @@ import tests.test_factories.metering_point_time_series_factory as factory
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
-from settlement_report_job.domain.time_series_factory import create_time_series
+from settlement_report_job.domain.time_series_factory import (
+    create_time_series_for_wholesale,
+)
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
@@ -61,7 +63,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    result_df = create_time_series(
+    result_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -101,7 +103,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -173,7 +175,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=from_date,
         period_end=to_date,
         calculation_id_by_grid_area={
@@ -232,7 +234,7 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -266,7 +268,7 @@ def test_create_time_series__returns_only_days_within_selected_period(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -313,7 +315,7 @@ def test_create_time_series__returns_only_selected_grid_area(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -364,7 +366,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -426,7 +428,7 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series(
+    actual_df = create_time_series_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={

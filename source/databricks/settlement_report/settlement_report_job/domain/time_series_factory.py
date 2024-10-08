@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-from typing import Callable, Any
+from typing import Callable
 from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
@@ -39,16 +39,16 @@ log = Logger(__name__)
 
 
 @logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.create_time_series"
+    "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
 )
-def create_time_series(
+def create_time_series_for_wholesale(
     period_start: datetime,
     period_end: datetime,
-    calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
     time_zone: str,
     repository: WholesaleRepository,
+    calculation_id_by_grid_area: dict[str, UUID],
 ) -> DataFrame:
     log.info("Creating time series points")
     prepared_time_series = _create_time_series(
@@ -57,7 +57,7 @@ def create_time_series(
         calculations_filter=lambda: _filter_on_calculation_id_by_grid_area(
             calculation_id_by_grid_area
         ),
-        actor_filter=lambda: _actor_filter(energy_supplier_ids),
+        actor_filter=lambda: _actor_filter_wholesale(energy_supplier_ids),
         resolution=resolution,
         time_zone=time_zone,
         repository=repository,
@@ -66,9 +66,6 @@ def create_time_series(
     return prepared_time_series
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.create_time_series"
-)
 def _create_time_series(
     period_start: datetime,
     period_end: datetime,
@@ -129,7 +126,7 @@ def _filter_on_calculation_id_by_grid_area(
     ).isin(calculation_id_by_grid_area_structs)
 
 
-def _actor_filter(energy_supplier_ids: list[str] | None) -> Column:
+def _actor_filter_wholesale(energy_supplier_ids: list[str] | None) -> Column:
     if energy_supplier_ids:
         return F.col(DataProductColumnNames.energy_supplier_id).isin(
             energy_supplier_ids
