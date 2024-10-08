@@ -25,7 +25,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 import tests.calculation.energy.energy_results_factories as energy_results_factories
-import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_responsible_factories
+from tests.calculation.energy import grid_loss_metering_point_periods_factories
 
 # This time should be within the time window of the grid loss responsible
 DEFAULT_OBSERVATION_TIME = datetime.strptime(
@@ -68,20 +68,24 @@ class TestWhenValidInput:
         )
         grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
-        grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-            energy_supplier_id="energy_supplier_id",
-            balance_responsible_id="balance_responsible_id",
-            metering_point_type=metering_point_type,
+        grid_loss_metering_point_periods = (
+            grid_loss_metering_point_periods_factories.create_row(
+                energy_supplier_id="energy_supplier_id",
+                balance_responsible_id="balance_responsible_id",
+                metering_point_type=metering_point_type,
+            )
         )
-        grid_loss_responsible = grid_loss_responsible_factories.create(
-            spark, [grid_loss_responsible_row]
+        grid_loss_metering_point_periods = (
+            grid_loss_metering_point_periods_factories.create(
+                spark, [grid_loss_metering_point_periods]
+            )
         )
 
         # Act
         actual = apply_grid_loss_adjustment(
             result,
             grid_loss,
-            grid_loss_responsible,
+            grid_loss_metering_point_periods,
             metering_point_type,
         )
 
@@ -117,20 +121,24 @@ class TestWhenValidInput:
         )
         grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
-        grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-            energy_supplier_id="energy_supplier_id",
-            balance_responsible_id="balance_responsible_id",
-            metering_point_type=metering_point_type,
+        grid_loss_metering_point_periods_row = (
+            grid_loss_metering_point_periods_factories.create_row(
+                energy_supplier_id="energy_supplier_id",
+                balance_responsible_id="balance_responsible_id",
+                metering_point_type=metering_point_type,
+            )
         )
-        grid_loss_responsible = grid_loss_responsible_factories.create(
-            spark, [grid_loss_responsible_row]
+        grid_loss_metering_point_periods = (
+            grid_loss_metering_point_periods_factories.create(
+                spark, [grid_loss_metering_point_periods_row]
+            )
         )
 
         # Act
         actual = apply_grid_loss_adjustment(
             result,
             grid_loss,
-            grid_loss_responsible,
+            grid_loss_metering_point_periods,
             metering_point_type,
         )
 
@@ -178,8 +186,8 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
         ]
         grid_loss = energy_results_factories.create(spark, grid_loss_rows)
 
-        grid_loss_responsible_rows = [
-            grid_loss_responsible_factories.create_row(
+        grid_loss_metering_point_periods_rows = [
+            grid_loss_metering_point_periods_factories.create_row(
                 grid_area="1",
                 metering_point_type=metering_point_type,
                 energy_supplier_id="grid_loss_responsible_1",
@@ -187,15 +195,17 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 to_date=DEFAULT_TO_DATE,
             )
         ]
-        grid_loss_responsible = grid_loss_responsible_factories.create(
-            spark, grid_loss_responsible_rows
+        grid_loss_metering_point_periods = (
+            grid_loss_metering_point_periods_factories.create(
+                spark, grid_loss_metering_point_periods_rows
+            )
         )
 
         # Act
         actual = apply_grid_loss_adjustment(
             result,
             grid_loss,
-            grid_loss_responsible,
+            grid_loss_metering_point_periods,
             metering_point_type,
         )
 
@@ -230,8 +240,8 @@ class TestWhenEnergySupplierOnlyHasGridLossMeteringPoints:
         ]
         grid_loss = energy_results_factories.create(spark, grid_loss_rows)
 
-        grid_loss_responsible_rows = [
-            grid_loss_responsible_factories.create_row(
+        grid_loss_metering_point_periods_rows = [
+            grid_loss_metering_point_periods_factories.create_row(
                 grid_area="1",
                 metering_point_type=metering_point_type,
                 energy_supplier_id="energy_supplier_id",
@@ -240,15 +250,17 @@ class TestWhenEnergySupplierOnlyHasGridLossMeteringPoints:
                 to_date=DEFAULT_TO_DATE,
             )
         ]
-        grid_loss_responsible = grid_loss_responsible_factories.create(
-            spark, grid_loss_responsible_rows
+        grid_loss_metering_point_periods = (
+            grid_loss_metering_point_periods_factories.create(
+                spark, grid_loss_metering_point_periods_rows
+            )
         )
 
         # Act
         actual = apply_grid_loss_adjustment(
             result,
             grid_loss,
-            grid_loss_responsible,
+            grid_loss_metering_point_periods,
             metering_point_type,
         )
 
@@ -272,7 +284,7 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_correct_energy_supplier_within_grid_loss_responsible_period(
+    def test_returns_correct_energy_supplier_within_grid_loss_metering_point_period(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
@@ -317,15 +329,15 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
         ]
         grid_loss = energy_results_factories.create(spark, grid_loss_rows)
 
-        grid_loss_responsible_rows = [
-            grid_loss_responsible_factories.create_row(
+        grid_loss_metering_point_periods_rows = [
+            grid_loss_metering_point_periods_factories.create_row(
                 grid_area="1",
                 metering_point_type=metering_point_type,
                 energy_supplier_id="grid_loss_responsible_1",
                 from_date=from_date_1,
                 to_date=to_date_1,
             ),
-            grid_loss_responsible_factories.create_row(
+            grid_loss_metering_point_periods_factories.create_row(
                 grid_area="1",
                 metering_point_type=metering_point_type,
                 energy_supplier_id="grid_loss_responsible_2",
@@ -333,15 +345,17 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
                 to_date=to_date_2,
             ),
         ]
-        grid_loss_responsible = grid_loss_responsible_factories.create(
-            spark, grid_loss_responsible_rows
+        grid_loss_metering_point_periods = (
+            grid_loss_metering_point_periods_factories.create(
+                spark, grid_loss_metering_point_periods_rows
+            )
         )
 
         # Act
         actual = apply_grid_loss_adjustment(
             result,
             grid_loss,
-            grid_loss_responsible,
+            grid_loss_metering_point_periods,
             metering_point_type,
         )
 

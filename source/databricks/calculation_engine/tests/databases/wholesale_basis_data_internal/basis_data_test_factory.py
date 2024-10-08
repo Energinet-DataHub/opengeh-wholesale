@@ -30,7 +30,7 @@ from package.calculation.preparation.data_structures.charge_price_information im
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
-    GridLossMeteringPoints,
+    GridLossMeteringPointIds,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -226,12 +226,12 @@ def create_prepared_metering_point_time_series(
 
 def create_grid_loss_metering_points(
     spark: SparkSession, data: None | Row | list[Row] = None
-) -> GridLossMeteringPoints:
+) -> GridLossMeteringPointIds:
     if data is None:
         data = [create_grid_loss_metering_points_row()]
     elif isinstance(data, Row):
         data = [data]
-    return GridLossMeteringPoints(
+    return GridLossMeteringPointIds(
         spark.createDataFrame(data, grid_loss_metering_points_schema)
     )
 
@@ -256,5 +256,5 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
-        grid_loss_metering_points_df=grid_loss_metering_points,
+        grid_loss_metering_points_ids=grid_loss_metering_points,
     )
