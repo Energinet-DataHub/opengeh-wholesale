@@ -19,20 +19,20 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class GridLossResponsible(DataFrameWrapper):
+class GridLossMeteringPointPeriods(DataFrameWrapper):
     """
-    Grid loss responsible.
+    Grid loss metering point periods including energy supplier and balance responsible party.
     """
 
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            grid_loss_responsible_schema,
+            grid_loss_metering_point_periods_schema,
             ignore_nullability=True,
         )
 
 
-grid_loss_responsible_schema = t.StructType(
+grid_loss_metering_point_periods_schema = t.StructType(
     [
         t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.grid_area_code, t.StringType(), False),

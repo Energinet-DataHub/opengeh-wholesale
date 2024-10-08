@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from .metering_point_periods import get_metering_point_periods_df
-from .grid_loss_responsible import get_grid_loss_responsible
+from .grid_loss_metering_point_periods import get_grid_loss_metering_point_periods
 from .charges_reader import (
     read_charge_links,
     read_charge_price_information,
@@ -30,4 +30,4 @@ from .get_charge_link_metering_point_periods import (
     get_charge_link_metering_point_periods,
 )
 from .time_series_points import get_time_series_points
-from .grid_loss_metering_points import get_grid_loss_metering_points
+from .grid_loss_metering_points import get_grid_loss_metering_point_ids
