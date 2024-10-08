@@ -90,7 +90,7 @@ jobs:
           private_key: ${{ secrets.dh3serviceaccount_privatekey }}
 
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ steps.generate_token.outputs.token }}
           repository: ${{ vars.environment_repository_path }}

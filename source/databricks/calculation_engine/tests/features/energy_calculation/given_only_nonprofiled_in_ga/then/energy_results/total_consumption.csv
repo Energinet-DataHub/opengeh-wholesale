@@ -1,5 +1,5 @@
-﻿grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
-800;;;9.722;['calculated', 'measured'];2023-07-02 02:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;4.721;['calculated', 'missing', 'measured'];2023-07-02 02:15;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;4.721;['calculated', 'missing', 'measured'];2023-07-02 02:30;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;12.202;['calculated', 'missing', 'measured'];2023-07-02 02:45;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
+800;;;9.722;['calculated', 'measured'];2023-07-02 02:00:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7a53928f-a4dd-431e-2c6e-f826f341daec;;PT15M
+800;;;4.721;['calculated', 'missing', 'measured'];2023-07-02 02:15:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7a53928f-a4dd-431e-2c6e-f826f341daec;;PT15M
+800;;;4.721;['calculated', 'missing', 'measured'];2023-07-02 02:30:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7a53928f-a4dd-431e-2c6e-f826f341daec;;PT15M
+800;;;12.202;['calculated', 'missing', 'measured'];2023-07-02 02:45:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7a53928f-a4dd-431e-2c6e-f826f341daec;;PT15M

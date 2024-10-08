@@ -19,7 +19,7 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class GridLossMeteringPoints(DataFrameWrapper):
+class GridLossMeteringPointIds(DataFrameWrapper):
     """
     Represents grid loss metering points.
     """
@@ -27,13 +27,13 @@ class GridLossMeteringPoints(DataFrameWrapper):
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            grid_loss_metering_points_schema,
+            grid_loss_metering_point_ids_schema,
         )
 
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
 # See comments to the `assert_schema()` invocation.
-grid_loss_metering_points_schema = t.StructType(
+grid_loss_metering_point_ids_schema = t.StructType(
     [
         t.StructField(Colname.metering_point_id, t.StringType(), False),
     ]
