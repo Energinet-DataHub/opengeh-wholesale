@@ -13,17 +13,11 @@
 # limitations under the License.
 
 
-class WholesaleBasisDataDatabase:
-    DATABASE_NAME = "wholesale_basis_data"
-    TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
-    CHARGE_LINKS_VIEW_NAME = "charge_link_periods_v1"
-    CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
+class ChargeResolution:
+    """
+    Time resolution of the charges, which is read from the Wholesale data product
+    """
 
-
-class WholesaleWholesaleResultsDatabase:
-    DATABASE_NAME = "wholesale_results"
-    ENERGY_V1_VIEW_NAME = "energy_v1"
-
-
-def get_settlement_reports_output_path(catalog_name: str) -> str:
-    return f"/Volumes/{catalog_name}/wholesale_settlement_report_output/settlement_reports"  # noqa: E501
+    MONTH = "P1M"
+    DAY = "P1D"
+    HOUR = "PT1H"
