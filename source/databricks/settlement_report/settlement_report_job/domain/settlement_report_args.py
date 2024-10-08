@@ -24,10 +24,6 @@ class SettlementReportArgs:
     report_id: str
     period_start: datetime
     period_end: datetime
-    calculation_type: CalculationType
-    requesting_actor_market_role: MarketRole
-    requesting_actor_id: str
-    calculation_id_by_grid_area: dict[str, UUID]
     """A dictionary containing grid area codes (keys) and calculation ids (values)."""
     energy_supplier_ids: list[str] | None
     split_report_by_grid_area: bool
@@ -38,3 +34,14 @@ class SettlementReportArgs:
     """The path to the folder where the settlement reports are stored."""
     include_basis_data: bool
     locale: str
+
+
+@dataclass
+class WholesaleSettlementReportArgs(SettlementReportArgs):
+    requesting_actor_market_role: MarketRole
+    requesting_actor_id: str
+    calculation_id_by_grid_area: dict[str, UUID]
+
+
+class BalanceFixingSettlementReportArgs(SettlementReportArgs):
+    grid_area_codes: list[str]
