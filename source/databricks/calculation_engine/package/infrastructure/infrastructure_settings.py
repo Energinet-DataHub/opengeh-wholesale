@@ -28,4 +28,4 @@ class InfrastructureSettings:
     calculation_input_path: str
     time_series_points_table_name: str | None
     metering_point_periods_table_name: str | None
-    grid_loss_metering_points_table_name: str | None
+    grid_loss_metering_point_ids_table_name: str | None

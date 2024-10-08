@@ -57,7 +57,7 @@ class TestWhenContractMismatch:
             reader._spark.read.format("delta"), "table", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_grid_loss_metering_points()
+                reader.read_grid_loss_metering_point_ids()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -70,7 +70,7 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/calculation_input"
-        table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+        table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
         row = _create_grid_loss_metering_point_row()
         df = spark.createDataFrame(
             data=[row], schema=grid_loss_metering_point_ids_schema
@@ -79,7 +79,7 @@ class TestWhenValidInput:
             spark,
             df,
             WholesaleInternalDatabase.DATABASE_NAME,
-            WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+            WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
             table_location,
             grid_loss_metering_point_ids_schema,
         )
@@ -87,7 +87,7 @@ class TestWhenValidInput:
         reader = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
 
         # Act
-        actual = reader.read_grid_loss_metering_points()
+        actual = reader.read_grid_loss_metering_point_ids()
 
         # Assert
         assert_dataframes_equal(actual, expected)
@@ -111,4 +111,4 @@ class TestWhenValidInputAndExtraColumns:
         with mock.patch.object(
             reader._spark.read.format("delta"), "table", return_value=df
         ):
-            reader.read_grid_loss_metering_points()
+            reader.read_grid_loss_metering_point_ids()

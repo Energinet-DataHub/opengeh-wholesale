@@ -51,7 +51,7 @@ schema_config = [
         name=paths.InputDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                name=paths.InputDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
                 schema=grid_loss_metering_point_ids_schema,
             )
         ],

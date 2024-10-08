@@ -211,7 +211,7 @@ class PreparedDataReader:
     ) -> DataFrame:
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
-            self._wholesale_internal_repository.read_grid_loss_metering_points(),
+            self._wholesale_internal_repository.read_grid_loss_metering_point_ids(),
             Colname.metering_point_id,
             "left_anti",
         )
