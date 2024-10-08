@@ -10,7 +10,9 @@ from settlement_report_job.infrastructure.column_names import (
     TimeSeriesPointCsvColumnNames,
     DataProductColumnNames,
 )
-from settlement_report_job.domain.metering_point_type import MeteringPointType
+from settlement_report_job.domain.DataProductValues.metering_point_type import (
+    MeteringPointType,
+)
 
 
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
