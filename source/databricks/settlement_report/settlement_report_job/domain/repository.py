@@ -43,7 +43,7 @@ class WholesaleRepository:
     def read_charge_price_information_periods(self) -> DataFrame:
         return self._read_view_or_table(
             WholesaleBasisDataDatabase.DATABASE_NAME,
-            WholesaleBasisDataDatabase.CHARGE_LINKS_VIEW_NAME,
+            WholesaleBasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME,
         )
 
     def read_energy(self) -> DataFrame:
