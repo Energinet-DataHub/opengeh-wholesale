@@ -17,6 +17,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
@@ -24,6 +25,9 @@ from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.domain.system_operator_filter import (
+    filter_time_series_on_charge_owner,
+)
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -72,6 +76,8 @@ def _create_time_series(
     calculations_filter: Callable[..., Column],
     actor_filter: Callable[..., Column],
     resolution: DataProductMeteringPointResolution,
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -111,6 +117,15 @@ def _read_from_view(
         & (F.col(DataProductColumnNames.resolution) == resolution.value)
     )
 
+    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
+        df = filter_time_series_on_charge_owner(
+            time_series=df,
+            system_operator_id=requesting_actor_id,
+            charge_link_periods=repository.read_charge_link_periods(),
+            charge_price_information_periods=repository.read_charge_price_information_periods(),
+        )
+
+    df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
 
 def _filter_on_calculation_id_by_grid_area(
     calculation_id_by_grid_area: dict[str, UUID],
