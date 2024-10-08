@@ -134,7 +134,7 @@ def create_prepared_data_reader(
             settings.calculation_input_database_name,
             settings.time_series_points_table_name,
             settings.metering_point_periods_table_name,
-            settings.grid_loss_metering_points_table_name,
+            settings.grid_loss_metering_point_ids_table_name,
         )
     )
 

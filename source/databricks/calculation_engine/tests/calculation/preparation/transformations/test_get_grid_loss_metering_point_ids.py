@@ -18,7 +18,7 @@ import metering_point_periods_factory as factory
 from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )
-from package.calculation.preparation.transformations.grid_loss_metering_points import (
+from package.calculation.preparation.transformations.grid_loss_metering_point_ids import (
     get_grid_loss_metering_point_ids,
 )
 from package.codelists import MeteringPointType
