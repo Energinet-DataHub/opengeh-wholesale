@@ -70,9 +70,6 @@ def _get_actual_for_output(
     if _has_field(calculation_output.basis_data_output, expected_result_name):
         return getattr(calculation_output.basis_data_output, expected_result_name)
 
-    if _has_field(calculation_output.internal_data_output, expected_result_name):
-        return getattr(calculation_output.internal_data_output, expected_result_name)
-
     raise Exception(f"Unknown expected result name: {expected_result_name}")
 
 
