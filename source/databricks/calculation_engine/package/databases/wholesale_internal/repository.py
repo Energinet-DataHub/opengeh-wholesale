@@ -30,21 +30,21 @@ class WholesaleInternalRepository:
         self,
         spark: SparkSession,
         catalog_name: str,
-        grid_loss_metering_points_table_name: str | None = None,
+        grid_loss_metering_point_ids_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
-        self._grid_loss_metering_points_table_name = (
-            grid_loss_metering_points_table_name
-            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
+        self._grid_loss_metering_point_ids_table_name = (
+            grid_loss_metering_point_ids_table_name
+            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
         )
 
-    def read_grid_loss_metering_points(self) -> DataFrame:
+    def read_grid_loss_metering_point_ids(self) -> DataFrame:
         return read_table(
             self._spark,
             self._catalog_name,
             WholesaleInternalDatabase.DATABASE_NAME,
-            self._grid_loss_metering_points_table_name,
+            self._grid_loss_metering_point_ids_table_name,
             grid_loss_metering_point_ids_schema,
         )
 

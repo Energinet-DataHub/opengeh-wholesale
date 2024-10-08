@@ -97,7 +97,7 @@ def parse_job_arguments(
             ),
             time_series_points_table_name=job_args.time_series_points_table_name,
             metering_point_periods_table_name=job_args.metering_point_periods_table_name,
-            grid_loss_metering_points_table_name=job_args.grid_loss_metering_points_table_name,
+            grid_loss_metering_point_ids_table_name=job_args.grid_loss_metering_points_table_name,
         )
 
         return calculator_args, infrastructure_settings
