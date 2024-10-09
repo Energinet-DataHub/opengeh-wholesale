@@ -18,6 +18,7 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput
+from package.databases.table_column_names import TableColumnNames
 from testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
@@ -32,6 +33,12 @@ def assert_output(
     actual_result = _get_actual_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
+    columns_to_skip = []
+    if TableColumnNames.calculation_result_id in expected_result.columns:
+        columns_to_skip.append(TableColumnNames.calculation_result_id)
+    if "result_id" in expected_result.columns:
+        columns_to_skip.append("result_id")
+
     # Sort actual_result and expected_result
     actual_result = actual_result.sort(actual_result.columns)
     expected_result = expected_result.sort(expected_result.columns)
@@ -43,6 +50,7 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
+        columns_to_skip=columns_to_skip,
     )
 
 
@@ -69,9 +77,6 @@ def _get_actual_for_output(
 
     if _has_field(calculation_output.basis_data_output, expected_result_name):
         return getattr(calculation_output.basis_data_output, expected_result_name)
-
-    if _has_field(calculation_output.internal_data_output, expected_result_name):
-        return getattr(calculation_output.internal_data_output, expected_result_name)
 
     raise Exception(f"Unknown expected result name: {expected_result_name}")
 

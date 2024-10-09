@@ -12,18 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.constants import Colname
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
-    GridLossMeteringPointPeriods,
-)
-from package.calculation.preparation.data_structures.grid_loss_metering_points import (
-    GridLossMeteringPointIds,
-)
 
+class ChargeResolution:
+    """
+    Time resolution of the charges, which is read from the Wholesale data product
+    """
 
-def get_grid_loss_metering_point_ids(
-    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
-) -> GridLossMeteringPointIds:
-    return GridLossMeteringPointIds(
-        grid_loss_metering_point_periods.df.select(Colname.metering_point_id).distinct()
-    )
+    MONTH = "P1M"
+    DAY = "P1D"
+    HOUR = "PT1H"
