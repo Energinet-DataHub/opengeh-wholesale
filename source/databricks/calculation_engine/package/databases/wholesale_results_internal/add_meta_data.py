@@ -11,9 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import uuid
-
-import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
 
@@ -42,17 +39,6 @@ def add_metadata(
     return df
 
 
-namespace = uuid.UUID("681fd884-0a2e-4dc2-96ea-c61c3683449c")
-
-
-def _generate_uuid5(concatenated_str: str) -> str:
-    return str(uuid.uuid5(namespace, concatenated_str))
-
-
-# User defined function to generate a deterministic uuid5 from a string
-uuid5_udf = f.udf(_generate_uuid5, StringType())
-
-
 def _add_calculation_result_id(
     df: DataFrame,
     column_group_for_calculation_result_id: list[str],
@@ -66,8 +52,18 @@ def _add_calculation_result_id(
     First the concatenated value is created in a new column as a string type, then the uuid5 is calculated
     and stored in the calculation_result_id column. The new column is then dropped.
     """
-
+    import uuid
     from package.databases.table_column_names import TableColumnNames
+
+    import pyspark.sql.functions as f
+
+    namespace = uuid.UUID("681fd884-0a2e-4dc2-96ea-c61c3683449c")
+
+    def _generate_uuid5(concatenated_str: str) -> str:
+        return str(uuid.uuid5(namespace, concatenated_str))
+
+    # User defined function to generate a deterministic uuid5 from a string
+    uuid5_udf = f.udf(_generate_uuid5, StringType())
 
     concat_placeholder = "concat_placeholder"
     df = df.withColumn(
