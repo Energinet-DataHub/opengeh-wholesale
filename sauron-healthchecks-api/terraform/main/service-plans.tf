@@ -1,5 +1,5 @@
 module "func_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
 
   type                 = "webapp"
   project_name         = var.domain_name_short
