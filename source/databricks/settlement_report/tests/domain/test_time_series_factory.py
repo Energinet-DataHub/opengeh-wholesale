@@ -82,7 +82,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
             )
         },
         energy_supplier_ids=None,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
@@ -124,7 +124,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
             )
         },
         energy_supplier_ids=None,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=resolution,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
@@ -191,11 +191,6 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
 
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
-    report_data_type = (
-        ReportDataType.TimeSeriesHourly
-        if resolution == MeteringPointResolutionDataProductValue.HOUR
-        else ReportDataType.TimeSeriesQuarterly
-    )
 
     # Act
     actual_df = create_time_series_for_wholesale(
@@ -207,7 +202,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
             )
         },
         energy_supplier_ids=None,
-        report_data_type=report_data_type,
+        metering_point_resolution=resolution,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
@@ -227,20 +222,20 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
 @pytest.mark.parametrize(
     "report_data_type",
     [
-        ReportDataType.TimeSeriesQuarterly,
-        ReportDataType.TimeSeriesHourly,
+        MeteringPointResolutionDataProductValue.HOUR,
+        MeteringPointResolutionDataProductValue.QUARTER,
     ],
 )
 def test_create_time_series__when_input_has_both_resolution_types__returns_only_data_with_expected_resolution(
     spark: SparkSession,
-    report_data_type: ReportDataType,
+    resolution: MeteringPointResolutionDataProductValue,
 ) -> None:
     # Arrange
     hourly_metering_point_id = "1111111111111"
     quarterly_metering_point_id = "1515151515115"
     expected_metering_point_id = (
         hourly_metering_point_id
-        if report_data_type == ReportDataType.TimeSeriesHourly
+        if resolution == MeteringPointResolutionDataProductValue.HOUR
         else quarterly_metering_point_id
     )
     spec_hour = default_data.create_time_series_data_spec(
@@ -270,7 +265,7 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        report_data_type=report_data_type,
+        metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -306,7 +301,7 @@ def test_create_time_series__returns_only_days_within_selected_period(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -351,7 +346,7 @@ def test_create_time_series__returns_only_selected_grid_area(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -400,7 +395,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -464,7 +459,7 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         energy_supplier_ids=selected_energy_supplier_ids,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -524,7 +519,7 @@ def test_create_time_series__when_system_operator__returns_only_time_series_with
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
         requesting_actor_id=charge_owner_id,
-        report_data_type=ReportDataType.TimeSeriesHourly,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
