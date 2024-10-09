@@ -21,8 +21,8 @@ import pytest
 from settlement_report_job.domain.DataProductValues.metering_point_type import (
     MeteringPointType,
 )
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolution,
 )
 from settlement_report_job.domain.report_data_type import ReportDataType
 
@@ -40,24 +40,24 @@ def _read_csv_file(file_name: str, spark: SparkSession) -> DataFrame:
 @pytest.mark.parametrize(
     "resolution,grid_area_codes,expected_file_count",
     [
-        (DataProductMeteringPointResolution.HOUR, ["804", "805"], 2),
-        (DataProductMeteringPointResolution.QUARTER, ["804", "805"], 2),
-        (DataProductMeteringPointResolution.HOUR, ["804"], 1),
-        (DataProductMeteringPointResolution.QUARTER, ["804", "805", "806"], 3),
+        (MeteringPointResolution.HOUR, ["804", "805"], 2),
+        (MeteringPointResolution.QUARTER, ["804", "805"], 2),
+        (MeteringPointResolution.HOUR, ["804"], 1),
+        (MeteringPointResolution.QUARTER, ["804", "805", "806"], 3),
     ],
 )
 def test_write__returns_files_corresponding_to_grid_area_codes(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolution,
     grid_area_codes: list[str],
     expected_file_count: int,
 ):
     # Arrange
     report_data_type = (
         ReportDataType.TimeSeriesHourly
-        if resolution == DataProductMeteringPointResolution.HOUR
+        if resolution == MeteringPointResolution.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
     test_spec = factory.TimeSeriesCsvTestDataSpec(

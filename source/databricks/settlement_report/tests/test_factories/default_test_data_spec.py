@@ -9,8 +9,8 @@ from settlement_report_job.domain.DataProductValues.metering_point_type import (
     MeteringPointType,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolution,
 )
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
 from test_factories.charge_price_information_periods_factory import (
@@ -99,7 +99,7 @@ def create_time_series_data_spec(
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_TYPE,
-    resolution: DataProductMeteringPointResolution = DataProductMeteringPointResolution.HOUR,
+    resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     from_date: datetime = DEFAULT_PERIOD_START,

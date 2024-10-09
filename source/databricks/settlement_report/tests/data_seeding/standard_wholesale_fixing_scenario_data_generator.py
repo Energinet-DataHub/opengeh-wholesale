@@ -14,8 +14,8 @@ from test_factories import (
     charge_price_information_periods_factory,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolution,
 )
 from settlement_report_job.domain.DataProductValues.metering_point_type import (
     MeteringPointType,
@@ -39,7 +39,7 @@ class MeteringPointSpec:
     metering_point_id: str
     grid_area_code: str
     energy_supplier_id: str
-    resolution: DataProductMeteringPointResolution
+    resolution: MeteringPointResolution
 
 
 def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
@@ -130,8 +130,8 @@ def _get_all_metering_points() -> list[MeteringPointSpec]:
     metering_points = []
     count = 0
     for resolution in {
-        DataProductMeteringPointResolution.HOUR,
-        DataProductMeteringPointResolution.QUARTER,
+        MeteringPointResolution.HOUR,
+        MeteringPointResolution.QUARTER,
     }:
         for grid_area_code in GRID_AREAS:
             for energy_supplier_id in ENERGY_SUPPLIER_IDS:
