@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class MeteringPointTypeValue:
+class MeteringPointTypeDataProductValue:
     PRODUCTION = "production"
     CONSUMPTION = "consumption"
     EXCHANGE = "exchange"

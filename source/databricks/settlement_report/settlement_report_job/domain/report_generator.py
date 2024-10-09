@@ -3,8 +3,8 @@ from typing import Any
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain import time_series_writer
-from settlement_report_job.domain.DataProductValues.metering_point_resolution_value import (
-    MeteringPointResolutionValue,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
@@ -40,7 +40,6 @@ def execute_quarterly_time_series(
         spark,
         dbutils,
         args,
-        MeteringPointResolutionValue.QUARTER,
         ReportDataType.TimeSeriesQuarterly,
         "quarterly_time_series_files",
     )
@@ -51,6 +50,7 @@ def _execute_time_series(
     dbutils: Any,
     args: SettlementReportArgs,
     time_series_resolution: TimeSeriesResolution,
+    report_data_type: ReportDataType,
     task_key: str,
 ) -> None:
     """

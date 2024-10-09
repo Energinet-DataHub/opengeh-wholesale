@@ -13,11 +13,8 @@
 # limitations under the License.
 
 
-class ChargeTypeValue:
-    """
-    Charge type which is read from the Wholesale data product
-    """
+class MeteringPointResolutionDataProductValue:
+    """Resolution values as defined for metering points in the data product(s)."""
 
-    TARIFF = "tariff"
-    FEE = "fee"
-    SUBSCRIPTION = "subscription"
+    HOUR = "PT1H"
+    QUARTER = "PT15M"

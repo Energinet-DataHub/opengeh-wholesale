@@ -3,15 +3,15 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.DataProductValues.charge_resolution_value import (
-    ChargeResolutionValue,
+from settlement_report_job.domain.DataProductValues.charge_resolution import (
+    ChargeResolutionDataProductValue,
 )
-from settlement_report_job.domain.DataProductValues.charge_type_value import (
-    ChargeTypeValue,
+from settlement_report_job.domain.DataProductValues.charge_type import (
+    ChargeTypeDataProductValue,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_type_value import (
-    MeteringPointTypeValue,
+from settlement_report_job.domain.DataProductValues.metering_point_type import (
+    MeteringPointTypeDataProductValue,
 )
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from settlement_report_job.infrastructure.schemas.charge_price_information_periods_v1 import (
@@ -23,7 +23,7 @@ DEFAULT_PERIOD_END = datetime(2024, 1, 2, 22)
 DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
 DEFAULT_CALCULATION_VERSION = 1
 DEFAULT_METERING_POINT_ID = "12345678-1111-1111-1111-111111111111"
-DEFAULT_METERING_TYPE = MeteringPointTypeValue.CONSUMPTION
+DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
 DEFAULT_GRID_AREA_CODE = "804"
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 
@@ -39,9 +39,9 @@ class ChargePriceInformationPeriodsTestDataSpec:
     calculation_version: int
     charge_key: str
     charge_code: str
-    charge_type: ChargeTypeValue
+    charge_type: ChargeTypeDataProductValue
     charge_owner_id: str
-    resolution: ChargeResolutionValue
+    resolution: ChargeResolutionDataProductValue
     is_tax: bool
     from_date: datetime
     to_date: datetime

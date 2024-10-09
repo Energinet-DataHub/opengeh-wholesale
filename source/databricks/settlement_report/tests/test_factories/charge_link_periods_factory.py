@@ -3,8 +3,8 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.DataProductValues.charge_type_value import (
-    ChargeTypeValue,
+from settlement_report_job.domain.DataProductValues.charge_type import (
+    ChargeTypeDataProductValue,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
@@ -24,7 +24,7 @@ class ChargeLinkPeriodsTestDataSpec:
     calculation_version: int
     charge_key: str
     charge_code: str
-    charge_type: ChargeTypeValue
+    charge_type: ChargeTypeDataProductValue
     charge_owner_id: str
     metering_point_id: str
     quantity: int

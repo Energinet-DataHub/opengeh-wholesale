@@ -13,8 +13,11 @@
 # limitations under the License.
 
 
-class MeteringPointResolutionValue:
-    """Resolution values as defined for metering points in the data product(s)."""
+class ChargeResolutionDataProductValue:
+    """
+    Time resolution of the charges, which is read from the Wholesale data product
+    """
 
+    MONTH = "P1M"
+    DAY = "P1D"
     HOUR = "PT1H"
-    QUARTER = "PT15M"

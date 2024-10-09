@@ -13,11 +13,11 @@
 # limitations under the License.
 
 
-class ChargeResolutionValue:
+class ChargeTypeDataProductValue:
     """
-    Time resolution of the charges, which is read from the Wholesale data product
+    Charge type which is read from the Wholesale data product
     """
 
-    MONTH = "P1M"
-    DAY = "P1D"
-    HOUR = "PT1H"
+    TARIFF = "tariff"
+    FEE = "fee"
+    SUBSCRIPTION = "subscription"

@@ -5,11 +5,11 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DecimalType
 
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_resolution_value import (
-    MeteringPointResolutionValue,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.DataProductValues.metering_point_type_value import (
-    MeteringPointTypeValue,
+from settlement_report_job.domain.DataProductValues.metering_point_type import (
+    MeteringPointTypeDataProductValue,
 )
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
@@ -28,8 +28,8 @@ class MeteringPointTimeSeriesTestDataSpec:
     calculation_type: CalculationType
     calculation_version: int
     metering_point_id: str
-    metering_point_type: MeteringPointTypeValue
-    resolution: MeteringPointResolutionValue
+    metering_point_type: MeteringPointTypeDataProductValue
+    resolution: MeteringPointResolutionDataProductValue
     grid_area_code: str
     energy_supplier_id: str
     from_date: datetime
@@ -43,7 +43,7 @@ def create(
     rows = []
     resolution = (
         timedelta(hours=1)
-        if data_spec.resolution == MeteringPointResolutionValue.HOUR
+        if data_spec.resolution == MeteringPointResolutionDataProductValue.HOUR
         else timedelta(minutes=15)
     )
     current_time = data_spec.from_date
