@@ -322,7 +322,8 @@
         },
         {
             "datasource": {
-                "type": "grafana-azure-monitor-datasource"
+                "type": "grafana-azure-monitor-datasource",
+                "uid": "azure-monitor-oob"
             },
             "fieldConfig": {
                 "defaults": {
@@ -394,7 +395,7 @@
                 "y": 0
             },
             "id": 57,
-            "maxDataPoints": 150,
+            "maxDataPoints": 15000,
             "options": {
                 "minVizHeight": 75,
                 "minVizWidth": 75,
@@ -679,7 +680,8 @@
         },
         {
             "datasource": {
-                "type": "grafana-azure-monitor-datasource"
+                "type": "grafana-azure-monitor-datasource",
+                "uid": "azure-monitor-oob"
             },
             "fieldConfig": {
                 "defaults": {
@@ -1346,7 +1348,7 @@
             },
             {
                 "current": {
-                    "selected": true,
+                    "selected": false,
                     "text": "appi-shres-${env_short}-we-${instance}",
                     "value": "appi-shres-${env_short}-we-${instance}"
                 },
@@ -1415,6 +1417,6 @@
     "timezone": "",
     "title": "DataHub Overview",
     "uid": "edznwpvyvltkwe",
-    "version": 11,
+    "version": 13,
     "weekStart": ""
 }
