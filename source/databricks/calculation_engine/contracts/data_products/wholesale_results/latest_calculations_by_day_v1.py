@@ -14,6 +14,6 @@ latest_calculation_by_day_v1 = t.StructType(
         t.StructField("calculation_version", t.LongType(), not nullable),
         #
         t.StructField("grid_area_code", t.StringType(), not nullable),
-        t.StructField("start_of_day", t.TimestampType(), nullable),
+        t.StructField("start_of_day", t.TimestampType(), not nullable),
     ]
 )
