@@ -5,9 +5,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
 from settlement_report_job.infrastructure import database_definitions
-from settlement_report_job.infrastructure.schemas.energy_v1 import (
-    energy_v1,
-)
+
 from settlement_report_job.infrastructure.schemas.charge_link_periods_v1 import (
     charge_link_periods_v1,
 )
@@ -16,6 +14,9 @@ from settlement_report_job.infrastructure.schemas.charge_price_information_perio
 )
 from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
     metering_point_time_series_v1,
+)
+from settlement_report_job.infrastructure.schemas.energy_v1 import (
+    energy_v1,
 )
 
 

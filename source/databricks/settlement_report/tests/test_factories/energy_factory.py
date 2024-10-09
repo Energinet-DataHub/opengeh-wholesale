@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import List
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import DecimalType, ArrayType, StringType
+from pyspark.sql.types import DecimalType
 
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
@@ -33,7 +34,7 @@ class EnergyTestDataSpec:
     resolution: str
     quantity: DecimalType(18, 3)
     quantity_unit: str
-    quantity_qualities: ArrayType(StringType())
+    quantity_qualities: List[str]
     from_date: datetime
     to_date: datetime
 

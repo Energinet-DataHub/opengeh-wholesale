@@ -36,7 +36,7 @@ from settlement_report_job.infrastructure import logging_configuration
 log = Logger(__name__)
 
 
-@logging_configuration.use_span("settlement_report_job.time_series_writer.write")
+@logging_configuration.use_span("settlement_report_job.csv_writer.write")
 def write(
     dbutils: Any,
     args: SettlementReportArgs,

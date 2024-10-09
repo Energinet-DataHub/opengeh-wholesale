@@ -8,12 +8,11 @@ from settlement_report_job.domain.metering_point_resolution import (
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs 
-from settlement_report_job.domain.time_series_factory import create_time_series
-from settlement_report_job.domain.energy_results_factory import create_energy_results 
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.energy_results_factory import create_energy_results
 from settlement_report_job.domain.time_series_factory import (
     create_time_series_for_wholesale,
-) 
+)
 from settlement_report_job.domain.task_type import TaskType
 
 from settlement_report_job.utils import create_zip_file
@@ -26,7 +25,7 @@ def execute_hourly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
     _execute_time_series(
-        spark, 
+        spark,
         dbutils,
         args,
         DataProductMeteringPointResolution.HOUR,
@@ -73,8 +72,8 @@ def _execute_time_series(
         repository=repository,
         requesting_actor_market_role=args.requesting_actor_market_role,
         requesting_actor_id=args.requesting_actor_id,
-    ) 
-    time_series_files = csv_writer.write( 
+    )
+    time_series_files = csv_writer.write(
         dbutils,
         args,
         time_series_df,
