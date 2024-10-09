@@ -120,3 +120,14 @@ resource "azuread_application_federated_identity_credential" "dh2_bridge" {
   audiences = [local.federated_identity_credential.audience_azuread]
   issuer    = local.federated_identity_credential.issuer_github
 }
+
+resource "azuread_application_federated_identity_credential" "opengeh_notifications" {
+  application_id = azuread_application.app_ci.id
+
+  display_name = "opengeh-notifications"
+  subject      = "repo:Energinet-DataHub/opengeh-notifications:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
+
