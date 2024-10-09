@@ -1,433 +1,505 @@
 ﻿calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area_code;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id;amount_type
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-01-31 23:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 00:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 01:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;37.5;kWh;['measured'];2023-02-01 02:00:00;PT1H;consumption;non_profiled;10;375;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 03:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 04:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 05:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 06:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 07:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 08:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 09:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 10:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 11:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 12:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 13:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 14:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 15:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 16:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 17:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 18:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 19:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 20:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 21:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 22:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-01 23:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 00:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 01:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 02:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 03:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 04:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 05:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 06:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 07:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 08:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 09:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 10:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 11:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 12:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 13:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 14:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 15:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 16:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 17:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 18:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 19:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 20:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 21:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 22:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-02 23:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 00:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 01:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 02:00:00;PT1H;consumption;non_profiled;10;0;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 03:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 04:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 05:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 06:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 07:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 08:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 09:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 10:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 11:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 12:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 13:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 14:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 15:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 16:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 17:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 18:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 19:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 20:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 21:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;0;kWh;['missing'];2023-02-03 22:00:00;PT1H;consumption;non_profiled;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-01-31 23:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 00:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 01:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;10.137;kWh;['calculated', 'missing'];2023-02-01 02:00:00;PT1H;consumption;flex;10;101.37;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 03:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 04:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 05:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 06:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 07:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 08:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 09:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 10:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 11:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 12:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 13:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 14:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 15:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 16:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 17:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 18:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 19:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 20:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 21:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 22:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-01 23:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 00:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 01:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 02:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 03:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 04:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 05:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 06:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 07:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 08:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 09:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 10:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 11:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 12:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 13:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 14:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 15:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 16:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 17:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 18:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 19:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 20:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 21:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 22:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-02 23:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 00:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 01:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 02:00:00;PT1H;consumption;flex;10;0;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 03:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 04:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 05:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 06:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 07:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 08:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 09:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 10:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 11:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 12:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 13:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 14:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 15:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 16:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 17:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 18:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 19:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 20:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 21:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated', 'missing'];2023-02-03 22:00:00;PT1H;consumption;flex;;;false;tariff-hourly-1;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-01-31 23:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 00:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 01:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 02:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 03:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 04:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 05:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 06:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 07:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 08:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 09:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 10:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 11:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 12:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 13:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 14:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 15:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 16:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 17:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 18:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 19:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 20:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 21:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 22:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-01 23:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 00:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 01:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 02:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 03:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 04:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 05:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 06:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 07:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 08:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 09:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 10:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 11:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 12:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 13:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 14:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 15:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 16:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 17:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 18:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 19:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 20:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 21:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 22:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-02 23:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 00:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 01:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;5;kWh;['measured'];2023-02-03 02:00:00;PT1H;consumption_from_grid;;10;50;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 03:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 04:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 05:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 06:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 07:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 08:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 09:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 10:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 11:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 12:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 13:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 14:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 15:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 16:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 17:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 18:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 19:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 20:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 21:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['missing'];2023-02-03 22:00:00;PT1H;consumption_from_grid;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-01-31 23:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 00:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 01:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 02:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 03:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 04:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 05:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 06:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 07:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 08:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 09:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 10:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 11:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 12:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 13:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 14:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 15:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 16:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 17:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 18:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 19:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 20:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 21:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 22:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-01 23:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 00:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 01:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 02:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 03:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 04:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 05:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 06:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 07:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 08:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 09:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 10:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 11:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 12:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 13:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 14:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 15:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 16:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 17:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 18:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 19:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 20:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 21:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 22:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-02 23:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 00:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 01:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 02:00:00;PT1H;production;;10;0;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 03:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 04:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 05:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 06:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 07:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 08:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 09:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 10:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 11:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 12:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 13:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 14:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 15:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 16:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 17:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 18:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 19:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 20:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 21:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;4000000000000;0;kWh;['missing'];2023-02-03 22:00:00;PT1H;production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-01-31 23:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 00:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 01:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 02:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 03:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 04:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 05:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 06:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 07:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 08:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 09:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 10:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 11:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 12:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 13:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 14:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 15:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 16:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 17:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 18:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 19:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 20:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 21:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 22:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-01 23:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 00:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 01:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 02:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 03:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 04:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 05:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 06:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 07:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 08:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 09:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 10:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 11:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 12:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 13:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 14:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 15:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 16:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 17:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 18:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 19:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 20:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 21:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 22:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-02 23:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 00:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 01:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 02:00:00;PT1H;own_production;;10;0;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 03:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 04:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 05:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 06:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 07:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 08:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 09:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 10:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 11:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 12:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 13:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 14:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 15:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 16:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 17:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 18:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 19:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 20:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 21:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['missing'];2023-02-03 22:00:00;PT1H;own_production;;;;false;tariff-hourly-2;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-01-31 23:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 00:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 01:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;44.28;kWh;['calculated', 'measured'];2023-02-01 02:00:00;PT1H;production;;7.654321;338.933334;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 03:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 04:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 05:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 06:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 07:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 08:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 09:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 10:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 11:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 12:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 13:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 14:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 15:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 16:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 17:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 18:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 19:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 20:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 21:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 22:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-01 23:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 00:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 01:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 02:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 03:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 04:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 05:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 06:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 07:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 08:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 09:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 10:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 11:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 12:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 13:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 14:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 15:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 16:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 17:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 18:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 19:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 20:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 21:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 22:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-02 23:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 00:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 01:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 02:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 03:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 04:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 05:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 06:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 07:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 08:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 09:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 10:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 11:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 12:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 13:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 14:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 15:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 16:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 17:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 18:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 19:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 20:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 21:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;0;kWh;['calculated', 'missing'];2023-02-03 22:00:00;PT1H;production;;;;false;tariff-hourly-3;tariff;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-01-31 23:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 00:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 01:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;10.137;kWh;['calculated'];2023-02-01 02:00:00;PT1H;consumption;flex;666.666666;6757.999993;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 03:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 04:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 05:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 06:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 07:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 08:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 09:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 10:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 11:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 12:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 13:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 14:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 15:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 16:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 17:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 18:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 19:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 20:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 21:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 22:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-01 23:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 00:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 01:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 02:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 03:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 04:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 05:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 06:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 07:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 08:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 09:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 10:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 11:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 12:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 13:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 14:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 15:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 16:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 17:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 18:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 19:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 20:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 21:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 22:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-02 23:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 00:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 01:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 02:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 03:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 04:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 05:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 06:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 07:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 08:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 09:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 10:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 11:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 12:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 13:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 14:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 15:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 16:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 17:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 18:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 19:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 20:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 21:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;0;kWh;['calculated'];2023-02-03 22:00:00;PT1H;consumption;flex;;;true;tariff-hourly-4-co_is_tax;tariff;6660000000666;amount_per_charge
