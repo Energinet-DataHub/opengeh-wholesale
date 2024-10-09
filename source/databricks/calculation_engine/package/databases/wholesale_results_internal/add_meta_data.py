@@ -32,9 +32,7 @@ def add_metadata(
             lit(args.calculation_execution_time_start),
         )
     )
-    df = _add_calculation_result_id(
-        df, column_group_for_calculation_result_id, args.calculation_id
-    )
+    df = _add_calculation_result_id(df, column_group_for_calculation_result_id)
 
     return df
 
@@ -42,7 +40,6 @@ def add_metadata(
 def _add_calculation_result_id(
     df: DataFrame,
     column_group_for_calculation_result_id: list[str],
-    calculation_id: str,
 ) -> DataFrame:
     """
     The Databricks engine is not fond of non-deterministic functions like 'uuid()' when it comes to retry.
@@ -69,11 +66,7 @@ def _add_calculation_result_id(
     concat_placeholder = "concat_placeholder"
     df = df.withColumn(
         concat_placeholder,
-        f.concat_ws(
-            "",
-            lit(calculation_id),
-            *[col(c) for c in column_group_for_calculation_result_id]
-        ),
+        f.concat_ws("", *[col(c) for c in column_group_for_calculation_result_id]),
     )
 
     df = df.withColumn(
