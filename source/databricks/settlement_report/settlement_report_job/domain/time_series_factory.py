@@ -100,13 +100,12 @@ def _read_from_view(
     resolution: MeteringPointResolution,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    return repository.read_metering_point_time_series().where(
+    df = repository.read_metering_point_time_series().where(
         (F.col(DataProductColumnNames.observation_time) >= period_start)
         & (F.col(DataProductColumnNames.observation_time) < period_end)
-        & (F.col(DataProductColumnNames.resolution) == resolution.value)
+        & (F.col(DataProductColumnNames.resolution) == resolution)
     )
 
-    df = df.where(F.col(DataProductColumnNames.resolution) == resolution)
 
 def _filter_on_calculation_id_by_grid_area(
     calculation_id_by_grid_area: dict[str, UUID],
