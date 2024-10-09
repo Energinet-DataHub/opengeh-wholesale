@@ -42,8 +42,10 @@ def add_metadata(
 
 namespace = uuid.UUID("681fd884-0a2e-4dc2-96ea-c61c3683449c")
 
+
 def _generate_uuid5(concatenated_str: str) -> str:
     return str(uuid.uuid5(namespace, concatenated_str))
+
 
 # User defined function to generate a deterministic uuid5 from a string
 uuid5_udf = f.udf(_generate_uuid5, StringType())
