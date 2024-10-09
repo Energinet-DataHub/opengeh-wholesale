@@ -16,6 +16,8 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
+from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.domain.latest_calculations import get_latest_calculations
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
@@ -59,33 +61,17 @@ def create_time_series_for_balance_fixing(
         period_end,
         resolution,
         repository,
+    ).where(F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
+
+    latest_balance_fixing_calculations = get_latest_calculations(
+        repository, time_zone
+    ).where(
+        F.col(DataProductColumnNames.calculation_type)
+        == CalculationType.BALANCE_FIXING.value
     )
-
-    calculations = repository.read_calculations()
-    calculations = calculations.withColumn(
-        "calculation_day",
-        F.explode(
-            F.sequence(
-                F.col(DataProductColumnNames.calculation_period_start),
-                F.col(DataProductColumnNames.calculation_period_end),
-                F.expr("INTERVAL 1 DAY")
-            )
-        )
-    ).where(F.col("calculation_day") < F.col(DataProductColumnNames.calculation_period_end))
-
-    window_spec = Window.partitionBy(
-        DataProductColumnNames.calculation_type,DataProductColumnNames.grid_area_code, "calculation_day"
-    ).orderBy(F.desc(DataProductColumnNames.calculation_version))
-
-    calculations = calculations.withColumn(
-        "rank", F.rank().over(window_spec)
+    time_series_points = _filter_latest_calculations(
+        time_series_points, latest_balance_fixing_calculations
     )
-    calculations = calculations.where(F.col("rank") == 1).drop("rank")
-
-
-    # time_series_points = time_series_points.where(
-    #     filter_on_calculation_id_by_grid_area_and_day(calculation_id_by_grid_area)
-    # )
 
     if energy_supplier_ids:
         time_series_points = time_series_points.where(
@@ -177,15 +163,6 @@ def _filter_on_calculation_id_by_grid_area(
     ).isin(calculation_id_by_grid_area_structs)
 
 
-
-def filter_on_calculation_id_by_grid_area_and_day(
-    grid_area_codes: list[str],
-
-) -> None:
-
-
-
-
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory._generate_time_series"
 )
@@ -266,3 +243,20 @@ def _get_desired_quantity_column_count(
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution.value}")
+
+
+def _filter_latest_calculations(
+    time_series_point: DataFrame, latest_calculations: DataFrame
+) -> DataFrame:
+    return time_series_point.join(
+        latest_calculations,
+        on=[
+            time_series_point[DataProductColumnNames.calculation_id]
+            == latest_calculations[DataProductColumnNames.calculation_id],
+            time_series_point[DataProductColumnNames.grid_area_code]
+            == latest_calculations[DataProductColumnNames.grid_area_code],
+            time_series_point[EphemeralColumns.start_of_day]
+            == latest_calculations[EphemeralColumns.start_of_day],
+        ],
+        how="inner",
+    )
