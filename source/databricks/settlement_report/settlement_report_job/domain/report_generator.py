@@ -27,7 +27,7 @@ def execute_hourly_time_series(
         spark,
         dbutils,
         args,
-        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
+        ReportDataType.TimeSeriesHourly,
         task_key="hourly_time_series_files",
     )
 
