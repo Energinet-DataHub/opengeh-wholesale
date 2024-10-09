@@ -42,9 +42,9 @@ log = Logger(__name__)
 
 
 @logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.create_time_series"
+    "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
 )
-def create_time_series(
+def create_time_series_for_wholesale(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
@@ -56,72 +56,66 @@ def create_time_series(
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
-    time_series_points = _read_and_filter_from_view(
+    time_series_points = _read_from_view(
         period_start,
         period_end,
-        calculation_id_by_grid_area,
-        requesting_actor_market_role,
-        requesting_actor_id,
-        energy_supplier_ids,
         resolution,
         repository,
     )
+
+    time_series_points = time_series_points.where(
+        _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
+    )
+
+    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
+        time_series_points = filter_time_series_on_charge_owner(
+            time_series=time_series_points,
+            system_operator_id=requesting_actor_id,
+            charge_link_periods=repository.read_charge_link_periods(),
+            charge_price_information_periods=repository.read_charge_price_information_periods(),
+        )
+
+    if energy_supplier_ids:
+        time_series_points = time_series_points.where(
+            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
+        )
+
     prepared_time_series = _generate_time_series(
         filtered_time_series_points=time_series_points,
-        desired_number_of_quantity_columns=_get_desired_quantity_column_count(
-            resolution
-        ),
+        resolution=resolution,
         time_zone=time_zone,
     )
     return prepared_time_series
 
 
 @logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._read_and_filter_from_view"
+    "settlement_report_job.time_series_factory._read_from_view"
 )
-def _read_and_filter_from_view(
+def _read_from_view(
     period_start: datetime,
     period_end: datetime,
-    calculation_id_by_grid_area: dict[str, UUID],
-    requesting_actor_market_role: MarketRole,
-    requesting_actor_id: str,
-    energy_supplier_ids: list[str] | None,
     resolution: DataProductMeteringPointResolution,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    df = repository.read_metering_point_time_series().where(
+    return repository.read_metering_point_time_series().where(
         (F.col(DataProductColumnNames.observation_time) >= period_start)
         & (F.col(DataProductColumnNames.observation_time) < period_end)
+        & (F.col(DataProductColumnNames.resolution) == resolution.value)
     )
 
-    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
-        df = filter_time_series_on_charge_owner(
-            time_series=df,
-            system_operator_id=requesting_actor_id,
-            charge_link_periods=repository.read_charge_link_periods(),
-            charge_price_information_periods=repository.read_charge_price_information_periods(),
-        )
 
-    df = df.where(F.col(DataProductColumnNames.resolution) == resolution.value)
-
+def _filter_on_calculation_id_by_grid_area(
+    calculation_id_by_grid_area: dict[str, UUID],
+) -> Column:
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
         for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
     ]
 
-    df_filtered = df.where(
-        F.struct(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-        ).isin(calculation_id_by_grid_area_structs)
-    )
-
-    if energy_supplier_ids:
-        df_filtered = df_filtered.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
-
-    return df_filtered
+    return F.struct(
+        F.col(DataProductColumnNames.grid_area_code),
+        F.col(DataProductColumnNames.calculation_id),
+    ).isin(calculation_id_by_grid_area_structs)
 
 
 @logging_configuration.use_span(
@@ -129,9 +123,11 @@ def _read_and_filter_from_view(
 )
 def _generate_time_series(
     filtered_time_series_points: DataFrame,
-    desired_number_of_quantity_columns: int,
+    resolution: DataProductMeteringPointResolution,
     time_zone: str,
 ) -> DataFrame:
+    desired_number_of_quantity_columns = _get_desired_quantity_column_count(resolution)
+
     filtered_time_series_points = filtered_time_series_points.withColumn(
         EphemeralColumns.start_of_day,
         _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
