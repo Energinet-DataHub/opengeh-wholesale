@@ -21,8 +21,6 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.constants import Colname
 from pyspark.sql.types import StringType
 
-from package.databases.table_column_names import TableColumnNames
-
 
 def add_metadata(
     args: CalculatorArgs,
@@ -68,6 +66,8 @@ def _add_calculation_result_id(
     First the concatenated value is created in a new column as a string type, then the uuid5 is calculated
     and stored in the calculation_result_id column. The new column is then dropped.
     """
+
+    from package.databases.table_column_names import TableColumnNames
 
     concat_placeholder = "concat_placeholder"
     df = df.withColumn(
