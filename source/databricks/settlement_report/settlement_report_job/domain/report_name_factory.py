@@ -55,6 +55,17 @@ class FileNameFactory:
         elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
             market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
 
+        if self.args.energy_supplier_ids is None:
+            single_energy_supplier_when_FAS_requested = ""
+        else:
+            single_energy_supplier_when_FAS_requested = str(
+                self.args.energy_supplier_ids[0]
+                if self.args.requesting_actor_market_role
+                == MarketRole.DATAHUB_ADMINISTRATOR
+                and len(self.args.energy_supplier_ids) == 1
+                else ""
+            )
+
         filename_parts = [
             self._get_pre_fix(),
             (
@@ -66,13 +77,7 @@ class FileNameFactory:
                 self.args.requesting_actor_id
                 if self.args.requesting_actor_market_role  # TODO: Is this right to assume? Or is it like _create_time_series where requesting actor isn't what determines it?
                 in [MarketRole.ENERGY_SUPPLIER, MarketRole.GRID_ACCESS_PROVIDER]
-                else (
-                    self.args.energy_supplier_ids[0]
-                    if self.args.requesting_actor_market_role
-                    == MarketRole.DATAHUB_ADMINISTRATOR
-                    and len(self.args.energy_supplier_ids) == 1
-                    else ""
-                )
+                else single_energy_supplier_when_FAS_requested
             ),
             market_role_code,
             self._get_start_date(),
