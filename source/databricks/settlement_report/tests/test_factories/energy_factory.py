@@ -1,14 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import List
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import DecimalType
 
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
-)
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from settlement_report_job.infrastructure.schemas.energy_v1 import (
     energy_v1,
@@ -32,9 +27,9 @@ class EnergyTestDataSpec:
     metering_point_type: str
     settlement_method: str
     resolution: str
-    quantity: DecimalType(18, 3)
+    quantity: Decimal
     quantity_unit: str
-    quantity_qualities: List[str]
+    quantity_qualities: list[str]
     from_date: datetime
     to_date: datetime
 
@@ -42,9 +37,7 @@ class EnergyTestDataSpec:
 def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
     rows = []
     resolution = (
-        timedelta(hours=1)
-        if data_spec.resolution == DataProductMeteringPointResolution.HOUR
-        else timedelta(minutes=15)
+        timedelta(hours=1) if data_spec.resolution == "PT1H" else timedelta(minutes=15)
     )
     current_time = data_spec.from_date
     while current_time < data_spec.to_date:
@@ -59,7 +52,7 @@ def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
                 DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
                 DataProductColumnNames.metering_point_type: data_spec.metering_point_type,
                 DataProductColumnNames.settlement_method: data_spec.settlement_method,
-                DataProductColumnNames.resolution: data_spec.resolution.value,
+                DataProductColumnNames.resolution: data_spec.resolution,
                 DataProductColumnNames.time: current_time,
                 DataProductColumnNames.quantity: data_spec.quantity,
                 DataProductColumnNames.quantity_unit: data_spec.quantity_unit,

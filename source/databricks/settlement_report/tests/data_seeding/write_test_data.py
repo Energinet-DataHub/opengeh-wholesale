@@ -89,6 +89,8 @@ def write_dataframe_to_table(
     schema: StructType,
     mode: str = "overwrite",
 ) -> None:
+    df.count()
+
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
     spark.sql(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
 
