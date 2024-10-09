@@ -17,8 +17,8 @@ import test_factories.charge_price_information_periods_factory as charge_price_i
 
 
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution_value import (
+    MeteringPointResolutionValue,
 )
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.time_series_factory import (
@@ -41,7 +41,7 @@ def _create_time_series_with_increasing_quantity(
     spark: SparkSession,
     from_date: datetime,
     to_date: datetime,
-    resolution: MeteringPointResolution,
+    resolution: MeteringPointResolutionValue,
 ) -> DataFrame:
     spec = default_data.create_time_series_data_spec(
         from_date=from_date, to_date=to_date, resolution=resolution
@@ -56,12 +56,12 @@ def _create_time_series_with_increasing_quantity(
 @pytest.mark.parametrize(
     "resolution",
     [
-        MeteringPointResolution.HOUR,
-        MeteringPointResolution.QUARTER,
+        MeteringPointResolutionValue.HOUR,
+        MeteringPointResolutionValue.QUARTER,
     ],
 )
 def test_create_time_series__when_two_days_of_data__returns_two_rows(
-    spark: SparkSession, resolution: MeteringPointResolution
+    spark: SparkSession, resolution: MeteringPointResolutionValue
 ) -> None:
     # Arrange
     expected_rows = DEFAULT_TO_DATE.day - DEFAULT_FROM_DATE.day
@@ -96,13 +96,13 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
 @pytest.mark.parametrize(
     "resolution, energy_quantity_column_count",
     [
-        (MeteringPointResolution.HOUR, 25),
-        (MeteringPointResolution.QUARTER, 100),
+        (MeteringPointResolutionValue.HOUR, 25),
+        (MeteringPointResolutionValue.QUARTER, 100),
     ],
 )
 def test_create_time_series__returns_expected_energy_quantity_columns(
     spark: SparkSession,
-    resolution: MeteringPointResolution,
+    resolution: MeteringPointResolutionValue,
     energy_quantity_column_count: int,
 ) -> None:
     # Arrange
@@ -145,28 +145,28 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
             # Entering daylight saving time for hourly resolution
             datetime(2023, 3, 25, 23),
             datetime(2023, 3, 27, 22),
-            MeteringPointResolution.HOUR,
+            MeteringPointResolutionValue.HOUR,
             23,
         ),
         (
             # Entering daylight saving time for quarterly resolution
             datetime(2023, 3, 25, 23),
             datetime(2023, 3, 27, 22),
-            MeteringPointResolution.QUARTER,
+            MeteringPointResolutionValue.QUARTER,
             92,
         ),
         (
             # Exiting daylight saving time for hourly resolution
             datetime(2023, 10, 28, 22),
             datetime(2023, 10, 30, 23),
-            MeteringPointResolution.HOUR,
+            MeteringPointResolutionValue.HOUR,
             25,
         ),
         (
             # Exiting daylight saving time for quarterly resolution
             datetime(2023, 10, 28, 22),
             datetime(2023, 10, 30, 23),
-            MeteringPointResolution.QUARTER,
+            MeteringPointResolutionValue.QUARTER,
             100,
         ),
     ],
@@ -175,7 +175,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
     spark: SparkSession,
     from_date: datetime,
     to_date: datetime,
-    resolution: MeteringPointResolution,
+    resolution: MeteringPointResolutionValue,
     expected_columns_with_data: int,
 ) -> None:
     # Arrange
@@ -185,13 +185,13 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
         to_date=to_date,
         resolution=resolution,
     )
-    total_columns = 25 if resolution == MeteringPointResolution.HOUR else 100
+    total_columns = 25 if resolution == MeteringPointResolutionValue.HOUR else 100
 
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
     report_data_type = (
         ReportDataType.TimeSeriesHourly
-        if resolution == MeteringPointResolution.HOUR
+        if resolution == MeteringPointResolutionValue.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
 
@@ -243,11 +243,11 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
     )
     spec_hour = default_data.create_time_series_data_spec(
         metering_point_id=hourly_metering_point_id,
-        resolution=MeteringPointResolution.HOUR,
+        resolution=MeteringPointResolutionValue.HOUR,
     )
     spec_quarter = default_data.create_time_series_data_spec(
         metering_point_id=quarterly_metering_point_id,
-        resolution=MeteringPointResolution.QUARTER,
+        resolution=MeteringPointResolutionValue.QUARTER,
     )
     df = time_series_factory.create(spark, spec_hour).union(
         time_series_factory.create(spark, spec_quarter)

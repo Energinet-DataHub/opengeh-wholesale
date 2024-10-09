@@ -3,8 +3,8 @@ from typing import Any
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain import time_series_writer
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution_value import (
+    MeteringPointResolutionValue,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
@@ -13,6 +13,7 @@ from settlement_report_job.domain.time_series_factory import (
     create_time_series_for_wholesale,
 )
 from settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.domain.time_series_resolution import TimeSeriesResolution
 
 from settlement_report_job.utils import create_zip_file
 from settlement_report_job.logger import Logger
@@ -27,7 +28,6 @@ def execute_hourly_time_series(
         spark,
         dbutils,
         args,
-        MeteringPointResolution.HOUR,
         ReportDataType.TimeSeriesHourly,
         "hourly_time_series_files",
     )
@@ -40,7 +40,7 @@ def execute_quarterly_time_series(
         spark,
         dbutils,
         args,
-        MeteringPointResolution.QUARTER,
+        MeteringPointResolutionValue.QUARTER,
         ReportDataType.TimeSeriesQuarterly,
         "quarterly_time_series_files",
     )
@@ -50,8 +50,7 @@ def _execute_time_series(
     spark: SparkSession,
     dbutils: Any,
     args: SettlementReportArgs,
-    resolution: MeteringPointResolution,
-    report_data_type: ReportDataType,
+    time_series_resolution: TimeSeriesResolution,
     task_key: str,
 ) -> None:
     """
@@ -67,7 +66,7 @@ def _execute_time_series(
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,
         time_zone=args.time_zone,
         energy_supplier_ids=args.energy_supplier_ids,
-        resolution=resolution,
+        time_series_resolution=time_series_resolution,
         repository=repository,
         requesting_actor_market_role=args.requesting_actor_market_role,
         requesting_actor_id=args.requesting_actor_id,

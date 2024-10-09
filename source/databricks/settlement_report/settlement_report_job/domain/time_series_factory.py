@@ -17,17 +17,17 @@ from uuid import UUID
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution_value import (
+    MeteringPointResolutionValue,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
+from settlement_report_job.domain.time_series_resolution import TimeSeriesResolution
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -50,7 +50,7 @@ def create_time_series_for_wholesale(
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
-    report_data_type: ReportDataType,
+    time_series_resolution: TimeSeriesResolution,
     requesting_actor_market_role: MarketRole,
     requesting_actor_id: str,
     time_zone: str,
@@ -58,7 +58,9 @@ def create_time_series_for_wholesale(
 ) -> DataFrame:
     log.info("Creating time series points")
 
-    resolution = _map_report_data_type_to_resolution(report_data_type)
+    resolution = _map_time_series_resolution_to_metering_point_resolution(
+        time_series_resolution
+    )
     time_series_points = _read_from_view(
         period_start,
         period_end,
@@ -97,7 +99,7 @@ def create_time_series_for_wholesale(
 def _read_from_view(
     period_start: datetime,
     period_end: datetime,
-    resolution: MeteringPointResolution,
+    resolution: MeteringPointResolutionValue,
     repository: WholesaleRepository,
 ) -> DataFrame:
     return repository.read_metering_point_time_series().where(
@@ -126,7 +128,7 @@ def _filter_on_calculation_id_by_grid_area(
 )
 def _generate_time_series(
     filtered_time_series_points: DataFrame,
-    resolution: MeteringPointResolution,
+    time_series_resolution: TimeSeriesResolution,
     time_zone: str,
 ) -> DataFrame:
     desired_number_of_quantity_columns = _get_desired_quantity_column_count(resolution)
@@ -193,22 +195,22 @@ def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
 
 
 def _get_desired_quantity_column_count(
-    resolution: MeteringPointResolution,
+    resolution: MeteringPointResolutionValue,
 ) -> int:
-    if resolution == MeteringPointResolution.HOUR:
+    if resolution == MeteringPointResolutionValue.HOUR:
         return 25
-    elif resolution == MeteringPointResolution.QUARTER:
+    elif resolution == MeteringPointResolutionValue.QUARTER:
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution}")
 
 
-def _map_report_data_type_to_resolution(
-    report_data_type: ReportDataType,
-) -> MeteringPointResolution:
-    if report_data_type == ReportDataType.TimeSeriesHourly:
-        return MeteringPointResolution.HOUR
-    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
-        return MeteringPointResolution.QUARTER
+def _map_time_series_resolution_to_metering_point_resolution(
+    time_series_resolution: TimeSeriesResolution,
+) -> MeteringPointResolutionValue:
+    if time_series_resolution == TimeSeriesResolution.Hourly:
+        return MeteringPointResolutionValue.HOUR
+    elif time_series_resolution == TimeSeriesResolution.Quarterly:
+        return MeteringPointResolutionValue.QUARTER
     else:
-        raise ValueError(f"Unknown report data type: {report_data_type}")
+        raise ValueError(f"Unknown time series resolution: {time_series_resolution}")

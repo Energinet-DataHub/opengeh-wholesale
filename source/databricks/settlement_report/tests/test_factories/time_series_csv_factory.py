@@ -3,34 +3,34 @@ from datetime import datetime, timedelta
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution_value import (
+    MeteringPointResolutionValue,
 )
 from settlement_report_job.infrastructure.column_names import (
     TimeSeriesPointCsvColumnNames,
     DataProductColumnNames,
 )
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointType,
+from settlement_report_job.domain.DataProductValues.metering_point_type_value import (
+    MeteringPointTypeValue,
 )
 
 
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_METERING_POINT_TYPE = MeteringPointTypeValue.CONSUMPTION
 DEFAULT_START_OF_DAY = datetime(2024, 1, 1, 23)
 DEFAULT_GRID_AREA_CODES = ["804"]
 DEFAULT_ENERGY_QUANTITY = 235.0
-DEFAULT_RESOLUTION = MeteringPointResolution.HOUR
+DEFAULT_RESOLUTION = MeteringPointResolutionValue.HOUR
 DEFAULT_NUM_METERING_POINTS = 10
 DEFAULT_NUM_DAYS_PER_METERING_POINT = 1
 
 
 @dataclass
 class TimeSeriesCsvTestDataSpec:
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE
+    metering_point_type: MeteringPointTypeValue = DEFAULT_METERING_POINT_TYPE
     start_of_day: datetime = DEFAULT_START_OF_DAY
     grid_area_codes: list = field(default_factory=lambda: DEFAULT_GRID_AREA_CODES)
     energy_quantity: float = DEFAULT_ENERGY_QUANTITY
-    resolution: MeteringPointResolution = DEFAULT_RESOLUTION
+    resolution: MeteringPointResolutionValue = DEFAULT_RESOLUTION
     num_metering_points: int = DEFAULT_NUM_METERING_POINTS
     num_days_per_metering_point: int = DEFAULT_NUM_DAYS_PER_METERING_POINT
 
@@ -52,7 +52,9 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     + timedelta(days=i),
                 }
                 for i in range(
-                    25 if data_spec.resolution == MeteringPointResolution.HOUR else 100
+                    25
+                    if data_spec.resolution == MeteringPointResolutionValue.HOUR
+                    else 100
                 ):
                     row[f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"] = (
                         data_spec.energy_quantity
