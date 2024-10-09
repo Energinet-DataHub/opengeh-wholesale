@@ -1,7 +1,7 @@
 -- This view breaks down each calculation period into daily intervals for each of the calculation's grid areas.
 -- This view only considers external calculations
 
-CREATE OR REPLACE VIEW {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_v1 as
+CREATE OR REPLACE VIEW {CATALOG_NAME}.{WHOLESALE_SAP_DATABASE_NAME}.latest_calculations_by_day_v1 as
 WITH calculations_by_day_and_grid_area_local_time AS (
     SELECT c.calculation_id, c.calculation_type, c.calculation_version, g.grid_area_code,
            explode(sequence(
