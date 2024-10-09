@@ -61,13 +61,15 @@ def create_time_series_for_balance_fixing(
         period_end,
         resolution,
         repository,
-    ).where(F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
+    )
 
-    latest_balance_fixing_calculations = get_latest_calculations(
-        repository, time_zone
-    ).where(
-        F.col(DataProductColumnNames.calculation_type)
-        == CalculationType.BALANCE_FIXING.value
+    latest_balance_fixing_calculations = (
+        get_latest_calculations(repository, time_zone)
+        .where(
+            F.col(DataProductColumnNames.calculation_type)
+            == CalculationType.BALANCE_FIXING.value
+        )
+        .where(F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
     )
     time_series_points = _filter_latest_calculations(
         time_series_points, latest_balance_fixing_calculations
