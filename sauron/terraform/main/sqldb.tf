@@ -1,18 +1,16 @@
-﻿data "azurerm_mssql_server" "mssqlsrv" {
-  name                = data.azurerm_key_vault_secret.mssql_data_name.value
-  resource_group_name = var.shared_resources_resource_group_name
-}
-
-module "mssqldb" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_4.0.1"
+﻿module "mssqldb" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_8.0.0"
 
   name                 = "data"
   location             = azurerm_resource_group.this.location
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
-  server_id            = data.azurerm_mssql_server.mssqlsrv.id
-  sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
+
+  server = {
+    name                = data.azurerm_key_vault_secret.mssql_data_name.value
+    resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
+  }
 
   # Find available SKU's for "single database" (not pooled) here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql
   sku_name                    = "GP_S_Gen5_6" # General Purpose (GP) - serverless compute (S) - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1
@@ -27,9 +25,9 @@ module "mssqldb" {
 }
 
 module "mssql_database_application_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_5.0.0"
 
-  sql_server_name = data.azurerm_mssql_server.mssqlsrv.name
+  sql_server_name = module.mssqldb.server_name
   database_name   = module.mssqldb.name
 
   application_hosts_names = [
