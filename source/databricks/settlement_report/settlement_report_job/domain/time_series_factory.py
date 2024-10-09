@@ -27,7 +27,6 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.domain.time_series_resolution import TimeSeriesResolution
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
@@ -84,7 +83,7 @@ def create_time_series_for_wholesale(
 
     prepared_time_series = _generate_time_series(
         filtered_time_series_points=time_series_points,
-        resolution=resolution,
+        metering_point_resolution=metering_point_resolution,
         time_zone=time_zone,
     )
     return prepared_time_series
