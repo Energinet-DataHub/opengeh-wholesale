@@ -55,22 +55,23 @@ class FileNameFactory:
         elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
             market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
 
-        if self.args.energy_supplier_ids is None:
-            single_energy_supplier_when_FAS_requested = ""
-        else:
-            single_energy_supplier_when_FAS_requested = str(
-                self.args.energy_supplier_ids[0]
-                if self.args.requesting_actor_market_role
-                == MarketRole.DATAHUB_ADMINISTRATOR
-                and len(self.args.energy_supplier_ids) == 1
-                else ""
-            )
+        assert self.args.energy_supplier_ids
+
+        single_energy_supplier_when_FAS_requested = (
+            self.args.energy_supplier_ids[0]
+            if self.args.requesting_actor_market_role
+            == MarketRole.DATAHUB_ADMINISTRATOR
+            and self.args.energy_supplier_ids is not None
+            and len(self.args.energy_supplier_ids) == 1
+            else ""
+        )
 
         filename_parts = [
             self._get_pre_fix(),
             (
                 grid_area_code
                 if len(self.args.calculation_id_by_grid_area) == 1
+                or self.args.split_report_by_grid_area
                 else "flere-net"
             ),
             (

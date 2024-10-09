@@ -33,6 +33,7 @@ class EnergyResultsCsvColumnNames:
     metering_point_type = "TYPEOFMP"
     settlement_method = "SETTLEMENTMETHOD"
     quantity = "ENERGYQUANTITY"
+    energy_supplier_id = "ENERGYSUPPLIERID"
 
 
 class TimeSeriesPointCsvColumnNames:

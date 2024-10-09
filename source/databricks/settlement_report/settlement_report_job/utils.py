@@ -27,6 +27,7 @@ from pyspark.sql.types import DecimalType, DoubleType, FloatType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
+    EnergyResultsCsvColumnNames,
     EphemeralColumns,
 )
 
@@ -192,6 +193,9 @@ def get_new_files(
     new_files = []
 
     regex = spark_output_path
+    if EnergyResultsCsvColumnNames.grid_area_code in partition_columns:
+        regex = f"{regex}/{EnergyResultsCsvColumnNames.grid_area_code}=(\\w{{3}})"
+
     if DataProductColumnNames.grid_area_code in partition_columns:
         regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
 
@@ -213,6 +217,7 @@ def get_new_files(
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))
+
     return new_files
 
 
