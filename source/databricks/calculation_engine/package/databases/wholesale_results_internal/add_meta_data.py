@@ -52,9 +52,10 @@ def _add_calculation_result_id(
     First the concatenated value is created in a new column as a string type, then the uuid5 is calculated
     and stored in the calculation_result_id column. The new column is then dropped.
     """
+
+    # The imports must be added locally in order to be imported correctly.
     import uuid
     from package.databases.table_column_names import TableColumnNames
-
     import pyspark.sql.functions as f
 
     namespace = uuid.UUID("681fd884-0a2e-4dc2-96ea-c61c3683449c")
