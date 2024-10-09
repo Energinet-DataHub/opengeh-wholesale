@@ -61,7 +61,9 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_timeseriesretriever_v2.name}")
         | where severityLevel == 3
-        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "DurableTask.Core.Exceptions.OrchestrationFailureException", "HealthCheckEnd")
+        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd")
+        | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
+        | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
@@ -97,7 +99,9 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
         | where severityLevel == 3
-        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "DurableTask.Core.Exceptions.OrchestrationFailureException", "HealthCheckEnd", "PartitionManagerError")
+        | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd", "PartitionManagerError")
+        | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
+        | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
