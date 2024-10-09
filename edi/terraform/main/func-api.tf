@@ -1,5 +1,5 @@
 module "func_receiver" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
 
   name                        = "api"
   project_name                = var.domain_name_short
@@ -65,7 +65,7 @@ module "func_receiver" {
 }
 
 module "kvs_edi_api_web_job_storage_connection_string" {
-  source       = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source       = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
   name         = "func-edi-api-web-jobs-storage-connection-string"
   value        = module.func_receiver.web_jobs_storage_connection_string
   key_vault_id = module.kv_internal.id

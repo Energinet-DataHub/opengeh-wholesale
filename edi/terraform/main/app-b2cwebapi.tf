@@ -1,5 +1,5 @@
 module "b2c_web_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_6.1.0"
 
   name                       = "b2cwebapi"
   project_name               = var.domain_name_short
@@ -47,7 +47,7 @@ module "b2c_web_api" {
 }
 
 module "kvs_app_edi_b2cwebapi_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "app-edi-b2cwebapi-base-url"
   value        = "https://${module.b2c_web_api.default_hostname}"
