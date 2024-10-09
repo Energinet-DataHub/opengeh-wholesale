@@ -1,7 +1,7 @@
 # Backup of the wholesale data lake storage account to be used by the task force
 
 module "st_data_backup_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
 
   name                       = "databack"
   project_name               = var.domain_name_short
@@ -18,6 +18,8 @@ module "st_data_backup_wholesale" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
+
+  audit_storage_account = null
 }
 
 # The storage containers are not created in the module, as they are used in schema creation. I.e., we want it dynamically

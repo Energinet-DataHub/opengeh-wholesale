@@ -1,5 +1,5 @@
 module "func_orchestrationsdf" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
 
   name                                   = "orchestrationsdf"
   project_name                           = var.domain_name_short
@@ -69,7 +69,7 @@ module "func_orchestrationsdf" {
 }
 
 module "kvs_func_orchestrationsdf_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
   name         = "func-wholesale-orchestrationsdf-base-url"
   value        = "https://${module.func_orchestrationsdf.default_hostname}"
