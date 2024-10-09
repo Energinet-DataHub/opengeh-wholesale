@@ -220,7 +220,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
 
 
 @pytest.mark.parametrize(
-    "report_data_type",
+    "resolution",
     [
         MeteringPointResolutionDataProductValue.HOUR,
         MeteringPointResolutionDataProductValue.QUARTER,
