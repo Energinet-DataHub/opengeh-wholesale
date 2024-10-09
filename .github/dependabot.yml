@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: terraform
+    directories:
+      - /*
+    schedule:
+      interval: daily
+      time: "15:15"
+      timezone: Europe/Copenhagen
+    open-pull-requests-limit: 1
