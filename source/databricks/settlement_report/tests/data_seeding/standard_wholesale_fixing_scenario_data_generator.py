@@ -35,6 +35,10 @@ CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
 IS_TAX = False
 METERING_POINT_TYPES = ["consumption", "exchange"]  # TODO: Add the rest?
 RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
+CALCULATION_PERIOD_START = FROM_DATE
+CALCULATION_PERIOD_END = TO_DATE
+QUANTITY_UNIT = "kwh"
+QUANTITY_QUALITIES = ["measured"]
 
 
 @dataclass
@@ -141,6 +145,8 @@ def create_energy(spark: SparkSession) -> DataFrame:
         data_spec = energy_factory.EnergyTestDataSpec(
             calculation_id=CALCULATION_ID,
             calculation_type=CALCULATION_TYPE,
+            calculation_period_start=CALCULATION_PERIOD_START,
+            calculation_period_end=CALCULATION_PERIOD_END,
             calculation_version=1,
             result_id=RESULT_ID,
             grid_area_code=metering_point.grid_area_code,
@@ -148,6 +154,8 @@ def create_energy(spark: SparkSession) -> DataFrame:
             settlement_method=None,
             resolution=metering_point.resolution,
             quantity=Decimal("1.005"),
+            quantity_unit=QUANTITY_UNIT,
+            quantity_qualities=QUANTITY_QUALITIES,
             from_date=FROM_DATE,
             to_date=TO_DATE,
         )

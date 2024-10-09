@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
@@ -86,12 +89,19 @@ def write_dataframe_to_table(
     mode: str = "overwrite",
 ) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
+    spark.sql(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
+
+    if os.path.exists(table_location):
+        shutil.rmtree(table_location)
 
     sql_schema = _struct_type_to_sql_schema(schema)
+
     spark.sql(
         f"CREATE OR REPLACE TABLE {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )
-    df.write.format("delta").mode(mode).saveAsTable(f"{database_name}.{table_name}")
+    df.write.format("delta").option("overwriteSchema", "true").mode(mode).saveAsTable(
+        f"{database_name}.{table_name}"
+    )
 
 
 def _struct_type_to_sql_schema(schema: StructType) -> str:

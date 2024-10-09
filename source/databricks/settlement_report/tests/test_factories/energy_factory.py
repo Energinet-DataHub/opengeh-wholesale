@@ -23,6 +23,8 @@ class EnergyTestDataSpec:
 
     calculation_id: str
     calculation_type: str
+    calculation_period_start: datetime
+    calculation_period_end: datetime
     calculation_version: int
     result_id: str
     grid_area_code: str
@@ -30,6 +32,8 @@ class EnergyTestDataSpec:
     settlement_method: str
     resolution: str
     quantity: DecimalType(18, 3)
+    quantity_unit: str
+    quantity_qualities: ArrayType(StringType())
     from_date: datetime
     to_date: datetime
 
@@ -47,6 +51,8 @@ def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
                 DataProductColumnNames.calculation_type: data_spec.calculation_type,
+                DataProductColumnNames.calculation_period_start: data_spec.calculation_period_start,
+                DataProductColumnNames.calculation_period_end: data_spec.calculation_period_end,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.result_id: data_spec.result_id,
                 DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
@@ -55,6 +61,8 @@ def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
                 DataProductColumnNames.resolution: data_spec.resolution.value,
                 DataProductColumnNames.time: current_time,
                 DataProductColumnNames.quantity: data_spec.quantity,
+                DataProductColumnNames.quantity_unit: data_spec.quantity_unit,
+                DataProductColumnNames.quantity_qualities: data_spec.quantity_qualities,
             }
         )
         current_time += resolution
