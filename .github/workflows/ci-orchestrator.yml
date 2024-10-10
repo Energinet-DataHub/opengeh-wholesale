@@ -8,6 +8,9 @@ on:
 concurrency:
   group: ${{ github.ref }}
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   #
   # License and Markdown Check
