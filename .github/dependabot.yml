@@ -1,3 +1,4 @@
+# yamllint disable rule:quoted-strings
 version: 2
 updates:
   - package-ecosystem: terraform
@@ -5,7 +6,7 @@ updates:
       - /dh2-bridge/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -25,7 +26,7 @@ updates:
       - /edi/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -45,7 +46,7 @@ updates:
       - /grid-loss-imbalance-prices/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -65,7 +66,7 @@ updates:
       - /esett-exchange/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -85,7 +86,7 @@ updates:
       - /integration-test/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -105,7 +106,7 @@ updates:
       - /market-participant/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -125,7 +126,7 @@ updates:
       - /migrations/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -145,7 +146,7 @@ updates:
       - /revision-log/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -165,7 +166,7 @@ updates:
       - /sauron/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -185,7 +186,7 @@ updates:
       - /sauron-healthchecks-api/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -205,7 +206,7 @@ updates:
       - /settlement-report/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -225,7 +226,7 @@ updates:
       - /shared-resources/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -245,7 +246,7 @@ updates:
       - /ui/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
@@ -265,7 +266,7 @@ updates:
       - /wholesale/**/*
     schedule:
       interval: monthly
-      time: 08:00
+      time: '08:00'
       timezone: Europe/Copenhagen
     open-pull-requests-limit: 1
     commit-message:
