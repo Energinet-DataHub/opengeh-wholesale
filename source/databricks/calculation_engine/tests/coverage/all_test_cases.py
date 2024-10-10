@@ -69,6 +69,10 @@ class Cases:
             Only_external_calculation_ids_included: str
             Calculation_ids_without_calculation_succeeded_time_not_included: str
             Correct_mp_types_included_in_energy_v1_output: str
+            Latest_calculation_by_day_splits_period_in_correct_amount_of_days: str
+            Latest_calculation_by_day_sets_correct_latest_calculation_when_periods_overlap: str
+            Latest_calculation_by_day_includes_correct_calculation_ids_in_output: str
+            Latest_calculation_by_day_only_includes_succeeded_external_calculations: str
 
         class SapResultsTests:
             Calculation_history_splits_period_in_correct_amount_of_days: str
