@@ -2,6 +2,7 @@ locals {
   func_organization = {
     app_settings = {
       FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identity_update_trigger
+      FeatureManagement__EnabledOrganizationIdentityUpdateEmail   = var.enabled_organization_identity_update_email
 
       "Database:ConnectionString"                                 = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
 
