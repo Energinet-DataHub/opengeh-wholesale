@@ -74,7 +74,6 @@ class Cases:
             Latest_calculation_by_day_includes_correct_calculation_ids_in_output: str
             Latest_calculation_by_day_only_includes_succeeded_external_calculations: str
 
-
         class SapResultsTests:
             Calculation_history_splits_period_in_correct_amount_of_days: str
             Calculation_history_sets_correct_latest_calculation_when_periods_overlap: str
