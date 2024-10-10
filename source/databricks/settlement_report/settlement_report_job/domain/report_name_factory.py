@@ -55,8 +55,6 @@ class FileNameFactory:
         elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
             market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
 
-        assert self.args.energy_supplier_ids
-
         single_energy_supplier_when_FAS_requested = (
             self.args.energy_supplier_ids[0]
             if self.args.requesting_actor_market_role
