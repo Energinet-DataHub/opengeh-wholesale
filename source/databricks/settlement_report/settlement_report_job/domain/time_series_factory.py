@@ -16,8 +16,6 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.latest_calculations import get_latest_calculations
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
@@ -42,10 +40,6 @@ from settlement_report_job.infrastructure import logging_configuration
 
 log = Logger(__name__)
 
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
-)
 def create_time_series_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
@@ -86,7 +80,6 @@ def create_time_series_for_balance_fixing(
         time_zone=time_zone,
     )
     return prepared_time_series
-
 
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.create_time_series_for_wholesale"

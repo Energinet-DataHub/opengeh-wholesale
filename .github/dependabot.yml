@@ -8,3 +8,11 @@ updates:
     directory: /source/dotnet
     schedule:
       interval: monthly
+  - package-ecosystem: docker
+    directory: /.docker
+    schedule:
+      interval: daily
+  - package-ecosystem: pip
+    directory: /source/databricks
+    schedule:
+      interval: daily
