@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class ChargeType:
+class ChargeTypeDataProductValue:
     """
     Charge type which is read from the Wholesale data product
     """

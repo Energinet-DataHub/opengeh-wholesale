@@ -48,11 +48,11 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    df_ready_for_writing = apply_report_type_df_changes(df, args, report_data_type)
+    df_ready_for_writing = _apply_report_type_df_changes(df, args, report_data_type)
 
-    partition_columns = get_partition_columns_for_report_type(report_data_type, args)
+    partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
-    order_by_columns = get_order_by_columns_for_report_type(report_data_type)
+    order_by_columns = _get_order_by_columns_for_report_type(report_data_type)
 
     headers = write_files(
         df=df_ready_for_writing,
@@ -78,7 +78,7 @@ def write(
     return files
 
 
-def get_partition_columns_for_report_type(
+def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
 ) -> List[str]:
     partition_columns = []
@@ -98,7 +98,7 @@ def get_partition_columns_for_report_type(
     return partition_columns
 
 
-def get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[str]:
+def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[str]:
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
@@ -121,7 +121,7 @@ def get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[st
     return []
 
 
-def apply_report_type_df_changes(
+def _apply_report_type_df_changes(
     df: DataFrame,
     args: SettlementReportArgs,
     report_type: ReportDataType,
