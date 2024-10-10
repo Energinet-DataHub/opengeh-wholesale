@@ -5,7 +5,10 @@ terraform {
       version = "1.49.1"
     }
     # It is recommended to pin to a given version of the Azure provider
-    azurerm = "4.3.0"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "4.3.0"
+    }
 
     shell = {
       source  = "scottwinkler/shell"
