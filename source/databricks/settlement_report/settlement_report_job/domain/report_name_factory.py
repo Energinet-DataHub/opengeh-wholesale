@@ -137,7 +137,7 @@ class FileNameFactory:
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
         elif self.report_data_type == ReportDataType.EnergyResults:
-            return "ENERGYRESULT"
+            return "RESULTENERGY"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )

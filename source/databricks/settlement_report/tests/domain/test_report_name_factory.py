@@ -203,3 +203,200 @@ def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
         actual
         == f"TSSD60_123_222222222222_DDQ_{expected_start_date}_{expected_end_date}_17.csv"
     )
+
+
+def test_create__when_energy_supplier_requests_energy_report_not_combined__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.split_report_by_grid_area = True
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
+    )
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="123", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert (
+        actual
+        == f"RESULTENERGY_123_{default_settlement_report_args.requesting_actor_id}_DDQ_01-10-2024_31-10-2024.csv"
+    )
+
+
+def test_create__when_energy_supplier_requests_energy_report_combined__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.calculation_id_by_grid_area = {
+        "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+        "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+    }
+
+    default_settlement_report_args.split_report_by_grid_area = False
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
+    )
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="456", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert (
+        actual
+        == f"RESULTENERGY_flere-net_{default_settlement_report_args.requesting_actor_id}_DDQ_01-10-2024_31-10-2024.csv"
+    )
+
+
+def test_create__when_grid_access_provider_requests_energy_report__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    default_settlement_report_args.calculation_id_by_grid_area = {
+        "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+    }
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="456", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert (
+        actual
+        == f"RESULTENERGY_456_{default_settlement_report_args.requesting_actor_id}_DDM_01-10-2024_31-10-2024.csv"
+    )
+
+
+def test_create__when_datahub_administrator_requests_energy_report_single_grid__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    default_settlement_report_args.energy_supplier_ids = None
+    default_settlement_report_args.calculation_id_by_grid_area = {
+        "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+    }
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="456", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert actual == f"RESULTENERGY_456__FAS_01-10-2024_31-10-2024.csv"
+
+
+def test_create__when_datahub_administrator_requests_energy_report_multi_grid_not_combined__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.calculation_id_by_grid_area = {
+        "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+        "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+    }
+    default_settlement_report_args.split_report_by_grid_area = True
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    default_settlement_report_args.energy_supplier_ids = None
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="456", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert actual == f"RESULTENERGY_456__FAS_01-10-2024_31-10-2024.csv"
+
+
+def test_create__when_datahub_administrator_requests_energy_report_multi_grid_single_provider_combined__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.calculation_id_by_grid_area = {
+        "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+        "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+    }
+    default_settlement_report_args.split_report_by_grid_area = False
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    default_settlement_report_args.energy_supplier_ids = ["1234567890123"]
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="456", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert (
+        actual == f"RESULTENERGY_flere-net_1234567890123_FAS_01-10-2024_31-10-2024.csv"
+    )
+
+
+def test_create__when_datahub_administrator_requests_energy_report_multi_grid_all_providers_combined__returns_correct_file_name(
+    spark: SparkSession,
+    default_settlement_report_args: SettlementReportArgs,
+):
+    # Arrange
+    default_settlement_report_args.calculation_id_by_grid_area = {
+        "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+        "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
+    }
+    default_settlement_report_args.split_report_by_grid_area = False
+    default_settlement_report_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    default_settlement_report_args.energy_supplier_ids = None
+
+    factory = FileNameFactory(
+        ReportDataType.EnergyResults, default_settlement_report_args
+    )
+
+    # Act
+    actual = factory.create(
+        grid_area_code="456", energy_supplier_id=None, chunk_index=None
+    )
+
+    # Assert
+    assert actual == f"RESULTENERGY_flere-net__FAS_01-10-2024_31-10-2024.csv"
