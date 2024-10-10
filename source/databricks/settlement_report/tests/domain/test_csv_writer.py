@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.domain import time_series_writer
+from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
 import pyspark.sql.functions as F
@@ -19,10 +19,10 @@ from tests.fixtures import DBUtilsFixture
 from functools import reduce
 import pytest
 from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointType,
+    MeteringPointTypeDataProductValue,
 )
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.report_data_type import ReportDataType
 
@@ -40,24 +40,24 @@ def _read_csv_file(file_name: str, spark: SparkSession) -> DataFrame:
 @pytest.mark.parametrize(
     "resolution,grid_area_codes,expected_file_count",
     [
-        (DataProductMeteringPointResolution.HOUR, ["804", "805"], 2),
-        (DataProductMeteringPointResolution.QUARTER, ["804", "805"], 2),
-        (DataProductMeteringPointResolution.HOUR, ["804"], 1),
-        (DataProductMeteringPointResolution.QUARTER, ["804", "805", "806"], 3),
+        (MeteringPointResolutionDataProductValue.HOUR, ["804", "805"], 2),
+        (MeteringPointResolutionDataProductValue.QUARTER, ["804", "805"], 2),
+        (MeteringPointResolutionDataProductValue.HOUR, ["804"], 1),
+        (MeteringPointResolutionDataProductValue.QUARTER, ["804", "805", "806"], 3),
     ],
 )
 def test_write__returns_files_corresponding_to_grid_area_codes(
     dbutils: DBUtilsFixture,
     spark: SparkSession,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolutionDataProductValue,
     grid_area_codes: list[str],
     expected_file_count: int,
 ):
     # Arrange
     report_data_type = (
         ReportDataType.TimeSeriesHourly
-        if resolution == DataProductMeteringPointResolution.HOUR
+        if resolution == MeteringPointResolutionDataProductValue.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
     test_spec = factory.TimeSeriesCsvTestDataSpec(
@@ -68,10 +68,10 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
     df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -97,10 +97,10 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
     df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -136,10 +136,10 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
     df_prepared_time_series = factory.create(spark, test_spec)
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
@@ -184,10 +184,10 @@ def test_write__files_have_correct_ordering_for_each_file(
     df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )
@@ -234,10 +234,10 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
     df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
     )
 
@@ -269,12 +269,12 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
     standard_wholesale_fixing_scenario_args.locale = "en-gb"
     test_spec_consumption = factory.TimeSeriesCsvTestDataSpec(
-        metering_point_type=MeteringPointType.CONSUMPTION,
+        metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=10,
     )
     test_spec_production = factory.TimeSeriesCsvTestDataSpec(
-        metering_point_type=MeteringPointType.PRODUCTION,
+        metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=20,
     )
@@ -285,10 +285,10 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     ).orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=10,
     )
@@ -341,10 +341,10 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
-    result_files = time_series_writer.write(
+    result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        prepared_time_series=df_prepared_time_series,
+        df=df_prepared_time_series,
         report_data_type=report_data_type,
         rows_per_file=rows_per_file,
     )

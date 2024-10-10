@@ -5,20 +5,22 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.domain.DataProductValues.charge_resolution import (
-    ChargeResolution,
+    ChargeResolutionDataProductValue,
 )
-from settlement_report_job.domain.DataProductValues.charge_type import ChargeType
+from settlement_report_job.domain.DataProductValues.charge_type import (
+    ChargeTypeDataProductValue,
+)
 from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointType,
+    MeteringPointTypeDataProductValue,
 )
 
 GRID_AREAS = ["804", "805"]
@@ -28,7 +30,7 @@ ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
 CHARGE_CODE = "4000"
-CHARGE_TYPE = ChargeType.TARIFF
+CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 CHARGE_OWNER_ID = "5790001330552"
 CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
 IS_TAX = False
@@ -39,7 +41,7 @@ class MeteringPointSpec:
     metering_point_id: str
     grid_area_code: str
     energy_supplier_id: str
-    resolution: DataProductMeteringPointResolution
+    resolution: MeteringPointResolutionDataProductValue
 
 
 def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
@@ -57,7 +59,7 @@ def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
                 calculation_type=CALCULATION_TYPE,
                 calculation_version=1,
                 metering_point_id=metering_point.metering_point_id,
-                metering_point_type=MeteringPointType.CONSUMPTION,
+                metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
                 resolution=metering_point.resolution,
                 grid_area_code=metering_point.grid_area_code,
                 energy_supplier_id=metering_point.energy_supplier_id,
@@ -119,7 +121,7 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
         charge_type=CHARGE_TYPE,
         charge_owner_id=CHARGE_OWNER_ID,
         is_tax=IS_TAX,
-        resolution=ChargeResolution.HOUR,
+        resolution=ChargeResolutionDataProductValue.HOUR,
         from_date=FROM_DATE,
         to_date=TO_DATE,
     )
@@ -130,8 +132,8 @@ def _get_all_metering_points() -> list[MeteringPointSpec]:
     metering_points = []
     count = 0
     for resolution in {
-        DataProductMeteringPointResolution.HOUR,
-        DataProductMeteringPointResolution.QUARTER,
+        MeteringPointResolutionDataProductValue.HOUR,
+        MeteringPointResolutionDataProductValue.QUARTER,
     }:
         for grid_area_code in GRID_AREAS:
             for energy_supplier_id in ENERGY_SUPPLIER_IDS:
