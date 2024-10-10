@@ -3,4 +3,4 @@ calculation_id;calculation_type;calculation_execution_time_start;calculation_res
 0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;1000000000000;2;pcs;;2023-02-02 23:00:00.000000;P1D;consumption_from_grid;;30;60;false;fee-2;fee;0000000000800;amount_per_charge
 0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;3000000000000;2;pcs;;2023-02-02 23:00:00.000000;P1D;consumption;non_profiled;30;60;false;fee-2;fee;0000000000800;amount_per_charge
 0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;1;pcs;;2023-02-01 23:00:00.000000;P1D;production;;;;false;fee-3;fee;0000000000800;amount_per_charge
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;1;pcs;;2023-02-02 23:00:00.000000;P1D;production;;20;20;false;fee-3;fee;0000000000800;amount_per_charge
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;IGNORED;800;2000000000000;10;pcs;;2023-02-02 23:00:00.000000;P1D;production;;20;20;false;fee-3;fee;0000000000800;amount_per_charge
