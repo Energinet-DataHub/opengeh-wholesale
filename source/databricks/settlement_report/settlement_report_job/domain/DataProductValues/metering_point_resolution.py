@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
 
-
-class DataProductMeteringPointResolution(Enum):
+class MeteringPointResolutionDataProductValue:
     """Resolution values as defined for metering points in the data product(s)."""
 
     HOUR = "PT1H"

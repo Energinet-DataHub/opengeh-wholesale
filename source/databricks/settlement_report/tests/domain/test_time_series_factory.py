@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from functools import reduce
 from unittest.mock import Mock
@@ -17,9 +17,10 @@ import test_factories.charge_price_information_periods_factory as charge_price_i
 
 
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.time_series_factory import (
     create_time_series_for_wholesale,
 )
@@ -40,7 +41,7 @@ def _create_time_series_with_increasing_quantity(
     spark: SparkSession,
     from_date: datetime,
     to_date: datetime,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolutionDataProductValue,
 ) -> DataFrame:
     spec = default_data.create_time_series_data_spec(
         from_date=from_date, to_date=to_date, resolution=resolution
@@ -55,12 +56,12 @@ def _create_time_series_with_increasing_quantity(
 @pytest.mark.parametrize(
     "resolution",
     [
-        DataProductMeteringPointResolution.HOUR,
-        DataProductMeteringPointResolution.QUARTER,
+        MeteringPointResolutionDataProductValue.HOUR,
+        MeteringPointResolutionDataProductValue.QUARTER,
     ],
 )
 def test_create_time_series__when_two_days_of_data__returns_two_rows(
-    spark: SparkSession, resolution: DataProductMeteringPointResolution
+    spark: SparkSession, resolution: MeteringPointResolutionDataProductValue
 ) -> None:
     # Arrange
     expected_rows = DEFAULT_TO_DATE.day - DEFAULT_FROM_DATE.day
@@ -81,7 +82,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
             )
         },
         energy_supplier_ids=None,
-        resolution=resolution,
+        metering_point_resolution=resolution,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
@@ -95,13 +96,13 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
 @pytest.mark.parametrize(
     "resolution, energy_quantity_column_count",
     [
-        (DataProductMeteringPointResolution.HOUR, 25),
-        (DataProductMeteringPointResolution.QUARTER, 100),
+        (MeteringPointResolutionDataProductValue.HOUR, 25),
+        (MeteringPointResolutionDataProductValue.QUARTER, 100),
     ],
 )
 def test_create_time_series__returns_expected_energy_quantity_columns(
     spark: SparkSession,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolutionDataProductValue,
     energy_quantity_column_count: int,
 ) -> None:
     # Arrange
@@ -123,7 +124,7 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
             )
         },
         energy_supplier_ids=None,
-        resolution=resolution,
+        metering_point_resolution=resolution,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
@@ -144,28 +145,28 @@ def test_create_time_series__returns_expected_energy_quantity_columns(
             # Entering daylight saving time for hourly resolution
             datetime(2023, 3, 25, 23),
             datetime(2023, 3, 27, 22),
-            DataProductMeteringPointResolution.HOUR,
+            MeteringPointResolutionDataProductValue.HOUR,
             23,
         ),
         (
             # Entering daylight saving time for quarterly resolution
             datetime(2023, 3, 25, 23),
             datetime(2023, 3, 27, 22),
-            DataProductMeteringPointResolution.QUARTER,
+            MeteringPointResolutionDataProductValue.QUARTER,
             92,
         ),
         (
             # Exiting daylight saving time for hourly resolution
             datetime(2023, 10, 28, 22),
             datetime(2023, 10, 30, 23),
-            DataProductMeteringPointResolution.HOUR,
+            MeteringPointResolutionDataProductValue.HOUR,
             25,
         ),
         (
             # Exiting daylight saving time for quarterly resolution
             datetime(2023, 10, 28, 22),
             datetime(2023, 10, 30, 23),
-            DataProductMeteringPointResolution.QUARTER,
+            MeteringPointResolutionDataProductValue.QUARTER,
             100,
         ),
     ],
@@ -174,7 +175,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
     spark: SparkSession,
     from_date: datetime,
     to_date: datetime,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolutionDataProductValue,
     expected_columns_with_data: int,
 ) -> None:
     # Arrange
@@ -184,7 +185,9 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
         to_date=to_date,
         resolution=resolution,
     )
-    total_columns = 25 if resolution == DataProductMeteringPointResolution.HOUR else 100
+    total_columns = (
+        25 if resolution == MeteringPointResolutionDataProductValue.HOUR else 100
+    )
 
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
@@ -199,7 +202,7 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
             )
         },
         energy_supplier_ids=None,
-        resolution=resolution,
+        metering_point_resolution=resolution,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
@@ -219,29 +222,29 @@ def test_create_time_series__when_daylight_saving_tim_transition__returns_expect
 @pytest.mark.parametrize(
     "resolution",
     [
-        DataProductMeteringPointResolution.HOUR,
-        DataProductMeteringPointResolution.QUARTER,
+        MeteringPointResolutionDataProductValue.HOUR,
+        MeteringPointResolutionDataProductValue.QUARTER,
     ],
 )
 def test_create_time_series__when_input_has_both_resolution_types__returns_only_data_with_expected_resolution(
     spark: SparkSession,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolutionDataProductValue,
 ) -> None:
     # Arrange
     hourly_metering_point_id = "1111111111111"
     quarterly_metering_point_id = "1515151515115"
     expected_metering_point_id = (
         hourly_metering_point_id
-        if resolution == DataProductMeteringPointResolution.HOUR
+        if resolution == MeteringPointResolutionDataProductValue.HOUR
         else quarterly_metering_point_id
     )
     spec_hour = default_data.create_time_series_data_spec(
         metering_point_id=hourly_metering_point_id,
-        resolution=DataProductMeteringPointResolution.HOUR,
+        resolution=MeteringPointResolutionDataProductValue.HOUR,
     )
     spec_quarter = default_data.create_time_series_data_spec(
         metering_point_id=quarterly_metering_point_id,
-        resolution=DataProductMeteringPointResolution.QUARTER,
+        resolution=MeteringPointResolutionDataProductValue.QUARTER,
     )
     df = time_series_factory.create(spark, spec_hour).union(
         time_series_factory.create(spark, spec_quarter)
@@ -262,7 +265,7 @@ def test_create_time_series__when_input_has_both_resolution_types__returns_only_
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        resolution=resolution,
+        metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -298,7 +301,7 @@ def test_create_time_series__returns_only_days_within_selected_period(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        resolution=DataProductMeteringPointResolution.HOUR,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -343,7 +346,7 @@ def test_create_time_series__returns_only_selected_grid_area(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        resolution=DataProductMeteringPointResolution.HOUR,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -392,7 +395,7 @@ def test_create_time_series__returns_only_selected_calculation_id(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        resolution=DataProductMeteringPointResolution.HOUR,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -456,7 +459,7 @@ def test_create_time_series__returns_data_for_expected_energy_suppliers(
         energy_supplier_ids=selected_energy_supplier_ids,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        resolution=DataProductMeteringPointResolution.HOUR,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -516,7 +519,7 @@ def test_create_time_series__when_system_operator__returns_only_time_series_with
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
         requesting_actor_id=charge_owner_id,
-        resolution=DataProductMeteringPointResolution.HOUR,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )

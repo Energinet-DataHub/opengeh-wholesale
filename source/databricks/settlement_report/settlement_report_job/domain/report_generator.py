@@ -3,8 +3,8 @@ from typing import Any
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain import csv_writer
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
@@ -27,9 +27,8 @@ def execute_hourly_time_series(
         spark,
         dbutils,
         args,
-        DataProductMeteringPointResolution.HOUR,
         ReportDataType.TimeSeriesHourly,
-        "hourly_time_series_files",
+        task_key="hourly_time_series_files",
     )
 
 
@@ -40,9 +39,8 @@ def execute_quarterly_time_series(
         spark,
         dbutils,
         args,
-        DataProductMeteringPointResolution.QUARTER,
         ReportDataType.TimeSeriesQuarterly,
-        "quarterly_time_series_files",
+        task_key="quarterly_time_series_files",
     )
 
 
@@ -50,7 +48,6 @@ def _execute_time_series(
     spark: SparkSession,
     dbutils: Any,
     args: SettlementReportArgs,
-    resolution: DataProductMeteringPointResolution,
     report_data_type: ReportDataType,
     task_key: str,
 ) -> None:
@@ -60,6 +57,13 @@ def _execute_time_series(
     if not args.include_basis_data:
         return
 
+    if report_data_type is ReportDataType.TimeSeriesHourly:
+        metering_point_resolution = MeteringPointResolutionDataProductValue.HOUR
+    elif report_data_type is ReportDataType.TimeSeriesQuarterly:
+        metering_point_resolution = MeteringPointResolutionDataProductValue.QUARTER
+    else:
+        raise ValueError(f"Unsupported report data type: {report_data_type}")
+
     repository = WholesaleRepository(spark, args.catalog_name)
     time_series_df = create_time_series_for_wholesale(
         period_start=args.period_start,
@@ -67,7 +71,7 @@ def _execute_time_series(
         calculation_id_by_grid_area=args.calculation_id_by_grid_area,
         time_zone=args.time_zone,
         energy_supplier_ids=args.energy_supplier_ids,
-        resolution=resolution,
+        metering_point_resolution=metering_point_resolution,
         repository=repository,
         requesting_actor_market_role=args.requesting_actor_market_role,
         requesting_actor_id=args.requesting_actor_id,
