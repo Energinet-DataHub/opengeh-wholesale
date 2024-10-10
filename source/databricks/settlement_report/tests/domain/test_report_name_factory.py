@@ -313,7 +313,7 @@ def test_create__when_datahub_administrator_requests_energy_report_single_grid__
     )
 
     # Assert
-    assert actual == f"RESULTENERGY_456__FAS_01-10-2024_31-10-2024.csv"
+    assert actual == "RESULTENERGY_456__FAS_01-10-2024_31-10-2024.csv"
 
 
 def test_create__when_datahub_administrator_requests_energy_report_multi_grid_not_combined__returns_correct_file_name(
@@ -341,7 +341,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_no
     )
 
     # Assert
-    assert actual == f"RESULTENERGY_456__FAS_01-10-2024_31-10-2024.csv"
+    assert actual == "RESULTENERGY_456__FAS_01-10-2024_31-10-2024.csv"
 
 
 def test_create__when_datahub_administrator_requests_energy_report_multi_grid_single_provider_combined__returns_correct_file_name(
@@ -370,7 +370,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_si
 
     # Assert
     assert (
-        actual == f"RESULTENERGY_flere-net_1234567890123_FAS_01-10-2024_31-10-2024.csv"
+        actual == "RESULTENERGY_flere-net_1234567890123_FAS_01-10-2024_31-10-2024.csv"
     )
 
 
@@ -399,4 +399,4 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_al
     )
 
     # Assert
-    assert actual == f"RESULTENERGY_flere-net__FAS_01-10-2024_31-10-2024.csv"
+    assert actual == "RESULTENERGY_flere-net__FAS_01-10-2024_31-10-2024.csv"
