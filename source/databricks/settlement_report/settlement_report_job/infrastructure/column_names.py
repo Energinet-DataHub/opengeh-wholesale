@@ -18,6 +18,11 @@ class DataProductColumnNames:
     settlement_method = "settlement_method"
     time = "time"
     to_date = "to_date"
+    result_id = "result_id"
+    calculation_period_start = "calculation_period_start"
+    calculation_period_end = "calculation_period_end"
+    quantity_unit = "quantity_unit"
+    quantity_qualities = "quantity_qualities"
 
 
 class EnergyResultsCsvColumnNames:
@@ -28,6 +33,7 @@ class EnergyResultsCsvColumnNames:
     metering_point_type = "TYPEOFMP"
     settlement_method = "SETTLEMENTMETHOD"
     quantity = "ENERGYQUANTITY"
+    energy_supplier_id = "ENERGYSUPPLIERID"
 
 
 class TimeSeriesPointCsvColumnNames:

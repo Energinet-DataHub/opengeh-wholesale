@@ -23,6 +23,7 @@ from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
+    EnergyResultsCsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
@@ -91,6 +92,8 @@ def _get_partition_columns_for_report_type(
 
         if args.prevent_large_text_files:
             partition_columns.append(EphemeralColumns.chunk_index)
+    if report_type in [ReportDataType.EnergyResults] and args.split_report_by_grid_area:
+        partition_columns = [EnergyResultsCsvColumnNames.grid_area_code]
 
     return partition_columns
 
@@ -105,6 +108,14 @@ def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[s
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
+        ]
+    if report_type in [ReportDataType.EnergyResults]:
+        return [
+            EnergyResultsCsvColumnNames.grid_area_code,
+            # EnergyResultsCsvColumnNames.energy_supplier_id, # TODO: Specification asks for sorting by this, but it does not exist.
+            EnergyResultsCsvColumnNames.metering_point_type,
+            EnergyResultsCsvColumnNames.settlement_method,
+            EnergyResultsCsvColumnNames.time,
         ]
 
     return []
@@ -130,6 +141,8 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.EnergyResults:
+        return "energy_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
 
