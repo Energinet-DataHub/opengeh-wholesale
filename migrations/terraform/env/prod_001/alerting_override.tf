@@ -78,7 +78,7 @@ module "monitor_action_group_mig" {
       threshold   = 0
       query       = <<QUERY
         exceptions
-        | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
+        | where cloud_RoleName in ("${module.func_timeseriesprocessor_v2.name}")
         | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException")
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | where innermostMessage !contains "The operation was canceled."
@@ -97,7 +97,7 @@ module "monitor_action_group_mig" {
       threshold   = 0
       query       = <<QUERY
         traces
-        | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
+        | where cloud_RoleName in ("${module.func_timeseriesprocessor_v2.name}")
         | where severityLevel == 3
         | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd", "PartitionManagerError")
         | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
