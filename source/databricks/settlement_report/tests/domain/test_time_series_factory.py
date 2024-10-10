@@ -82,7 +82,7 @@ def test_create_time_series__when_two_days_of_data__returns_two_rows(
             )
         },
         energy_supplier_ids=None,
-        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
+        metering_point_resolution=resolution,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         time_zone=DEFAULT_TIME_ZONE,
