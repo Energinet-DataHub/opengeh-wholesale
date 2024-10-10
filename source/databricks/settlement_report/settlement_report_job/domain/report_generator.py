@@ -2,7 +2,7 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
-from settlement_report_job.domain import time_series_writer
+from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.metering_point_resolution import (
     DataProductMeteringPointResolution,
 )
@@ -72,7 +72,7 @@ def _execute_time_series(
         requesting_actor_market_role=args.requesting_actor_market_role,
         requesting_actor_id=args.requesting_actor_id,
     )
-    time_series_files = time_series_writer.write(
+    time_series_files = csv_writer.write(
         dbutils,
         args,
         time_series_df,
