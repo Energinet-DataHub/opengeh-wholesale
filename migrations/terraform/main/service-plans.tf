@@ -1,5 +1,5 @@
 module "func_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
 
   type                           = "func"
   project_name                   = var.domain_name_short
@@ -29,7 +29,7 @@ module "func_service_plan" {
 }
 
 module "message_retriever_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_4.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
 
   type                           = "func"
   name                           = "messageretriever"
@@ -60,7 +60,7 @@ module "message_retriever_service_plan" {
 }
 
 module "message_processor_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_4.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
 
   type                           = "func"
   name                           = "messageprocessor"
@@ -90,7 +90,7 @@ module "message_processor_service_plan" {
 }
 
 module "webapp_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
 
   type                           = "webapp"
   project_name                   = var.domain_name_short

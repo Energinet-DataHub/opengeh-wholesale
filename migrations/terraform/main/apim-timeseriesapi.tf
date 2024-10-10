@@ -1,5 +1,5 @@
 module "apim_timeseriesapi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=api-management-api_4.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=api-management-api_5.0.0"
 
   name                       = "timeseriesapi"
   project_name               = var.domain_name_short
