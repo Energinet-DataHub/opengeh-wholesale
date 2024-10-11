@@ -149,11 +149,11 @@ jobs:
       infrastructure_path: ./integration-test/terraform
     secrets: inherit
 
-  # integration_test_terraform_ci:
-  #   needs: changes
-  #   if: ${{ needs.changes.outputs.integration_test_ci == 'true' }}
-  #   uses: ./.github/workflows/integration-test-terraform-ci.yml
-  #   secrets: inherit
+  integration_test_terraform_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.integration_test_ci == 'true' }}
+    uses: ./.github/workflows/integration-test-terraform-ci.yml
+    secrets: inherit
 
   esett_deprecated_ci:
     needs: changes
@@ -206,7 +206,7 @@ jobs:
         integration_test_ci,
         sauron_ci,
         esett_deprecated_ci,
-        # integration_test_terraform_ci,
+        integration_test_terraform_ci,
         sauron_healthchecks_api_ci,
       ]
     if: |
