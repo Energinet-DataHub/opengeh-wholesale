@@ -171,11 +171,11 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     )
 
     # Assert
-    assert actual_df.count() == 1
-    assert (
-        actual_df.collect()[0][DataProductColumnNames.grid_area_code]
-        == selected_grid_area_code
+    actual_grid_area_codes = (
+        actual_df.select(DataProductColumnNames.grid_area_code).distinct().collect()
     )
+    assert len(actual_grid_area_codes) == 1
+    assert actual_grid_area_codes[0][0] == selected_grid_area_code
 
 
 def test_read_and_filter_for_wholesale__returns_only_metering_points_from_selected_calculation_id(
