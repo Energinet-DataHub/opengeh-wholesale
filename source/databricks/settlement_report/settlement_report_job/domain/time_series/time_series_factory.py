@@ -21,7 +21,7 @@ from settlement_report_job.domain.DataProductValues.metering_point_resolution im
     MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.time_series.time_series_prepare_for_csv import (
+from settlement_report_job.domain.time_series.prepare_for_csv import (
     prepare_for_csv,
 )
 from settlement_report_job.domain.time_series.time_series_read_and_filter import (
