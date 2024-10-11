@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from functools import reduce
 from unittest.mock import Mock
 
@@ -88,17 +89,26 @@ def test_read_and_filter_for_wholesale__returns_only_days_within_selected_period
     spark: SparkSession,
 ) -> None:
     # Arrange
+    DATA_FROM_DATE = datetime(2024, 1, 1, 23)
+    DATA_TO_DATE = datetime(2024, 1, 31, 23)
+    NUMBER_OF_DAYS_IN_PERIOD = 2
+    NUMBER_OF_HOURS_IN_PERIOD = NUMBER_OF_DAYS_IN_PERIOD * 24
+    PERIOD_START = datetime(2024, 1, 10, 23)
+    PERIOD_END = PERIOD_START + timedelta(days=NUMBER_OF_DAYS_IN_PERIOD)
+
     df = time_series_factory.create(
         spark,
-        default_data.create_time_series_data_spec(),
+        default_data.create_time_series_data_spec(
+            from_date=DATA_FROM_DATE, to_date=DATA_TO_DATE
+        ),
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
     actual_df = read_and_filter_for_wholesale(
-        period_start=DEFAULT_FROM_DATE,
-        period_end=DEFAULT_TO_DATE,
+        period_start=PERIOD_START,
+        period_end=PERIOD_END,
         calculation_id_by_grid_area={
             default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
                 default_data.DEFAULT_CALCULATION_ID
@@ -112,10 +122,15 @@ def test_read_and_filter_for_wholesale__returns_only_days_within_selected_period
     )
 
     # Assert
-    assert actual_df.count() == 1
+
+    assert actual_df.count() == NUMBER_OF_HOURS_IN_PERIOD
     assert (
-        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.start_of_day]
-        == DEFAULT_FROM_DATE
+        actual_df.agg({DataProductColumnNames.observation_time: "max"}).collect()[0][0]
+        == PERIOD_START
+    )
+    assert (
+        actual_df.agg({DataProductColumnNames.observation_time: "min"}).collect()[0][0]
+        == PERIOD_END
     )
 
 
