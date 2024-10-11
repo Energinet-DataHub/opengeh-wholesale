@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 from functools import reduce
 from unittest.mock import Mock
 
@@ -14,9 +13,6 @@ import test_factories.charge_price_information_periods_factory as charge_price_i
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
-)
-from settlement_report_job.domain.time_series.time_series_factory import (
-    create_time_series_for_wholesale,
 )
 from settlement_report_job.domain.time_series.time_series_read_and_filter import (
     read_and_filter_for_wholesale,
@@ -80,7 +76,6 @@ def test_read_and_filter_for_wholesale__when_input_has_both_resolution_types__re
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         metering_point_resolution=resolution,
-        time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
 
@@ -150,7 +145,7 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series_for_wholesale(
+    actual_df = read_and_filter_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -160,7 +155,6 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
-        time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
 
@@ -260,7 +254,7 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = create_time_series_for_wholesale(
+    actual_df = read_and_filter_for_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
