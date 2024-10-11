@@ -44,7 +44,7 @@ class FileNameFactory:
 
     def _create_energy_result_filename(
         self,
-        grid_area_code: str,
+        grid_area_code: str | None,
     ) -> str:
 
         market_role_code = ""
