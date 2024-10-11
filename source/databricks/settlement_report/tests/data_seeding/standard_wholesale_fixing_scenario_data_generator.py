@@ -128,6 +128,27 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     return charge_price_information_periods_factory.create(spark, data_spec)
 
 
+def create_latest_calculations(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with latest calculations data for testing purposes.
+    """
+
+    data_spec = charge_price_information_periods_factory.ChargePriceInformtionPeriodsTestDataSpec(
+        calculation_id=CALCULATION_ID,
+        calculation_type=CALCULATION_TYPE,
+        calculation_version=1,
+        charge_key=CHARGE_KEY,
+        charge_code=CHARGE_CODE,
+        charge_type=CHARGE_TYPE,
+        charge_owner_id=CHARGE_OWNER_ID,
+        is_tax=IS_TAX,
+        resolution=ChargeResolutionDataProductValue.HOUR,
+        from_date=FROM_DATE,
+        to_date=TO_DATE,
+    )
+    return charge_price_information_periods_factory.create(spark, data_spec)
+
+
 def _get_all_metering_points() -> list[MeteringPointSpec]:
     metering_points = []
     count = 0

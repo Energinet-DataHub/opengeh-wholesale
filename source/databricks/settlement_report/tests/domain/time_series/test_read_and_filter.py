@@ -346,3 +346,46 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
 
     # Assert
     assert (actual.count() > 0) == return_rows
+
+
+def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
+    spark: SparkSession,
+    selected_energy_supplier_ids: list[str] | None,
+    expected_energy_supplier_ids: list[str],
+) -> None:
+    # Arrange
+    df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            time_series_factory.create(
+                spark,
+                default_data.create_time_series_data_spec(
+                    energy_supplier_id=energy_supplier_id,
+                ),
+            )
+            for energy_supplier_id in ENERGY_SUPPLIERS_ABC
+        ],
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = df
+
+    # Act
+    actual_df = read_and_filter_for_wholesale(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        calculation_id_by_grid_area={
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
+                default_data.DEFAULT_CALCULATION_ID
+            )
+        },
+        energy_supplier_ids=selected_energy_supplier_ids,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert set(
+        row[DataProductColumnNames.energy_supplier_id] for row in actual_df.collect()
+    ) == set(expected_energy_supplier_ids)

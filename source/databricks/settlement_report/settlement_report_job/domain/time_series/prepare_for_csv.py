@@ -44,50 +44,6 @@ from settlement_report_job.infrastructure import logging_configuration
 log = Logger(__name__)
 
 
-def create_time_series_for_balance_fixing(
-    period_start: datetime,
-    period_end: datetime,
-    grid_area_codes: list[str],
-    energy_supplier_ids: list[str] | None,
-    resolution: MeteringPointResolutionDataProductValue,
-    time_zone: str,
-    repository: WholesaleRepository,
-) -> DataFrame:
-    log.info("Creating time series points")
-    time_series_points = _read_from_view(
-        period_start,
-        period_end,
-        resolution,
-        repository,
-    )
-
-    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
-        (
-            F.col(DataProductColumnNames.calculation_type)
-            == CalculationTypeDataProductValue.BALANCE_FIXING.value
-        )
-        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
-        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
-        & (F.col(DataProductColumnNames.start_of_day) < period_end)
-    )
-
-    time_series_points = _filter_by_latest_calculations(
-        time_series_points, latest_balance_fixing_calculations
-    )
-
-    if energy_supplier_ids:
-        time_series_points = time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
-
-    prepared_time_series = _generate_time_series(
-        filtered_time_series_points=time_series_points,
-        resolution=resolution,
-        time_zone=time_zone,
-    )
-    return prepared_time_series
-
-
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.prepare_for_csv"
 )
@@ -170,20 +126,3 @@ def _get_desired_quantity_column_count(
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution}")
-
-
-def _filter_by_latest_calculations(
-    time_series_point: DataFrame, latest_calculations: DataFrame
-) -> DataFrame:
-    return time_series_point.join(
-        latest_calculations,
-        on=[
-            time_series_point[DataProductColumnNames.calculation_id]
-            == latest_calculations[DataProductColumnNames.calculation_id],
-            time_series_point[DataProductColumnNames.grid_area_code]
-            == latest_calculations[DataProductColumnNames.grid_area_code],
-            time_series_point[EphemeralColumns.start_of_day]
-            == latest_calculations[EphemeralColumns.start_of_day],
-        ],
-        how="inner",
-    )
