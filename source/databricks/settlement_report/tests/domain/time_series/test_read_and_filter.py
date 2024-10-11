@@ -20,6 +20,7 @@ from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_balance_fixing,
 )
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
+from test_factories import latest_calculations_factory
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
@@ -357,7 +358,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
     # Arrange
     not_latest_calculation_id = "11111111-9fc8-409a-a169-fbd49479d718"
     latest_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
-    df = reduce(
+    latest_calculations_df = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -369,8 +370,23 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
             for calculation_id in [latest_calculation_id, not_latest_calculation_id]
         ],
     )
+    latest_calculations_df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            latest_calculations_factory.create(
+                spark,
+                default_data.create_time_series_data_spec(
+                    calculation_id=calculation_id
+                ),
+            )
+            for calculation_id in [latest_calculation_id, not_latest_calculation_id]
+        ],
+    )
+
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = df
+    mock_repository.read_metering_point_time_series.return_value = (
+        latest_calculations_df
+    )
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(

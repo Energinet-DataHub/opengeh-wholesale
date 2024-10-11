@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from settlement_report_job.domain.DataProductValues.calculation_type import (
+    CalculationTypeDataProductValue,
+)
 from settlement_report_job.domain.DataProductValues.charge_resolution import (
     ChargeResolutionDataProductValue,
 )
@@ -10,7 +13,6 @@ from settlement_report_job.domain.DataProductValues.charge_type import (
 from settlement_report_job.domain.DataProductValues.metering_point_type import (
     MeteringPointTypeDataProductValue,
 )
-from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
 )
@@ -40,7 +42,7 @@ DEFAULT_CHARGE_OWNER_ID = "3333333333333"
 
 def create_charge_link_periods_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
-    calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
@@ -68,7 +70,7 @@ def create_charge_link_periods_data_spec(
 
 def create_charge_price_information_periods_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
-    calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
@@ -97,7 +99,7 @@ def create_charge_price_information_periods_data_spec(
 
 def create_time_series_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
-    calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
