@@ -18,6 +18,7 @@ class DataProductColumnNames:
     quantity = "quantity"
     resolution = "resolution"
     settlement_method = "settlement_method"
+    start_of_day = "start_of_day"
     time = "time"
     to_date = "to_date"
 

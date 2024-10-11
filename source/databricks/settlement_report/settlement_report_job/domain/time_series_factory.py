@@ -16,6 +16,9 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
+from settlement_report_job.domain.DataProductValues.calculation_type import (
+    CalculationTypeDataProductValue,
+)
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
@@ -40,12 +43,13 @@ from settlement_report_job.infrastructure import logging_configuration
 
 log = Logger(__name__)
 
+
 def create_time_series_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
     grid_area_codes: list[str],
     energy_supplier_ids: list[str] | None,
-    resolution: DataProductMeteringPointResolution,
+    resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -57,15 +61,17 @@ def create_time_series_for_balance_fixing(
         repository,
     )
 
-    latest_balance_fixing_calculations = (
-        get_latest_calculations(repository, time_zone)
-        .where(
+    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
+        (
             F.col(DataProductColumnNames.calculation_type)
-            == CalculationType.BALANCE_FIXING.value
+            == CalculationTypeDataProductValue.BALANCE_FIXING.value
         )
-        .where(F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
+        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
+        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
+        & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
-    time_series_points = _filter_latest_calculations(
+
+    time_series_points = _filter_by_latest_calculations(
         time_series_points, latest_balance_fixing_calculations
     )
 
@@ -80,6 +86,7 @@ def create_time_series_for_balance_fixing(
         time_zone=time_zone,
     )
     return prepared_time_series
+
 
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
@@ -105,7 +112,7 @@ def create_time_series_for_wholesale(
     )
 
     time_series_points = time_series_points.where(
-        _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
+        _filter_by_calculation_id_and_grid_area(calculation_id_by_grid_area)
     )
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
@@ -145,7 +152,7 @@ def _read_from_view(
     )
 
 
-def _filter_on_calculation_id_by_grid_area(
+def _filter_by_calculation_id_and_grid_area(
     calculation_id_by_grid_area: dict[str, UUID],
 ) -> Column:
     calculation_id_by_grid_area_structs = [
@@ -243,7 +250,7 @@ def _get_desired_quantity_column_count(
         raise ValueError(f"Unknown time series resolution: {resolution}")
 
 
-def _filter_latest_calculations(
+def _filter_by_latest_calculations(
     time_series_point: DataFrame, latest_calculations: DataFrame
 ) -> DataFrame:
     return time_series_point.join(

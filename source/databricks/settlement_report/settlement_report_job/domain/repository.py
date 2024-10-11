@@ -53,10 +53,10 @@ class WholesaleRepository:
             WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
         )
 
-    def read_calculations(self) -> DataFrame:
+    def read_latest_calculations(self) -> DataFrame:
         return self._read_view_or_table(
-            WholesaleInternalDatabase.DATABASE_NAME,
-            WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_VIEW_NAME,
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME,
         )
 
     def _read_view_or_table(
