@@ -160,7 +160,7 @@ def _filter_by_latest_calculations(
             == latest_calculations[DataProductColumnNames.calculation_id],
             time_series_point[DataProductColumnNames.grid_area_code]
             == latest_calculations[DataProductColumnNames.grid_area_code],
-            time_series_point[DataProductColumnNames.start_of_day]
+            time_series_point[EphemeralColumns.start_of_day]
             == latest_calculations[DataProductColumnNames.start_of_day],
         ],
         how="inner",
