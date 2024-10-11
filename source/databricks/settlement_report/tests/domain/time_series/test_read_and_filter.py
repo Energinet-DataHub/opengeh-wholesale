@@ -528,8 +528,8 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_overlap_in_ti
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(
-        period_start=DEFAULT_FROM_DATE,
-        period_end=DEFAULT_TO_DATE,
+        period_start=day_1,
+        period_end=day_4,
         grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
         energy_supplier_ids=None,
         resolution=default_data.DEFAULT_RESOLUTION,
@@ -538,38 +538,21 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_overlap_in_ti
     )
 
     # Assert
-    actual_calculation_ids_on_day_1 = (
-        actual_df.where(
-            (F.col(DataProductColumnNames.observation_time) >= day_1)
-            & (F.col(DataProductColumnNames.observation_time) < day_2)
-        )
-        .select(DataProductColumnNames.calculation_id)
-        .distinct()
-        .collect()
-    )
-    assert len(actual_calculation_ids_on_day_1) == 1
-    assert actual_calculation_ids_on_day_1[0][0] == calculation_id_1
 
-    actual_calculation_ids_on_day_2 = (
-        actual_df.where(
-            (F.col(DataProductColumnNames.observation_time) >= day_2)
-            & (F.col(DataProductColumnNames.observation_time) < day_3)
+    for day, expected_calculation_id in zip(
+        [day_1, day_2, day_3], [calculation_id_1, calculation_id_1, calculation_id_2]
+    ):
+        actual_calculation_ids = (
+            actual_df.where(
+                (F.col(DataProductColumnNames.observation_time) >= day)
+                & (
+                    F.col(DataProductColumnNames.observation_time)
+                    < day + timedelta(days=1)
+                )
+            )
+            .select(DataProductColumnNames.calculation_id)
+            .distinct()
+            .collect()
         )
-        .select(DataProductColumnNames.calculation_id)
-        .distinct()
-        .collect()
-    )
-    assert len(actual_calculation_ids_on_day_2) == 1
-    assert actual_calculation_ids_on_day_2[0][0] == calculation_id_1
-
-    actual_calculation_ids_on_day_3 = (
-        actual_df.where(
-            (F.col(DataProductColumnNames.observation_time) >= day_3)
-            & (F.col(DataProductColumnNames.observation_time) < day_4)
-        )
-        .select(DataProductColumnNames.calculation_id)
-        .distinct()
-        .collect()
-    )
-    assert len(actual_calculation_ids_on_day_3) == 1
-    assert actual_calculation_ids_on_day_3[0][0] == calculation_id_2
+        assert len(actual_calculation_ids) == 1
+        assert actual_calculation_ids[0][0] == expected_calculation_id
