@@ -145,7 +145,6 @@ def write_files(
     Returns:
         list[str]: Headers for the csv file.
     """
-
     if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
         chunk_index_col = F.floor(

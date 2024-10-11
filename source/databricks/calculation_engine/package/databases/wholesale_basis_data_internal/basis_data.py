@@ -16,8 +16,8 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
 from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.grid_loss_metering_points import (
-    GridLossMeteringPoints,
+from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
+    GridLossMeteringPointIds,
 )
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
@@ -127,12 +127,12 @@ def get_charge_links_basis_data(
     )
 
 
-@logging_configuration.use_span("get_grid_loss_metering_points_basis_data")
-def get_grid_loss_metering_points_basis_data(
+@logging_configuration.use_span("get_grid_loss_metering_point_ids_basis_data")
+def get_grid_loss_metering_point_ids_basis_data(
     calculation_id: str,
-    grid_loss_metering_points: GridLossMeteringPoints,
+    grid_loss_metering_point_ids: GridLossMeteringPointIds,
 ) -> DataFrame:
-    return grid_loss_metering_points.df.select(
+    return grid_loss_metering_point_ids.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
     )

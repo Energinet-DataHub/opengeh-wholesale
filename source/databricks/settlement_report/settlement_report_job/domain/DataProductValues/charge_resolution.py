@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.types import (
-    StructField,
-    StringType,
-    StructType,
-)
 
-from package.databases.table_column_names import TableColumnNames
+class ChargeResolutionDataProductValue:
+    """
+    Time resolution of the charges, which is read from the Wholesale data product
+    """
 
-grid_loss_metering_points_schema = StructType(
-    [
-        StructField(TableColumnNames.calculation_id, StringType(), False),
-        StructField(TableColumnNames.metering_point_id, StringType(), False),
-    ]
-)
+    MONTH = "P1M"
+    DAY = "P1D"
+    HOUR = "PT1H"

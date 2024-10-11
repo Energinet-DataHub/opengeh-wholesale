@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+from package.constants import Colname
+from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
+)
+from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
+    GridLossMeteringPointIds,
+)
 
 
-class DataProductMeteringPointResolution(Enum):
-    """Resolution values as defined for metering points in the data product(s)."""
-
-    HOUR = "PT1H"
-    QUARTER = "PT15M"
+def get_grid_loss_metering_point_ids(
+    grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
+) -> GridLossMeteringPointIds:
+    return GridLossMeteringPointIds(
+        grid_loss_metering_point_periods.df.select(Colname.metering_point_id).distinct()
+    )
