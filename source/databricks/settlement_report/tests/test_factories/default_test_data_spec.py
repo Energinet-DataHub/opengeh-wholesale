@@ -2,15 +2,17 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 from settlement_report_job.domain.DataProductValues.charge_resolution import (
-    ChargeResolution,
+    ChargeResolutionDataProductValue,
 )
-from settlement_report_job.domain.DataProductValues.charge_type import ChargeType
+from settlement_report_job.domain.DataProductValues.charge_type import (
+    ChargeTypeDataProductValue,
+)
 from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointType,
+    MeteringPointTypeDataProductValue,
 )
 from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
+from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    MeteringPointResolutionDataProductValue,
 )
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
 from test_factories.charge_price_information_periods_factory import (
@@ -28,11 +30,11 @@ DEFAULT_PERIOD_END = DEFAULT_TO_DATE
 DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
 DEFAULT_CALCULATION_VERSION = 1
 DEFAULT_METERING_POINT_ID = "3456789012345"
-DEFAULT_METERING_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
 DEFAULT_GRID_AREA_CODE = "804"
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
-DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
+DEFAULT_CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "3333333333333"
 
 
@@ -41,7 +43,7 @@ def create_charge_link_periods_data_spec(
     calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
+    charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
     charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     from_date: datetime = DEFAULT_PERIOD_START,
@@ -69,9 +71,9 @@ def create_charge_price_information_periods_data_spec(
     calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
+    charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
     charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
-    resolution: ChargeResolution = ChargeResolution.HOUR,
+    resolution: ChargeResolutionDataProductValue = ChargeResolutionDataProductValue.HOUR,
     is_tax: bool = False,
     from_date: datetime = DEFAULT_PERIOD_START,
     to_date: datetime = DEFAULT_PERIOD_END,
@@ -98,8 +100,8 @@ def create_time_series_data_spec(
     calculation_type: CalculationType = CalculationType.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_TYPE,
-    resolution: DataProductMeteringPointResolution = DataProductMeteringPointResolution.HOUR,
+    metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
+    resolution: MeteringPointResolutionDataProductValue = MeteringPointResolutionDataProductValue.HOUR,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     from_date: datetime = DEFAULT_PERIOD_START,

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class ChargeResolution:
+class ChargeResolutionDataProductValue:
     """
     Time resolution of the charges, which is read from the Wholesale data product
     """
