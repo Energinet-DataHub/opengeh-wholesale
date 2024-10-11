@@ -53,7 +53,7 @@ def create(
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.metering_point_id: data_spec.metering_point_id,
                 DataProductColumnNames.metering_point_type: data_spec.metering_point_type,
