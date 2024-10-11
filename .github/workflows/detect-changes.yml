@@ -78,41 +78,49 @@ jobs:
             edi_ci:
               - edi/**
               - .github/workflows/edi-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             market_participant_ci:
               - market-participant/**
               - .github/workflows/market-participant-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             settlement_report_ci:
               - settlement-report/**
               - .github/workflows/settlement-report-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             revision_log_ci:
               - revision-log/**
               - .github/workflows/revision-log-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             dh2_bridge_ci:
               - dh2-bridge/**
               - .github/workflows/dh2-bridge-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             grid_loss_imbalance_prices_ci:
               - grid-loss-imbalance-prices/**
               - .github/workflows/grid-loss-imbalance-prices-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             esett_exchange_ci:
               - esett-exchange/**
               - .github/workflows/esett-exchange-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             migrations_ci:
               - migrations/**
               - .github/workflows/migrations-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             shared_resources_infrastructure_ci:
@@ -132,30 +140,36 @@ jobs:
             ui_ci:
               - ui/**
               - .github/workflows/ui-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             wholesale_ci:
               - wholesale/**
               - .github/workflows/wholesale-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             integration_test_ci:
               - integration-test/**
               - .github/workflows/integration-test-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             esett_deprecated_ci:
               - esett-deprecated/**
               - .github/workflows/esett-deprecated-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             sauron_ci:
               - sauron/**
               - .github/workflows/sauron-cd.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             sauron_healthchecks_api_ci:
               - sauron-healthchecks-api/**
               - .github/workflows/sauron-healthchecks-api-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
