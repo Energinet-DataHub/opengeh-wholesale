@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, functions as F, Window, Column
+from pyspark.sql import DataFrame, functions as F, Window
 
+from settlement_report_job.domain.get_start_of_day import (
+    get_start_of_day,
+)
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
@@ -24,7 +27,6 @@ from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (
     DataProductColumnNames,
     TimeSeriesPointCsvColumnNames,
-    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -48,7 +50,7 @@ def prepare_for_csv(
 
     filtered_time_series_points = filtered_time_series_points.withColumn(
         TimeSeriesPointCsvColumnNames.start_of_day,
-        _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
+        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
     win = Window.partitionBy(
@@ -95,13 +97,6 @@ def prepare_for_csv(
         ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
         F.col(TimeSeriesPointCsvColumnNames.start_of_day),
         *quantity_column_names,
-    )
-
-
-def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
-    col = F.col(col) if isinstance(col, str) else col
-    return F.to_utc_timestamp(
-        F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
     )
 
 

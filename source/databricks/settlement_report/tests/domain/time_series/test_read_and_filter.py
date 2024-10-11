@@ -27,6 +27,7 @@ DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
 NOT_SYSTEM_OPERATOR_ID = "4444444444444"
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 @pytest.mark.parametrize(
@@ -386,7 +387,16 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
         grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
         energy_supplier_ids=None,
         resolution=default_data.DEFAULT_RESOLUTION,
+        time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
 
     # Assert
+    actual_calculation_ids = (
+        actual_df.select(DataProductColumnNames.calculation_id).distinct().collect()
+    )
+    assert len(actual_calculation_ids) == 1
+    assert (
+        actual_calculation_ids[0][DataProductColumnNames.calculation_id]
+        == latest_calculation_id
+    )

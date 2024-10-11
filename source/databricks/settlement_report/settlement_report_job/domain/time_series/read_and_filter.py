@@ -19,6 +19,7 @@ from pyspark.sql import DataFrame, functions as F, Column
 from settlement_report_job.domain.DataProductValues.calculation_type import (
     CalculationTypeDataProductValue,
 )
+from settlement_report_job.domain.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
@@ -46,6 +47,7 @@ def read_and_filter_for_balance_fixing(
     grid_area_codes: list[str],
     energy_supplier_ids: list[str] | None,
     resolution: MeteringPointResolutionDataProductValue,
+    time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
@@ -67,7 +69,7 @@ def read_and_filter_for_balance_fixing(
     )
 
     time_series_points = _filter_by_latest_calculations(
-        time_series_points, latest_balance_fixing_calculations
+        time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
     )
 
     if energy_supplier_ids:
@@ -151,8 +153,13 @@ def _filter_on_calculation_id_by_grid_area(
 
 
 def _filter_by_latest_calculations(
-    time_series_point: DataFrame, latest_calculations: DataFrame
+    time_series_point: DataFrame, latest_calculations: DataFrame, time_zone: str
 ) -> DataFrame:
+    time_series_point = time_series_point.withColumn(
+        EphemeralColumns.start_of_day,
+        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
+    )
+
     return time_series_point.join(
         latest_calculations,
         on=[
@@ -164,4 +171,4 @@ def _filter_by_latest_calculations(
             == latest_calculations[DataProductColumnNames.start_of_day],
         ],
         how="inner",
-    )
+    ).select(time_series_point["*"])
