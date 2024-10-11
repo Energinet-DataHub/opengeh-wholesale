@@ -25,7 +25,7 @@ from settlement_report_job.domain.time_series.time_series_prepare_for_csv import
     prepare_for_csv,
 )
 from settlement_report_job.domain.time_series.time_series_read_and_filter import (
-    read_and_filter,
+    read_and_filter_for_wholesale,
 )
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure import logging_configuration
@@ -49,7 +49,7 @@ def create_time_series_for_wholesale(
 ) -> DataFrame:
     log.info("Creating time series points")
 
-    time_series_points = read_and_filter(
+    time_series_points = read_and_filter_for_wholesale(
         period_start=period_start,
         period_end=period_end,
         calculation_id_by_grid_area=calculation_id_by_grid_area,
