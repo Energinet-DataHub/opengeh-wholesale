@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, functions as F
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_time_series_factory as time_series_factory
 import test_factories.charge_link_periods_factory as charge_links_factory
@@ -467,3 +468,109 @@ def test_read_and_filter_for_balance_fixing__returns_only_returns_balance_fixing
         actual_calculation_ids[0][DataProductColumnNames.calculation_id]
         == "22222222-9fc8-409a-a169-fbd49479d718"
     )
+
+
+def test_read_and_filter_for_balance_fixing__when_two_calculations_overlap_in_time__returns_only_latest_calculation_data(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    day_1 = DEFAULT_FROM_DATE
+    day_2 = day_1 + timedelta(days=1)
+    day_3 = day_1 + timedelta(days=2)
+    day_4 = day_1 + timedelta(days=3)
+    calculation_id_1 = "11111111-9fc8-409a-a169-fbd49479d718"
+    calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
+    calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
+
+    times_series_df_1 = time_series_factory.create(
+        spark,
+        default_data.create_time_series_data_spec(
+            calculation_id=calculation_id_1,
+            calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
+            from_date=day_1,
+            to_date=day_3,
+        ),
+    )
+    time_series_df_2 = time_series_factory.create(
+        spark,
+        default_data.create_time_series_data_spec(
+            calculation_id=calculation_id_2,
+            calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
+            from_date=day_2,
+            to_date=day_4,
+        ),
+    )
+    time_series_df = times_series_df_1.union(time_series_df_2)
+
+    latest_calculations_df = latest_calculations_factory.create(
+        spark,
+        [
+            default_data.create_latest_calculations_data_spec(
+                calculation_id=calculation_id_1,
+                calculation_type=calc_type,
+                start_of_day=day_1,
+            ),
+            default_data.create_latest_calculations_data_spec(
+                calculation_id=calculation_id_1,
+                calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
+                start_of_day=day_2,
+            ),
+            default_data.create_latest_calculations_data_spec(
+                calculation_id=calculation_id_2,
+                calculation_type=calc_type,
+                start_of_day=day_3,
+            ),
+        ],
+    )
+
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+
+    # Act
+    actual_df = read_and_filter_for_balance_fixing(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
+        energy_supplier_ids=None,
+        resolution=default_data.DEFAULT_RESOLUTION,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    actual_calculation_ids_on_day_1 = (
+        actual_df.where(
+            (F.col(DataProductColumnNames.observation_time) >= day_1)
+            & (F.col(DataProductColumnNames.observation_time) < day_2)
+        )
+        .select(DataProductColumnNames.calculation_id)
+        .distinct()
+        .collect()
+    )
+    assert len(actual_calculation_ids_on_day_1) == 1
+    assert actual_calculation_ids_on_day_1[0][0] == calculation_id_1
+
+    actual_calculation_ids_on_day_2 = (
+        actual_df.where(
+            (F.col(DataProductColumnNames.observation_time) >= day_2)
+            & (F.col(DataProductColumnNames.observation_time) < day_3)
+        )
+        .select(DataProductColumnNames.calculation_id)
+        .distinct()
+        .collect()
+    )
+    assert len(actual_calculation_ids_on_day_2) == 1
+    assert actual_calculation_ids_on_day_2[0][0] == calculation_id_1
+
+    actual_calculation_ids_on_day_3 = (
+        actual_df.where(
+            (F.col(DataProductColumnNames.observation_time) >= day_3)
+            & (F.col(DataProductColumnNames.observation_time) < day_4)
+        )
+        .select(DataProductColumnNames.calculation_id)
+        .distinct()
+        .collect()
+    )
+    assert len(actual_calculation_ids_on_day_3) == 1
+    assert actual_calculation_ids_on_day_3[0][0] == calculation_id_2

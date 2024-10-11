@@ -131,12 +131,14 @@ def create_latest_calculations_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    start_of_day: datetime = DEFAULT_PERIOD_START,
 ) -> LatestCalculationsTestDataSpec:
 
     return LatestCalculationsTestDataSpec(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
         calculation_version=calculation_version,
-        grid_area_code=DEFAULT_GRID_AREA_CODE,
-        start_of_day=DEFAULT_FROM_DATE,
+        grid_area_code=grid_area_code,
+        start_of_day=start_of_day,
     )
