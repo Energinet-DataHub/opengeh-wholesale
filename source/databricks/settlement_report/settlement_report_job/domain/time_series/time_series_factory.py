@@ -24,7 +24,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.time_series.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.domain.time_series.time_series_read_and_filter import (
+from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
 )
 from settlement_report_job.logger import Logger

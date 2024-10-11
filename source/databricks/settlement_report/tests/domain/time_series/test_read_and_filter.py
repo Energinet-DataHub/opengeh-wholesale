@@ -14,13 +14,10 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.time_series.time_series_read_and_filter import (
+from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
 )
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
-    TimeSeriesPointCsvColumnNames,
-)
+from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
@@ -82,7 +79,7 @@ def test_read_and_filter_for_wholesale__when_input_has_both_resolution_types__re
     # Assert
     assert actual_df.count() == 1
     assert (
-        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.metering_point_id]
+        actual_df.collect()[0][DataProductColumnNames.metering_point_id]
         == expected_metering_point_id
     )
 
@@ -166,7 +163,7 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     )
 
 
-def test_read_and_filter_for_wholesale__returns_only_selected_calculation_id(
+def test_read_and_filter_for_wholesale__returns_only_metering_points_from_selected_calculation_id(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -207,9 +204,12 @@ def test_read_and_filter_for_wholesale__returns_only_selected_calculation_id(
     )
 
     # Assert
-    assert actual_df.count() == 1
+    actual_metering_point_ids = (
+        actual_df.select(DataProductColumnNames.metering_point_id).distinct().collect()
+    )
+    assert len(actual_metering_point_ids) == 1
     assert (
-        actual_df.collect()[0][TimeSeriesPointCsvColumnNames.metering_point_id]
+        actual_metering_point_ids[0][DataProductColumnNames.metering_point_id]
         == expected_metering_point_id
     )
 
@@ -271,8 +271,7 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
 
     # Assert
     assert set(
-        row[TimeSeriesPointCsvColumnNames.energy_supplier_id]
-        for row in actual_df.collect()
+        row[DataProductColumnNames.energy_supplier_id] for row in actual_df.collect()
     ) == set(expected_energy_supplier_ids)
 
 
