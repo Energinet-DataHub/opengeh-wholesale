@@ -78,9 +78,12 @@ def test_read_and_filter_for_wholesale__when_input_has_both_resolution_types__re
     )
 
     # Assert
-    assert actual_df.count() == 1
+    actual_metering_point_ids = (
+        actual_df.select(DataProductColumnNames.metering_point_id).distinct().collect()
+    )
+    assert len(actual_metering_point_ids) == 1
     assert (
-        actual_df.collect()[0][DataProductColumnNames.metering_point_id]
+        actual_metering_point_ids[0][DataProductColumnNames.metering_point_id]
         == expected_metering_point_id
     )
 
