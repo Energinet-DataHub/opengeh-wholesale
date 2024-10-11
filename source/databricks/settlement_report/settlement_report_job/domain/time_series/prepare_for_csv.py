@@ -47,7 +47,7 @@ def prepare_for_csv(
     )
 
     filtered_time_series_points = filtered_time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
+        TimeSeriesPointCsvColumnNames.start_of_day,
         _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
@@ -56,7 +56,7 @@ def prepare_for_csv(
         DataProductColumnNames.energy_supplier_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
-        EphemeralColumns.start_of_day,
+        TimeSeriesPointCsvColumnNames.start_of_day,
     ).orderBy(DataProductColumnNames.observation_time)
     filtered_time_series_points = filtered_time_series_points.withColumn(
         "chronological_order", F.row_number().over(win)
@@ -68,7 +68,7 @@ def prepare_for_csv(
             DataProductColumnNames.energy_supplier_id,
             DataProductColumnNames.metering_point_id,
             DataProductColumnNames.metering_point_type,
-            EphemeralColumns.start_of_day,
+            TimeSeriesPointCsvColumnNames.start_of_day,
         )
         .pivot(
             "chronological_order",
@@ -93,9 +93,7 @@ def prepare_for_csv(
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
-        F.col(EphemeralColumns.start_of_day).alias(
-            TimeSeriesPointCsvColumnNames.start_of_day
-        ),
+        F.col(TimeSeriesPointCsvColumnNames.start_of_day),
         *quantity_column_names,
     )
 

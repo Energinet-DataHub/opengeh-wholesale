@@ -17,6 +17,7 @@ from settlement_report_job.domain.DataProductValues.metering_point_resolution im
 )
 from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
+    read_and_filter_for_balance_fixing,
 )
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 
@@ -354,23 +355,25 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
     expected_energy_supplier_ids: list[str],
 ) -> None:
     # Arrange
+    not_latest_calculation_id = "11111111-9fc8-409a-a169-fbd49479d718"
+    latest_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
     df = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
                 spark,
                 default_data.create_time_series_data_spec(
-                    energy_supplier_id=energy_supplier_id,
+                    calculation_id=calculation_id
                 ),
             )
-            for energy_supplier_id in ENERGY_SUPPLIERS_ABC
+            for calculation_id in [latest_calculation_id, not_latest_calculation_id]
         ],
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = df
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter_for_balance_fixing(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
