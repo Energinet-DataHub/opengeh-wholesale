@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DecimalType
 
-from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.domain.DataProductValues.calculation_type import (
+    CalculationTypeDataProductValue,
+)
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
 )
@@ -25,7 +27,7 @@ class MeteringPointTimeSeriesTestDataSpec:
     """
 
     calculation_id: str
-    calculation_type: CalculationType
+    calculation_type: CalculationTypeDataProductValue
     calculation_version: int
     metering_point_id: str
     metering_point_type: MeteringPointTypeDataProductValue
