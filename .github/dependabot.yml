@@ -3,7 +3,7 @@ version: 2
 updates:
   - package-ecosystem: "terraform"
     directories:
-      - "/dh2-bridge/**/*"
+      - "/dh2-bridge/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -23,7 +23,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/edi/**/*"
+      - "/edi/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -43,7 +43,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/grid-loss-imbalance-prices/**/*"
+      - "/grid-loss-imbalance-prices/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -63,7 +63,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/esett-exchange/**/*"
+      - "/esett-exchange/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -83,7 +83,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/integration-test/**/*"
+      - "/integration-test/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -103,7 +103,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/market-participant/**/*"
+      - "/market-participant/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -123,7 +123,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/migrations/**/*"
+      - "/migrations/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -143,7 +143,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/revision-log/**/*"
+      - "/revision-log/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -163,7 +163,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/sauron/**/*"
+      - "/sauron/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -183,7 +183,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/sauron-healthchecks-api/**/*"
+      - "/sauron-healthchecks-api/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -203,7 +203,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/settlement-report/**/*"
+      - "/settlement-report/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -223,7 +223,8 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/shared-resources/**/*"
+      - "/shared-resources/terraform/b2c/main/**"
+      - "/shared-resources/terraform/infrastructure/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -243,7 +244,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/ui/**/*"
+      - "/ui/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -263,7 +264,7 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/wholesale/**/*"
+      - "/wholesale/terraform/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
