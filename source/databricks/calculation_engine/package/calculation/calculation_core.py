@@ -162,7 +162,7 @@ class CalculationCore:
     ) -> CalculationOutput:
         calculation_output = CalculationOutput()
 
-        # cache of metering_point_time_series had no effect on performance (01-12-2023)
+        # cache of metering point time series had no effect on performance (01-12-2023)
         parent_metering_point_periods = (
             prepared_data_reader.get_metering_point_periods_df(
                 args.calculation_period_start_datetime,
@@ -183,14 +183,14 @@ class CalculationCore:
             )
         )
 
-        metering_point_time_series = (
+        parent_metering_point_time_series__except_grid_loss = (
             prepared_data_reader.get_metering_point_time_series(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
                 metering_point_periods__except_grid_loss,
             )
         )
-        metering_point_time_series.cache_internal()
+        parent_metering_point_time_series__except_grid_loss.cache_internal()
 
         (
             calculation_output.energy_results_output,
@@ -198,16 +198,16 @@ class CalculationCore:
             negative_grid_loss,
         ) = energy_calculation.execute(
             args,
-            metering_point_time_series,
+            parent_metering_point_time_series__except_grid_loss,
             grid_loss_metering_point_periods,
         )
 
         # This extends the content of metering_point_time_series with calculated grid loss,
         # which is used in the wholesale calculation and the basis data
-        metering_point_time_series = (
+        parent_metering_point_time_series__including_grid_loss = (
             append_calculated_grid_loss_to_metering_point_times_series(
                 args,
-                metering_point_time_series,
+                parent_metering_point_time_series__except_grid_loss,
                 positive_grid_loss,
                 negative_grid_loss,
             )
@@ -221,7 +221,7 @@ class CalculationCore:
         calculation_output.basis_data_output = basis_data_factory.create(
             args,
             parent_metering_point_periods,
-            metering_point_time_series,
+            parent_metering_point_time_series__including_grid_loss,
             input_charges_container=None,
             grid_loss_metering_point_ids=grid_loss_metering_point_ids,
         )
