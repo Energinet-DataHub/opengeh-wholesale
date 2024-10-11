@@ -20,6 +20,7 @@ from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestData
 from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsTestDataSpec,
 )
+from test_factories.latest_calculations_factory import LatestCalculationsTestDataSpec
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
@@ -122,4 +123,19 @@ def create_time_series_data_spec(
         from_date=from_date,
         to_date=to_date,
         quantity=quantity,
+    )
+
+
+def create_latest_calculations_data_spec(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_version: int = DEFAULT_CALCULATION_VERSION,
+) -> LatestCalculationsTestDataSpec:
+
+    return LatestCalculationsTestDataSpec(
+        calculation_id=calculation_id,
+        calculation_type=calculation_type,
+        calculation_version=calculation_version,
+        grid_area_code=DEFAULT_GRID_AREA_CODE,
+        start_of_day=DEFAULT_FROM_DATE,
     )
