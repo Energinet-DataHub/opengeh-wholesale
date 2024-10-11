@@ -1,282 +1,282 @@
 # yamllint disable rule:quoted-strings
 version: 2
 updates:
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /dh2-bridge/**/*
+      - "/dh2-bridge/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: dh2-bridge
+      prefix: "dh2-bridge"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /edi/**/*
+      - "/edi/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: edi
+      prefix: "edi"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /grid-loss-imbalance-prices/**/*
+      - "/grid-loss-imbalance-prices/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: grid-loss-imbalance-prices
+      prefix: "grid-loss-imbalance-prices"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /esett-exchange/**/*
+      - "/esett-exchange/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: esett-exchange
+      prefix: "esett-exchange"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /integration-test/**/*
+      - "/integration-test/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: integration-test
+      prefix: "integration-test"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /market-participant/**/*
+      - "/market-participant/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: market-participant
+      prefix: "market-participant"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /migrations/**/*
+      - "/migrations/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: migrations
+      prefix: "migrations"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /revision-log/**/*
+      - "/revision-log/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: revision-log
+      prefix: "revision-log"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /sauron/**/*
+      - "/sauron/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: sauron
+      prefix: "sauron"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /sauron-healthchecks-api/**/*
+      - "/sauron-healthchecks-api/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: sauron-healthchecks-api
+      prefix: "sauron-healthchecks-api"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /settlement-report/**/*
+      - "/settlement-report/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: settlement-report
+      prefix: "settlement-report"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /shared-resources/**/*
+      - "/shared-resources/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: shared-resources
+      prefix: "shared-resources"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /ui/**/*
+      - "/ui/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: ui
+      prefix: "ui"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
           - "*"
-  - package-ecosystem: terraform
+  - package-ecosystem: "terraform"
     directories:
-      - /wholesale/**/*
+      - "/wholesale/**/*"
     schedule:
-      interval: monthly
-      time: '08:00'
-      timezone: Europe/Copenhagen
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: wholesale
+      prefix: "wholesale"
     assignees:
-      - NicolajAaH
-      - renenielsendk
-      - kerbou
-      - djorgensendk
-      - lanni-energinet
+      - "NicolajAaH"
+      - "renenielsendk"
+      - "kerbou"
+      - "djorgensendk"
+      - "lanni-energinet"
     groups:
       providers:
         patterns:
