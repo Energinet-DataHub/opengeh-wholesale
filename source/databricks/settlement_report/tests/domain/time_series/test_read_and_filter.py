@@ -4,7 +4,6 @@ from functools import reduce
 from unittest.mock import Mock
 
 import pytest
-from pyspark.sql import SparkSession
 from pyspark.sql import SparkSession, functions as F
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_time_series_factory as time_series_factory
