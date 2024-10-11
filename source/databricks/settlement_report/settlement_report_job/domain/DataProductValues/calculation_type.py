@@ -14,6 +14,7 @@
 
 
 class CalculationTypeDataProductValue:
+    AGGREGATION = "aggregation"
     BALANCE_FIXING = "balance_fixing"
     WHOLESALE_FIXING = "wholesale_fixing"
     FIRST_CORRECTION_SETTLEMENT = "first_correction_settlement"

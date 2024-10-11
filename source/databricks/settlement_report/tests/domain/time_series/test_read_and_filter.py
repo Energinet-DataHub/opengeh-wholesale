@@ -9,7 +9,9 @@ import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_time_series_factory as time_series_factory
 import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods
-
+from settlement_report_job.domain.DataProductValues.calculation_type import (
+    CalculationTypeDataProductValue,
+)
 
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
@@ -372,7 +374,8 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
     latest_calculations_df = latest_calculations_factory.create(
         spark,
         default_data.create_latest_calculations_data_spec(
-            calculation_id=latest_calculation_id
+            calculation_id=latest_calculation_id,
+            calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
         ),
     )
 
@@ -399,4 +402,68 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
     assert (
         actual_calculation_ids[0][DataProductColumnNames.calculation_id]
         == latest_calculation_id
+    )
+
+
+def test_read_and_filter_for_balance_fixing__returns_only_returns_balance_fixing_results(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    calculation_id_and_type = {
+        "11111111-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.AGGREGATION,
+        "22222222-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.BALANCE_FIXING,
+        "33333333-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.WHOLESALE_FIXING,
+        "44444444-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.FIRST_CORRECTION_SETTLEMENT,
+        "55555555-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
+        "66666666-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
+    }
+    time_series_df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            time_series_factory.create(
+                spark,
+                default_data.create_time_series_data_spec(
+                    calculation_id=calc_id, calculation_type=calc_type
+                ),
+            )
+            for calc_id, calc_type in calculation_id_and_type.items()
+        ],
+    )
+
+    latest_calculations_df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            latest_calculations_factory.create(
+                spark,
+                default_data.create_latest_calculations_data_spec(
+                    calculation_id=calc_id, calculation_type=calc_type
+                ),
+            )
+            for calc_id, calc_type in calculation_id_and_type.items()
+        ],
+    )
+
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+
+    # Act
+    actual_df = read_and_filter_for_balance_fixing(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
+        energy_supplier_ids=None,
+        resolution=default_data.DEFAULT_RESOLUTION,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    actual_calculation_ids = (
+        actual_df.select(DataProductColumnNames.calculation_id).distinct().collect()
+    )
+    assert len(actual_calculation_ids) == 1
+    assert (
+        actual_calculation_ids[0][DataProductColumnNames.calculation_id]
+        == "22222222-9fc8-409a-a169-fbd49479d718"
     )
