@@ -481,44 +481,38 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_overlap_in_ti
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    times_series_df_1 = time_series_factory.create(
-        spark,
-        default_data.create_time_series_data_spec(
-            calculation_id=calculation_id_1,
-            calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
-            from_date=day_1,
-            to_date=day_3,
-        ),
+    time_series_df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            time_series_factory.create(
+                spark,
+                default_data.create_time_series_data_spec(
+                    calculation_id=calc_id,
+                    calculation_type=calc_type,
+                    from_date=from_date,
+                    to_date=to_date,
+                ),
+            )
+            for calc_id, from_date, to_date in [
+                (calculation_id_1, day_1, day_3),
+                (calculation_id_2, day_2, day_4),
+            ]
+        ],
     )
-    time_series_df_2 = time_series_factory.create(
-        spark,
-        default_data.create_time_series_data_spec(
-            calculation_id=calculation_id_2,
-            calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
-            from_date=day_2,
-            to_date=day_4,
-        ),
-    )
-    time_series_df = times_series_df_1.union(time_series_df_2)
 
     latest_calculations_df = latest_calculations_factory.create(
         spark,
         [
             default_data.create_latest_calculations_data_spec(
-                calculation_id=calculation_id_1,
+                calculation_id=calc_id,
                 calculation_type=calc_type,
-                start_of_day=day_1,
-            ),
-            default_data.create_latest_calculations_data_spec(
-                calculation_id=calculation_id_1,
-                calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
-                start_of_day=day_2,
-            ),
-            default_data.create_latest_calculations_data_spec(
-                calculation_id=calculation_id_2,
-                calculation_type=calc_type,
-                start_of_day=day_3,
-            ),
+                start_of_day=start_of_day,
+            )
+            for calc_id, start_of_day in [
+                (calculation_id_1, day_1),
+                (calculation_id_1, day_2),
+                (calculation_id_2, day_3),
+            ]
         ],
     )
 
