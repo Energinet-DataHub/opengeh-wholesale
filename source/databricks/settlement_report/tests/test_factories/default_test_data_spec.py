@@ -34,6 +34,7 @@ DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
 DEFAULT_CALCULATION_VERSION = 1
 DEFAULT_METERING_POINT_ID = "3456789012345"
 DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
+DEFAULT_RESOLUTION = MeteringPointResolutionDataProductValue.HOUR
 DEFAULT_GRID_AREA_CODE = "804"
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
@@ -104,7 +105,7 @@ def create_time_series_data_spec(
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
-    resolution: MeteringPointResolutionDataProductValue = MeteringPointResolutionDataProductValue.HOUR,
+    resolution: MeteringPointResolutionDataProductValue = DEFAULT_RESOLUTION,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     from_date: datetime = DEFAULT_PERIOD_START,

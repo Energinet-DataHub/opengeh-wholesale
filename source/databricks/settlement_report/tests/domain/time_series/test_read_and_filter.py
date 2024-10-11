@@ -352,13 +352,11 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
 
 def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
     spark: SparkSession,
-    selected_energy_supplier_ids: list[str] | None,
-    expected_energy_supplier_ids: list[str],
 ) -> None:
     # Arrange
     not_latest_calculation_id = "11111111-9fc8-409a-a169-fbd49479d718"
     latest_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
-    latest_calculations_df = reduce(
+    time_series_df = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -370,41 +368,25 @@ def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
             for calculation_id in [latest_calculation_id, not_latest_calculation_id]
         ],
     )
-    latest_calculations_df = reduce(
-        lambda df1, df2: df1.union(df2),
-        [
-            latest_calculations_factory.create(
-                spark,
-                default_data.create_time_series_data_spec(
-                    calculation_id=calculation_id
-                ),
-            )
-            for calculation_id in [latest_calculation_id, not_latest_calculation_id]
-        ],
+    latest_calculations_df = latest_calculations_factory.create(
+        spark,
+        default_data.create_latest_calculations_data_spec(
+            calculation_id=latest_calculation_id
+        ),
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = (
-        latest_calculations_df
-    )
+    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_latest_calculations.return_value = latest_calculations_df
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
-        energy_supplier_ids=selected_energy_supplier_ids,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
+        grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
+        energy_supplier_ids=None,
+        resolution=default_data.DEFAULT_RESOLUTION,
         repository=mock_repository,
     )
 
     # Assert
-    assert set(
-        row[DataProductColumnNames.energy_supplier_id] for row in actual_df.collect()
-    ) == set(expected_energy_supplier_ids)
