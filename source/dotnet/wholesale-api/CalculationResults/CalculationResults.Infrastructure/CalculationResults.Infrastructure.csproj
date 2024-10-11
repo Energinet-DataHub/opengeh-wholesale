@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="7.0.0" />
-    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.19.1" />
+    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.20.1" />
     <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="13.2.0" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.11" />
