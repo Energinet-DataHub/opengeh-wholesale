@@ -11,24 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
-from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Window, Column
 
-from settlement_report_job.domain.DataProductValues.calculation_type import (
-    CalculationTypeDataProductValue,
-)
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
-)
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.system_operator_filter import (
-    filter_time_series_on_charge_owner,
 )
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure.column_names import (

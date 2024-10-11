@@ -46,6 +46,5 @@ class EphemeralColumns:
     or output schema."""
 
     uid = "uid"
-    start_of_day = "start_of_day"
     quantities = "quantities"
     chunk_index = "chunk_index_partition"

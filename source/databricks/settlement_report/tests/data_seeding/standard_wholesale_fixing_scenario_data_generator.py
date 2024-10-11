@@ -4,6 +4,9 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
+from settlement_report_job.domain.DataProductValues.calculation_type import (
+    CalculationTypeDataProductValue,
+)
 from settlement_report_job.domain.DataProductValues.charge_resolution import (
     ChargeResolutionDataProductValue,
 )
@@ -14,8 +17,8 @@ from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
+    latest_calculations_factory,
 )
-from settlement_report_job.domain.calculation_type import CalculationType
 from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
     MeteringPointResolutionDataProductValue,
 )
@@ -25,7 +28,7 @@ from settlement_report_job.domain.DataProductValues.metering_point_type import (
 
 GRID_AREAS = ["804", "805"]
 CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
-CALCULATION_TYPE = CalculationType.WHOLESALE_FIXING
+CALCULATION_TYPE = CalculationTypeDataProductValue.WHOLESALE_FIXING
 ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
@@ -133,20 +136,22 @@ def create_latest_calculations(spark: SparkSession) -> DataFrame:
     Creates a DataFrame with latest calculations data for testing purposes.
     """
 
-    data_spec = charge_price_information_periods_factory.ChargePriceInformtionPeriodsTestDataSpec(
-        calculation_id=CALCULATION_ID,
-        calculation_type=CALCULATION_TYPE,
-        calculation_version=1,
-        charge_key=CHARGE_KEY,
-        charge_code=CHARGE_CODE,
-        charge_type=CHARGE_TYPE,
-        charge_owner_id=CHARGE_OWNER_ID,
-        is_tax=IS_TAX,
-        resolution=ChargeResolutionDataProductValue.HOUR,
-        from_date=FROM_DATE,
-        to_date=TO_DATE,
-    )
-    return charge_price_information_periods_factory.create(spark, data_spec)
+    data_specs = []
+    for grid_area_code in GRID_AREAS:
+        current_date = FROM_DATE
+        while current_date <= TO_DATE:
+            data_specs.append(
+                latest_calculations_factory.LatestCalculationsTestDataSpec(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    calculation_version=1,
+                    grid_area_code=grid_area_code,
+                    start_of_day=current_date,
+                )
+            )
+            current_date += timedelta(days=1)
+
+    return latest_calculations_factory.create(spark, data_specs)
 
 
 def _get_all_metering_points() -> list[MeteringPointSpec]:
