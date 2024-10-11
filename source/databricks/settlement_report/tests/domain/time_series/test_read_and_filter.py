@@ -125,16 +125,15 @@ def test_read_and_filter_for_wholesale__returns_only_days_within_selected_period
     )
 
     # Assert
-
     assert actual_df.count() == number_of_hours_in_period
-    assert (
-        actual_df.agg({DataProductColumnNames.observation_time: "max"}).collect()[0][0]
-        == period_start
-    )
-    assert (
-        actual_df.agg({DataProductColumnNames.observation_time: "min"}).collect()[0][0]
-        == period_end
-    )
+    actual_max_time = actual_df.orderBy(
+        DataProductColumnNames.observation_time, ascending=False
+    ).first()[DataProductColumnNames.observation_time]
+    min_observation_time = actual_df.orderBy(
+        DataProductColumnNames.observation_time, ascending=True
+    ).first()[DataProductColumnNames.observation_time]
+    assert actual_max_time == period_start
+    assert min_observation_time == period_end - timedelta(hours=1)
 
 
 def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
