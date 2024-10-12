@@ -40,7 +40,7 @@ def add_parent_data_to_child_metering_point_periods(
     All child metering points are updated with the energy supplier id and balance responsible party id of its parent metering point.
     """
     parent_metering_points_periods = all_metering_point_periods.where(
-        is_parent_metering_point(Colname.metering_point_type)
+        Colname.metering_point_type, is_parent_metering_point
     )
     child_metering_points_with_energy_suppliers = (
         _get_child_metering_points_with_energy_suppliers(all_metering_point_periods)
