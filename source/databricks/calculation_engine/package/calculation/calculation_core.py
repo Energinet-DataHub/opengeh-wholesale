@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 from package.calculation.energy.calculated_grid_loss import (
     append_calculated_grid_loss_to_metering_point_times_series,
@@ -56,18 +57,7 @@ class CalculationCore:
     ) -> CalculationOutput:
         calculation_output = CalculationOutput()
 
-        # cache of metering_point_time_series had no effect on performance (01-12-2023)
-        metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
-            args.calculation_period_start_datetime,
-            args.calculation_period_end_datetime,
-            args.calculation_grid_areas,
-        )
-
-        # Child metering points inherit energy supplier and balance responsible party from
-        # their parent metering point. So we add this data to the child metering points.
-        metering_point_periods = add_parent_data_to_child_metering_point_periods(
-            metering_point_periods
-        )
+        metering_point_periods = _get_metering_point_periods(args, prepared_data_reader)
 
         metering_point_periods__except_grid_loss = (
             prepared_data_reader.get_metering_point_periods__except_grid_loss(
@@ -163,13 +153,11 @@ class CalculationCore:
         calculation_output = CalculationOutput()
 
         # cache of metering point time series had no effect on performance (01-12-2023)
-        parent_metering_point_periods = (
-            prepared_data_reader.get_metering_point_periods_df(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-                args.calculation_grid_areas,
-            ).where(is_parent_metering_point(Colname.metering_point_type))
-        )
+        parent_metering_point_periods = prepared_data_reader.get_metering_point_periods(
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
+            args.calculation_grid_areas,
+        ).where(is_parent_metering_point(Colname.metering_point_type))
 
         grid_loss_metering_point_periods = (
             prepared_data_reader.get_grid_loss_metering_point_periods(
@@ -218,6 +206,7 @@ class CalculationCore:
         )
 
         # Add basis data to results
+
         calculation_output.basis_data_output = basis_data_factory.create(
             args,
             parent_metering_point_periods,
@@ -226,3 +215,20 @@ class CalculationCore:
         )
 
         return calculation_output
+
+
+def _get_metering_point_periods(
+    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
+) -> DataFrame:
+    # cache of metering_point_time_series had no effect on performance (01-12-2023)
+    metering_point_periods = prepared_data_reader.get_metering_point_periods(
+        args.calculation_period_start_datetime,
+        args.calculation_period_end_datetime,
+        args.calculation_grid_areas,
+    )
+    # Child metering points inherit energy supplier and balance responsible party from
+    # their parent metering point. So we add this data to the child metering points.
+    metering_point_periods = add_parent_data_to_child_metering_point_periods(
+        metering_point_periods
+    )
+    return metering_point_periods
