@@ -148,8 +148,8 @@ class CalculationCore:
             args,
             metering_point_periods,
             metering_point_time_series,
-            input_charges,
             grid_loss_metering_point_ids,
+            input_charges,
         )
 
         return calculation_output
@@ -222,7 +222,6 @@ class CalculationCore:
             args,
             parent_metering_point_periods,
             parent_metering_point_time_series__including_grid_loss,
-            input_charges_container=None,
             grid_loss_metering_point_ids=grid_loss_metering_point_ids,
         )
 
