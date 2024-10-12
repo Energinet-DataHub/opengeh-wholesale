@@ -11,15 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import List
 
-from package.calculation.domain.calculation_links.calculation_link import (
-    CalculationLink,
-)
+from pyspark.sql import DataFrame
 
 
-class CalculateTemporaryFlexConsumptionPerEsLink(CalculationLink):
-
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__()
+class IMeteringPointPeriodRepository(ABC):
+    @abstractmethod
+    def get_by(
+        self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]
+    ) -> DataFrame:
+        pass

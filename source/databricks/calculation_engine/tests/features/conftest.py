@@ -22,12 +22,14 @@ from features.utils.scenario_executor import ScenarioExecutor
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_output import CalculationOutput
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
 @pytest.fixture(scope="module")
 def actual_and_expected(
     request: FixtureRequest,
     spark: SparkSession,
+    infrastructure_settings: InfrastructureSettings,
 ) -> tuple[CalculationOutput, list[ExpectedOutput]]:
     """
     Provides the actual and expected output for a scenario test case.
@@ -37,7 +39,7 @@ def actual_and_expected(
     """
 
     scenario_path = str(Path(request.module.__file__).parent)
-    scenario_executor = ScenarioExecutor(spark)
+    scenario_executor = ScenarioExecutor(spark, infrastructure_settings)
     return scenario_executor.execute(scenario_path)
 
 

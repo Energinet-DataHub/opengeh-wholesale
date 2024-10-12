@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar
+from typing import TypeVar, Any
 
 from package.calculation.calculation_output import CalculationOutput
 
@@ -53,3 +53,6 @@ class CalculationLink(Link):
         if self._next_handler:
             return self._next_handler.execute(output)
         return output
+
+    def get_class_name(cls: Any) -> str:
+        return cls.__name__

@@ -20,8 +20,12 @@ from unittest.mock import Mock
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
+import package
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.domain.chains.cache_bucket import CacheBucket
+from package.container import Container
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from .calculation_args import create_calculation_args
 from .dataframes.typecasting import cast_column_types
 from .expected_output import ExpectedOutput
@@ -34,11 +38,15 @@ class ScenarioExecutor:
     input_path: str
     output_path: str
 
-    def __init__(self, spark: SparkSession):
+    def __init__(
+        self, spark: SparkSession, infrastructure_settings: InfrastructureSettings
+    ):
         self.spark = spark
         self.migrations_wholesale_repository = Mock()
         self.wholesale_internal_repository = Mock()
         self.wholesale_results_internal_repository = Mock()
+        self.metering_point_period_repository = Mock()
+        self.infrastructure_settings = infrastructure_settings
 
     def execute(
         self, scenario_folder_path: str
@@ -47,6 +55,16 @@ class ScenarioExecutor:
 
         from package.calculation import PreparedDataReader
         from package.calculation.calculation_core import CalculationCore
+
+        container = Container()
+        container.spark.override(self.spark)
+        container.infrastructure_settings.from_value(self.infrastructure_settings)
+        container.metering_point_period_repository.override(
+            self.metering_point_period_repository
+        )
+        container.cache_bucket.override(CacheBucket())
+        container.calculator_args.override(self.test_calculation_args)
+        container.wire(packages=[package])
 
         actual = CalculationCore().execute(
             self.test_calculation_args,
@@ -66,6 +84,7 @@ class ScenarioExecutor:
             self.migrations_wholesale_repository,
             self.wholesale_internal_repository,
             self.wholesale_results_internal_repository,
+            self.metering_point_period_repository,
         )
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)

@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import Provide, Container, inject
+
+from dependency_injector.wiring import Provide, inject
 
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
@@ -19,9 +20,10 @@ from package.calculation.domain.calculation_links.calculation_link import (
     CalculationLink,
 )
 from package.calculation.domain.chains.cache_bucket import CacheBucket
-from package.calculation.wholesale.links.metering_point_period_repository import (
+from package.calculation.wholesale.links.imetering_point_period_repository import (
     IMeteringPointPeriodRepository,
 )
+from package.container import Container
 from package.infrastructure import logging_configuration
 
 
@@ -30,12 +32,12 @@ class GetMeteringPointPeriodsLink(CalculationLink):
     @inject
     def __init__(
         self,
-        args: CalculatorArgs = Provide[Container.args],
+        args: CalculatorArgs = Provide[Container.calculator_args],
         metering_point_period_repository: IMeteringPointPeriodRepository = Provide[
             Container.metering_point_period_repository
         ],
-        cache_bucket: CacheBucket = Provide[Container.bucket],
-    ):
+        cache_bucket: CacheBucket = Provide[Container.cache_bucket],
+    ) -> None:
         super().__init__()
         self.metering_point_period_repository = metering_point_period_repository
         self.cache_bucket = cache_bucket
@@ -50,6 +52,6 @@ class GetMeteringPointPeriodsLink(CalculationLink):
             self.args.calculation_grid_areas,
         )
 
-        self.cache_bucket.metering_point_periods = metering_point_periods
+        self.cache_bucket.metering_points = metering_point_periods
 
         return super().execute(output)

@@ -33,6 +33,8 @@ from pyspark.sql.types import StructType
 
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
+from package.codelists import CalculationType
+from package.container import create_and_configure_container, Container
 from package.databases.migrations_wholesale.schemas import (
     time_series_points_schema,
     metering_point_periods_schema,
@@ -40,8 +42,6 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
-from package.codelists import CalculationType
-from package.container import create_and_configure_container, Container
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
@@ -410,7 +410,10 @@ def dependency_injection_container(
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    return create_and_configure_container(spark, infrastructure_settings)
+    return create_and_configure_container(
+        spark,
+        infrastructure_settings,
+    )
 
 
 @pytest.fixture(scope="session")

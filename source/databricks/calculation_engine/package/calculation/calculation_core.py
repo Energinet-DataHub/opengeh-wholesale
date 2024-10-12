@@ -22,12 +22,12 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     is_parent_metering_point,
 )
 from package.databases.wholesale_basis_data_internal import basis_data_factory
-
 from package.infrastructure import logging_configuration
 from .calculation_output import (
     CalculationOutput,
 )
 from .calculator_args import CalculatorArgs
+from .domain.chains.chain import Chain
 from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .preparation.data_structures import PreparedMeteringPointTimeSeries
@@ -167,6 +167,9 @@ class CalculationCore:
         prepared_data_reader: PreparedDataReader,
     ) -> CalculationOutput:
         calculation_output = CalculationOutput()
+
+        chain = Chain()
+        chain.execute()
 
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(

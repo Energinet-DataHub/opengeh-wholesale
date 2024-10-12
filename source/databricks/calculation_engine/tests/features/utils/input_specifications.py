@@ -13,6 +13,9 @@
 # limitations under the License.
 from pyspark.sql.types import StructType
 
+from package.calculation.wholesale.links.metering_point_period_repository import (
+    MeteringPointPeriodRepository,
+)
 from package.databases import wholesale_internal
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import (
@@ -40,6 +43,7 @@ def get_data_input_specifications(
     migrations_wholesale_repository: MigrationsWholesaleRepository,
     wholesale_internal_repository: wholesale_internal.WholesaleInternalRepository,
     wholesale_results_internal_repository: WholesaleResultsInternalRepository,
+    metering_point_periods_repository: MeteringPointPeriodRepository,
 ) -> dict[str, tuple[StructType, callable]]:
     """
     Contains the mapping between the csv file name, the schema name and the function
@@ -52,7 +56,7 @@ def get_data_input_specifications(
         ),
         "metering_point_periods.csv": (
             metering_point_periods_schema,
-            migrations_wholesale_repository.read_metering_point_periods,
+            metering_point_periods_repository.get_by,
         ),
         "time_series_points.csv": (
             time_series_points_schema,

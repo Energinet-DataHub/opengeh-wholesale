@@ -11,29 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
-from dependency_injector.wiring import inject, Provide, Container
-from pyspark.sql import DataFrame
-from pyspark.sql.connect.session import SparkSession
+from dependency_injector.wiring import inject, Provide
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.wholesale.links.imetering_point_period_repository import (
+    IMeteringPointPeriodRepository,
+)
 from package.constants import Colname
 from package.databases import read_table
 from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import MigrationsWholesaleDatabase
-
-
-class IMeteringPointPeriodRepository(ABC):
-    @abstractmethod
-    def get_by(
-        self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]
-    ) -> DataFrame:
-        pass
 
 
 class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
@@ -41,10 +35,11 @@ class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
     @inject
     def __init__(
         self,
-        spark: SparkSession = Provide[Container.spark_session],
-        infrastructure_settings=Provide[Container.infrastructure_settings],
+        spark: SparkSession = Provide["Container.spark"],
+        infrastructure_settings: InfrastructureSettings = Provide[
+            "Container.infrastructure_settings"
+        ],
     ):
-
         super().__init__()
         self.spark = spark
         self.infrastructure_settings = infrastructure_settings
@@ -71,6 +66,8 @@ class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
                 col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start)
             )
         )
+
+        metering_point_periods_df.cache()
 
         return metering_point_periods_df
 
