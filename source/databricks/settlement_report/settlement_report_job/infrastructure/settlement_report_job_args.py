@@ -13,7 +13,6 @@
 # limitations under the License.
 import json
 import sys
-import uuid
 from argparse import Namespace
 
 import configargparse
@@ -78,6 +77,10 @@ def parse_job_arguments(
             ),
             include_basis_data=job_args.include_basis_data,
             locale=job_args.locale if job_args.locale is not None else "da-DK",
+        )
+
+        _validate_grid_area_selection(
+            calculation_id_by_grid_area, grid_area_codes, calculation_type
         )
 
         return settlement_report_args
@@ -150,3 +153,25 @@ def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, str]:
         calculation_id_by_grid_area[grid_area] = calculation_id
 
     return calculation_id_by_grid_area
+
+
+def _validate_grid_area_selection(
+    calculation_id_by_grid_area: dict[str, str],
+    grid_area_codes: list[str],
+    calculation_type: CalculationType,
+) -> None:
+    if calculation_type is CalculationType.BALANCE_FIXING:
+        if grid_area_codes is None:
+            raise ValueError(
+                "Grid area codes must be provided when calculation type is balance fixing"
+            )
+
+        if calculation_id_by_grid_area is not None:
+            raise ValueError(
+                "Calculation id by grid area code is not expected for balance fixing"
+            )
+    else:
+        if calculation_id_by_grid_area is None:
+            raise ValueError(
+                f"Calculation id must be provide for each grid area code when the calculation type is {calculation_type.value}"
+            )
