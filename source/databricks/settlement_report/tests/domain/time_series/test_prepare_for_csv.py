@@ -10,13 +10,13 @@ from pyspark.sql.types import DecimalType
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_time_series_factory as time_series_factory
 
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
 from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
+from settlement_report_job.infrastructure.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
+)
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
 )
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"

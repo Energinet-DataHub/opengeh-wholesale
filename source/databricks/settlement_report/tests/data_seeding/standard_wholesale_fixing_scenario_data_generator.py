@@ -4,24 +4,18 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.DataProductValues.charge_resolution import (
-    ChargeResolutionDataProductValue,
-)
-from settlement_report_job.domain.DataProductValues.charge_type import (
+from settlement_report_job.wholesale.data_values import (
     ChargeTypeDataProductValue,
+    ChargeResolutionDataProductValue,
+    MeteringPointResolutionDataProductValue,
+    MeteringPointTypeDataProductValue,
 )
 from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
 )
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointTypeDataProductValue,
-)
+from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 GRID_AREAS = ["804", "805"]
 CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"

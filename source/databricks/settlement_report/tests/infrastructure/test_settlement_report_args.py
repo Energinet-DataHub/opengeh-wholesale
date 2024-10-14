@@ -27,7 +27,7 @@ from settlement_report_job.entry_point import (
 from settlement_report_job.infrastructure.environment_variables import (
     EnvironmentVariable,
 )
-from settlement_report_job.domain.calculation_type import CalculationType
+from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 DEFAULT_REPORT_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 

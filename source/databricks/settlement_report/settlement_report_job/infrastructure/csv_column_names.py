@@ -1,25 +1,3 @@
-class DataProductColumnNames:
-    calculation_id = "calculation_id"
-    calculation_type = "calculation_type"
-    calculation_version = "calculation_version"
-    charge_key = "charge_key"
-    charge_code = "charge_code"
-    charge_owner_id = "charge_owner_id"
-    charge_type = "charge_type"
-    energy_supplier_id = "energy_supplier_id"
-    from_date = "from_date"
-    grid_area_code = "grid_area_code"
-    is_tax = "is_tax"
-    metering_point_id = "metering_point_id"
-    metering_point_type = "metering_point_type"
-    observation_time = "observation_time"
-    quantity = "quantity"
-    resolution = "resolution"
-    settlement_method = "settlement_method"
-    time = "time"
-    to_date = "to_date"
-
-
 class EnergyResultsCsvColumnNames:
     grid_area_code = "METERINGGRIDAREAID"
     calculation_type = "ENERGYBUSINESSPROCESS"

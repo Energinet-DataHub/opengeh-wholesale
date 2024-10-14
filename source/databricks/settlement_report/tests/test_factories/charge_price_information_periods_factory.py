@@ -3,18 +3,14 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.DataProductValues.charge_resolution import (
+from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointTypeDataProductValue,
+    ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
 )
-from settlement_report_job.domain.DataProductValues.charge_type import (
-    ChargeTypeDataProductValue,
-)
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointTypeDataProductValue,
-)
-from settlement_report_job.infrastructure.column_names import DataProductColumnNames
-from settlement_report_job.infrastructure.schemas.charge_price_information_periods_v1 import (
+from settlement_report_job.wholesale.schemas import (
     charge_price_information_periods_v1,
 )
 

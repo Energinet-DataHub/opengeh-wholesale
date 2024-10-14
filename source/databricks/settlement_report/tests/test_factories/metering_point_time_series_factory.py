@@ -4,15 +4,13 @@ from datetime import datetime, timedelta
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DecimalType
 
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointTypeDataProductValue,
-)
-from settlement_report_job.infrastructure.column_names import DataProductColumnNames
-from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
+from settlement_report_job.wholesale.schemas import (
     metering_point_time_series_v1,
 )
 
