@@ -14,7 +14,7 @@ from settlement_report_job.wholesale.schemas import (
 from settlement_report_job.wholesale.schemas import (
     metering_point_time_series_v1,
 )
-from settlement_report_job.infrastructure.schemas.energy_v1 import (
+from settlement_report_job.wholesale.schemas.energy_v1 import (
     energy_v1,
 )
 

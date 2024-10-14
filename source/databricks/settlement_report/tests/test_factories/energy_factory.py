@@ -4,8 +4,8 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.infrastructure.column_names import DataProductColumnNames
-from settlement_report_job.infrastructure.schemas.energy_v1 import (
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.schemas.energy_v1 import (
     energy_v1,
 )
 
