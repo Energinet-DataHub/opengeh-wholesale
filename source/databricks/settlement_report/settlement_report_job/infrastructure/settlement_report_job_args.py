@@ -57,10 +57,10 @@ def parse_job_arguments(
                     job_args.calculation_id_by_grid_area
                 )
                 if job_args.calculation_id_by_grid_area
-                else {}
+                else None
             ),
             grid_area_codes=(
-                job_args.grid_area_codes if job_args.grid_area_codes else []
+                job_args.grid_area_codes if job_args.grid_area_codes else None
             ),
             energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,

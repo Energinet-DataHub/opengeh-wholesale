@@ -29,8 +29,7 @@ class SettlementReportArgs:
     calculation_type: CalculationType
     requesting_actor_market_role: MarketRole
     requesting_actor_id: str
-    grid_areas_selection: GridAreaSelection
-    calculation_id_by_grid_area_codes: dict[str, UUID]
+    calculation_id_by_grid_area: dict[str, str]
     grid_area_codes: list[str]
     """A dictionary containing grid area codes (keys) and calculation ids (values)."""
     energy_supplier_ids: list[str] | None
