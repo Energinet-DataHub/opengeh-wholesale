@@ -14,6 +14,7 @@ class MarketRoleInFileName:
 
     ENERGY_SUPPLIER = "DDQ"
     GRID_ACCESS_PROVIDER = "DDM"
+    DATAHUB_ADMINISTRATOR = "FAS"
 
 
 class FileNameFactory:
@@ -23,7 +24,7 @@ class FileNameFactory:
 
     def create(
         self,
-        grid_area_code: str,
+        grid_area_code: str | None,
         energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
@@ -34,14 +35,53 @@ class FileNameFactory:
             return self._create_time_series_filename(
                 grid_area_code, energy_supplier_id, chunk_index
             )
+        if self.report_data_type in [ReportDataType.EnergyResults]:
+            return self._create_energy_result_filename(grid_area_code)
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
             )
 
+    def _create_energy_result_filename(
+        self,
+        grid_area_code: str | None,
+    ) -> str:
+
+        market_role_code = None
+        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
+            market_role_code = MarketRoleInFileName.ENERGY_SUPPLIER
+        elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+            market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
+
+        energy_supplier_id = (
+            self.args.energy_supplier_ids[0]
+            if self.args.energy_supplier_ids is not None
+            else None
+        )
+
+        filename_parts = [
+            self._get_pre_fix(),
+            grid_area_code if grid_area_code is not None else "flere-net",
+            (
+                self.args.requesting_actor_id
+                if self.args.requesting_actor_market_role  # TODO: Is this right to assume? Or is it like _create_time_series where requesting actor isn't what determines it?
+                in [MarketRole.ENERGY_SUPPLIER, MarketRole.GRID_ACCESS_PROVIDER]
+                else energy_supplier_id
+            ),
+            market_role_code,
+            self._get_start_date(),
+            self._get_end_date(),
+        ]
+
+        filename_parts_without_none = [
+            part for part in filename_parts if part is not None
+        ]
+
+        return "_".join(filename_parts_without_none) + ".csv"
+
     def _create_time_series_filename(
         self,
-        grid_area_code: str,
+        grid_area_code: str | None,
         energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
@@ -86,6 +126,8 @@ class FileNameFactory:
             return "TSSD60"
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
+        elif self.report_data_type == ReportDataType.EnergyResults:
+            return "RESULTENERGY"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )

@@ -28,6 +28,7 @@ from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
+    write_energy_to_delta_table,
 )
 
 
@@ -96,6 +97,9 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     write_charge_price_information_periods_to_delta_table(
         spark, charge_price_information_periods_df, input_database_location
     )
+
+    energy_df = standard_wholesale_fixing_scenario_data_generator.create_energy(spark)
+    write_energy_to_delta_table(spark, energy_df, input_database_location)
 
 
 @pytest.fixture(scope="session")
@@ -233,3 +237,14 @@ def spark(
 
     yield session
     session.stop()
+
+
+@pytest.fixture(autouse=True)
+def configure_dummy_logging() -> None:
+    """Ensure that logging hooks don't fail due to _TRACER_NAME not being set."""
+
+    from settlement_report_job.logging.logging_configuration import configure_logging
+
+    configure_logging(
+        cloud_role_name="any-cloud-role-name", tracer_name="any-tracer-name"
+    )

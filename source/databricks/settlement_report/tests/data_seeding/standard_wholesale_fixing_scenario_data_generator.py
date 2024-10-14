@@ -16,6 +16,7 @@ from test_factories import (
     charge_link_periods_factory,
     charge_price_information_periods_factory,
     latest_calculations_factory,
+    energy_factory,
 )
 
 GRID_AREAS = ["804", "805"]
@@ -29,11 +30,18 @@ CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 CHARGE_OWNER_ID = "5790001330552"
 CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
 IS_TAX = False
+METERING_POINT_TYPES = ["consumption", "exchange"]  # TODO: Add the rest?
+RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
+CALCULATION_PERIOD_START = FROM_DATE
+CALCULATION_PERIOD_END = TO_DATE
+QUANTITY_UNIT = "kwh"
+QUANTITY_QUALITIES = ["measured"]
 
 
 @dataclass
 class MeteringPointSpec:
     metering_point_id: str
+    metering_point_type: str
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue
@@ -146,6 +154,40 @@ def create_latest_calculations(spark: SparkSession) -> DataFrame:
     return latest_calculations_factory.create(spark, data_specs)
 
 
+def create_energy(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with energy data for testing purposes.
+    Mimics the wholesale_results.energy_v1 view.
+    """
+
+    df = None
+    for metering_point in _get_all_metering_points():
+        data_spec = energy_factory.EnergyTestDataSpec(
+            calculation_id=CALCULATION_ID,
+            calculation_type=CALCULATION_TYPE.value,
+            calculation_period_start=CALCULATION_PERIOD_START,
+            calculation_period_end=CALCULATION_PERIOD_END,
+            calculation_version=1,
+            result_id=RESULT_ID,
+            grid_area_code=metering_point.grid_area_code,
+            metering_point_type=metering_point.metering_point_type,
+            settlement_method=None,
+            resolution=metering_point.resolution,
+            quantity=Decimal("1.005"),
+            quantity_unit=QUANTITY_UNIT,
+            quantity_qualities=QUANTITY_QUALITIES,
+            from_date=FROM_DATE,
+            to_date=TO_DATE,
+        )
+        next_df = energy_factory.create(spark, data_spec)
+        if df is None:
+            df = next_df
+        else:
+            df = df.union(next_df)
+
+    return df
+
+
 def _get_all_metering_points() -> list[MeteringPointSpec]:
     metering_points = []
     count = 0
@@ -155,13 +197,15 @@ def _get_all_metering_points() -> list[MeteringPointSpec]:
     }:
         for grid_area_code in GRID_AREAS:
             for energy_supplier_id in ENERGY_SUPPLIER_IDS:
-                metering_points.append(
-                    MeteringPointSpec(
-                        metering_point_id=str(1000000000000 + count),
-                        grid_area_code=grid_area_code,
-                        energy_supplier_id=energy_supplier_id,
-                        resolution=resolution,
+                for metering_point_type in METERING_POINT_TYPES:
+                    metering_points.append(
+                        MeteringPointSpec(
+                            metering_point_id=str(1000000000000 + count),
+                            metering_point_type=metering_point_type,
+                            grid_area_code=grid_area_code,
+                            energy_supplier_id=energy_supplier_id,
+                            resolution=resolution,
+                        )
                     )
-                )
 
     return metering_points

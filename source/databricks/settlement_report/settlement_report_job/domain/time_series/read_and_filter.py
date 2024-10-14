@@ -16,6 +16,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Column
 
+from settlement_report_job import logging
 from settlement_report_job.domain.csv_column_names import EphemeralColumns
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
@@ -26,19 +27,15 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.read_and_filter_for_balance_fixing"
-)
+@logging.use_span()
 def read_and_filter_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
@@ -119,9 +116,7 @@ def read_and_filter_for_wholesale(
     return time_series_points
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._read_from_view"
-)
+@logging.use_span()
 def _read_from_view(
     period_start: datetime,
     period_end: datetime,

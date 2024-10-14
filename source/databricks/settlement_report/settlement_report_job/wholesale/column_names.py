@@ -1,5 +1,7 @@
 class DataProductColumnNames:
     calculation_id = "calculation_id"
+    calculation_period_start = "calculation_period_start"
+    calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"
     calculation_version = "calculation_version"
     calculation_period_start = "calculation_period_start"
@@ -16,7 +18,10 @@ class DataProductColumnNames:
     metering_point_type = "metering_point_type"
     observation_time = "observation_time"
     quantity = "quantity"
+    quantity_unit = "quantity_unit"
+    quantity_qualities = "quantity_qualities"
     resolution = "resolution"
+    result_id = "result_id"
     settlement_method = "settlement_method"
     start_of_day = "start_of_day"
     time = "time"
