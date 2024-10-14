@@ -14,7 +14,7 @@
 import contextlib
 import logging
 import os
-from typing import Any, Callable, Tuple, Dict, Iterator
+from typing import Any, Iterator
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry import trace
@@ -25,11 +25,13 @@ DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
 _IS_INSTRUMENTED: bool = False
 _TRACER: Tracer | None = None
+_TRACER_NAME: str
 
 
 def configure_logging(
     *,
     cloud_role_name: str,
+    tracer_name: str,
     applicationinsights_connection_string: str | None = None,
     extras: dict[str, Any] | None = None,
 ) -> None:
@@ -37,6 +39,7 @@ def configure_logging(
     Configure logging to use OpenTelemetry and Azure Monitor.
 
     :param cloud_role_name:
+    :param tracer_name:
     :param applicationinsights_connection_string:
     :param extras: Custom structured logging data to be included in every log message.
     :return:
@@ -44,6 +47,9 @@ def configure_logging(
     If connection string is None, then logging will not be sent to Azure Monitor.
     This is useful for unit testing.
     """
+
+    global _TRACER_NAME
+    _TRACER_NAME = tracer_name
 
     # Only configure logging once.
     global _IS_INSTRUMENTED
@@ -79,23 +85,9 @@ def add_extras(extras: dict[str, Any]) -> None:
 def get_tracer() -> Tracer:
     global _TRACER
     if _TRACER is None:
-        _TRACER = trace.get_tracer("settlement-report-job")
+        global _TRACER_NAME
+        _TRACER = trace.get_tracer(_TRACER_NAME)
     return _TRACER
-
-
-def use_span(name: str | None = None) -> Callable[..., Any]:
-    """
-    Decorator for creating spans.
-    """
-
-    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        def wrapper(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Any:
-            with start_span(name or func.__name__):
-                return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 @contextlib.contextmanager
