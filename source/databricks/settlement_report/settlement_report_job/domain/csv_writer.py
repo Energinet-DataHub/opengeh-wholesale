@@ -15,11 +15,11 @@ from typing import Any, List
 
 from pyspark.sql import DataFrame
 
+from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.logger import Logger
 from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
     EnergyResultsCsvColumnNames,
@@ -30,13 +30,12 @@ from settlement_report_job.utils import (
     get_new_files,
     merge_files,
 )
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span("settlement_report_job.csv_writer.write")
+@logging.use_span()
 def write(
     dbutils: Any,
     args: SettlementReportArgs,

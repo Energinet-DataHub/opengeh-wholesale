@@ -13,7 +13,7 @@ from settlement_report_job.domain.time_series.time_series_factory import (
 from settlement_report_job.domain.task_type import TaskType
 
 from settlement_report_job.utils import create_zip_file
-from settlement_report_job.logger import Logger
+from settlement_report_job.logging import Logger
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
