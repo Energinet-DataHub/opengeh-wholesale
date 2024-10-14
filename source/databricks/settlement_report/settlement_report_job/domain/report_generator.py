@@ -3,9 +3,6 @@ from typing import Any
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain import csv_writer
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -16,6 +13,9 @@ from settlement_report_job.domain.task_type import TaskType
 
 from settlement_report_job.utils import create_zip_file
 from settlement_report_job.logger import Logger
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
 
 log = Logger(__name__)
 

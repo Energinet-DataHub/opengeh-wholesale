@@ -3,17 +3,14 @@ from datetime import datetime, timedelta
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+from settlement_report_job.infrastructure.csv_column_names import (
+    TimeSeriesPointCsvColumnNames,
+)
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.infrastructure.column_names import (
-    TimeSeriesPointCsvColumnNames,
-    DataProductColumnNames,
-)
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
-    MeteringPointTypeDataProductValue,
-)
-
 
 DEFAULT_METERING_POINT_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
 DEFAULT_START_OF_DAY = datetime(2024, 1, 1, 23)
@@ -51,13 +48,13 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     TimeSeriesPointCsvColumnNames.start_of_day: data_spec.start_of_day
                     + timedelta(days=i),
                 }
-                for i in range(
+                for j in range(
                     25
                     if data_spec.resolution
                     == MeteringPointResolutionDataProductValue.HOUR
                     else 100
                 ):
-                    row[f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i+1}"] = (
+                    row[f"{TimeSeriesPointCsvColumnNames.energy_prefix}{j+1}"] = (
                         data_spec.energy_quantity
                     )
                 rows.append(row)
