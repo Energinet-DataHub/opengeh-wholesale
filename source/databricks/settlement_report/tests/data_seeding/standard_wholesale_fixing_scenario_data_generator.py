@@ -164,7 +164,7 @@ def create_energy(spark: SparkSession) -> DataFrame:
     for metering_point in _get_all_metering_points():
         data_spec = energy_factory.EnergyTestDataSpec(
             calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE.value,
+            calculation_type=CALCULATION_TYPE,
             calculation_period_start=CALCULATION_PERIOD_START,
             calculation_period_end=CALCULATION_PERIOD_END,
             calculation_version=1,
