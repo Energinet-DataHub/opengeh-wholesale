@@ -5,6 +5,7 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.wholesale.data_values import (
+    CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
     MeteringPointResolutionDataProductValue,
@@ -14,16 +15,17 @@ from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
+    latest_calculations_factory,
     energy_factory,
 )
-from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 GRID_AREAS = ["804", "805"]
 CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
-CALCULATION_TYPE = CalculationType.WHOLESALE_FIXING
+CALCULATION_TYPE = CalculationTypeDataProductValue.WHOLESALE_FIXING
 ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
+"""TO_DATE is exclusive"""
 CHARGE_CODE = "4000"
 CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 CHARGE_OWNER_ID = "5790001330552"
@@ -130,6 +132,29 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     return charge_price_information_periods_factory.create(spark, data_spec)
 
 
+def create_latest_calculations(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with latest calculations data for testing purposes.
+    """
+
+    data_specs = []
+    for grid_area_code in GRID_AREAS:
+        current_date = FROM_DATE
+        while current_date < TO_DATE:
+            data_specs.append(
+                latest_calculations_factory.LatestCalculationsTestDataSpec(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    calculation_version=1,
+                    grid_area_code=grid_area_code,
+                    start_of_day=current_date,
+                )
+            )
+            current_date += timedelta(days=1)
+
+    return latest_calculations_factory.create(spark, data_specs)
+
+
 def create_energy(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with energy data for testing purposes.
@@ -140,7 +165,7 @@ def create_energy(spark: SparkSession) -> DataFrame:
     for metering_point in _get_all_metering_points():
         data_spec = energy_factory.EnergyTestDataSpec(
             calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE.value,
+            calculation_type=CALCULATION_TYPE,
             calculation_period_start=CALCULATION_PERIOD_START,
             calculation_period_end=CALCULATION_PERIOD_END,
             calculation_version=1,

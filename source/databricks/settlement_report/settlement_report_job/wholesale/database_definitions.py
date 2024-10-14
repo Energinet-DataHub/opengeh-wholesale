@@ -20,6 +20,7 @@ class WholesaleBasisDataDatabase:
     CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
 
 
-class WholesaleWholesaleResultsDatabase:
+class WholesaleResultsDatabase:
     DATABASE_NAME = "wholesale_results"
+    LATEST_CALCULATIONS_BY_DAY_VIEW_NAME = "latest_calculations_by_day_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
