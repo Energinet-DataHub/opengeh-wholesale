@@ -31,7 +31,7 @@ from package.codelists import (
 from package.constants import Colname
 
 
-def add_calculated_grid_loss_to_metering_point_times_series(
+def append_calculated_grid_loss_to_metering_point_times_series(
     args: CalculatorArgs,
     metering_point_time_series: PreparedMeteringPointTimeSeries,
     positive_grid_loss: EnergyResults,
