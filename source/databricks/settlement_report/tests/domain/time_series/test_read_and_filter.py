@@ -405,7 +405,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
     )
 
 
-def test_read_and_filter_for_balance_fixing__returns_only_returns_balance_fixing_results(
+def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results(
     spark: SparkSession,
 ) -> None:
     # Arrange
