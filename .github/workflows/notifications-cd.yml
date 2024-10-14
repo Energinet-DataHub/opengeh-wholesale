@@ -1,0 +1,20 @@
+name: Notifications Infrastructure CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - notifications/**
+      - .github/workflows/notifications-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
+
+jobs:
+  reusable_cd:
+    uses: ./.github/workflows/reusable-cd.yml
+    with:
+      release_name_prefix: notifications_infrastructure
+      event_type: notifications-deployment-request-infrastructure
+      team_name: Raccoons
+    secrets: inherit

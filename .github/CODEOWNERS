@@ -43,8 +43,12 @@ migrations/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/volt @Energine
 migrations/terraform/main/dbw-job-names.tf @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
 migrations/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
 
-
 # settlement-report
 settlement-report/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 settlement-report/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 settlement-report/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+
+# notifications
+notifications/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+notifications/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+notifications/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws

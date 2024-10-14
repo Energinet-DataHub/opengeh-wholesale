@@ -67,6 +67,15 @@ jobs:
       infrastructure_path: ./settlement-report/terraform
     secrets: inherit
 
+  notifications_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.notifications_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: notifications_infrastructure
+      infrastructure_path: ./notifications/terraform
+    secrets: inherit
+
   revision_log_ci:
     needs: changes
     if: ${{ needs.changes.outputs.revision_log_ci == 'true' }}
@@ -195,6 +204,7 @@ jobs:
         edi_ci,
         market_participant_ci,
         settlement_report_ci,
+        notifications_ci,
         revision_log_ci,
         dh2_bridge_ci,
         grid_loss_imbalance_prices_ci,
