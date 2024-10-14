@@ -8,20 +8,10 @@ from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
-    MeteringPointTypeDataProductValue,
 )
 from settlement_report_job.wholesale.schemas import (
     charge_price_information_periods_v1,
 )
-
-DEFAULT_PERIOD_START = datetime(2024, 1, 1, 22)
-DEFAULT_PERIOD_END = datetime(2024, 1, 2, 22)
-DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
-DEFAULT_CALCULATION_VERSION = 1
-DEFAULT_METERING_POINT_ID = "12345678-1111-1111-1111-111111111111"
-DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
-DEFAULT_GRID_AREA_CODE = "804"
-DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 
 
 @dataclass

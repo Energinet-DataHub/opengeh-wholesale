@@ -5,14 +5,8 @@ from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
-    ChargeTypeDataProductValue,
-    ChargeResolutionDataProductValue,
-    MeteringPointTypeDataProductValue,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.schemas.charge_price_information_periods_v1 import (
-    charge_price_information_periods_v1,
-)
 from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 import (
     latest_calculations_by_day_v1,
 )
