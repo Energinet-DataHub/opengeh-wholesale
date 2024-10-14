@@ -33,12 +33,11 @@ def is_child_metering_point(col: Column | str) -> bool:
     return ~is_parent_metering_point(col)  # type: ignore
 
 
-def get_metering_points_periods_for_wholesale_basis_data(
+def add_parent_data_to_child_metering_point_periods(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
     """
-    Returns all metering point periods that should be included in an energy and wholesale calculations basis data.
-    All child metering points are updated with the energy supplier id of its parent metering point.
+    All child metering points are updated with the energy supplier id and balance responsible party id of its parent metering point.
     """
     parent_metering_points_periods = all_metering_point_periods.where(
         is_parent_metering_point(Colname.metering_point_type)
@@ -59,22 +58,18 @@ def _get_child_metering_points_with_energy_suppliers(
     Returns all child metering points.
     The energy supplier of child metering points is added from its parent metering point.
     """
-    production_and_consumption_metering_points = all_metering_point_periods.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-    )
 
     es = "energy_supplier_id_temp"
     mp = "metering_point_id_temp"
     from_date = "from_date_temp"
     to_date = "to_date_temp"
-    potential_parent_metering_points = (
-        production_and_consumption_metering_points.select(
-            f.col(Colname.metering_point_id).alias(mp),
-            f.col(Colname.energy_supplier_id).alias(es),
-            f.col(Colname.from_date).alias(from_date),
-            f.col(Colname.to_date).alias(to_date),
-        )
+    potential_parent_metering_points = all_metering_point_periods.where(
+        is_parent_metering_point(Colname.metering_point_type)
+    ).select(
+        f.col(Colname.metering_point_id).alias(mp),
+        f.col(Colname.energy_supplier_id).alias(es),
+        f.col(Colname.from_date).alias(from_date),
+        f.col(Colname.to_date).alias(to_date),
     )
 
     all_child_metering_points = all_metering_point_periods.where(

@@ -22,7 +22,7 @@ import tests.calculation.energy.energy_results_factories as energy_results_facto
 import tests.calculation.energy.metering_point_time_series_factories as metering_point_time_series_factory
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.calculated_grid_loss import (
-    add_calculated_grid_loss_to_metering_point_times_series,
+    append_calculated_grid_loss_to_metering_point_times_series,
 )
 from package.calculation.preparation.data_structures import (
     PreparedMeteringPointTimeSeries,
@@ -63,7 +63,7 @@ def test__add_calculated_grid_loss_to_metering_point_times_series__returns_corre
     )
 
     # Act
-    result = add_calculated_grid_loss_to_metering_point_times_series(
+    result = append_calculated_grid_loss_to_metering_point_times_series(
         mock_calculator_args,
         prepared_metering_point_time_series,
         positive_grid_loss,

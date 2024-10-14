@@ -10,7 +10,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.energy_results_factory import create_energy_results
-from settlement_report_job.domain.time_series_factory import (
+from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
 )
 from settlement_report_job.domain.task_type import TaskType
