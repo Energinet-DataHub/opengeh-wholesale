@@ -120,6 +120,7 @@ class ViewColumns:
     result = Column("result_id", StringType())
     settlement_method = Column("settlement_method", StringType())
     start_date_time = Column("start_date_time", TimestampType())
+    start_of_day = Column("start_of_day", TimestampType())
     time = Column("time", TimestampType())
     time_series_type = Column("time_series_type", StringType())
     to_date = Column("to_date", TimestampType())
