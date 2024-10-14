@@ -50,6 +50,7 @@ def read_and_filter_for_balance_fixing(
         period_start,
         period_end,
         resolution,
+        energy_supplier_ids,
         repository,
     )
 
@@ -65,11 +66,6 @@ def read_and_filter_for_balance_fixing(
     time_series_points = _filter_by_latest_calculations(
         time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
     )
-
-    if energy_supplier_ids:
-        time_series_points = time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
 
     return time_series_points
 
@@ -91,6 +87,7 @@ def read_and_filter_for_wholesale(
         period_start=period_start,
         period_end=period_end,
         resolution=metering_point_resolution,
+        energy_supplier_ids=energy_supplier_ids,
         repository=repository,
     )
 
@@ -106,11 +103,6 @@ def read_and_filter_for_wholesale(
             charge_price_information_periods=repository.read_charge_price_information_periods(),
         )
 
-    if energy_supplier_ids:
-        time_series_points = time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
-
     return time_series_points
 
 
@@ -119,13 +111,21 @@ def _read_from_view(
     period_start: datetime,
     period_end: datetime,
     resolution: MeteringPointResolutionDataProductValue,
+    energy_supplier_ids: list[str] | None,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    return repository.read_metering_point_time_series().where(
+    time_series_points = repository.read_metering_point_time_series().where(
         (F.col(DataProductColumnNames.observation_time) >= period_start)
         & (F.col(DataProductColumnNames.observation_time) < period_end)
         & (F.col(DataProductColumnNames.resolution) == resolution)
     )
+
+    if energy_supplier_ids:
+        time_series_points = time_series_points.where(
+            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
+        )
+
+    return time_series_points
 
 
 def _filter_on_calculation_id_by_grid_area(
