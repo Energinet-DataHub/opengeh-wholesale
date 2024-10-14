@@ -21,7 +21,7 @@ from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
 from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.csv_column_names import (
+from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
 )
 from settlement_report_job.utils import (

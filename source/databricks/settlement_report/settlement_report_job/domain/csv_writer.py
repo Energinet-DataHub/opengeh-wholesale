@@ -20,7 +20,7 @@ from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.csv_column_names import (
+from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
     EphemeralColumns,
 )
