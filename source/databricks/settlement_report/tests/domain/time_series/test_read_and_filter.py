@@ -371,7 +371,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
             for calculation_id in [latest_calculation_id, not_latest_calculation_id]
         ],
     )
-    latest_calculations_df = latest_calculations_factory.create(
+    latest_calculations = latest_calculations_factory.create(
         spark,
         default_data.create_latest_calculations_data_spec(
             calculation_id=latest_calculation_id,
@@ -381,7 +381,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
 
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = time_series_df
-    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+    mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(
@@ -417,7 +417,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
         "55555555-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
         "66666666-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
     }
-    time_series_df = reduce(
+    time_series = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -430,7 +430,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
         ],
     )
 
-    latest_calculations_df = reduce(
+    latest_calculations = reduce(
         lambda df1, df2: df1.union(df2),
         [
             latest_calculations_factory.create(
@@ -444,8 +444,8 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
-    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(
@@ -481,7 +481,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series_df = reduce(
+    time_series = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -500,7 +500,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
         ],
     )
 
-    latest_calculations_df = latest_calculations_factory.create(
+    latest_calculations = latest_calculations_factory.create(
         spark,
         [
             default_data.create_latest_calculations_data_spec(
@@ -517,8 +517,8 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
-    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(
@@ -564,7 +564,7 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series_df = reduce(
+    time_series = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -585,7 +585,7 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
         ],
     )
 
-    latest_calculations_df = latest_calculations_factory.create(
+    latest_calculations = latest_calculations_factory.create(
         spark,
         [
             default_data.create_latest_calculations_data_spec(
@@ -604,8 +604,8 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
-    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
     actual_df = read_and_filter_for_balance_fixing(
