@@ -89,8 +89,6 @@ def write_dataframe_to_table(
     schema: StructType,
     mode: str = "overwrite",
 ) -> None:
-    df.count()
-
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
     spark.sql(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
 
@@ -102,9 +100,7 @@ def write_dataframe_to_table(
     spark.sql(
         f"CREATE OR REPLACE TABLE {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )
-    df.write.format("delta").option("overwriteSchema", "true").mode(mode).saveAsTable(
-        f"{database_name}.{table_name}"
-    )
+    df.write.format("delta").mode(mode).saveAsTable(f"{database_name}.{table_name}")
 
 
 def _struct_type_to_sql_schema(schema: StructType) -> str:

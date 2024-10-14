@@ -208,7 +208,8 @@ def get_new_files(
             raise ValueError(f"File {f} does not match the expected pattern")
 
         groups = partition_match.groups()
-        grid_area = groups[0]
+
+        grid_area = groups[0] if len(groups) > 0 else None
         chunk_index = groups[1] if len(groups) > 1 else None
 
         file_name = file_name_factory.create(

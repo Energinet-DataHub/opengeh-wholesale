@@ -52,7 +52,7 @@ def write(
 
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
-    order_by_columns = _get_order_by_columns_for_report_type(report_data_type)
+    order_by_columns = _get_order_by_columns_for_report_type(report_data_type, args)
 
     headers = write_files(
         df=df_ready_for_writing,
@@ -98,7 +98,9 @@ def _get_partition_columns_for_report_type(
     return partition_columns
 
 
-def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[str]:
+def _get_order_by_columns_for_report_type(
+    report_type: ReportDataType, args: SettlementReportArgs
+) -> List[str]:
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
@@ -109,14 +111,16 @@ def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[s
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ]
+
     if report_type in [ReportDataType.EnergyResults]:
-        return [
+        order_by_columns = [
             EnergyResultsCsvColumnNames.grid_area_code,
-            # EnergyResultsCsvColumnNames.energy_supplier_id, # TODO: Specification asks for sorting by this, but it does not exist.
             EnergyResultsCsvColumnNames.metering_point_type,
             EnergyResultsCsvColumnNames.settlement_method,
             EnergyResultsCsvColumnNames.time,
         ]
+
+        return order_by_columns
 
     return []
 

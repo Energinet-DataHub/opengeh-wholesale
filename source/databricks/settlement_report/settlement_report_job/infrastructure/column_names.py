@@ -1,5 +1,7 @@
 class DataProductColumnNames:
     calculation_id = "calculation_id"
+    calculation_period_start = "calculation_period_start"
+    calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"
     calculation_version = "calculation_version"
     charge_key = "charge_key"
@@ -14,15 +16,13 @@ class DataProductColumnNames:
     metering_point_type = "metering_point_type"
     observation_time = "observation_time"
     quantity = "quantity"
+    quantity_unit = "quantity_unit"
+    quantity_qualities = "quantity_qualities"
     resolution = "resolution"
+    result_id = "result_id"
     settlement_method = "settlement_method"
     time = "time"
     to_date = "to_date"
-    result_id = "result_id"
-    calculation_period_start = "calculation_period_start"
-    calculation_period_end = "calculation_period_end"
-    quantity_unit = "quantity_unit"
-    quantity_qualities = "quantity_qualities"
 
 
 class EnergyResultsCsvColumnNames:

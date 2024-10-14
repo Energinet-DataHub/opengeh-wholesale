@@ -48,7 +48,6 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         for file_path in actual_files:
             df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
-            for i, col in enumerate(df.columns):
-                assert col == expected_columns[i]
+            assert df.columns == expected_columns
     finally:
         reset_task_values(dbutils)

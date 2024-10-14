@@ -24,7 +24,7 @@ class FileNameFactory:
 
     def create(
         self,
-        grid_area_code: str,
+        grid_area_code: str | None,
         energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
@@ -44,39 +44,29 @@ class FileNameFactory:
 
     def _create_energy_result_filename(
         self,
-        grid_area_code: str,
+        grid_area_code: str | None,
     ) -> str:
 
-        market_role_code = ""
-        if self.args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
-            market_role_code = MarketRoleInFileName.DATAHUB_ADMINISTRATOR
-        elif self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
+        market_role_code = None
+        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
             market_role_code = MarketRoleInFileName.ENERGY_SUPPLIER
         elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
             market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
 
-        single_energy_supplier_when_FAS_requested = (
+        energy_supplier_id = (
             self.args.energy_supplier_ids[0]
-            if self.args.requesting_actor_market_role
-            == MarketRole.DATAHUB_ADMINISTRATOR
-            and self.args.energy_supplier_ids is not None
-            and len(self.args.energy_supplier_ids) == 1
-            else ""
+            if self.args.energy_supplier_ids is not None
+            else None
         )
 
         filename_parts = [
             self._get_pre_fix(),
-            (
-                grid_area_code
-                if len(self.args.calculation_id_by_grid_area) == 1
-                or self.args.split_report_by_grid_area
-                else "flere-net"
-            ),
+            grid_area_code if grid_area_code is not None else "flere-net",
             (
                 self.args.requesting_actor_id
                 if self.args.requesting_actor_market_role  # TODO: Is this right to assume? Or is it like _create_time_series where requesting actor isn't what determines it?
                 in [MarketRole.ENERGY_SUPPLIER, MarketRole.GRID_ACCESS_PROVIDER]
-                else single_energy_supplier_when_FAS_requested
+                else energy_supplier_id
             ),
             market_role_code,
             self._get_start_date(),
