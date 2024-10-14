@@ -7,12 +7,12 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.energy_results_factory import create_energy_results
-from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv
-from settlement_report_job.domain.time_series.read_and_filter import (
-    read_and_filter_for_wholesale,
-    read_and_filter_for_balance_fixing,
+from settlement_report_job.domain.time_series.time_series_factory import (
+    create_time_series_for_wholesale,
+    create_time_series_for_balance_fixing,
 )
 from settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 from settlement_report_job.utils import create_zip_file
 from settlement_report_job.logging import Logger
@@ -68,38 +68,35 @@ def _execute_time_series(
         raise ValueError(f"Unsupported report data type: {report_data_type}")
 
     repository = WholesaleRepository(spark, args.catalog_name)
-    if args.is_balance_fixing:
-        time_series_points = read_and_filter_for_balance_fixing(
+    if args.calculation_type is CalculationType.BALANCE_FIXING:
+        time_series_df = create_time_series_for_balance_fixing(
             period_start=args.period_start,
             period_end=args.period_end,
             grid_area_codes=args.grid_area_codes,
-            energy_supplier_ids=args.energy_supplier_ids,
-            resolution=metering_point_resolution,
             time_zone=args.time_zone,
+            energy_supplier_ids=args.energy_supplier_ids,
+            metering_point_resolution=metering_point_resolution,
             repository=repository,
+            requesting_actor_market_role=args.requesting_actor_market_role,
+            requesting_actor_id=args.requesting_actor_id,
         )
     else:
-        time_series_points = read_and_filter_for_wholesale(
+        time_series_df = create_time_series_for_wholesale(
             period_start=args.period_start,
             period_end=args.period_end,
             calculation_id_by_grid_area=args.calculation_id_by_grid_area_codes,
+            time_zone=args.time_zone,
             energy_supplier_ids=args.energy_supplier_ids,
             metering_point_resolution=metering_point_resolution,
+            repository=repository,
             requesting_actor_market_role=args.requesting_actor_market_role,
             requesting_actor_id=args.requesting_actor_id,
-            repository=repository,
         )
-
-    prepared_time_series = prepare_for_csv(
-        filtered_time_series_points=time_series_points,
-        metering_point_resolution=metering_point_resolution,
-        time_zone=args.time_zone,
-    )
 
     time_series_files = csv_writer.write(
         dbutils,
         args,
-        prepared_time_series,
+        time_series_df,
         report_data_type,
     )
 
