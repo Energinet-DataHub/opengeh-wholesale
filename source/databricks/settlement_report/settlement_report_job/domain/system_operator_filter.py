@@ -1,6 +1,6 @@
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job.infrastructure.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 
 def filter_time_series_on_charge_owner(

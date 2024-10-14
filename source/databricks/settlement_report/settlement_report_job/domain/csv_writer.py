@@ -20,8 +20,7 @@ from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
+from settlement_report_job.infrastructure.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
     EnergyResultsCsvColumnNames,
     EphemeralColumns,
@@ -32,6 +31,7 @@ from settlement_report_job.utils import (
     merge_files,
 )
 from settlement_report_job.infrastructure import logging_configuration
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 log = Logger(__name__)
 

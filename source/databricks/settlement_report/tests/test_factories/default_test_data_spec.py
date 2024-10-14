@@ -1,17 +1,11 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from settlement_report_job.domain.DataProductValues.charge_resolution import (
-    ChargeResolutionDataProductValue,
-)
-from settlement_report_job.domain.DataProductValues.charge_type import (
-    ChargeTypeDataProductValue,
-)
-from settlement_report_job.domain.DataProductValues.metering_point_type import (
+from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
-)
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
+    ChargeTypeDataProductValue,
+    ChargeResolutionDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
