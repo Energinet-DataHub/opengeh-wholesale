@@ -8,6 +8,9 @@ from settlement_report_job.wholesale.data_values import (
     ChargeResolutionDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
+from settlement_report_job.wholesale.data_values.calculation_type import (
+    CalculationTypeDataProductValue,
+)
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
 from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsTestDataSpec,
