@@ -20,18 +20,18 @@ from settlement_report_job.domain.get_start_of_day import (
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
 from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
+from settlement_report_job.infrastructure.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
 )
 from settlement_report_job.utils import (
     map_from_dict,
 )
 from settlement_report_job.infrastructure import logging_configuration
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
 
 log = Logger(__name__)
 

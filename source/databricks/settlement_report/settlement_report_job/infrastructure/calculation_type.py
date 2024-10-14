@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import Enum
 
-class CalculationTypeDataProductValue:
-    AGGREGATION = "aggregation"
+
+class CalculationType(Enum):
+    """The job parameter values must correspond with these values."""
+
     BALANCE_FIXING = "balance_fixing"
     WHOLESALE_FIXING = "wholesale_fixing"
     FIRST_CORRECTION_SETTLEMENT = "first_correction_settlement"

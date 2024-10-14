@@ -21,19 +21,16 @@ from settlement_report_job.domain.DataProductValues.calculation_type import (
 )
 from settlement_report_job.domain.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
 from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
-    EphemeralColumns,
-)
 from settlement_report_job.infrastructure import logging_configuration
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
 
 log = Logger(__name__)
 

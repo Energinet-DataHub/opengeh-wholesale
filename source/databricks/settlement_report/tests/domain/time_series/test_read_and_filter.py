@@ -14,15 +14,16 @@ from settlement_report_job.domain.DataProductValues.calculation_type import (
 )
 
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
 from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
 from settlement_report_job.infrastructure.column_names import DataProductColumnNames
 from test_factories import latest_calculations_factory
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE

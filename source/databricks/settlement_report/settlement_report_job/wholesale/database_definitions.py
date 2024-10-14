@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+
+class WholesaleBasisDataDatabase:
+    DATABASE_NAME = "wholesale_basis_data"
+    TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
+    CHARGE_LINKS_VIEW_NAME = "charge_link_periods_v1"
+    CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
 
 
-class CalculationType(Enum):
-    BALANCE_FIXING = "balance_fixing"
-    WHOLESALE_FIXING = "wholesale_fixing"
-    FIRST_CORRECTION_SETTLEMENT = "first_correction_settlement"
-    SECOND_CORRECTION_SETTLEMENT = "second_correction_settlement"
-    THIRD_CORRECTION_SETTLEMENT = "third_correction_settlement"
+class WholesaleResultsDatabase:
+    DATABASE_NAME = "wholesale_results"
+    LATEST_CALCULATIONS_BY_DAY_VIEW_NAME = "latest_calculations_by_day_v1"
+    ENERGY_V1_VIEW_NAME = "energy_v1"
