@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import DecimalType
 
-from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
+    CalculationTypeDataProductValue,
     MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
@@ -23,7 +23,7 @@ class MeteringPointTimeSeriesTestDataSpec:
     """
 
     calculation_id: str
-    calculation_type: CalculationType
+    calculation_type: CalculationTypeDataProductValue
     calculation_version: int
     metering_point_id: str
     metering_point_type: MeteringPointTypeDataProductValue
@@ -49,7 +49,7 @@ def create(
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.metering_point_id: data_spec.metering_point_id,
                 DataProductColumnNames.metering_point_type: data_spec.metering_point_type,

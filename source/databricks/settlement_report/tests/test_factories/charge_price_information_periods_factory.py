@@ -3,25 +3,15 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
-    MeteringPointTypeDataProductValue,
+    CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
 )
 from settlement_report_job.wholesale.schemas import (
     charge_price_information_periods_v1,
 )
-
-DEFAULT_PERIOD_START = datetime(2024, 1, 1, 22)
-DEFAULT_PERIOD_END = datetime(2024, 1, 2, 22)
-DEFAULT_CALCULATION_ID = "11111111-1111-1111-1111-111111111111"
-DEFAULT_CALCULATION_VERSION = 1
-DEFAULT_METERING_POINT_ID = "12345678-1111-1111-1111-111111111111"
-DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
-DEFAULT_GRID_AREA_CODE = "804"
-DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 
 
 @dataclass
@@ -31,7 +21,7 @@ class ChargePriceInformationPeriodsTestDataSpec:
     """
 
     calculation_id: str
-    calculation_type: CalculationType
+    calculation_type: CalculationTypeDataProductValue
     calculation_version: int
     charge_key: str
     charge_code: str
@@ -58,7 +48,7 @@ def create(
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.charge_key: data_spec.charge_key,
                 DataProductColumnNames.charge_code: data_spec.charge_code,
