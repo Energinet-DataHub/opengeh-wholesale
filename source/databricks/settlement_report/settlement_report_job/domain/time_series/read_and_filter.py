@@ -159,15 +159,19 @@ def _filter_by_latest_calculations(
         get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
-    return time_series_points.join(
-        latest_calculations,
-        on=[
-            time_series_points[DataProductColumnNames.calculation_id]
-            == latest_calculations[DataProductColumnNames.calculation_id],
-            time_series_points[DataProductColumnNames.grid_area_code]
-            == latest_calculations[DataProductColumnNames.grid_area_code],
-            time_series_points[EphemeralColumns.start_of_day]
-            == latest_calculations[DataProductColumnNames.start_of_day],
-        ],
-        how="inner",
-    ).select(time_series_points["*"])
+    return (
+        time_series_points.join(
+            latest_calculations,
+            on=[
+                time_series_points[DataProductColumnNames.calculation_id]
+                == latest_calculations[DataProductColumnNames.calculation_id],
+                time_series_points[DataProductColumnNames.grid_area_code]
+                == latest_calculations[DataProductColumnNames.grid_area_code],
+                time_series_points[EphemeralColumns.start_of_day]
+                == latest_calculations[DataProductColumnNames.start_of_day],
+            ],
+            how="inner",
+        )
+        .select(time_series_points["*"])
+        .drop(EphemeralColumns.start_of_day)
+    )
