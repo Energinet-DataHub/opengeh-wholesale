@@ -81,7 +81,7 @@ class FileNameFactory:
 
     def _create_time_series_filename(
         self,
-        grid_area_code: str,
+        grid_area_code: str | None,
         energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
