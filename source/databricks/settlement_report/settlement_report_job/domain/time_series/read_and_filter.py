@@ -74,9 +74,7 @@ def read_and_filter_for_balance_fixing(
     return time_series_points
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.read_and_filter_for_wholesale"
-)
+@logging.use_span()
 def read_and_filter_for_wholesale(
     period_start: datetime,
     period_end: datetime,
