@@ -80,7 +80,9 @@ def parse_job_arguments(
         )
 
         _validate_grid_area_selection(
-            calculation_id_by_grid_area, grid_area_codes, calculation_type
+            settlement_report_args.calculation_id_by_grid_area_codes,
+            settlement_report_args.grid_area_codes,
+            settlement_report_args.calculation_type,
         )
 
         return settlement_report_args
