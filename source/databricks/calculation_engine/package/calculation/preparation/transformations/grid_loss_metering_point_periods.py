@@ -62,7 +62,7 @@ def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
 ) -> None:
     for grid_area in grid_areas:
         current_grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods.filter(
+            grid_loss_metering_point_periods.where(
                 col(Colname.grid_area_code) == grid_area
             )
         )
