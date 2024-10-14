@@ -25,10 +25,10 @@ from pyspark.sql.window import Window
 from pyspark.sql.types import DecimalType, DoubleType, FloatType
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
+from settlement_report_job.infrastructure.csv_column_names import (
     EphemeralColumns,
 )
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 
 @dataclass

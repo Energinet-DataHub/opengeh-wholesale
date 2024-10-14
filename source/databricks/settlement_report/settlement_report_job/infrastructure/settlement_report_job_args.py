@@ -24,8 +24,8 @@ from settlement_report_job.infrastructure.args_helper import (
     valid_date,
     valid_energy_supplier_ids,
 )
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.infrastructure.database_definitions import (
+from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.infrastructure.paths import (
     get_settlement_reports_output_path,
 )
 from settlement_report_job.logger import Logger

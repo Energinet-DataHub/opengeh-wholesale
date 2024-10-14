@@ -1,14 +1,14 @@
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
-from settlement_report_job.infrastructure import database_definitions
-from settlement_report_job.infrastructure.schemas.charge_link_periods_v1 import (
+from settlement_report_job.wholesale import database_definitions
+from settlement_report_job.wholesale.schemas import (
     charge_link_periods_v1,
 )
-from settlement_report_job.infrastructure.schemas.charge_price_information_periods_v1 import (
+from settlement_report_job.wholesale.schemas import (
     charge_price_information_periods_v1,
 )
-from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
+from settlement_report_job.wholesale.schemas import (
     metering_point_time_series_v1,
 )
 

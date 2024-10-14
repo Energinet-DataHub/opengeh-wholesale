@@ -20,11 +20,11 @@ import settlement_report_job.domain.report_naming_convention as market_naming
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
-from settlement_report_job.infrastructure.column_names import (
+from settlement_report_job.infrastructure.csv_column_names import (
     EnergyResultsCsvColumnNames,
-    DataProductColumnNames,
 )
 from settlement_report_job.utils import map_from_dict
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 
 def create_energy_results(

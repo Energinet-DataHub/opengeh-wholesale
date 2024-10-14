@@ -9,9 +9,6 @@ from settlement_report_job.utils import (
     map_from_dict,
     write_files,
 )
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
-)
 
 
 def test_map_from_dict__when_applied_to_new_col__returns_df_with_new_col(
