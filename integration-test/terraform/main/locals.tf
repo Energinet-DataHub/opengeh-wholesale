@@ -2,7 +2,7 @@ locals {
   integration_mssqlserver_admin_name = "inttestdbadmin"
   resource_suffix_with_dash          = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   resource_suffix_without_dash       = "${lower(var.domain_name_short)}${lower(var.environment_short)}we${lower(var.environment_instance)}"
-  databricks_runtime_version         = "14.3.x-scala2.12"
+  databricks_runtime_version         = "15.4.x-scala2.12"
   databricks_unity_catalog_name      = replace(azurerm_databricks_workspace.this.name, "-", "_") # Catalog created from default is workspace name with dashes replaced by underscores
 
   tags = {
