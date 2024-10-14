@@ -22,7 +22,7 @@ from pyspark.sql.session import SparkSession
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
-import settlement_report_job.infrastructure.logging_configuration as config
+import settlement_report_job.logging.logging_configuration as config
 from settlement_report_job.domain import report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
@@ -73,6 +73,7 @@ def start_task_with_deps(
 
     config.configure_logging(
         cloud_role_name=cloud_role_name,
+        tracer_name="settlement-report-job",
         applicationinsights_connection_string=applicationinsights_connection_string,
         extras={"Subsystem": "wholesale-aggregations"},
     )
