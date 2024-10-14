@@ -5,6 +5,7 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.wholesale.data_values import (
+    CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
     MeteringPointResolutionDataProductValue,
@@ -16,7 +17,6 @@ from test_factories import (
     charge_price_information_periods_factory,
     latest_calculations_factory,
 )
-from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 GRID_AREAS = ["804", "805"]
 CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
