@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections.abc import Callable
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
@@ -25,6 +26,7 @@ from settlement_report_job.domain.csv_column_names import (
 )
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.domain.market_role import MarketRole
 
 
 def create_energy_results(
@@ -35,7 +37,7 @@ def create_energy_results(
     energy = _read_and_filter_from_view(args, repository)
 
     # return relevant columns with market naming convention
-    return energy.select(
+    select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
             EnergyResultsCsvColumnNames.grid_area_code
         ),
@@ -55,13 +57,40 @@ def create_energy_results(
         F.col(DataProductColumnNames.quantity).alias(
             EnergyResultsCsvColumnNames.quantity
         ),
-    )
+    ]
+
+    if DataProductColumnNames.energy_supplier_id in energy.columns:
+        select_columns.insert(
+            1,
+            F.col(DataProductColumnNames.energy_supplier_id).alias(
+                EnergyResultsCsvColumnNames.energy_supplier_id
+            ),
+        )
+
+    return energy.select(select_columns)
+
+
+def _get_view_read_function_based_on_requesting_actor_role(
+    args: SettlementReportArgs, repository: WholesaleRepository
+) -> Callable[[], DataFrame]:
+    if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
+        return repository.read_energy_per_es
+    if args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
+        return repository.read_energy_per_brp
+    if args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        return repository.read_energy
+
+    raise ValueError("Requesting actor role not allowed to read energy_results.")
 
 
 def _read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
-    df = repository.read_energy().where(
+    read_from_repository_func = _get_view_read_function_based_on_requesting_actor_role(
+        args, repository
+    )
+
+    df = read_from_repository_func().where(
         (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
     )

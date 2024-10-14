@@ -9,6 +9,7 @@ class DataProductColumnNames:
     charge_owner_id = "charge_owner_id"
     charge_type = "charge_type"
     energy_supplier_id = "energy_supplier_id"
+    balance_responsible_party_id = "balance_responsible_party_id"
     from_date = "from_date"
     grid_area_code = "grid_area_code"
     is_tax = "is_tax"

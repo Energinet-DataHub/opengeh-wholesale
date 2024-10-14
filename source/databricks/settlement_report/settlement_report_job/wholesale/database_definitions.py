@@ -23,3 +23,5 @@ class WholesaleBasisDataDatabase:
 class WholesaleWholesaleResultsDatabase:
     DATABASE_NAME = "wholesale_results"
     ENERGY_V1_VIEW_NAME = "energy_v1"
+    ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
+    ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"

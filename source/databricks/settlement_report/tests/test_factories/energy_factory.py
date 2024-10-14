@@ -5,9 +5,8 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.schemas.energy_v1 import (
-    energy_v1,
-)
+from settlement_report_job.wholesale.schemas.energy_v1 import energy_v1
+from settlement_report_job.wholesale.schemas.energy_per_es_v1 import energy_per_es_v1
 
 
 @dataclass
@@ -32,9 +31,13 @@ class EnergyTestDataSpec:
     quantity_qualities: list[str]
     from_date: datetime
     to_date: datetime
+    energy_supplier_id: str
+    balance_responsible_party_id: str
 
 
-def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
+def create(
+    spark: SparkSession, data_spec: EnergyTestDataSpec, target_energy_per_es_v1: bool
+) -> DataFrame:
     rows = []
     resolution = (
         timedelta(hours=1) if data_spec.resolution == "PT1H" else timedelta(minutes=15)
@@ -50,6 +53,8 @@ def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.result_id: data_spec.result_id,
                 DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
+                DataProductColumnNames.energy_supplier_id: data_spec.energy_supplier_id,
+                DataProductColumnNames.balance_responsible_party_id: data_spec.balance_responsible_party_id,
                 DataProductColumnNames.metering_point_type: data_spec.metering_point_type,
                 DataProductColumnNames.settlement_method: data_spec.settlement_method,
                 DataProductColumnNames.resolution: data_spec.resolution,
@@ -61,4 +66,6 @@ def create(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
         )
         current_time += resolution
 
+    if target_energy_per_es_v1:
+        return spark.createDataFrame(rows, energy_per_es_v1)
     return spark.createDataFrame(rows, energy_v1)

@@ -35,6 +35,7 @@ CALCULATION_PERIOD_START = FROM_DATE
 CALCULATION_PERIOD_END = TO_DATE
 QUANTITY_UNIT = "kwh"
 QUANTITY_QUALITIES = ["measured"]
+BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 
 
 @dataclass
@@ -130,7 +131,7 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     return charge_price_information_periods_factory.create(spark, data_spec)
 
 
-def create_energy(spark: SparkSession) -> DataFrame:
+def create_energy(spark: SparkSession, target_energy_per_es_v1: bool) -> DataFrame:
     """
     Creates a DataFrame with energy data for testing purposes.
     Mimics the wholesale_results.energy_v1 view.
@@ -154,8 +155,10 @@ def create_energy(spark: SparkSession) -> DataFrame:
             quantity_qualities=QUANTITY_QUALITIES,
             from_date=FROM_DATE,
             to_date=TO_DATE,
+            energy_supplier_id=metering_point.energy_supplier_id,
+            balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
         )
-        next_df = energy_factory.create(spark, data_spec)
+        next_df = energy_factory.create(spark, data_spec, target_energy_per_es_v1)
         if df is None:
             df = next_df
         else:
