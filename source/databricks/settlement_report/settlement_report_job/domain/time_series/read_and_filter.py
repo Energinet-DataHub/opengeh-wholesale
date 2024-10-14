@@ -16,6 +16,12 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Column
 
+from settlement_report_job import logging
+from settlement_report_job.domain.csv_column_names import EphemeralColumns
+from settlement_report_job.wholesale.data_values.calculation_type import (
+    CalculationTypeDataProductValue,
+)
+from settlement_report_job.domain.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.csv_column_names import EphemeralColumns
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
@@ -26,19 +32,34 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.read_and_filter_for_balance_fixing"
-)
+@logging.use_span()
+def read_and_filter_for_balance_fixing(
+    period_start: datetime,
+    period_end: datetime,
+    grid_area_codes: list[str],
+    energy_supplier_ids: list[str] | None,
+    resolution: MeteringPointResolutionDataProductValue,
+    time_zone: str,
+    repository: WholesaleRepository,
+) -> DataFrame:
+    log.info("Creating time series points")
+    time_series_points = _read_from_view(
+        period_start,
+        period_end,
+        resolution,
+        energy_supplier_ids,
+        repository,
+    )
+
+@logging.use_span()
 def read_and_filter_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
@@ -80,6 +101,23 @@ def read_and_filter_for_balance_fixing(
 @logging_configuration.use_span(
     "settlement_report_job.time_series_factory.read_and_filter_for_wholesale"
 )
+    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
+        (
+            F.col(DataProductColumnNames.calculation_type)
+            == CalculationTypeDataProductValue.BALANCE_FIXING
+        )
+        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
+        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
+        & (F.col(DataProductColumnNames.start_of_day) < period_end)
+    )
+    time_series_points = _filter_by_latest_calculations(
+        time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
+    )
+
+    return time_series_points
+
+
+@logging.use_span()
 def read_and_filter_for_wholesale(
     period_start: datetime,
     period_end: datetime,
@@ -96,6 +134,7 @@ def read_and_filter_for_wholesale(
         period_start=period_start,
         period_end=period_end,
         resolution=metering_point_resolution,
+        energy_supplier_ids=energy_supplier_ids,
         repository=repository,
     )
 
@@ -111,28 +150,29 @@ def read_and_filter_for_wholesale(
             charge_price_information_periods=repository.read_charge_price_information_periods(),
         )
 
+    return time_series_points
+
+
+@logging.use_span()
+def _read_from_view(
+    period_start: datetime,
+    period_end: datetime,
+    resolution: MeteringPointResolutionDataProductValue,
+    energy_supplier_ids: list[str] | None,
+    repository: WholesaleRepository,
+) -> DataFrame:
+    time_series_points = repository.read_metering_point_time_series().where(
+        (F.col(DataProductColumnNames.observation_time) >= period_start)
+        & (F.col(DataProductColumnNames.observation_time) < period_end)
+        & (F.col(DataProductColumnNames.resolution) == resolution)
+    )
+
     if energy_supplier_ids:
         time_series_points = time_series_points.where(
             F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
         )
 
     return time_series_points
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory._read_from_view"
-)
-def _read_from_view(
-    period_start: datetime,
-    period_end: datetime,
-    resolution: MeteringPointResolutionDataProductValue,
-    repository: WholesaleRepository,
-) -> DataFrame:
-    return repository.read_metering_point_time_series().where(
-        (F.col(DataProductColumnNames.observation_time) >= period_start)
-        & (F.col(DataProductColumnNames.observation_time) < period_end)
-        & (F.col(DataProductColumnNames.resolution) == resolution)
-    )
 
 
 def _filter_on_calculation_id_by_grid_area(

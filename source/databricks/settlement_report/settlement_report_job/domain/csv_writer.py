@@ -15,13 +15,14 @@ from typing import Any, List
 
 from pyspark.sql import DataFrame
 
+from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.logger import Logger
 from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
+    EnergyResultsCsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
@@ -29,13 +30,12 @@ from settlement_report_job.utils import (
     get_new_files,
     merge_files,
 )
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span("settlement_report_job.csv_writer.write")
+@logging.use_span()
 def write(
     dbutils: Any,
     args: SettlementReportArgs,
@@ -51,7 +51,7 @@ def write(
 
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
-    order_by_columns = _get_order_by_columns_for_report_type(report_data_type)
+    order_by_columns = _get_order_by_columns_for_report_type(report_data_type, args)
 
     headers = write_files(
         df=df_ready_for_writing,
@@ -91,11 +91,15 @@ def _get_partition_columns_for_report_type(
 
         if args.prevent_large_text_files:
             partition_columns.append(EphemeralColumns.chunk_index)
+    if report_type in [ReportDataType.EnergyResults] and args.split_report_by_grid_area:
+        partition_columns = [EnergyResultsCsvColumnNames.grid_area_code]
 
     return partition_columns
 
 
-def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[str]:
+def _get_order_by_columns_for_report_type(
+    report_type: ReportDataType, args: SettlementReportArgs
+) -> List[str]:
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
@@ -106,6 +110,16 @@ def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[s
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ]
+
+    if report_type in [ReportDataType.EnergyResults]:
+        order_by_columns = [
+            EnergyResultsCsvColumnNames.grid_area_code,
+            EnergyResultsCsvColumnNames.metering_point_type,
+            EnergyResultsCsvColumnNames.settlement_method,
+            EnergyResultsCsvColumnNames.time,
+        ]
+
+        return order_by_columns
 
     return []
 
@@ -130,6 +144,8 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.EnergyResults:
+        return "energy_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
 

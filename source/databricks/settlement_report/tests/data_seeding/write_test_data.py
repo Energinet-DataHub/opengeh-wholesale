@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
@@ -11,6 +14,24 @@ from settlement_report_job.wholesale.schemas import (
 from settlement_report_job.wholesale.schemas import (
     metering_point_time_series_v1,
 )
+from settlement_report_job.wholesale.schemas.energy_v1 import (
+    energy_v1,
+)
+
+
+def write_energy_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
+        schema=energy_v1,
+    )
 
 
 def write_charge_price_information_periods_to_delta_table(
@@ -68,8 +89,13 @@ def write_dataframe_to_table(
     mode: str = "overwrite",
 ) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
+    spark.sql(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
+
+    if os.path.exists(table_location):
+        shutil.rmtree(table_location)
 
     sql_schema = _struct_type_to_sql_schema(schema)
+
     spark.sql(
         f"CREATE OR REPLACE TABLE {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )

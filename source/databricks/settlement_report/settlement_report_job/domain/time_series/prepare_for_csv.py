@@ -14,31 +14,31 @@
 
 from pyspark.sql import DataFrame, functions as F, Window
 
+from settlement_report_job import logging
+from settlement_report_job.domain.get_start_of_day import (
+    get_start_of_day,
+)
 from settlement_report_job.domain.get_start_of_day import (
     get_start_of_day,
 )
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.logger import Logger
 from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
 )
 from settlement_report_job.utils import (
     map_from_dict,
 )
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.prepare_for_csv"
-)
+@logging.use_span()
 def prepare_for_csv(
     filtered_time_series_points: DataFrame,
     metering_point_resolution: MeteringPointResolutionDataProductValue,
