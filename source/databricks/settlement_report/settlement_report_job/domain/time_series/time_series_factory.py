@@ -23,6 +23,7 @@ from settlement_report_job.domain.time_series.prepare_for_csv import (
 )
 from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
+    read_and_filter_for_balance_fixing,
 )
 from settlement_report_job.logger import Logger
 from settlement_report_job.infrastructure import logging_configuration
@@ -31,6 +32,22 @@ from settlement_report_job.wholesale.data_values import (
 )
 
 log = Logger(__name__)
+
+from typing import Optional
+from uuid import UUID
+
+
+class GridAreaSelection:
+    def __init__(
+        self,
+        grid_area_codes: list[str],
+        calculation_id_by_grid_area: Optional[dict[str, UUID]] = None,
+    ):
+        self.grid_area_codes = grid_area_codes
+        self.calculation_id_by_grid_area = calculation_id_by_grid_area
+
+    def has_calculation_ids(self) -> bool:
+        return self.calculation_id_by_grid_area is not None
 
 
 @logging_configuration.use_span(
@@ -49,20 +66,4 @@ def create_time_series_for_wholesale(
 ) -> DataFrame:
     log.info("Creating time series points")
 
-    time_series_points = read_and_filter_for_wholesale(
-        period_start=period_start,
-        period_end=period_end,
-        calculation_id_by_grid_area=calculation_id_by_grid_area,
-        energy_supplier_ids=energy_supplier_ids,
-        metering_point_resolution=metering_point_resolution,
-        requesting_actor_market_role=requesting_actor_market_role,
-        requesting_actor_id=requesting_actor_id,
-        repository=repository,
-    )
-
-    prepared_time_series = prepare_for_csv(
-        filtered_time_series_points=time_series_points,
-        metering_point_resolution=metering_point_resolution,
-        time_zone=time_zone,
-    )
     return prepared_time_series

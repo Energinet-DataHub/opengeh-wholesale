@@ -24,7 +24,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
         period_start=datetime(2024, 6, 30, 22, 0, 0),
         period_end=datetime(2024, 7, 31, 22, 0, 0),
         calculation_type=CalculationType.WHOLESALE_FIXING,
-        calculation_id_by_grid_area={
+        calculation_id_by_grid_area_codes={
             "016": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373")
         },
         split_report_by_grid_area=True,

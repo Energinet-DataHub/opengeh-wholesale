@@ -53,8 +53,15 @@ def parse_job_arguments(
             calculation_type=job_args.calculation_type,
             requesting_actor_market_role=job_args.requesting_actor_market_role,
             requesting_actor_id=job_args.requesting_actor_id,
-            calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
-                job_args.calculation_id_by_grid_area
+            calculation_id_by_grid_area_codes=(
+                _create_calculation_id_by_grid_area_dict(
+                    job_args.calculation_id_by_grid_area
+                )
+                if job_args.calculation_id_by_grid_area
+                else {}
+            ),
+            grid_area_codes=(
+                job_args.grid_area_codes if job_args.grid_area_codes else []
             ),
             energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
@@ -106,6 +113,8 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
 
     return args
 
+
+def _create_grid_area_selection(grid_area_codes: list[str]) -> dict[str, uuid.UUID]:
 
 def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid.UUID]:
     try:
