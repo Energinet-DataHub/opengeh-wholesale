@@ -4,7 +4,7 @@ import pytest
 from tests.fixtures import DBUtilsFixture
 from settlement_report_job.domain.report_generator import execute_quarterly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.csv_column_names import (
+from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
 )
 

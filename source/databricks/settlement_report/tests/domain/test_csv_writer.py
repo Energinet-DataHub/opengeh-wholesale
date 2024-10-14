@@ -22,7 +22,7 @@ from settlement_report_job.domain.report_data_type import ReportDataType
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import tests.test_factories.time_series_csv_factory as factory
-from settlement_report_job.infrastructure.csv_column_names import (
+from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
 )
 from settlement_report_job.wholesale.data_values import (
