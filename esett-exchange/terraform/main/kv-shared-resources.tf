@@ -93,8 +93,8 @@ data "azurerm_key_vault_secret" "relay_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "bvault_policy_id" {
-  name         = "bvault-policy-id"
+data "azurerm_key_vault_secret" "bvault_vaulted_policy_id" {
+  name         = "bvault-vaulted-policy-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

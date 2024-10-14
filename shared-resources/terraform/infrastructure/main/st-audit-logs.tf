@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "audit_logs" {
 }
 
 module "st_audit_logs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.2.0"
 
   name                       = "audit"
   project_name               = var.domain_name_short
@@ -32,7 +32,7 @@ module "st_audit_logs" {
     }
   ]
   blob_storage_backup_policy = {
-    backup_policy_id          = module.backup_vault.blob_storage_backup_policy_id
+    backup_policy_id          = module.backup_vault.blob_storage_backup_vaulted_policy_id
     backup_vault_id           = module.backup_vault.id
     backup_vault_location     = azurerm_resource_group.this.location
     backup_vault_principal_id = module.backup_vault.identity.0.principal_id

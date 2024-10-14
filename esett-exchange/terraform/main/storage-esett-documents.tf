@@ -1,5 +1,5 @@
 module "storage_esett_documents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.2.0"
 
   name                       = "documents"
   project_name               = var.domain_name_short
@@ -20,7 +20,7 @@ module "storage_esett_documents" {
     },
   ]
   blob_storage_backup_policy = {
-    backup_policy_id          = data.azurerm_key_vault_secret.bvault_policy_id.value
+    backup_policy_id          = data.azurerm_key_vault_secret.bvault_vaulted_policy_id.value
     backup_vault_id           = data.azurerm_key_vault_secret.bvault_vault_id.value
     backup_vault_location     = data.azurerm_key_vault_secret.bvault_vault_location.value
     backup_vault_principal_id = data.azurerm_key_vault_secret.bvault_vault_principal_id.value
