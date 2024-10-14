@@ -23,5 +23,4 @@ class EphemeralColumns:
 
     chunk_index = "chunk_index_partition"
     start_of_day = "start_of_day"
-    uid = "uid"
     quantities = "quantities"

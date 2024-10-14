@@ -18,9 +18,6 @@ from settlement_report_job import logging
 from settlement_report_job.domain.get_start_of_day import (
     get_start_of_day,
 )
-from settlement_report_job.domain.get_start_of_day import (
-    get_start_of_day,
-)
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )

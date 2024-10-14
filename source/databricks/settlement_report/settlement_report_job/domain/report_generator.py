@@ -12,9 +12,6 @@ from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
-from settlement_report_job.domain.time_series.time_series_factory import (
-    create_time_series_for_wholesale,
-)
 from settlement_report_job.domain.task_type import TaskType
 
 from settlement_report_job.utils import create_zip_file

@@ -22,11 +22,6 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
 from settlement_report_job.domain.get_start_of_day import get_start_of_day
-from settlement_report_job.domain.csv_column_names import EphemeralColumns
-from settlement_report_job.wholesale.data_values.calculation_type import (
-    CalculationTypeDataProductValue,
-)
-from settlement_report_job.domain.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.system_operator_filter import (
@@ -59,48 +54,6 @@ def read_and_filter_for_balance_fixing(
         repository,
     )
 
-@logging.use_span()
-def read_and_filter_for_balance_fixing(
-    period_start: datetime,
-    period_end: datetime,
-    grid_area_codes: list[str],
-    energy_supplier_ids: list[str] | None,
-    resolution: MeteringPointResolutionDataProductValue,
-    time_zone: str,
-    repository: WholesaleRepository,
-) -> DataFrame:
-    log.info("Creating time series points")
-    time_series_points = _read_from_view(
-        period_start,
-        period_end,
-        resolution,
-        repository,
-    )
-
-    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
-        (
-            F.col(DataProductColumnNames.calculation_type)
-            == CalculationTypeDataProductValue.BALANCE_FIXING
-        )
-        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
-        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
-        & (F.col(DataProductColumnNames.start_of_day) < period_end)
-    )
-    time_series_points = _filter_by_latest_calculations(
-        time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
-    )
-
-    if energy_supplier_ids:
-        time_series_points = time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
-        )
-
-    return time_series_points
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.read_and_filter_for_wholesale"
-)
     latest_balance_fixing_calculations = repository.read_latest_calculations().where(
         (
             F.col(DataProductColumnNames.calculation_type)

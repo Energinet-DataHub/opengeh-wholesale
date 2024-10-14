@@ -189,29 +189,6 @@ def create_energy(spark: SparkSession) -> DataFrame:
     return df
 
 
-def create_latest_calculations(spark: SparkSession) -> DataFrame:
-    """
-    Creates a DataFrame with latest calculations data for testing purposes.
-    """
-
-    data_specs = []
-    for grid_area_code in GRID_AREAS:
-        current_date = FROM_DATE
-        while current_date <= TO_DATE:
-            data_specs.append(
-                latest_calculations_factory.LatestCalculationsTestDataSpec(
-                    calculation_id=CALCULATION_ID,
-                    calculation_type=CALCULATION_TYPE,
-                    calculation_version=1,
-                    grid_area_code=grid_area_code,
-                    start_of_day=current_date,
-                )
-            )
-            current_date += timedelta(days=1)
-
-    return latest_calculations_factory.create(spark, data_specs)
-
-
 def _get_all_metering_points() -> list[MeteringPointSpec]:
     metering_points = []
     count = 0

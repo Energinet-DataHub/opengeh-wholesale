@@ -8,7 +8,6 @@ from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
-    MeteringPointTypeDataProductValue,
 )
 from settlement_report_job.wholesale.schemas import (
     charge_price_information_periods_v1,
