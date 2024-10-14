@@ -139,7 +139,7 @@ def create_latest_calculations(spark: SparkSession) -> DataFrame:
     data_specs = []
     for grid_area_code in GRID_AREAS:
         current_date = FROM_DATE
-        while current_date <= TO_DATE:
+        while current_date < TO_DATE:
             data_specs.append(
                 latest_calculations_factory.LatestCalculationsTestDataSpec(
                     calculation_id=CALCULATION_ID,
