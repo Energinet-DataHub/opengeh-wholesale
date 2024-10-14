@@ -16,7 +16,8 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F, Column
 
-from settlement_report_job.domain.DataProductValues.calculation_type import (
+from settlement_report_job.domain.csv_column_names import EphemeralColumns
+from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
 from settlement_report_job.domain.get_start_of_day import get_start_of_day
