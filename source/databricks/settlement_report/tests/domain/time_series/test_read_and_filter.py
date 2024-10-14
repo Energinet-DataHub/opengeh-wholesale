@@ -353,7 +353,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter_for_balance_fixing__returns_only_latest_calculations(
+def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_latest_calculations(
     spark: SparkSession,
 ) -> None:
     # Arrange
