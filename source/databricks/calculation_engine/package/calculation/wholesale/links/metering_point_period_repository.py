@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
@@ -20,9 +21,6 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.links.imetering_point_period_repository import (
-    IMeteringPointPeriodRepository,
-)
 from package.constants import Colname
 from package.databases import read_table
 from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
@@ -30,7 +28,15 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 
-class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
+class IMeteringPointPeriodsRepository(ABC):
+    @abstractmethod
+    def get_by(
+        self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]
+    ) -> DataFrame:
+        pass
+
+
+class MeteringPointPeriodsRepository(IMeteringPointPeriodsRepository):
 
     @inject
     def __init__(
@@ -47,6 +53,7 @@ class MeteringPointPeriodRepository(IMeteringPointPeriodRepository):
     def get_by(
         self, period_start: datetime, period_end: datetime, grid_area_codes: List[str]
     ) -> DataFrame:
+
         metering_point_periods_df = read_table(
             self.spark,
             self.infrastructure_settings.catalog_name,

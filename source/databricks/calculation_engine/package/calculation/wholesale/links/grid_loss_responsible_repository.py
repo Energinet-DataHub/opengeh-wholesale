@@ -17,7 +17,7 @@ from pyspark.sql.functions import col
 
 from package.calculation.preparation.data_structures import GridLossResponsible
 from package.calculation.wholesale.links.metering_point_period_repository import (
-    IMeteringPointPeriodRepository,
+    IMeteringPointPeriodsRepository,
 )
 from package.constants import Colname
 from package.databases.wholesale_internal import WholesaleInternalRepository
@@ -33,7 +33,7 @@ class GridLossResponsibleRepository(IGridLossResponsibleRepository):
 
     def __init__(
         self,
-        metering_point_periods_repository: IMeteringPointPeriodRepository,
+        metering_point_periods_repository: IMeteringPointPeriodsRepository,
         repository: WholesaleInternalRepository,
     ):
         self.repository = repository

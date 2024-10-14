@@ -19,11 +19,11 @@ class CacheBucket:
         self._metering_points = None
 
     @property
-    def metering_points(self):
+    def metering_point_periods(self):
         return self._metering_points
 
-    @metering_points.setter
-    def metering_points(self, value) -> None:
+    @metering_point_periods.setter
+    def metering_point_periods(self, value) -> None:
         if self._metering_points is not None:
             raise AttributeError("metering_points can only be set once.")
         self._metering_points = value

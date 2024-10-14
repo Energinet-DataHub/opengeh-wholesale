@@ -14,7 +14,7 @@
 from pyspark.sql.types import StructType
 
 from package.calculation.wholesale.links.metering_point_period_repository import (
-    MeteringPointPeriodRepository,
+    MeteringPointPeriodsRepository,
 )
 from package.databases import wholesale_internal
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
@@ -43,7 +43,7 @@ def get_data_input_specifications(
     migrations_wholesale_repository: MigrationsWholesaleRepository,
     wholesale_internal_repository: wholesale_internal.WholesaleInternalRepository,
     wholesale_results_internal_repository: WholesaleResultsInternalRepository,
-    metering_point_periods_repository: MeteringPointPeriodRepository,
+    metering_point_periods_repository: MeteringPointPeriodsRepository,
 ) -> dict[str, tuple[StructType, callable]]:
     """
     Contains the mapping between the csv file name, the schema name and the function
