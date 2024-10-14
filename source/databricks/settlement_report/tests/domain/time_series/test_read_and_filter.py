@@ -469,7 +469,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_returns_balance_fixing
     )
 
 
-def test_read_and_filter_for_balance_fixing__when_two_calculations_overlap_in_time__returns_only_latest_calculation_data(
+def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_overlap__returns_only_latest_calculation_data(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -550,3 +550,91 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_overlap_in_ti
         )
         assert len(actual_calculation_ids) == 1
         assert actual_calculation_ids[0][0] == expected_calculation_id
+
+
+def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    day_1 = DEFAULT_FROM_DATE
+    day_2 = day_1 + timedelta(days=1)
+    grid_area_1 = "805"
+    grid_area_2 = "806"
+    calculation_id_1 = "11111111-9fc8-409a-a169-fbd49479d718"
+    calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
+    calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
+
+    time_series_df = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            time_series_factory.create(
+                spark,
+                default_data.create_time_series_data_spec(
+                    calculation_id=calc_id,
+                    calculation_type=calc_type,
+                    grid_area_code=grid_area,
+                    from_date=day_1,
+                    to_date=day_2,
+                ),
+            )
+            for calc_id, grid_area in [
+                (calculation_id_1, grid_area_1),
+                (calculation_id_1, grid_area_2),
+                (calculation_id_2, grid_area_2),
+            ]
+        ],
+    )
+
+    latest_calculations_df = latest_calculations_factory.create(
+        spark,
+        [
+            default_data.create_latest_calculations_data_spec(
+                calculation_id=calculation_id_1,
+                calculation_type=calc_type,
+                grid_area_code=grid_area_1,
+                start_of_day=day_1,
+            ),
+            default_data.create_latest_calculations_data_spec(
+                calculation_id=calculation_id_2,
+                calculation_type=calc_type,
+                grid_area_code=grid_area_2,
+                start_of_day=day_1,
+            ),
+        ],
+    )
+
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_latest_calculations.return_value = latest_calculations_df
+
+    # Act
+    actual_df = read_and_filter_for_balance_fixing(
+        period_start=day_1,
+        period_end=day_2,
+        grid_area_codes=[grid_area_1, grid_area_2],
+        energy_supplier_ids=None,
+        resolution=default_data.DEFAULT_RESOLUTION,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert all(
+        row[DataProductColumnNames.calculation_id] == calculation_id_1
+        for row in actual_df.where(
+            F.col(DataProductColumnNames.grid_area_code) == grid_area_1
+        )
+        .select(DataProductColumnNames.calculation_id)
+        .distinct()
+        .collect()
+    )
+
+    assert all(
+        row[DataProductColumnNames.calculation_id] == calculation_id_2
+        for row in actual_df.where(
+            F.col(DataProductColumnNames.grid_area_code) == grid_area_2
+        )
+        .select(DataProductColumnNames.calculation_id)
+        .distinct()
+        .collect()
+    )

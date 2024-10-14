@@ -67,7 +67,6 @@ def read_and_filter_for_balance_fixing(
         & (F.col(DataProductColumnNames.start_of_day) >= period_start)
         & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
-
     time_series_points = _filter_by_latest_calculations(
         time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
     )
@@ -153,22 +152,22 @@ def _filter_on_calculation_id_by_grid_area(
 
 
 def _filter_by_latest_calculations(
-    time_series_point: DataFrame, latest_calculations: DataFrame, time_zone: str
+    time_series_points: DataFrame, latest_calculations: DataFrame, time_zone: str
 ) -> DataFrame:
-    time_series_point = time_series_point.withColumn(
+    time_series_points = time_series_points.withColumn(
         EphemeralColumns.start_of_day,
         get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
-    return time_series_point.join(
+    return time_series_points.join(
         latest_calculations,
         on=[
-            time_series_point[DataProductColumnNames.calculation_id]
+            time_series_points[DataProductColumnNames.calculation_id]
             == latest_calculations[DataProductColumnNames.calculation_id],
-            time_series_point[DataProductColumnNames.grid_area_code]
+            time_series_points[DataProductColumnNames.grid_area_code]
             == latest_calculations[DataProductColumnNames.grid_area_code],
-            time_series_point[EphemeralColumns.start_of_day]
+            time_series_points[EphemeralColumns.start_of_day]
             == latest_calculations[DataProductColumnNames.start_of_day],
         ],
         how="inner",
-    ).select(time_series_point["*"])
+    ).select(time_series_points["*"])
