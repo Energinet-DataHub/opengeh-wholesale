@@ -16,6 +16,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame
 
+from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.time_series.prepare_for_csv import (
@@ -24,18 +25,14 @@ from settlement_report_job.domain.time_series.prepare_for_csv import (
 from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
 )
-from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.create_time_series_for_wholesale"
-)
+@logging.use_span()
 def create_time_series_for_wholesale(
     period_start: datetime,
     period_end: datetime,
