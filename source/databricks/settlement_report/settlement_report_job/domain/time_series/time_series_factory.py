@@ -40,8 +40,6 @@ def create_time_series_for_balance_fixing(
     grid_area_codes: list[str],
     energy_supplier_ids: list[str] | None,
     metering_point_resolution: MeteringPointResolutionDataProductValue,
-    requesting_actor_market_role: MarketRole,
-    requesting_actor_id: str,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -53,8 +51,7 @@ def create_time_series_for_balance_fixing(
         grid_area_codes=grid_area_codes,
         energy_supplier_ids=energy_supplier_ids,
         metering_point_resolution=metering_point_resolution,
-        requesting_actor_market_role=requesting_actor_market_role,
-        requesting_actor_id=requesting_actor_id,
+        time_zone=time_zone,
         repository=repository,
     )
 

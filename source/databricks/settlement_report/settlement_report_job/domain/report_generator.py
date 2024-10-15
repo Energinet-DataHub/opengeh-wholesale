@@ -77,8 +77,6 @@ def _execute_time_series(
             energy_supplier_ids=args.energy_supplier_ids,
             metering_point_resolution=metering_point_resolution,
             repository=repository,
-            requesting_actor_market_role=args.requesting_actor_market_role,
-            requesting_actor_id=args.requesting_actor_id,
         )
     else:
         time_series_df = create_time_series_for_wholesale(
