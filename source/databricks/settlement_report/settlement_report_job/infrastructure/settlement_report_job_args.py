@@ -60,8 +60,6 @@ def parse_job_arguments(
             calculation_type=job_args.calculation_type,
             requesting_actor_market_role=job_args.requesting_actor_market_role,
             requesting_actor_id=job_args.requesting_actor_id,
-            calculation_id_by_grid_area_codes=calculation_id_by_grid_area,
-            grid_area_codes=grid_area_codes,
             energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
@@ -72,6 +70,8 @@ def parse_job_arguments(
             ),
             include_basis_data=job_args.include_basis_data,
             locale=job_args.locale if job_args.locale is not None else "da-DK",
+            calculation_id_by_grid_area_codes=calculation_id_by_grid_area,
+            grid_area_codes=grid_area_codes,
         )
 
         _validate_grid_area_selection(
