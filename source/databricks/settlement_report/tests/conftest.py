@@ -23,12 +23,16 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from data_seeding import standard_wholesale_fixing_scenario_data_generator
+from data_seeding import (
+    standard_wholesale_fixing_scenario_data_generator,
+    standard_balance_fixing_scenario_data_generator,
+)
 from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
     write_energy_to_delta_table,
+    write_latest_calculations_by_day_to_delta_table,
 )
 
 
@@ -68,6 +72,33 @@ def standard_wholesale_fixing_scenario_args(
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
         locale="da-dk",
+    )
+
+
+@pytest.fixture(scope="session")
+def standard_balance_fixing_scenario_data_written_to_delta(
+    spark: SparkSession,
+    input_database_location: str,
+) -> None:
+    time_series_df = standard_balance_fixing_scenario_data_generator.create_metering_point_time_series(
+        spark
+    )
+    write_metering_point_time_series_to_delta_table(
+        spark, time_series_df, input_database_location
+    )
+
+    energy_df = standard_balance_fixing_scenario_data_generator.create_energy(spark)
+    write_energy_to_delta_table(spark, energy_df, input_database_location)
+
+    latest_calculations_by_day = (
+        standard_balance_fixing_scenario_data_generator.create_latest_calculations(
+            spark
+        )
+    )
+    write_latest_calculations_by_day_to_delta_table(
+        standard_balance_fixing_scenario_data_generator.create_latest_calculations(
+            spark
+        )
     )
 
 
