@@ -50,7 +50,7 @@ def create_time_series_for_balance_fixing(
     time_series_points = read_and_filter_for_balance_fixing(
         period_start=period_start,
         period_end=period_end,
-        grid_are_codes=grid_area_codes,
+        grid_area_codes=grid_area_codes,
         energy_supplier_ids=energy_supplier_ids,
         metering_point_resolution=metering_point_resolution,
         requesting_actor_market_role=requesting_actor_market_role,
