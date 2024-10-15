@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 import sys
+import uuid
 from argparse import Namespace
 
 import configargparse
@@ -44,14 +45,11 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
-        if job_args.calculation_type is CalculationType.BALANCE_FIXING:
-            grid_area_codes = _create_grid_area_codes_list(job_args.grid_area_codes)
-            calculation_id_by_grid_area = None
-        else:
-            calculation_id_by_grid_area = _create_calculation_id_by_grid_area_dict(
-                job_args.calculation_id_by_grid_area
-            )
-            grid_area_codes = None
+        grid_area_codes = _create_grid_area_codes(
+            job_args.grid_area_codes, job_args.calculation_type
+        )
+        calculation_id_by_grid_area = _create_calculation_ids_by_grid_area_code(job_args.calculation_id_by_grid_area) if job_args.calculation_type is CalculationType.BALANCE_FIXING else None
+
 
         settlement_report_args = SettlementReportArgs(
             report_id=job_args.report_id,
@@ -60,6 +58,8 @@ def parse_job_arguments(
             calculation_type=job_args.calculation_type,
             requesting_actor_market_role=job_args.requesting_actor_market_role,
             requesting_actor_id=job_args.requesting_actor_id,
+            calculation_id_by_grid_area=calculation_id_by_grid_area,
+            grid_area_codes=grid_area_codes,
             energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
@@ -70,14 +70,6 @@ def parse_job_arguments(
             ),
             include_basis_data=job_args.include_basis_data,
             locale=job_args.locale if job_args.locale is not None else "da-DK",
-            calculation_id_by_grid_area_codes=calculation_id_by_grid_area,
-            grid_area_codes=grid_area_codes,
-        )
-
-        _validate_grid_area_selection(
-            settlement_report_args.calculation_id_by_grid_area_codes,
-            settlement_report_args.grid_area_codes,
-            settlement_report_args.calculation_type,
         )
 
         return settlement_report_args
@@ -120,7 +112,16 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     return args
 
 
-def _create_grid_area_codes_list(grid_area_codes: str) -> list[str]:
+def _create_grid_area_codes(
+    s: str, calculation_type: CalculationType
+) -> list[str]
+    if calculation_type is CalculationType.BALANCE_FIXING:
+        return _create_grid_area_codes_as_list(s)
+    else:
+        return list(_create_calculation_ids_by_grid_area_code(s).keys())
+
+
+def _create_grid_area_codes_as_list(grid_area_codes: str) -> list[str]:
     if not grid_area_codes.startswith("[") or not grid_area_codes.endswith("]"):
         msg = "Grid area codes must be a list enclosed by an opening '[' and a closing ']'"
         raise configargparse.ArgumentTypeError(msg)
@@ -138,7 +139,7 @@ def _create_grid_area_codes_list(grid_area_codes: str) -> list[str]:
     return tokens
 
 
-def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, str]:
+def _create_calculation_ids_by_grid_area_code(json_str: str) -> dict[str, uuid.UUID]:
     try:
         calculation_id_by_grid_area = json.loads(json_str)
     except json.JSONDecodeError as e:
@@ -150,25 +151,3 @@ def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, str]:
         calculation_id_by_grid_area[grid_area] = calculation_id
 
     return calculation_id_by_grid_area
-
-
-def _validate_grid_area_selection(
-    calculation_id_by_grid_area: dict[str, str],
-    grid_area_codes: list[str],
-    calculation_type: CalculationType,
-) -> None:
-    if calculation_type is CalculationType.BALANCE_FIXING:
-        if grid_area_codes is None:
-            raise ValueError(
-                "Grid area codes must be provided when calculation type is balance fixing"
-            )
-
-        if calculation_id_by_grid_area is not None:
-            raise ValueError(
-                "Calculation id by grid area code is not expected for balance fixing"
-            )
-    else:
-        if calculation_id_by_grid_area is None:
-            raise ValueError(
-                f"Calculation id must be provide for each grid area code when the calculation type is {calculation_type.value}"
-            )

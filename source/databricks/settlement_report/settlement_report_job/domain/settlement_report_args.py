@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -13,6 +14,9 @@ class SettlementReportArgs:
     calculation_type: CalculationType
     requesting_actor_market_role: MarketRole
     requesting_actor_id: str
+    calculation_id_by_grid_area: dict[str, uuid.UUID] | None
+    """ A dictionary containing grid area codes (keys) and calculation ids (values). None for balance fixing"""
+    grid_area_codes: list[str]
     energy_supplier_ids: list[str] | None
     split_report_by_grid_area: bool
     prevent_large_text_files: bool
@@ -22,12 +26,3 @@ class SettlementReportArgs:
     """The path to the folder where the settlement reports are stored."""
     include_basis_data: bool
     locale: str
-    calculation_id_by_grid_area_codes: dict[str, str] | None
-    """
-    calculation_id_by_grid_area_codes is only  used when not balance fixing. None otherwise.
-    A dictionary containing grid area codes (keys) and calculation ids (values).
-    """
-    grid_area_codes: list[str] | None
-    """
-    Only used when not balance fixing. None otherwise.
-    """
