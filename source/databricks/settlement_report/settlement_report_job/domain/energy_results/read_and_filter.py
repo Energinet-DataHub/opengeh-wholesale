@@ -25,11 +25,13 @@ log = logging.Logger(__name__)
 
 
 def _get_view_read_function(
-    energy_supplier_ids: list[str] | None, repository: WholesaleRepository
+    requesting_actor_market_role: MarketRole,
+    repository: WholesaleRepository,
 ) -> Callable[[], DataFrame]:
-    if energy_supplier_ids is not None:
+    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        return repository.read_energy
+    else:
         return repository.read_energy_per_es
-    return repository.read_energy
 
 
 @logging.use_span()
@@ -37,7 +39,7 @@ def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
     read_from_repository_func = _get_view_read_function(
-        args.energy_supplier_ids, repository
+        args.requesting_actor_market_role, repository
     )
 
     df = read_from_repository_func().where(

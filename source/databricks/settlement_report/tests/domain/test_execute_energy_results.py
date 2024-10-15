@@ -63,7 +63,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         reset_task_values(dbutils)
 
 
-def test_execute_energy_results__when_standard_wholesale_fixing_scenario_non_administrator__returns_expected_number_of_files_and_content(
+def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_access__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -71,7 +71,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_non_adm
 ):
     try:
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-            MarketRole.ENERGY_SUPPLIER
+            MarketRole.GRID_ACCESS_PROVIDER
         )
         standard_wholesale_fixing_scenario_args.requesting_actor_id = "1234567890123"
 
@@ -87,8 +87,8 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_non_adm
         ]
 
         expected_file_names = [
-            "RESULTENERGY_804_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
-            "RESULTENERGY_805_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_804_1234567890123_DDM_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_805_1234567890123_DDM_02-01-2024_02-01-2024.csv",
         ]
 
         # Act
