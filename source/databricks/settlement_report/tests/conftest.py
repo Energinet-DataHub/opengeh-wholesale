@@ -120,7 +120,7 @@ def standard_balance_fixing_scenario_data_written_to_delta(
         )
     )
     write_latest_calculations_by_day_to_delta_table(
-        latest_calculations_by_day, input_database_location
+        spark, latest_calculations_by_day, input_database_location
     )
 
 
