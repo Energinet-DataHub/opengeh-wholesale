@@ -87,7 +87,7 @@ def _get_partition_columns_for_report_type(
     ]:
         partition_columns = [DataProductColumnNames.grid_area_code]
         if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(DataProductColumnNames.energy_supplier_id)
+            partition_columns.append(TimeSeriesPointCsvColumnNames.energy_supplier_id)
 
         if args.prevent_large_text_files:
             partition_columns.append(EphemeralColumns.chunk_index)
@@ -159,7 +159,9 @@ def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) ->
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
-        return args.energy_supplier_ids is not None
+        return (
+            args.energy_supplier_ids is not None and len(args.energy_supplier_ids) == 1
+        )
     elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
         return True
     elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:

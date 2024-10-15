@@ -28,6 +28,7 @@ from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
     EnergyResultsCsvColumnNames,
+    TimeSeriesPointCsvColumnNames,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
@@ -199,6 +200,9 @@ def get_new_files(
     if DataProductColumnNames.grid_area_code in partition_columns:
         regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
 
+    if TimeSeriesPointCsvColumnNames.energy_supplier_id in partition_columns:
+        regex = f"{regex}/{TimeSeriesPointCsvColumnNames.energy_supplier_id}=(\\w+)"
+
     if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
@@ -209,11 +213,22 @@ def get_new_files(
 
         groups = partition_match.groups()
 
-        grid_area = groups[0] if len(groups) > 0 else None
-        chunk_index = groups[1] if len(groups) > 1 else None
+        group_count = 0
+        grid_area = groups[group_count] if len(groups) > 0 else None
+        if TimeSeriesPointCsvColumnNames.energy_supplier_id in partition_columns:
+            group_count += 1
+            energy_supplier_id = groups[group_count]
+        else:
+            energy_supplier_id = None
+
+        if EphemeralColumns.chunk_index in partition_columns:
+            group_count += 1
+            chunk_index = groups[group_count]
+        else:
+            chunk_index = None
 
         file_name = file_name_factory.create(
-            grid_area, energy_supplier_id=None, chunk_index=chunk_index
+            grid_area, energy_supplier_id=energy_supplier_id, chunk_index=chunk_index
         )
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
