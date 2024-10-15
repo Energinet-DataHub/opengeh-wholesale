@@ -156,7 +156,31 @@ def create_latest_calculations(spark: SparkSession) -> DataFrame:
     return latest_calculations_factory.create(spark, data_specs)
 
 
-def create_energy(spark: SparkSession, target_energy_per_es_v1: bool) -> DataFrame:
+def _get_energy_test_spec(
+    metering_point: MeteringPointSpec,
+) -> energy_factory.EnergyTestDataSpec:
+    return energy_factory.EnergyTestDataSpec(
+        calculation_id=CALCULATION_ID,
+        calculation_type=CALCULATION_TYPE,
+        calculation_period_start=CALCULATION_PERIOD_START,
+        calculation_period_end=CALCULATION_PERIOD_END,
+        calculation_version=1,
+        result_id=RESULT_ID,
+        grid_area_code=metering_point.grid_area_code,
+        metering_point_type=metering_point.metering_point_type,
+        settlement_method=None,
+        resolution=metering_point.resolution,
+        quantity=Decimal("1.005"),
+        quantity_unit=QUANTITY_UNIT,
+        quantity_qualities=QUANTITY_QUALITIES,
+        from_date=FROM_DATE,
+        to_date=TO_DATE,
+        energy_supplier_id=metering_point.energy_supplier_id,
+        balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
+    )
+
+
+def create_energy(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with energy data for testing purposes.
     Mimics the wholesale_results.energy_v1 view.
@@ -164,26 +188,26 @@ def create_energy(spark: SparkSession, target_energy_per_es_v1: bool) -> DataFra
 
     df = None
     for metering_point in _get_all_metering_points():
-        data_spec = energy_factory.EnergyTestDataSpec(
-            calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE,
-            calculation_period_start=CALCULATION_PERIOD_START,
-            calculation_period_end=CALCULATION_PERIOD_END,
-            calculation_version=1,
-            result_id=RESULT_ID,
-            grid_area_code=metering_point.grid_area_code,
-            metering_point_type=metering_point.metering_point_type,
-            settlement_method=None,
-            resolution=metering_point.resolution,
-            quantity=Decimal("1.005"),
-            quantity_unit=QUANTITY_UNIT,
-            quantity_qualities=QUANTITY_QUALITIES,
-            from_date=FROM_DATE,
-            to_date=TO_DATE,
-            energy_supplier_id=metering_point.energy_supplier_id,
-            balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
-        )
-        next_df = energy_factory.create(spark, data_spec, target_energy_per_es_v1)
+        data_spec = _get_energy_test_spec(metering_point)
+        next_df = energy_factory.create_energy_v1(spark, data_spec)
+        if df is None:
+            df = next_df
+        else:
+            df = df.union(next_df)
+
+    return df
+
+
+def create_energy_per_es(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with energy data for testing purposes.
+    Mimics the wholesale_results.energy_v1 view.
+    """
+
+    df = None
+    for metering_point in _get_all_metering_points():
+        data_spec = _get_energy_test_spec(metering_point)
+        next_df = energy_factory.create_energy_per_es_v1(spark, data_spec)
         if df is None:
             df = next_df
         else:

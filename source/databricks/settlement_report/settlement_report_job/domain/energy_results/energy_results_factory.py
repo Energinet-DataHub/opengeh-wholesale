@@ -39,7 +39,6 @@ def create_energy_results(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-
     energy = read_and_filter_from_view(args, repository)
 
     return prepare_for_csv(energy)

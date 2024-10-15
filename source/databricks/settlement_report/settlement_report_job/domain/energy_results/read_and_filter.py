@@ -24,35 +24,33 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 log = logging.Logger(__name__)
 
 
-def _get_view_read_function_based_on_requesting_actor_role(
-    args: SettlementReportArgs, repository: WholesaleRepository
+def _get_view_read_function(
+    energy_supplier_ids: list[str] | None, repository: WholesaleRepository
 ) -> Callable[[], DataFrame]:
-    if (
-        args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR
-        and args.energy_supplier_ids is not None
-    ):
+    if energy_supplier_ids is not None:
         return repository.read_energy_per_es
-    if args.requesting_actor_market_role in [
-        MarketRole.ENERGY_SUPPLIER,
-        MarketRole.GRID_ACCESS_PROVIDER,
-    ]:
-        return repository.read_energy
-
-    raise ValueError("Requesting actor role not allowed to read energy_results.")
+    return repository.read_energy
 
 
 @logging.use_span()
 def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
-    read_from_repository_func = _get_view_read_function_based_on_requesting_actor_role(
-        args, repository
+    read_from_repository_func = _get_view_read_function(
+        args.energy_supplier_ids, repository
     )
 
     df = read_from_repository_func().where(
         (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
     )
+
+    if args.energy_supplier_ids is not None:
+        df = df.where(
+            F.col(DataProductColumnNames.energy_supplier_id).isin(
+                args.energy_supplier_ids
+            )
+        )
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
