@@ -65,7 +65,7 @@ def test_execute_hourly_time_series__when_standard_balance_fixing_scenario__retu
 
         # Act
         execute_hourly_time_series(
-            spark, dbutils, standard_wholesale_fixing_scenario_args
+            spark, dbutils, standard_balance_fixing_scenario_args
         )
 
         # Assert
