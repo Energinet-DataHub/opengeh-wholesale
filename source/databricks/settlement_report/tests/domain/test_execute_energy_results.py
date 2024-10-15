@@ -41,8 +41,8 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         ]
 
         expected_file_names = [
-            f"RESULTENERGY_804_02-01-2024_02-01-2024.csv",
-            f"RESULTENERGY_805_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_804_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_805_02-01-2024_02-01-2024.csv",
         ]
 
         # Act
@@ -88,8 +88,8 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_non_adm
         ]
 
         expected_file_names = [
-            f"RESULTENERGY_804_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
-            f"RESULTENERGY_805_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_804_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_805_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
         ]
 
         # Act
