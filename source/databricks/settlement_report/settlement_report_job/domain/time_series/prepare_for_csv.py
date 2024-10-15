@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, functions as F, Window, Column
+from pyspark.sql import DataFrame, functions as F, Window
 
 from settlement_report_job import logging
+from settlement_report_job.domain.get_start_of_day import (
+    get_start_of_day,
+)
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
 from settlement_report_job.domain.csv_column_names import (
     TimeSeriesPointCsvColumnNames,
-    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -44,8 +46,8 @@ def prepare_for_csv(
     )
 
     filtered_time_series_points = filtered_time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
+        TimeSeriesPointCsvColumnNames.start_of_day,
+        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
     win = Window.partitionBy(
@@ -53,7 +55,7 @@ def prepare_for_csv(
         DataProductColumnNames.energy_supplier_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
-        EphemeralColumns.start_of_day,
+        TimeSeriesPointCsvColumnNames.start_of_day,
     ).orderBy(DataProductColumnNames.observation_time)
     filtered_time_series_points = filtered_time_series_points.withColumn(
         "chronological_order", F.row_number().over(win)
@@ -65,7 +67,7 @@ def prepare_for_csv(
             DataProductColumnNames.energy_supplier_id,
             DataProductColumnNames.metering_point_id,
             DataProductColumnNames.metering_point_type,
-            EphemeralColumns.start_of_day,
+            TimeSeriesPointCsvColumnNames.start_of_day,
         )
         .pivot(
             "chronological_order",
@@ -90,17 +92,8 @@ def prepare_for_csv(
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
-        F.col(EphemeralColumns.start_of_day).alias(
-            TimeSeriesPointCsvColumnNames.start_of_day
-        ),
+        F.col(TimeSeriesPointCsvColumnNames.start_of_day),
         *quantity_column_names,
-    )
-
-
-def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
-    col = F.col(col) if isinstance(col, str) else col
-    return F.to_utc_timestamp(
-        F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
     )
 
 

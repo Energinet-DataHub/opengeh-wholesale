@@ -27,9 +27,9 @@ def write_energy_to_delta_table(
     write_dataframe_to_table(
         spark,
         df=df,
-        database_name=database_definitions.WholesaleWholesaleResultsDatabase.DATABASE_NAME,
-        table_name=database_definitions.WholesaleWholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
-        table_location=f"{table_location}/{database_definitions.WholesaleWholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",
         schema=energy_v1,
     )
 
