@@ -75,6 +75,30 @@ def standard_wholesale_fixing_scenario_args(
     )
 
 
+@pytest.fixture(scope="function")
+def standard_balance_fixing_scenario_args(
+    settlement_reports_output_path: str,
+) -> SettlementReportArgs:
+    return SettlementReportArgs(
+        report_id=str(uuid.uuid4()),
+        period_start=standard_balance_fixing_scenario_data_generator.FROM_DATE,
+        period_end=standard_balance_fixing_scenario_data_generator.TO_DATE,
+        calculation_type=CalculationType.BALANCE_FIXING,
+        calculation_id_by_grid_area=None,
+        grid_area_codes=standard_balance_fixing_scenario_data_generator.GRID_AREAS,
+        split_report_by_grid_area=True,
+        prevent_large_text_files=False,
+        time_zone="Europe/Copenhagen",
+        catalog_name="spark_catalog",
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
+        requesting_actor_id="1212121212121",
+        settlement_reports_output_path=settlement_reports_output_path,
+        include_basis_data=True,
+        locale="da-dk",
+    )
+
+
 @pytest.fixture(scope="session")
 def standard_balance_fixing_scenario_data_written_to_delta(
     spark: SparkSession,

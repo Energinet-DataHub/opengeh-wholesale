@@ -15,7 +15,6 @@ from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
-    latest_calculations_factory,
     energy_factory,
 )
 
