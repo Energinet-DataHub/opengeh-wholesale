@@ -55,7 +55,7 @@ def test_execute_hourly_time_series__when_standard_balance_fixing_scenario__retu
 ):
     try:
         # Arrange
-        expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+        expected_file_count = 2  # corresponding to the number of grid areas in standard_balance_fixing_scenario
         expected_columns = [
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.energy_supplier_id,
