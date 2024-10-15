@@ -60,14 +60,8 @@ class WholesaleRepository:
 
     def read_energy_per_es(self) -> DataFrame:
         return self._read_view_or_table(
-            WholesaleWholesaleResultsDatabase.DATABASE_NAME,
-            WholesaleWholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
-        )
-
-    def read_energy_per_brp(self) -> DataFrame:
-        return self._read_view_or_table(
-            WholesaleWholesaleResultsDatabase.DATABASE_NAME,
-            WholesaleWholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME,
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
         )
 
     def _read_view_or_table(

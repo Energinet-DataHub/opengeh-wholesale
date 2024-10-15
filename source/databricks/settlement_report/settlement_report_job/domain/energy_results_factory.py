@@ -75,9 +75,10 @@ def _get_view_read_function_based_on_requesting_actor_role(
 ) -> Callable[[], DataFrame]:
     if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
         return repository.read_energy_per_es
-    if args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
-        return repository.read_energy_per_brp
-    if args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+    if args.requesting_actor_market_role in [
+        MarketRole.ENERGY_SUPPLIER,
+        MarketRole.GRID_ACCESS_PROVIDER,
+    ]:
         return repository.read_energy
 
     raise ValueError("Requesting actor role not allowed to read energy_results.")

@@ -29,6 +29,7 @@ from data_seeding.write_test_data import (
     write_charge_link_periods_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
     write_energy_to_delta_table,
+    write_energy_per_es_to_delta_table,
 )
 
 
@@ -98,8 +99,15 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
         spark, charge_price_information_periods_df, input_database_location
     )
 
-    energy_df = standard_wholesale_fixing_scenario_data_generator.create_energy(spark)
+    energy_df = standard_wholesale_fixing_scenario_data_generator.create_energy(
+        spark, target_energy_per_es_v1=False
+    )
     write_energy_to_delta_table(spark, energy_df, input_database_location)
+
+    energy_per_es_df = standard_wholesale_fixing_scenario_data_generator.create_energy(
+        spark, target_energy_per_es_v1=True
+    )
+    write_energy_per_es_to_delta_table(spark, energy_per_es_df, input_database_location)
 
 
 @pytest.fixture(scope="session")

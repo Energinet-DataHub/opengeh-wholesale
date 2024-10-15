@@ -31,12 +31,18 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
             # EnergyResultsCsvColumnNames.grid_area_code,
+            EnergyResultsCsvColumnNames.energy_supplier_id,
             EnergyResultsCsvColumnNames.calculation_type,
             EnergyResultsCsvColumnNames.time,
             EnergyResultsCsvColumnNames.resolution,
             EnergyResultsCsvColumnNames.metering_point_type,
             EnergyResultsCsvColumnNames.settlement_method,
             EnergyResultsCsvColumnNames.quantity,
+        ]
+
+        expected_file_names = [
+            f"RESULTENERGY_804_02-01-2024_02-01-2024.csv",
+            f"RESULTENERGY_805_02-01-2024_02-01-2024.csv",
         ]
 
         # Act
@@ -49,5 +55,56 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
             df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
+
+        actual_file_names = [file.split("/")[-1] for file in actual_files]
+        for actual_file_name in actual_file_names:
+            assert actual_file_name in expected_file_names
+    finally:
+        reset_task_values(dbutils)
+
+
+def test_execute_energy_results__when_standard_wholesale_fixing_scenario_non_administrator__returns_expected_number_of_files_and_content(
+    spark: SparkSession,
+    dbutils: DBUtilsFixture,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_data_written_to_delta: None,
+):
+    try:
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+            MarketRole.ENERGY_SUPPLIER
+        )
+        standard_wholesale_fixing_scenario_args.requesting_actor_id = "1234567890123"
+
+        # Arrange
+        expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+        expected_columns = [
+            # EnergyResultsCsvColumnNames.grid_area_code,
+            EnergyResultsCsvColumnNames.calculation_type,
+            EnergyResultsCsvColumnNames.time,
+            EnergyResultsCsvColumnNames.resolution,
+            EnergyResultsCsvColumnNames.metering_point_type,
+            EnergyResultsCsvColumnNames.settlement_method,
+            EnergyResultsCsvColumnNames.quantity,
+        ]
+
+        expected_file_names = [
+            f"RESULTENERGY_804_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
+            f"RESULTENERGY_805_1234567890123_DDQ_02-01-2024_02-01-2024.csv",
+        ]
+
+        # Act
+        execute_energy_results(spark, dbutils, standard_wholesale_fixing_scenario_args)
+
+        # Assert
+        actual_files = dbutils.jobs.taskValues.get("energy_result_files")
+        assert len(actual_files) == expected_file_count
+        for file_path in actual_files:
+            df = spark.read.csv(file_path, header=True)
+            assert df.count() > 0
+            assert df.columns == expected_columns
+
+        actual_file_names = [file.split("/")[-1] for file in actual_files]
+        for actual_file_name in actual_file_names:
+            assert actual_file_name in expected_file_names
     finally:
         reset_task_values(dbutils)

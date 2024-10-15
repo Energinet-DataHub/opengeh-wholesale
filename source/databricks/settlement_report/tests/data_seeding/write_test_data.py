@@ -34,6 +34,21 @@ def write_energy_to_delta_table(
     )
 
 
+def write_energy_per_es_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
+        schema=energy_v1,
+    )
+
+
 def write_charge_price_information_periods_to_delta_table(
     spark: SparkSession,
     df: DataFrame,
@@ -99,7 +114,9 @@ def write_dataframe_to_table(
     spark.sql(
         f"CREATE OR REPLACE TABLE {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )
-    df.write.format("delta").mode(mode).saveAsTable(f"{database_name}.{table_name}")
+    df.write.format("delta").option("overwriteSchema", "true").mode(mode).saveAsTable(
+        f"{database_name}.{table_name}"
+    )
 
 
 def _struct_type_to_sql_schema(schema: StructType) -> str:
