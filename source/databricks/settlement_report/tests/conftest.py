@@ -49,7 +49,7 @@ def standard_wholesale_fixing_scenario_args(
         period_start=standard_wholesale_fixing_scenario_data_generator.FROM_DATE,
         period_end=standard_wholesale_fixing_scenario_data_generator.TO_DATE,
         calculation_type=CalculationType.WHOLESALE_FIXING,
-        calculation_id_by_grid_area_codes={
+        calculation_id_by_grid_area={
             standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[
                 0
             ]: standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID,

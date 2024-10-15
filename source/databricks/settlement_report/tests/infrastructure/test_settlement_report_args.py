@@ -127,7 +127,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.period_start == datetime(2022, 5, 31, 22)
         assert actual_args.period_end == datetime(2022, 6, 1, 22)
         assert actual_args.calculation_type == CalculationType.WHOLESALE_FIXING
-        assert actual_args.calculation_id_by_grid_area_codes == {
+        assert actual_args.calculation_id_by_grid_area == {
             "804": "95bd2365-c09b-4ee7-8c25-8dd56b564811",
             "805": "d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d",
         }

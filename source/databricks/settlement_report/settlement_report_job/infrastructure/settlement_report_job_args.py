@@ -46,9 +46,7 @@ def parse_job_arguments(
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
         grid_area_codes = (
-            _create_grid_area_codes_as_list(
-                job_args.grid_area_codescalculation_id_by_grid_area
-            )
+            _create_grid_area_codes(job_args.grid_area_codescalculation_id_by_grid_area)
             if job_args.calculation_type is CalculationType.BALANCE_FIXING
             else None
         )
@@ -122,7 +120,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     return args
 
 
-def _create_grid_area_codes_as_list(grid_area_codes: str) -> list[str]:
+def _create_grid_area_codes(grid_area_codes: str) -> list[str]:
     if not grid_area_codes.startswith("[") or not grid_area_codes.endswith("]"):
         msg = "Grid area codes must be a list enclosed by an opening '[' and a closing ']'"
         raise configargparse.ArgumentTypeError(msg)
