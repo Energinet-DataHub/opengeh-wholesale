@@ -44,19 +44,14 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
-        calculation_id_by_grid_area = (
-            _create_calculation_id_by_grid_area_dict(
+        if job_args.calculation_type is CalculationType.BALANCE_FIXING:
+            grid_area_codes = _create_grid_area_codes_list(job_args.grid_area_codes)
+            calculation_id_by_grid_area = None
+        else:
+            calculation_id_by_grid_area = _create_calculation_id_by_grid_area_dict(
                 job_args.calculation_id_by_grid_area
             )
-            if job_args.calculation_id_by_grid_area
-            else None
-        )
-
-        grid_area_codes = (
-            _create_grid_area_codes_list(job_args.grid_area_codes)
-            if job_args.grid_area_codes
-            else None
-        )
+            grid_area_codes = None
 
         settlement_report_args = SettlementReportArgs(
             report_id=job_args.report_id,

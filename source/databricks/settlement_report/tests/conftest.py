@@ -57,6 +57,7 @@ def standard_wholesale_fixing_scenario_args(
                 1
             ]: standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID,
         },
+        grid_area_codes=None,
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
