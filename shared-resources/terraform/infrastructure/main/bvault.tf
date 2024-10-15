@@ -1,5 +1,5 @@
 module "backup_vault" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/backup-vault?ref=backup-vault_5.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/backup-vault?ref=backup-vault_5.2.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -8,14 +8,6 @@ module "backup_vault" {
   location             = azurerm_resource_group.this.location
   datastore_type       = "VaultStore"
   soft_delete          = "Off"
-}
-
-module "kvs_bvault_policy_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
-
-  name         = "bvault-policy-id"
-  value        = module.backup_vault.blob_storage_backup_policy_id
-  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_bvault_vaulted_policy_id" {
