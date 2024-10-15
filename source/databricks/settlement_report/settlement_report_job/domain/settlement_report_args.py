@@ -16,7 +16,8 @@ class SettlementReportArgs:
     requesting_actor_id: str
     calculation_id_by_grid_area: dict[str, uuid.UUID] | None
     """ A dictionary containing grid area codes (keys) and calculation ids (values). None for balance fixing"""
-    grid_area_codes: list[str]
+    grid_area_codes: list[str] | None
+    """ None if NOT balance fixing"""
     energy_supplier_ids: list[str] | None
     split_report_by_grid_area: bool
     prevent_large_text_files: bool

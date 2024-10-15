@@ -45,11 +45,21 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
-        grid_area_codes = _create_grid_area_codes(
-            job_args.grid_area_codes, job_args.calculation_type
+        grid_area_codes = (
+            _create_grid_area_codes_as_list(
+                job_args.grid_area_codescalculation_id_by_grid_area
+            )
+            if job_args.calculation_type is CalculationType.BALANCE_FIXING
+            else None
         )
-        calculation_id_by_grid_area = _create_calculation_ids_by_grid_area_code(job_args.calculation_id_by_grid_area) if job_args.calculation_type is CalculationType.BALANCE_FIXING else None
 
+        calculation_id_by_grid_area = (
+            _create_calculation_ids_by_grid_area_code(
+                job_args.calculation_id_by_grid_area
+            )
+            if job_args.calculation_type is not CalculationType.BALANCE_FIXING
+            else None
+        )
 
         settlement_report_args = SettlementReportArgs(
             report_id=job_args.report_id,
@@ -112,15 +122,6 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     return args
 
 
-def _create_grid_area_codes(
-    s: str, calculation_type: CalculationType
-) -> list[str]
-    if calculation_type is CalculationType.BALANCE_FIXING:
-        return _create_grid_area_codes_as_list(s)
-    else:
-        return list(_create_calculation_ids_by_grid_area_code(s).keys())
-
-
 def _create_grid_area_codes_as_list(grid_area_codes: str) -> list[str]:
     if not grid_area_codes.startswith("[") or not grid_area_codes.endswith("]"):
         msg = "Grid area codes must be a list enclosed by an opening '[' and a closing ']'"
@@ -148,6 +149,9 @@ def _create_calculation_ids_by_grid_area_code(json_str: str) -> dict[str, uuid.U
         )
 
     for grid_area, calculation_id in calculation_id_by_grid_area.items():
-        calculation_id_by_grid_area[grid_area] = calculation_id
+        try:
+            calculation_id_by_grid_area[grid_area] = uuid.UUID(calculation_id)
+        except ValueError:
+            raise ValueError(f"Calculation ID for grid area {grid_area} is not a uuid")
 
     return calculation_id_by_grid_area

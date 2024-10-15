@@ -68,7 +68,7 @@ def _read_and_filter_from_view(
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area_codes.items()
+        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
     ]
 
     df_filtered = df.where(
