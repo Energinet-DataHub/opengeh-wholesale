@@ -4,8 +4,8 @@ resource "azurerm_portal_dashboard" "timeseriesprocessor" {
   location            = azurerm_resource_group.this.location
   dashboard_properties = templatefile("dashboard-templates/timeseriessync_dashboard.tpl",
     {
-      timeseriessync_id   = module.func_timeseriesprocessor_v2.id,
-      timeseriessync_name = module.func_timeseriesprocessor_v2.name,
+      timeseriessync_id   = module.func_timeseriesprocessor.id,
+      timeseriessync_name = module.func_timeseriesprocessor.name,
       appi_sharedres_id   = data.azurerm_key_vault_secret.appi_id.value,
       appi_sharedres_name = data.azurerm_key_vault_secret.appi_name.value,
       plan_services_id    = module.message_processor_service_plan.id

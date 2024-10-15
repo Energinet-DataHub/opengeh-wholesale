@@ -1,5 +1,5 @@
-module "func_timeseriesprocessor_v2" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_1.0.0"
+module "func_timeseriesprocessor" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_8.0.0"
 
   name                                   = "timeseriesprocessor"
   project_name                           = var.domain_name_short
@@ -16,10 +16,7 @@ module "func_timeseriesprocessor_v2" {
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
   use_32_bit_worker                      = false
-  app_settings                           = local.func_timeseriesprocessor_v2.app_settings
-  allowed_monitor_reader_entra_groups    = [var.developer_security_group_name]
-  web_jobs_storage_name                  = module.durabletask_storage.name
-  web_jobs_primary_connection_string     = module.durabletask_storage.primary_connection_string
+  app_settings                           = local.func_timeseriesprocessor.app_settings
   health_check_path                      = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
     action_group_id = module.monitor_action_group_mig[0].id
