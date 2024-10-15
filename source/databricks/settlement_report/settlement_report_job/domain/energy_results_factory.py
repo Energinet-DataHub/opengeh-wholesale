@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
+from uuid import UUID
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
@@ -32,7 +34,9 @@ def create_energy_results(
     repository: WholesaleRepository,
 ) -> DataFrame:
 
-    energy = _read_and_filter_from_view(args, repository)
+    energy = _read_and_filter_from_view(
+        args.period_start, args.period_end, args.calculation_id_by_grid_area, repository
+    )
 
     # return relevant columns with market naming convention
     return energy.select(
@@ -59,16 +63,19 @@ def create_energy_results(
 
 
 def _read_and_filter_from_view(
-    args: SettlementReportArgs, repository: WholesaleRepository
+    period_start: datetime,
+    period_end: datetime,
+    calculation_id_by_grid_area: dict[str, UUID],
+    repository: WholesaleRepository,
 ) -> DataFrame:
     df = repository.read_energy().where(
-        (F.col(DataProductColumnNames.time) >= args.period_start)
-        & (F.col(DataProductColumnNames.time) < args.period_end)
+        (F.col(DataProductColumnNames.time) >= period_start)
+        & (F.col(DataProductColumnNames.time) < period_end)
     )
 
     calculation_id_by_grid_area_structs = [
         F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()  # type: ignore[union-attr]
+        for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
     ]
 
     df_filtered = df.where(
