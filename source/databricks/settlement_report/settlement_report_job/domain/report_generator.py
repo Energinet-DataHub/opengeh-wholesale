@@ -118,7 +118,14 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
     }
 
     for taskKey, key in task_types_to_zip.items():
-        files_to_zip.extend(dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key))
+        try:
+            files_to_zip.extend(
+                dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
+            )
+        except ValueError:
+            log.info(
+                f"Task Key {taskKey.value} was not found in TaskValues, continuing without it."
+            )
 
     log.info(f"Files to zip: {files_to_zip}")
     zip_file_path = f"{args.settlement_reports_output_path}/{args.report_id}.zip"
