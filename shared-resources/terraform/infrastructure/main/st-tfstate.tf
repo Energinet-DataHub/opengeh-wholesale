@@ -21,11 +21,20 @@ resource "azurerm_data_protection_backup_instance_blob_storage" "tfstate" {
   location           = data.azurerm_resource_group.tfstate.location
   storage_account_id = data.azurerm_storage_account.tfstate.id
 
-  backup_policy_id = module.backup_vault.blob_storage_backup_policy_id
+  backup_policy_id                = module.backup_vault.blob_storage_backup_vaulted_policy_id
+  storage_account_container_names = local.tsstate_containers
 
   depends_on = [
     azurerm_role_assignment.backup_vault_tfstate
   ]
+}
+
+data "azurerm_storage_containers" "tfstate" {
+  storage_account_id = data.azurerm_storage_account.tfstate.id
+}
+
+locals {
+  tsstate_containers = data.azurerm_storage_containers.tfstate.containers.*.name
 }
 
 # PIM Contributor Control Plane, i.e., Outlaws can apply on 001 environments

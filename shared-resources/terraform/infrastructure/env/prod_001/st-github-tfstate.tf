@@ -21,11 +21,20 @@ resource "azurerm_data_protection_backup_instance_blob_storage" "github_tfstate"
   location           = data.azurerm_resource_group.github_tfstate.location
   storage_account_id = data.azurerm_storage_account.github_tfstate.id
 
-  backup_policy_id = module.backup_vault.blob_storage_backup_policy_id
+  backup_policy_id                = module.backup_vault.blob_storage_backup_vaulted_policy_id
+  storage_account_container_names = local.github_tfstate_containers
 
   depends_on = [
     azurerm_role_assignment.backup_vault_github_tfstate
   ]
+}
+
+data "azurerm_storage_containers" "github_tfstate" {
+  storage_account_id = data.azurerm_storage_account.github_tfstate.id
+}
+
+locals {
+  github_tfstate_containers = data.azurerm_storage_containers.github_tfstate.containers.*.name
 }
 
 # PIM Contributor Control Plane, i.e., Outlaws can apply on prod
