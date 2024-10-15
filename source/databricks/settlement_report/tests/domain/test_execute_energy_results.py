@@ -27,10 +27,10 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
             MarketRole.DATAHUB_ADMINISTRATOR
         )
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids = ["1000000000000"]
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            # EnergyResultsCsvColumnNames.grid_area_code,
             EnergyResultsCsvColumnNames.energy_supplier_id,
             EnergyResultsCsvColumnNames.calculation_type,
             EnergyResultsCsvColumnNames.time,
@@ -41,8 +41,8 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         ]
 
         expected_file_names = [
-            "RESULTENERGY_804_02-01-2024_02-01-2024.csv",
-            "RESULTENERGY_805_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_804_1000000000000_02-01-2024_02-01-2024.csv",
+            "RESULTENERGY_805_1000000000000_02-01-2024_02-01-2024.csv",
         ]
 
         # Act
@@ -78,7 +78,6 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_non_adm
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            # EnergyResultsCsvColumnNames.grid_area_code,
             EnergyResultsCsvColumnNames.calculation_type,
             EnergyResultsCsvColumnNames.time,
             EnergyResultsCsvColumnNames.resolution,

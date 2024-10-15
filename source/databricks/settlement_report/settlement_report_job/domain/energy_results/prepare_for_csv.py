@@ -12,31 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections.abc import Callable
-from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
+from pyspark.sql import DataFrame, functions as F, Window
 
-
-import settlement_report_job.domain.report_naming_convention as market_naming
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-
+from settlement_report_job import logging
+from settlement_report_job.domain.get_start_of_day import (
+    get_start_of_day,
+)
+from settlement_report_job.domain.report_naming_convention import (
+    METERING_POINT_TYPES,
+)
 from settlement_report_job.domain.csv_column_names import (
     EnergyResultsCsvColumnNames,
 )
-from settlement_report_job.utils import map_from_dict
+from settlement_report_job.utils import (
+    map_from_dict,
+)
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
+import settlement_report_job.domain.report_naming_convention as market_naming
+
+log = logging.Logger(__name__)
 
 
-def create_energy_results(
-    args: SettlementReportArgs,
-    repository: WholesaleRepository,
+@logging.use_span()
+def prepare_for_csv(
+    energy: DataFrame,
 ) -> DataFrame:
-
-    energy = _read_and_filter_from_view(args, repository)
-
-    # return relevant columns with market naming convention
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
             EnergyResultsCsvColumnNames.grid_area_code
@@ -68,44 +71,3 @@ def create_energy_results(
         )
 
     return energy.select(select_columns)
-
-
-def _get_view_read_function_based_on_requesting_actor_role(
-    args: SettlementReportArgs, repository: WholesaleRepository
-) -> Callable[[], DataFrame]:
-    if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
-        return repository.read_energy_per_es
-    if args.requesting_actor_market_role in [
-        MarketRole.ENERGY_SUPPLIER,
-        MarketRole.GRID_ACCESS_PROVIDER,
-    ]:
-        return repository.read_energy
-
-    raise ValueError("Requesting actor role not allowed to read energy_results.")
-
-
-def _read_and_filter_from_view(
-    args: SettlementReportArgs, repository: WholesaleRepository
-) -> DataFrame:
-    read_from_repository_func = _get_view_read_function_based_on_requesting_actor_role(
-        args, repository
-    )
-
-    df = read_from_repository_func().where(
-        (F.col(DataProductColumnNames.time) >= args.period_start)
-        & (F.col(DataProductColumnNames.time) < args.period_end)
-    )
-
-    calculation_id_by_grid_area_structs = [
-        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
-    ]
-
-    df_filtered = df.where(
-        F.struct(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-        ).isin(calculation_id_by_grid_area_structs)
-    )
-
-    return df_filtered
