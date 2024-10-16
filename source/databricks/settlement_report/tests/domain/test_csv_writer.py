@@ -29,10 +29,15 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
+from settlement_report_job.utils import _get_csv_writer_options_based_on_locale
 
 
-def _read_csv_file(file_name: str, spark: SparkSession) -> DataFrame:
-    return spark.read.csv(file_name, header=True, sep=",")
+def _read_csv_file(
+    file_name: str, spark: SparkSession, expected_delimiter: str
+) -> DataFrame:
+    return spark.read.option("delimiter", expected_delimiter).csv(
+        file_name, header=True, sep=expected_delimiter
+    )
 
 
 @pytest.mark.parametrize(
@@ -195,8 +200,12 @@ def test_write__files_have_correct_ordering_for_each_file(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
+
+    expected_delimiter = _get_csv_writer_options_based_on_locale(
+        standard_wholesale_fixing_scenario_args.locale
+    )["delimiter"]
     for file in result_files:
-        df_actual = _read_csv_file(file, spark)
+        df_actual = _read_csv_file(file, spark, expected_delimiter)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -244,8 +253,12 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
+
+    expected_delimiter = _get_csv_writer_options_based_on_locale(
+        standard_wholesale_fixing_scenario_args.locale
+    )["delimiter"]
     for file in result_files:
-        df_actual = _read_csv_file(file, spark)
+        df_actual = _read_csv_file(file, spark, expected_delimiter)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -297,8 +310,12 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
+
+    expected_delimiter = _get_csv_writer_options_based_on_locale(
+        standard_wholesale_fixing_scenario_args.locale
+    )["delimiter"]
     for file in result_files:
-        individual_dataframes.append(_read_csv_file(file, spark))
+        individual_dataframes.append(_read_csv_file(file, spark, expected_delimiter))
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
     print(df_actual.collect()[0], df_expected.collect()[0])
@@ -353,8 +370,11 @@ def test_write__files_have_correct_sorting_across_multiple_files(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
+    expected_delimiter = _get_csv_writer_options_based_on_locale(
+        standard_wholesale_fixing_scenario_args.locale
+    )["delimiter"]
     for file in result_files:
-        individual_dataframes.append(_read_csv_file(file, spark))
+        individual_dataframes.append(_read_csv_file(file, spark, expected_delimiter))
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
     assert df_actual.collect() == df_expected.collect()

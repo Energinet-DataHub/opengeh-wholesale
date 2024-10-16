@@ -73,6 +73,7 @@ def write(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
+        locale=args.locale,
     )
     return files
 
@@ -118,6 +119,9 @@ def _get_order_by_columns_for_report_type(
             EnergyResultsCsvColumnNames.settlement_method,
             EnergyResultsCsvColumnNames.time,
         ]
+
+        if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
+            order_by_columns.insert(1, EnergyResultsCsvColumnNames.energy_supplier_id)
 
         return order_by_columns
 

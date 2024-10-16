@@ -113,9 +113,15 @@ def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
 
 
 def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
-    data_types_to_convert = [FloatType(), DecimalType(), DoubleType()]
+    data_types_to_convert = [
+        FloatType().typeName(),
+        DecimalType().typeName(),
+        DoubleType().typeName(),
+    ]
     fields_to_convert = [
-        field for field in df.schema if field.dataType in data_types_to_convert
+        field
+        for field in df.schema
+        if field.dataType.typeName() in data_types_to_convert
     ]
 
     for field in fields_to_convert:
@@ -223,7 +229,7 @@ def get_new_files(
 
 
 def merge_files(
-    dbutils: Any, new_files: list[TmpFile], headers: list[str]
+    dbutils: Any, new_files: list[TmpFile], headers: list[str], locale: str
 ) -> list[str]:
     """Merges the new files and moves them to the final location.
 
@@ -237,11 +243,12 @@ def merge_files(
         list[str]: List of the final file paths.
     """
     print("Files to merge: " + str(new_files))
+    csv_delimiter = _get_csv_writer_options_based_on_locale(locale)["delimiter"]
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
             print("Creating " + str(tmp_dst))
-            f_tmp_dst.write(",".join(headers) + "\n")
+            f_tmp_dst.write(csv_delimiter.join(headers) + "\n")
 
     for _file in new_files:
         with _file.src.open("r") as f_src:

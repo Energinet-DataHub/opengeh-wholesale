@@ -58,6 +58,12 @@ class WholesaleRepository:
             WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME,
         )
 
+    def read_energy_per_es(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+        )
+
     def _read_view_or_table(
         self,
         database_name: str,
