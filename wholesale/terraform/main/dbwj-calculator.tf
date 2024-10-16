@@ -4,15 +4,15 @@ resource "databricks_job" "calculator_job" {
   max_concurrent_runs = 100
 
   task {
-    task_key    = "calculator_task_${uuid()}"
+    task_key = "calculator_task_${uuid()}"
     # Do not retry:
     # Business logic in the job should prevent running twice with the same calculation_id,
     # because we'd otherwise risk creating duplicate data.
     max_retries = 0
 
     new_cluster {
-      spark_version = local.spark_version
-      node_type_id  = "Standard_D16as_v4"
+      spark_version  = local.spark_version
+      node_type_id   = "Standard_D16as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 4

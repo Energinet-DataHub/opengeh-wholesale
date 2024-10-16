@@ -1,4 +1,4 @@
-﻿module "sbtsub_wholesale_integration_event_listener" {
+module "sbtsub_wholesale_integration_event_listener" {
   source             = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=service-bus-topic-subscription_5.0.0"
   name               = local.INTEGRATIONEVENTS_SUBSCRIPTION_NAME
   topic_id           = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
