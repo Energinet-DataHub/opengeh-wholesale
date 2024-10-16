@@ -54,16 +54,17 @@ def read_and_filter_from_view(
             )
         )
 
-    calculation_id_by_grid_area_structs = [
-        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
-    ]
+    if args.calculation_id_by_grid_area is not None:
+        calculation_id_by_grid_area_structs = [
+            F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
+            for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()
+        ]
 
-    df_filtered = df.where(
-        F.struct(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-        ).isin(calculation_id_by_grid_area_structs)
-    )
+        df = df.where(
+            F.struct(
+                F.col(DataProductColumnNames.grid_area_code),
+                F.col(DataProductColumnNames.calculation_id),
+            ).isin(calculation_id_by_grid_area_structs)
+        )
 
-    return df_filtered
+    return df
