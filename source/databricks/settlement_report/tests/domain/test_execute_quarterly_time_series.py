@@ -115,7 +115,6 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
     )
 
     # Assert
-
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
     if include_basis_data:
         assert len(actual_files) == expected_file_count
