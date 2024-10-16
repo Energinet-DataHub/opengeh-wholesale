@@ -7,7 +7,7 @@ from data_seeding import standard_wholesale_fixing_scenario_data_generator
 from settlement_report_job.domain.report_generator import execute_quarterly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
-    TimeSeriesPointCsvColumnNames,
+    CsvColumnNames,
 )
 
 
@@ -25,6 +25,15 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
+    try:
+        # Arrange
+        expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+        expected_columns = [
+            CsvColumnNames.energy_supplier_id,
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.start_of_day,
+        ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
     # Arrange
     expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     energy_supplier_id = (

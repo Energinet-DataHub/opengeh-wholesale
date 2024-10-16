@@ -22,7 +22,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
 from settlement_report_job.domain.csv_column_names import (
-    EnergyResultsCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames

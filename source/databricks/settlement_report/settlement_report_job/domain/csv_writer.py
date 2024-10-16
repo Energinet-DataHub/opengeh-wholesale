@@ -21,8 +21,7 @@ from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
-    TimeSeriesPointCsvColumnNames,
-    EnergyResultsCsvColumnNames,
+    CsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
@@ -86,14 +85,18 @@ def _get_partition_columns_for_report_type(
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
     ]:
-        partition_columns = [DataProductColumnNames.grid_area_code]
+        partition_columns = [CsvColumnNames.grid_area_code]
         if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(DataProductColumnNames.energy_supplier_id)
+            partition_columns.append(CsvColumnNames.energy_supplier_id)
 
         if args.prevent_large_text_files:
             partition_columns.append(EphemeralColumns.chunk_index)
-    if report_type in [ReportDataType.EnergyResults] and args.split_report_by_grid_area:
-        partition_columns = [EnergyResultsCsvColumnNames.grid_area_code]
+    if report_type in [ReportDataType.EnergyResults]:
+        if args.split_report_by_grid_area:
+            partition_columns = [CsvColumnNames.grid_area_code]
+
+        if _is_partitioning_by_energy_supplier_id_needed(args):
+            partition_columns.append(CsvColumnNames.energy_supplier_id)
 
     return partition_columns
 
@@ -106,22 +109,22 @@ def _get_order_by_columns_for_report_type(
         ReportDataType.TimeSeriesQuarterly,
     ]:
         return [
-            DataProductColumnNames.grid_area_code,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.start_of_day,
+            CsvColumnNames.grid_area_code,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.start_of_day,
         ]
 
     if report_type in [ReportDataType.EnergyResults]:
         order_by_columns = [
-            EnergyResultsCsvColumnNames.grid_area_code,
-            EnergyResultsCsvColumnNames.metering_point_type,
-            EnergyResultsCsvColumnNames.settlement_method,
-            EnergyResultsCsvColumnNames.time,
+            CsvColumnNames.grid_area_code,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+            CsvColumnNames.time,
         ]
 
         if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
-            order_by_columns.insert(1, EnergyResultsCsvColumnNames.energy_supplier_id)
+            order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
         return order_by_columns
 
@@ -163,7 +166,9 @@ def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) ->
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
-        return args.energy_supplier_ids is not None
+        return (
+            args.energy_supplier_ids is not None and len(args.energy_supplier_ids) == 1
+        )
     elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
         return True
     elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:

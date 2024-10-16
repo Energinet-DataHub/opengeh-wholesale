@@ -12,7 +12,7 @@ import test_factories.metering_point_time_series_factory as time_series_factory
 
 from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv
 from settlement_report_job.domain.csv_column_names import (
-    TimeSeriesPointCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
@@ -164,7 +164,7 @@ def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_expected_
     # Assert
     assert actual_df.count() == 2
     dst_day = actual_df.where(
-        F.col(TimeSeriesPointCsvColumnNames.start_of_day) == from_date
+        F.col(CsvColumnNames.start_of_day) == from_date
     ).collect()[0]
     for i in range(1, total_columns):
         expected_value = None if i > expected_columns_with_data else Decimal(i - 1)

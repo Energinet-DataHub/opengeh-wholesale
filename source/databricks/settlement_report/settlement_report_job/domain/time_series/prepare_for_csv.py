@@ -22,7 +22,7 @@ from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
 from settlement_report_job.domain.csv_column_names import (
-    TimeSeriesPointCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -46,7 +46,7 @@ def prepare_for_csv(
     )
 
     filtered_time_series_points = filtered_time_series_points.withColumn(
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.start_of_day,
         get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
@@ -55,7 +55,7 @@ def prepare_for_csv(
         DataProductColumnNames.energy_supplier_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.start_of_day,
     ).orderBy(DataProductColumnNames.observation_time)
     filtered_time_series_points = filtered_time_series_points.withColumn(
         "chronological_order", F.row_number().over(win)
@@ -67,7 +67,7 @@ def prepare_for_csv(
             DataProductColumnNames.energy_supplier_id,
             DataProductColumnNames.metering_point_id,
             DataProductColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.start_of_day,
+            CsvColumnNames.start_of_day,
         )
         .pivot(
             "chronological_order",
@@ -77,22 +77,24 @@ def prepare_for_csv(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i}")
+        F.col(str(i)).alias(f"{CsvColumnNames.energy_prefix}{i}")
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 
     return pivoted_df.select(
         F.col(DataProductColumnNames.energy_supplier_id).alias(
-            TimeSeriesPointCsvColumnNames.energy_supplier_id
+            CsvColumnNames.energy_supplier_id
         ),
-        F.col(DataProductColumnNames.grid_area_code),
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            CsvColumnNames.grid_area_code
+        ),
         F.col(DataProductColumnNames.metering_point_id).alias(
-            TimeSeriesPointCsvColumnNames.metering_point_id
+            CsvColumnNames.metering_point_id
         ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
-        F.col(TimeSeriesPointCsvColumnNames.start_of_day),
+        ].alias(CsvColumnNames.metering_point_type),
+        F.col(CsvColumnNames.start_of_day),
         *quantity_column_names,
     )
 

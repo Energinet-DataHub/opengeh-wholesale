@@ -1,20 +1,15 @@
-class EnergyResultsCsvColumnNames:
-    grid_area_code = "METERINGGRIDAREAID"
+class CsvColumnNames:
     calculation_type = "ENERGYBUSINESSPROCESS"
-    time = "STARTDATETIME"
-    resolution = "RESOLUTIONDURATION"
-    metering_point_type = "TYPEOFMP"
-    settlement_method = "SETTLEMENTMETHOD"
-    quantity = "ENERGYQUANTITY"
-    energy_supplier_id = "ENERGYSUPPLIERID"
-
-
-class TimeSeriesPointCsvColumnNames:
-    metering_point_id = "METERINGPOINTID"
-    metering_point_type = "TYPEOFMP"
-    energy_supplier_id = "ENERGYSUPPLIERID"
-    start_of_day = "STARTDATETIME"
     energy_prefix = "ENERGYQUANTITY"
+    energy_supplier_id = "ENERGYSUPPLIERID"
+    grid_area_code = "METERINGGRIDAREAID"
+    metering_point_type = "TYPEOFMP"
+    metering_point_id = "METERINGPOINTID"
+    quantity = "ENERGYQUANTITY"
+    resolution = "RESOLUTIONDURATION"
+    settlement_method = "SETTLEMENTMETHOD"
+    start_of_day = "STARTDATETIME"
+    time = "STARTDATETIME"
 
 
 class EphemeralColumns:
