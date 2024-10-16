@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
 import uuid
 import pytest
 from typing import Callable, Generator
@@ -42,6 +43,19 @@ def dbutils() -> DBUtilsFixture:
     Returns a DBUtilsFixture instance that can be used to mock dbutils.
     """
     return DBUtilsFixture()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_before_tests(
+    input_database_location: str,
+):
+
+    if os.path.exists(input_database_location):
+        shutil.rmtree(input_database_location)
+
+    yield
+
+    # Add cleanup code to be run after the tests
 
 
 @pytest.fixture(scope="function")
