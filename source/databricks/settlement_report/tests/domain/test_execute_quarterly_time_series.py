@@ -41,7 +41,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
         actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.csv(file_path, header=True)
+            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
     finally:
@@ -82,7 +82,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
         if include_basis_data:
             assert len(actual_files) == expected_file_count
             for file_path in actual_files:
-                df = spark.read.csv(file_path, header=True)
+                df = spark.read.option("delimiter", ";").csv(file_path, header=True)
                 assert df.count() > 0
                 assert df.columns == expected_columns
         else:

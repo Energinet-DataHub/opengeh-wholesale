@@ -223,7 +223,7 @@ def get_new_files(
 
 
 def merge_files(
-    dbutils: Any, new_files: list[TmpFile], headers: list[str]
+    dbutils: Any, new_files: list[TmpFile], headers: list[str], locale: str
 ) -> list[str]:
     """Merges the new files and moves them to the final location.
 
@@ -237,11 +237,12 @@ def merge_files(
         list[str]: List of the final file paths.
     """
     print("Files to merge: " + str(new_files))
+    csv_delimiter = _get_csv_writer_options_based_on_locale(locale)["delimiter"]
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
             print("Creating " + str(tmp_dst))
-            f_tmp_dst.write(",".join(headers) + "\n")
+            f_tmp_dst.write(csv_delimiter.join(headers) + "\n")
 
     for _file in new_files:
         with _file.src.open("r") as f_src:
