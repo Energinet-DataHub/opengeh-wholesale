@@ -18,7 +18,7 @@ def reset_task_values_quarterly(dbutils: DBUtilsFixture):
         pass
 
 
-def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files(
+def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_number_of_files(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -47,6 +47,43 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
         # Assert
         actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
         assert len(actual_files) == expected_file_count
+        for file_path in actual_files:
+            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            assert df.count() > 0
+            assert df.columns == expected_columns
+            assert energy_supplier_id in file_path
+    finally:
+        reset_task_values_quarterly(dbutils)
+
+
+def test_execute_quarterly_time_series__when_grid_access_provider__returns_expected(
+    spark: SparkSession,
+    dbutils: DBUtilsFixture,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_data_written_to_delta: None,
+):
+    try:
+        # Arrange
+
+        expected_file_names = [
+            f"RESULTENERGY_804_1000000000000_02-01-2024_02-01-2024.csv",
+            f"RESULTENERGY_805_1000000000000_02-01-2024_02-01-2024.csv",
+        ]
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+        expected_columns = [
+            TimeSeriesPointCsvColumnNames.metering_point_id,
+            TimeSeriesPointCsvColumnNames.metering_point_type,
+            TimeSeriesPointCsvColumnNames.start_of_day,
+        ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
+
+        # Act
+        execute_quarterly_time_series(
+            spark, dbutils, standard_wholesale_fixing_scenario_args
+        )
+
+        # Assert
+        actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+        assert set(actual_files) == set(expected_file_names)
         for file_path in actual_files:
             df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
