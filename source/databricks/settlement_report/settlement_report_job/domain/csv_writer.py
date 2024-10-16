@@ -72,6 +72,7 @@ def write(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
+        locale=args.locale,
     )
     return files
 

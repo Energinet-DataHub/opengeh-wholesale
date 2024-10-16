@@ -42,7 +42,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
         actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.csv(file_path, header=True)
+            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
     finally:
@@ -83,7 +83,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
         if include_basis_data:
             assert len(actual_files) == expected_file_count
             for file_path in actual_files:
-                df = spark.read.csv(file_path, header=True)
+                df = spark.read.option("delimiter", ";").csv(file_path, header=True)
                 assert df.count() > 0
                 assert df.columns == expected_columns
         else:
@@ -93,7 +93,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
         reset_task_values_quarterly(dbutils)
 
 
-def test_execute_hourly_time_series__when_standard_balance_fixing_scenario__returns_expected_number_of_files_and_content(
+def test_execute_quarterly_time_series__when_standard_balance_fixing_scenario__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_balance_fixing_scenario_args: SettlementReportArgs,
@@ -118,7 +118,7 @@ def test_execute_hourly_time_series__when_standard_balance_fixing_scenario__retu
         actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.csv(file_path, header=True)
+            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
     finally:
