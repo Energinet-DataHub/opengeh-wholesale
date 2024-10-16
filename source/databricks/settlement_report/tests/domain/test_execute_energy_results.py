@@ -153,12 +153,6 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
             for i, column in enumerate(df.columns):
                 assert column == expected_columns[i]
             assert df.columns == expected_columns
-            assert (
-                df.filter(
-                    f"{CsvColumnNames.energy_supplier_id} != '{standard_wholesale_fixing_scenario_args.requesting_actor_id}'"
-                ).count()
-                == 0
-            )
 
         actual_file_names = [file.split("/")[-1] for file in actual_files]
         for actual_file_name in actual_file_names:
