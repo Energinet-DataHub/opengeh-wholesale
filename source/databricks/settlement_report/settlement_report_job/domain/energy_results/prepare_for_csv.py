@@ -15,12 +15,6 @@
 from pyspark.sql import DataFrame, functions as F, Window
 
 from settlement_report_job import logging
-from settlement_report_job.domain.get_start_of_day import (
-    get_start_of_day,
-)
-from settlement_report_job.domain.report_naming_convention import (
-    METERING_POINT_TYPES,
-)
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
@@ -28,9 +22,6 @@ from settlement_report_job.utils import (
     map_from_dict,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
-    MeteringPointResolutionDataProductValue,
-)
 import settlement_report_job.domain.report_naming_convention as market_naming
 
 log = logging.Logger(__name__)
