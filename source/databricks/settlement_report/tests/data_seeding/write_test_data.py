@@ -104,18 +104,15 @@ def write_dataframe_to_table(
     table_name: str,
     table_location: str,
     schema: StructType,
-    mode: str = "overwrite",
+    mode: str = "append",  # Append because the tables are shared across tests
 ) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
-    spark.sql(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
-
-    if os.path.exists(table_location):
-        shutil.rmtree(table_location)
 
     sql_schema = _struct_type_to_sql_schema(schema)
 
+    # Creating table if not exists - note that the table is shared across tests, and should therefore not be deleted first.
     spark.sql(
-        f"CREATE OR REPLACE TABLE {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
+        f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )
     df.write.format("delta").mode(mode).saveAsTable(f"{database_name}.{table_name}")
 
