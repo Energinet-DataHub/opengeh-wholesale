@@ -25,15 +25,6 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
-    try:
-        # Arrange
-        expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
-        expected_columns = [
-            CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.metering_point_id,
-            CsvColumnNames.metering_point_type,
-            CsvColumnNames.start_of_day,
-        ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
     # Arrange
     expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     energy_supplier_id = (
@@ -41,9 +32,9 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
     )
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = [energy_supplier_id]
     expected_columns = [
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.start_of_day,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -76,9 +67,9 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     ]
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     expected_columns = [
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.start_of_day,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -110,10 +101,10 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
     if include_basis_data:
         expected_file_count = 2
         expected_columns = [
-            TimeSeriesPointCsvColumnNames.energy_supplier_id,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.start_of_day,
+            CsvColumnNames.energy_supplier_id,
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.start_of_day,
         ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
     else:
         expected_file_count = 0
@@ -145,10 +136,10 @@ def test_execute_quarterly_time_series__when_standard_balance_fixing_scenario__r
     # Arrange
     expected_file_count = 2  # corresponding to the number of grid areas in standard_balance_fixing_scenario
     expected_columns = [
-        TimeSeriesPointCsvColumnNames.energy_supplier_id,
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.energy_supplier_id,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.start_of_day,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
