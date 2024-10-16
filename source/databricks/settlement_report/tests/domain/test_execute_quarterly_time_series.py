@@ -13,6 +13,7 @@ from settlement_report_job.domain.csv_column_names import (
 
 @pytest.fixture(scope="function", autouse=True)
 def reset_task_values(dbutils: DBUtilsFixture):
+    print("Resetting task values before test")
     yield
     print("Resetting task values")
     dbutils.jobs.taskValues.reset()
@@ -42,7 +43,9 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
     )
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = dbutils.jobs.taskValues.get(
+        key="quarterly_time_series_files", default=[]
+    )
     assert len(actual_files) == expected_file_count
     for file_path in actual_files:
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
@@ -112,6 +115,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
     )
 
     # Assert
+
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
     if include_basis_data:
         assert len(actual_files) == expected_file_count
