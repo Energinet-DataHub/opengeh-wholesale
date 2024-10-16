@@ -46,7 +46,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.csv(file_path, header=True)
+            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
     finally:
