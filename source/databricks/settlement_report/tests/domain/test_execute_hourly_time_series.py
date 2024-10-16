@@ -25,8 +25,8 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.energy_supplier_id,
+            TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.start_of_day,
         ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
@@ -40,7 +40,7 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
         actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.csv(file_path, header=True)
+            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
     finally:

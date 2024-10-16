@@ -60,6 +60,23 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.quantity).alias(
             EnergyResultsCsvColumnNames.quantity
         ),
+<<<<<<< HEAD:source/databricks/settlement_report/settlement_report_job/domain/energy_results/prepare_for_csv.py
+=======
+    )
+
+
+def _read_and_filter_from_view(
+    args: SettlementReportArgs, repository: WholesaleRepository
+) -> DataFrame:
+    df = repository.read_energy().where(
+        (F.col(DataProductColumnNames.time) >= args.period_start)
+        & (F.col(DataProductColumnNames.time) < args.period_end)
+    )
+
+    calculation_id_by_grid_area_structs = [
+        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
+        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()  # type: ignore[union-attr]
+>>>>>>> main:source/databricks/settlement_report/settlement_report_job/domain/energy_results_factory.py
     ]
 
     if DataProductColumnNames.energy_supplier_id in energy.columns:

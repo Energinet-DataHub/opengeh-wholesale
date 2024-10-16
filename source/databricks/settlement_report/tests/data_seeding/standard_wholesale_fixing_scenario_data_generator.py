@@ -15,7 +15,6 @@ from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
-    latest_calculations_factory,
     energy_factory,
 )
 
@@ -131,29 +130,6 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
         to_date=TO_DATE,
     )
     return charge_price_information_periods_factory.create(spark, data_spec)
-
-
-def create_latest_calculations(spark: SparkSession) -> DataFrame:
-    """
-    Creates a DataFrame with latest calculations data for testing purposes.
-    """
-
-    data_specs = []
-    for grid_area_code in GRID_AREAS:
-        current_date = FROM_DATE
-        while current_date < TO_DATE:
-            data_specs.append(
-                latest_calculations_factory.LatestCalculationsTestDataSpec(
-                    calculation_id=CALCULATION_ID,
-                    calculation_type=CALCULATION_TYPE,
-                    calculation_version=1,
-                    grid_area_code=grid_area_code,
-                    start_of_day=current_date,
-                )
-            )
-            current_date += timedelta(days=1)
-
-    return latest_calculations_factory.create(spark, data_specs)
 
 
 def _get_energy_test_spec(

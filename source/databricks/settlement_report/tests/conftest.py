@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
 import uuid
 import pytest
 from typing import Callable, Generator
@@ -23,13 +24,20 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from tests.fixtures import DBUtilsFixture
 
-from data_seeding import standard_wholesale_fixing_scenario_data_generator
+from data_seeding import (
+    standard_wholesale_fixing_scenario_data_generator,
+    standard_balance_fixing_scenario_data_generator,
+)
 from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
     write_energy_to_delta_table,
+<<<<<<< HEAD
     write_energy_per_es_to_delta_table,
+=======
+    write_latest_calculations_by_day_to_delta_table,
+>>>>>>> main
 )
 
 
@@ -39,6 +47,19 @@ def dbutils() -> DBUtilsFixture:
     Returns a DBUtilsFixture instance that can be used to mock dbutils.
     """
     return DBUtilsFixture()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_before_tests(
+    input_database_location: str,
+):
+
+    if os.path.exists(input_database_location):
+        shutil.rmtree(input_database_location)
+
+    yield
+
+    # Add cleanup code to be run after the tests
 
 
 @pytest.fixture(scope="function")
@@ -58,6 +79,7 @@ def standard_wholesale_fixing_scenario_args(
                 standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
             ),
         },
+        grid_area_codes=None,
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
@@ -68,6 +90,55 @@ def standard_wholesale_fixing_scenario_args(
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
         locale="da-dk",
+    )
+
+
+@pytest.fixture(scope="function")
+def standard_balance_fixing_scenario_args(
+    settlement_reports_output_path: str,
+) -> SettlementReportArgs:
+    return SettlementReportArgs(
+        report_id=str(uuid.uuid4()),
+        period_start=standard_balance_fixing_scenario_data_generator.FROM_DATE,
+        period_end=standard_balance_fixing_scenario_data_generator.TO_DATE,
+        calculation_type=CalculationType.BALANCE_FIXING,
+        calculation_id_by_grid_area=None,
+        grid_area_codes=standard_balance_fixing_scenario_data_generator.GRID_AREAS,
+        split_report_by_grid_area=True,
+        prevent_large_text_files=False,
+        time_zone="Europe/Copenhagen",
+        catalog_name="spark_catalog",
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
+        requesting_actor_id="1212121212121",
+        settlement_reports_output_path=settlement_reports_output_path,
+        include_basis_data=True,
+        locale="da-dk",
+    )
+
+
+@pytest.fixture(scope="session")
+def standard_balance_fixing_scenario_data_written_to_delta(
+    spark: SparkSession,
+    input_database_location: str,
+) -> None:
+    time_series_df = standard_balance_fixing_scenario_data_generator.create_metering_point_time_series(
+        spark
+    )
+    write_metering_point_time_series_to_delta_table(
+        spark, time_series_df, input_database_location
+    )
+
+    energy_df = standard_balance_fixing_scenario_data_generator.create_energy(spark)
+    write_energy_to_delta_table(spark, energy_df, input_database_location)
+
+    latest_calculations_by_day = (
+        standard_balance_fixing_scenario_data_generator.create_latest_calculations(
+            spark
+        )
+    )
+    write_latest_calculations_by_day_to_delta_table(
+        spark, latest_calculations_by_day, input_database_location
     )
 
 

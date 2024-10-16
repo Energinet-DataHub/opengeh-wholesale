@@ -17,6 +17,24 @@ from settlement_report_job.wholesale.schemas import (
 from settlement_report_job.wholesale.schemas.energy_v1 import (
     energy_v1,
 )
+from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 import (
+    latest_calculations_by_day_v1,
+)
+
+
+def write_latest_calculations_by_day_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME}",
+        schema=latest_calculations_by_day_v1,
+    )
 
 
 def write_energy_to_delta_table(
@@ -101,18 +119,15 @@ def write_dataframe_to_table(
     table_name: str,
     table_location: str,
     schema: StructType,
-    mode: str = "overwrite",
+    mode: str = "append",  # Append because the tables are shared across tests
 ) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
-    spark.sql(f"DROP TABLE IF EXISTS {database_name}.{table_name}")
-
-    if os.path.exists(table_location):
-        shutil.rmtree(table_location)
 
     sql_schema = _struct_type_to_sql_schema(schema)
 
+    # Creating table if not exists - note that the table is shared across tests, and should therefore not be deleted first.
     spark.sql(
-        f"CREATE OR REPLACE TABLE {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
+        f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )
     df.write.format("delta").option("overwriteSchema", "true").mode(mode).saveAsTable(
         f"{database_name}.{table_name}"
