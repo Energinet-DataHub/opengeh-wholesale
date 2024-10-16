@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.domain.csv_column_names import (
-    TimeSeriesPointCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
@@ -40,12 +40,10 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
             counter += 1
             for i in range(data_spec.num_days_per_metering_point):
                 row = {
-                    TimeSeriesPointCsvColumnNames.metering_point_id: str(
-                        1000000000000 + counter
-                    ),
-                    TimeSeriesPointCsvColumnNames.metering_point_type: data_spec.metering_point_type,
+                    CsvColumnNames.metering_point_id: str(1000000000000 + counter),
+                    CsvColumnNames.metering_point_type: data_spec.metering_point_type,
                     DataProductColumnNames.grid_area_code: grid_area_code,
-                    TimeSeriesPointCsvColumnNames.start_of_day: data_spec.start_of_day
+                    CsvColumnNames.start_of_day: data_spec.start_of_day
                     + timedelta(days=i),
                 }
                 for j in range(
@@ -54,7 +52,7 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     == MeteringPointResolutionDataProductValue.HOUR
                     else 100
                 ):
-                    row[f"{TimeSeriesPointCsvColumnNames.energy_prefix}{j+1}"] = (
+                    row[f"{CsvColumnNames.energy_prefix}{j+1}"] = (
                         data_spec.energy_quantity
                     )
                 rows.append(row)
