@@ -113,9 +113,15 @@ def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
 
 
 def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
-    data_types_to_convert = [FloatType(), DecimalType(), DoubleType()]
+    data_types_to_convert = [
+        FloatType().typeName(),
+        DecimalType().typeName(),
+        DoubleType().typeName(),
+    ]
     fields_to_convert = [
-        field for field in df.schema if field.dataType in data_types_to_convert
+        field
+        for field in df.schema
+        if field.dataType.typeName() in data_types_to_convert
     ]
 
     for field in fields_to_convert:

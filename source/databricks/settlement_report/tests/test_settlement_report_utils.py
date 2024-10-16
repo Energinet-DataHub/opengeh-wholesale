@@ -1,13 +1,22 @@
 from pathlib import Path
 import pytest
 from tempfile import TemporaryDirectory
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession, DataFrame, Row, functions as F
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    FloatType,
+    DecimalType,
+    DoubleType,
+)
+from decimal import Decimal
 
 from settlement_report_job.utils import (
     create_zip_file,
     get_dbutils,
     map_from_dict,
     write_files,
+    _convert_all_floats_to_danish_csv_format,
 )
 
 
@@ -250,3 +259,35 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
     assert columns == ["value"]
 
     tmp_dir.cleanup()
+
+
+def test_convert_all_floats_to_danish_csv_format__when_locale_danish__floating_point_separator_should_be_comma(
+    spark: SparkSession,
+):
+    # Arrange
+    data = [
+        Row(float=1.1, decimal=Decimal("100.123"), double=2.2),
+        Row(float=3.3, decimal=Decimal("200.456"), double=4.4),
+        Row(float=5.5, decimal=Decimal("300.789"), double=6.6),
+    ]
+    schema = StructType(
+        [
+            StructField("float", FloatType(), True),
+            StructField("decimal", DecimalType(10, 3), True),
+            StructField("double", DoubleType(), True),
+        ]
+    )
+    test_df = spark.createDataFrame(data, schema)
+
+    # Act
+    actual_df = _convert_all_floats_to_danish_csv_format(test_df)
+
+    # Assert
+    for row in actual_df.collect():
+        assert type(row.float) is str
+        assert type(row.decimal) is str
+        assert type(row.double) is str
+
+        assert "," in row.float
+        assert "," in row.decimal
+        assert "," in row.double
