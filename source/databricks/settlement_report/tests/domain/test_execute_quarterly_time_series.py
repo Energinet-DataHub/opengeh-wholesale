@@ -21,7 +21,6 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
-    utils,
 ):
     try:
         # Arrange
