@@ -389,7 +389,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
         period_end=DEFAULT_TO_DATE,
         grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
         energy_supplier_ids=None,
-        resolution=default_data.DEFAULT_RESOLUTION,
+        metering_point_resolution=default_data.DEFAULT_RESOLUTION,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -453,7 +453,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
         period_end=DEFAULT_TO_DATE,
         grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
         energy_supplier_ids=None,
-        resolution=default_data.DEFAULT_RESOLUTION,
+        metering_point_resolution=default_data.DEFAULT_RESOLUTION,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -526,7 +526,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
         period_end=day_4,
         grid_area_codes=[default_data.DEFAULT_GRID_AREA_CODE],
         energy_supplier_ids=None,
-        resolution=default_data.DEFAULT_RESOLUTION,
+        metering_point_resolution=default_data.DEFAULT_RESOLUTION,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
@@ -613,7 +613,7 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
         period_end=day_2,
         grid_area_codes=[grid_area_1, grid_area_2],
         energy_supplier_ids=None,
-        resolution=default_data.DEFAULT_RESOLUTION,
+        metering_point_resolution=default_data.DEFAULT_RESOLUTION,
         time_zone=DEFAULT_TIME_ZONE,
         repository=mock_repository,
     )
