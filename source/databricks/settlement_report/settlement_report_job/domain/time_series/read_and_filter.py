@@ -41,7 +41,7 @@ def read_and_filter_for_balance_fixing(
     period_end: datetime,
     grid_area_codes: list[str],
     energy_supplier_ids: list[str] | None,
-    resolution: MeteringPointResolutionDataProductValue,
+    metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
@@ -49,7 +49,7 @@ def read_and_filter_for_balance_fixing(
     time_series_points = _read_from_view(
         period_start,
         period_end,
-        resolution,
+        metering_point_resolution,
         energy_supplier_ids,
         repository,
     )
