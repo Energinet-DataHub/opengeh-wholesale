@@ -11,6 +11,7 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
+from test_factories.default_test_data_spec import create_energy_results_data_spec
 from test_factories import (
     metering_point_time_series_factory,
     charge_link_periods_factory,
@@ -132,30 +133,6 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     return charge_price_information_periods_factory.create(spark, data_spec)
 
 
-def _get_energy_test_spec(
-    metering_point: MeteringPointSpec,
-) -> energy_factory.EnergyTestDataSpec:
-    return energy_factory.EnergyTestDataSpec(
-        calculation_id=CALCULATION_ID,
-        calculation_type=CALCULATION_TYPE,
-        calculation_period_start=CALCULATION_PERIOD_START,
-        calculation_period_end=CALCULATION_PERIOD_END,
-        calculation_version=1,
-        result_id=RESULT_ID,
-        grid_area_code=metering_point.grid_area_code,
-        metering_point_type=metering_point.metering_point_type,
-        settlement_method=None,
-        resolution=metering_point.resolution,
-        quantity=Decimal("1.005"),
-        quantity_unit=QUANTITY_UNIT,
-        quantity_qualities=QUANTITY_QUALITIES,
-        from_date=FROM_DATE,
-        to_date=TO_DATE,
-        energy_supplier_id=metering_point.energy_supplier_id,
-        balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
-    )
-
-
 def create_energy(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with energy data for testing purposes.
@@ -164,7 +141,16 @@ def create_energy(spark: SparkSession) -> DataFrame:
 
     df = None
     for metering_point in _get_all_metering_points():
-        data_spec = _get_energy_test_spec(metering_point)
+        data_spec = create_energy_results_data_spec(
+            calculation_id=CALCULATION_ID,
+            calculation_type=CALCULATION_TYPE,
+            calculation_period_start=FROM_DATE,
+            calculation_period_end=TO_DATE,
+            grid_area_code=metering_point.grid_area_code,
+            metering_point_type=metering_point.metering_point_type,
+            resolution=metering_point.resolution,
+            energy_supplier_id=metering_point.energy_supplier_id,
+        )
         next_df = energy_factory.create_energy_v1(spark, data_spec)
         if df is None:
             df = next_df
@@ -182,7 +168,16 @@ def create_energy_per_es(spark: SparkSession) -> DataFrame:
 
     df = None
     for metering_point in _get_all_metering_points():
-        data_spec = _get_energy_test_spec(metering_point)
+        data_spec = create_energy_results_data_spec(
+            calculation_id=CALCULATION_ID,
+            calculation_type=CALCULATION_TYPE,
+            calculation_period_start=FROM_DATE,
+            calculation_period_end=TO_DATE,
+            grid_area_code=metering_point.grid_area_code,
+            metering_point_type=metering_point.metering_point_type,
+            resolution=metering_point.resolution,
+            energy_supplier_id=metering_point.energy_supplier_id,
+        )
         next_df = energy_factory.create_energy_per_es_v1(spark, data_spec)
         if df is None:
             df = next_df
