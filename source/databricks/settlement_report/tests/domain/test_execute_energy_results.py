@@ -5,7 +5,7 @@ from tests.fixtures import DBUtilsFixture
 from settlement_report_job.domain.report_generator import execute_energy_results
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
-    EnergyResultsCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.domain.market_role import MarketRole
 
@@ -31,13 +31,13 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            EnergyResultsCsvColumnNames.energy_supplier_id,
-            EnergyResultsCsvColumnNames.calculation_type,
-            EnergyResultsCsvColumnNames.time,
-            EnergyResultsCsvColumnNames.resolution,
-            EnergyResultsCsvColumnNames.metering_point_type,
-            EnergyResultsCsvColumnNames.settlement_method,
-            EnergyResultsCsvColumnNames.quantity,
+            CsvColumnNames.energy_supplier_id,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -78,12 +78,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            EnergyResultsCsvColumnNames.calculation_type,
-            EnergyResultsCsvColumnNames.time,
-            EnergyResultsCsvColumnNames.resolution,
-            EnergyResultsCsvColumnNames.metering_point_type,
-            EnergyResultsCsvColumnNames.settlement_method,
-            EnergyResultsCsvColumnNames.quantity,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -129,13 +129,13 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            EnergyResultsCsvColumnNames.energy_supplier_id,
-            EnergyResultsCsvColumnNames.calculation_type,
-            EnergyResultsCsvColumnNames.time,
-            EnergyResultsCsvColumnNames.resolution,
-            EnergyResultsCsvColumnNames.metering_point_type,
-            EnergyResultsCsvColumnNames.settlement_method,
-            EnergyResultsCsvColumnNames.quantity,
+            CsvColumnNames.energy_supplier_id,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -157,7 +157,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
             assert df.columns == expected_columns
             assert (
                 df.filter(
-                    f"{EnergyResultsCsvColumnNames.energy_supplier_id} != '{standard_wholesale_fixing_scenario_args.requesting_actor_id}'"
+                    f"{CsvColumnNames.energy_supplier_id} != '{standard_wholesale_fixing_scenario_args.requesting_actor_id}'"
                 ).count()
                 == 0
             )

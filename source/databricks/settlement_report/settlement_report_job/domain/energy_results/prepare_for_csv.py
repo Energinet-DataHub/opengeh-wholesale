@@ -22,7 +22,7 @@ from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
 from settlement_report_job.domain.csv_column_names import (
-    EnergyResultsCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -42,31 +42,27 @@ def prepare_for_csv(
 ) -> DataFrame:
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
-            EnergyResultsCsvColumnNames.grid_area_code
+            CsvColumnNames.grid_area_code
         ),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(EnergyResultsCsvColumnNames.calculation_type),
-        F.col(DataProductColumnNames.time).alias(EnergyResultsCsvColumnNames.time),
-        F.col(DataProductColumnNames.resolution).alias(
-            EnergyResultsCsvColumnNames.resolution
-        ),
+        ].alias(CsvColumnNames.calculation_type),
+        F.col(DataProductColumnNames.time).alias(CsvColumnNames.time),
+        F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
         map_from_dict(market_naming.METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(EnergyResultsCsvColumnNames.metering_point_type),
+        ].alias(CsvColumnNames.metering_point_type),
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
-        ].alias(EnergyResultsCsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(
-            EnergyResultsCsvColumnNames.quantity
-        ),
+        ].alias(CsvColumnNames.settlement_method),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
     ]
 
     if DataProductColumnNames.energy_supplier_id in energy.columns:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(
-                EnergyResultsCsvColumnNames.energy_supplier_id
+                CsvColumnNames.energy_supplier_id
             ),
         )
 
