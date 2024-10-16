@@ -12,30 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
+from pyspark.sql import DataFrame, functions as F, Window
 
-
-import settlement_report_job.domain.report_naming_convention as market_naming
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-
+from settlement_report_job import logging
+from settlement_report_job.domain.get_start_of_day import (
+    get_start_of_day,
+)
+from settlement_report_job.domain.report_naming_convention import (
+    METERING_POINT_TYPES,
+)
 from settlement_report_job.domain.csv_column_names import (
     EnergyResultsCsvColumnNames,
 )
-from settlement_report_job.utils import map_from_dict
+from settlement_report_job.utils import (
+    map_from_dict,
+)
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
+import settlement_report_job.domain.report_naming_convention as market_naming
+
+log = logging.Logger(__name__)
 
 
-def create_energy_results(
-    args: SettlementReportArgs,
-    repository: WholesaleRepository,
+@logging.use_span()
+def prepare_for_csv(
+    energy: DataFrame,
 ) -> DataFrame:
-
-    energy = _read_and_filter_from_view(args, repository)
-
-    # return relevant columns with market naming convention
-    return energy.select(
+    select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
             EnergyResultsCsvColumnNames.grid_area_code
         ),
@@ -55,27 +60,14 @@ def create_energy_results(
         F.col(DataProductColumnNames.quantity).alias(
             EnergyResultsCsvColumnNames.quantity
         ),
-    )
-
-
-def _read_and_filter_from_view(
-    args: SettlementReportArgs, repository: WholesaleRepository
-) -> DataFrame:
-    df = repository.read_energy().where(
-        (F.col(DataProductColumnNames.time) >= args.period_start)
-        & (F.col(DataProductColumnNames.time) < args.period_end)
-    )
-
-    calculation_id_by_grid_area_structs = [
-        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in args.calculation_id_by_grid_area.items()  # type: ignore[union-attr]
     ]
 
-    df_filtered = df.where(
-        F.struct(
-            F.col(DataProductColumnNames.grid_area_code),
-            F.col(DataProductColumnNames.calculation_id),
-        ).isin(calculation_id_by_grid_area_structs)
-    )
+    if DataProductColumnNames.energy_supplier_id in energy.columns:
+        select_columns.insert(
+            1,
+            F.col(DataProductColumnNames.energy_supplier_id).alias(
+                EnergyResultsCsvColumnNames.energy_supplier_id
+            ),
+        )
 
-    return df_filtered
+    return energy.select(select_columns)
