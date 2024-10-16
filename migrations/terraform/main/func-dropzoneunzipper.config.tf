@@ -28,7 +28,8 @@ locals {
       "StorageAccount__TimeSeriesContainerName"             = azurerm_storage_container.dh2_timeseries.name
       "StorageAccount__ChargesContainerName"                = azurerm_storage_container.dh2_charges.name
       "StorageAccount__ChargeLinksContainerName"            = azurerm_storage_container.dh2_charge_links.name
-      "StorageAccount__ConsumptionStatementsContainerName" = azurerm_storage_container.dh2_consumption_statements.name
+      "StorageAccount__ConsumptionStatementsContainerName"  = azurerm_storage_container.dh2_consumption_statements.name
+      "StorageAccount__CalculationResultsContainerName"     = azurerm_storage_container.dh2_calculation_results.name
 
       # Event Hub settings - deprecated
       INGRESS_EVENT_HUB_CONNECTION_STRING = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string

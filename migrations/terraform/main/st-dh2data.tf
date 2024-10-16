@@ -125,6 +125,12 @@ resource "azurerm_storage_container" "dh2_consumption_statements" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "dh2_calculation_results" {
+  name                  = "dh2-calculation-results"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
 #---- Queues
 
 resource "azurerm_storage_queue" "charges" {
