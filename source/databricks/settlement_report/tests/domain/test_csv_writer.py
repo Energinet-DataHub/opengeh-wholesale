@@ -21,9 +21,9 @@ import pytest
 from settlement_report_job.domain.report_data_type import ReportDataType
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-import tests.test_factories.time_series_csv_factory as factory
+import test_factories.time_series_csv_factory as factory
 from settlement_report_job.domain.csv_column_names import (
-    TimeSeriesPointCsvColumnNames,
+    CsvColumnNames,
 )
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
@@ -172,9 +172,9 @@ def test_write__files_have_correct_ordering_for_each_file(
 ):
     # Arrange
     expected_order_by = [
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.start_of_day,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
@@ -227,9 +227,9 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
 ):
     # Arrange
     expected_order_by = [
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.start_of_day,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     test_spec = factory.TimeSeriesCsvTestDataSpec(
@@ -272,9 +272,9 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     expected_file_count = 3
     individual_dataframes = []
     expected_order_by = [
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.start_of_day,
     ]
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
@@ -342,9 +342,9 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     # Arrange
     individual_dataframes = []
     expected_order_by = [
-        TimeSeriesPointCsvColumnNames.metering_point_type,
-        TimeSeriesPointCsvColumnNames.metering_point_id,
-        TimeSeriesPointCsvColumnNames.start_of_day,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.start_of_day,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
