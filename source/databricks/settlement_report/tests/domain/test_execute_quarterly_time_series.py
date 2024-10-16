@@ -2,6 +2,8 @@ from pyspark.sql import SparkSession
 import pytest
 
 from tests.fixtures import DBUtilsFixture
+
+from data_seeding import standard_wholesale_fixing_scenario_data_generator
 from settlement_report_job.domain.report_generator import execute_quarterly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
@@ -25,8 +27,13 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
     try:
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+        energy_supplier_id = (
+            standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
+        )
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids = [
+            energy_supplier_id
+        ]
         expected_columns = [
-            TimeSeriesPointCsvColumnNames.energy_supplier_id,
             TimeSeriesPointCsvColumnNames.metering_point_id,
             TimeSeriesPointCsvColumnNames.metering_point_type,
             TimeSeriesPointCsvColumnNames.start_of_day,
@@ -44,6 +51,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
             df = spark.read.option("delimiter", ";").csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
+            assert energy_supplier_id in file_path
     finally:
         reset_task_values_quarterly(dbutils)
 
