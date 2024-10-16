@@ -70,8 +70,17 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
                 RunResultState.FAILED => Application.Model.CalculationState.Failed,
                 RunResultState.CANCELED => Application.Model.CalculationState.Canceled,
                 RunResultState.TIMEDOUT => Application.Model.CalculationState.Canceled,
+                RunResultState.MAXIMUM_CONCURRENT_RUNS_REACHED => throw new InvalidOperationException(),
+                RunResultState.EXCLUDED => throw new InvalidOperationException(),
+                RunResultState.SUCCESS_WITH_FAILURES => throw new InvalidOperationException(),
+                RunResultState.UPSTREAM_FAILED => throw new InvalidOperationException(),
+                RunResultState.UPSTREAM_CANCELED => throw new InvalidOperationException(),
+                null => throw new InvalidOperationException(),
                 _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
             },
+            RunLifeCycleState.BLOCKED => throw new InvalidOperationException(),
+            RunLifeCycleState.WAITING_FOR_RETRY => throw new InvalidOperationException(),
+            RunLifeCycleState.QUEUED => throw new InvalidOperationException(),
             _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
         };
     }
