@@ -27,6 +27,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
         calculation_id_by_grid_area={
             "016": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373")
         },
+        grid_area_codes=None,
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
