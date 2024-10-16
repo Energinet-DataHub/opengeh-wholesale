@@ -77,4 +77,8 @@ def create_energy_per_es_v1(
 
 def create_energy_v1(spark: SparkSession, data_spec: EnergyTestDataSpec) -> DataFrame:
     rows = _get_base_energy_rows_from_spec(data_spec)
+    for row in rows:
+        del row[DataProductColumnNames.energy_supplier_id]
+        del row[DataProductColumnNames.balance_responsible_party_id]
+
     return spark.createDataFrame(rows, energy_v1)

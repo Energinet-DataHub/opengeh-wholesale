@@ -129,6 +129,11 @@ def standard_balance_fixing_scenario_data_written_to_delta(
     energy_df = standard_balance_fixing_scenario_data_generator.create_energy(spark)
     write_energy_to_delta_table(spark, energy_df, input_database_location)
 
+    energy_per_es_df = (
+        standard_balance_fixing_scenario_data_generator.create_energy_per_es(spark)
+    )
+    write_energy_per_es_to_delta_table(spark, energy_per_es_df, input_database_location)
+
     latest_calculations_by_day = (
         standard_balance_fixing_scenario_data_generator.create_latest_calculations(
             spark

@@ -14,6 +14,9 @@ from settlement_report_job.wholesale.schemas import (
 from settlement_report_job.wholesale.schemas import (
     metering_point_time_series_v1,
 )
+from settlement_report_job.wholesale.schemas.energy_per_es_v1 import (
+    energy_per_es_v1,
+)
 from settlement_report_job.wholesale.schemas.energy_v1 import (
     energy_v1,
 )
@@ -63,7 +66,7 @@ def write_energy_per_es_to_delta_table(
         database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
         table_name=database_definitions.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
         table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME}",
-        schema=energy_v1,
+        schema=energy_per_es_v1,
     )
 
 
