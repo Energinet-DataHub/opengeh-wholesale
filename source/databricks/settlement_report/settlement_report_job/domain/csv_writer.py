@@ -109,7 +109,7 @@ def _get_order_by_columns_for_report_type(
         ReportDataType.TimeSeriesQuarterly,
     ]:
         return [
-            DataProductColumnNames.grid_area_code,
+            CsvColumnNames.grid_area_code,
             CsvColumnNames.metering_point_type,
             CsvColumnNames.metering_point_id,
             CsvColumnNames.start_of_day,

@@ -6,7 +6,6 @@ from pyspark.sql import SparkSession, DataFrame
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
@@ -42,7 +41,7 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                 row = {
                     CsvColumnNames.metering_point_id: str(1000000000000 + counter),
                     CsvColumnNames.metering_point_type: data_spec.metering_point_type,
-                    DataProductColumnNames.grid_area_code: grid_area_code,
+                    CsvColumnNames.grid_area_code: grid_area_code,
                     CsvColumnNames.start_of_day: data_spec.start_of_day
                     + timedelta(days=i),
                 }

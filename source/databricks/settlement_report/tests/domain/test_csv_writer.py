@@ -21,7 +21,7 @@ import pytest
 from settlement_report_job.domain.report_data_type import ReportDataType
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-import tests.test_factories.time_series_csv_factory as factory
+import test_factories.time_series_csv_factory as factory
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
