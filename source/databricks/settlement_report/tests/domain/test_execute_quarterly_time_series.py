@@ -21,6 +21,7 @@ def test_execute_quarterly_time_series__when_standard_wholesale_fixing_scenario_
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
+    utils,
 ):
     try:
         # Arrange
@@ -102,10 +103,10 @@ def test_execute_hourly_time_series__when_standard_balance_fixing_scenario__retu
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_balance_fixing_scenario
         expected_columns = [
-            TimeSeriesPointCsvColumnNames.energy_supplier_id,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.start_of_day,
+            CsvColumnNames.energy_supplier_id,
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.start_of_day,
         ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
         # Act

@@ -22,7 +22,6 @@ from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
-    CsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
