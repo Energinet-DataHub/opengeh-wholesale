@@ -6,7 +6,9 @@ from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.domain.energy_results_factory import create_energy_results
+from settlement_report_job.domain.energy_results.energy_results_factory import (
+    create_energy_results,
+)
 from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
     create_time_series_for_balance_fixing,
@@ -19,6 +21,7 @@ from settlement_report_job.logging import Logger
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
+from settlement_report_job.domain.market_role import MarketRole
 
 log = Logger(__name__)
 
@@ -107,6 +110,9 @@ def execute_energy_results(
     """
     Entry point for the logic of creating energy results.
     """
+    if args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        return
+
     repository = WholesaleRepository(spark, args.catalog_name)
     energy_results_df = create_energy_results(args=args, repository=repository)
 
@@ -133,7 +139,14 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
     }
 
     for taskKey, key in task_types_to_zip.items():
-        files_to_zip.extend(dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key))
+        try:
+            files_to_zip.extend(
+                dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
+            )
+        except ValueError:
+            log.info(
+                f"Task Key {taskKey.value} was not found in TaskValues, continuing without it."
+            )
 
     log.info(f"Files to zip: {files_to_zip}")
     zip_file_path = f"{args.settlement_reports_output_path}/{args.report_id}.zip"
