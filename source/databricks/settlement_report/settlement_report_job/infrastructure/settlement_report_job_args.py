@@ -46,7 +46,7 @@ def parse_job_arguments(
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
         grid_area_codes = (
-            _create_grid_area_codes(job_args.grid_area_codescalculation_id_by_grid_area)
+            _create_grid_area_codes(job_args.grid_area_codes)
             if job_args.calculation_type is CalculationType.BALANCE_FIXING
             else None
         )
