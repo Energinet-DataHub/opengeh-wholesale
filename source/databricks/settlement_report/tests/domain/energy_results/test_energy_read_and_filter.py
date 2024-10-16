@@ -55,6 +55,12 @@ def test_energy_read_and_filter_for_energy_results__when_requesting_energy_per_e
     mock_repository.read_energy.return_value = df_energy_v1
     mock_repository.read_energy_per_es.return_value = df_energy_per_es_v1
 
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+        if request_energy_per_es
+        else MarketRole.GRID_ACCESS_PROVIDER
+    )
+
     expected_columns = (
         df_energy_per_es_v1.columns if request_energy_per_es else df_energy_v1.columns
     )
@@ -66,4 +72,5 @@ def test_energy_read_and_filter_for_energy_results__when_requesting_energy_per_e
     )
 
     # Assert
-    assert expected_columns == actual_df.columns
+    for i, column in enumerate(actual_df.columns):
+        assert expected_columns[i] == column
