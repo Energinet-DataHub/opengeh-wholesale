@@ -33,11 +33,8 @@ from data_seeding.write_test_data import (
     write_charge_link_periods_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
     write_energy_to_delta_table,
-<<<<<<< HEAD
     write_energy_per_es_to_delta_table,
-=======
     write_latest_calculations_by_day_to_delta_table,
->>>>>>> main
 )
 
 
