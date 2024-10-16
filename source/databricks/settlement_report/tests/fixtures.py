@@ -35,6 +35,9 @@ class TaskValuesFixture:
     def set(self, key, value):
         self.values[key] = value
 
+    def reset(self):
+        self.values = {}
+
 
 class DBUtilsJobsFixture:
     def __init__(self):
