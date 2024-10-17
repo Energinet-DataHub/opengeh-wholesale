@@ -4,6 +4,7 @@ resource "databricks_job" "this" {
   provider = databricks.dbw
   name     = each.value
 
+  # Lifecycle is ignored, as migrations update the jobs in the migrations repository using APIs
   lifecycle {
     ignore_changes = all
   }
