@@ -66,8 +66,8 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     actor_id = standard_wholesale_fixing_scenario_args.requesting_actor_id
     expected_file_names = [
-        f"TSSD15_804_{actor_id}_02-01-2024_02-01-2024.csv",
-        f"TSSD15_805_{actor_id}_02-01-2024_02-01-2024.csv",
+        f"TSSD15_804_{actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"TSSD15_805_{actor_id}_DDM_02-01-2024_02-01-2024.csv",
     ]
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     expected_columns = [
