@@ -70,7 +70,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
                 RunResultState.SUCCESS => CalculationState.Completed,
                 RunResultState.FAILED => CalculationState.Failed,
                 RunResultState.CANCELED => CalculationState.Canceled,
-                RunResultState.TIMEDOUT => CalculationState.Canceled,
+                RunResultState.TIMEDOUT => CalculationState.Failed,
                 RunResultState.MAXIMUM_CONCURRENT_RUNS_REACHED => CalculationState.Failed,
                 RunResultState.EXCLUDED => CalculationState.Failed,
                 RunResultState.SUCCESS_WITH_FAILURES => CalculationState.Failed,
