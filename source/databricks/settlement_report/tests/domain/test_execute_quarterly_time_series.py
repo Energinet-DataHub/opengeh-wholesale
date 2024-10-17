@@ -4,6 +4,7 @@ import pytest
 from tests.fixtures import DBUtilsFixture
 
 from data_seeding import standard_wholesale_fixing_scenario_data_generator
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_generator import execute_quarterly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
@@ -43,9 +44,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
     )
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(
-        key="quarterly_time_series_files", default=[]
-    )
+    actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
     assert len(actual_files) == expected_file_count
     for file_path in actual_files:
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
@@ -61,9 +60,14 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+    actor_id = standard_wholesale_fixing_scenario_args.requesting_actor_id
     expected_file_names = [
-        f"RESULTENERGY_804_1000000000000_02-01-2024_02-01-2024.csv",
-        f"RESULTENERGY_805_1000000000000_02-01-2024_02-01-2024.csv",
+        f"TSSD15_804_{actor_id}_02-01-2024_02-01-2024.csv",
+        f"TSSD15_805_{actor_id}_02-01-2024_02-01-2024.csv",
     ]
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     expected_columns = [
@@ -79,12 +83,13 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert set(actual_files) == set(expected_file_names)
+    assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
+        print(file_path)
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
-        assert energy_supplier_id in file_path
+        assert any(file_name in file_path for file_name in expected_file_names)
 
 
 @pytest.mark.parametrize("include_basis_data", [False, True])
