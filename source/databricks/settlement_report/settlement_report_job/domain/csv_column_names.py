@@ -10,6 +10,14 @@ class CsvColumnNames:
     settlement_method = "SETTLEMENTMETHOD"
     start_of_day = "STARTDATETIME"
     time = "STARTDATETIME"
+    process_variant = "PROCESSVARIANT"  # Not idea what this is
+    quantity_unit = "MEASUREUNIT"
+    currency = "ENERGYCURRENCY"
+    price = "PRICE"
+    amount = "AMOUNT"
+    charge_type = "CHARGETYPE"
+    charge_code = "CHARGEID"
+    charge_owner_id = "CHARGEOWNER"
 
 
 class EphemeralColumns:
