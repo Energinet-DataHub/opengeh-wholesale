@@ -18,6 +18,7 @@ from settlement_report_job import logging
 from settlement_report_job.domain.get_start_of_day import (
     get_start_of_day,
 )
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
@@ -40,6 +41,7 @@ def prepare_for_csv(
     filtered_time_series_points: DataFrame,
     metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
+    requesting_market_role: MarketRole,
 ) -> DataFrame:
     desired_number_of_quantity_columns = _get_desired_quantity_column_count(
         metering_point_resolution
@@ -81,7 +83,7 @@ def prepare_for_csv(
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 
-    return pivoted_df.select(
+    csv_df = pivoted_df.select(
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
         ),
@@ -97,6 +99,11 @@ def prepare_for_csv(
         F.col(CsvColumnNames.start_of_day),
         *quantity_column_names,
     )
+
+    if requesting_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
+
+    return csv_df
 
 
 def _get_desired_quantity_column_count(
