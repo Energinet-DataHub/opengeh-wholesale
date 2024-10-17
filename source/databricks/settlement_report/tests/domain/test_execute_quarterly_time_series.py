@@ -154,8 +154,8 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     standard_wholesale_fixing_scenario_args.requesting_actor_market_role = market_role
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     expected_file_names = [
-        f"TSSD15_804_02-01-2024_02-01-2024.csv",
-        f"TSSD15_805_02-01-2024_02-01-2024.csv",
+        "TSSD15_804_02-01-2024_02-01-2024.csv",
+        "TSSD15_805_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.energy_supplier_id,
