@@ -27,10 +27,13 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     energy_supplier_id = (
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
     )
+    expected_file_names = [
+        f"TSSD15_804_{energy_supplier_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"TSSD15_805_{energy_supplier_id}_DDM_02-01-2024_02-01-2024.csv",
+    ]
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = [energy_supplier_id]
     expected_columns = [
         CsvColumnNames.metering_point_id,
@@ -50,7 +53,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected_n
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
-        assert energy_supplier_id in file_path
+        assert any(file_name in file_path for file_name in expected_file_names)
 
 
 def test_execute_quarterly_time_series__when_grid_access_provider__returns_expected(
@@ -85,34 +88,20 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        print(file_path)
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)
 
 
-@pytest.mark.parametrize("include_basis_data", [False, True])
-def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_csv_file_paths(
+def test_execute_quarterly_time_series__when_include_basis_data_false__returns_no_file_paths(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
-    include_basis_data: bool,
 ):
     # Arrange
-    standard_wholesale_fixing_scenario_args.include_basis_data = include_basis_data
-
-    if include_basis_data:
-        expected_file_count = 2
-        expected_columns = [
-            CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.metering_point_id,
-            CsvColumnNames.metering_point_type,
-            CsvColumnNames.start_of_day,
-        ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    else:
-        expected_file_count = 0
+    standard_wholesale_fixing_scenario_args.include_basis_data = False
 
     # Act
     execute_quarterly_time_series(
@@ -121,14 +110,7 @@ def test_execute_quarterly_time_series__when_include_basis_data__returns_valid_c
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    if include_basis_data:
-        assert len(actual_files) == expected_file_count
-        for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
-            assert df.count() > 0
-            assert df.columns == expected_columns
-    else:
-        assert actual_files is None or len(actual_files) == 0
+    assert actual_files is None or len(actual_files) == 0
 
 
 def test_execute_quarterly_time_series__when_standard_balance_fixing_scenario__returns_expected_number_of_files_and_content(
