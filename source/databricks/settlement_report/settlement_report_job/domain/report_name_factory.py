@@ -9,12 +9,11 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 class MarketRoleInFileName:
     """
     Market role identifiers used in the csv file name in the settlement report.
-    This is not the role of the requesting actor, but the role of the actor that the data is related to.
+    System operator and datahub admin are not included as they are not part of the file name.
     """
 
     ENERGY_SUPPLIER = "DDQ"
     GRID_ACCESS_PROVIDER = "DDM"
-    DATAHUB_ADMINISTRATOR = "FAS"
 
 
 class FileNameFactory:
@@ -47,12 +46,6 @@ class FileNameFactory:
         grid_area_code: str | None,
     ) -> str:
 
-        market_role_code = None
-        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
-            market_role_code = MarketRoleInFileName.ENERGY_SUPPLIER
-        elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-            market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
-
         energy_supplier_id = (
             self.args.energy_supplier_ids[0]
             if self.args.energy_supplier_ids is not None
@@ -68,7 +61,7 @@ class FileNameFactory:
                 in [MarketRole.ENERGY_SUPPLIER, MarketRole.GRID_ACCESS_PROVIDER]
                 else energy_supplier_id
             ),
-            market_role_code,
+            self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
         ]
@@ -95,11 +88,7 @@ class FileNameFactory:
                 is MarketRole.GRID_ACCESS_PROVIDER
                 else energy_supplier_id
             ),
-            (
-                MarketRoleInFileName.GRID_ACCESS_PROVIDER
-                if energy_supplier_id is None
-                else MarketRoleInFileName.ENERGY_SUPPLIER
-            ),
+            self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
             chunk_index,
@@ -131,3 +120,11 @@ class FileNameFactory:
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )
+
+    def _get_market_role_in_file_name(self) -> str | None:
+        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
+            return MarketRoleInFileName.ENERGY_SUPPLIER
+        elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+            return MarketRoleInFileName.GRID_ACCESS_PROVIDER
+
+        return None
