@@ -28,8 +28,9 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
 ):
     # Arrange
     expected_file_names = [
-        f"TSSD60_804__02-01-2024_02-01-2024.csv",
-        f"TSSD60_805__02-01-2024_02-01-2024.csv",
+        "TSSD60_804__02-01-2024_02-01-2024.csv",
+        "TSSD60_805__02-01-2024_02-01-2024.csv",
+        "TSSD60_805__02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.energy_supplier_id,
