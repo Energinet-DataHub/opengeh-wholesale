@@ -3,6 +3,7 @@ locals {
     "Schema_Migration",
     "Bulk_Charge_Links_Landing_to_Gold",
     "Bulk_Charges_Landing_to_Gold",
+    "Bulk_Calculation_Results_Landing_to_Wholesale",
     "duplicates_in_time_series_eloverblik",
     "monitor_eloverblik_time_series",
     "duplicates_in_metering_points_gold",
