@@ -9,12 +9,11 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 class MarketRoleInFileName:
     """
     Market role identifiers used in the csv file name in the settlement report.
-    This is not the role of the requesting actor, but the role of the actor that the data is related to.
+    System operator and datahub admin are not included as they are not part of the file name.
     """
 
     ENERGY_SUPPLIER = "DDQ"
     GRID_ACCESS_PROVIDER = "DDM"
-    DATAHUB_ADMINISTRATOR = "FAS"
 
 
 class FileNameFactory:
@@ -36,7 +35,9 @@ class FileNameFactory:
                 grid_area_code, energy_supplier_id, chunk_index
             )
         if self.report_data_type in [ReportDataType.EnergyResults]:
-            return self._create_energy_result_filename(grid_area_code)
+            return self._create_energy_result_filename(
+                grid_area_code, energy_supplier_id
+            )
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
@@ -45,30 +46,13 @@ class FileNameFactory:
     def _create_energy_result_filename(
         self,
         grid_area_code: str | None,
+        energy_supplier_id: str | None,
     ) -> str:
-
-        market_role_code = None
-        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
-            market_role_code = MarketRoleInFileName.ENERGY_SUPPLIER
-        elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-            market_role_code = MarketRoleInFileName.GRID_ACCESS_PROVIDER
-
-        energy_supplier_id = (
-            self.args.energy_supplier_ids[0]
-            if self.args.energy_supplier_ids is not None
-            else None
-        )
-
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code if grid_area_code is not None else "flere-net",
-            (
-                self.args.requesting_actor_id
-                if self.args.requesting_actor_market_role  # TODO: Is this right to assume? Or is it like _create_time_series where requesting actor isn't what determines it?
-                in [MarketRole.ENERGY_SUPPLIER, MarketRole.GRID_ACCESS_PROVIDER]
-                else energy_supplier_id
-            ),
-            market_role_code,
+            self._get_actor_id_in_file_name(energy_supplier_id),
+            self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
         ]
@@ -89,17 +73,8 @@ class FileNameFactory:
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code,
-            (
-                self.args.requesting_actor_id
-                if self.args.requesting_actor_market_role
-                is MarketRole.GRID_ACCESS_PROVIDER
-                else energy_supplier_id
-            ),
-            (
-                MarketRoleInFileName.GRID_ACCESS_PROVIDER
-                if energy_supplier_id is None
-                else MarketRoleInFileName.ENERGY_SUPPLIER
-            ),
+            self._get_actor_id_in_file_name(energy_supplier_id),
+            self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
             chunk_index,
@@ -131,3 +106,27 @@ class FileNameFactory:
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )
+
+    def _get_actor_id_in_file_name(self, energy_supplier_id: str | None) -> str | None:
+        if self.args.requesting_actor_market_role in {
+            MarketRole.ENERGY_SUPPLIER,
+            MarketRole.GRID_ACCESS_PROVIDER,
+        }:
+            return self.args.requesting_actor_id
+        elif self.args.requesting_actor_market_role in {
+            MarketRole.SYSTEM_OPERATOR,
+            MarketRole.DATAHUB_ADMINISTRATOR,
+        }:
+            return energy_supplier_id
+        else:
+            raise ValueError(
+                f"Market role {self.args.requesting_actor_market_role} is not supported."
+            )
+
+    def _get_market_role_in_file_name(self) -> str | None:
+        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
+            return MarketRoleInFileName.ENERGY_SUPPLIER
+        elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+            return MarketRoleInFileName.GRID_ACCESS_PROVIDER
+
+        return None

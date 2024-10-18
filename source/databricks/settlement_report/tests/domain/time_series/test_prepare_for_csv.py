@@ -9,6 +9,7 @@ from pyspark.sql.types import DecimalType
 
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_time_series_factory as time_series_factory
+from settlement_report_job.domain.market_role import MarketRole
 
 from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv
 from settlement_report_job.domain.csv_column_names import (
@@ -25,6 +26,7 @@ DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
 NOT_SYSTEM_OPERATOR_ID = "4444444444444"
+DEFAULT_MARKET_ROLE = MarketRole.ENERGY_SUPPLIER
 
 
 def _create_time_series_with_increasing_quantity(
@@ -59,11 +61,13 @@ def test_prepare_for_csv__when_two_days_of_data__returns_two_rows(
         from_date=DEFAULT_FROM_DATE, to_date=DEFAULT_TO_DATE, resolution=resolution
     )
     df = time_series_factory.create(spark, spec)
+
     # Act
     result_df = prepare_for_csv(
         filtered_time_series_points=df,
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
+        requesting_market_role=DEFAULT_MARKET_ROLE,
     )
 
     # Assert
@@ -94,6 +98,7 @@ def test_prepare_for_csv__returns_expected_energy_quantity_columns(
         filtered_time_series_points=df,
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
+        requesting_market_role=DEFAULT_MARKET_ROLE,
     )
 
     # Assert
@@ -159,6 +164,7 @@ def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_expected_
         filtered_time_series_points=df,
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
+        requesting_market_role=DEFAULT_MARKET_ROLE,
     )
 
     # Assert

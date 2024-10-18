@@ -41,6 +41,7 @@ def create_time_series_for_balance_fixing(
     energy_supplier_ids: list[str] | None,
     metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
+    requesting_market_role: MarketRole,
     repository: WholesaleRepository,
 ) -> DataFrame:
     log.info("Creating time series points")
@@ -59,6 +60,7 @@ def create_time_series_for_balance_fixing(
         filtered_time_series_points=time_series_points,
         metering_point_resolution=metering_point_resolution,
         time_zone=time_zone,
+        requesting_market_role=requesting_market_role,
     )
     return prepared_time_series
 
@@ -92,5 +94,6 @@ def create_time_series_for_wholesale(
         filtered_time_series_points=time_series_points,
         metering_point_resolution=metering_point_resolution,
         time_zone=time_zone,
+        requesting_market_role=requesting_actor_market_role,
     )
     return prepared_time_series

@@ -1,3 +1,4 @@
+import copy
 import uuid
 from datetime import datetime
 
@@ -54,12 +55,12 @@ def test_create__when_energy_supplier__returns_expected_file_name(
     expected_pre_fix: str,
 ):
     # Arrange
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
+    args = copy.deepcopy(default_settlement_report_args)
     energy_supplier_id = "1234567890123"
     grid_area_code = "123"
-    sut = FileNameFactory(report_data_type, default_settlement_report_args)
+    args.requesting_actor_id = energy_supplier_id
+    args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
+    sut = FileNameFactory(report_data_type, args)
 
     # Act
     actual = sut.create(grid_area_code, energy_supplier_id, chunk_index=None)
@@ -76,15 +77,12 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
+    args = copy.deepcopy(default_settlement_report_args)
     grid_area_code = "123"
     requesting_actor_id = "1111111111111"
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.GRID_ACCESS_PROVIDER
-    )
-    default_settlement_report_args.requesting_actor_id = requesting_actor_id
-    sut = FileNameFactory(
-        ReportDataType.TimeSeriesHourly, default_settlement_report_args
-    )
+    args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
+    args.requesting_actor_id = requesting_actor_id
+    sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
     actual = sut.create(grid_area_code, energy_supplier_id=None, chunk_index=None)
@@ -99,21 +97,21 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
 @pytest.mark.parametrize(
     "market_role, energy_supplier_id, expected_file_name",
     [
-        (MarketRole.SYSTEM_OPERATOR, None, "TSSD60_123_DDM_01-07-2024_31-07-2024.csv"),
+        (MarketRole.SYSTEM_OPERATOR, None, "TSSD60_123_01-07-2024_31-07-2024.csv"),
         (
             MarketRole.DATAHUB_ADMINISTRATOR,
             None,
-            "TSSD60_123_DDM_01-07-2024_31-07-2024.csv",
+            "TSSD60_123_01-07-2024_31-07-2024.csv",
         ),
         (
             MarketRole.SYSTEM_OPERATOR,
             "1987654321123",
-            "TSSD60_123_1987654321123_DDQ_01-07-2024_31-07-2024.csv",
+            "TSSD60_123_1987654321123_01-07-2024_31-07-2024.csv",
         ),
         (
             MarketRole.DATAHUB_ADMINISTRATOR,
             "1987654321123",
-            "TSSD60_123_1987654321123_DDQ_01-07-2024_31-07-2024.csv",
+            "TSSD60_123_1987654321123_01-07-2024_31-07-2024.csv",
         ),
     ],
 )
@@ -125,11 +123,10 @@ def test_create__when_system_operator_or_datahub_admin__returns_expected_file_na
     expected_file_name: str,
 ):
     # Arrange
-    default_settlement_report_args.requesting_actor_market_role = market_role
+    args = copy.deepcopy(default_settlement_report_args)
+    args.requesting_actor_market_role = market_role
     grid_area_code = "123"
-    sut = FileNameFactory(
-        ReportDataType.TimeSeriesHourly, default_settlement_report_args
-    )
+    sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
     actual = sut.create(grid_area_code, energy_supplier_id, chunk_index=None)
@@ -143,20 +140,19 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
-    sut = FileNameFactory(
-        ReportDataType.TimeSeriesHourly, default_settlement_report_args
-    )
+    args = copy.deepcopy(default_settlement_report_args)
+    energy_supplier_id = "222222222222"
+    args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
+    args.requesting_actor_id = energy_supplier_id
+    sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
     actual = sut.create(
-        grid_area_code="123", energy_supplier_id="222222222222", chunk_index="17"
+        grid_area_code="123", energy_supplier_id=energy_supplier_id, chunk_index="17"
     )
 
     # Assert
-    assert actual == "TSSD60_123_222222222222_DDQ_01-07-2024_31-07-2024_17.csv"
+    assert actual == f"TSSD60_123_{energy_supplier_id}_DDQ_01-07-2024_31-07-2024_17.csv"
 
 
 @pytest.mark.parametrize(
@@ -185,25 +181,16 @@ def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
     expected_end_date: str,
 ):
     # Arrange
-    default_settlement_report_args.period_start = period_start
-    default_settlement_report_args.period_end = period_end
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
-    sut = FileNameFactory(
-        ReportDataType.TimeSeriesHourly, default_settlement_report_args
-    )
+    args = copy.deepcopy(default_settlement_report_args)
+    args.period_start = period_start
+    args.period_end = period_end
+    sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
-    actual = sut.create(
-        grid_area_code="123", energy_supplier_id="222222222222", chunk_index="17"
-    )
+    actual = sut.create(grid_area_code="123", energy_supplier_id=None, chunk_index="17")
 
     # Assert
-    assert (
-        actual
-        == f"TSSD60_123_222222222222_DDQ_{expected_start_date}_{expected_end_date}_17.csv"
-    )
+    assert actual == f"TSSD60_123_{expected_start_date}_{expected_end_date}_17.csv"
 
 
 def test_create__when_energy_supplier_requests_energy_report_not_combined__returns_correct_file_name(
@@ -211,14 +198,11 @@ def test_create__when_energy_supplier_requests_energy_report_not_combined__retur
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.split_report_by_grid_area = True
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
+    args = copy.deepcopy(default_settlement_report_args)
+    args.split_report_by_grid_area = True
+    args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
 
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
@@ -228,7 +212,7 @@ def test_create__when_energy_supplier_requests_energy_report_not_combined__retur
     # Assert
     assert (
         actual
-        == f"RESULTENERGY_123_{default_settlement_report_args.requesting_actor_id}_DDQ_01-10-2024_31-10-2024.csv"
+        == f"RESULTENERGY_123_{args.requesting_actor_id}_DDQ_01-07-2024_31-07-2024.csv"
     )
 
 
@@ -237,19 +221,16 @@ def test_create__when_energy_supplier_requests_energy_report_combined__returns_c
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.calculation_id_by_grid_area = {
+    args = copy.deepcopy(default_settlement_report_args)
+    args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
 
-    default_settlement_report_args.split_report_by_grid_area = False
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
+    args.split_report_by_grid_area = False
+    args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
 
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
@@ -259,7 +240,7 @@ def test_create__when_energy_supplier_requests_energy_report_combined__returns_c
     # Assert
     assert (
         actual
-        == f"RESULTENERGY_flere-net_{default_settlement_report_args.requesting_actor_id}_DDQ_01-10-2024_31-10-2024.csv"
+        == f"RESULTENERGY_flere-net_{args.requesting_actor_id}_DDQ_01-07-2024_31-07-2024.csv"
     )
 
 
@@ -268,16 +249,13 @@ def test_create__when_grid_access_provider_requests_energy_report__returns_corre
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.GRID_ACCESS_PROVIDER
-    )
-    default_settlement_report_args.calculation_id_by_grid_area = {
+    args = copy.deepcopy(default_settlement_report_args)
+    args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
+    args.calculation_id_by_grid_area = {
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
 
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
@@ -287,7 +265,7 @@ def test_create__when_grid_access_provider_requests_energy_report__returns_corre
     # Assert
     assert (
         actual
-        == f"RESULTENERGY_456_{default_settlement_report_args.requesting_actor_id}_DDM_01-10-2024_31-10-2024.csv"
+        == f"RESULTENERGY_456_{args.requesting_actor_id}_DDM_01-07-2024_31-07-2024.csv"
     )
 
 
@@ -296,17 +274,14 @@ def test_create__when_datahub_administrator_requests_energy_report_single_grid__
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.DATAHUB_ADMINISTRATOR
-    )
-    default_settlement_report_args.energy_supplier_ids = None
-    default_settlement_report_args.calculation_id_by_grid_area = {
+    args = copy.deepcopy(default_settlement_report_args)
+    args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
+    args.energy_supplier_ids = None
+    args.calculation_id_by_grid_area = {
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
 
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
@@ -314,7 +289,7 @@ def test_create__when_datahub_administrator_requests_energy_report_single_grid__
     )
 
     # Assert
-    assert actual == "RESULTENERGY_456_01-10-2024_31-10-2024.csv"
+    assert actual == "RESULTENERGY_456_01-07-2024_31-07-2024.csv"
 
 
 def test_create__when_datahub_administrator_requests_energy_report_multi_grid_not_combined__returns_correct_file_name(
@@ -322,19 +297,15 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_no
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.calculation_id_by_grid_area = {
+    args = copy.deepcopy(default_settlement_report_args)
+    args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
-    default_settlement_report_args.split_report_by_grid_area = True
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.DATAHUB_ADMINISTRATOR
-    )
-    default_settlement_report_args.energy_supplier_ids = None
-
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    args.split_report_by_grid_area = True
+    args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
+    args.energy_supplier_ids = None
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
@@ -342,7 +313,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_no
     )
 
     # Assert
-    assert actual == "RESULTENERGY_456_01-10-2024_31-10-2024.csv"
+    assert actual == "RESULTENERGY_456_01-07-2024_31-07-2024.csv"
 
 
 def test_create__when_datahub_administrator_requests_energy_report_multi_grid_single_provider_combined__returns_correct_file_name(
@@ -350,27 +321,28 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_si
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.calculation_id_by_grid_area = {
+    args = copy.deepcopy(default_settlement_report_args)
+    energy_supplier_id = "1234567890123"
+    args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
-    default_settlement_report_args.split_report_by_grid_area = False
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.DATAHUB_ADMINISTRATOR
-    )
-    default_settlement_report_args.energy_supplier_ids = ["1234567890123"]
+    args.split_report_by_grid_area = False
+    args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
+    args.energy_supplier_ids = [energy_supplier_id]
 
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
-        grid_area_code=None, energy_supplier_id=None, chunk_index=None
+        grid_area_code=None, energy_supplier_id=energy_supplier_id, chunk_index=None
     )
 
     # Assert
-    assert actual == "RESULTENERGY_flere-net_1234567890123_01-10-2024_31-10-2024.csv"
+    assert (
+        actual
+        == f"RESULTENERGY_flere-net_{energy_supplier_id}_01-07-2024_31-07-2024.csv"
+    )
 
 
 def test_create__when_datahub_administrator_requests_energy_report_multi_grid_all_providers_combined__returns_correct_file_name(
@@ -378,19 +350,16 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_al
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    default_settlement_report_args.calculation_id_by_grid_area = {
+    args = copy.deepcopy(default_settlement_report_args)
+    args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
-    default_settlement_report_args.split_report_by_grid_area = False
-    default_settlement_report_args.requesting_actor_market_role = (
-        MarketRole.DATAHUB_ADMINISTRATOR
-    )
-    default_settlement_report_args.energy_supplier_ids = None
+    args.split_report_by_grid_area = False
+    args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
+    args.energy_supplier_ids = None
 
-    factory = FileNameFactory(
-        ReportDataType.EnergyResults, default_settlement_report_args
-    )
+    factory = FileNameFactory(ReportDataType.EnergyResults, args)
 
     # Act
     actual = factory.create(
@@ -398,4 +367,4 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_al
     )
 
     # Assert
-    assert actual == "RESULTENERGY_flere-net_01-10-2024_31-10-2024.csv"
+    assert actual == "RESULTENERGY_flere-net_01-07-2024_31-07-2024.csv"
