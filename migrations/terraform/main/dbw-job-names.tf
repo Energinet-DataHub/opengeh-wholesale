@@ -43,6 +43,8 @@ locals {
     "Reprocess_Time_Series_Bronze_Quarantine",
     "Stream_Time_Series_Audit_Autoloader",
     "Stream_Time_Series_Gold_To_Eloverblik",
-    "Stream_Time_Series_Gold_To_Wholesale"
+    "Stream_Time_Series_Gold_To_Wholesale",
+    "alert_multiple_open_charge_link_periods_wholesale",
+    "alert_bronze_migration_audit_changed"
   ]
 }
