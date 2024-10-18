@@ -37,6 +37,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     energy_supplier_id = (
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
     )
+    args.requesting_actor_id = energy_supplier_id
     args.energy_supplier_ids = [energy_supplier_id]
     expected_file_names = [
         f"TSSD15_804_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
