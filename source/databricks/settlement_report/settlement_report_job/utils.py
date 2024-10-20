@@ -126,7 +126,7 @@ def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
 
     for field in fields_to_convert:
         df = df.withColumn(
-            field.name, F.regexp_replace(F.col(field.name).cast("string"), "\\.", ",")
+            field.name, F.translate(F.col(field.name).cast("string"), ".", ",")
         )
 
     return df
