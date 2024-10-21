@@ -95,8 +95,7 @@ def test_read_and_filter_from_view__when_requesting_actor_is_energy_supplier__re
     )
 
     # Assert
-    for i, column in enumerate(actual_df.columns):
-        assert expected_columns[i] == column
+    assert expected_columns == actual_df.columns
 
     assert (
         actual_df.filter(
@@ -143,8 +142,7 @@ def test_read_and_filter_from_view__when_datahub_admin__returns_results_for_expe
     )
 
     # Assert
-    for i, column in enumerate(actual_df.columns):
-        assert expected_columns[i] == column
+    assert expected_columns == actual_df.columns
 
     if energy_supplier_ids is not None:
         energy_supplier_ids_as_string = ", ".join(energy_supplier_ids)
@@ -193,8 +191,7 @@ def test_read_and_filter_from_view__when_grid_access_provider__returns_expected_
     )
 
     # Assert
-    for i, column in enumerate(actual_df.columns):
-        assert expected_columns[i] == column
+    assert expected_columns == actual_df.columns
 
     assert (
         actual_df.filter(
