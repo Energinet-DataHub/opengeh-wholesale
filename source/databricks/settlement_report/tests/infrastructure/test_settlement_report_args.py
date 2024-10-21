@@ -69,6 +69,15 @@ def _substitute_energy_supplier_ids(
 
 
 @pytest.fixture(scope="session")
+def contract_parameters_for_balance_fixing(contracts_path: str) -> list[str]:
+    job_parameters = _get_contract_parameters(
+        f"{contracts_path}/settlement-report-balance-fixing-parameters-reference.txt"
+    )
+
+    return job_parameters
+
+
+@pytest.fixture(scope="session")
 def contract_parameters_for_wholesale(contracts_path: str) -> list[str]:
     job_parameters = _get_contract_parameters(
         f"{contracts_path}/settlement-report-wholesale-calculations-parameters-reference.txt"
