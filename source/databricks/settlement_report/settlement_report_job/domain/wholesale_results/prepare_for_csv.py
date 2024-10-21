@@ -35,6 +35,9 @@ def prepare_for_csv(
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
         ].alias(CsvColumnNames.calculation_type),
+        map_from_dict(market_naming.CALCULATION_TYPES_TO_PROCESS_VARIANT)[
+            F.col(DataProductColumnNames.calculation_type)
+        ].alias(CsvColumnNames.process_variant),
         F.col(DataProductColumnNames.grid_area_code).alias(
             CsvColumnNames.grid_area_code
         ),

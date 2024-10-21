@@ -10,6 +10,8 @@ class CsvColumnNames:
     settlement_method = "SETTLEMENTMETHOD"
     start_of_day = "STARTDATETIME"
     time = "STARTDATETIME"
+    # When ENERGYBUSINESSPROCESS is Correction Settlement - D32
+    # PROCESSVARIANT is either First - D01, Second - D02, Third - D03
     process_variant = "PROCESSVARIANT"
     quantity_unit = "MEASUREUNIT"
     currency = "ENERGYCURRENCY"
