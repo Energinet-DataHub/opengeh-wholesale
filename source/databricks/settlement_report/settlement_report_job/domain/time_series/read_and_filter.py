@@ -117,7 +117,7 @@ def _read_from_view(
     time_series_points = repository.read_metering_point_time_series().where(
         (F.col(DataProductColumnNames.observation_time) >= period_start)
         & (F.col(DataProductColumnNames.observation_time) < period_end)
-        & (F.col(DataProductColumnNames.resolution) == resolution)
+        & (F.col(DataProductColumnNames.resolution) == resolution.value)
     )
 
     if energy_supplier_ids:
