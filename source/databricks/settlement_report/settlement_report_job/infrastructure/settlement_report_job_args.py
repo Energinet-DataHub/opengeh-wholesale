@@ -97,7 +97,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument("--requesting-actor-market-role", type=MarketRole, required=True)
     p.add_argument("--requesting-actor-id", type=str, required=True)
     p.add_argument("--calculation-id-by-grid-area", type=str, required=False)
-    p.add_argument("--grid-areas-codes", type=str, required=False)
+    p.add_argument("--grid-area-codes", type=str, required=False)
     p.add_argument(
         "--energy-supplier-ids", type=valid_energy_supplier_ids, required=False
     )
