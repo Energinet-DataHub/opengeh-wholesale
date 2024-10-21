@@ -31,6 +31,9 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
+from settlement_report_job.domain.balance_fixing_utils import (
+    _filter_by_latest_calculations,
+)
 
 log = logging.Logger(__name__)
 
@@ -140,29 +143,3 @@ def _filter_on_calculation_id_by_grid_area(
         F.col(DataProductColumnNames.grid_area_code),
         F.col(DataProductColumnNames.calculation_id),
     ).isin(calculation_id_by_grid_area_structs)
-
-
-def _filter_by_latest_calculations(
-    time_series_points: DataFrame, latest_calculations: DataFrame, time_zone: str
-) -> DataFrame:
-    time_series_points = time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
-    )
-
-    return (
-        time_series_points.join(
-            latest_calculations,
-            on=[
-                time_series_points[DataProductColumnNames.calculation_id]
-                == latest_calculations[DataProductColumnNames.calculation_id],
-                time_series_points[DataProductColumnNames.grid_area_code]
-                == latest_calculations[DataProductColumnNames.grid_area_code],
-                time_series_points[EphemeralColumns.start_of_day]
-                == latest_calculations[DataProductColumnNames.start_of_day],
-            ],
-            how="inner",
-        )
-        .select(time_series_points["*"])
-        .drop(EphemeralColumns.start_of_day)
-    )

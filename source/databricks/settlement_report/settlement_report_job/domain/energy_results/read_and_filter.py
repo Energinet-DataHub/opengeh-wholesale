@@ -20,6 +20,13 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.wholesale.data_values.calculation_type import (
+    CalculationTypeDataProductValue,
+)
+from settlement_report_job.domain.balance_fixing_utils import (
+    _filter_by_latest_calculations,
+)
 
 log = logging.Logger(__name__)
 
@@ -46,6 +53,26 @@ def read_and_filter_from_view(
         (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
     )
+
+    if args.calculation_type is CalculationType.BALANCE_FIXING:
+        latest_balance_fixing_calculations = (
+            repository.read_latest_calculations().where(
+                (
+                    F.col(DataProductColumnNames.calculation_type)
+                    == CalculationTypeDataProductValue.BALANCE_FIXING
+                )
+                & (
+                    F.col(DataProductColumnNames.grid_area_code).isin(
+                        args.grid_area_codes
+                    )
+                )
+                & (F.col(DataProductColumnNames.start_of_day) >= args.period_start)
+                & (F.col(DataProductColumnNames.start_of_day) < args.period_end)
+            )
+        )
+        df = _filter_by_latest_calculations(
+            df, latest_balance_fixing_calculations, time_zone=args.time_zone
+        )
 
     if args.energy_supplier_ids is not None:
         df = df.where(
