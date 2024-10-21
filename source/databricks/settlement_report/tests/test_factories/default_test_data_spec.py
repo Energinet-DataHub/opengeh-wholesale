@@ -60,11 +60,11 @@ def create_charge_link_periods_data_spec(
     charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
     return ChargeLinkPeriodsTestDataSpec(
         calculation_id=calculation_id,
-        calculation_type=calculation_type.value,
+        calculation_type=calculation_type,
         calculation_version=calculation_version,
         charge_key=charge_key,
         charge_code=charge_code,
-        charge_type=charge_type.value,
+        charge_type=charge_type,
         charge_owner_id=charge_owner_id,
         metering_point_id=metering_point_id,
         from_date=from_date,
