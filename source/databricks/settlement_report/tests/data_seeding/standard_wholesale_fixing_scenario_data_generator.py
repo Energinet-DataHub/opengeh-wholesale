@@ -58,20 +58,18 @@ def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
     """
     df = None
     for metering_point in _get_all_metering_points():
-        data_spec = (
-            metering_point_time_series_factory.MeteringPointTimeSeriesTestDataSpec(
-                calculation_id=CALCULATION_ID,
-                calculation_type=CALCULATION_TYPE,
-                calculation_version=1,
-                metering_point_id=metering_point.metering_point_id,
-                metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
-                resolution=metering_point.resolution,
-                grid_area_code=metering_point.grid_area_code,
-                energy_supplier_id=metering_point.energy_supplier_id,
-                from_date=FROM_DATE,
-                to_date=TO_DATE,
-                quantity=Decimal("1.005"),
-            )
+        data_spec = metering_point_time_series_factory.MeteringPointTimeSeriesRow(
+            calculation_id=CALCULATION_ID,
+            calculation_type=CALCULATION_TYPE,
+            calculation_version=1,
+            metering_point_id=metering_point.metering_point_id,
+            metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+            resolution=metering_point.resolution,
+            grid_area_code=metering_point.grid_area_code,
+            energy_supplier_id=metering_point.energy_supplier_id,
+            from_date=FROM_DATE,
+            to_date=TO_DATE,
+            quantity=Decimal("1.005"),
         )
         next_df = metering_point_time_series_factory.create(spark, data_spec)
         if df is None:
@@ -90,7 +88,7 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
     df = None
 
     for metering_point in _get_all_metering_points():
-        data_spec = charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec(
+        data_spec = charge_link_periods_factory.ChargeLinkPeriodsRow(
             calculation_id=CALCULATION_ID,
             calculation_type=CALCULATION_TYPE,
             calculation_version=1,
@@ -117,18 +115,20 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     Creates a DataFrame with charge price information periods data for testing purposes.
     """
 
-    data_spec = charge_price_information_periods_factory.ChargePriceInformationPeriodsTestDataSpec(
-        calculation_id=CALCULATION_ID,
-        calculation_type=CALCULATION_TYPE,
-        calculation_version=1,
-        charge_key=CHARGE_KEY,
-        charge_code=CHARGE_CODE,
-        charge_type=CHARGE_TYPE,
-        charge_owner_id=CHARGE_OWNER_ID,
-        is_tax=IS_TAX,
-        resolution=ChargeResolutionDataProductValue.HOUR,
-        from_date=FROM_DATE,
-        to_date=TO_DATE,
+    data_spec = (
+        charge_price_information_periods_factory.ChargePriceInformationPeriodsRow(
+            calculation_id=CALCULATION_ID,
+            calculation_type=CALCULATION_TYPE,
+            calculation_version=1,
+            charge_key=CHARGE_KEY,
+            charge_code=CHARGE_CODE,
+            charge_type=CHARGE_TYPE,
+            charge_owner_id=CHARGE_OWNER_ID,
+            is_tax=IS_TAX,
+            resolution=ChargeResolutionDataProductValue.HOUR,
+            from_date=FROM_DATE,
+            to_date=TO_DATE,
+        )
     )
     return charge_price_information_periods_factory.create(spark, data_spec)
 

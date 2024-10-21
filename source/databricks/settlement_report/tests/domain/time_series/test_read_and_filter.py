@@ -322,9 +322,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     )
     charge_link_periods_df = charge_links_factory.create(
         spark,
-        default_data.create_charge_link_periods_data_spec(
-            charge_owner_id=SYSTEM_OPERATOR_ID
-        ),
+        default_data.create_charge_link_periods_row(charge_owner_id=SYSTEM_OPERATOR_ID),
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = time_series_df

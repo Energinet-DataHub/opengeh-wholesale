@@ -84,7 +84,7 @@ def create_latest_calculations(spark: SparkSession) -> DataFrame:
         current_date = FROM_DATE
         while current_date < TO_DATE:
             data_specs.append(
-                latest_calculations_factory.LatestCalculationsTestDataSpec(
+                latest_calculations_factory.LatestCalculationsPerDayRow(
                     calculation_id=CALCULATION_ID,
                     calculation_type=CALCULATION_TYPE,
                     calculation_version=1,

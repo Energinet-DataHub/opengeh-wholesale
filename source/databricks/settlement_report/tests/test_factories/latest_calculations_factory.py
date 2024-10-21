@@ -13,7 +13,7 @@ from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 impor
 
 
 @dataclass
-class LatestCalculationsTestDataSpec:
+class LatestCalculationsPerDayRow:
     """
     Data specification for creating a latest_calculations_per_day test data.
     """
@@ -27,21 +27,21 @@ class LatestCalculationsTestDataSpec:
 
 def create(
     spark: SparkSession,
-    data_specs: LatestCalculationsTestDataSpec | list[LatestCalculationsTestDataSpec],
+    rows: LatestCalculationsPerDayRow | list[LatestCalculationsPerDayRow],
 ) -> DataFrame:
-    if not isinstance(data_specs, list):
-        data_specs = [data_specs]
+    if not isinstance(rows, list):
+        rows = [rows]
 
-    rows = []
-    for data_spec in data_specs:
-        rows.append(
+    data_rows = []
+    for row in rows:
+        data_rows.append(
             {
-                DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type,
-                DataProductColumnNames.calculation_version: data_spec.calculation_version,
-                DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
-                DataProductColumnNames.start_of_day: data_spec.start_of_day,
+                DataProductColumnNames.calculation_id: row.calculation_id,
+                DataProductColumnNames.calculation_type: row.calculation_type,
+                DataProductColumnNames.calculation_version: row.calculation_version,
+                DataProductColumnNames.grid_area_code: row.grid_area_code,
+                DataProductColumnNames.start_of_day: row.start_of_day,
             }
         )
 
-    return spark.createDataFrame(rows, latest_calculations_by_day_v1)
+    return spark.createDataFrame(data_rows, latest_calculations_by_day_v1)

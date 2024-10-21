@@ -15,11 +15,7 @@ from settlement_report_job.wholesale.schemas import (
 
 
 @dataclass
-class ChargePriceInformationPeriodsTestDataSpec:
-    """
-    Data specification for creating a price information periods test data.
-    """
-
+class ChargePriceInformationPeriodsRow:
     calculation_id: str
     calculation_type: CalculationTypeDataProductValue
     calculation_version: int
@@ -35,16 +31,13 @@ class ChargePriceInformationPeriodsTestDataSpec:
 
 def create(
     spark: SparkSession,
-    data_specs: (
-        ChargePriceInformationPeriodsTestDataSpec
-        | list[ChargePriceInformationPeriodsTestDataSpec]
-    ),
+    rows: ChargePriceInformationPeriodsRow | list[ChargePriceInformationPeriodsRow],
 ) -> DataFrame:
-    if not isinstance(data_specs, list):
-        data_specs = [data_specs]
+    if not isinstance(rows, list):
+        rows = [rows]
 
     rows = []
-    for data_spec in data_specs:
+    for data_spec in rows:
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
