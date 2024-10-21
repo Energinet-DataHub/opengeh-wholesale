@@ -35,7 +35,7 @@ BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 @dataclass
 class MeteringPointSpec:
     metering_point_id: str
-    metering_point_type: str
+    metering_point_type: MeteringPointTypeDataProductValue
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue

@@ -34,7 +34,7 @@ IS_TAX = False
 METERING_POINT_TYPES = [
     MeteringPointTypeDataProductValue.CONSUMPTION,
     MeteringPointTypeDataProductValue.EXCHANGE,
-]  # TODO: Add the rest?
+]
 RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
 CALCULATION_PERIOD_START = FROM_DATE
 CALCULATION_PERIOD_END = TO_DATE
