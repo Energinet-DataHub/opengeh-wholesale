@@ -19,27 +19,22 @@ locals {
       UNZIPPED_CONSUMPTION_STATEMENTS_CONTAINER_NAME = azurerm_storage_container.dh2_consumption_statements.name
 
       # Storage Account settings
-      "StorageAccount__DropzoneArchiveUri"                  = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
-      "StorageAccount__DropzoneUri"                         = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
-      "StorageAccount__Dh2DataUri"                          = "https://${module.st_dh2data.name}.blob.core.windows.net"
-      "StorageAccount__DropzoneArchiveContainerName"        = azurerm_storage_container.dropzonearchive.name
-      "StorageAccount__DropzoneContainerName"               = azurerm_storage_container.dh2_dropzone_zipped.name
-      "StorageAccount__MeteringPointsContainerName"         = azurerm_storage_container.dh2_metering_point_history.name
-      "StorageAccount__TimeSeriesContainerName"             = azurerm_storage_container.dh2_timeseries.name
-      "StorageAccount__ChargesContainerName"                = azurerm_storage_container.dh2_charges.name
-      "StorageAccount__ChargeLinksContainerName"            = azurerm_storage_container.dh2_charge_links.name
-      "StorageAccount__ConsumptionStatementsContainerName"  = azurerm_storage_container.dh2_consumption_statements.name
-      "StorageAccount__CalculationResultsContainerName"     = azurerm_storage_container.dh2_calculation_results.name
-
-      # Event Hub settings - deprecated
-      INGRESS_EVENT_HUB_CONNECTION_STRING = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string
-      INGRESS_EVENT_HUB_NAME              = azurerm_eventhub.eventhub_dropzone_zipped.name
-      INGRESS_EVENT_HUB_CONSUMER_GROUP    = azurerm_eventhub_consumer_group.consumer_group_dropzone_zipped.name
+      "StorageAccount__DropzoneArchiveUri"                 = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
+      "StorageAccount__DropzoneUri"                        = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
+      "StorageAccount__Dh2DataUri"                         = "https://${module.st_dh2data.name}.blob.core.windows.net"
+      "StorageAccount__DropzoneArchiveContainerName"       = azurerm_storage_container.dropzonearchive.name
+      "StorageAccount__DropzoneContainerName"              = azurerm_storage_container.dh2_dropzone_zipped.name
+      "StorageAccount__MeteringPointsContainerName"        = azurerm_storage_container.dh2_metering_point_history.name
+      "StorageAccount__TimeSeriesContainerName"            = azurerm_storage_container.dh2_timeseries.name
+      "StorageAccount__ChargesContainerName"               = azurerm_storage_container.dh2_charges.name
+      "StorageAccount__ChargeLinksContainerName"           = azurerm_storage_container.dh2_charge_links.name
+      "StorageAccount__ConsumptionStatementsContainerName" = azurerm_storage_container.dh2_consumption_statements.name
+      "StorageAccount__CalculationResultsContainerName"    = azurerm_storage_container.dh2_calculation_results.name
 
       # Event Hub settings
-      "EventHub__Name"              = azurerm_eventhub.eventhub_dropzone_zipped.name
-      "EventHub__ConnectionString"  = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string
-      "EventHub__ConsumerGroup"     = azurerm_eventhub_consumer_group.consumer_group_dropzone_zipped.name
+      "EventHub__Name"                    = azurerm_eventhub.eventhub_dropzone_zipped.name
+      "EventHub__FullyQualifiedNamespace" = "${azurerm_eventhub_namespace.eventhub_namespace_dropzone.name}.servicebus.windows.net"
+      "EventHub__ConsumerGroup"           = azurerm_eventhub_consumer_group.consumer_group_dropzone_zipped.name
 
       # Logging Worker
       "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
