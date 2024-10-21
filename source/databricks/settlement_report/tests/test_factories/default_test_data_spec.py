@@ -73,7 +73,7 @@ def create_charge_link_periods_row(
     )
 
 
-def create_charge_price_information_periods_data_spec(
+def create_charge_price_information_periods_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,

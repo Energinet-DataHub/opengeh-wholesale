@@ -59,7 +59,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_points_wit
     charge_price_information_periods_df = (
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 from_date=charge_from_date, to_date=charge_to_date
             ),
         )
@@ -117,7 +117,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_if_calcula
     charge_price_information_periods_df = (
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 calculation_id=calculation_id_charge_price_information,
             ),
         )
@@ -155,7 +155,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_where_the_
     charge_price_information_periods_df = (
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(),
+            default_data.create_charge_price_information_periods_row(),
         )
     )
     charge_link_periods_df = charge_link_periods_factory.create(
@@ -204,14 +204,14 @@ def test_filter_time_series_on_charge_owner__when_multiple_links_matches_on_mete
     charge_price_information_periods_df = (
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 charge_code="code1"
             ),
         )
     ).union(
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 charge_code="code2"
             ),
         )
@@ -254,14 +254,14 @@ def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_ope
     charge_price_information_periods_df = (
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 charge_owner_id=system_operator_id
             ),
         )
     ).union(
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 charge_owner_id=not_system_operator_id
             ),
         )
@@ -329,7 +329,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_from_meter
     charge_price_information_periods_df = (
         charge_price_information_periods_factory.create(
             spark,
-            default_data.create_charge_price_information_periods_data_spec(
+            default_data.create_charge_price_information_periods_row(
                 charge_owner_id=system_operator_id, is_tax=is_tax
             ),
         )

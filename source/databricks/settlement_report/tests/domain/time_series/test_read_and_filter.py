@@ -316,7 +316,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     )
     charge_price_information_period_df = charge_price_information_periods.create(
         spark,
-        default_data.create_charge_price_information_periods_data_spec(
+        default_data.create_charge_price_information_periods_row(
             charge_owner_id=SYSTEM_OPERATOR_ID
         ),
     )
