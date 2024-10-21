@@ -19,6 +19,7 @@ from test_factories.latest_calculations_factory import LatestCalculationsTestDat
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
+from test_factories.energy_factory import EnergyTestDataSpec
 
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
@@ -35,6 +36,13 @@ DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
 DEFAULT_CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "3333333333333"
+
+# For energy results
+DEFAULT_RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
+DEFAULT_SETTLEMENT_METHOD = None
+DEFAULT_QUANTITY_UNIT = "kwh"
+DEFAULT_QUANTITY_QUALITIES = ["measured"]
+DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 
 
 def create_charge_link_periods_data_spec(
@@ -136,4 +144,44 @@ def create_latest_calculations_data_spec(
         calculation_version=calculation_version,
         grid_area_code=grid_area_code,
         start_of_day=start_of_day,
+    )
+
+
+def create_energy_results_data_spec(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_period_start: datetime = DEFAULT_PERIOD_START,
+    calculation_period_end: datetime = DEFAULT_PERIOD_END,
+    calculation_version: int = DEFAULT_CALCULATION_VERSION,
+    result_id: int = DEFAULT_RESULT_ID,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
+    settlement_method: str = DEFAULT_SETTLEMENT_METHOD,
+    resolution: MeteringPointResolutionDataProductValue = DEFAULT_RESOLUTION,
+    quantity: Decimal = Decimal("1.005"),
+    quantity_unit: str = DEFAULT_QUANTITY_UNIT,
+    quantity_qualities: list[str] = DEFAULT_QUANTITY_QUALITIES,
+    from_date: datetime = DEFAULT_PERIOD_START,
+    to_date: datetime = DEFAULT_PERIOD_END,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    balance_responsible_party_id: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
+) -> EnergyTestDataSpec:
+    return EnergyTestDataSpec(
+        calculation_id=calculation_id,
+        calculation_type=calculation_type,
+        calculation_period_start=calculation_period_start,
+        calculation_period_end=calculation_period_end,
+        calculation_version=calculation_version,
+        result_id=result_id,
+        grid_area_code=grid_area_code,
+        metering_point_type=metering_point_type,
+        settlement_method=settlement_method,
+        resolution=resolution,
+        quantity=quantity,
+        quantity_unit=quantity_unit,
+        quantity_qualities=quantity_qualities,
+        from_date=from_date,
+        to_date=to_date,
+        energy_supplier_id=energy_supplier_id,
+        balance_responsible_party_id=balance_responsible_party_id,
     )
