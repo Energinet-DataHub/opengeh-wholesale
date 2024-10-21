@@ -23,7 +23,10 @@ ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
 """TO_DATE is exclusive"""
-METERING_POINT_TYPES = ["consumption", "exchange"]
+METERING_POINT_TYPES = [
+    MeteringPointTypeDataProductValue.CONSUMPTION,
+    MeteringPointTypeDataProductValue.EXCHANGE,
+]
 RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
 CALCULATION_PERIOD_START = FROM_DATE
 CALCULATION_PERIOD_END = TO_DATE
