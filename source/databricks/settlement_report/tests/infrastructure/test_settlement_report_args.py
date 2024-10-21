@@ -69,17 +69,26 @@ def _substitute_energy_supplier_ids(
 
 
 @pytest.fixture(scope="session")
-def contract_parameters(contracts_path: str) -> list[str]:
+def contract_parameters_for_wholesale(contracts_path: str) -> list[str]:
     job_parameters = _get_contract_parameters(
-        f"{contracts_path}/settlement-report-job-parameters-reference.txt"
+        f"{contracts_path}/settlement-report-wholesale-calculations-parameters-reference.txt"
     )
 
     return job_parameters
 
 
 @pytest.fixture(scope="session")
-def sys_argv_from_contract(contract_parameters: list[str]) -> list[str]:
-    return ["dummy_script_name"] + contract_parameters
+def sys_argv_from_contract_for_wholesale(
+    contract_parameters_for_wholesale: list[str],
+) -> list[str]:
+    return ["dummy_script_name"] + contract_parameters_for_wholesale
+
+
+@pytest.fixture(scope="session")
+def sys_argv_from_contract_for_balance_fixing(
+    contract_parameters_for_balance_fixing: list[str],
+) -> list[str]:
+    return ["dummy_script_name"] + contract_parameters_for_balance_fixing
 
 
 @pytest.fixture(scope="session")
@@ -89,95 +98,117 @@ def job_environment_variables() -> dict:
     }
 
 
-class TestWhenInvokedWithIncorrectParameters:
-    def test_fails(
-        self,
-        job_environment_variables: dict,
-    ) -> None:
-        # Arrange
-        with pytest.raises(SystemExit) as excinfo:
-            with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
-                with patch.dict("os.environ", job_environment_variables):
-                    # Act
-                    parse_command_line_arguments()
-
-        # Assert
-        assert excinfo.value.code == 2
-
-
-class TestWhenInvokedWithValidParameters:
-    def test_parses_parameters_from_contract(
-        self,
-        job_environment_variables: dict,
-        sys_argv_from_contract: list[str],
-    ) -> None:
-        """
-        This test ensures that the settlement report job accepts
-        the arguments that are provided by the client.
-        """
-        # Arrange
-        with patch("sys.argv", sys_argv_from_contract):
+def test_when_invoked_with_incorrect_parameters__fails(
+    job_environment_variables: dict,
+) -> None:
+    # Arrange
+    with pytest.raises(SystemExit) as excinfo:
+        with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
             with patch.dict("os.environ", job_environment_variables):
+                # Act
+                parse_command_line_arguments()
+
+    # Assert
+    assert excinfo.value.code == 2
+
+
+def test_when_parameters_for_balance_fixing__parses_parameters_from_contract(
+    job_environment_variables: dict,
+    sys_argv_from_contract_for_balance_fixing: list[str],
+) -> None:
+    """
+    This test ensures that the settlement report job for balance fixing accepts
+    the arguments that are provided by the client.
+    """
+    # Arrange
+    with patch("sys.argv", sys_argv_from_contract_for_balance_fixing):
+        with patch.dict("os.environ", job_environment_variables):
+            command_line_args = parse_command_line_arguments()
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert - settlement report arguments
+    assert actual_args.report_id == DEFAULT_REPORT_ID
+    assert actual_args.period_start == datetime(2022, 5, 31, 22)
+    assert actual_args.period_end == datetime(2022, 6, 1, 22)
+    assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
+    assert actual_args.grid_area_codes == ["804", "805"]
+    assert actual_args.energy_supplier_ids == ["1234567890123"]
+    assert actual_args.prevent_large_text_files is True
+    assert actual_args.split_report_by_grid_area is True
+    assert actual_args.time_zone == "Europe/Copenhagen"
+    assert actual_args.include_basis_data is True
+    assert actual_args.locale == "da-DK"
+
+
+def test_when_parameters_for_wholesale__parses_parameters_from_contract(
+    job_environment_variables: dict,
+    sys_argv_from_contract_for_wholesale: list[str],
+) -> None:
+    """
+    This test ensures that the settlement report job for wholesale calculations accepts
+    the arguments that are provided by the client.
+    """
+    # Arrange
+    with patch("sys.argv", sys_argv_from_contract_for_wholesale):
+        with patch.dict("os.environ", job_environment_variables):
+            command_line_args = parse_command_line_arguments()
+            # Act
+            actual_args = parse_job_arguments(command_line_args)
+
+    # Assert - settlement report arguments
+    assert actual_args.report_id == DEFAULT_REPORT_ID
+    assert actual_args.period_start == datetime(2022, 5, 31, 22)
+    assert actual_args.period_end == datetime(2022, 6, 1, 22)
+    assert actual_args.calculation_type == CalculationType.WHOLESALE_FIXING
+    assert actual_args.calculation_id_by_grid_area == {
+        "804": uuid.UUID("95bd2365-c09b-4ee7-8c25-8dd56b564811"),
+        "805": uuid.UUID("d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"),
+    }
+    assert actual_args.energy_supplier_ids == ["1234567890123"]
+    assert actual_args.prevent_large_text_files is True
+    assert actual_args.split_report_by_grid_area is True
+    assert actual_args.time_zone == "Europe/Copenhagen"
+    assert actual_args.include_basis_data is True
+    assert actual_args.locale == "da-DK"
+
+
+@pytest.mark.parametrize(
+    "not_valid_calculation_id",
+    [
+        "not_valid",
+        "",
+        None,
+        "c09b-4ee7-8c25-8dd56b564811",  # too short
+    ],
+)
+def test_when_no_valid_calculation_id_for_grid_area__raises_uuid_value_error(
+    job_environment_variables: dict,
+    sys_argv_from_contract_for_wholesale: list[str],
+    not_valid_calculation_id: str,
+) -> None:
+    # Arrange
+    test_sys_args = sys_argv_from_contract_for_wholesale.copy()
+    pattern = r"--calculation-id-by-grid-area=(\{.*\})"
+
+    for i, item in enumerate(test_sys_args):
+        if re.search(pattern, item):
+            test_sys_args[i] = re.sub(
+                pattern,
+                f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',  # noqa
+                item,
+            )
+            break
+
+    with patch("sys.argv", test_sys_args):
+        with patch.dict("os.environ", job_environment_variables):
+            with pytest.raises(ValueError) as exc_info:
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual_args = parse_job_arguments(command_line_args)
+                parse_job_arguments(command_line_args)
 
-        # Assert - settlement report arguments
-        assert actual_args.report_id == DEFAULT_REPORT_ID
-        assert actual_args.period_start == datetime(2022, 5, 31, 22)
-        assert actual_args.period_end == datetime(2022, 6, 1, 22)
-        assert actual_args.calculation_type == CalculationType.WHOLESALE_FIXING
-        assert actual_args.calculation_id_by_grid_area == {
-            "804": uuid.UUID("95bd2365-c09b-4ee7-8c25-8dd56b564811"),
-            "805": uuid.UUID("d3e2b83a-2fd9-4bcd-a6dc-41e4ce74cd6d"),
-        }
-        assert actual_args.energy_supplier_ids == ["1234567890123"]
-        assert actual_args.prevent_large_text_files is True
-        assert actual_args.split_report_by_grid_area is True
-        assert actual_args.time_zone == "Europe/Copenhagen"
-        assert actual_args.include_basis_data is True
-        assert actual_args.locale == "da-DK"
-
-
-class TestWhenNoValidCalculationIdForGridArea:
-
-    @pytest.mark.parametrize(
-        "not_valid_calculation_id",
-        [
-            "not_valid",
-            "",
-            None,
-            "c09b-4ee7-8c25-8dd56b564811",  # too short
-        ],
-    )
-    def test_raise_uuid_value_error(
-        self,
-        job_environment_variables: dict,
-        sys_argv_from_contract: list[str],
-        not_valid_calculation_id: str,
-    ) -> None:
-        # Arrange
-        test_sys_args = sys_argv_from_contract.copy()
-        pattern = r"--calculation-id-by-grid-area=(\{.*\})"
-
-        for i, item in enumerate(test_sys_args):
-            if re.search(pattern, item):
-                test_sys_args[i] = re.sub(
-                    pattern,
-                    f'--calculation-id-by-grid-area={{"804": "{not_valid_calculation_id}"}}',  # noqa
-                    item,
-                )
-                break
-
-        with patch("sys.argv", test_sys_args):
-            with patch.dict("os.environ", job_environment_variables):
-                with pytest.raises(ValueError) as exc_info:
-                    command_line_args = parse_command_line_arguments()
-                    # Act
-                    parse_job_arguments(command_line_args)
-
-        # Assert
-        assert "Calculation ID for grid area 804 is not a uuid" in str(exc_info.value)
+    # Assert
+    assert "Calculation ID for grid area 804 is not a uuid" in str(exc_info.value)
 
 
 @pytest.mark.parametrize(
@@ -189,15 +220,15 @@ class TestWhenNoValidCalculationIdForGridArea:
 )
 def test_returns_expected_value_for_prevent_large_text_files(
     job_environment_variables: dict,
-    sys_argv_from_contract: list[str],
+    sys_argv_from_contract_for_wholesale: list[str],
     prevent_large_text_files: bool,
 ) -> None:
     # Arrange
-    test_sys_args = sys_argv_from_contract.copy()
+    test_sys_args = sys_argv_from_contract_for_wholesale.copy()
     if not prevent_large_text_files:
         test_sys_args = [
             item
-            for item in sys_argv_from_contract
+            for item in sys_argv_from_contract_for_wholesale
             if not item.startswith("--prevent-large-text-files")
         ]
 
@@ -221,15 +252,15 @@ def test_returns_expected_value_for_prevent_large_text_files(
 )
 def test_returns_expected_value_for_split_report_by_grid_area(
     job_environment_variables: dict,
-    sys_argv_from_contract: list[str],
+    sys_argv_from_contract_for_wholesale: list[str],
     split_report_by_grid_area: bool,
 ) -> None:
     # Arrange
-    test_sys_args = sys_argv_from_contract.copy()
+    test_sys_args = sys_argv_from_contract_for_wholesale.copy()
     if not split_report_by_grid_area:
         test_sys_args = [
             item
-            for item in sys_argv_from_contract
+            for item in sys_argv_from_contract_for_wholesale
             if not item.startswith("--split-report-by-grid-area")
         ]
 
@@ -253,15 +284,15 @@ def test_returns_expected_value_for_split_report_by_grid_area(
 )
 def test_returns_expected_value_for_include_basis_data(
     job_environment_variables: dict,
-    sys_argv_from_contract: list[str],
+    sys_argv_from_contract_for_wholesale: list[str],
     include_basis_data: bool,
 ) -> None:
     # Arrange
-    test_sys_args = sys_argv_from_contract.copy()
+    test_sys_args = sys_argv_from_contract_for_wholesale.copy()
     if not include_basis_data:
         test_sys_args = [
             item
-            for item in sys_argv_from_contract
+            for item in sys_argv_from_contract_for_wholesale
             if not item.startswith("--include-basis-data")
         ]
 
@@ -287,13 +318,13 @@ def test_returns_expected_value_for_include_basis_data(
     ],
 )
 def test_when_energy_supplier_ids_are_specified__returns_expected_energy_supplier_ids(
-    sys_argv_from_contract: list[str],
+    sys_argv_from_contract_for_wholesale: list[str],
     job_environment_variables: dict,
     energy_supplier_ids_argument: str,
     expected_energy_suppliers_ids: list[str],
 ) -> None:
     # Arrange
-    test_sys_args = sys_argv_from_contract.copy()
+    test_sys_args = sys_argv_from_contract_for_wholesale.copy()
     test_sys_args = _substitute_energy_supplier_ids(
         test_sys_args, energy_supplier_ids_argument
     )
@@ -319,12 +350,12 @@ def test_when_energy_supplier_ids_are_specified__returns_expected_energy_supplie
     ],
 )
 def test_when_invalid_energy_supplier_ids__raise_exception(
-    sys_argv_from_contract: list[str],
+    sys_argv_from_contract_for_wholesale: list[str],
     job_environment_variables: dict,
     energy_supplier_ids_argument: str,
 ) -> None:
     # Arrange
-    test_sys_args = sys_argv_from_contract.copy()
+    test_sys_args = sys_argv_from_contract_for_wholesale.copy()
     test_sys_args = _substitute_energy_supplier_ids(
         test_sys_args, energy_supplier_ids_argument
     )
@@ -341,13 +372,13 @@ def test_when_invalid_energy_supplier_ids__raise_exception(
 
 
 def test_when_no_energy_supplier_specified__returns_none_energy_supplier_ids(
-    sys_argv_from_contract: list[str],
+    sys_argv_from_contract_for_wholesale: list[str],
     job_environment_variables: dict,
 ) -> None:
     # Arrange
     test_sys_args = [
         item
-        for item in sys_argv_from_contract
+        for item in sys_argv_from_contract_for_wholesale
         if not item.startswith("--energy-supplier-ids")
     ]
 
@@ -370,12 +401,12 @@ class TestWhenInvokedWithValidMarketRole:
     def test_returns_expected_requesting_actor_market_role(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract: list[str],
+        sys_argv_from_contract_for_wholesale: list[str],
         market_role: MarketRole,
     ) -> None:
         # Arrange
         test_sys_args = _substitute_requesting_actor_market_role(
-            sys_argv_from_contract.copy(), market_role.value
+            sys_argv_from_contract_for_wholesale.copy(), market_role.value
         )
 
         with patch("sys.argv", test_sys_args):
@@ -394,11 +425,11 @@ class TestWhenInvokedWithInvalidMarketRole:
     def test_raise_system_exit_with_non_zero_code(
         self,
         job_environment_variables: dict,
-        sys_argv_from_contract: list[str],
+        sys_argv_from_contract_for_wholesale: list[str],
     ) -> None:
         # Arrange
         test_sys_args = _substitute_requesting_actor_market_role(
-            sys_argv_from_contract.copy(), "invalid_market_role"
+            sys_argv_from_contract_for_wholesale.copy(), "invalid_market_role"
         )
 
         with patch("sys.argv", test_sys_args):
@@ -414,10 +445,12 @@ class TestWhenInvokedWithInvalidMarketRole:
 
 class TestWhenUnknownCalculationType:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract: list[str]
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract_for_wholesale: list[str],
     ) -> None:
         # Arrange
-        test_sys_args = sys_argv_from_contract.copy()
+        test_sys_args = sys_argv_from_contract_for_wholesale.copy()
         unknown_calculation_type = "unknown_calculation_type"
         pattern = r"--calculation-type=(\w+)"
 
@@ -441,10 +474,12 @@ class TestWhenUnknownCalculationType:
 
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract: list[str]
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract_for_wholesale: list[str],
     ) -> None:
         # Arrange
-        with patch("sys.argv", sys_argv_from_contract):
+        with patch("sys.argv", sys_argv_from_contract_for_wholesale):
             for excluded_env_var in job_environment_variables.keys():
                 env_variables_with_one_missing = {
                     key: value
