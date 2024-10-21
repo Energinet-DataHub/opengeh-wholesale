@@ -330,13 +330,16 @@ def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseco
                 all_lines_written = f.readlines()
 
                 assert (
-                    all_lines_written[0] == "a{expected_delimiter}2024-10-21 12:10:30\n"
+                    all_lines_written[0]
+                    == f"a{expected_delimiter}2024-10-21 12:10:30\n"
                 )
                 assert (
-                    all_lines_written[1] == "b{expected_delimiter}2024-10-21 12:10:30\n"
+                    all_lines_written[1]
+                    == f"b{expected_delimiter}2024-10-21 12:10:30\n"
                 )
                 assert (
-                    all_lines_written[2] == "c{expected_delimiter}2024-10-21 12:10:30\n"
+                    all_lines_written[2]
+                    == f"c{expected_delimiter}2024-10-21 12:10:30\n"
                 )
 
     assert columns == ["key", "value"]
