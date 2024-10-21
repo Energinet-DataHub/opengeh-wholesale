@@ -19,6 +19,7 @@ from test_factories.latest_calculations_factory import LatestCalculationsTestDat
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
+from test_factories.wholesale_factory import WholesaleTestDataSpec
 
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
@@ -119,6 +120,51 @@ def create_time_series_data_spec(
         from_date=from_date,
         to_date=to_date,
         quantity=quantity,
+    )
+
+
+def create_wholesale_data_spec(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_version: int = DEFAULT_CALCULATION_VERSION,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
+    charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
+    charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
+    resolution: ChargeResolutionDataProductValue = ChargeResolutionDataProductValue.HOUR,
+    quantity_unit: str = "kWh",
+    metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
+    settlement_method: str = "flex",
+    is_tax: bool = False,
+    currency: str = "DKK",
+    time: datetime = DEFAULT_PERIOD_START,
+    quantity: Decimal = Decimal("1.005"),
+    quantity_qualities: list[str] = ["measured"],
+    price: Decimal = Decimal("0.005"),
+    amount: Decimal = Decimal("0.005"),
+) -> WholesaleTestDataSpec:
+    return WholesaleTestDataSpec(
+        calculation_id=calculation_id,
+        calculation_type=calculation_type,
+        calculation_version=calculation_version,
+        result_id="result_id_placeholder",  # Add appropriate value
+        grid_area_code=grid_area_code,
+        energy_supplier_id=energy_supplier_id,
+        charge_code=charge_code,
+        charge_type=charge_type,
+        charge_owner_id=charge_owner_id,
+        resolution=resolution,
+        quantity_unit=quantity_unit,
+        metering_point_type=metering_point_type,
+        settlement_method=settlement_method,
+        is_tax=is_tax,
+        currency=currency,
+        time=time,
+        quantity=quantity,
+        quantity_qualities=quantity_qualities,
+        price=price,
+        amount=amount,
     )
 
 
