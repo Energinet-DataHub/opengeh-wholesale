@@ -14,7 +14,6 @@ from settlement_report_job.domain.csv_column_names import (
 
 @pytest.fixture(scope="function", autouse=True)
 def reset_task_values(dbutils: DBUtilsFixture):
-    print("Resetting task values before test")
     yield
     print("Resetting task values")
     dbutils.jobs.taskValues.reset()
