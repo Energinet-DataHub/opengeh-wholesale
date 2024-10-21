@@ -40,14 +40,14 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
             for i in range(data_spec.num_days_per_metering_point):
                 row = {
                     CsvColumnNames.metering_point_id: str(1000000000000 + counter),
-                    CsvColumnNames.metering_point_type: data_spec.metering_point_type,
+                    CsvColumnNames.metering_point_type: data_spec.metering_point_type.value,
                     CsvColumnNames.grid_area_code: grid_area_code,
                     CsvColumnNames.start_of_day: data_spec.start_of_day
                     + timedelta(days=i),
                 }
                 for j in range(
                     25
-                    if data_spec.resolution
+                    if data_spec.resolution.value
                     == MeteringPointResolutionDataProductValue.HOUR
                     else 100
                 ):
