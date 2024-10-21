@@ -104,12 +104,13 @@ def get_dbutils(spark: SparkSession) -> Any:
 
 
 def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
+    options_to_always_include = {"timestampFormat": "yyyy-MM-dd HH:mm:ss"}
     if locale.lower() == "en-gb":
-        return {"locale": "en-gb", "delimiter": ","}
+        return options_to_always_include | {"locale": "en-gb", "delimiter": ","}
     if locale.lower() == "da-dk":
-        return {"locale": "da-dk", "delimiter": ";"}
+        return options_to_always_include | {"locale": "da-dk", "delimiter": ";"}
     else:
-        return {"locale": "en-us", "delimiter": ","}
+        return options_to_always_include | {"locale": "en-us", "delimiter": ","}
 
 
 def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
