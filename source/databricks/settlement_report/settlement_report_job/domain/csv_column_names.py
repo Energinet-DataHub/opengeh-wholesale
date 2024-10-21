@@ -10,7 +10,7 @@ class CsvColumnNames:
     settlement_method = "SETTLEMENTMETHOD"
     start_of_day = "STARTDATETIME"
     time = "STARTDATETIME"
-    process_variant = "PROCESSVARIANT"  # Not idea what this is
+    process_variant = "PROCESSVARIANT"
     quantity_unit = "MEASUREUNIT"
     currency = "ENERGYCURRENCY"
     price = "PRICE"

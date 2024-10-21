@@ -28,6 +28,12 @@ def create_wholesale_results(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    wholesale = read_and_filter_from_view(args, repository)
+    wholesale = read_and_filter_from_view(
+        args.energy_supplier_ids,
+        args.calculation_id_by_grid_area,
+        args.period_start,
+        args.period_end,
+        repository,
+    )
 
     return prepare_for_csv(wholesale)

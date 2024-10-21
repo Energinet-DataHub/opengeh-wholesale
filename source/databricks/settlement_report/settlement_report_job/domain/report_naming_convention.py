@@ -43,4 +43,10 @@ CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS = {
     "third_correction_settlement": "D32",
 }
 
+CALCULATION_TYPES_TO_PROCESS_VARIANT = {
+    "first_correction_settlement": "D01",
+    "second_correction_settlement": "D02",
+    "third_correction_settlement": "D03",
+}
+
 RESOLUTION_NAMES = {"PT1H": "TSSD60", "PT15M": "TSSD15"}
