@@ -26,9 +26,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<PerformanceScenarioState>>
+public class SettlementReportWholesaleCalculationsJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<PerformanceScenarioState>>
 {
-    public SettlementReportJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<PerformanceScenarioState>> lazyFixtureFactory)
+    public SettlementReportWholesaleCalculationsJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<PerformanceScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
