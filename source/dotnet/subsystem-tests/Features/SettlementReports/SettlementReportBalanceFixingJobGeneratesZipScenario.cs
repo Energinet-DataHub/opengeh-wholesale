@@ -22,13 +22,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 
-[ExecutionContext(AzureEnvironment.Dev003, WorkflowTrigger.Scheduled)]
+[Collection(nameof(SettlementReportJobCollectionDefinition))]
+[ExecutionContext(AzureEnvironment.AllDev)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportBalanceFixingJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<PerformanceScenarioState>>
+public class SettlementReportBalanceFixingJobGeneratesZipScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>>
 {
-    public SettlementReportBalanceFixingJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<PerformanceScenarioState>> lazyFixtureFactory)
+    public SettlementReportBalanceFixingJobGeneratesZipScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
@@ -43,73 +44,19 @@ public class SettlementReportBalanceFixingJobPerformanceScenario : SubsystemTest
         Fixture.ScenarioState.JobParameters = new[]
         {
             $"--report-id={Fixture.ScenarioState.ReportId}",
-            "--period-start=2024-06-30T22:00:00Z",
-            "--period-end=2024-07-31T22:00:00Z",
+            "--period-start=2023-01-31T23:00:00Z",
+            "--period-end=2023-02-28T23:00:00Z",
             "--calculation-type=balance_fixing",
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
             "--include-basis-data",
-            "--grid_area_codes=" +
-                "[" +
-                    "003," +
-                    "007," +
-                    "016," +
-                    "031," +
-                    "042," +
-                    "051," +
-                    "084," +
-                    "085," +
-                    "131," +
-                    "141," +
-                    "151," +
-                    "154," +
-                    "233," +
-                    "244," +
-                    "245," +
-                    "331," +
-                    "341," +
-                    "342," +
-                    "344," +
-                    "347," +
-                    "348," +
-                    "351," +
-                    "357," +
-                    "370," +
-                    "371," +
-                    "381," +
-                    "384," +
-                    "385," +
-                    "396," +
-                    "531," +
-                    "532," +
-                    "533," +
-                    "543," +
-                    "584," +
-                    "740," +
-                    "757," +
-                    "791," +
-                    "853," +
-                    "854," +
-                    "860," +
-                    "911," +
-                    "950," +
-                    "951," +
-                    "952," +
-                    "953," +
-                    "954," +
-                    "960," +
-                    "962," +
-                    "990" +
-                "]",
-            "--split-report-by-grid-area",
-            "--prevent-large-text-files",
+            $"--grid_area_codes=[804]",
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromHours(2);
+        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(15);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
             $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
-        Fixture.ScenarioState.ExpectedMinimumOutputFileSizeInBytes = 4000000000;
     }
 
     [ScenarioStep(1)]
@@ -136,7 +83,7 @@ public class SettlementReportBalanceFixingJobPerformanceScenario : SubsystemTest
     {
         var (isCompleted, run) = await Fixture.WaitForSettlementReportJobRunCompletedAsync(
             Fixture.ScenarioState.JobRunId,
-            waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(10)));
+            waitTimeLimit: Fixture.ScenarioState.ExpectedJobTimeLimit.Add(TimeSpan.FromMinutes(5)));
 
         Fixture.ScenarioState.Run = run;
 
@@ -150,24 +97,16 @@ public class SettlementReportBalanceFixingJobPerformanceScenario : SubsystemTest
     [SubsystemFact]
     public async Task AndThen_OutputFileIsGeneratedAtExpectedLocation()
     {
-        Fixture.ScenarioState.OutputFileInfo = await Fixture.GetFileInfoAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
+        var outputFileInfo = await Fixture.GetFileInfoAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         // Assert
-        Fixture.ScenarioState.OutputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
-    }
-
-    [ScenarioStep(4)]
-    [SubsystemFact]
-    public void AndThen_OutputFileSizeIsGreatherThan()
-    {
-        // Assert
-        Fixture.ScenarioState.OutputFileInfo.ContentLength.Should().BeGreaterThan(Fixture.ScenarioState.ExpectedMinimumOutputFileSizeInBytes);
+        outputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
     /// <summary>
     /// In this step we verify the 'duration' of the job is within our 'performance goal'.
     /// </summary>
-    [ScenarioStep(5)]
+    [ScenarioStep(4)]
     [SubsystemFact]
     public void AndThen_JobDurationIsLessThanOrEqualToTimeLimit()
     {
