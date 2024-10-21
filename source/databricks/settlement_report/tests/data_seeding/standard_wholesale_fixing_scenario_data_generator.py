@@ -31,7 +31,10 @@ CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 CHARGE_OWNER_ID = "5790001330552"
 CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
 IS_TAX = False
-METERING_POINT_TYPES = ["consumption", "exchange"]  # TODO: Add the rest?
+METERING_POINT_TYPES = [
+    MeteringPointTypeDataProductValue.CONSUMPTION,
+    MeteringPointTypeDataProductValue.EXCHANGE,
+]  # TODO: Add the rest?
 RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
 CALCULATION_PERIOD_START = FROM_DATE
 CALCULATION_PERIOD_END = TO_DATE
@@ -43,7 +46,7 @@ BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 @dataclass
 class MeteringPointSpec:
     metering_point_id: str
-    metering_point_type: str
+    metering_point_type: MeteringPointTypeDataProductValue
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue
