@@ -116,7 +116,7 @@ def test_read_and_filter_from_view__when_requesting_actor_is_energy_supplier__re
         (None, True),
         (["1000000000000"], True),
         (["2000000000000", "3000000000000"], True),
-        ("'ID_WITH_NO_DATA'", False),
+        (["'ID_WITH_NO_DATA'"], False),
     ],
 )
 def test_read_and_filter_from_view__when_datahub_admin__returns_results_for_expected_energy_suppliers(
