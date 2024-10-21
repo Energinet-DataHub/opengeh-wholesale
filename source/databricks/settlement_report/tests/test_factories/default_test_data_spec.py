@@ -38,7 +38,7 @@ DEFAULT_CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "3333333333333"
 
 # For energy results
-DEFAULT_REPORT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
+DEFAULT_RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
 DEFAULT_SETTLEMENT_METHOD = None
 DEFAULT_QUANTITY_UNIT = "kwh"
 DEFAULT_QUANTITY_QUALITIES = ["measured"]
@@ -153,7 +153,7 @@ def create_energy_results_data_spec(
     calculation_period_start: datetime = DEFAULT_PERIOD_START,
     calculation_period_end: datetime = DEFAULT_PERIOD_END,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
-    result_id: int = DEFAULT_REPORT_ID,
+    result_id: int = DEFAULT_RESULT_ID,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
     settlement_method: str = DEFAULT_SETTLEMENT_METHOD,
