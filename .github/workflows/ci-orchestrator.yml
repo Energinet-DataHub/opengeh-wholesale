@@ -191,6 +191,15 @@ jobs:
       infrastructure_path: ./sauron-healthchecks-api/terraform
     secrets: inherit
 
+  archive_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.archive_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: archive_infrastructure
+      infrastructure_path: ./archive/terraform
+    secrets: inherit
+
   #
   # Branch policy status check
   #
@@ -218,6 +227,7 @@ jobs:
         esett_deprecated_ci,
         integration_test_terraform_ci,
         sauron_healthchecks_api_ci,
+        archive_ci,
       ]
     if: |
       always()

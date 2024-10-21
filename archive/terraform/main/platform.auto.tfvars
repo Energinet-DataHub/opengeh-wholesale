@@ -1,0 +1,12 @@
+# This file contains values that are the same across all environments
+# For environment-specific values, refer to /env/<env_name>/platform.environment.auto.tfvars
+ip_restrictions = [{
+  ip_address = "20.253.5.176/28"
+  name       = "github_largerunner"
+  }, {
+  ip_address = "20.120.143.248/29"
+  name       = "github_largerunner"
+}]
+platform_security_group_name = "SEC-G-Datahub-PlatformDevelopersAzure"
+alert_email_address = "8d8e42fa.energinet.onmicrosoft.com@emea.teams.ms"
+ad_group_directory_reader     = "SEC-A-DataHub-AAD-DirectoryReader"

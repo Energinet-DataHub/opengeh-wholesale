@@ -44,6 +44,8 @@ on:
         value: ${{ jobs.changes.outputs.sauron_ci }}
       sauron_healthchecks_api_ci:
         value: ${{ jobs.changes.outputs.sauron_healthchecks_api_ci }}
+      archive_ci:
+        value: ${{ jobs.changes.outputs.archive_ci }}
 
 jobs:
   changes:
@@ -68,6 +70,7 @@ jobs:
       esett_deprecated_ci: ${{ steps.filter.outputs.esett_deprecated_ci }}
       sauron_ci: ${{ steps.filter.outputs.sauron_ci }}
       sauron_healthchecks_api_ci: ${{ steps.filter.outputs.sauron_healthchecks_api_ci }}
+      archive_ci: ${{ steps.filter.outputs.archive_ci }}
     steps:
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
@@ -179,6 +182,12 @@ jobs:
             sauron_healthchecks_api_ci:
               - sauron-healthchecks-api/**
               - .github/workflows/sauron-healthchecks-api-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            archive_ci:
+              - archive/**
+              - .github/workflows/archive-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
