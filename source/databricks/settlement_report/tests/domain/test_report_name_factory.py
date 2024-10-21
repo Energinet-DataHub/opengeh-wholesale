@@ -14,7 +14,7 @@ from settlement_report_job.domain.report_name_factory import (
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def default_settlement_report_args() -> SettlementReportArgs:
     """
     Note: Some tests depend on the values of `period_start` and `period_end`
@@ -55,7 +55,7 @@ def test_create__when_energy_supplier__returns_expected_file_name(
     expected_pre_fix: str,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     energy_supplier_id = "1234567890123"
     grid_area_code = "123"
     args.requesting_actor_id = energy_supplier_id
@@ -77,7 +77,7 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     grid_area_code = "123"
     requesting_actor_id = "1111111111111"
     args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
@@ -123,7 +123,7 @@ def test_create__when_system_operator_or_datahub_admin__returns_expected_file_na
     expected_file_name: str,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.requesting_actor_market_role = market_role
     grid_area_code = "123"
     sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
@@ -140,7 +140,7 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     energy_supplier_id = "222222222222"
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
     args.requesting_actor_id = energy_supplier_id
@@ -181,7 +181,7 @@ def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
     expected_end_date: str,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.period_start = period_start
     args.period_end = period_end
     sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
@@ -198,7 +198,7 @@ def test_create__when_energy_supplier_requests_energy_report_not_combined__retur
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.split_report_by_grid_area = True
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
 
@@ -221,7 +221,7 @@ def test_create__when_energy_supplier_requests_energy_report_combined__returns_c
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
@@ -249,7 +249,7 @@ def test_create__when_grid_access_provider_requests_energy_report__returns_corre
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
     args.calculation_id_by_grid_area = {
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
@@ -274,7 +274,7 @@ def test_create__when_datahub_administrator_requests_energy_report_single_grid__
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
     args.energy_supplier_ids = None
     args.calculation_id_by_grid_area = {
@@ -297,7 +297,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_no
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
@@ -321,7 +321,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_si
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     energy_supplier_id = "1234567890123"
     args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
@@ -350,7 +350,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_al
     default_settlement_report_args: SettlementReportArgs,
 ):
     # Arrange
-    args = copy.deepcopy(default_settlement_report_args)
+    args = default_settlement_report_args
     args.calculation_id_by_grid_area = {
         "123": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
