@@ -32,7 +32,7 @@ module "mssql_this" { # Needs to be a named like this or it would delete all dat
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
   audit_storage_account = var.enable_audit_logs ? {
     id                    = data.azurerm_key_vault_secret.st_audit_shres_id.value
-    primary_blob_endpoint = "https://${data.azurerm_key_vault_secret.st_audit_shres_id.value}.blob.core.windows.net/"
+    primary_blob_endpoint = "https://${data.azurerm_key_vault_secret.st_audit_shres_name.value}.blob.core.windows.net/"
   } : null
 }
 
