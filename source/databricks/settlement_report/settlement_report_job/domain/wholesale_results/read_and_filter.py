@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import uuid
+from uuid import UUID
 from datetime import datetime
 
 from pyspark.sql import DataFrame, functions as F
@@ -26,7 +26,7 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def read_and_filter_from_view(
     energy_supplier_ids: list[str] | None,
-    calculation_id_by_grid_area: dict[str, uuid],
+    calculation_id_by_grid_area: dict[str, UUID],
     period_start: datetime,
     period_end: datetime,
     repository: WholesaleRepository,
