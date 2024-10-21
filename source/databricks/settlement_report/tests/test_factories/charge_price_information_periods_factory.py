@@ -36,22 +36,22 @@ def create(
     if not isinstance(rows, list):
         rows = [rows]
 
-    rows = []
-    for data_spec in rows:
-        rows.append(
+    row_list = []
+    for row in rows:
+        row_list.append(
             {
-                DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type,
-                DataProductColumnNames.calculation_version: data_spec.calculation_version,
-                DataProductColumnNames.charge_key: data_spec.charge_key,
-                DataProductColumnNames.charge_code: data_spec.charge_code,
-                DataProductColumnNames.charge_type: data_spec.charge_type,
-                DataProductColumnNames.charge_owner_id: data_spec.charge_owner_id,
-                DataProductColumnNames.resolution: data_spec.resolution,
-                DataProductColumnNames.is_tax: data_spec.is_tax,
-                DataProductColumnNames.from_date: data_spec.from_date,
-                DataProductColumnNames.to_date: data_spec.to_date,
+                DataProductColumnNames.calculation_id: row.calculation_id,
+                DataProductColumnNames.calculation_type: row.calculation_type,
+                DataProductColumnNames.calculation_version: row.calculation_version,
+                DataProductColumnNames.charge_key: row.charge_key,
+                DataProductColumnNames.charge_code: row.charge_code,
+                DataProductColumnNames.charge_type: row.charge_type,
+                DataProductColumnNames.charge_owner_id: row.charge_owner_id,
+                DataProductColumnNames.resolution: row.resolution,
+                DataProductColumnNames.is_tax: row.is_tax,
+                DataProductColumnNames.from_date: row.from_date,
+                DataProductColumnNames.to_date: row.to_date,
             }
         )
 
-    return spark.createDataFrame(rows, charge_price_information_periods_v1)
+    return spark.createDataFrame(row_list, charge_price_information_periods_v1)

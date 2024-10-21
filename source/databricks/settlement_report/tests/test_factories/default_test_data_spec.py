@@ -130,7 +130,7 @@ def create_time_series_data_spec(
     )
 
 
-def create_latest_calculations_data_spec(
+def create_latest_calculations_per_day_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,

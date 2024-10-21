@@ -14,10 +14,6 @@ from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 impor
 
 @dataclass
 class LatestCalculationsPerDayRow:
-    """
-    Data specification for creating a latest_calculations_per_day test data.
-    """
-
     calculation_id: str
     calculation_type: CalculationTypeDataProductValue
     calculation_version: int
