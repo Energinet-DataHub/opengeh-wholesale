@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
@@ -20,6 +21,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.
 public class PerformanceScenarioState
 {
     public Guid ReportId { get; set; }
+
+    public SettlementReportJobName JobName { get; set; }
 
     [NotNull]
     public IReadOnlyCollection<string>? JobParameters { get; set; }

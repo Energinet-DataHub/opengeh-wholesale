@@ -40,6 +40,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         // Input
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
+        Fixture.ScenarioState.JobName = SettlementReportJobName.SettlementReportWholesaleCalculations;
         Fixture.ScenarioState.JobParameters = new[]
         {
             $"--report-id={Fixture.ScenarioState.ReportId}",
@@ -64,6 +65,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         Fixture.ScenarioState.JobRunId = await Fixture.StartSettlementReportJobRunAsync(
             Fixture.ScenarioState.ReportId,
+            Fixture.ScenarioState.JobName,
             Fixture.ScenarioState.JobParameters);
 
         // Assert
