@@ -1,5 +1,6 @@
 from pathlib import Path
 import pytest
+from datetime import datetime
 from tempfile import TemporaryDirectory
 from pyspark.sql import SparkSession, DataFrame, Row, functions as F
 from pyspark.sql.types import (
@@ -291,3 +292,56 @@ def test_convert_all_floats_to_danish_csv_format__when_locale_danish__floating_p
         assert "," in row.float
         assert "," in row.decimal
         assert "," in row.double
+
+
+@pytest.mark.parametrize("locale", ["da-dk", "en-gb", "en-us"])
+def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseconds(
+    spark: SparkSession, locale: str
+):
+    # Arrange
+    df = spark.createDataFrame(
+        [
+            ("a", datetime(2024, 10, 21, 12, 10, 30, 0)),
+            ("b", datetime(2024, 10, 21, 12, 10, 30, 30)),
+            ("c", datetime(2024, 10, 21, 12, 10, 30, 123)),
+        ],
+        ["key", "value"],
+    )
+    tmp_dir = TemporaryDirectory()
+    csv_path = f"{tmp_dir.name}/csv_file"
+    expected_delimiter = ";" if locale == "da-dk" else ","
+
+    # Act
+    columns = write_files(
+        df,
+        csv_path,
+        partition_columns=[],
+        order_by=[],
+        locale=locale,
+        rows_per_file=1000,
+    )
+
+    # Assert
+    assert Path(csv_path).exists()
+
+    for x in Path(csv_path).iterdir():
+        if x.is_file() and x.name[-4:] == ".csv":
+            with x.open(mode="r") as f:
+                all_lines_written = f.readlines()
+
+                assert (
+                    all_lines_written[0]
+                    == f"a{expected_delimiter}2024-10-21 12:10:30\n"
+                )
+                assert (
+                    all_lines_written[1]
+                    == f"b{expected_delimiter}2024-10-21 12:10:30\n"
+                )
+                assert (
+                    all_lines_written[2]
+                    == f"c{expected_delimiter}2024-10-21 12:10:30\n"
+                )
+
+    assert columns == ["key", "value"]
+
+    tmp_dir.cleanup()
