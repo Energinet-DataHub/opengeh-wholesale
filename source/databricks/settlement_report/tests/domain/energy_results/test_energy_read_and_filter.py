@@ -193,11 +193,10 @@ def test_read_and_filter_from_view__when_grid_access_provider__returns_expected_
     # Assert
     assert expected_columns == actual_df.columns
 
-    assert (
-        actual_df.filter(
-            f"{DataProductColumnNames.grid_area_code} != '{grid_area_code}'"
-        ).count()
-        == 0
-    )
+    number_of_rows_from_non_chosen_grid_areas = actual_df.filter(
+        f"{DataProductColumnNames.grid_area_code} != '{grid_area_code}'"
+    ).count()
+    number_of_rows_returned = actual_df.count()
 
-    assert actual_df.count() > 0
+    assert number_of_rows_from_non_chosen_grid_areas == 0
+    assert number_of_rows_returned > 0
