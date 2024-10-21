@@ -49,7 +49,7 @@ public class SettlementReportBalanceFixingJobPerformanceScenario : SubsystemTest
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
             "--include-basis-data",
-            "--grid_area_codes=" +
+            "--grid-area-codes=" +
                 "[" +
                     "003," +
                     "007," +

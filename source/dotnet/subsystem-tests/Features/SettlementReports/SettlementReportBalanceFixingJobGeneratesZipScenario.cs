@@ -50,7 +50,7 @@ public class SettlementReportBalanceFixingJobGeneratesZipScenario : SubsystemTes
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
             "--include-basis-data",
-            $"--grid_area_codes=[804]",
+            $"--grid-area-codes=[804]",
         };
 
         // Expectations
