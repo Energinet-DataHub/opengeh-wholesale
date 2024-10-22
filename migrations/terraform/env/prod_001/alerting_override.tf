@@ -31,7 +31,7 @@ module "monitor_action_group_mig" {
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
-    },
+    }/*,
     {
       name        = "timeseriesretriever-exception"
       description = "Triggers if there has been exceptions in the past hour in the timeseriesretriever function"
@@ -105,6 +105,6 @@ module "monitor_action_group_mig" {
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
-    }
+    }*/
   ]
 }

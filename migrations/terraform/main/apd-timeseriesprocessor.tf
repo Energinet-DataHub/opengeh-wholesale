@@ -1,3 +1,4 @@
+/*
 resource "azurerm_portal_dashboard" "timeseriesprocessor" {
   name                = "apd-timeseriesprocessor-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
@@ -16,3 +17,4 @@ resource "azurerm_portal_dashboard" "timeseriesprocessor" {
 
   tags = local.tags
 }
+*/
