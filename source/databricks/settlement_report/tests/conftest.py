@@ -19,10 +19,12 @@ from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
+
+from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from tests.fixtures import DBUtilsFixture
+
 
 from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
