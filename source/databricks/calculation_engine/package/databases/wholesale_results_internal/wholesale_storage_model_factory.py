@@ -74,13 +74,13 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
 
 def _get_column_group_for_calculation_result_id() -> list[str]:
     return [
-        Colname.calculation_id,
+        # Colname.calculation_id,
         Colname.resolution,
-        Colname.charge_type,
-        Colname.charge_owner,
-        Colname.charge_code,
-        Colname.grid_area_code,
-        Colname.energy_supplier_id,
-        Colname.metering_point_type,
-        Colname.settlement_method,
+        # Colname.charge_type,
+        # Colname.charge_owner,
+        # Colname.charge_code,
+        # Colname.grid_area_code,
+        # Colname.energy_supplier_id,
+        # Colname.metering_point_type,
+        # Colname.settlement_method,
     ]

@@ -72,10 +72,13 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     and are thus neither part of this list.
     """
     return [
+        Colname.calculation_id,
         Colname.grid_area_code,
         Colname.from_grid_area_code,
         Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
+        TableColumnNames.time_series_type,
+        TableColumnNames.aggregation_level,
     ]
 
 
