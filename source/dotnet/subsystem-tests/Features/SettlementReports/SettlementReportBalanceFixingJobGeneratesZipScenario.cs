@@ -22,14 +22,13 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 
-[Collection(nameof(SettlementReportJobCollectionDefinition))]
 [ExecutionContext(AzureEnvironment.AllDev)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>>
+public class SettlementReportBalanceFixingJobGeneratesZipScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>>
 {
-    public SettlementReportJobGeneratesZipScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>> lazyFixtureFactory)
+    public SettlementReportBalanceFixingJobGeneratesZipScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<GeneratesZipScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
@@ -40,16 +39,17 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         // Input
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
+        Fixture.ScenarioState.JobName = SettlementReportJobName.SettlementReportBalanceFixing;
         Fixture.ScenarioState.JobParameters = new[]
         {
             $"--report-id={Fixture.ScenarioState.ReportId}",
             "--period-start=2023-01-31T23:00:00Z",
             "--period-end=2023-02-28T23:00:00Z",
-            "--calculation-type=wholesale_fixing",
+            "--calculation-type=balance_fixing",
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
             "--include-basis-data",
-            $"--calculation-id-by-grid-area={{\"804\": \"{Fixture.Configuration.InputCalculationId}\"}}",
+            "--grid-area-codes=[804]",
         };
 
         // Expectations
@@ -64,6 +64,7 @@ public class SettlementReportJobGeneratesZipScenario : SubsystemTestsBase<Settle
     {
         Fixture.ScenarioState.JobRunId = await Fixture.StartSettlementReportJobRunAsync(
             Fixture.ScenarioState.ReportId,
+            Fixture.ScenarioState.JobName,
             Fixture.ScenarioState.JobParameters);
 
         // Assert
