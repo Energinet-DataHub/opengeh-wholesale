@@ -28,9 +28,10 @@ Describe "AddMitIdProvider" {
                 $b2CClientSecret = "mocked_value"
                 $mitIdClientId = "mocked_value"
                 $mitIdClientSecret = "mocked_value"
+                $mitIdConfigUrl = "mocked_value"
 
                 # Act
-                $response = ./AddMitIdProvider.ps1 $b2CTenantId $b2CClientId $b2CClientSecret $mitIdClientId $mitIdClientSecret
+                $response = ./AddMitIdProvider.ps1 $b2CTenantId $b2CClientId $b2CClientSecret $mitIdClientId $mitIdClientSecret $mitIdConfigUrl
 
                 $actual = $response | ConvertFrom-Json
                 $actual.mitid | Should -Be $expectedId
@@ -47,9 +48,10 @@ Describe "AddMitIdProvider" {
                 $b2CClientSecret = "mocked_value"
                 $mitIdClientId = "mocked_value_id"
                 $mitIdClientSecret = "mocked_value_secret"
+                $mitIdConfigUrl = "mocked_value"
 
                 # Act
-                ./AddMitIdProvider.ps1 $b2CTenantId $b2CClientId $b2CClientSecret $mitIdClientId $mitIdClientSecret
+                ./AddMitIdProvider.ps1 $b2CTenantId $b2CClientId $b2CClientSecret $mitIdClientId $mitIdClientSecret $mitIdConfigUrl
 
                 Should -Invoke -CommandName New-OpenIdProvider -Times 1 -ParameterFilter {
                     $openIdConfigurationClientId -eq $mitIdClientId -and $openIdConfigurationClientSecret -eq $mitIdClientSecret

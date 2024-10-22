@@ -30,3 +30,8 @@ variable "mitid_client_secret" {
   description = "Client secret for OpenID Connect configuration of the MitID provider."
   sensitive   = true
 }
+
+variable "mitid_config_url" {
+  type        = string
+  description = "the open-id endpoint url of the MitID provider."
+}

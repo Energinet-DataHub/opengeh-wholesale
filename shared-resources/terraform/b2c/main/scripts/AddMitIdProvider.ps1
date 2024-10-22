@@ -40,7 +40,10 @@ param (
     $MitIdClientId,
     [Parameter(Mandatory)]
     [string]
-    $MitIdClientSecret
+    $MitIdClientSecret,
+    [Parameter(Mandatory)]
+    [string]
+    $MitIdConfigUrl
 )
 
 [string]$accessToken = Get-AccessToken -B2CTenantId $B2CTenantId -B2CClientId $B2CClientId -B2CClientSecret $B2CClientSecret
@@ -51,8 +54,8 @@ Write-Information "Creating OpenId provider for MitID"
 # In case of change, increment the identifier version, e.g. MitIDv4 > MitIDv5.
 $providerId = New-OpenIdProvider `
     -AccessToken $AccessToken `
-    -Identifier "MitIDv2" `
-    -OpenIdConfigurationUrl "https://pp.netseidbroker.dk/op/.well-known/openid-configuration" `
+    -Identifier "MitIDv3" `
+    -OpenIdConfigurationUrl $MitIdConfigUrl `
     -OpenIdConfigurationClientId $MitIdClientId `
     -OpenIdConfigurationClientSecret $MitIdClientSecret `
     -OpenIdConfigurationUserIdClaimName "sub" `
