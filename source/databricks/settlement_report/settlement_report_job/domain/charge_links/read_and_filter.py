@@ -46,29 +46,37 @@ def read_and_filter(
     requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    log.info("Creating time series points")
+    log.info("Creating charge links")
 
-    time_series_points = _read_from_view(
+    metering_point_periods = _read_metering_point_periods(
         period_start=period_start,
         period_end=period_end,
-        resolution=metering_point_resolution,
         energy_supplier_ids=energy_supplier_ids,
         repository=repository,
     )
+    charge_link_periods = _read_charge_link_periods(
+        period_start=period_start,
+        period_end=period_end,
+        requesting_actor_id=requesting_actor_id,
+        requesting_actor_market_role=requesting_actor_market_role,
+        repository=repository,
+    )
 
-    time_series_points = time_series_points.where(
+    charge_link_periods = charge_link_periods.where(
         _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
     )
 
-    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
-        time_series_points = filter_on_charge_owner(
-            df=time_series_points,
-            charge_owner_id=requesting_actor_id,
-            charge_link_periods=repository.read_charge_link_periods(),
-            charge_price_information_periods=repository.read_charge_price_information_periods(),
-        )
+    charge_link_periods = charge_link_periods.join(
+        metering_point_periods,
+        on=[DataProductColumnNames.calculation_id, DataProductColumnNames.metering_point_id],
+        how="inner",
+    ).where(
+        F.col(charge_link_periods[DataProductColumnNames.from_date]
+    )
 
-    return time_series_points
+
+
+
 
 
 def _read_metering_point_periods(
@@ -94,7 +102,7 @@ def _read_charge_link_periods(
     period_start: datetime,
     period_end: datetime,
     requesting_actor_id: str,
-    requestion_actor_market_role: MarketRole,
+    requesting_actor_market_role: MarketRole,
     repository: WholesaleRepository,
 ) -> DataFrame:
     charge_link_periods = repository.read_charge_link_periods().where(
@@ -102,19 +110,11 @@ def _read_charge_link_periods(
         & (F.col(DataProductColumnNames.to_date) > period_start)
     )
 
-    if requestion_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.SYSTEM_OPERATOR,
-    ]:
-        charge_price_information_periods = (
-            repository.read_charge_price_information_periods()
-        )
+    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
 
-        charge_link_periods = charge_link_periods.where(
-            F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id
-        )
+    elif requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
 
-    return time_series_points
+    return charge_link_periods
 
 
 def _filter_on_calculation_id_by_grid_area(
