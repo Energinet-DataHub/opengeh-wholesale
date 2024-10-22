@@ -21,8 +21,4 @@ module "mssqldb_this" {
     id                  = module.monitor_action_group[0].id
     resource_group_name = azurerm_resource_group.this.name
   }
-
-  depends_on = [
-    module.mssql_this
-  ]
 }
