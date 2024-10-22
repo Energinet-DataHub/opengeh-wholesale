@@ -104,7 +104,7 @@ def get_dbutils(spark: SparkSession) -> Any:
 
 
 def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
-    options_to_always_include = {"timestampFormat": "yyyy-MM-dd HH:mm:ss"}
+    options_to_always_include = {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
     if locale.lower() == "en-gb":
         return options_to_always_include | {"locale": "en-gb", "delimiter": ","}
     if locale.lower() == "da-dk":
