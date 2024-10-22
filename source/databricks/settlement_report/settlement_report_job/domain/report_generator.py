@@ -79,6 +79,7 @@ def _execute_time_series(
             time_zone=args.time_zone,
             energy_supplier_ids=args.energy_supplier_ids,
             metering_point_resolution=metering_point_resolution,
+            requesting_market_role=args.requesting_actor_market_role,
             repository=repository,
         )
     else:
