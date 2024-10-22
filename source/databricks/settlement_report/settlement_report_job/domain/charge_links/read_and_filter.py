@@ -41,7 +41,6 @@ def read_and_filter(
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
-    metering_point_resolution: MeteringPointResolutionDataProductValue,
     requesting_actor_market_role: MarketRole,
     requesting_actor_id: str,
     repository: WholesaleRepository,
@@ -66,13 +65,31 @@ def read_and_filter(
         _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
     )
 
+    charge_link_periods = charge_link_periods.withColumnRenamed(DataProductColumnNames.from_date, "link_from_date").withColumnRenamed(DataProductColumnNames.to_date, "link_to_date")
+    metering_point_periods = metering_point_periods.withColumnRenamed(DataProductColumnNames.from_date, "metering_point_from_date").withColumnRenamed(DataProductColumnNames.to_date, "metering_point_to_date")
+
+
     charge_link_periods = charge_link_periods.join(
         metering_point_periods,
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.metering_point_id],
         how="inner",
     ).where(
-        F.col(charge_link_periods[DataProductColumnNames.from_date]
+        (F.col("link_from_date") < F.col("metering_point_to_date")) & (F.col("link_to_date") > F.col("metering_point_from_date"))
+    ).select(
+        DataProductColumnNames.metering_point_id,
+        DataProductColumnNames.metering_point_type,
+        DataProductColumnNames.charge_type,
+        DataProductColumnNames.charge_code,
+        DataProductColumnNames.charge_owner_id,
+        DataProductColumnNames.quantity,
+        F.least(F.col("link_from_date"), F.col("metering_point_from_date")).alias(DataProductColumnNames.from_date),
+        F.greatest(F.col("link_to_date"), F.col("metering_point_to_date")).alias(DataProductColumnNames.to_date),
+        DataProductColumnNames.grid_area_code,
+        DataProductColumnNames.energy_supplier_id,
     )
+
+    return charge_link_periods
+
 
 
 
@@ -130,28 +147,3 @@ def _filter_on_calculation_id_by_grid_area(
         F.col(DataProductColumnNames.calculation_id),
     ).isin(calculation_id_by_grid_area_structs)
 
-
-def _filter_by_latest_calculations(
-    time_series_points: DataFrame, latest_calculations: DataFrame, time_zone: str
-) -> DataFrame:
-    time_series_points = time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
-    )
-
-    return (
-        time_series_points.join(
-            latest_calculations,
-            on=[
-                time_series_points[DataProductColumnNames.calculation_id]
-                == latest_calculations[DataProductColumnNames.calculation_id],
-                time_series_points[DataProductColumnNames.grid_area_code]
-                == latest_calculations[DataProductColumnNames.grid_area_code],
-                time_series_points[EphemeralColumns.start_of_day]
-                == latest_calculations[DataProductColumnNames.start_of_day],
-            ],
-            how="inner",
-        )
-        .select(time_series_points["*"])
-        .drop(EphemeralColumns.start_of_day)
-    )
