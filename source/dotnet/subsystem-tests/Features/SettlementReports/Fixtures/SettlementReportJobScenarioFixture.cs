@@ -64,7 +64,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
         }
     }
 
-    public async Task<IReadOnlyDictionary<long, SettlementReportJobState>> StartSettlementReportJobRunsAsync(int concurrentRuns, IReadOnlyCollection<string> jobParametersTemplate)
+    public async Task<IReadOnlyDictionary<long, SettlementReportJobState>> StartSettlementReportJobRunsAsync(int concurrentRuns, SettlementReportJobName jobName, IReadOnlyCollection<string> jobParametersTemplate)
     {
         var jobRuns = new Dictionary<long, SettlementReportJobState>();
         for (var index = 0; index < concurrentRuns; index++)
@@ -74,7 +74,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
                 .Select(parameter => parameter.Replace("Guid", reportId.ToString()))
                 .ToList();
 
-            var runId = await StartSettlementReportJobRunAsync(reportId, jobParameters.AsReadOnly());
+            var runId = await StartSettlementReportJobRunAsync(reportId, jobName, jobParameters.AsReadOnly());
             var runState = await DatabricksClient.Jobs.RunsGet(runId);
             var settlementReportJobState = ConvertToSettlementReportJobState(runState.Item1);
 
@@ -131,16 +131,17 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
         return allAreRunning;
     }
 
-    public async Task<long> StartSettlementReportJobRunAsync(Guid reportId, IReadOnlyCollection<string> jobParameters)
+    public async Task<long> StartSettlementReportJobRunAsync(Guid reportId, SettlementReportJobName jobName, IReadOnlyCollection<string> jobParameters)
     {
-        var settlementReportJobId = await DatabricksClient.GetSettlementReportJobIdAsync();
+        var jobNameAsString = jobName.ToString();
+        var settlementReportJobId = await DatabricksClient.GetJobIdAsync(jobNameAsString);
         var runParameters = RunParameters.CreatePythonParams(jobParameters);
 
         var runId = await DatabricksClient
             .Jobs
             .RunNow(settlementReportJobId, runParameters);
 
-        DiagnosticMessageSink.WriteDiagnosticMessage($"'SettlementReportJob' for '{reportId}' with run id '{runId}' started.");
+        DiagnosticMessageSink.WriteDiagnosticMessage($"'{jobNameAsString}' for '{reportId}' with run id '{runId}' started.");
 
         return runId;
     }

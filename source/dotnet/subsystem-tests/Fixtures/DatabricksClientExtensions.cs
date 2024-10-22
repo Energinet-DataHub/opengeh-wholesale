@@ -78,12 +78,12 @@ public static class DatabricksClientExtensions
     }
 
     /// <summary>
-    /// Retrieve settlement report job id from databricks.
+    /// Retrieve "job id" by "job name" from databricks.
     /// </summary>
-    public static async Task<long> GetSettlementReportJobIdAsync(this DatabricksClient databricksClient)
+    public static async Task<long> GetJobIdAsync(this DatabricksClient databricksClient, string jobName)
     {
         var job = await databricksClient.Jobs
-            .ListPageable(name: "SettlementReportJob")
+            .ListPageable(name: jobName)
             .SingleAsync();
 
         return job.JobId;
