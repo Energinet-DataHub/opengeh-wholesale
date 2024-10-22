@@ -56,7 +56,7 @@ def test_mapping_of_process_variant(
 
     # Act
     actual = prepare_for_csv(wholesale)
-    actual.show()
+
     # Assert
     assert actual.collect()[0]["PROCESSVARIANT"] == expected_process_variant
 
