@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from datetime import datetime
 from unittest.mock import Mock
 
@@ -56,7 +56,7 @@ def test_time_within_and_outside_of_date_range_scenarios(
     actual = read_and_filter_from_view(
         energy_supplier_ids=ENERGY_SUPPLIER_IDS,
         calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
+            default_data.DEFAULT_GRID_AREA_CODE: UUID(
                 default_data.DEFAULT_CALCULATION_ID
             )
         },
@@ -107,10 +107,68 @@ def test_energy_supplier_ids_scenarios(
     actual = read_and_filter_from_view(
         energy_supplier_ids=args_energy_supplier_ids,
         calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
+            default_data.DEFAULT_GRID_AREA_CODE: UUID(
                 default_data.DEFAULT_CALCULATION_ID
             )
         },
+        period_start=default_data.DEFAULT_FROM_DATE,
+        period_end=default_data.DEFAULT_TO_DATE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "args_calculation_id_by_grid_area, expected_rows",
+    [
+        pytest.param(
+            None,
+            1,
+            id="When calculation_id_by_grid_area is None, return 1 row",
+        ),
+        pytest.param(
+            {"804": UUID(default_data.DEFAULT_CALCULATION_ID)},
+            1,
+            id="when calculation_id and grid_area_code is in calculation_id_by_grid_area, return 1 row",
+        ),
+        pytest.param(
+            {"500": UUID(default_data.DEFAULT_CALCULATION_ID)},
+            0,
+            id="when grid_area_code is not in calculation_id_by_grid_area, return 0 rows",
+        ),
+        pytest.param(
+            {"804": UUID("11111111-1111-2222-1111-111111111111")},
+            0,
+            id="when calculation_id is not in calculation_id_by_grid_area, return 0 row",
+        ),
+        pytest.param(
+            {"500": UUID("11111111-1111-2222-1111-111111111111")},
+            0,
+            id="when calculation_id and grid_area_code is not in calculation_id_by_grid_area, return 0 row",
+        ),
+    ],
+)
+def test_calculation_id_by_grid_loss_scenarios(
+    spark: SparkSession,
+    args_calculation_id_by_grid_area: dict[str, UUID],
+    expected_rows: int,
+) -> None:
+    # Arrange
+    df = create_wholesale(
+        spark,
+        create_amounts_per_charge_data_spec(
+            calculation_id=default_data.DEFAULT_CALCULATION_ID, grid_area_code="804"
+        ),
+    )
+    mock_repository = Mock()
+    mock_repository.read_wholesale_results.return_value = df
+
+    # Act
+    actual = read_and_filter_from_view(
+        energy_supplier_ids=ENERGY_SUPPLIER_IDS,
+        calculation_id_by_grid_area=args_calculation_id_by_grid_area,
         period_start=default_data.DEFAULT_FROM_DATE,
         period_end=default_data.DEFAULT_TO_DATE,
         repository=mock_repository,
