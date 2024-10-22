@@ -44,7 +44,7 @@ variable "developer_security_group_contributor_access" {
 
 variable "developer_security_group_reader_access" {
   type        = bool
-  description = "Flag to determine if the developers should have reader access to the resource group."
+  description = "Flag to determine if the developers should have reader access to the resource group"
   default     = false
 }
 

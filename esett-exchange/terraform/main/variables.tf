@@ -32,7 +32,7 @@ variable "developer_security_group_name" {
 
 variable "developer_security_group_contributor_access" {
   type        = bool
-  description = "Flag to determine if the developers should have contributor access to the resource group."
+  description = "Flag to determine if the developers should have contributor access to the resource group"
   default     = false
 }
 
