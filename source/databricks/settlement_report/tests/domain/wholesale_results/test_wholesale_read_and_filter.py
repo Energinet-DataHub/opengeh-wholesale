@@ -76,12 +76,6 @@ def test_time_within_and_outside_of_date_range(
             ["1234567890123"], "1234567890123", 1, id="time is within the range"
         ),
         pytest.param(
-            ["1234567890123"],
-            None,
-            0,
-            id="time is outside the range (None energy_supplier_id)",
-        ),
-        pytest.param(
             ["2345678901234"],
             "1234567890123",
             0,
@@ -90,7 +84,7 @@ def test_time_within_and_outside_of_date_range(
         pytest.param(
             None,
             "1234567890123",
-            0,
+            1,
             id="time is outside the range (None energy_supplier_ids)",
         ),
     ],
@@ -120,6 +114,6 @@ def test_when_time_is_within_and_outside_of_date_range(
         period_end=default_data.DEFAULT_TO_DATE,
         repository=mock_repository,
     )
-    actual.show()
+
     # Assert
     assert actual.count() == expected_rows

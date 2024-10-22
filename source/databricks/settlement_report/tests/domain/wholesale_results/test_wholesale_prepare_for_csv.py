@@ -101,8 +101,8 @@ def test_when_metering_point_type__then_type_of_mp(
 @pytest.mark.parametrize(
     "settlement_method, expected_settlement_method",
     [
-        (SettlementMethodDataProductValue.NON_PROFILED, "E02"),
-        (SettlementMethodDataProductValue.FLEX, "D01"),
+        (SettlementMethodDataProductValue.NON_PROFILED.value, "E02"),
+        (SettlementMethodDataProductValue.FLEX.value, "D01"),
     ],
 )
 def test_when_settlement_method__then_settlement_method(
