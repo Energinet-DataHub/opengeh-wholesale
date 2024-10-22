@@ -31,7 +31,7 @@ def read_and_filter_from_view(
     period_end: datetime,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    df = repository.read_wholesale_results().where(
+    df = repository.read_amounts_per_charge().where(
         (F.col(DataProductColumnNames.time) >= period_start)
         & (F.col(DataProductColumnNames.time) < period_end)
     )
