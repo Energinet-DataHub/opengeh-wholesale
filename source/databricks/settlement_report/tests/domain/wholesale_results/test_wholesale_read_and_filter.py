@@ -39,7 +39,7 @@ ENERGY_SUPPLIER_IDS = ["1234567890123", "2345678901234"]
         ),
     ],
 )
-def test_time_within_and_outside_of_date_range(
+def test_time_within_and_outside_of_date_range_scenarios(
     spark: SparkSession,
     args_start_date: datetime,
     args_end_date: datetime,
@@ -70,41 +70,42 @@ def test_time_within_and_outside_of_date_range(
 
 
 @pytest.mark.parametrize(
-    "energy_supplier_ids, energy_supplier_id, expected_rows",
+    "args_energy_supplier_ids, expected_rows",
     [
         pytest.param(
-            ["1234567890123"], "1234567890123", 1, id="time is within the range"
+            ["1234567890123"],
+            1,
+            id="when energy_supplier_id is in energy_supplier_ids, return 1 row",
         ),
         pytest.param(
             ["2345678901234"],
-            "1234567890123",
             0,
-            id="time is outside the range (different energy_supplier_id)",
+            id="when energy_supplier_id is not in energy_supplier_ids, return 0 rows",
         ),
         pytest.param(
             None,
-            "1234567890123",
             1,
-            id="time is outside the range (None energy_supplier_ids)",
+            id="when energy_supplier_ids is None, return 1 row",
         ),
     ],
 )
-def test_when_time_is_within_and_outside_of_date_range(
+def test_energy_supplier_ids_scenarios(
     spark: SparkSession,
-    energy_supplier_ids: list[str] | None,
-    energy_supplier_id: str,
+    args_energy_supplier_ids: list[str] | None,
     expected_rows: int,
 ) -> None:
     # Arrange
+    energy_supplier_id = "1234567890123"
     df = create_wholesale(
-        spark, create_amounts_per_charge_data_spec(energy_supplier_id=energy_supplier_id)
+        spark,
+        create_amounts_per_charge_data_spec(energy_supplier_id=energy_supplier_id),
     )
     mock_repository = Mock()
     mock_repository.read_wholesale_results.return_value = df
 
     # Act
     actual = read_and_filter_from_view(
-        energy_supplier_ids=energy_supplier_ids,
+        energy_supplier_ids=args_energy_supplier_ids,
         calculation_id_by_grid_area={
             default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
                 default_data.DEFAULT_CALCULATION_ID
