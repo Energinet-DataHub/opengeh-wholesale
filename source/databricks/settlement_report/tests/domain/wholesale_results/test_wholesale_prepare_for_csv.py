@@ -11,8 +11,8 @@ from settlement_report_job.wholesale.data_values import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from test_factories.default_test_data_spec import create_wholesale_data_spec
-from test_factories.wholesale_factory import create_wholesale
+from test_factories.default_test_data_spec import create_amounts_per_charge_data_spec
+from test_factories.amounts_per_charge_factory import create_wholesale
 
 
 @pytest.mark.parametrize(
@@ -26,7 +26,7 @@ from test_factories.wholesale_factory import create_wholesale
 def test_when_calculation_type_correction__then_process_variant_has_value(
     spark: SparkSession, calculation_type, expected_process_variant
 ) -> None:
-    spec = create_wholesale_data_spec(calculation_type=calculation_type)
+    spec = create_amounts_per_charge_data_spec(calculation_type=calculation_type)
     wholesale = create_wholesale(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert actual.collect()[0]["PROCESSVARIANT"] == expected_process_variant
@@ -42,7 +42,7 @@ def test_when_calculation_type_correction__then_process_variant_has_value(
 def test_when_calculation_type_not_correction__then_process_variant_is_empty(
     spark: SparkSession, calculation_type
 ) -> None:
-    spec = create_wholesale_data_spec(calculation_type=calculation_type)
+    spec = create_amounts_per_charge_data_spec(calculation_type=calculation_type)
     wholesale = create_wholesale(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert actual.collect()[0]["PROCESSVARIANT"] is None
@@ -61,7 +61,7 @@ def test_when_calculation_type_not_correction__then_process_variant_is_empty(
 def test_when_calculation_type__then_energy_business_process(
     spark: SparkSession, calculation_type, expected_energy_business_process
 ) -> None:
-    spec = create_wholesale_data_spec(calculation_type=calculation_type)
+    spec = create_amounts_per_charge_data_spec(calculation_type=calculation_type)
     wholesale = create_wholesale(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert (
@@ -92,7 +92,7 @@ def test_when_calculation_type__then_energy_business_process(
 def test_when_metering_point_type__then_type_of_mp(
     spark: SparkSession, metering_point_type, expected_type_of_mp
 ) -> None:
-    spec = create_wholesale_data_spec(metering_point_type=metering_point_type)
+    spec = create_amounts_per_charge_data_spec(metering_point_type=metering_point_type)
     wholesale = create_wholesale(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert actual.collect()[0]["TYPEOFMP"] == expected_type_of_mp
@@ -108,7 +108,7 @@ def test_when_metering_point_type__then_type_of_mp(
 def test_when_settlement_method__then_settlement_method(
     spark: SparkSession, settlement_method, expected_settlement_method
 ) -> None:
-    spec = create_wholesale_data_spec(settlement_method=settlement_method)
+    spec = create_amounts_per_charge_data_spec(settlement_method=settlement_method)
     wholesale = create_wholesale(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert actual.collect()[0]["SETTLEMENTMETHOD"] == expected_settlement_method

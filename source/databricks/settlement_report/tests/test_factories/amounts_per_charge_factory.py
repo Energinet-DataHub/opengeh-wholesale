@@ -18,7 +18,7 @@ from settlement_report_job.wholesale.schemas.amounts_per_charge_v1 import (
 
 
 @dataclass
-class WholesaleTestDataSpec:
+class AmountsPerChargeTestDataSpec:
     """
     Data specification for creating wholesale test data.
     """
@@ -45,7 +45,7 @@ class WholesaleTestDataSpec:
     amount: Decimal
 
 
-def _get_base_wholesale_rows_from_spec(data_spec: WholesaleTestDataSpec):
+def _get_base_wholesale_rows_from_spec(data_spec: AmountsPerChargeTestDataSpec):
     rows = [
         {
             DataProductColumnNames.calculation_id: data_spec.calculation_id,
@@ -75,7 +75,7 @@ def _get_base_wholesale_rows_from_spec(data_spec: WholesaleTestDataSpec):
 
 
 def create_wholesale(
-    spark: SparkSession, data_spec: WholesaleTestDataSpec
+    spark: SparkSession, data_spec: AmountsPerChargeTestDataSpec
 ) -> DataFrame:
     rows = _get_base_wholesale_rows_from_spec(data_spec)
     return spark.createDataFrame(rows, amounts_per_charge_v1)

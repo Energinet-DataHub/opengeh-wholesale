@@ -9,8 +9,8 @@ import test_factories.default_test_data_spec as default_data
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
 )
-from test_factories.default_test_data_spec import create_wholesale_data_spec
-from test_factories.wholesale_factory import create_wholesale
+from test_factories.default_test_data_spec import create_amounts_per_charge_data_spec
+from test_factories.amounts_per_charge_factory import create_wholesale
 
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
@@ -48,7 +48,7 @@ def test_time_within_and_outside_of_date_range(
     # Arrange
     time = datetime(2024, 1, 3, 23)
 
-    df = create_wholesale(spark, create_wholesale_data_spec(time=time))
+    df = create_wholesale(spark, create_amounts_per_charge_data_spec(time=time))
     mock_repository = Mock()
     mock_repository.read_wholesale_results.return_value = df
 
@@ -97,7 +97,7 @@ def test_when_time_is_within_and_outside_of_date_range(
 ) -> None:
     # Arrange
     df = create_wholesale(
-        spark, create_wholesale_data_spec(energy_supplier_id=energy_supplier_id)
+        spark, create_amounts_per_charge_data_spec(energy_supplier_id=energy_supplier_id)
     )
     mock_repository = Mock()
     mock_repository.read_wholesale_results.return_value = df

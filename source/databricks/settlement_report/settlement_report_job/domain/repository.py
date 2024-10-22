@@ -67,7 +67,7 @@ class WholesaleRepository:
     def read_wholesale_results(self) -> DataFrame:
         return self._read_view_or_table(
             WholesaleResultsDatabase.DATABASE_NAME,
-            WholesaleResultsDatabase.WHOLESALE_RESULTS_VIEW_NAME,
+            WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME,
         )
 
     def _read_view_or_table(
