@@ -31,7 +31,10 @@ CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 CHARGE_OWNER_ID = "5790001330552"
 CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
 IS_TAX = False
-METERING_POINT_TYPES = ["consumption", "exchange"]  # TODO: Add the rest?
+METERING_POINT_TYPES = [
+    MeteringPointTypeDataProductValue.CONSUMPTION,
+    MeteringPointTypeDataProductValue.EXCHANGE,
+]
 RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
 CALCULATION_PERIOD_START = FROM_DATE
 CALCULATION_PERIOD_END = TO_DATE
@@ -43,7 +46,7 @@ BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 @dataclass
 class MeteringPointSpec:
     metering_point_id: str
-    metering_point_type: str
+    metering_point_type: MeteringPointTypeDataProductValue
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue
@@ -90,7 +93,7 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
     df = None
 
     for metering_point in _get_all_metering_points():
-        data_spec = charge_link_periods_factory.ChargeLinkPeriodsTestDataSpec(
+        data_spec = charge_link_periods_factory.ChargeLinkPeriodsRow(
             calculation_id=CALCULATION_ID,
             calculation_type=CALCULATION_TYPE,
             calculation_version=1,
@@ -117,18 +120,20 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     Creates a DataFrame with charge price information periods data for testing purposes.
     """
 
-    data_spec = charge_price_information_periods_factory.ChargePriceInformationPeriodsTestDataSpec(
-        calculation_id=CALCULATION_ID,
-        calculation_type=CALCULATION_TYPE,
-        calculation_version=1,
-        charge_key=CHARGE_KEY,
-        charge_code=CHARGE_CODE,
-        charge_type=CHARGE_TYPE,
-        charge_owner_id=CHARGE_OWNER_ID,
-        is_tax=IS_TAX,
-        resolution=ChargeResolutionDataProductValue.HOUR,
-        from_date=FROM_DATE,
-        to_date=TO_DATE,
+    data_spec = (
+        charge_price_information_periods_factory.ChargePriceInformationPeriodsRow(
+            calculation_id=CALCULATION_ID,
+            calculation_type=CALCULATION_TYPE,
+            calculation_version=1,
+            charge_key=CHARGE_KEY,
+            charge_code=CHARGE_CODE,
+            charge_type=CHARGE_TYPE,
+            charge_owner_id=CHARGE_OWNER_ID,
+            is_tax=IS_TAX,
+            resolution=ChargeResolutionDataProductValue.HOUR,
+            from_date=FROM_DATE,
+            to_date=TO_DATE,
+        )
     )
     return charge_price_information_periods_factory.create(spark, data_spec)
 

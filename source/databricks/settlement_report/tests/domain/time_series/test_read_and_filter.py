@@ -316,15 +316,13 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     )
     charge_price_information_period_df = charge_price_information_periods.create(
         spark,
-        default_data.create_charge_price_information_periods_data_spec(
+        default_data.create_charge_price_information_periods_row(
             charge_owner_id=SYSTEM_OPERATOR_ID
         ),
     )
     charge_link_periods_df = charge_links_factory.create(
         spark,
-        default_data.create_charge_link_periods_data_spec(
-            charge_owner_id=SYSTEM_OPERATOR_ID
-        ),
+        default_data.create_charge_link_periods_row(charge_owner_id=SYSTEM_OPERATOR_ID),
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_time_series.return_value = time_series_df
@@ -373,7 +371,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
     )
     latest_calculations = latest_calculations_factory.create(
         spark,
-        default_data.create_latest_calculations_data_spec(
+        default_data.create_latest_calculations_per_day_row(
             calculation_id=latest_calculation_id,
             calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
         ),
@@ -435,7 +433,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
         [
             latest_calculations_factory.create(
                 spark,
-                default_data.create_latest_calculations_data_spec(
+                default_data.create_latest_calculations_per_day_row(
                     calculation_id=calc_id, calculation_type=calc_type
                 ),
             )
@@ -503,7 +501,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     latest_calculations = latest_calculations_factory.create(
         spark,
         [
-            default_data.create_latest_calculations_data_spec(
+            default_data.create_latest_calculations_per_day_row(
                 calculation_id=calc_id,
                 calculation_type=calc_type,
                 start_of_day=start_of_day,
@@ -588,13 +586,13 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     latest_calculations = latest_calculations_factory.create(
         spark,
         [
-            default_data.create_latest_calculations_data_spec(
+            default_data.create_latest_calculations_per_day_row(
                 calculation_id=calculation_id_1,
                 calculation_type=calc_type,
                 grid_area_code=grid_area_1,
                 start_of_day=day_1,
             ),
-            default_data.create_latest_calculations_data_spec(
+            default_data.create_latest_calculations_per_day_row(
                 calculation_id=calculation_id_2,
                 calculation_type=calc_type,
                 grid_area_code=grid_area_2,

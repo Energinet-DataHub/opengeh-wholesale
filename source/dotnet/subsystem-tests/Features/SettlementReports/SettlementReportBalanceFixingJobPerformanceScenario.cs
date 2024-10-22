@@ -26,9 +26,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<PerformanceScenarioState>>
+public class SettlementReportBalanceFixingJobPerformanceScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<PerformanceScenarioState>>
 {
-    public SettlementReportJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<PerformanceScenarioState>> lazyFixtureFactory)
+    public SettlementReportBalanceFixingJobPerformanceScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<PerformanceScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
@@ -39,67 +39,68 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
     {
         // Input
         Fixture.ScenarioState.ReportId = Guid.NewGuid();
+        Fixture.ScenarioState.JobName = SettlementReportJobName.SettlementReportBalanceFixing;
         Fixture.ScenarioState.JobParameters = new[]
         {
             $"--report-id={Fixture.ScenarioState.ReportId}",
             "--period-start=2024-06-30T22:00:00Z",
             "--period-end=2024-07-31T22:00:00Z",
-            "--calculation-type=wholesale_fixing",
+            "--calculation-type=balance_fixing",
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
             "--include-basis-data",
-            "--calculation-id-by-grid-area=" +
-                "{" +
-                    "\"003\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"007\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"016\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"031\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"042\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"051\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"084\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"085\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"131\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"141\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"151\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"154\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"233\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"244\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"245\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"331\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"341\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"342\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"344\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"347\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"348\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"351\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"357\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"370\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"371\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"381\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"384\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"385\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"396\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"531\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"532\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"533\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"543\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"584\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"740\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"757\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"791\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"853\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"854\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"860\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"911\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"950\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"951\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"952\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"953\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"954\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"960\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"962\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"," +
-                    "\"990\": \"32e49805-20ef-4db2-ac84-c4455de7a373\"" +
-                "}",
+            "--grid-area-codes=" +
+                "[" +
+                    "003," +
+                    "007," +
+                    "016," +
+                    "031," +
+                    "042," +
+                    "051," +
+                    "084," +
+                    "085," +
+                    "131," +
+                    "141," +
+                    "151," +
+                    "154," +
+                    "233," +
+                    "244," +
+                    "245," +
+                    "331," +
+                    "341," +
+                    "342," +
+                    "344," +
+                    "347," +
+                    "348," +
+                    "351," +
+                    "357," +
+                    "370," +
+                    "371," +
+                    "381," +
+                    "384," +
+                    "385," +
+                    "396," +
+                    "531," +
+                    "532," +
+                    "533," +
+                    "543," +
+                    "584," +
+                    "740," +
+                    "757," +
+                    "791," +
+                    "853," +
+                    "854," +
+                    "860," +
+                    "911," +
+                    "950," +
+                    "951," +
+                    "952," +
+                    "953," +
+                    "954," +
+                    "960," +
+                    "962," +
+                    "990" +
+                "]",
             "--split-report-by-grid-area",
             "--prevent-large-text-files",
         };
@@ -117,6 +118,7 @@ public class SettlementReportJobPerformanceScenario : SubsystemTestsBase<Settlem
     {
         Fixture.ScenarioState.JobRunId = await Fixture.StartSettlementReportJobRunAsync(
             Fixture.ScenarioState.ReportId,
+            Fixture.ScenarioState.JobName,
             Fixture.ScenarioState.JobParameters);
 
         // Assert

@@ -21,14 +21,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports;
 
-[Collection(nameof(SettlementReportJobCollectionDefinition))]
+[Collection(nameof(SettlementReportWholesaleCalculationsJobCollectionDefinition))]
 [ExecutionContext(AzureEnvironment.Dev001)]
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<ConcurrentRunsScenarioState>>
+public class SettlementReportWholesaleCalculationsJobConcurrentRunsScenario : SubsystemTestsBase<SettlementReportJobScenarioFixture<ConcurrentRunsScenarioState>>
 {
-    public SettlementReportJobConcurrentRunsScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<ConcurrentRunsScenarioState>> lazyFixtureFactory)
+    public SettlementReportWholesaleCalculationsJobConcurrentRunsScenario(LazyFixtureFactory<SettlementReportJobScenarioFixture<ConcurrentRunsScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
@@ -38,6 +38,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     public void Given_ScenarioSetup()
     {
         // Input
+        Fixture.ScenarioState.JobName = SettlementReportJobName.SettlementReportWholesaleCalculations;
         Fixture.ScenarioState.JobParametersTemplate = new[]
         {
           "--report-id=Guid",
@@ -59,6 +60,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     {
         Fixture.ScenarioState.JobRuns = await Fixture.StartSettlementReportJobRunsAsync(
             Fixture.ScenarioState.ExpectedConcurrentRuns,
+            Fixture.ScenarioState.JobName,
             Fixture.ScenarioState.JobParametersTemplate);
 
         // Assert
@@ -75,6 +77,7 @@ public class SettlementReportJobConcurrentRunsScenario : SubsystemTestsBase<Sett
     {
         Fixture.ScenarioState.ExceedingJobRuns = await Fixture.StartSettlementReportJobRunsAsync(
             concurrentRuns: 1,
+            Fixture.ScenarioState.JobName,
             Fixture.ScenarioState.JobParametersTemplate);
 
         // Assert

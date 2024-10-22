@@ -1,4 +1,7 @@
-class CalculationTypeDataProductValue:
+from enum import Enum
+
+
+class CalculationTypeDataProductValue(Enum):
     AGGREGATION = "aggregation"
     BALANCE_FIXING = "balance_fixing"
     WHOLESALE_FIXING = "wholesale_fixing"

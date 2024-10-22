@@ -23,7 +23,10 @@ ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
 """TO_DATE is exclusive"""
-METERING_POINT_TYPES = ["consumption", "exchange"]
+METERING_POINT_TYPES = [
+    MeteringPointTypeDataProductValue.CONSUMPTION,
+    MeteringPointTypeDataProductValue.EXCHANGE,
+]
 RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
 CALCULATION_PERIOD_START = FROM_DATE
 CALCULATION_PERIOD_END = TO_DATE
@@ -35,7 +38,7 @@ BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 @dataclass
 class MeteringPointSpec:
     metering_point_id: str
-    metering_point_type: str
+    metering_point_type: MeteringPointTypeDataProductValue
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue
@@ -84,7 +87,7 @@ def create_latest_calculations(spark: SparkSession) -> DataFrame:
         current_date = FROM_DATE
         while current_date < TO_DATE:
             data_specs.append(
-                latest_calculations_factory.LatestCalculationsTestDataSpec(
+                latest_calculations_factory.LatestCalculationsPerDayRow(
                     calculation_id=CALCULATION_ID,
                     calculation_type=CALCULATION_TYPE,
                     calculation_version=1,
