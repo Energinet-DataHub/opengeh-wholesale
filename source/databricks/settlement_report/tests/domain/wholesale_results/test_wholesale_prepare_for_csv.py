@@ -11,8 +11,8 @@ from settlement_report_job.wholesale.data_values import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from test_factories.default_test_data_spec import create_amounts_per_charge_data_spec
-from test_factories.amounts_per_charge_factory import create_amounts_per_charge
+from test_factories.default_test_data_spec import create_amounts_per_charge_row
+from test_factories.amounts_per_charge_factory import create
 
 
 @pytest.mark.parametrize(
@@ -51,8 +51,8 @@ def test_mapping_of_process_variant(
     expected_process_variant: str,
 ) -> None:
     # Arrange
-    spec = create_amounts_per_charge_data_spec(calculation_type=calculation_type)
-    wholesale = create_amounts_per_charge(spark, spec)
+    spec = create_amounts_per_charge_row(calculation_type=calculation_type)
+    wholesale = create(spark, spec)
 
     # Act
     actual = prepare_for_csv(wholesale)
@@ -96,8 +96,8 @@ def test_mapping_of_energy_business_process(
     calculation_type: CalculationTypeDataProductValue,
     expected_energy_business_process: str,
 ) -> None:
-    spec = create_amounts_per_charge_data_spec(calculation_type=calculation_type)
-    wholesale = create_amounts_per_charge(spark, spec)
+    spec = create_amounts_per_charge_row(calculation_type=calculation_type)
+    wholesale = create(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert (
         actual.collect()[0]["ENERGYBUSINESSPROCESS"] == expected_energy_business_process
@@ -189,8 +189,8 @@ def test_mapping_of_type_of_mp(
     metering_point_type: MeteringPointTypeDataProductValue,
     expected_type_of_mp: str,
 ) -> None:
-    spec = create_amounts_per_charge_data_spec(metering_point_type=metering_point_type)
-    wholesale = create_amounts_per_charge(spark, spec)
+    spec = create_amounts_per_charge_row(metering_point_type=metering_point_type)
+    wholesale = create(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert actual.collect()[0]["TYPEOFMP"] == expected_type_of_mp
 
@@ -215,7 +215,7 @@ def test_mapping_of_settlement_method(
     settlement_method: SettlementMethodDataProductValue,
     expected_settlement_method: str,
 ) -> None:
-    spec = create_amounts_per_charge_data_spec(settlement_method=settlement_method)
-    wholesale = create_amounts_per_charge(spark, spec)
+    spec = create_amounts_per_charge_row(settlement_method=settlement_method)
+    wholesale = create(spark, spec)
     actual = prepare_for_csv(wholesale)
     assert actual.collect()[0]["SETTLEMENTMETHOD"] == expected_settlement_method

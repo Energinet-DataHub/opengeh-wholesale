@@ -23,7 +23,7 @@ from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
 from test_factories.energy_factory import EnergyTestDataSpec
-from test_factories.amounts_per_charge_factory import AmountsPerChargeTestDataSpec
+from test_factories.amounts_per_charge_factory import AmountsPerChargeRow
 
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
@@ -134,7 +134,7 @@ def create_time_series_data_spec(
     )
 
 
-def create_amounts_per_charge_data_spec(
+def create_amounts_per_charge_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
@@ -154,8 +154,8 @@ def create_amounts_per_charge_data_spec(
     quantity_qualities: list[str] = ["measured"],
     price: Decimal = Decimal("0.005"),
     amount: Decimal = Decimal("0.005"),
-) -> AmountsPerChargeTestDataSpec:
-    return AmountsPerChargeTestDataSpec(
+) -> AmountsPerChargeRow:
+    return AmountsPerChargeRow(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
         calculation_version=calculation_version,
