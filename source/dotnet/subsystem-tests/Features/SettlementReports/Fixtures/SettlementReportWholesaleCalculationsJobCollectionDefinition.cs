@@ -17,12 +17,12 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 
 /// <summary>
-/// A xUnit collection fixture for ensuring tests using the "Settlement Report Job" don't run in parallel.
+/// A xUnit collection fixture for ensuring tests using the "Settlement Report Wholesale Calculations Job" don't run in parallel.
 ///
 /// xUnit documentation of collection fixtures:
 ///  * https://xunit.net/docs/shared-context#collection-fixture
 /// </summary>
-[CollectionDefinition(nameof(SettlementReportJobCollectionDefinition))]
-public sealed class SettlementReportJobCollectionDefinition
+[CollectionDefinition(nameof(SettlementReportWholesaleCalculationsJobCollectionDefinition))]
+public sealed class SettlementReportWholesaleCalculationsJobCollectionDefinition
 {
 }
