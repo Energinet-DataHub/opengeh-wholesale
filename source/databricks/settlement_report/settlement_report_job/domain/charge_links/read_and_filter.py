@@ -102,7 +102,10 @@ def _read_charge_link_periods(
         & (F.col(DataProductColumnNames.to_date) > period_start)
     )
 
-    if requestion_actor_market_role in [MarketRole.SYSTEM_OPERATOR, MarketRole.SYSTEM_OPERATOR]:
+    if requestion_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.SYSTEM_OPERATOR,
+    ]:
         charge_price_information_periods = (
             repository.read_charge_price_information_periods()
         )
@@ -110,8 +113,6 @@ def _read_charge_link_periods(
         charge_link_periods = charge_link_periods.where(
             F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id
         )
-
-
 
     return time_series_points
 
