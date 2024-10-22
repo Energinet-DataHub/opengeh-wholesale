@@ -5,6 +5,11 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    CalculationTypeDataProductValue,
+    MeteringPointTypeDataProductValue,
+    MeteringPointResolutionDataProductValue,
+)
 from settlement_report_job.wholesale.schemas.energy_v1 import energy_v1
 from settlement_report_job.wholesale.schemas.energy_per_es_v1 import energy_per_es_v1
 
@@ -17,15 +22,15 @@ class EnergyTestDataSpec:
     """
 
     calculation_id: str
-    calculation_type: str
+    calculation_type: CalculationTypeDataProductValue
     calculation_period_start: datetime
     calculation_period_end: datetime
     calculation_version: int
     result_id: str
     grid_area_code: str
-    metering_point_type: str
+    metering_point_type: MeteringPointTypeDataProductValue
     settlement_method: str
-    resolution: str
+    resolution: MeteringPointResolutionDataProductValue
     quantity: Decimal
     quantity_unit: str
     quantity_qualities: list[str]
@@ -45,7 +50,7 @@ def _get_base_energy_rows_from_spec(data_spec: EnergyTestDataSpec):
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
                 DataProductColumnNames.calculation_period_start: data_spec.calculation_period_start,
                 DataProductColumnNames.calculation_period_end: data_spec.calculation_period_end,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
@@ -53,9 +58,9 @@ def _get_base_energy_rows_from_spec(data_spec: EnergyTestDataSpec):
                 DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
                 DataProductColumnNames.energy_supplier_id: data_spec.energy_supplier_id,
                 DataProductColumnNames.balance_responsible_party_id: data_spec.balance_responsible_party_id,
-                DataProductColumnNames.metering_point_type: data_spec.metering_point_type,
+                DataProductColumnNames.metering_point_type: data_spec.metering_point_type.value,
                 DataProductColumnNames.settlement_method: data_spec.settlement_method,
-                DataProductColumnNames.resolution: data_spec.resolution,
+                DataProductColumnNames.resolution: data_spec.resolution.value,
                 DataProductColumnNames.time: current_time,
                 DataProductColumnNames.quantity: data_spec.quantity,
                 DataProductColumnNames.quantity_unit: data_spec.quantity_unit,

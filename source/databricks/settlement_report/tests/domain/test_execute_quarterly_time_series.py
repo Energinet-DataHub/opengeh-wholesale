@@ -3,7 +3,7 @@ import copy
 from pyspark.sql import SparkSession
 import pytest
 
-from tests.fixtures import DBUtilsFixture
+from tests.dbutils_fixture import DBUtilsFixture
 
 from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,

@@ -49,11 +49,11 @@ def create(
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.metering_point_id: data_spec.metering_point_id,
-                DataProductColumnNames.metering_point_type: data_spec.metering_point_type,
-                DataProductColumnNames.resolution: data_spec.resolution,
+                DataProductColumnNames.metering_point_type: data_spec.metering_point_type.value,
+                DataProductColumnNames.resolution: data_spec.resolution.value,
                 DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
                 DataProductColumnNames.energy_supplier_id: data_spec.energy_supplier_id,
                 DataProductColumnNames.observation_time: current_time,

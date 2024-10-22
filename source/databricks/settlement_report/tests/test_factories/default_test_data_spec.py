@@ -153,7 +153,7 @@ def create_energy_results_data_spec(
     calculation_period_start: datetime = DEFAULT_PERIOD_START,
     calculation_period_end: datetime = DEFAULT_PERIOD_END,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
-    result_id: int = DEFAULT_RESULT_ID,
+    result_id: str = DEFAULT_RESULT_ID,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
     settlement_method: str = DEFAULT_SETTLEMENT_METHOD,

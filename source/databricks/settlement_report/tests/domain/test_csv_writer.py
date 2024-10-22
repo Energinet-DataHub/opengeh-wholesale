@@ -15,7 +15,7 @@ from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
 import pyspark.sql.functions as F
-from tests.fixtures import DBUtilsFixture
+from tests.dbutils_fixture import DBUtilsFixture
 from functools import reduce
 import pytest
 from settlement_report_job.domain.report_data_type import ReportDataType
