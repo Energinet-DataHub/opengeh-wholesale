@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit;
-
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 
 /// <summary>
-/// A xUnit collection fixture for ensuring tests using the "Settlement Report Job" don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
+/// Settlement report job names in Databricks.
 /// </summary>
-[CollectionDefinition(nameof(SettlementReportJobCollectionDefinition))]
-public sealed class SettlementReportJobCollectionDefinition
+public enum SettlementReportJobName
 {
+    SettlementReportBalanceFixing,
+    SettlementReportWholesaleCalculations,
 }

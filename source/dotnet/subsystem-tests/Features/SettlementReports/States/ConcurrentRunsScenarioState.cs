@@ -13,11 +13,14 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
 
 public class ConcurrentRunsScenarioState
 {
+    public SettlementReportJobName JobName { get; set; }
+
     /// <summary>
     /// Use to specify the parameters to use for each job we start.
     /// Any occurrence of 'Guid' will be replaced with a new Guid.
