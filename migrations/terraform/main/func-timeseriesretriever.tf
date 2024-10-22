@@ -1,6 +1,5 @@
-/*
 module "func_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_3.0.0"
 
   name                                   = "timeseriesretriever"
   project_name                           = var.domain_name_short
@@ -20,6 +19,8 @@ module "func_timeseriesretriever" {
   app_settings                           = local.func_timeseriesretriever.app_settings
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
+  allowed_monitor_reader_entra_groups    = [var.developer_security_group_name]
+  durabletask_storage_connection_string  = module.durabletask_storage_account_timeseriesretriever.primary_connection_string
   health_check_path                      = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
     action_group_id = module.monitor_action_group_mig[0].id
@@ -59,5 +60,27 @@ module "func_timeseriesretriever" {
       role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
+
+  depends_on = [module.durabletask_storage_account_timeseriesretriever]
 }
-*/
+
+module "durabletask_storage_account_timeseriesretriever" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.3.0"
+
+  name                       = "tsretrdrbl"
+  project_name               = var.domain_name_short
+  environment_short          = var.environment_short
+  environment_instance       = var.environment_instance
+  resource_group_name        = azurerm_resource_group.this.name
+  location                   = azurerm_resource_group.this.location
+  account_replication_type   = "LRS"
+  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
+  ip_rules                   = local.ip_restrictions_as_string
+  use_table                  = true
+  use_queue                  = true
+  use_blob                   = true
+  shared_access_key_enabled  = true
+  audit_storage_account = var.enable_audit_logs ? {
+    id = data.azurerm_key_vault_secret.st_audit_shres_id.value
+  } : null
+}
