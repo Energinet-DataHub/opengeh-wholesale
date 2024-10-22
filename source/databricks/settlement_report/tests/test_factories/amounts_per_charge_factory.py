@@ -62,10 +62,8 @@ def _get_base_wholesale_rows_from_spec(data_spec: AmountsPerChargeTestDataSpec):
         DataProductColumnNames.resolution: data_spec.resolution.value,
         DataProductColumnNames.quantity_unit: data_spec.quantity_unit,
         DataProductColumnNames.metering_point_type: data_spec.metering_point_type.value,
-        DataProductColumnNames.settlement_method: (
-            data_spec.settlement_method.value
-            if data_spec.settlement_method is not None
-            else None
+        DataProductColumnNames.settlement_method: getattr(
+            data_spec.settlement_method, "value", None
         ),
         DataProductColumnNames.is_tax: data_spec.is_tax,
         DataProductColumnNames.currency: data_spec.currency,
