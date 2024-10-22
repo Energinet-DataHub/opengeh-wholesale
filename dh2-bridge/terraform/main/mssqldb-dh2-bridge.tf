@@ -23,6 +23,13 @@ module "mssqldb_dh2_bridge" {
   }
 }
 
+module "kvs_sql_connection_string_db_migrations" {
+  source       = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  name         = "mssql-dh2bridge-connection-string-db-migrations"
+  value        = "Server=tcp:${module.mssqldb_dh2_bridge.server_fqdn},1433;Initial Catalog=${module.mssqldb_dh2_bridge.name};Persist Security Info=False;Authentication=Active Directory Default;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+  key_vault_id = module.kv_internal.id
+}
+
 module "kvs_sql_ms_dh2_bridge_database_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
 
