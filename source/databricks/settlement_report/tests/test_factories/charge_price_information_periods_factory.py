@@ -41,13 +41,13 @@ def create(
         row_list.append(
             {
                 DataProductColumnNames.calculation_id: row.calculation_id,
-                DataProductColumnNames.calculation_type: row.calculation_type,
+                DataProductColumnNames.calculation_type: row.calculation_type.value,
                 DataProductColumnNames.calculation_version: row.calculation_version,
                 DataProductColumnNames.charge_key: row.charge_key,
                 DataProductColumnNames.charge_code: row.charge_code,
-                DataProductColumnNames.charge_type: row.charge_type,
+                DataProductColumnNames.charge_type: row.charge_type.value,
                 DataProductColumnNames.charge_owner_id: row.charge_owner_id,
-                DataProductColumnNames.resolution: row.resolution,
+                DataProductColumnNames.resolution: row.resolution.value,
                 DataProductColumnNames.is_tax: row.is_tax,
                 DataProductColumnNames.from_date: row.from_date,
                 DataProductColumnNames.to_date: row.to_date,

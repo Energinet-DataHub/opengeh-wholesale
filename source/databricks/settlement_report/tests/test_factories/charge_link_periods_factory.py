@@ -40,11 +40,11 @@ def create(
         row_list.append(
             {
                 DataProductColumnNames.calculation_id: row.calculation_id,
-                DataProductColumnNames.calculation_type: row.calculation_type,
+                DataProductColumnNames.calculation_type: row.calculation_type.value,
                 DataProductColumnNames.calculation_version: row.calculation_version,
                 DataProductColumnNames.charge_key: row.charge_key,
                 DataProductColumnNames.charge_code: row.charge_code,
-                DataProductColumnNames.charge_type: row.charge_type,
+                DataProductColumnNames.charge_type: row.charge_type.value,
                 DataProductColumnNames.charge_owner_id: row.charge_owner_id,
                 DataProductColumnNames.metering_point_id: row.metering_point_id,
                 DataProductColumnNames.quantity: row.quantity,

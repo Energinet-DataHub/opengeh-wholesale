@@ -33,7 +33,7 @@ def create(
         data_rows.append(
             {
                 DataProductColumnNames.calculation_id: row.calculation_id,
-                DataProductColumnNames.calculation_type: row.calculation_type,
+                DataProductColumnNames.calculation_type: row.calculation_type.value,
                 DataProductColumnNames.calculation_version: row.calculation_version,
                 DataProductColumnNames.grid_area_code: row.grid_area_code,
                 DataProductColumnNames.start_of_day: row.start_of_day,
