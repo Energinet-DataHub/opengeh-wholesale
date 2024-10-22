@@ -49,40 +49,38 @@ class AmountsPerChargeTestDataSpec:
 
 
 def _get_base_wholesale_rows_from_spec(data_spec: AmountsPerChargeTestDataSpec):
-    rows = [
-        {
-            DataProductColumnNames.calculation_id: data_spec.calculation_id,
-            DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
-            DataProductColumnNames.calculation_version: data_spec.calculation_version,
-            DataProductColumnNames.result_id: data_spec.result_id,
-            DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
-            DataProductColumnNames.energy_supplier_id: data_spec.energy_supplier_id,
-            DataProductColumnNames.charge_code: data_spec.charge_code,
-            DataProductColumnNames.charge_type: data_spec.charge_type.value,
-            DataProductColumnNames.charge_owner_id: data_spec.charge_owner_id,
-            DataProductColumnNames.resolution: data_spec.resolution.value,
-            DataProductColumnNames.quantity_unit: data_spec.quantity_unit,
-            DataProductColumnNames.metering_point_type: data_spec.metering_point_type.value,
-            DataProductColumnNames.settlement_method: (
-                data_spec.settlement_method.value
-                if data_spec.settlement_method is not None
-                else None
-            ),
-            DataProductColumnNames.is_tax: data_spec.is_tax,
-            DataProductColumnNames.currency: data_spec.currency,
-            DataProductColumnNames.time: data_spec.time,
-            DataProductColumnNames.quantity: data_spec.quantity,
-            DataProductColumnNames.quantity_qualities: data_spec.quantity_qualities,
-            DataProductColumnNames.price: data_spec.price,
-            DataProductColumnNames.amount: data_spec.amount,
-        }
-    ]
+    row = {
+        DataProductColumnNames.calculation_id: data_spec.calculation_id,
+        DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
+        DataProductColumnNames.calculation_version: data_spec.calculation_version,
+        DataProductColumnNames.result_id: data_spec.result_id,
+        DataProductColumnNames.grid_area_code: data_spec.grid_area_code,
+        DataProductColumnNames.energy_supplier_id: data_spec.energy_supplier_id,
+        DataProductColumnNames.charge_code: data_spec.charge_code,
+        DataProductColumnNames.charge_type: data_spec.charge_type.value,
+        DataProductColumnNames.charge_owner_id: data_spec.charge_owner_id,
+        DataProductColumnNames.resolution: data_spec.resolution.value,
+        DataProductColumnNames.quantity_unit: data_spec.quantity_unit,
+        DataProductColumnNames.metering_point_type: data_spec.metering_point_type.value,
+        DataProductColumnNames.settlement_method: (
+            data_spec.settlement_method.value
+            if data_spec.settlement_method is not None
+            else None
+        ),
+        DataProductColumnNames.is_tax: data_spec.is_tax,
+        DataProductColumnNames.currency: data_spec.currency,
+        DataProductColumnNames.time: data_spec.time,
+        DataProductColumnNames.quantity: data_spec.quantity,
+        DataProductColumnNames.quantity_qualities: data_spec.quantity_qualities,
+        DataProductColumnNames.price: data_spec.price,
+        DataProductColumnNames.amount: data_spec.amount,
+    }
 
-    return rows
+    return row
 
 
 def create_amounts_per_charge(
     spark: SparkSession, data_spec: AmountsPerChargeTestDataSpec
 ) -> DataFrame:
-    rows = _get_base_wholesale_rows_from_spec(data_spec)
-    return spark.createDataFrame(rows, amounts_per_charge_v1)
+    row = _get_base_wholesale_rows_from_spec(data_spec)
+    return spark.createDataFrame([row], amounts_per_charge_v1)
