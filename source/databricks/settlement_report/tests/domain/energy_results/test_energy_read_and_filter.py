@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 from pyspark.sql import SparkSession, functions as F
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.wholesale.data_values.calculation_type import (
+from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
 from test_factories import latest_calculations_factory
@@ -234,7 +234,7 @@ def test_read_and_filter_from_view__when_balance_fixing__returns_only_rows_from_
     )
     latest_calculations = latest_calculations_factory.create(
         spark,
-        default_data.create_latest_calculations_data_spec(
+        default_data.create_latest_calculations_per_day_row(
             calculation_id=latest_calculation_id,
             calculation_type=CalculationTypeDataProductValue.BALANCE_FIXING,
         ),
@@ -299,7 +299,7 @@ def test_read_and_filter_from_view__when_balance_fixing_with_two_calculations_wi
     latest_calculations = latest_calculations_factory.create(
         spark,
         [
-            default_data.create_latest_calculations_data_spec(
+            default_data.create_latest_calculations_per_day_row(
                 calculation_id=calc_id,
                 calculation_type=calc_type,
                 start_of_day=start_of_day,
@@ -385,13 +385,13 @@ def test_read_and_filter_from_view__when_balance_fixing__latest_calculation_for_
     latest_calculations = latest_calculations_factory.create(
         spark,
         [
-            default_data.create_latest_calculations_data_spec(
+            default_data.create_latest_calculations_per_day_row(
                 calculation_id=calculation_id_1,
                 calculation_type=calc_type,
                 grid_area_code=grid_area_1,
                 start_of_day=day_1,
             ),
-            default_data.create_latest_calculations_data_spec(
+            default_data.create_latest_calculations_per_day_row(
                 calculation_id=calculation_id_2,
                 calculation_type=calc_type,
                 grid_area_code=grid_area_2,
@@ -433,4 +433,70 @@ def test_read_and_filter_from_view__when_balance_fixing__latest_calculation_for_
         .select(DataProductColumnNames.calculation_id)
         .distinct()
         .collect()
+    )
+
+
+def test_read_and_filter_from_view__when_balance_fixing__returns_only_balance_fixing_results(
+    spark: SparkSession, standard_balance_fixing_scenario_args: SettlementReportArgs
+) -> None:
+    # Arrange
+    calculation_id_and_type = {
+        "11111111-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.AGGREGATION,
+        "22222222-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.BALANCE_FIXING,
+        "33333333-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.WHOLESALE_FIXING,
+        "44444444-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.FIRST_CORRECTION_SETTLEMENT,
+        "55555555-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
+        "66666666-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
+    }
+    energy_per_es = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            energy_factory.create_energy_per_es_v1(
+                spark,
+                default_data.create_energy_results_data_spec(
+                    calculation_id=calc_id, calculation_type=calc_type
+                ),
+            )
+            for calc_id, calc_type in calculation_id_and_type.items()
+        ],
+    )
+
+    latest_calculations = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            latest_calculations_factory.create(
+                spark,
+                default_data.create_latest_calculations_per_day_row(
+                    calculation_id=calc_id, calculation_type=calc_type
+                ),
+            )
+            for calc_id, calc_type in calculation_id_and_type.items()
+        ],
+    )
+
+    mock_repository = Mock()
+    mock_repository.read_energy_per_es.return_value = energy_per_es
+    mock_repository.read_latest_calculations.return_value = latest_calculations
+
+    standard_balance_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    standard_balance_fixing_scenario_args.grid_area_codes = [
+        default_data.DEFAULT_GRID_AREA_CODE
+    ]
+
+    # Act
+    actual_df = read_and_filter_from_view(
+        args=standard_balance_fixing_scenario_args,
+        repository=mock_repository,
+    )
+
+    # Assert
+    actual_calculation_ids = (
+        actual_df.select(DataProductColumnNames.calculation_id).distinct().collect()
+    )
+    assert len(actual_calculation_ids) == 1
+    assert (
+        actual_calculation_ids[0][DataProductColumnNames.calculation_id]
+        == "22222222-9fc8-409a-a169-fbd49479d718"
     )

@@ -81,7 +81,7 @@ def read_and_filter_by_latest_calculations(
     latest_balance_fixing_calculations = repository.read_latest_calculations().where(
         (
             F.col(DataProductColumnNames.calculation_type)
-            == CalculationTypeDataProductValue.BALANCE_FIXING
+            == CalculationTypeDataProductValue.BALANCE_FIXING.value
         )
         & (F.col(DataProductColumnNames.grid_area_code).isin(args.grid_area_codes))
         & (F.col(DataProductColumnNames.start_of_day) >= args.period_start)
