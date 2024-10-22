@@ -77,7 +77,7 @@ def parse_job_arguments(
                 env_vars.get_catalog_name()
             ),
             include_basis_data=job_args.include_basis_data,
-            locale=job_args.locale if job_args.locale is not None else "da-DK",
+            locale=job_args.locale,
         )
 
         return settlement_report_args
@@ -97,7 +97,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument("--requesting-actor-market-role", type=MarketRole, required=True)
     p.add_argument("--requesting-actor-id", type=str, required=True)
     p.add_argument("--calculation-id-by-grid-area", type=str, required=False)
-    p.add_argument("--grid-areas-codes", type=str, required=False)
+    p.add_argument("--grid-area-codes", type=str, required=False)
     p.add_argument(
         "--energy-supplier-ids", type=valid_energy_supplier_ids, required=False
     )
@@ -107,10 +107,10 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
-    p.add(
+    p.add_argument(
         "--include-basis-data", action="store_true"
     )  # true if present, false otherwise
-    p.add("--locale", type=str, required=False)
+    p.add_argument("--locale", type=str, required=False, default="da-DK")
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
