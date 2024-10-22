@@ -86,7 +86,7 @@ def read_and_filter(
         F.greatest(F.col("link_to_date"), F.col("metering_point_to_date")).alias(DataProductColumnNames.to_date),
         DataProductColumnNames.grid_area_code,
         DataProductColumnNames.energy_supplier_id,
-    )
+    ).distinct()
 
     return charge_link_periods
 
