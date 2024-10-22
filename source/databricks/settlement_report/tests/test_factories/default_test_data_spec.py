@@ -14,11 +14,11 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
+from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
 from test_factories.charge_price_information_periods_factory import (
-    ChargePriceInformationPeriodsTestDataSpec,
+    ChargePriceInformationPeriodsRow,
 )
-from test_factories.latest_calculations_factory import LatestCalculationsTestDataSpec
+from test_factories.latest_calculations_factory import LatestCalculationsPerDayRow
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
@@ -49,7 +49,7 @@ DEFAULT_QUANTITY_QUALITIES = ["measured"]
 DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 
 
-def create_charge_link_periods_data_spec(
+def create_charge_link_periods_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
@@ -60,9 +60,9 @@ def create_charge_link_periods_data_spec(
     from_date: datetime = DEFAULT_PERIOD_START,
     to_date: datetime = DEFAULT_PERIOD_END,
     quantity: int = 1,
-) -> ChargeLinkPeriodsTestDataSpec:
+) -> ChargeLinkPeriodsRow:
     charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
-    return ChargeLinkPeriodsTestDataSpec(
+    return ChargeLinkPeriodsRow(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
         calculation_version=calculation_version,
@@ -77,7 +77,7 @@ def create_charge_link_periods_data_spec(
     )
 
 
-def create_charge_price_information_periods_data_spec(
+def create_charge_price_information_periods_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
@@ -88,10 +88,10 @@ def create_charge_price_information_periods_data_spec(
     is_tax: bool = False,
     from_date: datetime = DEFAULT_PERIOD_START,
     to_date: datetime = DEFAULT_PERIOD_END,
-) -> ChargePriceInformationPeriodsTestDataSpec:
+) -> ChargePriceInformationPeriodsRow:
     charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
 
-    return ChargePriceInformationPeriodsTestDataSpec(
+    return ChargePriceInformationPeriodsRow(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
         calculation_version=calculation_version,
@@ -179,15 +179,15 @@ def create_amounts_per_charge_data_spec(
     )
 
 
-def create_latest_calculations_data_spec(
+def create_latest_calculations_per_day_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     start_of_day: datetime = DEFAULT_PERIOD_START,
-) -> LatestCalculationsTestDataSpec:
+) -> LatestCalculationsPerDayRow:
 
-    return LatestCalculationsTestDataSpec(
+    return LatestCalculationsPerDayRow(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
         calculation_version=calculation_version,
