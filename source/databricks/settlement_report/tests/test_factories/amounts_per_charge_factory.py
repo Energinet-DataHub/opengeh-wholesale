@@ -81,7 +81,7 @@ def _get_base_wholesale_rows_from_spec(data_spec: AmountsPerChargeTestDataSpec):
     return rows
 
 
-def create_wholesale(
+def create_amounts_per_charge(
     spark: SparkSession, data_spec: AmountsPerChargeTestDataSpec
 ) -> DataFrame:
     rows = _get_base_wholesale_rows_from_spec(data_spec)

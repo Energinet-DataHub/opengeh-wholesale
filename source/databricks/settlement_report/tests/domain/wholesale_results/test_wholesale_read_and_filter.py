@@ -10,7 +10,7 @@ from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
 )
 from test_factories.default_test_data_spec import create_amounts_per_charge_data_spec
-from test_factories.amounts_per_charge_factory import create_wholesale
+from test_factories.amounts_per_charge_factory import create_amounts_per_charge
 
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
@@ -48,9 +48,11 @@ def test_time_within_and_outside_of_date_range_scenarios(
     # Arrange
     time = datetime(2024, 1, 3, 23)
 
-    df = create_wholesale(spark, create_amounts_per_charge_data_spec(time=time))
+    df = create_amounts_per_charge(
+        spark, create_amounts_per_charge_data_spec(time=time)
+    )
     mock_repository = Mock()
-    mock_repository.read_wholesale_results.return_value = df
+    mock_repository.read_amounts_per_charge.return_value = df
 
     # Act
     actual = read_and_filter_from_view(
@@ -96,12 +98,12 @@ def test_energy_supplier_ids_scenarios(
 ) -> None:
     # Arrange
     energy_supplier_id = "1234567890123"
-    df = create_wholesale(
+    df = create_amounts_per_charge(
         spark,
         create_amounts_per_charge_data_spec(energy_supplier_id=energy_supplier_id),
     )
     mock_repository = Mock()
-    mock_repository.read_wholesale_results.return_value = df
+    mock_repository.read_amounts_per_charge.return_value = df
 
     # Act
     actual = read_and_filter_from_view(
@@ -156,14 +158,14 @@ def test_calculation_id_by_grid_loss_scenarios(
     expected_rows: int,
 ) -> None:
     # Arrange
-    df = create_wholesale(
+    df = create_amounts_per_charge(
         spark,
         create_amounts_per_charge_data_spec(
             calculation_id=default_data.DEFAULT_CALCULATION_ID, grid_area_code="804"
         ),
     )
     mock_repository = Mock()
-    mock_repository.read_wholesale_results.return_value = df
+    mock_repository.read_amounts_per_charge.return_value = df
 
     # Act
     actual = read_and_filter_from_view(
