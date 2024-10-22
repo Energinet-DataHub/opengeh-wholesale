@@ -11,6 +11,9 @@ from settlement_report_job.wholesale.data_values import (
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
+from settlement_report_job.wholesale.data_values.settlement_method import (
+    SettlementMethodDataProductValue,
+)
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsTestDataSpec
 from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsTestDataSpec,
@@ -143,7 +146,7 @@ def create_amounts_per_charge_data_spec(
     resolution: ChargeResolutionDataProductValue = ChargeResolutionDataProductValue.HOUR,
     quantity_unit: str = "kWh",
     metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
-    settlement_method: str = "flex",
+    settlement_method: SettlementMethodDataProductValue = DEFAULT_SETTLEMENT_METHOD,
     is_tax: bool = False,
     currency: str = "DKK",
     time: datetime = DEFAULT_PERIOD_START,

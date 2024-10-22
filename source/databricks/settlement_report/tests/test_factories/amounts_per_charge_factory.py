@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
@@ -11,6 +11,9 @@ from settlement_report_job.wholesale.data_values import (
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
+)
+from settlement_report_job.wholesale.data_values.settlement_method import (
+    SettlementMethodDataProductValue,
 )
 from settlement_report_job.wholesale.schemas.amounts_per_charge_v1 import (
     amounts_per_charge_v1,
@@ -35,7 +38,7 @@ class AmountsPerChargeTestDataSpec:
     resolution: ChargeResolutionDataProductValue
     quantity_unit: str
     metering_point_type: MeteringPointTypeDataProductValue
-    settlement_method: str
+    settlement_method: SettlementMethodDataProductValue | None
     is_tax: bool
     currency: str
     time: datetime
@@ -60,7 +63,11 @@ def _get_base_wholesale_rows_from_spec(data_spec: AmountsPerChargeTestDataSpec):
             DataProductColumnNames.resolution: data_spec.resolution.value,
             DataProductColumnNames.quantity_unit: data_spec.quantity_unit,
             DataProductColumnNames.metering_point_type: data_spec.metering_point_type.value,
-            DataProductColumnNames.settlement_method: data_spec.settlement_method,
+            DataProductColumnNames.settlement_method: (
+                data_spec.settlement_method.value
+                if data_spec.settlement_method is not None
+                else None
+            ),
             DataProductColumnNames.is_tax: data_spec.is_tax,
             DataProductColumnNames.currency: data_spec.currency,
             DataProductColumnNames.time: data_spec.time,
