@@ -48,13 +48,13 @@ def create(
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.charge_key: data_spec.charge_key,
                 DataProductColumnNames.charge_code: data_spec.charge_code,
-                DataProductColumnNames.charge_type: data_spec.charge_type,
+                DataProductColumnNames.charge_type: data_spec.charge_type.value,
                 DataProductColumnNames.charge_owner_id: data_spec.charge_owner_id,
-                DataProductColumnNames.resolution: data_spec.resolution,
+                DataProductColumnNames.resolution: data_spec.resolution.value,
                 DataProductColumnNames.is_tax: data_spec.is_tax,
                 DataProductColumnNames.from_date: data_spec.from_date,
                 DataProductColumnNames.to_date: data_spec.to_date,

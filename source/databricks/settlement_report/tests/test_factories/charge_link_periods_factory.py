@@ -44,11 +44,11 @@ def create(
         rows.append(
             {
                 DataProductColumnNames.calculation_id: data_spec.calculation_id,
-                DataProductColumnNames.calculation_type: data_spec.calculation_type,
+                DataProductColumnNames.calculation_type: data_spec.calculation_type.value,
                 DataProductColumnNames.calculation_version: data_spec.calculation_version,
                 DataProductColumnNames.charge_key: data_spec.charge_key,
                 DataProductColumnNames.charge_code: data_spec.charge_code,
-                DataProductColumnNames.charge_type: data_spec.charge_type,
+                DataProductColumnNames.charge_type: data_spec.charge_type.value,
                 DataProductColumnNames.charge_owner_id: data_spec.charge_owner_id,
                 DataProductColumnNames.metering_point_id: data_spec.metering_point_id,
                 DataProductColumnNames.quantity: data_spec.quantity,
