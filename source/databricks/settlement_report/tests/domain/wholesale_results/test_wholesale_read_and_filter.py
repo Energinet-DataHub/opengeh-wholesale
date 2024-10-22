@@ -48,9 +48,7 @@ def test_time_within_and_outside_of_date_range_scenarios(
     # Arrange
     time = datetime(2024, 1, 3, 23)
 
-    df = create(
-        spark, create_amounts_per_charge_row(time=time)
-    )
+    df = create(spark, create_amounts_per_charge_row(time=time))
     mock_repository = Mock()
     mock_repository.read_amounts_per_charge.return_value = df
 
