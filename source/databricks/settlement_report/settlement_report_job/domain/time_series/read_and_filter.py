@@ -31,8 +31,10 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.balance_fixing_utils import (
-    _filter_by_latest_calculations,
+from settlement_report_job.domain.factory_utils import (
+    filter_by_energy_supplier_ids,
+    filter_by_latest_calculations,
+    filter_by_calculation_id_by_grid_area,
 )
 
 log = logging.Logger(__name__)
@@ -66,8 +68,11 @@ def read_and_filter_for_balance_fixing(
         & (F.col(DataProductColumnNames.start_of_day) >= period_start)
         & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
-    time_series_points = _filter_by_latest_calculations(
-        time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
+    time_series_points = filter_by_latest_calculations(
+        time_series_points,
+        latest_balance_fixing_calculations,
+        df_time_column=DataProductColumnNames.observation_time,
+        time_zone=time_zone,
     )
 
     return time_series_points
@@ -95,7 +100,7 @@ def read_and_filter_for_wholesale(
     )
 
     time_series_points = time_series_points.where(
-        _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
+        filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area)
     )
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
@@ -125,21 +130,7 @@ def _read_from_view(
 
     if energy_supplier_ids:
         time_series_points = time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
+            filter_by_energy_supplier_ids(energy_supplier_ids)
         )
 
     return time_series_points
-
-
-def _filter_on_calculation_id_by_grid_area(
-    calculation_id_by_grid_area: dict[str, UUID],
-) -> Column:
-    calculation_id_by_grid_area_structs = [
-        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
-    ]
-
-    return F.struct(
-        F.col(DataProductColumnNames.grid_area_code),
-        F.col(DataProductColumnNames.calculation_id),
-    ).isin(calculation_id_by_grid_area_structs)

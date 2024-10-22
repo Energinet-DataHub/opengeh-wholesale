@@ -114,12 +114,7 @@ def execute_energy_results(
         return
 
     repository = WholesaleRepository(spark, args.catalog_name)
-    if args.calculation_type is CalculationType.BALANCE_FIXING:
-        energy_results_df = create_energy_results_for_balance_fixing(
-            args=args, repository=repository
-        )
-    else:
-        energy_results_df = create_energy_results(args=args, repository=repository)
+    energy_results_df = create_energy_results(args=args, repository=repository)
 
     energy_result_files = csv_writer.write(
         dbutils,
