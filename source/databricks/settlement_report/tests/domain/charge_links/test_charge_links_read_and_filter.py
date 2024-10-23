@@ -19,7 +19,7 @@ DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
-GRID_ACCESS_PROVIDER_ID = "3333333333333"
+GRID_ACCESS_PROVIDER_ID = "4444444444444"
 OTHER_ID = "9999999999999"
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
@@ -318,12 +318,16 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
 @pytest.mark.parametrize(
     "charge_owner_id,is_tax,return_rows",
     [
-        pytest.param(SYSTEM_OPERATOR_ID, True, True, id="system operator with tax"),
         pytest.param(
-            SYSTEM_OPERATOR_ID, False, False, id="system operator without tax"
+            SYSTEM_OPERATOR_ID, False, True, id="system operator without tax: include"
         ),
-        pytest.param(OTHER_ID, False, False, id="other charge owner without tax"),
-        pytest.param(OTHER_ID, True, False, id="other charge owner with tax"),
+        pytest.param(
+            SYSTEM_OPERATOR_ID, True, False, id="system operator with tax: exclude"
+        ),
+        pytest.param(
+            OTHER_ID, False, False, id="other charge owner without tax: exclude"
+        ),
+        pytest.param(OTHER_ID, True, False, id="other charge owner with tax: exclude"),
     ],
 )
 def test_read_and_filter__when_system_operator__returns_expected_charge_links(
@@ -378,13 +382,21 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
     "charge_owner_id,is_tax,return_rows",
     [
         pytest.param(
-            GRID_ACCESS_PROVIDER_ID, True, True, id="grid access provider with tax"
+            GRID_ACCESS_PROVIDER_ID,
+            True,
+            True,
+            id="grid access provider with tax: include",
         ),
         pytest.param(
-            GRID_ACCESS_PROVIDER_ID, False, False, id="grid access provider without tax"
+            GRID_ACCESS_PROVIDER_ID,
+            False,
+            True,
+            id="grid access provider without tax: include",
         ),
-        pytest.param(OTHER_ID, False, False, id="other charge owner without tax"),
-        pytest.param(OTHER_ID, True, True, id="other charge owner with tax"),
+        pytest.param(
+            OTHER_ID, False, False, id="other charge owner without tax: exclude"
+        ),
+        pytest.param(OTHER_ID, True, True, id="other charge owner with tax: include"),
     ],
 )
 def test_read_and_filter__when_grid_access_provider__returns_expected_charge_links(

@@ -181,12 +181,12 @@ def filter_on_charge_owner_and_tax(
     if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
         return charge_link_periods.where(
             (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
-            | (F.col(DataProductColumnNames.is_tax) == True)
+            & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
         )
     elif requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
         return charge_link_periods.where(
             (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
-            & (F.col(DataProductColumnNames.is_tax) == False)
+            | (F.col(DataProductColumnNames.is_tax) == F.lit(True))
         )
     else:
         raise ValueError("Invalid requesting actor market role")
