@@ -96,9 +96,14 @@ def test_mapping_of_energy_business_process(
     calculation_type: CalculationTypeDataProductValue,
     expected_energy_business_process: str,
 ) -> None:
+    # Arrange
     spec = create_amounts_per_charge_row(calculation_type=calculation_type)
     wholesale = create(spark, spec)
+
+    # Act
     actual = prepare_for_csv(wholesale)
+
+    # Assert
     assert (
         actual.collect()[0]["ENERGYBUSINESSPROCESS"] == expected_energy_business_process
     )
@@ -189,9 +194,14 @@ def test_mapping_of_type_of_mp(
     metering_point_type: MeteringPointTypeDataProductValue,
     expected_type_of_mp: str,
 ) -> None:
+    # Arrange
     spec = create_amounts_per_charge_row(metering_point_type=metering_point_type)
     wholesale = create(spark, spec)
+
+    # Act
     actual = prepare_for_csv(wholesale)
+
+    # Assert
     assert actual.collect()[0]["TYPEOFMP"] == expected_type_of_mp
 
 
@@ -215,7 +225,12 @@ def test_mapping_of_settlement_method(
     settlement_method: SettlementMethodDataProductValue,
     expected_settlement_method: str,
 ) -> None:
+    # Arrange
     spec = create_amounts_per_charge_row(settlement_method=settlement_method)
     wholesale = create(spark, spec)
+
+    # Act
     actual = prepare_for_csv(wholesale)
+
+    # Assert
     assert actual.collect()[0]["SETTLEMENTMETHOD"] == expected_settlement_method
