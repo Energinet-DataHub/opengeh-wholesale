@@ -73,6 +73,7 @@ def read_and_filter_from_view(
             observation_time_column=DataProductColumnNames.time,
         )
     elif args.calculation_id_by_grid_area:
+        # args.calculation_id_by_grid_area should never be null when not BALANCE_FIXING.
         df = df.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
