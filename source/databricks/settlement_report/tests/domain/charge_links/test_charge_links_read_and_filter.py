@@ -7,6 +7,7 @@ import pytest
 from pyspark.sql import SparkSession, functions as F
 import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as charge_links_factory
+import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods
 from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
 from settlement_report_job.wholesale.data_values import (
@@ -69,7 +70,9 @@ def test_read_and_filter__returns_link_periods_that_overlaps_with_selected_perio
     period_start = JAN_2ND
     period_end = JAN_4TH
 
-    df = charge_links_factory.create(
+    metering_point_periods_factory.create(spark, default_data.)
+
+    charge_link_periods = charge_links_factory.create(
         spark,
         [
             default_data.create_charge_link_periods_row(
@@ -78,8 +81,8 @@ def test_read_and_filter__returns_link_periods_that_overlaps_with_selected_perio
         ],
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_periods = df
-    mock_repository.read_charge_link_periods = df
+    mock_repository.read_metering_point_periods = charge_link_periods
+    mock_repository.read_charge_link_periods = s
 
     # Act
     actual_df = read_and_filter(

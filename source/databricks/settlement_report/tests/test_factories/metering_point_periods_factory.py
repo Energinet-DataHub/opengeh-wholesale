@@ -27,8 +27,8 @@ class MeteringPointPeriodsRow:
     settlement_method: SettlementMethodDataProductValue
     grid_area_code: str
     resolution: MeteringPointResolutionDataProductValue
-    from_grid_area_code: str
-    parent_metering_point_id: str
+    from_grid_area_code: str | None
+    parent_metering_point_id: str | None
     energy_supplier_id: str
     balance_responsible_party_id: str
     from_date: datetime
