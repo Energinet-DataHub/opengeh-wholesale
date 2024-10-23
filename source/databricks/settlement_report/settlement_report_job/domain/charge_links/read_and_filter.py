@@ -17,20 +17,9 @@ from uuid import UUID
 from pyspark.sql import DataFrame, functions as F, Column
 
 from settlement_report_job import logging
-from settlement_report_job.domain.csv_column_names import EphemeralColumns
-from settlement_report_job.wholesale.data_values.calculation_type import (
-    CalculationTypeDataProductValue,
-)
-from settlement_report_job.domain.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.system_operator_filter import (
-    filter_on_charge_owner,
-)
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
-    MeteringPointResolutionDataProductValue,
-)
 
 log = logging.Logger(__name__)
 
@@ -89,12 +78,6 @@ def read_and_filter(
     ).distinct()
 
     return charge_link_periods
-
-
-
-
-
-
 
 def _read_metering_point_periods(
     period_start: datetime,
