@@ -154,12 +154,9 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        if df.count() > rows_per_file:
-            w = Window().orderBy(order_by)
-            chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
-            df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
-        else:
-            partition_columns.remove(EphemeralColumns.chunk_index)
+        w = Window().orderBy(order_by)
+        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
+        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
 
     df = df.orderBy(order_by)
 
@@ -228,7 +225,7 @@ def get_new_files(
         else:
             energy_supplier_id = None
 
-        if EphemeralColumns.chunk_index in partition_columns:
+        if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
             group_count += 1
             chunk_index = groups[group_count]
         else:
