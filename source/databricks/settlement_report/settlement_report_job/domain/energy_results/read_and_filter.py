@@ -59,18 +59,16 @@ def read_and_filter_from_view(
     )
 
     if args.calculation_type is CalculationType.BALANCE_FIXING:
+        df = df.where(filter_by_grid_area_codes(args.grid_area_codes))
         df = read_and_filter_by_latest_calculations(df, args, repository)
 
-    if args.energy_supplier_ids is not None:
-        df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
-
-    if args.calculation_id_by_grid_area is not None:
+    elif args.calculation_id_by_grid_area is not None:
         df = df.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
 
-    if args.grid_area_codes is not None:
-        df = df.where(filter_by_grid_area_codes(args.grid_area_codes))
+    if args.energy_supplier_ids is not None:
+        df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
 
     return df
 
@@ -83,7 +81,7 @@ def read_and_filter_by_latest_calculations(
             F.col(DataProductColumnNames.calculation_type)
             == CalculationTypeDataProductValue.BALANCE_FIXING.value
         )
-        & (F.col(DataProductColumnNames.grid_area_code).isin(args.grid_area_codes))
+        & (filter_by_grid_area_codes(args.grid_area_codes))
         & (F.col(DataProductColumnNames.start_of_day) >= args.period_start)
         & (F.col(DataProductColumnNames.start_of_day) < args.period_end)
     )
