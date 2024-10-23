@@ -139,11 +139,18 @@ def _read_charge_link_periods(
         charge_price_information_periods = (
             repository.read_charge_price_information_periods()
         )
+
+        is_tax = (
+            False
+            if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR
+            else True
+        )
+
         charge_link_periods = filter_on_charge_owner_and_tax(
             charge_link_periods=charge_link_periods,
             charge_price_information_periods=charge_price_information_periods,
-            requesting_actor_id=requesting_actor_id,
-            requesting_actor_market_role=requesting_actor_market_role,
+            charge_owner_id=requesting_actor_id,
+            is_tax=is_tax,
         )
 
     return charge_link_periods
@@ -166,8 +173,8 @@ def _filter_on_calculation_id_by_grid_area(
 def filter_on_charge_owner_and_tax(
     charge_link_periods: DataFrame,
     charge_price_information_periods: DataFrame,
-    requesting_actor_id: str,
-    requesting_actor_market_role: MarketRole,
+    charge_owner_id: str,
+    is_tax: bool,
 ) -> DataFrame:
     charge_link_periods = charge_link_periods.join(
         charge_price_information_periods,
@@ -178,15 +185,7 @@ def filter_on_charge_owner_and_tax(
         charge_price_information_periods[DataProductColumnNames.is_tax],
     )
 
-    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        return charge_link_periods.where(
-            (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
-            & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
-        )
-    elif requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-        return charge_link_periods.where(
-            (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
-            & (F.col(DataProductColumnNames.is_tax) == F.lit(True))
-        )
-    else:
-        raise ValueError("Invalid requesting actor market role")
+    return charge_link_periods.where(
+        (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
+        & (F.col(DataProductColumnNames.is_tax) == F.lit(is_tax))
+    )
