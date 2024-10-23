@@ -27,3 +27,6 @@ class DataProductColumnNames:
     start_of_day = "start_of_day"
     time = "time"
     to_date = "to_date"
+    currency = "currency"
+    price = "price"
+    amount = "amount"
