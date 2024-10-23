@@ -54,30 +54,52 @@ def read_and_filter(
         _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
     )
 
-    charge_link_periods = charge_link_periods.withColumnRenamed(DataProductColumnNames.from_date, "link_from_date").withColumnRenamed(DataProductColumnNames.to_date, "link_to_date")
-    metering_point_periods = metering_point_periods.withColumnRenamed(DataProductColumnNames.from_date, "metering_point_from_date").withColumnRenamed(DataProductColumnNames.to_date, "metering_point_to_date")
+    link_from_date = "link_from_date"
+    link_to_date = "link_to_date"
+    metering_point_from_date = "metering_point_from_date"
+    metering_point_to_date = "metering_point_to_date"
 
+    charge_link_periods = charge_link_periods.withColumnRenamed(
+        DataProductColumnNames.from_date, link_from_date
+    ).withColumnRenamed(DataProductColumnNames.to_date, link_to_date)
+    metering_point_periods = metering_point_periods.withColumnRenamed(
+        DataProductColumnNames.from_date, metering_point_from_date
+    ).withColumnRenamed(DataProductColumnNames.to_date, metering_point_to_date)
 
-    charge_link_periods = charge_link_periods.join(
-        metering_point_periods,
-        on=[DataProductColumnNames.calculation_id, DataProductColumnNames.metering_point_id],
-        how="inner",
-    ).where(
-        (F.col("link_from_date") < F.col("metering_point_to_date")) & (F.col("link_to_date") > F.col("metering_point_from_date"))
-    ).select(
-        DataProductColumnNames.metering_point_id,
-        DataProductColumnNames.metering_point_type,
-        DataProductColumnNames.charge_type,
-        DataProductColumnNames.charge_code,
-        DataProductColumnNames.charge_owner_id,
-        DataProductColumnNames.quantity,
-        F.least(F.col("link_from_date"), F.col("metering_point_from_date")).alias(DataProductColumnNames.from_date),
-        F.greatest(F.col("link_to_date"), F.col("metering_point_to_date")).alias(DataProductColumnNames.to_date),
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.energy_supplier_id,
-    ).distinct()
+    charge_link_periods = (
+        charge_link_periods.join(
+            metering_point_periods,
+            on=[
+                DataProductColumnNames.calculation_id,
+                DataProductColumnNames.metering_point_id,
+            ],
+            how="inner",
+        )
+        .where(
+            (F.col(link_from_date) < F.col(metering_point_to_date))
+            & (F.col(link_to_date) > F.col(metering_point_from_date))
+        )
+        .select(
+            DataProductColumnNames.metering_point_id,
+            DataProductColumnNames.metering_point_type,
+            DataProductColumnNames.charge_type,
+            DataProductColumnNames.charge_code,
+            DataProductColumnNames.charge_owner_id,
+            DataProductColumnNames.quantity,
+            F.greatest(F.col(link_from_date), F.col(metering_point_from_date)).alias(
+                DataProductColumnNames.from_date
+            ),
+            F.least(F.col(link_to_date), F.col(metering_point_to_date)).alias(
+                DataProductColumnNames.to_date
+            ),
+            DataProductColumnNames.grid_area_code,
+            DataProductColumnNames.energy_supplier_id,
+        )
+        .distinct()
+    )
 
     return charge_link_periods
+
 
 def _read_metering_point_periods(
     period_start: datetime,
@@ -110,9 +132,19 @@ def _read_charge_link_periods(
         & (F.col(DataProductColumnNames.to_date) > period_start)
     )
 
-    if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
-
-    elif requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+    if requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.GRID_ACCESS_PROVIDER,
+    ]:
+        charge_price_information_periods = (
+            repository.read_charge_price_information_periods()
+        )
+        charge_link_periods = filter_on_charge_owner_and_tax(
+            charge_link_periods=charge_link_periods,
+            charge_price_information_periods=charge_price_information_periods,
+            requesting_actor_id=requesting_actor_id,
+            requesting_actor_market_role=requesting_actor_market_role,
+        )
 
     return charge_link_periods
 
@@ -130,3 +162,34 @@ def _filter_on_calculation_id_by_grid_area(
         F.col(DataProductColumnNames.calculation_id),
     ).isin(calculation_id_by_grid_area_structs)
 
+
+def filter_on_charge_owner_and_tax(
+    charge_link_periods: DataFrame,
+    charge_price_information_periods: DataFrame,
+    requesting_actor_id: str,
+    requesting_actor_market_role: MarketRole,
+) -> DataFrame:
+    charge_link_periods.join(
+        charge_price_information_periods,
+        on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
+        how="inner",
+    ).select(
+        charge_link_periods[DataProductColumnNames.calculation_id],
+        charge_link_periods[DataProductColumnNames.metering_point_id],
+        charge_link_periods[DataProductColumnNames.from_date],
+        charge_link_periods[DataProductColumnNames.to_date],
+        charge_price_information_periods[DataProductColumnNames.is_tax],
+    )
+
+    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        return charge_link_periods.where(
+            (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
+            | (F.col(DataProductColumnNames.is_tax) == True)
+        )
+    elif requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        return charge_link_periods.where(
+            (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
+            & (F.col(DataProductColumnNames.is_tax) == False)
+        )
+    else:
+        raise ValueError("Invalid requesting actor market role")

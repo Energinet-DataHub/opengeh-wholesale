@@ -15,8 +15,6 @@ def filter_charge_links_on_charge_owner_and_tax_value(
         & (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
     )
 
-    charge_link_periods = charge_link_periods.where
-
     return charge_link_periods.join(
         charge_price_information_periods,
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
