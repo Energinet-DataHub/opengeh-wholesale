@@ -304,7 +304,7 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
         (NOT_SYSTEM_OPERATOR_ID, False),
     ],
 )
-def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_series_with_system_operator_as_charge_owner(
+def test_read_and_filter__when_system_operator__returns_only_time_series_with_system_operator_as_charge_owner(
     spark: SparkSession,
     charge_owner_id: str,
     return_rows: bool,
