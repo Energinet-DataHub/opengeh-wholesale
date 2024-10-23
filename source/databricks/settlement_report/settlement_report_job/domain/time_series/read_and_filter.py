@@ -31,6 +31,11 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
+from settlement_report_job.domain.factory_filters import (
+    filter_by_energy_supplier_ids,
+    filter_by_calculation_id_by_grid_area,
+    read_and_filter_by_latest_calculations,
+)
 
 log = logging.Logger(__name__)
 
@@ -54,17 +59,14 @@ def read_and_filter_for_balance_fixing(
         repository,
     )
 
-    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
-        (
-            F.col(DataProductColumnNames.calculation_type)
-            == CalculationTypeDataProductValue.BALANCE_FIXING.value
-        )
-        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
-        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
-        & (F.col(DataProductColumnNames.start_of_day) < period_end)
-    )
-    time_series_points = _filter_by_latest_calculations(
-        time_series_points, latest_balance_fixing_calculations, time_zone=time_zone
+    time_series_points = read_and_filter_by_latest_calculations(
+        df=time_series_points,
+        repository=repository,
+        grid_area_codes=grid_area_codes,
+        period_start=period_start,
+        period_end=period_end,
+        time_zone=time_zone,
+        observation_time_column=DataProductColumnNames.observation_time,
     )
 
     return time_series_points
@@ -92,7 +94,7 @@ def read_and_filter_for_wholesale(
     )
 
     time_series_points = time_series_points.where(
-        _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
+        filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area)
     )
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
@@ -122,47 +124,7 @@ def _read_from_view(
 
     if energy_supplier_ids:
         time_series_points = time_series_points.where(
-            F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
+            filter_by_energy_supplier_ids(energy_supplier_ids)
         )
 
     return time_series_points
-
-
-def _filter_on_calculation_id_by_grid_area(
-    calculation_id_by_grid_area: dict[str, UUID],
-) -> Column:
-    calculation_id_by_grid_area_structs = [
-        F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-        for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
-    ]
-
-    return F.struct(
-        F.col(DataProductColumnNames.grid_area_code),
-        F.col(DataProductColumnNames.calculation_id),
-    ).isin(calculation_id_by_grid_area_structs)
-
-
-def _filter_by_latest_calculations(
-    time_series_points: DataFrame, latest_calculations: DataFrame, time_zone: str
-) -> DataFrame:
-    time_series_points = time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
-    )
-
-    return (
-        time_series_points.join(
-            latest_calculations,
-            on=[
-                time_series_points[DataProductColumnNames.calculation_id]
-                == latest_calculations[DataProductColumnNames.calculation_id],
-                time_series_points[DataProductColumnNames.grid_area_code]
-                == latest_calculations[DataProductColumnNames.grid_area_code],
-                time_series_points[EphemeralColumns.start_of_day]
-                == latest_calculations[DataProductColumnNames.start_of_day],
-            ],
-            how="inner",
-        )
-        .select(time_series_points["*"])
-        .drop(EphemeralColumns.start_of_day)
-    )
