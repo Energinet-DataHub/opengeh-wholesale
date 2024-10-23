@@ -100,4 +100,3 @@ variable "alert_email_address" {
   description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
-
