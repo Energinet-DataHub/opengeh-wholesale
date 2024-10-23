@@ -61,10 +61,10 @@ def read_and_filter_from_view(
     if args.energy_supplier_ids:
         df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
 
-    if args.calculation_type is CalculationType.BALANCE_FIXING:
+    if args.calculation_type is CalculationType.BALANCE_FIXING and args.grid_area_codes:
         df = df.where(filter_by_grid_area_codes(args.grid_area_codes))
         df = read_and_filter_by_latest_calculations(df, args, repository)
-    else:
+    elif args.calculation_id_by_grid_area:
         df = df.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
