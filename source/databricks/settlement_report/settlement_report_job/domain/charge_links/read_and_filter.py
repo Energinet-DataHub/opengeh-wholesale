@@ -50,7 +50,7 @@ def read_and_filter(
         repository=repository,
     )
 
-    charge_link_periods = charge_link_periods.where(
+    metering_point_periods = metering_point_periods.where(
         _filter_on_calculation_id_by_grid_area(calculation_id_by_grid_area)
     )
 

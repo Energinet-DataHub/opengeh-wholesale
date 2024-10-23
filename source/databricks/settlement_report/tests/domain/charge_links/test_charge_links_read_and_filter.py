@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import reduce
 from unittest.mock import Mock
 
@@ -10,13 +10,9 @@ import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods
 from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
-from settlement_report_job.wholesale.data_values import (
-    CalculationTypeDataProductValue,
-)
 
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from test_factories import latest_calculations_factory
 
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
@@ -117,24 +113,45 @@ def test_read_and_filter__returns_only_selected_grid_area(
     # Arrange
     selected_grid_area_code = "805"
     not_selected_grid_area_code = "806"
-    df = charge.create(
+    selected_metering_point = "555"
+    not_selected_metering_point = "666"
+
+    metering_point_periods = metering_point_periods_factory.create(
         spark,
-        default_data.create_time_series_data_spec(
+        default_data.create_metering_point_periods_row(
             grid_area_code=selected_grid_area_code,
+            metering_point_id=selected_metering_point,
         ),
     ).union(
-        time_series_factory.create(
+        metering_point_periods_factory.create(
             spark,
-            default_data.create_time_series_data_spec(
+            default_data.create_metering_point_periods_row(
                 grid_area_code=not_selected_grid_area_code,
+                metering_point_id=not_selected_metering_point,
+            ),
+        )
+    )
+    charge_link_periods = charge_links_factory.create(
+        spark,
+        default_data.create_charge_link_periods_row(
+            metering_point_id=selected_metering_point,
+        ),
+    ).union(
+        charge_links_factory.create(
+            spark,
+            default_data.create_charge_link_periods_row(
+                metering_point_id=not_selected_metering_point,
             ),
         )
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = df
+    mock_repository.read_metering_point_time_series.return_value = (
+        metering_point_periods
+    )
+    mock_repository.read_charge_link_periods.return_value = charge_link_periods
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -143,7 +160,6 @@ def test_read_and_filter__returns_only_selected_grid_area(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         repository=mock_repository,
     )
 
@@ -155,7 +171,7 @@ def test_read_and_filter__returns_only_selected_grid_area(
     assert actual_grid_area_codes[0][0] == selected_grid_area_code
 
 
-def test_read_and_filter__returns_only_metering_points_from_selected_calculation_id(
+def test_read_and_filter__returns_only_rows_from_selected_calculation_id(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -163,26 +179,42 @@ def test_read_and_filter__returns_only_metering_points_from_selected_calculation
     not_selected_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
     expected_metering_point_id = "123456789012345678901234567"
     other_metering_point_id = "765432109876543210987654321"
-    df = time_series_factory.create(
+    charge_link_periods = charge_links_factory.create(
         spark,
-        default_data.create_time_series_data_spec(
+        default_data.create_charge_link_periods_row(
             calculation_id=selected_calculation_id,
             metering_point_id=expected_metering_point_id,
         ),
     ).union(
-        time_series_factory.create(
+        charge_links_factory.create(
             spark,
-            default_data.create_time_series_data_spec(
+            default_data.create_charge_link_periods_row(
+                calculation_id=not_selected_calculation_id,
+                metering_point_id=other_metering_point_id,
+            ),
+        )
+    )
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(
+            calculation_id=selected_calculation_id,
+            metering_point_id=expected_metering_point_id,
+        ),
+    ).union(
+        metering_point_periods_factory.create(
+            spark,
+            default_data.create_metering_point_periods_row(
                 calculation_id=not_selected_calculation_id,
                 metering_point_id=other_metering_point_id,
             ),
         )
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = df
+    mock_repository.read_charge_link_periods.return_value = charge_link_periods
+    mock_repository.read_metering_point_periods.return_value = metering_point_periods
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -191,7 +223,6 @@ def test_read_and_filter__returns_only_metering_points_from_selected_calculation
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
         repository=mock_repository,
     )
 
@@ -301,7 +332,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     mock_repository.read_charge_link_periods.return_value = charge_link_periods_df
 
     # Act
-    actual = read_and_filter_for_wholesale(
+    actual = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
