@@ -169,19 +169,14 @@ def filter_on_charge_owner_and_tax(
     requesting_actor_id: str,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
-    charge_link_periods.join(
+    charge_link_periods = charge_link_periods.join(
         charge_price_information_periods,
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
         how="inner",
     ).select(
-        charge_link_periods[DataProductColumnNames.calculation_id],
-        charge_link_periods[DataProductColumnNames.metering_point_id],
-        charge_link_periods[DataProductColumnNames.from_date],
-        charge_link_periods[DataProductColumnNames.to_date],
+        charge_link_periods["*"],
         charge_price_information_periods[DataProductColumnNames.is_tax],
     )
-
-    charge_link_periods.show()
 
     if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
         return charge_link_periods.where(

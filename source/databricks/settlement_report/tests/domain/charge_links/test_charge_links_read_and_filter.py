@@ -349,7 +349,7 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
         default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = metering_point_period
+    mock_repository.read_metering_point_periods.return_value = metering_point_period
     mock_repository.read_charge_price_information_periods.return_value = (
         charge_price_information_period_df
     )
@@ -410,7 +410,7 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
         default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = metering_point_period
+    mock_repository.read_metering_point_periods.return_value = metering_point_period
     mock_repository.read_charge_price_information_periods.return_value = (
         charge_price_information_period_df
     )
