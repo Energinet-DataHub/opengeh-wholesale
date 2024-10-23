@@ -154,11 +154,12 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        w = Window().orderBy(order_by)
-        chunk_index_col = F.floor(
-            (F.row_number().over(w) - F.lit(1)) / F.lit(rows_per_file)
-        )  # Subtract one as row_number starts at 1
-        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+        if df.count() > rows_per_file:
+            w = Window().orderBy(order_by)
+            chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
+            df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+        else:
+            partition_columns.remove(EphemeralColumns.chunk_index)
 
     df = df.orderBy(order_by)
 

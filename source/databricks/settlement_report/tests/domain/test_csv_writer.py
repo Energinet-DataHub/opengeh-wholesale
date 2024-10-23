@@ -24,6 +24,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 import test_factories.time_series_csv_factory as factory
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
@@ -378,3 +379,81 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
     assert df_actual.collect() == df_expected.collect()
+
+
+def test_write__when_prevent_large_files__chunk_index_start_at_1(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 3
+    report_data_type = ReportDataType.TimeSeriesQuarterly
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    standard_wholesale_fixing_scenario_args.locale = "en-gb"
+    test_spec_consumption = factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=30,
+    )
+    df_prepared_time_series = factory.create(spark, test_spec_consumption)
+
+    # Act
+    result_files = csv_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df_prepared_time_series,
+        report_data_type=report_data_type,
+        rows_per_file=10,
+    )
+
+    # Assert
+    assert len(result_files) == expected_file_count
+    for result_file in result_files:
+        file_name = result_file[:-4].split("/")[-1]
+        file_name_components = file_name.split("_")
+
+        chunk_id_if_present = file_name_components[-1]
+        assert int(chunk_id_if_present) >= 1 and int(chunk_id_if_present) < 4
+
+
+def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be_excluded(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 1
+    report_data_type = ReportDataType.TimeSeriesQuarterly
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    standard_wholesale_fixing_scenario_args.locale = "en-gb"
+    test_spec_consumption = factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=30,
+    )
+    df_prepared_time_series = factory.create(spark, test_spec_consumption)
+
+    # Act
+    result_files = csv_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df_prepared_time_series,
+        report_data_type=report_data_type,
+        rows_per_file=31,
+    )
+
+    # Assert
+    assert len(result_files) == expected_file_count
+    file_name = result_files[0]
+    file_name = file_name[:-4].split("/")[-1]
+    file_name_components = file_name.split("_")
+
+    chunk_id_if_present = file_name_components[-1]
+    try:
+        int(chunk_id_if_present)
+        assert (
+            False
+        ), "A valid integer indicating a present chunk index was found when not expected!"
+    except ValueError:
+        pass
