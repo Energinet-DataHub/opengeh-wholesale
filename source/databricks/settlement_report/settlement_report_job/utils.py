@@ -155,9 +155,7 @@ def write_files(
     """
     if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
-        chunk_index_col = F.floor(
-            (F.row_number().over(w) - F.lit(1)) / F.lit(rows_per_file)
-        )  # Subtract one as row_number starts at 1
+        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
 
     df = df.orderBy(order_by)
@@ -227,7 +225,7 @@ def get_new_files(
         else:
             energy_supplier_id = None
 
-        if EphemeralColumns.chunk_index in partition_columns:
+        if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
             group_count += 1
             chunk_index = groups[group_count]
         else:
