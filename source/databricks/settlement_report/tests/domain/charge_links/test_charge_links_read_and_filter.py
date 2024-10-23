@@ -84,8 +84,8 @@ def test_read_and_filter__returns_link_periods_that_overlaps_with_selected_perio
         ),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_periods = charge_link_periods
-    mock_repository.read_charge_link_periods = metering_point_periods
+    mock_repository.read_metering_point_periods.return_value = charge_link_periods
+    mock_repository.read_charge_link_periods.return_value = metering_point_periods
 
     # Act
     actual_df = read_and_filter(
