@@ -31,6 +31,14 @@ module "kvs_sql_ms_settlement_report_database_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+module "kvs_mssql_grid_loss_imbalance_prices_connection_string" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-settlement-report-connection-string"
+  value        = local.DB_CONNECTION_STRING
+  key_vault_id = module.kv_internal.id
+}
+
 locals {
   pim_security_group_rules_001 = [
     {
