@@ -181,6 +181,8 @@ def filter_on_charge_owner_and_tax(
         charge_price_information_periods[DataProductColumnNames.is_tax],
     )
 
+    charge_link_periods.show()
+
     if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
         return charge_link_periods.where(
             (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)

@@ -19,7 +19,8 @@ DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
-NOT_SYSTEM_OPERATOR_ID = "4444444444444"
+GRID_ACCESS_PROVIDER_ID = "3333333333333"
+OTHER_ID = "9999999999999"
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 JAN_1ST = datetime(2023, 12, 31, 23)
@@ -61,7 +62,7 @@ JAN_5TH = datetime(2024, 1, 4, 23)
         ),
     ],
 )
-def test_read_and_filter__returns_link_periods_that_overlaps_with_selected_period(
+def test_read_and_filter__returns_charge_links_that_overlap_with_selected_period(
     spark: SparkSession,
     charge_link_from_date: datetime,
     charge_link_to_date: datetime,
@@ -85,8 +86,8 @@ def test_read_and_filter__returns_link_periods_that_overlaps_with_selected_perio
         ),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_periods.return_value = charge_link_periods
-    mock_repository.read_charge_link_periods.return_value = metering_point_periods
+    mock_repository.read_metering_point_periods.return_value = metering_point_periods
+    mock_repository.read_charge_link_periods.return_value = charge_link_periods
 
     # Act
     actual_df = read_and_filter(
@@ -241,6 +242,7 @@ ENERGY_SUPPLIER_A = "1000000000000"
 ENERGY_SUPPLIER_B = "2000000000000"
 ENERGY_SUPPLIER_C = "3000000000000"
 ENERGY_SUPPLIERS_ABC = [ENERGY_SUPPLIER_A, ENERGY_SUPPLIER_B, ENERGY_SUPPLIER_C]
+METERING_POINT_ID_ABC = ["123", "456", "789"]
 
 
 @pytest.mark.parametrize(
@@ -261,20 +263,36 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
     expected_energy_supplier_ids: list[str],
 ) -> None:
     # Arrange
-    df = reduce(
+    metering_point_periods = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            time_series_factory.create(
+            metering_point_periods_factory.create(
                 spark,
-                default_data.create_time_series_data_spec(
+                default_data.create_metering_point_periods_row(
                     energy_supplier_id=energy_supplier_id,
+                    metering_point_id=metering_point_id,
                 ),
             )
-            for energy_supplier_id in ENERGY_SUPPLIERS_ABC
+            for energy_supplier_id, metering_point_id in zip(
+                ENERGY_SUPPLIERS_ABC, METERING_POINT_ID_ABC
+            )
+        ],
+    )
+    charge_link_periods = reduce(
+        lambda df1, df2: df1.union(df2),
+        [
+            charge_links_factory.create(
+                spark,
+                default_data.create_charge_link_periods_row(
+                    metering_point_id=metering_point_id,
+                ),
+            )
+            for metering_point_id in METERING_POINT_ID_ABC
         ],
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = df
+    mock_repository.read_metering_point_periods.return_value = metering_point_periods
+    mock_repository.read_charge_link_periods.return_value = charge_link_periods
 
     # Act
     actual_df = read_and_filter(
@@ -298,34 +316,40 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
 
 
 @pytest.mark.parametrize(
-    "charge_owner_id,return_rows",
+    "charge_owner_id,is_tax,return_rows",
     [
-        (SYSTEM_OPERATOR_ID, True),
-        (NOT_SYSTEM_OPERATOR_ID, False),
+        pytest.param(SYSTEM_OPERATOR_ID, True, True, id="system operator with tax"),
+        pytest.param(
+            SYSTEM_OPERATOR_ID, False, False, id="system operator without tax"
+        ),
+        pytest.param(OTHER_ID, False, False, id="other charge owner without tax"),
+        pytest.param(OTHER_ID, True, False, id="other charge owner with tax"),
     ],
 )
-def test_read_and_filter__when_system_operator__returns_only_time_series_with_system_operator_as_charge_owner(
+def test_read_and_filter__when_system_operator__returns_expected_charge_links(
     spark: SparkSession,
     charge_owner_id: str,
+    is_tax: bool,
     return_rows: bool,
 ) -> None:
     # Arrange
-    time_series_df = time_series_factory.create(
+    metering_point_period = metering_point_periods_factory.create(
         spark,
-        default_data.create_time_series_data_spec(),
+        default_data.create_metering_point_periods_row(),
     )
     charge_price_information_period_df = charge_price_information_periods.create(
         spark,
         default_data.create_charge_price_information_periods_row(
-            charge_owner_id=SYSTEM_OPERATOR_ID
+            charge_owner_id=charge_owner_id,
+            is_tax=is_tax,
         ),
     )
     charge_link_periods_df = charge_links_factory.create(
         spark,
-        default_data.create_charge_link_periods_row(charge_owner_id=SYSTEM_OPERATOR_ID),
+        default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_metering_point_time_series.return_value = metering_point_period
     mock_repository.read_charge_price_information_periods.return_value = (
         charge_price_information_period_df
     )
@@ -342,7 +366,68 @@ def test_read_and_filter__when_system_operator__returns_only_time_series_with_sy
         },
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
-        requesting_actor_id=charge_owner_id,
+        requesting_actor_id=SYSTEM_OPERATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert (actual.count() > 0) == return_rows
+
+
+@pytest.mark.parametrize(
+    "charge_owner_id,is_tax,return_rows",
+    [
+        pytest.param(
+            GRID_ACCESS_PROVIDER_ID, True, True, id="grid access provider with tax"
+        ),
+        pytest.param(
+            GRID_ACCESS_PROVIDER_ID, False, False, id="grid access provider without tax"
+        ),
+        pytest.param(OTHER_ID, False, False, id="other charge owner without tax"),
+        pytest.param(OTHER_ID, True, True, id="other charge owner with tax"),
+    ],
+)
+def test_read_and_filter__when_grid_access_provider__returns_expected_charge_links(
+    spark: SparkSession,
+    charge_owner_id: str,
+    is_tax: bool,
+    return_rows: bool,
+) -> None:
+    # Arrange
+    metering_point_period = metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(),
+    )
+    charge_price_information_period_df = charge_price_information_periods.create(
+        spark,
+        default_data.create_charge_price_information_periods_row(
+            charge_owner_id=charge_owner_id,
+            is_tax=is_tax,
+        ),
+    )
+    charge_link_periods_df = charge_links_factory.create(
+        spark,
+        default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_time_series.return_value = metering_point_period
+    mock_repository.read_charge_price_information_periods.return_value = (
+        charge_price_information_period_df
+    )
+    mock_repository.read_charge_link_periods.return_value = charge_link_periods_df
+
+    # Act
+    actual = read_and_filter(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        calculation_id_by_grid_area={
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
+                default_data.DEFAULT_CALCULATION_ID
+            )
+        },
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.GRID_ACCESS_PROVIDER,
+        requesting_actor_id=GRID_ACCESS_PROVIDER_ID,
         repository=mock_repository,
     )
 
