@@ -70,19 +70,22 @@ def test_read_and_filter__returns_link_periods_that_overlaps_with_selected_perio
     period_start = JAN_2ND
     period_end = JAN_4TH
 
-    metering_point_periods_factory.create(spark, default_data.)
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(
+            from_date=charge_link_from_date, to_date=charge_link_to_date
+        ),
+    )
 
     charge_link_periods = charge_links_factory.create(
         spark,
-        [
-            default_data.create_charge_link_periods_row(
-                from_date=charge_link_from_date, to_date=charge_link_to_date
-            )
-        ],
+        default_data.create_charge_link_periods_row(
+            from_date=charge_link_from_date, to_date=charge_link_to_date
+        ),
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_periods = charge_link_periods
-    mock_repository.read_charge_link_periods = s
+    mock_repository.read_charge_link_periods = metering_point_periods
 
     # Act
     actual_df = read_and_filter(

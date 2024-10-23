@@ -51,7 +51,9 @@ def create(
                 DataProductColumnNames.calculation_version: row.calculation_version,
                 DataProductColumnNames.metering_point_id: row.metering_point_id,
                 DataProductColumnNames.metering_point_type: row.metering_point_type.value,
-                DataProductColumnNames.settlement_method: row.settlement_method.value,
+                DataProductColumnNames.settlement_method: (
+                    row.settlement_method.value if row.settlement_method else None
+                ),
                 DataProductColumnNames.grid_area_code: row.grid_area_code,
                 DataProductColumnNames.resolution: row.resolution.value,
                 DataProductColumnNames.from_grid_area_code: row.from_grid_area_code,
