@@ -9,7 +9,11 @@ import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods
-from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
+from settlement_report_job.domain.charge_links.read_and_filter import (
+    read_and_filter,
+    merge_connected_periods,
+    merge_connected_periods_2,
+)
 
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -445,3 +449,75 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
 
     # Assert
     assert (actual.count() > 0) == return_rows
+
+
+def test_read_and_filter__when_multiple_metering_point_periods_match_link_period__return_one_row(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    metering_point_period = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                balance_responsible_party_id="1", from_date=JAN_1ST, to_date=JAN_2ND
+            ),
+            default_data.create_metering_point_periods_row(
+                balance_responsible_party_id="2", from_date=JAN_2ND, to_date=JAN_3RD
+            ),
+        ],
+    )
+    charge_link_period = charge_links_factory.create(
+        spark,
+        default_data.create_charge_link_periods_row(from_date=JAN_1ST, to_date=JAN_3RD),
+    )
+    mock_repository = Mock()
+    mock_repository.read_metering_point_periods.return_value = metering_point_period
+    mock_repository.read_charge_link_periods.return_value = charge_link_period
+
+    # Act
+    actual = read_and_filter(
+        period_start=JAN_1ST,
+        period_end=JAN_3RD,
+        calculation_id_by_grid_area={
+            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
+                default_data.DEFAULT_CALCULATION_ID
+            )
+        },
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    actual.show()
+    assert actual.count() == 1
+    assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == JAN_1ST
+    assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
+
+
+def test_merge_connecting_periods(spark: SparkSession) -> None:
+    # Arrange
+
+    # create a dataframe with two periods that are connected
+    df = spark.createDataFrame(
+        [
+            ("1", JAN_1ST, JAN_2ND),
+            ("1", JAN_2ND, JAN_3RD),
+            ("1", JAN_4TH, JAN_5TH),
+        ],
+        [
+            DataProductColumnNames.charge_key,
+            DataProductColumnNames.from_date,
+            DataProductColumnNames.to_date,
+        ],
+    )
+
+    # Act
+    actual = merge_connected_periods_2(df, DataProductColumnNames.charge_key)
+
+    # Assert
+    actual.show()
+    assert actual.count() == 1
+    assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == JAN_1ST
+    assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
