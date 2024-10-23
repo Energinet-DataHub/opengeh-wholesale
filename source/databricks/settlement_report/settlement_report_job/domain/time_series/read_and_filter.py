@@ -33,8 +33,8 @@ from settlement_report_job.wholesale.data_values import (
 )
 from settlement_report_job.domain.factory_filters import (
     filter_by_energy_supplier_ids,
-    filter_by_latest_calculations,
     filter_by_calculation_id_by_grid_area,
+    read_and_filter_by_latest_calculations,
 )
 
 log = logging.Logger(__name__)
@@ -59,20 +59,14 @@ def read_and_filter_for_balance_fixing(
         repository,
     )
 
-    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
-        (
-            F.col(DataProductColumnNames.calculation_type)
-            == CalculationTypeDataProductValue.BALANCE_FIXING.value
-        )
-        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
-        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
-        & (F.col(DataProductColumnNames.start_of_day) < period_end)
-    )
-    time_series_points = filter_by_latest_calculations(
-        time_series_points,
-        latest_balance_fixing_calculations,
-        df_time_column=DataProductColumnNames.observation_time,
+    time_series_points = read_and_filter_by_latest_calculations(
+        df=time_series_points,
+        repository=repository,
+        grid_area_codes=grid_area_codes,
+        period_start=period_start,
+        period_end=period_end,
         time_zone=time_zone,
+        observation_time_column=DataProductColumnNames.observation_time,
     )
 
     return time_series_points

@@ -26,10 +26,10 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
 from settlement_report_job.domain.factory_filters import (
-    filter_by_latest_calculations,
     filter_by_energy_supplier_ids,
     filter_by_grid_area_codes,
     filter_by_calculation_id_by_grid_area,
+    read_and_filter_by_latest_calculations,
 )
 
 log = logging.Logger(__name__)
@@ -63,31 +63,18 @@ def read_and_filter_from_view(
 
     if args.calculation_type is CalculationType.BALANCE_FIXING and args.grid_area_codes:
         df = df.where(filter_by_grid_area_codes(args.grid_area_codes))
-        df = read_and_filter_by_latest_calculations(df, args, repository)
+        df = read_and_filter_by_latest_calculations(
+            df=df,
+            repository=repository,
+            grid_area_codes=args.grid_area_codes,
+            period_start=args.period_start,
+            period_end=args.period_end,
+            time_zone=args.time_zone,
+            observation_time_column=DataProductColumnNames.time,
+        )
     elif args.calculation_id_by_grid_area:
         df = df.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
 
-    return df
-
-
-def read_and_filter_by_latest_calculations(
-    df: DataFrame, args: SettlementReportArgs, repository: WholesaleRepository
-) -> DataFrame:
-    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
-        (
-            F.col(DataProductColumnNames.calculation_type)
-            == CalculationTypeDataProductValue.BALANCE_FIXING.value
-        )
-        & (filter_by_grid_area_codes(args.grid_area_codes))
-        & (F.col(DataProductColumnNames.start_of_day) >= args.period_start)
-        & (F.col(DataProductColumnNames.start_of_day) < args.period_end)
-    )
-    df = filter_by_latest_calculations(
-        df,
-        latest_balance_fixing_calculations,
-        df_time_column=DataProductColumnNames.time,
-        time_zone=args.time_zone,
-    )
     return df
