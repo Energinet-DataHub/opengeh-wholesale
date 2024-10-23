@@ -25,7 +25,7 @@ from settlement_report_job.infrastructure.calculation_type import CalculationTyp
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.domain.factory_utils import (
+from settlement_report_job.domain.factory_filters import (
     filter_by_latest_calculations,
     filter_by_energy_supplier_ids,
     filter_by_grid_area_codes,
@@ -58,17 +58,16 @@ def read_and_filter_from_view(
         & (F.col(DataProductColumnNames.time) < args.period_end)
     )
 
+    if args.energy_supplier_ids:
+        df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
+
     if args.calculation_type is CalculationType.BALANCE_FIXING:
         df = df.where(filter_by_grid_area_codes(args.grid_area_codes))
         df = read_and_filter_by_latest_calculations(df, args, repository)
-
-    elif args.calculation_id_by_grid_area is not None:
+    else:
         df = df.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
-
-    if args.energy_supplier_ids is not None:
-        df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
 
     return df
 

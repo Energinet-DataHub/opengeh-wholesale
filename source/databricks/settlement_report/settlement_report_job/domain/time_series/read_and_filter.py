@@ -31,7 +31,7 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.factory_utils import (
+from settlement_report_job.domain.factory_filters import (
     filter_by_energy_supplier_ids,
     filter_by_latest_calculations,
     filter_by_calculation_id_by_grid_area,
