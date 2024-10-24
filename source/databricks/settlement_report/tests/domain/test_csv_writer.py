@@ -581,8 +581,8 @@ def test_write__when_energy_supplier_is_only_partition_for_energy_results__retur
                     grid_area_code="805", energy_supplier_id=energy_supplier_id
                 ),
             )
-        )
-        # standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
+        ),
+        standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
     )
 
     # Act

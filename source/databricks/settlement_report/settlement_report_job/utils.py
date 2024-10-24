@@ -220,7 +220,7 @@ def get_new_files(
 
         if (
             CsvColumnNames.grid_area_code in partition_columns
-            or DataProductColumnNames.grid_area_code in partition_columns
+            or EphemeralColumns.grid_area_code in partition_columns
         ):
             grid_area = groups[group_count]
             group_count += 1
@@ -240,7 +240,9 @@ def get_new_files(
             chunk_index = None
 
         file_name = file_name_factory.create(
-            grid_area, energy_supplier_id=energy_supplier_id, chunk_index=chunk_index
+            grid_area_code=grid_area,
+            energy_supplier_id=energy_supplier_id,
+            chunk_index=chunk_index,
         )
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name

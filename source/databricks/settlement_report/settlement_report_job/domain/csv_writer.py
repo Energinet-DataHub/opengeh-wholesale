@@ -77,6 +77,12 @@ def write(
     return files
 
 
+def _check_if_only_one_grid_area_is_selected(args: SettlementReportArgs):
+    return (
+        args.calculation_id_by_grid_area and len(args.calculation_id_by_grid_area) == 1
+    ) or (args.grid_area_codes and len(args.grid_area_codes) == 1)
+
+
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
 ) -> List[str]:
@@ -93,7 +99,9 @@ def _get_partition_columns_for_report_type(
             partition_columns.append(EphemeralColumns.chunk_index)
 
     if report_type in [ReportDataType.EnergyResults]:
-        if args.split_report_by_grid_area:
+        if args.split_report_by_grid_area or _check_if_only_one_grid_area_is_selected(
+            args
+        ):
             partition_columns = [EphemeralColumns.grid_area_code]
 
         if _is_partitioning_by_energy_supplier_id_needed(args):
