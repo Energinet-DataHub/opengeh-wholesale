@@ -34,16 +34,17 @@ class FileNameFactory:
             return self._create_time_series_filename(
                 grid_area_code, energy_supplier_id, chunk_index
             )
-        if self.report_data_type in [ReportDataType.EnergyResults]:
-            return self._create_energy_result_filename(
-                grid_area_code, energy_supplier_id
-            )
+        if self.report_data_type in [
+            ReportDataType.EnergyResults,
+            ReportDataType.WholesaleResults,
+        ]:
+            return self._create_result_filename(grid_area_code, energy_supplier_id)
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
             )
 
-    def _create_energy_result_filename(
+    def _create_result_filename(
         self,
         grid_area_code: str | None,
         energy_supplier_id: str | None,
@@ -103,6 +104,8 @@ class FileNameFactory:
             return "TSSD15"
         elif self.report_data_type == ReportDataType.EnergyResults:
             return "RESULTENERGY"
+        elif self.report_data_type == ReportDataType.WholesaleResults:
+            return "RESULTWHOLESALE"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )
