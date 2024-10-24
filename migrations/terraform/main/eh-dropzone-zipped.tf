@@ -1,10 +1,11 @@
 #---- Eventhub Namespace
 
 resource "azurerm_eventhub_namespace" "eventhub_namespace_dropzone" {
-  name                = "evhns-dropzone-${local.resources_suffix}"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = "Standard"
+  name                         = "evhns-dropzone-${local.resources_suffix}"
+  location                     = azurerm_resource_group.this.location
+  resource_group_name          = azurerm_resource_group.this.name
+  sku                          = "Standard"
+  local_authentication_enabled = false
   identity {
     type = "SystemAssigned"
   }
