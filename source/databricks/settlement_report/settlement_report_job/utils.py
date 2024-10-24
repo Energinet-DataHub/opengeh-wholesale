@@ -212,8 +212,6 @@ def get_new_files(
     if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
-    assert EphemeralColumns.chunk_index in partition_columns
-
     for f in files:
         partition_match = re.match(regex, str(f))
         if partition_match is None:
