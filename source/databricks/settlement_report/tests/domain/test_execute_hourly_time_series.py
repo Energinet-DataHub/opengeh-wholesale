@@ -33,8 +33,8 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
     expected_columns = [
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.start_of_day,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.start_date_time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
 
     # Act

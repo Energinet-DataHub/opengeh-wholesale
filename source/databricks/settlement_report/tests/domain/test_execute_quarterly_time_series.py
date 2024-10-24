@@ -44,8 +44,8 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.start_of_day,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.start_date_time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -77,8 +77,8 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.start_of_day,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.start_date_time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -118,8 +118,8 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.start_of_day,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.start_date_time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -157,8 +157,8 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     expected_columns = [
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.start_of_day,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.start_date_time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -212,8 +212,8 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.start_of_day,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.start_date_time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
