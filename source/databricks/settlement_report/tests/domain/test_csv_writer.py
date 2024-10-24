@@ -576,13 +576,14 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     }
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     standard_wholesale_fixing_scenario_args.split_report_by_grid_area = True
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
 
     for i in range(10):
         df = energy_factory.create_energy_per_es_v1(
             spark, create_energy_results_data_spec(grid_area_code="804")
         )
 
-    prepare_for_csv(
+    df = prepare_for_csv(
         df,
         standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
     )
