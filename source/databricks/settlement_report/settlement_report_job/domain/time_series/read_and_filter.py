@@ -14,24 +14,19 @@
 from datetime import datetime
 from uuid import UUID
 
-from pyspark.sql import DataFrame, functions as F, Column
+from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
-from settlement_report_job.domain.csv_column_names import EphemeralColumns
-from settlement_report_job.wholesale.data_values.calculation_type import (
-    CalculationTypeDataProductValue,
-)
-from settlement_report_job.domain.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.system_operator_filter import (
+from settlement_report_job.domain.dataframe_utils.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.factory_filters import (
+from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_energy_supplier_ids,
     filter_by_calculation_id_by_grid_area,
     read_and_filter_by_latest_calculations,
