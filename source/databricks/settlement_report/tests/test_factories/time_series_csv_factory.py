@@ -43,7 +43,7 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     CsvColumnNames.type_of_mp: data_spec.metering_point_type.value,
                     CsvColumnNames.grid_area_code: grid_area_code,
                     CsvColumnNames.start_date_time: data_spec.start_of_day
-                                                    + timedelta(days=i),
+                    + timedelta(days=i),
                 }
                 for j in range(
                     25
