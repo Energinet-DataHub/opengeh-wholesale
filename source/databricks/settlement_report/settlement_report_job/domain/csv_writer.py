@@ -25,6 +25,7 @@ from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
+    _check_if_only_one_grid_area_is_selected,
     write_files,
     get_new_files,
     merge_files,
@@ -77,13 +78,6 @@ def write(
     return files
 
 
-def _check_if_only_one_grid_area_is_selected(args: SettlementReportArgs) -> bool:
-    return (
-        args.calculation_id_by_grid_area is not None
-        and len(args.calculation_id_by_grid_area) == 1
-    ) or (args.grid_area_codes is not None and len(args.grid_area_codes) == 1)
-
-
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
 ) -> list[str]:
@@ -95,7 +89,10 @@ def _get_partition_columns_for_report_type(
         partition_columns = [CsvColumnNames.grid_area_code]
 
     if report_type in [ReportDataType.EnergyResults] and (
-        _check_if_only_one_grid_area_is_selected(args) or args.split_report_by_grid_area
+        _check_if_only_one_grid_area_is_selected(
+            args.calculation_id_by_grid_area, args.grid_area_codes
+        )
+        or args.split_report_by_grid_area
     ):
         partition_columns = [EphemeralColumns.grid_area_code]
 

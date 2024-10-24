@@ -15,6 +15,7 @@ from dataclasses import dataclass
 import itertools
 from pathlib import Path
 import re
+from uuid import UUID
 import zipfile
 
 from typing import Any
@@ -284,3 +285,13 @@ def merge_files(
         dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
     return list(set([str(_file.dst) for _file in new_files]))
+
+
+def _check_if_only_one_grid_area_is_selected(
+    calculation_id_by_grid_area: dict[str, UUID] | None,
+    grid_area_codes: list[str] | None,
+) -> bool:
+    return (
+        calculation_id_by_grid_area is not None
+        and len(calculation_id_by_grid_area) == 1
+    ) or (grid_area_codes is not None and len(grid_area_codes) == 1)
