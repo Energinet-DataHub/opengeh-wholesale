@@ -42,7 +42,7 @@ locals {
     "Stream_Time_Series_Gold_To_Wholesale",
     "alert_multiple_open_charge_link_periods_wholesale",
     "alert_bronze_migration_audit_changed",
-    "eloverblik_time_series_freshness_compared_to_bronze",
-    "wholesale_time_series_freshness_compared_to_bronze"
+    "alert_eloverblik_time_series_freshness_compared_to_bronze",
+    "alert_wholesale_time_series_freshness_compared_to_bronze"
   ]
 }
