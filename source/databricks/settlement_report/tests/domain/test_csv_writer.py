@@ -548,12 +548,12 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     expected_file_count = 1
     expected_columns = [
         CsvColumnNames.grid_area_code,
-        CsvColumnNames.calculation_type,
-        CsvColumnNames.time,
-        CsvColumnNames.resolution,
-        CsvColumnNames.metering_point_type,
+        CsvColumnNames.energy_business_process,
+        CsvColumnNames.start_date_time,
+        CsvColumnNames.resolution_duration,
+        CsvColumnNames.type_of_mp,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
