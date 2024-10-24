@@ -621,12 +621,12 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.calculation_type,
-        CsvColumnNames.time,
-        CsvColumnNames.resolution,
-        CsvColumnNames.metering_point_type,
+        CsvColumnNames.energy_business_process,
+        CsvColumnNames.start_date_time,
+        CsvColumnNames.resolution_duration,
+        CsvColumnNames.type_of_mp,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [

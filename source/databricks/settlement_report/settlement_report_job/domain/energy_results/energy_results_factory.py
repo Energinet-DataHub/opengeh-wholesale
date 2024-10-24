@@ -48,5 +48,6 @@ def create_energy_results(
         energy,
         _check_if_only_one_grid_area_is_selected(
             args.calculation_id_by_grid_area, args.grid_area_codes
-        ),
+        )
+        or args.split_report_by_grid_area,
     )
