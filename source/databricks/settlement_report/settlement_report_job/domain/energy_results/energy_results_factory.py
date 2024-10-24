@@ -41,4 +41,4 @@ def create_energy_results(
 ) -> DataFrame:
     energy = read_and_filter_from_view(args, repository)
 
-    return prepare_for_csv(energy)
+    return prepare_for_csv(energy, args.split_report_by_grid_area)

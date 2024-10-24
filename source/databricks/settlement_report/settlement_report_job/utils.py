@@ -201,8 +201,8 @@ def get_new_files(
     if CsvColumnNames.grid_area_code in partition_columns:
         regex = f"{regex}/{CsvColumnNames.grid_area_code}=(\\w{{3}})"
 
-    if DataProductColumnNames.grid_area_code in partition_columns:
-        regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
+    if EphemeralColumns.grid_area_code in partition_columns:
+        regex = f"{regex}/{EphemeralColumns.grid_area_code}=(\\w{{3}})"
 
     if CsvColumnNames.energy_supplier_id in partition_columns:
         regex = f"{regex}/{CsvColumnNames.energy_supplier_id}=(\\w+)"
