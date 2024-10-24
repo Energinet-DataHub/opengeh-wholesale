@@ -46,6 +46,8 @@ def default_settlement_report_args() -> SettlementReportArgs:
     [
         (ReportDataType.TimeSeriesHourly, "TSSD60"),
         (ReportDataType.TimeSeriesQuarterly, "TSSD15"),
+        (ReportDataType.EnergyResults, "RESULTENERGY"),
+        (ReportDataType.WholesaleResults, "RESULTWHOLESALE"),
     ],
 )
 def test_create__when_energy_supplier__returns_expected_file_name(

@@ -38,12 +38,36 @@ class FileNameFactory:
             return self._create_energy_result_filename(
                 grid_area_code, energy_supplier_id
             )
+        if self.report_data_type in [ReportDataType.WholesaleResults]:
+            return self._create_wholesale_result_filename(
+                grid_area_code, energy_supplier_id
+            )
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
             )
 
     def _create_energy_result_filename(
+        self,
+        grid_area_code: str | None,
+        energy_supplier_id: str | None,
+    ) -> str:
+        filename_parts = [
+            self._get_pre_fix(),
+            grid_area_code if grid_area_code is not None else "flere-net",
+            self._get_actor_id_in_file_name(energy_supplier_id),
+            self._get_market_role_in_file_name(),
+            self._get_start_date(),
+            self._get_end_date(),
+        ]
+
+        filename_parts_without_none = [
+            part for part in filename_parts if part is not None
+        ]
+
+        return "_".join(filename_parts_without_none) + ".csv"
+
+    def _create_wholesale_result_filename(
         self,
         grid_area_code: str | None,
         energy_supplier_id: str | None,
@@ -103,6 +127,8 @@ class FileNameFactory:
             return "TSSD15"
         elif self.report_data_type == ReportDataType.EnergyResults:
             return "RESULTENERGY"
+        elif self.report_data_type == ReportDataType.WholesaleResults:
+            return "RESULTWHOLESALE"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )
