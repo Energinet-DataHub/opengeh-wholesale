@@ -25,6 +25,7 @@ from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
+    should_include_ephemeral_grid_area,
     write_files,
     get_new_files,
     merge_files,
@@ -77,13 +78,6 @@ def write(
     return files
 
 
-def _check_if_only_one_grid_area_is_selected(args: SettlementReportArgs) -> bool:
-    return (
-        args.calculation_id_by_grid_area is not None
-        and len(args.calculation_id_by_grid_area) == 1
-    ) or (args.grid_area_codes is not None and len(args.grid_area_codes) == 1)
-
-
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
 ) -> list[str]:
@@ -93,17 +87,18 @@ def _get_partition_columns_for_report_type(
         ReportDataType.TimeSeriesQuarterly,
     ]:
         partition_columns = [CsvColumnNames.grid_area_code]
-        if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(CsvColumnNames.energy_supplier_id)
 
-    if report_type in [ReportDataType.EnergyResults]:
-        if args.split_report_by_grid_area or _check_if_only_one_grid_area_is_selected(
-            args
-        ):
-            partition_columns = [EphemeralColumns.grid_area_code]
+    if report_type in [ReportDataType.EnergyResults] and (
+        should_include_ephemeral_grid_area(
+            args.calculation_id_by_grid_area,
+            args.grid_area_codes,
+            args.split_report_by_grid_area,
+        )
+    ):
+        partition_columns = [EphemeralColumns.grid_area_code]
 
-        if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(CsvColumnNames.energy_supplier_id)
+    if _is_partitioning_by_energy_supplier_id_needed(args):
+        partition_columns.append(CsvColumnNames.energy_supplier_id)
 
     if args.prevent_large_text_files:
         partition_columns.append(EphemeralColumns.chunk_index)
