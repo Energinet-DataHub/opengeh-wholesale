@@ -47,6 +47,14 @@ module "kvs_sql_ms_revision_log_database_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+module "kvs_mssql_grid_loss_imbalance_prices_connection_string" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-revision-log-connection-string"
+  value        = local.CONNECTION_STRING_DB_MIGRATIONS
+  key_vault_id = module.kv_internal.id
+}
+
 locals {
   pim_security_group_rules_001 = [
     {
