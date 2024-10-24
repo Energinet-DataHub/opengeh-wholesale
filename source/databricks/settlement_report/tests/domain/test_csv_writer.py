@@ -537,3 +537,72 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
+
+
+def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_files_and_content(
+    spark: SparkSession,
+    dbutils: DBUtilsFixture,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 4  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+    expected_columns = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.energy_supplier_id,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.settlement_method,
+        CsvColumnNames.quantity,
+    ]
+
+    expected_file_names = [
+        "RESULTENERGY_804_02-01-2024_02-01-2024_1.csv",
+        "RESULTENERGY_804_02-01-2024_02-01-2024_2.csv",
+        "RESULTENERGY_804_02-01-2024_02-01-2024_3.csv",
+        "RESULTENERGY_804_02-01-2024_02-01-2024_4.csv",
+    ]
+
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area = {
+        standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[
+            0
+        ]: standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area[
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[0]
+        ]
+    }
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+    standard_wholesale_fixing_scenario_args.split_report_by_grid_area = True
+
+    for i in range(10):
+        df = energy_factory.create_energy_per_es_v1(
+            spark, create_energy_results_data_spec(grid_area_code="804")
+        )
+
+    prepare_for_csv(
+        df,
+        standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
+    )
+
+    # Act
+    actual_files = csv_writer.write(
+        dbutils,
+        standard_wholesale_fixing_scenario_args,
+        df,
+        ReportDataType.EnergyResults,
+        rows_per_file=3,
+    )
+
+    # Assert
+    actual_file_names = [file.split("/")[-1] for file in actual_files]
+    for actual_file_name in actual_file_names:
+        assert actual_file_name in expected_file_names
+
+    assert len(actual_files) == expected_file_count
+    for file_path in actual_files:
+        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        assert df.count() > 0
+        assert df.columns == expected_columns

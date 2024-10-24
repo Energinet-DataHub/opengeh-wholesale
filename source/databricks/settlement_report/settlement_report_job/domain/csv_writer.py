@@ -86,18 +86,15 @@ def _get_partition_columns_for_report_type(
         ReportDataType.TimeSeriesQuarterly,
     ]:
         partition_columns = [CsvColumnNames.grid_area_code]
-        if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(CsvColumnNames.energy_supplier_id)
 
-        if args.prevent_large_text_files:
-            partition_columns.append(EphemeralColumns.chunk_index)
+    if report_type in [ReportDataType.EnergyResults] and args.split_report_by_grid_area:
+        partition_columns = [EphemeralColumns.grid_area_code]
 
-    if report_type in [ReportDataType.EnergyResults]:
-        if args.split_report_by_grid_area:
-            partition_columns = [EphemeralColumns.grid_area_code]
+    if _is_partitioning_by_energy_supplier_id_needed(args):
+        partition_columns.append(CsvColumnNames.energy_supplier_id)
 
-        if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(CsvColumnNames.energy_supplier_id)
+    if args.prevent_large_text_files:
+        partition_columns.append(EphemeralColumns.chunk_index)
 
     return partition_columns
 
