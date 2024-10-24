@@ -39,16 +39,18 @@ def prepare_for_csv(
         ),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(CsvColumnNames.calculation_type),
-        F.col(DataProductColumnNames.time).alias(CsvColumnNames.time),
-        F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
+        ].alias(CsvColumnNames.energy_business_process),
+        F.col(DataProductColumnNames.time).alias(CsvColumnNames.start_date_time),
+        F.col(DataProductColumnNames.resolution).alias(
+            CsvColumnNames.resolution_duration
+        ),
         map_from_dict(market_naming.METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(CsvColumnNames.metering_point_type),
+        ].alias(CsvColumnNames.type_of_mp),
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
     if DataProductColumnNames.energy_supplier_id in energy.columns:
