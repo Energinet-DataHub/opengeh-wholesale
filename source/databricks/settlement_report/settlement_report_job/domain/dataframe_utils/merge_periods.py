@@ -3,21 +3,23 @@ from pyspark.sql import DataFrame, functions as F, Window
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 
-def merge_connected_periods(
-    input_df: DataFrame, group_by_columns: list[str]
-) -> DataFrame:
+def merge_connected_periods(input_df: DataFrame) -> DataFrame:
     """
     Merges connected and/or overlapping periods within each group of rows in the input DataFrame.
     Args:
         input_df: a dataframe that contains any number of columns plus the columns 'from_date' and 'to_date'
-        group_by_columns: All the columns that should be used to group the rows before merging the periods
 
     Returns:
         A DataFrame with the same columns as the input DataFrame.
         Rows that had overlapping/connected periods are merged into single rows.
 
     """
-    window_spec = Window.partitionBy(group_by_columns).orderBy(
+    other_columns = [
+        col
+        for col in input_df.columns
+        if col not in [DataProductColumnNames.from_date, DataProductColumnNames.to_date]
+    ]
+    window_spec = Window.partitionBy(other_columns).orderBy(
         DataProductColumnNames.from_date
     )
 
@@ -41,8 +43,8 @@ def merge_connected_periods(
     )
 
     # Merge overlapping periods within each group
-    group_by_columns.append("group")
-    merged_df = df_with_group.groupBy(group_by_columns).agg(
+    other_columns.append("group")
+    merged_df = df_with_group.groupBy(other_columns).agg(
         F.min(DataProductColumnNames.from_date).alias(DataProductColumnNames.from_date),
         F.max(DataProductColumnNames.to_date).alias(DataProductColumnNames.to_date),
     )

@@ -96,7 +96,7 @@ def test_merge_connecting_periods__when_overlapping_periods__returns_merged_peri
     ).orderBy(F.rand())
 
     # Act
-    actual = merge_connected_periods(df, [DataProductColumnNames.charge_key])
+    actual = merge_connected_periods(df)
 
     # Assert
     actual.show()
@@ -165,7 +165,7 @@ def test_merge_connecting_periods__when_connections_and_gaps_between_periods__re
     ).orderBy(F.rand())
 
     # Act
-    actual = merge_connected_periods(df, [DataProductColumnNames.charge_key])
+    actual = merge_connected_periods(df)
 
     # Assert
     actual.show()
@@ -224,7 +224,7 @@ def test_merge_connecting_periods__when_overlap_but_difference_groups__returns_w
     ).orderBy(F.rand())
 
     # Act
-    actual = merge_connected_periods(df, [some_column_name])
+    actual = merge_connected_periods(df)
 
     # Assert
     actual.show()
