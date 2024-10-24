@@ -216,12 +216,20 @@ def get_new_files(
             raise ValueError(f"File {f} does not match the expected pattern")
 
         groups = partition_match.groups()
-
         group_count = 0
-        grid_area = groups[group_count] if len(groups) > 0 else None
-        if CsvColumnNames.energy_supplier_id in partition_columns:
+
+        if (
+            CsvColumnNames.grid_area_code in partition_columns
+            or DataProductColumnNames.grid_area_code in partition_columns
+        ):
+            grid_area = groups[group_count]
             group_count += 1
+        else:
+            grid_area = None
+
+        if CsvColumnNames.energy_supplier_id in partition_columns:
             energy_supplier_id = groups[group_count]
+            group_count += 1
         else:
             energy_supplier_id = None
 
