@@ -212,6 +212,8 @@ def get_new_files(
     if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
+    assert EphemeralColumns.chunk_index in partition_columns
+
     for f in files:
         partition_match = re.match(regex, str(f))
         if partition_match is None:
@@ -296,7 +298,7 @@ def should_include_ephemeral_grid_area(
         _check_if_only_one_grid_area_is_selected(
             calculation_id_by_grid_area, grid_area_codes
         )
-        or split_report_by_grid_area,
+        or split_report_by_grid_area
     )
 
 
@@ -304,7 +306,13 @@ def _check_if_only_one_grid_area_is_selected(
     calculation_id_by_grid_area: dict[str, UUID] | None,
     grid_area_codes: list[str] | None,
 ) -> bool:
-    return (
+    only_one_grid_area_from_calc_ids = (
         calculation_id_by_grid_area is not None
         and len(calculation_id_by_grid_area) == 1
-    ) or (grid_area_codes is not None and len(grid_area_codes) == 1)
+    )
+
+    only_one_grid_area_from_grid_area_codes = (
+        grid_area_codes is not None and len(grid_area_codes) == 1
+    )
+
+    return only_one_grid_area_from_calc_ids or only_one_grid_area_from_grid_area_codes
