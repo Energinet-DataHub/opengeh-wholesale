@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, List
+from typing import Any
 
 from pyspark.sql import DataFrame
 
@@ -77,9 +77,16 @@ def write(
     return files
 
 
+def _check_if_only_one_grid_area_is_selected(args: SettlementReportArgs) -> bool:
+    return (
+        args.calculation_id_by_grid_area is not None
+        and len(args.calculation_id_by_grid_area) == 1
+    ) or (args.grid_area_codes is not None and len(args.grid_area_codes) == 1)
+
+
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     partition_columns = []
     if report_type in [
         ReportDataType.TimeSeriesHourly,
@@ -89,22 +96,24 @@ def _get_partition_columns_for_report_type(
         if _is_partitioning_by_energy_supplier_id_needed(args):
             partition_columns.append(CsvColumnNames.energy_supplier_id)
 
-        if args.prevent_large_text_files:
-            partition_columns.append(EphemeralColumns.chunk_index)
-
     if report_type in [ReportDataType.EnergyResults]:
-        if args.split_report_by_grid_area:
+        if args.split_report_by_grid_area or _check_if_only_one_grid_area_is_selected(
+            args
+        ):
             partition_columns = [EphemeralColumns.grid_area_code]
 
         if _is_partitioning_by_energy_supplier_id_needed(args):
             partition_columns.append(CsvColumnNames.energy_supplier_id)
+
+    if args.prevent_large_text_files:
+        partition_columns.append(EphemeralColumns.chunk_index)
 
     return partition_columns
 
 
 def _get_order_by_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,

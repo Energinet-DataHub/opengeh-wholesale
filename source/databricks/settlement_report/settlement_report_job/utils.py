@@ -158,7 +158,8 @@ def write_files(
         chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
 
-    df = df.orderBy(order_by)
+    if len(order_by) > 0:
+        df = df.orderBy(*order_by)
 
     if locale.lower() == "da-dk":
         df = _convert_all_floats_to_danish_csv_format(df)
@@ -216,23 +217,33 @@ def get_new_files(
             raise ValueError(f"File {f} does not match the expected pattern")
 
         groups = partition_match.groups()
-
         group_count = 0
-        grid_area = groups[group_count] if len(groups) > 0 else None
-        if CsvColumnNames.energy_supplier_id in partition_columns:
+
+        if (
+            CsvColumnNames.grid_area_code in partition_columns
+            or EphemeralColumns.grid_area_code in partition_columns
+        ):
+            grid_area = groups[group_count]
             group_count += 1
+        else:
+            grid_area = None
+
+        if CsvColumnNames.energy_supplier_id in partition_columns:
             energy_supplier_id = groups[group_count]
+            group_count += 1
         else:
             energy_supplier_id = None
 
         if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
-            group_count += 1
             chunk_index = groups[group_count]
+            group_count += 1
         else:
             chunk_index = None
 
         file_name = file_name_factory.create(
-            grid_area, energy_supplier_id=energy_supplier_id, chunk_index=chunk_index
+            grid_area_code=grid_area,
+            energy_supplier_id=energy_supplier_id,
+            chunk_index=chunk_index,
         )
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
