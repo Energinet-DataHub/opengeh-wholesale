@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, List
+from typing import Any
 
 from pyspark.sql import DataFrame
 
@@ -77,9 +77,16 @@ def write(
     return files
 
 
+def _check_if_only_one_grid_area_is_selected(args: SettlementReportArgs) -> bool:
+    return (
+        args.calculation_id_by_grid_area is not None
+        and len(args.calculation_id_by_grid_area) == 1
+    ) or (args.grid_area_codes is not None and len(args.grid_area_codes) == 1)
+
+
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     partition_columns = []
     if report_type in [
         ReportDataType.TimeSeriesHourly,
@@ -87,7 +94,9 @@ def _get_partition_columns_for_report_type(
     ]:
         partition_columns = [CsvColumnNames.grid_area_code]
 
-    if report_type in [ReportDataType.EnergyResults] and args.split_report_by_grid_area:
+    if report_type in [ReportDataType.EnergyResults] and (
+        _check_if_only_one_grid_area_is_selected(args) or args.split_report_by_grid_area
+    ):
         partition_columns = [EphemeralColumns.grid_area_code]
 
     if _is_partitioning_by_energy_supplier_id_needed(args):
@@ -101,7 +110,7 @@ def _get_partition_columns_for_report_type(
 
 def _get_order_by_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
