@@ -36,7 +36,7 @@ metering_point_periods_v1 = t.StructType(
         t.StructField("to_grid_area_code", t.StringType(), nullable),
         #
         # GRSN number
-        t.StructField("parent_metering_point_id", t.StringType(), not nullable),
+        t.StructField("parent_metering_point_id", t.StringType(), nullable),
         #
         # EIC or GLN number
         t.StructField("energy_supplier_id", t.StringType(), nullable),
