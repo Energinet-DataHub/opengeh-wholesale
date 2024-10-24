@@ -545,7 +545,7 @@ def test_write__when_energy_supplier_is_only_partition_for_energy_results__retur
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
 ):
     # Arrange
-    expected_file_count = 1  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
+    expected_file_count = 1
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.calculation_type,
