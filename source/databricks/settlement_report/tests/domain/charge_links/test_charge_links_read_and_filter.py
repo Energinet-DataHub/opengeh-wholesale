@@ -4,16 +4,12 @@ from functools import reduce
 from unittest.mock import Mock
 
 import pytest
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession
 import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods
-from settlement_report_job.domain.charge_links.read_and_filter import (
-    read_and_filter,
-    merge_connected_periods,
-)
-
+from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
@@ -497,72 +493,3 @@ def test_read_and_filter__when_multiple_metering_point_periods_match_link_period
     assert actual.count() == 1
     assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == JAN_1ST
     assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
-
-
-@pytest.mark.parametrize(
-    "periods,expected_periods",
-    [
-        pytest.param(
-            [
-                (JAN_1ST, JAN_2ND),
-                (JAN_3RD, JAN_4TH),
-            ],
-            [
-                (JAN_1ST, JAN_2ND),
-                (JAN_3RD, JAN_4TH),
-            ],
-            id="no connected periods",
-        ),
-        pytest.param(
-            [
-                (JAN_1ST, JAN_2ND),
-                (JAN_2ND, JAN_3RD),
-                (JAN_4TH, JAN_5TH),
-                (JAN_5TH, JAN_6TH),
-            ],
-            [
-                (JAN_1ST, JAN_3RD),
-                (JAN_4TH, JAN_6TH),
-            ],
-            id="two connect and two others connected",
-        ),
-        pytest.param(
-            [
-                (JAN_1ST, JAN_2ND),
-                (JAN_2ND, JAN_3RD),
-                (JAN_3RD, JAN_4TH),
-                (JAN_5TH, JAN_6TH),
-            ],
-            [
-                (JAN_1ST, JAN_4TH),
-                (JAN_5TH, JAN_6TH),
-            ],
-            id="three connected and one not connected",
-        ),
-    ],
-)
-def test_merge_connecting_periods(
-    spark: SparkSession,
-    periods: list[tuple[datetime, datetime]],
-    expected_periods: list[tuple[datetime, datetime]],
-) -> None:
-    # Arrange
-    df = spark.createDataFrame(
-        [(1, from_date, to_date) for from_date, to_date in periods],
-        [
-            DataProductColumnNames.charge_key,
-            DataProductColumnNames.from_date,
-            DataProductColumnNames.to_date,
-        ],
-    ).orderBy(F.rand())
-
-    # Act
-    actual = merge_connected_periods(df, [DataProductColumnNames.charge_key])
-
-    # Assert
-    actual.show()
-    actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.count() == len(expected_periods)
-    for i, (expected_from, expected_to) in enumerate(expected_periods):
-        assert actual.collect()[i][DataProductColumnNames.from_date] == expected_from
-        assert actual.collect()[i][DataProductColumnNames.to_date] == expected_to

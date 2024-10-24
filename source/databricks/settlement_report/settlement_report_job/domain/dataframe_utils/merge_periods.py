@@ -6,7 +6,17 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 def merge_connected_periods(
     input_df: DataFrame, group_by_columns: list[str]
 ) -> DataFrame:
-    # Define a window specification to order by from_date
+    """
+    Merges connected and/or overlapping periods within each group of rows in the input DataFrame.
+    Args:
+        input_df: a dataframe that contains any number of columns plus the columns 'from_date' and 'to_date'
+        group_by_columns: All the columns that should be used to group the rows before merging the periods
+
+    Returns:
+        A DataFrame with the same columns as the input DataFrame.
+        Rows that had overlapping/connected periods are merged into single rows.
+
+    """
     window_spec = Window.partitionBy(group_by_columns).orderBy(
         DataProductColumnNames.from_date
     )

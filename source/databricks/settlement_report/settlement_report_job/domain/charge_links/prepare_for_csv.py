@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame, functions as F, Window
 
 from settlement_report_job import logging
-from settlement_report_job.domain.get_start_of_day import (
+from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
     get_start_of_day,
 )
 from settlement_report_job.domain.market_role import MarketRole
