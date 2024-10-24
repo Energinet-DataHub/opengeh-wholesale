@@ -287,6 +287,19 @@ def merge_files(
     return list(set([str(_file.dst) for _file in new_files]))
 
 
+def should_include_ephemeral_grid_area(
+    calculation_id_by_grid_area: dict[str, UUID] | None,
+    grid_area_codes: list[str] | None,
+    split_report_by_grid_area: bool,
+) -> bool:
+    return (
+        _check_if_only_one_grid_area_is_selected(
+            calculation_id_by_grid_area, grid_area_codes
+        )
+        or split_report_by_grid_area,
+    )
+
+
 def _check_if_only_one_grid_area_is_selected(
     calculation_id_by_grid_area: dict[str, UUID] | None,
     grid_area_codes: list[str] | None,

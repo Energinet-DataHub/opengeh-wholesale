@@ -25,7 +25,7 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.utils import (
-    _check_if_only_one_grid_area_is_selected,
+    should_include_ephemeral_grid_area,
     map_from_dict,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -46,8 +46,9 @@ def create_energy_results(
 
     return prepare_for_csv(
         energy,
-        _check_if_only_one_grid_area_is_selected(
-            args.calculation_id_by_grid_area, args.grid_area_codes
-        )
-        or args.split_report_by_grid_area,
+        should_include_ephemeral_grid_area(
+            args.calculation_id_by_grid_area,
+            args.grid_area_codes,
+            args.split_report_by_grid_area,
+        ),
     )
