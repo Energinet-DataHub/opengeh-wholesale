@@ -194,16 +194,33 @@ def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
     assert actual == f"TSSD60_123_{expected_start_date}_{expected_end_date}_17.csv"
 
 
-def test_create__when_energy_supplier_requests_energy_report_not_combined__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_energy_supplier_requests_report_not_combined(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
     args.split_report_by_grid_area = True
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
 
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -213,13 +230,30 @@ def test_create__when_energy_supplier_requests_energy_report_not_combined__retur
     # Assert
     assert (
         actual
-        == f"RESULTENERGY_123_{args.requesting_actor_id}_DDQ_01-07-2024_31-07-2024.csv"
+        == f"{pre_fix}_123_{args.requesting_actor_id}_DDQ_01-07-2024_31-07-2024.csv"
     )
 
 
-def test_create__when_energy_supplier_requests_energy_report_combined__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_energy_supplier_requests_report_combined(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
@@ -231,7 +265,7 @@ def test_create__when_energy_supplier_requests_energy_report_combined__returns_c
     args.split_report_by_grid_area = False
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
 
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -241,13 +275,30 @@ def test_create__when_energy_supplier_requests_energy_report_combined__returns_c
     # Assert
     assert (
         actual
-        == f"RESULTENERGY_flere-net_{args.requesting_actor_id}_DDQ_01-07-2024_31-07-2024.csv"
+        == f"{pre_fix}_flere-net_{args.requesting_actor_id}_DDQ_01-07-2024_31-07-2024.csv"
     )
 
 
-def test_create__when_grid_access_provider_requests_energy_report__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_grid_access_provider_requests_report(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
@@ -256,7 +307,7 @@ def test_create__when_grid_access_provider_requests_energy_report__returns_corre
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
 
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -266,13 +317,30 @@ def test_create__when_grid_access_provider_requests_energy_report__returns_corre
     # Assert
     assert (
         actual
-        == f"RESULTENERGY_456_{args.requesting_actor_id}_DDM_01-07-2024_31-07-2024.csv"
+        == f"{pre_fix}_456_{args.requesting_actor_id}_DDM_01-07-2024_31-07-2024.csv"
     )
 
 
-def test_create__when_datahub_administrator_requests_energy_report_single_grid__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_datahub_administrator_requests_report_single_grid(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
@@ -282,7 +350,7 @@ def test_create__when_datahub_administrator_requests_energy_report_single_grid__
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
 
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -290,12 +358,29 @@ def test_create__when_datahub_administrator_requests_energy_report_single_grid__
     )
 
     # Assert
-    assert actual == "RESULTENERGY_456_01-07-2024_31-07-2024.csv"
+    assert actual == f"{pre_fix}_456_01-07-2024_31-07-2024.csv"
 
 
-def test_create__when_datahub_administrator_requests_energy_report_multi_grid_not_combined__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_datahub_administrator_requests_report_multi_grid_not_combined(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
@@ -306,7 +391,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_no
     args.split_report_by_grid_area = True
     args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
     args.energy_supplier_ids = None
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -314,12 +399,29 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_no
     )
 
     # Assert
-    assert actual == "RESULTENERGY_456_01-07-2024_31-07-2024.csv"
+    assert actual == f"{pre_fix}_456_01-07-2024_31-07-2024.csv"
 
 
-def test_create__when_datahub_administrator_requests_energy_report_multi_grid_single_provider_combined__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_datahub_administrator_requests_report_multi_grid_single_provider_combined(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
@@ -332,7 +434,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_si
     args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
     args.energy_supplier_ids = [energy_supplier_id]
 
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -341,14 +443,30 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_si
 
     # Assert
     assert (
-        actual
-        == f"RESULTENERGY_flere-net_{energy_supplier_id}_01-07-2024_31-07-2024.csv"
+        actual == f"{pre_fix}_flere-net_{energy_supplier_id}_01-07-2024_31-07-2024.csv"
     )
 
 
-def test_create__when_datahub_administrator_requests_energy_report_multi_grid_all_providers_combined__returns_correct_file_name(
+@pytest.mark.parametrize(
+    "report_data_type, pre_fix",
+    [
+        pytest.param(
+            ReportDataType.EnergyResults,
+            "RESULTENERGY",
+            id="returns correct energy file name",
+        ),
+        pytest.param(
+            ReportDataType.WholesaleResults,
+            "RESULTWHOLESALE",
+            id="returns correct wholesale file name",
+        ),
+    ],
+)
+def test_create__when_datahub_administrator_requests_result_report_multi_grid_all_providers_combined(
     spark: SparkSession,
     default_settlement_report_args: SettlementReportArgs,
+    report_data_type: ReportDataType,
+    pre_fix: str,
 ):
     # Arrange
     args = default_settlement_report_args
@@ -360,7 +478,7 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_al
     args.requesting_actor_market_role = MarketRole.DATAHUB_ADMINISTRATOR
     args.energy_supplier_ids = None
 
-    factory = FileNameFactory(ReportDataType.EnergyResults, args)
+    factory = FileNameFactory(report_data_type, args)
 
     # Act
     actual = factory.create(
@@ -368,4 +486,4 @@ def test_create__when_datahub_administrator_requests_energy_report_multi_grid_al
     )
 
     # Assert
-    assert actual == "RESULTENERGY_flere-net_01-07-2024_31-07-2024.csv"
+    assert actual == f"{pre_fix}_flere-net_01-07-2024_31-07-2024.csv"
