@@ -539,7 +539,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
         assert df.columns == expected_columns
 
 
-def test_write__when_energy_supplier_is_only_partition_for_energy_results__returns_correct_columns_and_files(
+def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_correct_columns_and_files(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
