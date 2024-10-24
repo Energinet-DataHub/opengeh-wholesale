@@ -68,3 +68,21 @@ variable "ad_group_directory_reader" {
   description = "Name of a Active Directory group with the Directory Reader permission."
   default     = ""
 }
+
+variable "pim_reader_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = ""
+}
+
+variable "pim_contributor_data_plane_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = ""
+}
+
+variable "pim_contributor_control_plane_group_name" {
+  type        = string
+  description = "Name of the PIM group that needs contributor control plane."
+  default     = ""
+}
