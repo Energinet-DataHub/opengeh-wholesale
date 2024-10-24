@@ -536,7 +536,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     for file_path in actual_files:
         df = spark.read.option("delimiter", ";").csv(file_path, header=True)
         assert df.count() > 0
-        assert df.columns == expected_columns
+        assert df.columns == expected_columns 
 
 
 def test_write__when_energy_supplier_is_only_partition_for_energy_results__returns_correct_columns_and_files(

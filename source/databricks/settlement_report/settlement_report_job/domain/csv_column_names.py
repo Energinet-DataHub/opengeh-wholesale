@@ -23,9 +23,10 @@ class CsvColumnNames:
 
 
 class EphemeralColumns:
-    """Columns that are added to the DataFrame for processing but not part of the input
-    or output schema."""
+    # Columns that are added to the DataFrame for processing
+    # but not part of the input or output schema.
 
+    grid_area_code = "grid_area_code_partition"
     chunk_index = "chunk_index_partition"
     start_of_day = "start_of_day"
     quantities = "quantities"
