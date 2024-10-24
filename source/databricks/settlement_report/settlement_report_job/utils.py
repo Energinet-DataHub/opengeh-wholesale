@@ -234,8 +234,8 @@ def get_new_files(
             energy_supplier_id = None
 
         if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
-            group_count += 1
             chunk_index = groups[group_count]
+            group_count += 1
         else:
             chunk_index = None
 
