@@ -198,15 +198,26 @@ def _filter_on_charge_owner_and_tax(
 
 def _merge_connected_metering_point_periods(
     metering_point_periods: DataFrame,
+    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
+    """
+    Before joining metering point periods on the charge link periods, the metering point periods must be merged if
+    for instance two periods are connected due to a change in resolution or balance responsible party (or energy
+    supplier for grid access providers)
+    """
     metering_point_periods = metering_point_periods.select(
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.grid_area_code,
         DataProductColumnNames.from_date,
         DataProductColumnNames.to_date,
-        # DataProductColumnNames.energy_supplier_id
+        DataProductColumnNames.energy_supplier_id,
     )
+    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        # grid access provider will not see energy suppliers. We need to remove this columns so that a potential
+        # change in energy supplier will not be appearing in the merged periods
+        metering_point_periods.drop(DataProductColumnNames.energy_supplier_id)
+
     merge_connected_periods(metering_point_periods)
 
     return metering_point_periods
