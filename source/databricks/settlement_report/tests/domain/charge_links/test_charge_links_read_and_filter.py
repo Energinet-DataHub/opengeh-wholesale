@@ -499,19 +499,56 @@ def test_read_and_filter__when_multiple_metering_point_periods_match_link_period
     assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
 
 
-def test_merge_connecting_periods_when_four_periods_and_one_gap_in_the_middle__returns_two_periods(
+@pytest.mark.parametrize(
+    "periods,expected_periods",
+    [
+        pytest.param(
+            [
+                (JAN_1ST, JAN_2ND),
+                (JAN_3RD, JAN_4TH),
+            ],
+            [
+                (JAN_1ST, JAN_2ND),
+                (JAN_3RD, JAN_4TH),
+            ],
+            id="no connected periods",
+        ),
+        pytest.param(
+            [
+                (JAN_1ST, JAN_2ND),
+                (JAN_2ND, JAN_3RD),
+                (JAN_4TH, JAN_5TH),
+                (JAN_5TH, JAN_6TH),
+            ],
+            [
+                (JAN_1ST, JAN_3RD),
+                (JAN_4TH, JAN_6TH),
+            ],
+            id="two connect and two others connected",
+        ),
+        pytest.param(
+            [
+                (JAN_1ST, JAN_2ND),
+                (JAN_2ND, JAN_3RD),
+                (JAN_3RD, JAN_4TH),
+                (JAN_5TH, JAN_6TH),
+            ],
+            [
+                (JAN_1ST, JAN_4TH),
+                (JAN_5TH, JAN_6TH),
+            ],
+            id="three connected and one not connected",
+        ),
+    ],
+)
+def test_merge_connecting_periods(
     spark: SparkSession,
+    periods: list[tuple[datetime, datetime]],
+    expected_periods: list[tuple[datetime, datetime]],
 ) -> None:
     # Arrange
     df = spark.createDataFrame(
-        [
-            ("1", JAN_1ST, JAN_2ND),
-            ("1", JAN_2ND, JAN_3RD),
-            ("1", JAN_4TH, JAN_5TH),
-            ("1", JAN_5TH, JAN_6TH),
-            # ("1", JAN_7TH, JAN_8TH),
-            # ("1", JAN_8TH, JAN_9TH),
-        ],
+        [(1, from_date, to_date) for from_date, to_date in periods],
         [
             DataProductColumnNames.charge_key,
             DataProductColumnNames.from_date,
@@ -525,39 +562,7 @@ def test_merge_connecting_periods_when_four_periods_and_one_gap_in_the_middle__r
     # Assert
     actual.show()
     actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.count() == 2
-    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
-    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_3RD
-    assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_4TH
-    assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_6TH
-
-
-def test_merge_connecting_periods_when_four_periods_and_one_gap__returns_two_periods(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    df = spark.createDataFrame(
-        [
-            ("1", JAN_1ST, JAN_2ND),
-            ("1", JAN_2ND, JAN_3RD),
-            ("1", JAN_3RD, JAN_4TH),
-            ("1", JAN_5TH, JAN_6TH),
-        ],
-        [
-            DataProductColumnNames.charge_key,
-            DataProductColumnNames.from_date,
-            DataProductColumnNames.to_date,
-        ],
-    ).orderBy(F.rand())
-
-    # Act
-    actual = merge_connected_periods(df, [DataProductColumnNames.charge_key])
-
-    # Assert
-    actual.show()
-    actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.count() == 2
-    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
-    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH
-    assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_5TH
-    assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_6TH
+    assert actual.count() == len(expected_periods)
+    for i, (expected_from, expected_to) in enumerate(expected_periods):
+        assert actual.collect()[i][DataProductColumnNames.from_date] == expected_from
+        assert actual.collect()[i][DataProductColumnNames.to_date] == expected_to
