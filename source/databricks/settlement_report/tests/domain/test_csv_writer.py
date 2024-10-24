@@ -575,7 +575,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
         ]
     }
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
-    standard_wholesale_fixing_scenario_args.split_report_by_grid_area = True
+    standard_wholesale_fixing_scenario_args.split_report_by_grid_area = False
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
 
     for i in range(10):
@@ -599,8 +599,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
 
     # Assert
     actual_file_names = [file.split("/")[-1] for file in actual_files]
-    for actual_file_name in actual_file_names:
-        assert actual_file_name in expected_file_names
+    assert sorted(actual_file_names) == sorted(expected_file_names)
 
     assert len(actual_files) == expected_file_count
     for file_path in actual_files:
