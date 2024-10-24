@@ -20,6 +20,9 @@ from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_calculation_id_by_grid_area,
 )
+from settlement_report_job.domain.dataframe_utils.merge_periods import (
+    merge_connected_periods,
+)
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -191,3 +194,19 @@ def _filter_on_charge_owner_and_tax(
         (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
         & (F.col(DataProductColumnNames.is_tax) == F.lit(is_tax))
     )
+
+
+def _merge_connected_metering_point_periods(
+    metering_point_periods: DataFrame,
+) -> DataFrame:
+    metering_point_periods = metering_point_periods.select(
+        DataProductColumnNames.calculation_id,
+        DataProductColumnNames.metering_point_id,
+        DataProductColumnNames.grid_area_code,
+        DataProductColumnNames.from_date,
+        DataProductColumnNames.to_date,
+        # DataProductColumnNames.energy_supplier_id
+    )
+    merge_connected_periods(metering_point_periods)
+
+    return metering_point_periods
