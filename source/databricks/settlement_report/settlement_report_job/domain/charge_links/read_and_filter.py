@@ -285,6 +285,4 @@ def merge_connected_periods(
         F.max(DataProductColumnNames.to_date).alias(DataProductColumnNames.to_date),
     )
 
-    # Order the result by from_date
-    result_df = merged_df.orderBy(DataProductColumnNames.from_date)
-    return result_df
+    return merged_df

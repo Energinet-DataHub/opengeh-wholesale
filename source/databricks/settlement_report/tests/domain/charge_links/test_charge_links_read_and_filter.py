@@ -499,18 +499,18 @@ def test_read_and_filter__when_multiple_metering_point_periods_match_link_period
     assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
 
 
-def test_merge_connecting_periods(spark: SparkSession) -> None:
+def test_merge_connecting_periods_when_four_periods_and_one_gap_in_the_middle__returns_two_periods(
+    spark: SparkSession,
+) -> None:
     # Arrange
-
-    # create a dataframe with two periods that are connected
     df = spark.createDataFrame(
         [
             ("1", JAN_1ST, JAN_2ND),
             ("1", JAN_2ND, JAN_3RD),
             ("1", JAN_4TH, JAN_5TH),
             ("1", JAN_5TH, JAN_6TH),
-            ("1", JAN_7TH, JAN_8TH),
-            ("1", JAN_8TH, JAN_9TH),
+            # ("1", JAN_7TH, JAN_8TH),
+            # ("1", JAN_8TH, JAN_9TH),
         ],
         [
             DataProductColumnNames.charge_key,
@@ -529,4 +529,35 @@ def test_merge_connecting_periods(spark: SparkSession) -> None:
     assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
     assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_3RD
     assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_4TH
+    assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_6TH
+
+
+def test_merge_connecting_periods_when_four_periods_and_one_gap__returns_two_periods(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    df = spark.createDataFrame(
+        [
+            ("1", JAN_1ST, JAN_2ND),
+            ("1", JAN_2ND, JAN_3RD),
+            ("1", JAN_3RD, JAN_4TH),
+            ("1", JAN_5TH, JAN_6TH),
+        ],
+        [
+            DataProductColumnNames.charge_key,
+            DataProductColumnNames.from_date,
+            DataProductColumnNames.to_date,
+        ],
+    ).orderBy(F.rand())
+
+    # Act
+    actual = merge_connected_periods(df, [DataProductColumnNames.charge_key])
+
+    # Assert
+    actual.show()
+    actual = actual.orderBy(DataProductColumnNames.from_date)
+    assert actual.count() == 2
+    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
+    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH
+    assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_5TH
     assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_6TH
