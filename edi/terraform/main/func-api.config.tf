@@ -19,7 +19,8 @@ locals {
       RevisionLogOptions__ApiAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
 
       # FeatureManagement
-      FeatureManagement__UsePeekMessages = var.feature_management_use_peek_messages
+      FeatureManagement__UsePeekMessages                        = var.feature_management_use_peek_messages
+      FeatureManagement__ReceiveMeteredDataForMeasurementPoints = var.feature_management_receive_metered_data_for_measurement_points
 
       # Service Bus
       ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"

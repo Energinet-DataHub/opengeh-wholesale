@@ -100,6 +100,12 @@ variable "feature_management_use_peek_messages" {
   default     = true
 }
 
+variable "feature_management_receive_metered_data_for_measurement_points" {
+  type        = bool
+  description = "Used to allow reception of metered data for measurement points."
+  default     = false
+}
+
 variable "apim_maintenance_mode" {
   type        = bool
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."
