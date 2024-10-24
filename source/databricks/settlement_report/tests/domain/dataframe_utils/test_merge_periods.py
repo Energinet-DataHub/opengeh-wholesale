@@ -99,7 +99,6 @@ def test_merge_connecting_periods__when_overlapping_periods__returns_merged_peri
     actual = merge_connected_periods(df)
 
     # Assert
-    actual.show()
     actual = actual.orderBy(DataProductColumnNames.from_date)
     assert actual.count() == len(expected_periods)
     for i, (expected_from, expected_to) in enumerate(expected_periods):
@@ -168,7 +167,6 @@ def test_merge_connecting_periods__when_connections_and_gaps_between_periods__re
     actual = merge_connected_periods(df)
 
     # Assert
-    actual.show()
     actual = actual.orderBy(DataProductColumnNames.from_date)
     assert actual.count() == len(expected_periods)
     for i, (expected_from, expected_to) in enumerate(expected_periods):
@@ -227,12 +225,80 @@ def test_merge_connecting_periods__when_overlap_but_difference_groups__returns_w
     actual = merge_connected_periods(df)
 
     # Assert
-    actual.show()
     actual = actual.orderBy(DataProductColumnNames.from_date)
     assert actual.count() == len(expected_periods)
     for i, (expected_some_column_value, expected_from, expected_to) in enumerate(
         expected_periods
     ):
         assert actual.collect()[i][some_column_name] == expected_some_column_value
+        assert actual.collect()[i][DataProductColumnNames.from_date] == expected_from
+        assert actual.collect()[i][DataProductColumnNames.to_date] == expected_to
+
+
+@pytest.mark.parametrize(
+    "periods,expected_periods",
+    [
+        pytest.param(
+            [
+                ("A", "B", JAN_1ST, JAN_2ND),
+                ("A", "C", JAN_2ND, JAN_3RD),
+                ("B", "C", JAN_3RD, JAN_4TH),
+            ],
+            [
+                ("A", "B", JAN_1ST, JAN_2ND),
+                ("A", "C", JAN_2ND, JAN_3RD),
+                ("B", "C", JAN_3RD, JAN_4TH),
+            ],
+            id="overlaps but not same group",
+        ),
+        pytest.param(
+            [
+                ("A", "B", JAN_1ST, JAN_2ND),
+                ("A", "C", JAN_2ND, JAN_3RD),
+                ("A", "C", JAN_3RD, JAN_4TH),
+            ],
+            [
+                ("A", "B", JAN_1ST, JAN_2ND),
+                ("A", "C", JAN_2ND, JAN_4TH),
+            ],
+            id="overlaps and including same group",
+        ),
+    ],
+)
+def test_merge_connecting_periods__when_multiple_other_columns_and_no___returns_expected(
+    spark: SparkSession,
+    periods: list[tuple[str, str, datetime, datetime]],
+    expected_periods: list[tuple[str, str, datetime, datetime]],
+) -> None:
+    # Arrange
+    column_a = "column_a"
+    column_b = "column_b"
+    df = spark.createDataFrame(
+        [
+            (col_a_value, col_b_value, from_date, to_date)
+            for col_a_value, col_b_value, from_date, to_date in periods
+        ],
+        [
+            column_a,
+            column_b,
+            DataProductColumnNames.from_date,
+            DataProductColumnNames.to_date,
+        ],
+    ).orderBy(F.rand())
+
+    # Act
+    actual = merge_connected_periods(df)
+
+    # Assert
+    actual = actual.orderBy(DataProductColumnNames.from_date)
+    assert actual.count() == len(expected_periods)
+    for i, (
+        expected_col_a,
+        expected_col_b,
+        expected_from,
+        expected_to,
+    ) in enumerate(expected_periods):
+        assert actual.collect()[i][column_a] == expected_col_a
+        assert actual.collect()[i][column_b] == expected_col_b
         assert actual.collect()[i][DataProductColumnNames.from_date] == expected_from
         assert actual.collect()[i][DataProductColumnNames.to_date] == expected_to
