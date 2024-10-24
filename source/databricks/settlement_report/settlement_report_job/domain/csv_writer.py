@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, List
+from typing import Any
 
 from pyspark.sql import DataFrame
 
@@ -86,7 +86,7 @@ def _check_if_only_one_grid_area_is_selected(args: SettlementReportArgs) -> bool
 
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     partition_columns = []
     if report_type in [
         ReportDataType.TimeSeriesHourly,
@@ -113,7 +113,7 @@ def _get_partition_columns_for_report_type(
 
 def _get_order_by_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,

@@ -158,7 +158,7 @@ def write_files(
         chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
 
-    df = df.orderBy(order_by)
+    df = df.orderBy(*order_by)
 
     if locale.lower() == "da-dk":
         df = _convert_all_floats_to_danish_csv_format(df)
