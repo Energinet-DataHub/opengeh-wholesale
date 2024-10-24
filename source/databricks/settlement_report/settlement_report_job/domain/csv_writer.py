@@ -111,17 +111,17 @@ def _get_order_by_columns_for_report_type(
     ]:
         return [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.metering_point_type,
+            CsvColumnNames.type_of_mp,
             CsvColumnNames.metering_point_id,
-            CsvColumnNames.start_of_day,
+            CsvColumnNames.start_date_time,
         ]
 
     if report_type in [ReportDataType.EnergyResults]:
         order_by_columns = [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.metering_point_type,
+            CsvColumnNames.type_of_mp,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.time,
+            CsvColumnNames.start_date_time,
         ]
 
         if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
