@@ -19,7 +19,6 @@ from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsRow,
 )
 from test_factories.latest_calculations_factory import LatestCalculationsPerDayRow
-from test_factories.metering_point_periods_factory import MeteringPointPeriodsRow
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
@@ -102,40 +101,6 @@ def create_charge_price_information_periods_row(
         charge_owner_id=charge_owner_id,
         resolution=resolution,
         is_tax=is_tax,
-        from_date=from_date,
-        to_date=to_date,
-    )
-
-
-def create_metering_point_periods_row(
-    calculation_id: str = DEFAULT_CALCULATION_ID,
-    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
-    calculation_version: int = DEFAULT_CALCULATION_VERSION,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_TYPE,
-    settlement_method: SettlementMethodDataProductValue = DEFAULT_SETTLEMENT_METHOD,
-    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
-    resolution: MeteringPointResolutionDataProductValue = DEFAULT_RESOLUTION,
-    from_grid_area_code: str = DEFAULT_GRID_AREA_CODE,
-    parent_metering_point_id: str | None = None,
-    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_party_id: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
-    from_date: datetime = DEFAULT_PERIOD_START,
-    to_date: datetime = DEFAULT_PERIOD_END,
-) -> MeteringPointPeriodsRow:
-    return MeteringPointPeriodsRow(
-        calculation_id=calculation_id,
-        calculation_type=calculation_type,
-        calculation_version=calculation_version,
-        metering_point_id=metering_point_id,
-        metering_point_type=metering_point_type,
-        settlement_method=settlement_method,
-        grid_area_code=grid_area_code,
-        resolution=resolution,
-        from_grid_area_code=from_grid_area_code,
-        parent_metering_point_id=parent_metering_point_id,
-        energy_supplier_id=energy_supplier_id,
-        balance_responsible_party_id=balance_responsible_party_id,
         from_date=from_date,
         to_date=to_date,
     )
