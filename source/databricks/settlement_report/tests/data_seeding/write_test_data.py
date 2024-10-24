@@ -14,6 +14,9 @@ from settlement_report_job.wholesale.schemas import (
 from settlement_report_job.wholesale.schemas import (
     metering_point_time_series_v1,
 )
+from settlement_report_job.wholesale.schemas.amounts_per_charge_v1 import (
+    amounts_per_charge_v1,
+)
 from settlement_report_job.wholesale.schemas.energy_per_es_v1 import (
     energy_per_es_v1,
 )
@@ -37,6 +40,21 @@ def write_latest_calculations_by_day_to_delta_table(
         table_name=database_definitions.WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME,
         table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME}",
         schema=latest_calculations_by_day_v1,
+    )
+
+
+def write_amounts_per_charge_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME}",
+        schema=amounts_per_charge_v1,
     )
 
 
