@@ -47,23 +47,6 @@ public static class DatabricksAbstractionExtensions
         return server;
     }
 
-    public static WireMockServer MockEnergyResultsViewResponse(
-        this WireMockServer server,
-        Guid? calculationId = null)
-    {
-        // => Databricks SQL Statement API
-        var chunkIndex = 0;
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        server
-            .MockEnergySqlStatementsView(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultViewStream(path, calculationId ?? Guid.NewGuid());
-
-        return server;
-    }
-
     /// <summary>
     /// Setup databrick api response mocks to be able to respond with energy results for the calculation id
     /// provided by <paramref name="getCalculationIdCallback"/>
