@@ -194,7 +194,7 @@ def filter_on_charge_owner_and_tax(
     )
 
 
-def merge_connected_periods(
+def merge_connected_periods_delete(
     input_df: DataFrame, group_by_columns: list[str]
 ) -> DataFrame:
 
@@ -251,53 +251,40 @@ def merge_connected_periods(
     return result_df
 
 
-def merge_connected_periods_2(
+def merge_connected_periods(
     input_df: DataFrame, group_by_columns: list[str]
 ) -> DataFrame:
-    # Self-join on charge_key and overlapping date ranges
-    joined_df = (
-        input_df.alias("df1")
-        .join(
-            input_df.alias("df2"),
-            (F.col("df1.charge_key") == F.col("df2.charge_key"))
-            & (F.col("df1.from_date") <= F.col("df2.to_date"))
-            & (F.col("df1.to_date") >= F.col("df2.from_date"))
-            & (F.col("df1.from_date") != F.col("df2.from_date"))
-            & (F.col("df1.to_date") != F.col("df2.to_date")),
-            "left",
-        )
-        .where(F.col("df2.charge_key").isNotNull())
+    # Define a window specification to order by from_date
+    window_spec = Window.partitionBy(group_by_columns).orderBy(
+        DataProductColumnNames.from_date
     )
 
-    # Merge overlapping periods
-    merged_df = joined_df.groupBy("df1.charge_key").agg(
-        F.min(F.least(F.col("df1.from_date"), F.col("df2.from_date"))).alias(
-            "from_date"
-        ),
-        F.max(F.greatest(F.col("df1.to_date"), F.col("df2.to_date"))).alias("to_date"),
+    # Add columns to identify overlapping periods
+    df_with_next = input_df.withColumn(
+        "next_from_date", F.lead(DataProductColumnNames.from_date).over(window_spec)
+    ).withColumn(
+        "next_to_date", F.lead(DataProductColumnNames.to_date).over(window_spec)
     )
 
-    # Include non-overlapping periods
-    non_overlapping_df = (
-        input_df.alias("df1")
-        .join(
-            merged_df.alias("df2"),
-            (F.col("df1.charge_key") == F.col("df2.charge_key"))
-            & (
-                (
-                    (F.col("df1.from_date") > F.col("df2.from_date"))
-                    & (F.col("df1.from_date") < F.col("df2.to_date"))
-                )
-                | (
-                    (F.col("df1.to_date") > F.col("df2.from_date"))
-                    & (F.col("df1.to_date") < F.col("df2.to_date"))
-                )
-            ),
-            "left_anti",
-        )
-        .select("df1.*")
+    # Add a column to identify the start of a new group of connected periods
+    df_with_group = df_with_next.withColumn(
+        "group",
+        F.sum(
+            F.when(
+                F.col(DataProductColumnNames.from_date)
+                > F.lag(DataProductColumnNames.to_date).over(window_spec),
+                1,
+            ).otherwise(0)
+        ).over(window_spec.rowsBetween(Window.unboundedPreceding, Window.currentRow)),
     )
 
-    # Union merged and non-overlapping periods
-    result_df = merged_df.union(non_overlapping_df).distinct()
+    # Merge overlapping periods within each group
+    group_by_columns.append("group")
+    merged_df = df_with_group.groupBy(group_by_columns).agg(
+        F.min(DataProductColumnNames.from_date).alias(DataProductColumnNames.from_date),
+        F.max(DataProductColumnNames.to_date).alias(DataProductColumnNames.to_date),
+    )
+
+    # Order the result by from_date
+    result_df = merged_df.orderBy(DataProductColumnNames.from_date)
     return result_df

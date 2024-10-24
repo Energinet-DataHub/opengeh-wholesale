@@ -12,7 +12,6 @@ import test_factories.charge_price_information_periods_factory as charge_price_i
 from settlement_report_job.domain.charge_links.read_and_filter import (
     read_and_filter,
     merge_connected_periods,
-    merge_connected_periods_2,
 )
 
 from settlement_report_job.domain.market_role import MarketRole
@@ -32,6 +31,10 @@ JAN_2ND = datetime(2024, 1, 1, 23)
 JAN_3RD = datetime(2024, 1, 2, 23)
 JAN_4TH = datetime(2024, 1, 3, 23)
 JAN_5TH = datetime(2024, 1, 4, 23)
+JAN_6TH = datetime(2024, 1, 5, 23)
+JAN_7TH = datetime(2024, 1, 6, 23)
+JAN_8TH = datetime(2024, 1, 7, 23)
+JAN_9TH = datetime(2024, 1, 8, 23)
 
 
 @pytest.mark.parametrize(
@@ -505,19 +508,25 @@ def test_merge_connecting_periods(spark: SparkSession) -> None:
             ("1", JAN_1ST, JAN_2ND),
             ("1", JAN_2ND, JAN_3RD),
             ("1", JAN_4TH, JAN_5TH),
+            ("1", JAN_5TH, JAN_6TH),
+            ("1", JAN_7TH, JAN_8TH),
+            ("1", JAN_8TH, JAN_9TH),
         ],
         [
             DataProductColumnNames.charge_key,
             DataProductColumnNames.from_date,
             DataProductColumnNames.to_date,
         ],
-    )
+    ).orderBy(F.rand())
 
     # Act
-    actual = merge_connected_periods_2(df, DataProductColumnNames.charge_key)
+    actual = merge_connected_periods(df, [DataProductColumnNames.charge_key])
 
     # Assert
     actual.show()
-    assert actual.count() == 1
-    assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == JAN_1ST
-    assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
+    actual = actual.orderBy(DataProductColumnNames.from_date)
+    assert actual.count() == 2
+    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
+    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_3RD
+    assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_4TH
+    assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_6TH
