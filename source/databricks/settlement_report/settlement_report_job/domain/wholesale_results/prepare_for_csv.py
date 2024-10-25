@@ -59,7 +59,9 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
         F.col(DataProductColumnNames.price).alias(CsvColumnNames.price),
         F.col(DataProductColumnNames.amount).alias(CsvColumnNames.amount),
-        F.col(DataProductColumnNames.charge_type).alias(CsvColumnNames.charge_type),
+        map_from_dict(market_naming.CHARGE_TYPES)[
+            F.col(DataProductColumnNames.charge_type)
+        ].alias(CsvColumnNames.charge_type),
         F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_id),
         F.col(DataProductColumnNames.charge_owner_id).alias(
             CsvColumnNames.charge_owner
