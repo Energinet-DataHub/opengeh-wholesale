@@ -28,7 +28,7 @@ class WholesaleRepository:
         self._spark = spark
         self._catalog_name = catalog_name
 
-    def read_metering_point_periods(self):
+    def read_metering_point_periods(self) -> DataFrame:
         return self._read_view_or_table(
             WholesaleBasisDataDatabase.DATABASE_NAME,
             WholesaleBasisDataDatabase.METERING_POINT_PERIODS_VIEW_NAME,
