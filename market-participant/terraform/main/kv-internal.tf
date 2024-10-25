@@ -46,3 +46,11 @@ module "kvs_cvr_password" {
   value        = var.cvr_password
   key_vault_id = module.kv_internal.id
 }
+
+module "kvs_mssql_market_participant_connection_string" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-market-participant-connection-string"
+  value        = local.CONNECTION_STRING_DB_MIGRATIONS
+  key_vault_id = module.kv_internal.id
+}
