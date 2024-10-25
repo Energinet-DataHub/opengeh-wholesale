@@ -60,6 +60,7 @@ def read_and_filter(
     charge_link_periods = _join_charge_link_and_metering_point_periods(
         charge_link_periods=charge_link_periods,
         metering_point_periods=metering_point_periods,
+        requesting_actor_market_role=requesting_actor_market_role,
     )
 
     return charge_link_periods
@@ -127,8 +128,14 @@ def _read_charge_link_periods(
 
 
 def _join_charge_link_and_metering_point_periods(
-    charge_link_periods: DataFrame, metering_point_periods: DataFrame
+    charge_link_periods: DataFrame,
+    metering_point_periods: DataFrame,
+    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
+    metering_point_periods = _merge_split_metering_point_periods(
+        metering_point_periods, requesting_actor_market_role
+    )
+
     link_from_date = "link_from_date"
     link_to_date = "link_to_date"
     metering_point_from_date = "metering_point_from_date"
@@ -196,28 +203,37 @@ def _filter_on_charge_owner_and_tax(
     )
 
 
-def _merge_connected_metering_point_periods(
+def _merge_split_metering_point_periods(
     metering_point_periods: DataFrame,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     """
     Before joining metering point periods on the charge link periods, the metering point periods must be merged if
-    for instance two periods are connected due to a change in resolution or balance responsible party (or energy
-    supplier for grid access providers)
+    for instance a period is split in two for instance due to a change in resolution, balance responsible party or energy
+    supplier (grid access providers only)
     """
     metering_point_periods = metering_point_periods.select(
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.metering_point_id,
+        DataProductColumnNames.metering_point_type,
         DataProductColumnNames.grid_area_code,
         DataProductColumnNames.from_date,
         DataProductColumnNames.to_date,
         DataProductColumnNames.energy_supplier_id,
     )
     if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        # grid access provider will not see energy suppliers. We need to remove this columns so that a potential
+        # grid access provider should not see energy suppliers. We need to remove this columns so that a potential
         # change in energy supplier will not be appearing in the merged periods
-        metering_point_periods.drop(DataProductColumnNames.energy_supplier_id)
+        metering_point_periods = metering_point_periods.drop(
+            DataProductColumnNames.energy_supplier_id
+        )
 
-    merge_connected_periods(metering_point_periods)
+    metering_point_periods = merge_connected_periods(metering_point_periods)
+
+    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        # add the energy_supplier_id column again to have the same columns in all cases
+        metering_point_periods = metering_point_periods.withColumn(
+            DataProductColumnNames.energy_supplier_id, F.lit(None)
+        )
 
     return metering_point_periods

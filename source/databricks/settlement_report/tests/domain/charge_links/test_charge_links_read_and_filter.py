@@ -8,7 +8,7 @@ from pyspark.sql import SparkSession
 import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
-import test_factories.charge_price_information_periods_factory as charge_price_information_periods
+import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -65,7 +65,7 @@ JAN_9TH = datetime(2024, 1, 8, 23)
         ),
     ],
 )
-def test_read_and_filter__returns_charge_links_that_overlap_with_selected_period(
+def test_read_and_filter__returns_charge_link_periods_that_overlap_with_selected_period(
     spark: SparkSession,
     charge_link_from_date: datetime,
     charge_link_to_date: datetime,
@@ -149,9 +149,7 @@ def test_read_and_filter__returns_only_selected_grid_area(
         )
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = (
-        metering_point_periods
-    )
+    mock_repository.read_metering_point_periods.return_value = metering_point_periods
     mock_repository.read_charge_link_periods.return_value = charge_link_periods
 
     # Act
@@ -344,12 +342,14 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
         spark,
         default_data.create_metering_point_periods_row(),
     )
-    charge_price_information_period_df = charge_price_information_periods.create(
-        spark,
-        default_data.create_charge_price_information_periods_row(
-            charge_owner_id=charge_owner_id,
-            is_tax=is_tax,
-        ),
+    charge_price_information_period_df = (
+        charge_price_information_periods_factory.create(
+            spark,
+            default_data.create_charge_price_information_periods_row(
+                charge_owner_id=charge_owner_id,
+                is_tax=is_tax,
+            ),
+        )
     )
     charge_link_periods_df = charge_links_factory.create(
         spark,
@@ -413,12 +413,14 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
         spark,
         default_data.create_metering_point_periods_row(),
     )
-    charge_price_information_period_df = charge_price_information_periods.create(
-        spark,
-        default_data.create_charge_price_information_periods_row(
-            charge_owner_id=charge_owner_id,
-            is_tax=is_tax,
-        ),
+    charge_price_information_period_df = (
+        charge_price_information_periods_factory.create(
+            spark,
+            default_data.create_charge_price_information_periods_row(
+                charge_owner_id=charge_owner_id,
+                is_tax=is_tax,
+            ),
+        )
     )
     charge_link_periods_df = charge_links_factory.create(
         spark,
@@ -450,28 +452,52 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter__when_multiple_metering_point_periods_match_link_period__return_one_row(
+# @pytest.mark.parametrize(
+#     "requesting_actor_market_role, expected_row_count",
+#     [
+#         [MarketRole.GRID_ACCESS_PROVIDER, 1],
+#         MarketRole.SYSTEM_OPERATOR, 2,
+#         MarketRole.DATAHUB_ADMINISTRATOR, 2,
+#         MarketRole.ENERGY_SUPPLIER,
+#     ],
+# )
+def test_read_and_filter__when_metering_point_changes_energy_supplier__returns_expected_link_periods(
     spark: SparkSession,
+    # requesting_actor_market_role: str,
 ) -> None:
     # Arrange
     metering_point_period = metering_point_periods_factory.create(
         spark,
         [
             default_data.create_metering_point_periods_row(
-                balance_responsible_party_id="1", from_date=JAN_1ST, to_date=JAN_2ND
+                energy_supplier_id="1", from_date=JAN_1ST, to_date=JAN_2ND
             ),
             default_data.create_metering_point_periods_row(
-                balance_responsible_party_id="2", from_date=JAN_2ND, to_date=JAN_3RD
+                energy_supplier_id="2", from_date=JAN_2ND, to_date=JAN_3RD
             ),
         ],
     )
     charge_link_period = charge_links_factory.create(
         spark,
-        default_data.create_charge_link_periods_row(from_date=JAN_1ST, to_date=JAN_3RD),
+        default_data.create_charge_link_periods_row(
+            from_date=JAN_1ST, to_date=JAN_3RD, charge_owner_id=GRID_ACCESS_PROVIDER_ID
+        ),
+    )
+    charge_price_information_periods = charge_price_information_periods_factory.create(
+        spark,
+        default_data.create_charge_price_information_periods_row(
+            from_date=JAN_1ST,
+            to_date=JAN_3RD,
+            is_tax=True,
+            charge_owner_id=GRID_ACCESS_PROVIDER_ID,
+        ),
     )
     mock_repository = Mock()
     mock_repository.read_metering_point_periods.return_value = metering_point_period
     mock_repository.read_charge_link_periods.return_value = charge_link_period
+    mock_repository.read_charge_price_information_periods.return_value = (
+        charge_price_information_periods
+    )
 
     # Act
     actual = read_and_filter(
@@ -483,13 +509,12 @@ def test_read_and_filter__when_multiple_metering_point_periods_match_link_period
             )
         },
         energy_supplier_ids=None,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        requesting_actor_market_role=MarketRole.GRID_ACCESS_PROVIDER,
+        requesting_actor_id=GRID_ACCESS_PROVIDER_ID,
         repository=mock_repository,
     )
 
     # Assert
-    actual.show()
     assert actual.count() == 1
     assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == JAN_1ST
     assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
