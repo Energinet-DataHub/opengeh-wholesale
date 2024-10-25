@@ -27,7 +27,7 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-log = logging.Logger(__name__)
+logger = logging.Logger(__name__)
 
 
 @logging.use_span()
@@ -40,7 +40,7 @@ def read_and_filter(
     requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    log.info("Creating charge links")
+    logger.info("Creating charge links")
 
     metering_point_periods = _read_metering_point_periods(
         period_start=period_start,
@@ -117,7 +117,7 @@ def _read_charge_link_periods(
             else True
         )
 
-        charge_link_periods = _filter_on_charge_owner_and_tax(
+        charge_link_periods = _filter_by_charge_owner_and_tax(
             charge_link_periods=charge_link_periods,
             charge_price_information_periods=charge_price_information_periods,
             charge_owner_id=requesting_actor_id,
@@ -132,7 +132,7 @@ def _join_charge_link_and_metering_point_periods(
     metering_point_periods: DataFrame,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
-    metering_point_periods = _merge_split_metering_point_periods(
+    metering_point_periods = _merge_metering_point_periods(
         metering_point_periods, requesting_actor_market_role
     )
 
@@ -182,7 +182,7 @@ def _join_charge_link_and_metering_point_periods(
     return charge_link_periods
 
 
-def _filter_on_charge_owner_and_tax(
+def _filter_by_charge_owner_and_tax(
     charge_link_periods: DataFrame,
     charge_price_information_periods: DataFrame,
     charge_owner_id: str,
@@ -203,7 +203,7 @@ def _filter_on_charge_owner_and_tax(
     )
 
 
-def _merge_split_metering_point_periods(
+def _merge_metering_point_periods(
     metering_point_periods: DataFrame,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
