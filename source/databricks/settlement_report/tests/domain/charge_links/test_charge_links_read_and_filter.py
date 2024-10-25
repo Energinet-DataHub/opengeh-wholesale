@@ -20,7 +20,9 @@ DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
 GRID_ACCESS_PROVIDER_ID = "4444444444444"
 OTHER_ID = "9999999999999"
-DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
+    default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
+}
 
 JAN_1ST = datetime(2023, 12, 31, 23)
 JAN_2ND = datetime(2024, 1, 1, 23)
@@ -299,11 +301,7 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
     actual_df = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=selected_energy_supplier_ids,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
@@ -366,11 +364,7 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
     actual = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
         requesting_actor_id=SYSTEM_OPERATOR_ID,
@@ -437,11 +431,7 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
     actual = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.GRID_ACCESS_PROVIDER,
         requesting_actor_id=GRID_ACCESS_PROVIDER_ID,
@@ -493,11 +483,7 @@ def test_read_and_filter__when_grid_loss_responsible_and_energy_supplier_changes
     actual = read_and_filter(
         period_start=JAN_1ST,
         period_end=JAN_3RD,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.GRID_ACCESS_PROVIDER,
         requesting_actor_id=GRID_ACCESS_PROVIDER_ID,
@@ -553,11 +539,7 @@ def test_read_and_filter__when_datahub_user_and_energy_supplier_changes_on_meter
     actual = read_and_filter(
         period_start=JAN_1ST,
         period_end=JAN_3RD,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
@@ -609,11 +591,7 @@ def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_lin
     actual = read_and_filter(
         period_start=JAN_1ST,
         period_end=JAN_3RD,
-        calculation_id_by_grid_area={
-            default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
-                default_data.DEFAULT_CALCULATION_ID
-            )
-        },
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
