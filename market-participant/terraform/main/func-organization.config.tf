@@ -31,13 +31,7 @@ locals {
 
       "IntegrationEvents:TopicName"                               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
       "IntegrationEvents:SubscriptionName"                        = module.sbtsub_market_participant_event_listener.name
-
       "ServiceBus:FullyQualifiedNamespace"                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
-      "ServiceBus:SharedIntegrationEventTopic"                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
-      "ServiceBus:IntegrationEventSubscription"                   = module.sbtsub_market_participant_event_listener.name
-      "ServiceBus:ConsumerConnectionString"                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
-      "ServiceBus:ProducerConnectionString"                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)",
-      "ServiceBus:HealthConnectionString"                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)",
 
       "RevisionLogOptions:ApiAddress"                             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
     }
