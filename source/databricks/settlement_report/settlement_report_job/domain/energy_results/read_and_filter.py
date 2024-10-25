@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections.abc import Callable
-from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F
 
@@ -22,10 +21,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.calculation_type import CalculationType
-from settlement_report_job.wholesale.data_values.calculation_type import (
-    CalculationTypeDataProductValue,
-)
-from settlement_report_job.domain.factory_filters import (
+from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_energy_supplier_ids,
     filter_by_grid_area_codes,
     filter_by_calculation_id_by_grid_area,
