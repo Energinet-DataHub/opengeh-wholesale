@@ -293,14 +293,12 @@ def should_include_ephemeral_grid_area(
     split_report_by_grid_area: bool,
 ) -> bool:
     return (
-        _check_if_only_one_grid_area_is_selected(
-            calculation_id_by_grid_area, grid_area_codes
-        )
+        _is_exactly_one_grid_area_selected(calculation_id_by_grid_area, grid_area_codes)
         or split_report_by_grid_area
     )
 
 
-def _check_if_only_one_grid_area_is_selected(
+def _is_exactly_one_grid_area_selected(
     calculation_id_by_grid_area: dict[str, UUID] | None,
     grid_area_codes: list[str] | None,
 ) -> bool:
