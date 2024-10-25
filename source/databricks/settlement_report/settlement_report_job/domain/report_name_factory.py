@@ -38,7 +38,7 @@ class FileNameFactory:
             ReportDataType.EnergyResults,
             ReportDataType.WholesaleResults,
         ]:
-            return self._create_energy_result_filename(
+            return self._create_result_filename(
                 grid_area_code, energy_supplier_id, chunk_index
             )
         else:
@@ -46,7 +46,7 @@ class FileNameFactory:
                 f"Report data type {self.report_data_type} is not supported."
             )
 
-    def _create_energy_result_filename(
+    def _create_result_filename(
         self,
         grid_area_code: str | None,
         energy_supplier_id: str | None,
