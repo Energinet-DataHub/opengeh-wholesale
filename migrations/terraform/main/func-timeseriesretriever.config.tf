@@ -11,7 +11,7 @@ locals {
       "StorageAccount__Dh2TimeSeriesIntermediaryContainerName"               = azurerm_storage_container.timeseriesintermediary.name
       "StorageAccount__Dh2TimeSeriesAuditDataStorageAccountUri"              = "https://${module.st_dh2timeseries_audit.name}.blob.core.windows.net"
       "StorageAccount__Dh2TimeSeriesAuditDataContainerName"                  = azurerm_storage_container.timeseriesaudit.name
-      "ServiceBus__FullyQualifiedNamespace"                                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
+      "ServiceBus__FullyQualifiedNamespace"                                  = "${data.azurerm_key_vault_secret.sb_domain_relay_namespace_name.value}.servicebus.windows.net"
       "ServiceBus__TimeSeriesMessagesTopicName"                              = azurerm_servicebus_topic.time_series_imported_messages_topic.name
       "ServiceBus__TimeSeriesProcessingSubscriptionName"                     = module.sbtsub_time_series_processing.name
       "ServiceBus__TimeSeriesAuditSubscriptionName"                          = module.sbtsub_time_series_sync_audit.name
