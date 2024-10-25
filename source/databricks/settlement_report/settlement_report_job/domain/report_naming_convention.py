@@ -11,42 +11,61 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from settlement_report_job.wholesale.data_values import (
+    ChargeTypeDataProductValue,
+    CalculationTypeDataProductValue,
+    MeteringPointResolutionDataProductValue,
+    MeteringPointTypeDataProductValue,
+)
+from settlement_report_job.wholesale.data_values.settlement_method import (
+    SettlementMethodDataProductValue,
+)
 
 METERING_POINT_TYPES = {
-    "ve_production": "D01",
-    "net_production": "D05",
-    "supply_to_grid": "D06",
-    "consumption_from_grid": "D07",
-    "wholesale_services_information": "D08",
-    "own_production": "D09",
-    "net_from_grid": "D10",
-    "net_to_grid": "D11",
-    "total_consumption": "D12",
-    "electrical_heating": "D14",
-    "net_consumption": "D15",
-    "effect_settlement": "D19",
-    "consumption": "E17",
-    "production": "E18",
-    "exchange": "E20",
+    MeteringPointTypeDataProductValue.VE_PRODUCTION.value: "D01",
+    MeteringPointTypeDataProductValue.NET_PRODUCTION.value: "D05",
+    MeteringPointTypeDataProductValue.SUPPLY_TO_GRID.value: "D06",
+    MeteringPointTypeDataProductValue.CONSUMPTION_FROM_GRID.value: "D07",
+    MeteringPointTypeDataProductValue.WHOLESALE_SERVICES_INFORMATION.value: "D08",
+    MeteringPointTypeDataProductValue.OWN_PRODUCTION.value: "D09",
+    MeteringPointTypeDataProductValue.NET_FROM_GRID.value: "D10",
+    MeteringPointTypeDataProductValue.NET_TO_GRID.value: "D11",
+    MeteringPointTypeDataProductValue.TOTAL_CONSUMPTION.value: "D12",
+    MeteringPointTypeDataProductValue.ELECTRICAL_HEATING.value: "D14",
+    MeteringPointTypeDataProductValue.NET_CONSUMPTION.value: "D15",
+    MeteringPointTypeDataProductValue.EFFECT_SETTLEMENT.value: "D19",
+    MeteringPointTypeDataProductValue.CONSUMPTION.value: "E17",
+    MeteringPointTypeDataProductValue.PRODUCTION.value: "E18",
+    MeteringPointTypeDataProductValue.EXCHANGE.value: "E20",
 }
 
 SETTLEMENT_METHODS = {
-    "non_profiled": "E02",
-    "flex": "D01",
+    SettlementMethodDataProductValue.NON_PROFILED.value: "E02",
+    SettlementMethodDataProductValue.FLEX.value: "D01",
 }
 
 CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS = {
-    "balance_fixing": "D04",
-    "wholesale_fixing": "D05",
-    "first_correction_settlement": "D32",
-    "second_correction_settlement": "D32",
-    "third_correction_settlement": "D32",
+    CalculationTypeDataProductValue.BALANCE_FIXING.value: "D04",
+    CalculationTypeDataProductValue.WHOLESALE_FIXING.value: "D05",
+    CalculationTypeDataProductValue.FIRST_CORRECTION_SETTLEMENT.value: "D32",
+    CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT.value: "D32",
+    CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT.value: "D32",
 }
 
 CALCULATION_TYPES_TO_PROCESS_VARIANT = {
-    "first_correction_settlement": "1ST",
-    "second_correction_settlement": "2ND",
-    "third_correction_settlement": "3RD",
+    CalculationTypeDataProductValue.FIRST_CORRECTION_SETTLEMENT.value: "1ST",
+    CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT.value: "2ND",
+    CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT.value: "3RD",
 }
 
-RESOLUTION_NAMES = {"PT1H": "TSSD60", "PT15M": "TSSD15"}
+
+RESOLUTION_NAMES = {
+    MeteringPointResolutionDataProductValue.HOUR.value: "TSSD60",
+    MeteringPointResolutionDataProductValue.QUARTER.value: "TSSD15",
+}
+
+CHARGE_TYPES = {
+    ChargeTypeDataProductValue.SUBSCRIPTION.value: "D01",
+    ChargeTypeDataProductValue.FEE.value: "D02",
+    ChargeTypeDataProductValue.TARIFF.value: "D03",
+}
