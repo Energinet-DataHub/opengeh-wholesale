@@ -1,6 +1,6 @@
 data "azurerm_client_config" "this" {}
 
-module "st_audit_logs" {
+module "st_this" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.2.0"
 
   name                       = "docs"
