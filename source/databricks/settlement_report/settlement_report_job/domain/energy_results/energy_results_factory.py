@@ -24,7 +24,10 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
-from settlement_report_job.utils import map_from_dict
+from settlement_report_job.utils import (
+    should_include_ephemeral_grid_area,
+    map_from_dict,
+)
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 from settlement_report_job.domain.energy_results.read_and_filter import (
@@ -42,5 +45,10 @@ def create_energy_results(
     energy = read_and_filter_from_view(args, repository)
 
     return prepare_for_csv(
-        energy, create_ephemeral_grid_area_column=args.split_report_by_grid_area
+        energy,
+        should_include_ephemeral_grid_area(
+            args.calculation_id_by_grid_area,
+            args.grid_area_codes,
+            args.split_report_by_grid_area,
+        ),
     )

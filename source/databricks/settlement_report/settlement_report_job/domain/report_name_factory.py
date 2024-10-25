@@ -38,7 +38,9 @@ class FileNameFactory:
             ReportDataType.EnergyResults,
             ReportDataType.WholesaleResults,
         ]:
-            return self._create_result_filename(grid_area_code, energy_supplier_id)
+            return self._create_result_filename(
+                grid_area_code, energy_supplier_id, chunk_index
+            )
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
@@ -48,6 +50,7 @@ class FileNameFactory:
         self,
         grid_area_code: str | None,
         energy_supplier_id: str | None,
+        chunk_index: str | None,
     ) -> str:
         filename_parts = [
             self._get_pre_fix(),
@@ -56,6 +59,7 @@ class FileNameFactory:
             self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
+            chunk_index,
         ]
 
         filename_parts_without_none = [
