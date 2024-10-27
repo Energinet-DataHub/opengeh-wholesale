@@ -41,7 +41,8 @@ def prepare_for_csv(
     filtered_time_series_points: DataFrame,
     metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
-    requesting_market_role: MarketRole,
+    requesting_actor_market_role: MarketRole,
+    energy_supplier_ids: str | None,
 ) -> DataFrame:
     desired_number_of_quantity_columns = _get_desired_quantity_column_count(
         metering_point_resolution
@@ -100,16 +101,11 @@ def prepare_for_csv(
         *quantity_column_names,
     )
 
-    if requesting_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
         csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
     return csv_df.orderBy(
-        [
-            CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
-            CsvColumnNames.metering_point_id,
-            CsvColumnNames.start_date_time,
-        ]
+        _get_order_by_columns(requesting_actor_market_role, energy_supplier_ids)
     )
 
 
@@ -122,3 +118,21 @@ def _get_desired_quantity_column_count(
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution}")
+
+
+def _get_order_by_columns(
+    requesting_actor_market_role: MarketRole,
+    energy_supplier_ids: str | None,
+) -> list[str]:
+    order_by_columns = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.start_date_time,
+    ]
+    if requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR and (
+        energy_supplier_ids is None or len(energy_supplier_ids) > 1
+    ):
+        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
+
+    return order_by_columns

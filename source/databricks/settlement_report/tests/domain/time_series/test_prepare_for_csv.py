@@ -67,7 +67,7 @@ def test_prepare_for_csv__when_two_days_of_data__returns_two_rows(
         filtered_time_series_points=df,
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
-        requesting_market_role=DEFAULT_MARKET_ROLE,
+        requesting_actor_market_role=DEFAULT_MARKET_ROLE,
     )
 
     # Assert
@@ -98,7 +98,7 @@ def test_prepare_for_csv__returns_expected_energy_quantity_columns(
         filtered_time_series_points=df,
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
-        requesting_market_role=DEFAULT_MARKET_ROLE,
+        requesting_actor_market_role=DEFAULT_MARKET_ROLE,
     )
 
     # Assert
@@ -164,7 +164,7 @@ def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_expected_
         filtered_time_series_points=df,
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
-        requesting_market_role=DEFAULT_MARKET_ROLE,
+        requesting_actor_market_role=DEFAULT_MARKET_ROLE,
     )
 
     # Assert
