@@ -103,7 +103,14 @@ def prepare_for_csv(
     if requesting_market_role is MarketRole.GRID_ACCESS_PROVIDER:
         csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
-    return csv_df
+    return csv_df.orderBy(
+        [
+            CsvColumnNames.grid_area_code,
+            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.start_date_time,
+        ]
+    )
 
 
 def _get_desired_quantity_column_count(

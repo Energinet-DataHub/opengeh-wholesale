@@ -19,6 +19,7 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.utils import (
     map_from_dict,
 )
@@ -32,6 +33,7 @@ log = logging.Logger(__name__)
 def prepare_for_csv(
     energy: DataFrame,
     create_ephemeral_grid_area_column: bool,
+    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
@@ -68,4 +70,14 @@ def prepare_for_csv(
             ),
         )
 
-    return energy.select(select_columns)
+    order_by_columns = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.type_of_mp,
+        CsvColumnNames.settlement_method,
+        CsvColumnNames.start_date_time,
+    ]
+
+    if requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
+        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
+
+    return energy.select(select_columns).orderBy(order_by_columns)
