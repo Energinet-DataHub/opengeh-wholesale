@@ -61,6 +61,7 @@ def create_time_series_for_balance_fixing(
         metering_point_resolution=metering_point_resolution,
         time_zone=time_zone,
         requesting_market_role=requesting_market_role,
+        energy_supplier_ids=energy_supplier_ids,
     )
     return prepared_time_series
 
