@@ -97,9 +97,6 @@ def _get_partition_columns_for_report_type(
     ):
         partition_columns = [EphemeralColumns.grid_area_code]
 
-    if _is_partitioning_by_energy_supplier_id_needed(args):
-        partition_columns.append(CsvColumnNames.energy_supplier_id)
-
     if args.prevent_large_text_files:
         partition_columns.append(EphemeralColumns.chunk_index)
 
