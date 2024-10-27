@@ -55,7 +55,6 @@ def write(
         df=df_ready_for_writing,
         path=spark_output_path,
         partition_columns=partition_columns,
-        order_by=order_by_columns,
         rows_per_file=rows_per_file,
         locale=args.locale,
     )
