@@ -19,6 +19,7 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.utils import (
     map_from_dict,
 )
@@ -53,7 +54,7 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
-    if DataProductColumnNames.energy_supplier_id in energy.columns:
+    if _should_select_energy_supplier_id_column:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(
@@ -69,3 +70,17 @@ def prepare_for_csv(
         )
 
     return energy.select(select_columns)
+
+
+def _should_select_energy_supplier_id_column(
+    requesting_actor_market_role: MarketRole, energy_supplier_ids
+) -> bool:
+    if requesting_actor_market_role in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
+        return False
+    elif requesting_actor_market_role is MarketRole.DATAHUB_ADMINISTRATOR:
+        return energy_supplier_ids is None or len(energy_supplier_ids) > 1
+    else:
+        raise ValueError(f"Unexpected market role: {requesting_actor_market_role}")
