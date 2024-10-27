@@ -52,7 +52,7 @@ def write(
     order_by_columns = _get_order_by_columns_for_report_type(report_data_type, args)
 
     headers = write_files(
-        df=df_ready_for_writing,
+        df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
         order_by=order_by_columns,
