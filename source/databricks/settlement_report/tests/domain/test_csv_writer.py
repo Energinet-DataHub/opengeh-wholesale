@@ -519,6 +519,8 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
             spark, create_energy_results_data_spec(grid_area_code="804")
         ),
         standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids,
     )
 
     # Act
@@ -590,6 +592,8 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
             standard_wholesale_fixing_scenario_args.grid_area_codes,
             standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         ),
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids,
     )
 
     # Act
@@ -663,6 +667,8 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
             None,
             standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         ),
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids,
     )
 
     # Act
