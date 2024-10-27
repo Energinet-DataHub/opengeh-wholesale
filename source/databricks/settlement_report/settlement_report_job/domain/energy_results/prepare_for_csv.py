@@ -86,8 +86,6 @@ def _should_select_energy_supplier_id_column(
     ]:
         return False
     elif requesting_actor_market_role is MarketRole.DATAHUB_ADMINISTRATOR:
-        return True
-        # TODO JMG. Should it be(?):
-        # return energy_supplier_ids is None or len(energy_supplier_ids) > 1
+        return energy_supplier_ids is None or len(energy_supplier_ids) > 1
     else:
         raise ValueError(f"Unexpected market role: {requesting_actor_market_role}")
