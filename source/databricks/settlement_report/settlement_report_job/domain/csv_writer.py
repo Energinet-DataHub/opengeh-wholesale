@@ -157,25 +157,3 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "energy_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
-
-
-def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) -> bool:
-    """
-    When this partitioning by energy_supplier_id, the energy_supplier_id will be included in the file name
-
-    """
-    if args.requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.DATAHUB_ADMINISTRATOR,
-    ]:
-        return (
-            args.energy_supplier_ids is not None and len(args.energy_supplier_ids) == 1
-        )
-    elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
-        return True
-    elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        return False
-    else:
-        raise ValueError(
-            f"Unsupported requesting actor market role: {args.requesting_actor_market_role}"
-        )
