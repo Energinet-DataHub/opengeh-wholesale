@@ -520,6 +520,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
         ),
         standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids,
     )
 
     # Act
@@ -592,6 +593,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
             standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         ),
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids,
     )
 
     # Act
@@ -666,6 +668,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
             standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         ),
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        standard_wholesale_fixing_scenario_args.energy_supplier_ids,
     )
 
     # Act
