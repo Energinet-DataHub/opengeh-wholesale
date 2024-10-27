@@ -71,7 +71,7 @@ class FileNameFactory:
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code,
-            self._get_actor_id_in_file_name(energy_supplier_id),
+            self._get_actor_id_in_file_name(),
             self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
