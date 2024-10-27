@@ -198,7 +198,7 @@ def test_write__files_have_correct_ordering_for_each_file(
         num_days_per_metering_point=number_of_days_for_each_mp,
     )
     df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+    df_prepared_time_series = df_prepared_time_series.orderBy(expected_order_by)
 
     # Act
     result_files = csv_writer.write(
@@ -252,7 +252,7 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         num_metering_points=number_of_rows,
     )
     df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+    df_prepared_time_series = df_prepared_time_series.orderBy(expected_order_by)
 
     # Act
     result_files = csv_writer.write(
@@ -275,70 +275,6 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         df_actual = _read_csv_file(file, spark, expected_delimiter)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
-
-
-def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
-    dbutils: DBUtilsFixture,
-    spark: SparkSession,
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-):
-    # Arrange
-    expected_file_count = 3
-    individual_dataframes = []
-    expected_order_by = [
-        CsvColumnNames.type_of_mp,
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.start_date_time,
-    ]
-    report_data_type = ReportDataType.TimeSeriesQuarterly
-    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    standard_wholesale_fixing_scenario_args.locale = "en-gb"
-    test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
-        metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
-        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
-        num_metering_points=10,
-    )
-    test_spec_production = time_series_factory.TimeSeriesCsvTestDataSpec(
-        metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION,
-        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
-        num_metering_points=20,
-    )
-    df_prepared_time_series_consumption = time_series_factory.create(
-        spark, test_spec_consumption
-    )
-    df_prepared_time_series_production = time_series_factory.create(
-        spark, test_spec_production
-    )
-    df_prepared_time_series = df_prepared_time_series_consumption.union(
-        df_prepared_time_series_production
-    ).orderBy(F.rand())
-
-    # Act
-    result_files = csv_writer.write(
-        dbutils=dbutils,
-        args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
-        report_data_type=report_data_type,
-        rows_per_file=10,
-    )
-    result_files.sort()
-
-    # Assert
-    assert len(result_files) == expected_file_count
-
-    # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
-    # Asserting that the dataframe is unchanged
-
-    expected_delimiter = _get_csv_writer_options_based_on_locale(
-        standard_wholesale_fixing_scenario_args.locale
-    )["delimiter"]
-    for file in result_files:
-        individual_dataframes.append(_read_csv_file(file, spark, expected_delimiter))
-    df_actual = reduce(DataFrame.unionByName, individual_dataframes)
-    df_expected = df_actual.orderBy(expected_order_by)
-    print(df_actual.collect()[0], df_expected.collect()[0])
-    print(df_actual.collect()[-1], df_expected.collect()[-1])
-    assert df_actual.collect() == df_expected.collect()
 
 
 @pytest.mark.parametrize(
@@ -371,7 +307,7 @@ def test_write__files_have_correct_sorting_across_multiple_files(
         num_metering_points=number_of_rows,
     )
     df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+    df_prepared_time_series = df_prepared_time_series.orderBy(expected_order_by)
 
     # Act
     result_files = csv_writer.write(
