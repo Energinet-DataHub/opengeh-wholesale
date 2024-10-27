@@ -42,7 +42,6 @@ def prepare_for_csv(
     metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
     requesting_market_role: MarketRole,
-    energy_supplier_ids: list[str] | None,
 ) -> DataFrame:
     desired_number_of_quantity_columns = _get_desired_quantity_column_count(
         metering_point_resolution
@@ -101,25 +100,13 @@ def prepare_for_csv(
         *quantity_column_names,
     )
 
-    if _should_drop_energy_supplier_id_column(
-        requesting_market_role, energy_supplier_ids
-    ):
+    if requesting_market_role in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
         csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
     return csv_df
-
-
-def _should_drop_energy_supplier_id_column(
-    requesting_market_role: MarketRole,
-    energy_supplier_ids: list[str] | None,
-) -> bool:
-    exactly_one_energy_supplier_id = (
-        energy_supplier_ids is not None and len(energy_supplier_ids) == 1
-    )
-    return (
-        requesting_market_role is MarketRole.GRID_ACCESS_PROVIDER
-        or exactly_one_energy_supplier_id
-    )
 
 
 def _get_desired_quantity_column_count(

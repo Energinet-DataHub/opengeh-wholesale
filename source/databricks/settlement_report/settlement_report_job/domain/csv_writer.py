@@ -123,9 +123,10 @@ def _get_order_by_columns_for_report_type(
             CsvColumnNames.start_date_time,
         ]
 
-        if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR and (
-            args.energy_supplier_ids is None or len(args.energy_supplier_ids) > 1
-        ):
+        if args.requesting_actor_market_role not in [
+            MarketRole.GRID_ACCESS_PROVIDER,
+            MarketRole.ENERGY_SUPPLIER,
+        ]:
             order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
         return order_by_columns

@@ -34,7 +34,6 @@ def prepare_for_csv(
     energy: DataFrame,
     create_ephemeral_grid_area_column: bool,
     requesting_actor_market_role: MarketRole,
-    energy_supplier_ids: list[str] | None,
 ) -> DataFrame:
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
@@ -56,10 +55,10 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
-    if _should_select_energy_supplier_id_column(
-        requesting_actor_market_role=requesting_actor_market_role,
-        energy_supplier_ids=energy_supplier_ids,
-    ):
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(
@@ -75,17 +74,3 @@ def prepare_for_csv(
         )
 
     return energy.select(select_columns)
-
-
-def _should_select_energy_supplier_id_column(
-    requesting_actor_market_role: MarketRole, energy_supplier_ids: list[str] | None
-) -> bool:
-    if requesting_actor_market_role in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
-    ]:
-        return False
-    elif requesting_actor_market_role is MarketRole.DATAHUB_ADMINISTRATOR:
-        return energy_supplier_ids is None or len(energy_supplier_ids) > 1
-    else:
-        raise ValueError(f"Unexpected market role: {requesting_actor_market_role}")

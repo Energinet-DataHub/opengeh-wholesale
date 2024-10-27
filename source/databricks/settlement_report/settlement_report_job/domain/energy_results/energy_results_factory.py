@@ -52,5 +52,4 @@ def create_energy_results(
             args.split_report_by_grid_area,
         ),
         args.requesting_actor_market_role,
-        args.energy_supplier_ids,
     )
