@@ -31,6 +31,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         # Arrange
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
+            CsvColumnNames.energy_supplier_id,
             CsvColumnNames.grid_area_code,
             CsvColumnNames.energy_business_process,
             CsvColumnNames.start_date_time,
