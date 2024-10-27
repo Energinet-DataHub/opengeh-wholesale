@@ -165,7 +165,6 @@ def test_write_files__when_locale_set_to_english(spark: SparkSession):
         df,
         csv_path,
         partition_columns=[],
-        order_by=[],
         locale="en-gb",
         rows_per_file=1000,
     )
@@ -198,7 +197,6 @@ def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSe
         df,
         csv_path,
         partition_columns=[],
-        order_by=["value"],
         locale="da-dk",
         rows_per_file=1000,
     )
@@ -236,7 +234,6 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
         df,
         csv_path,
         partition_columns=["key"],
-        order_by=["value"],
         locale="da-dk",
         rows_per_file=1000,
     )
@@ -316,7 +313,6 @@ def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseco
         df,
         csv_path,
         partition_columns=[],
-        order_by=[],
         locale=locale,
         rows_per_file=1000,
     )
