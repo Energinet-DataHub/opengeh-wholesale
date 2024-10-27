@@ -47,8 +47,6 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    df_ready_for_writing = _apply_report_type_df_changes(df, args, report_data_type)
-
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
     order_by_columns = _get_order_by_columns_for_report_type(report_data_type, args)
@@ -131,21 +129,6 @@ def _get_order_by_columns_for_report_type(
         return order_by_columns
 
     return []
-
-
-def _apply_report_type_df_changes(
-    df: DataFrame,
-    args: SettlementReportArgs,
-    report_type: ReportDataType,
-) -> DataFrame:
-    if (
-        report_type
-        in [ReportDataType.TimeSeriesHourly, ReportDataType.TimeSeriesQuarterly]
-        and args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER
-    ):
-        df = df.drop(DataProductColumnNames.energy_supplier_id)
-
-    return df
 
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
