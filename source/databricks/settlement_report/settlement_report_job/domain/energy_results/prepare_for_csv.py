@@ -34,7 +34,6 @@ def prepare_for_csv(
     energy: DataFrame,
     create_ephemeral_grid_area_column: bool,
     requesting_actor_market_role: MarketRole,
-    energy_supplier_ids: str | None,
 ) -> DataFrame:
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
@@ -78,9 +77,10 @@ def prepare_for_csv(
         CsvColumnNames.start_date_time,
     ]
 
-    if requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR and (
-        energy_supplier_ids is None or len(energy_supplier_ids) > 1
-    ):
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
         order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
     return energy.select(select_columns).orderBy(order_by_columns)
