@@ -191,7 +191,7 @@ class CalculationCore:
         )
 
         # Do not generate basis data for aggregation calculations
-        if args.calculation_type == CalculationType.AGGREGATION.value:
+        if args.calculation_type.value == CalculationType.AGGREGATION.value:
             return calculation_output
 
         # This extends the content of metering_point_time_series with calculated grid loss,
