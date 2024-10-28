@@ -100,8 +100,7 @@ def prepare_for_csv(
         *quantity_column_names,
     )
 
-    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-    if requesting_market_role in [
+    if requesting_actor_market_role in [
         MarketRole.GRID_ACCESS_PROVIDER,
         MarketRole.ENERGY_SUPPLIER,
     ]:
