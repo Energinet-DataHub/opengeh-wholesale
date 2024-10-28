@@ -86,4 +86,4 @@ def prepare_for_csv(
     ]:
         order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
-    return energy.select(select_columns).orderBy(order_by_columns)
+    return energy.select(select_columns).orderBy(*order_by_columns)
