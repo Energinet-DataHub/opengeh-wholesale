@@ -16,9 +16,7 @@ from pyspark.sql import DataFrame
 
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.utils import (
-    should_include_ephemeral_grid_area,
-)
+
 
 from settlement_report_job.domain.energy_results.read_and_filter import (
     read_and_filter_from_view,

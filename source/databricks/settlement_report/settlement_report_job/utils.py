@@ -271,30 +271,3 @@ def merge_files(
         dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
     return list(set([str(_file.dst) for _file in new_files]))
-
-
-def should_include_ephemeral_grid_area(
-    calculation_id_by_grid_area: dict[str, UUID] | None,
-    grid_area_codes: list[str] | None,
-    split_report_by_grid_area: bool,
-) -> bool:
-    return (
-        _is_exactly_one_grid_area_selected(calculation_id_by_grid_area, grid_area_codes)
-        or split_report_by_grid_area
-    )
-
-
-def _is_exactly_one_grid_area_selected(
-    calculation_id_by_grid_area: dict[str, UUID] | None,
-    grid_area_codes: list[str] | None,
-) -> bool:
-    only_one_grid_area_from_calc_ids = (
-        calculation_id_by_grid_area is not None
-        and len(calculation_id_by_grid_area) == 1
-    )
-
-    only_one_grid_area_from_grid_area_codes = (
-        grid_area_codes is not None and len(grid_area_codes) == 1
-    )
-
-    return only_one_grid_area_from_calc_ids or only_one_grid_area_from_grid_area_codes

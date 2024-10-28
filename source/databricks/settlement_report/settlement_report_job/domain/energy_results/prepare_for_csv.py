@@ -32,7 +32,7 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def prepare_for_csv(
     energy: DataFrame,
-    create_ephemeral_grid_area_column: bool,
+    one_file_per_grid_area: bool,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     select_columns = [
@@ -74,7 +74,7 @@ def prepare_for_csv(
         )
         order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
-    if create_ephemeral_grid_area_column:
+    if one_file_per_grid_area:
         select_columns.append(
             F.col(DataProductColumnNames.grid_area_code).alias(
                 EphemeralColumns.grid_area_code_partitioning
