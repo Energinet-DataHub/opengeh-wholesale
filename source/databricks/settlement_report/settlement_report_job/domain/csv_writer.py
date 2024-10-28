@@ -98,7 +98,6 @@ def _get_partition_columns_for_report_type(
     return partition_columns
 
 
-
 def _apply_report_type_df_changes(
     df: DataFrame,
     args: SettlementReportArgs,
