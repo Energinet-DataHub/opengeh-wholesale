@@ -16,4 +16,4 @@
 --energy-supplier-ids=[1234567890123]
 --split-report-by-grid-area
 --prevent-large-text-files
---include-basis-data 
+--include-basis-data
