@@ -42,7 +42,6 @@ def prepare_for_csv(
     metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
     requesting_actor_market_role: MarketRole,
-    energy_supplier_ids: str | None,
 ) -> DataFrame:
     desired_number_of_quantity_columns = _get_desired_quantity_column_count(
         metering_point_resolution
@@ -104,9 +103,9 @@ def prepare_for_csv(
     if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
         csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
-    return csv_df.orderBy(
-        _get_order_by_columns(requesting_actor_market_role, energy_supplier_ids)
-    )
+    has_energy_supplier_id_column = CsvColumnNames.energy_supplier_id in csv_df.columns
+
+    return csv_df.orderBy(_get_order_by_columns(has_energy_supplier_id_column))
 
 
 def _get_desired_quantity_column_count(
@@ -121,8 +120,7 @@ def _get_desired_quantity_column_count(
 
 
 def _get_order_by_columns(
-    requesting_actor_market_role: MarketRole,
-    energy_supplier_ids: str | None,
+    has_energy_supplier_id_column: bool,
 ) -> list[str]:
     order_by_columns = [
         CsvColumnNames.grid_area_code,
@@ -130,9 +128,7 @@ def _get_order_by_columns(
         CsvColumnNames.metering_point_id,
         CsvColumnNames.start_date_time,
     ]
-    if requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR and (
-        energy_supplier_ids is None or len(energy_supplier_ids) > 1
-    ):
+    if has_energy_supplier_id_column:
         order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
     return order_by_columns

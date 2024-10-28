@@ -27,7 +27,6 @@ DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
 NOT_SYSTEM_OPERATOR_ID = "4444444444444"
 DEFAULT_MARKET_ROLE = MarketRole.GRID_ACCESS_PROVIDER
-DEFAULT_ENERGY_SUPPLIER_IDS = None
 
 
 def _create_time_series_with_increasing_quantity(
@@ -69,7 +68,6 @@ def test_prepare_for_csv__when_two_days_of_data__returns_two_rows(
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         requesting_actor_market_role=DEFAULT_MARKET_ROLE,
-        energy_supplier_ids=DEFAULT_ENERGY_SUPPLIER_IDS,
     )
 
     # Assert
