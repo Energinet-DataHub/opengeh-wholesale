@@ -36,7 +36,7 @@ class CsvToDataframeWrapperParser:
         if not os.path.exists(file_path):
             return None
 
-        df = spark_session.read.csv(file_path, header=True)
+        df = spark_session.read.csv(file_path, header=True, sep=";")
         name, extension = os.path.splitext(file_name)
         return DataframeWrapper(key=file_name, name=name, df=df)
 

@@ -85,7 +85,7 @@ class ScenarioExecutor:
 
         # Reading the CSV file without applying the schema means all types are strings.
         # We do this because some types are not supported by the CSV reader fx. ArrayType.
-        df = spark_session.read.csv(path_to_csv, header=True)
+        df = spark_session.read.csv(path_to_csv, header=True, sep=";")
 
         # Cast the column types to match the schema
         df = cast_column_types(df, table_or_view_name=csv_file_name)
@@ -128,7 +128,7 @@ class ScenarioExecutor:
             raise Exception("Missing expected result files in output folder.")
 
         for result_file in expected_result_file_paths:
-            raw_df = spark.read.csv(result_file[1], header=True)
+            raw_df = spark.read.csv(result_file[1], header=True, sep=";")
             df = cast_column_types(raw_df, table_or_view_name=result_file[0])
             expected_results.append(ExpectedOutput(name=result_file[0], df=df))
 
