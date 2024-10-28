@@ -81,16 +81,6 @@ resource "azuread_application_federated_identity_credential" "greenforce_fronten
   issuer    = local.federated_identity_credential.issuer_github
 }
 
-resource "azuread_application_federated_identity_credential" "esett_deprecated" {
-  application_id = azuread_application.app_ci.id
-
-  display_name = "esett-deprecated-azureauth"
-  subject      = "repo:Energinet-DataHub/esett-deprecated:environment:AzureAuth"
-
-  audiences = [local.federated_identity_credential.audience_azuread]
-  issuer    = local.federated_identity_credential.issuer_github
-}
-
 resource "azuread_application_federated_identity_credential" "opengeh_revision_log" {
   application_id = azuread_application.app_ci.id
 

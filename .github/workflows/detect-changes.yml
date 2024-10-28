@@ -38,8 +38,6 @@ on:
         value: ${{ jobs.changes.outputs.wholesale_ci }}
       integration_test_ci:
         value: ${{ jobs.changes.outputs.integration_test_ci }}
-      esett_deprecated_ci:
-        value: ${{ jobs.changes.outputs.esett_deprecated_ci }}
       sauron_ci:
         value: ${{ jobs.changes.outputs.sauron_ci }}
       sauron_healthchecks_api_ci:
@@ -67,7 +65,6 @@ jobs:
       ui_ci: ${{ steps.filter.outputs.ui_ci }}
       wholesale_ci: ${{ steps.filter.outputs.wholesale_ci }}
       integration_test_ci: ${{ steps.filter.outputs.integration_test_ci }}
-      esett_deprecated_ci: ${{ steps.filter.outputs.esett_deprecated_ci }}
       sauron_ci: ${{ steps.filter.outputs.sauron_ci }}
       sauron_healthchecks_api_ci: ${{ steps.filter.outputs.sauron_healthchecks_api_ci }}
       archive_ci: ${{ steps.filter.outputs.archive_ci }}
@@ -164,12 +161,6 @@ jobs:
             integration_test_ci:
               - integration-test/**
               - .github/workflows/integration-test-*.yml
-              - .github/workflows/infrastructure-build-prerelease.yml
-              - .github/workflows/infrastructure-validate.yml
-              - .github/actions/terraform-validate/*
-            esett_deprecated_ci:
-              - esett-deprecated/**
-              - .github/workflows/esett-deprecated-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*

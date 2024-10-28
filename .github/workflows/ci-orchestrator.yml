@@ -164,15 +164,6 @@ jobs:
     uses: ./.github/workflows/integration-test-terraform-ci.yml
     secrets: inherit
 
-  esett_deprecated_ci:
-    needs: changes
-    if: ${{ needs.changes.outputs.esett_deprecated_ci == 'true' }}
-    uses: ./.github/workflows/infrastructure-build-prerelease.yml
-    with:
-      release_name_prefix: esett_deprecated_infrastructure
-      infrastructure_path: ./esett-deprecated/terraform
-    secrets: inherit
-
   sauron_ci:
     needs: changes
     if: ${{ needs.changes.outputs.sauron_ci == 'true' }}
@@ -224,7 +215,6 @@ jobs:
         wholesale_ci,
         integration_test_ci,
         sauron_ci,
-        esett_deprecated_ci,
         integration_test_terraform_ci,
         sauron_healthchecks_api_ci,
         archive_ci,
