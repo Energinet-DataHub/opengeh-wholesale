@@ -45,7 +45,7 @@ from settlement_report_job.wholesale.data_values import (
 )
 from settlement_report_job.utils import (
     should_include_ephemeral_grid_area,
-    _get_csv_writer_options_based_on_locale,
+    _get_csv_writer_options,
 )
 
 
@@ -286,7 +286,6 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     ]
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    standard_wholesale_fixing_scenario_args.locale = "en-gb"
     test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -394,7 +393,6 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
     expected_file_count = 3
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    standard_wholesale_fixing_scenario_args.locale = "en-gb"
     test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -430,7 +428,6 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
     expected_file_count = 1
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    standard_wholesale_fixing_scenario_args.locale = "en-gb"
     test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,

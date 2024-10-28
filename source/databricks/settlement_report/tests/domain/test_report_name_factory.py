@@ -36,7 +36,6 @@ def default_settlement_report_args() -> SettlementReportArgs:
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         settlement_reports_output_path="some_output_volume_path",
         include_basis_data=True,
-        locale="da-dk",
     )
 
 

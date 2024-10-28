@@ -104,14 +104,8 @@ def get_dbutils(spark: SparkSession) -> Any:
     return dbutils
 
 
-def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
-    options_to_always_include = {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
-    if locale.lower() == "en-gb":
-        return options_to_always_include | {"locale": "en-gb"}
-    if locale.lower() == "da-dk":
-        return options_to_always_include | {"locale": "da-dk"}
-    else:
-        return options_to_always_include | {"locale": "en-us"}
+def _get_csv_writer_options() -> dict[str, str]:
+    return {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
 
 
 def write_files(
@@ -120,7 +114,6 @@ def write_files(
     partition_columns: list[str],
     order_by: list[str],
     rows_per_file: int,
-    locale: str = "en-us",
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -142,7 +135,7 @@ def write_files(
     if len(order_by) > 0:
         df = df.orderBy(*order_by)
 
-    csv_writer_options = _get_csv_writer_options_based_on_locale(locale)
+    csv_writer_options = _get_csv_writer_options()
 
     print("writing to path: " + path)
     if partition_columns:
@@ -231,7 +224,7 @@ def get_new_files(
 
 
 def merge_files(
-    dbutils: Any, new_files: list[TmpFile], headers: list[str], locale: str
+    dbutils: Any, new_files: list[TmpFile], headers: list[str]
 ) -> list[str]:
     """Merges the new files and moves them to the final location.
 
