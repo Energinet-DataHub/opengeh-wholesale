@@ -23,7 +23,7 @@ def reset_task_values(dbutils: DBUtilsFixture):
     dbutils.jobs.taskValues.reset()
 
 
-def test_execute_wholesale_results__when_energy_supplier__returns_expected(
+def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_false__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
