@@ -16,20 +16,10 @@ from pyspark.sql import DataFrame
 
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-
-from settlement_report_job.domain.csv_column_names import (
-    CsvColumnNames,
+from settlement_report_job.domain.charge_links.read_and_filter import (
+    read_and_filter,
 )
-from settlement_report_job.utils import (
-    should_include_ephemeral_grid_area,
-    map_from_dict,
-)
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-
-from settlement_report_job.domain.energy_results.read_and_filter import (
-    read_and_filter_from_view,
-)
-from settlement_report_job.domain.energy_results.prepare_for_csv import (
+from settlement_report_job.domain.charge_links.prepare_for_csv import (
     prepare_for_csv,
 )
 
@@ -38,14 +28,9 @@ def create_energy_results(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    energy = read_and_filter_from_view(args, repository)
+    charge_link_periods = read_and_filter(args, repository)
 
     return prepare_for_csv(
-        energy,
-        should_include_ephemeral_grid_area(
-            args.calculation_id_by_grid_area,
-            args.grid_area_codes,
-            args.split_report_by_grid_area,
-        ),
+        charge_link_periods,
         args.requesting_actor_market_role,
     )

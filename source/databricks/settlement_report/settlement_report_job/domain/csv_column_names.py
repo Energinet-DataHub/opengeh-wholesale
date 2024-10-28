@@ -1,23 +1,24 @@
 class CsvColumnNames:
+    amount = "AMOUNT"
+    charge_id = "CHARGEID"
+    charge_occurrences = "CHARGEOCCURRENCES"
+    charge_owner = "CHARGEOWNER"
+    charge_type = "CHARGETYPE"
     energy_business_process = "ENERGYBUSINESSPROCESS"
+    energy_currency = "ENERGYCURRENCY"
     energy_quantity = "ENERGYQUANTITY"
     energy_supplier_id = "ENERGYSUPPLIERID"
     grid_area_code = "METERINGGRIDAREAID"
-    type_of_mp = "TYPEOFMP"
+    measure_unit = "MEASUREUNIT"
     metering_point_id = "METERINGPOINTID"
+    period_start = "PERIODSTART"
+    period_end = "PERIODEND"
+    price = "PRICE"
+    process_variant = "PROCESSVARIANT"
     resolution_duration = "RESOLUTIONDURATION"
     settlement_method = "SETTLEMENTMETHOD"
     start_date_time = "STARTDATETIME"
-    # When ENERGYBUSINESSPROCESS is Correction Settlement - D32
-    # PROCESSVARIANT is either First - D01 - 1ST, Second - D02 - 2ND, Third - D03 - 3RD
-    process_variant = "PROCESSVARIANT"
-    measure_unit = "MEASUREUNIT"
-    energy_currency = "ENERGYCURRENCY"
-    price = "PRICE"
-    amount = "AMOUNT"
-    charge_type = "CHARGETYPE"
-    charge_id = "CHARGEID"
-    charge_owner = "CHARGEOWNER"
+    type_of_mp = "TYPEOFMP"
 
 
 class EphemeralColumns:
