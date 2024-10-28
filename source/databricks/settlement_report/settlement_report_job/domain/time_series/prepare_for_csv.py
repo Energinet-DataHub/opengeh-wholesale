@@ -100,7 +100,10 @@ def prepare_for_csv(
         *quantity_column_names,
     )
 
-    if requesting_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+    if requesting_market_role in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
         csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
     return csv_df
