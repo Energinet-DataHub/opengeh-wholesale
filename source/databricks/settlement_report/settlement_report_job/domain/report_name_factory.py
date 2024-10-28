@@ -24,23 +24,18 @@ class FileNameFactory:
     def create(
         self,
         grid_area_code: str | None,
-        energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
         }:
-            return self._create_time_series_filename(
-                grid_area_code, energy_supplier_id, chunk_index
-            )
+            return self._create_time_series_filename(grid_area_code, chunk_index)
         if self.report_data_type in [
             ReportDataType.EnergyResults,
             ReportDataType.WholesaleResults,
         ]:
-            return self._create_result_filename(
-                grid_area_code, energy_supplier_id, chunk_index
-            )
+            return self._create_result_filename(grid_area_code, chunk_index)
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
@@ -49,13 +44,12 @@ class FileNameFactory:
     def _create_result_filename(
         self,
         grid_area_code: str | None,
-        energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code if grid_area_code is not None else "flere-net",
-            self._get_actor_id_in_file_name(energy_supplier_id),
+            self._get_actor_id_in_file_name(),
             self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
@@ -71,14 +65,13 @@ class FileNameFactory:
     def _create_time_series_filename(
         self,
         grid_area_code: str | None,
-        energy_supplier_id: str | None,
         chunk_index: str | None,
     ) -> str:
 
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code,
-            self._get_actor_id_in_file_name(energy_supplier_id),
+            self._get_actor_id_in_file_name(),
             self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
@@ -114,21 +107,19 @@ class FileNameFactory:
             f"Report data type {self.report_data_type} is not supported."
         )
 
-    def _get_actor_id_in_file_name(self, energy_supplier_id: str | None) -> str | None:
-        if self.args.requesting_actor_market_role in {
-            MarketRole.ENERGY_SUPPLIER,
+    def _get_actor_id_in_file_name(self) -> str | None:
+
+        if self.args.requesting_actor_market_role in [
             MarketRole.GRID_ACCESS_PROVIDER,
-        }:
+            MarketRole.ENERGY_SUPPLIER,
+        ]:
             return self.args.requesting_actor_id
-        elif self.args.requesting_actor_market_role in {
-            MarketRole.SYSTEM_OPERATOR,
-            MarketRole.DATAHUB_ADMINISTRATOR,
-        }:
-            return energy_supplier_id
-        else:
-            raise ValueError(
-                f"Market role {self.args.requesting_actor_market_role} is not supported."
-            )
+        elif (
+            self.args.energy_supplier_ids is not None
+            and len(self.args.energy_supplier_ids) == 1
+        ):
+            return self.args.energy_supplier_ids[0]
+        return None
 
     def _get_market_role_in_file_name(self) -> str | None:
         if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
