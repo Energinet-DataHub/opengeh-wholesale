@@ -17,7 +17,6 @@ from settlement_report_job.utils import (
     get_dbutils,
     map_from_dict,
     write_files,
-    _convert_all_floats_to_danish_csv_format,
 )
 
 
@@ -147,9 +146,9 @@ def test_write_files__when_locale_set_to_danish(spark: SparkSession):
             with x.open(mode="r") as f:
                 all_lines_written = f.readlines()
 
-                assert all_lines_written[0] == "a;1,1\n"
-                assert all_lines_written[1] == "b;2,2\n"
-                assert all_lines_written[2] == "c;3,3\n"
+                assert all_lines_written[0] == "a,1,1\n"
+                assert all_lines_written[1] == "b,2,2\n"
+                assert all_lines_written[2] == "c,3,3\n"
 
     tmp_dir.cleanup()
 
@@ -211,9 +210,9 @@ def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSe
             with x.open(mode="r") as f:
                 all_lines_written = f.readlines()
 
-                assert all_lines_written[0] == "a;1,1\n"
-                assert all_lines_written[1] == "b;2,2\n"
-                assert all_lines_written[2] == "c;3,3\n"
+                assert all_lines_written[0] == "a,1,1\n"
+                assert all_lines_written[1] == "b,2,2\n"
+                assert all_lines_written[2] == "c,3,3\n"
 
     assert columns == ["key", "value"]
 
@@ -262,38 +261,6 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
     tmp_dir.cleanup()
 
 
-def test_convert_all_floats_to_danish_csv_format__when_locale_danish__floating_point_separator_should_be_comma(
-    spark: SparkSession,
-):
-    # Arrange
-    data = [
-        Row(float=1.1, decimal=Decimal("100.123"), double=2.2),
-        Row(float=3.3, decimal=Decimal("200.456"), double=4.4),
-        Row(float=5.5, decimal=Decimal("300.789"), double=6.6),
-    ]
-    schema = StructType(
-        [
-            StructField("float", FloatType(), True),
-            StructField("decimal", DecimalType(10, 3), True),
-            StructField("double", DoubleType(), True),
-        ]
-    )
-    test_df = spark.createDataFrame(data, schema)
-
-    # Act
-    actual_df = _convert_all_floats_to_danish_csv_format(test_df)
-
-    # Assert
-    for row in actual_df.collect():
-        assert type(row.float) is str
-        assert type(row.decimal) is str
-        assert type(row.double) is str
-
-        assert "," in row.float
-        assert "," in row.decimal
-        assert "," in row.double
-
-
 @pytest.mark.parametrize("locale", ["da-dk", "en-gb", "en-us"])
 def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseconds(
     spark: SparkSession, locale: str
@@ -309,7 +276,6 @@ def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseco
     )
     tmp_dir = TemporaryDirectory()
     csv_path = f"{tmp_dir.name}/csv_file"
-    expected_delimiter = ";" if locale == "da-dk" else ","
 
     # Act
     columns = write_files(
@@ -329,18 +295,9 @@ def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseco
             with x.open(mode="r") as f:
                 all_lines_written = f.readlines()
 
-                assert (
-                    all_lines_written[0]
-                    == f"a{expected_delimiter}2024-10-21T12:10:30Z\n"
-                )
-                assert (
-                    all_lines_written[1]
-                    == f"b{expected_delimiter}2024-10-21T12:10:30Z\n"
-                )
-                assert (
-                    all_lines_written[2]
-                    == f"c{expected_delimiter}2024-10-21T12:10:30Z\n"
-                )
+                assert all_lines_written[0] == f"a,2024-10-21T12:10:30Z\n"
+                assert all_lines_written[1] == f"b,2024-10-21T12:10:30Z\n"
+                assert all_lines_written[2] == f"c,2024-10-21T12:10:30Z\n"
 
     assert columns == ["key", "value"]
 

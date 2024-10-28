@@ -107,31 +107,11 @@ def get_dbutils(spark: SparkSession) -> Any:
 def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
     options_to_always_include = {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
     if locale.lower() == "en-gb":
-        return options_to_always_include | {"locale": "en-gb", "delimiter": ","}
+        return options_to_always_include | {"locale": "en-gb"}
     if locale.lower() == "da-dk":
-        return options_to_always_include | {"locale": "da-dk", "delimiter": ";"}
+        return options_to_always_include | {"locale": "da-dk"}
     else:
-        return options_to_always_include | {"locale": "en-us", "delimiter": ","}
-
-
-def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
-    data_types_to_convert = [
-        FloatType().typeName(),
-        DecimalType().typeName(),
-        DoubleType().typeName(),
-    ]
-    fields_to_convert = [
-        field
-        for field in df.schema
-        if field.dataType.typeName() in data_types_to_convert
-    ]
-
-    for field in fields_to_convert:
-        df = df.withColumn(
-            field.name, F.translate(F.col(field.name).cast("string"), ".", ",")
-        )
-
-    return df
+        return options_to_always_include | {"locale": "en-us"}
 
 
 def write_files(
@@ -161,9 +141,6 @@ def write_files(
 
     if len(order_by) > 0:
         df = df.orderBy(*order_by)
-
-    if locale.lower() == "da-dk":
-        df = _convert_all_floats_to_danish_csv_format(df)
 
     csv_writer_options = _get_csv_writer_options_based_on_locale(locale)
 
@@ -268,12 +245,11 @@ def merge_files(
         list[str]: List of the final file paths.
     """
     print("Files to merge: " + str(new_files))
-    csv_delimiter = _get_csv_writer_options_based_on_locale(locale)["delimiter"]
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
             print("Creating " + str(tmp_dst))
-            f_tmp_dst.write(csv_delimiter.join(headers) + "\n")
+            f_tmp_dst.write(",".join(headers) + "\n")
 
     for _file in new_files:
         with _file.src.open("r") as f_src:
