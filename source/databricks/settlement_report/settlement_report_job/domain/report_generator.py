@@ -136,9 +136,6 @@ def execute_wholesale_results(
     """
     Entry point for the logic of creating wholesale results.
     """
-    if args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        return
-
     repository = WholesaleRepository(spark, args.catalog_name)
     wholesale_results_df = create_wholesale_results(args=args, repository=repository)
 
