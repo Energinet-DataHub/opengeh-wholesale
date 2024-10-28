@@ -24,6 +24,7 @@ from settlement_report_job.domain.report_naming_convention import (
 )
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -84,11 +85,11 @@ def prepare_for_csv(
     ]
 
     csv_df = pivoted_df.select(
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            EphemeralColumns.grid_area_code_partitioning
+        ),
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
-        ),
-        F.col(DataProductColumnNames.grid_area_code).alias(
-            CsvColumnNames.grid_area_code
         ),
         F.col(DataProductColumnNames.metering_point_id).alias(
             CsvColumnNames.metering_point_id
