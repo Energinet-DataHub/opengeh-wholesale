@@ -33,7 +33,7 @@ from .preparation import PreparedDataReader
 from .preparation.transformations import get_grid_loss_metering_point_ids
 from .wholesale import wholesale_calculation
 from ..codelists import MeteringPointType
-from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..codelists.calculation_type import is_wholesale_calculation_type, CalculationType
 from ..constants import Colname
 
 
@@ -189,6 +189,10 @@ class CalculationCore:
             parent_metering_point_time_series__except_grid_loss,
             grid_loss_metering_point_periods,
         )
+
+        # Do not generate basis data for aggregation calculations
+        if args.calculation_type == CalculationType.AGGREGATION.value:
+            return calculation_output
 
         # This extends the content of metering_point_time_series with calculated grid loss,
         # which is used in the wholesale calculation and the basis data
