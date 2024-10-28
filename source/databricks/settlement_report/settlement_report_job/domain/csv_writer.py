@@ -16,7 +16,6 @@ from typing import Any
 from pyspark.sql import DataFrame
 
 from settlement_report_job import logging
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -30,7 +29,6 @@ from settlement_report_job.utils import (
     get_new_files,
     merge_files,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 log = logging.Logger(__name__)
 
