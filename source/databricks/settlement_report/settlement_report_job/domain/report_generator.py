@@ -6,6 +6,9 @@ from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.monthly_amounts.monthly_amounts_factory import (
+    create_monthly_amounts,
+)
 from settlement_report_job.domain.energy_results.energy_results_factory import (
     create_energy_results,
 )
@@ -127,6 +130,27 @@ def execute_energy_results(
     dbutils.jobs.taskValues.set(key="energy_result_files", value=energy_result_files)
 
 
+def execute_monthly_amounts(
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
+) -> None:
+    """
+    Entry point for the logic of monthly amounts.
+    """
+    repository = WholesaleRepository(spark, args.catalog_name)
+    monthly_amounts_df = create_monthly_amounts(args=args, repository=repository)
+
+    monthly_amounts_files = csv_writer.write(
+        dbutils,
+        args,
+        monthly_amounts_df,
+        ReportDataType.MonthlyAmounts,
+    )
+
+    dbutils.jobs.taskValues.set(
+        key="monthly_amounts_files", value=monthly_amounts_files
+    )
+
+
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating the final zip file.
@@ -137,6 +161,7 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
         TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
         TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
         TaskType.ENERGY_RESULTS: "energy_result_files",
+        TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
     }
 
     for taskKey, key in task_types_to_zip.items():

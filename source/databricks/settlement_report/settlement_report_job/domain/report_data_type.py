@@ -25,3 +25,4 @@ class ReportDataType(Enum):
     TimeSeriesQuarterly = 2
     EnergyResults = 3
     WholesaleResults = 4
+    MonthlyAmounts = 5

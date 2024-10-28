@@ -48,6 +48,10 @@ def start_energy_results() -> None:
     _start_task(report_generator.execute_energy_results)
 
 
+def start_monthly_amounts() -> None:
+    _start_task(report_generator.execute_monthly_amounts)
+
+
 def start_zip() -> None:
     _start_task(report_generator.execute_zip)
 

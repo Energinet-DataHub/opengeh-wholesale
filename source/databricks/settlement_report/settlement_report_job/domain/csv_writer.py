@@ -86,7 +86,10 @@ def _get_partition_columns_for_report_type(
     ]:
         partition_columns = [CsvColumnNames.grid_area_code]
 
-    if report_type in [ReportDataType.EnergyResults] and (
+    if report_type in [
+        ReportDataType.EnergyResults,
+        ReportDataType.MonthlyAmounts,
+    ] and (
         should_include_ephemeral_grid_area(
             args.calculation_id_by_grid_area,
             args.grid_area_codes,
@@ -130,6 +133,16 @@ def _get_order_by_columns_for_report_type(
             order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
         return order_by_columns
+
+    if report_type in [ReportDataType.MonthlyAmounts]:
+        return [
+            CsvColumnNames.grid_area_code,
+            CsvColumnNames.energy_supplier_id,
+            CsvColumnNames.charge_owner,
+            CsvColumnNames.charge_type,
+            CsvColumnNames.charge_id,
+            CsvColumnNames.resolution_duration,
+        ]
 
     return []
 
