@@ -146,9 +146,9 @@ def test_write_files__when_locale_set_to_danish(spark: SparkSession):
             with x.open(mode="r") as f:
                 all_lines_written = f.readlines()
 
-                assert all_lines_written[0] == "a,1,1\n"
-                assert all_lines_written[1] == "b,2,2\n"
-                assert all_lines_written[2] == "c,3,3\n"
+                assert all_lines_written[0] == "a,1.1\n"
+                assert all_lines_written[1] == "b,2.2\n"
+                assert all_lines_written[2] == "c,3.3\n"
 
     tmp_dir.cleanup()
 
@@ -210,9 +210,9 @@ def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSe
             with x.open(mode="r") as f:
                 all_lines_written = f.readlines()
 
-                assert all_lines_written[0] == "a,1,1\n"
-                assert all_lines_written[1] == "b,2,2\n"
-                assert all_lines_written[2] == "c,3,3\n"
+                assert all_lines_written[0] == "a,1.1\n"
+                assert all_lines_written[1] == "b,2.2\n"
+                assert all_lines_written[2] == "c,3.3\n"
 
     assert columns == ["key", "value"]
 
