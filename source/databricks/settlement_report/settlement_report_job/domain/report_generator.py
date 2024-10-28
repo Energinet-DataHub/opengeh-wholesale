@@ -146,7 +146,7 @@ def execute_wholesale_results(
         dbutils,
         args,
         wholesale_results_df,
-        ReportDataType.EnergyResults,
+        ReportDataType.WholesaleResults,
     )
 
     dbutils.jobs.taskValues.set(
