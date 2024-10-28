@@ -38,6 +38,8 @@ from data_seeding.write_test_data import (
     write_energy_per_es_to_delta_table,
     write_latest_calculations_by_day_to_delta_table,
     write_amounts_per_charge_to_delta_table,
+    write_monthly_amounts_per_charge_to_delta_table,
+    write_total_monthly_amounts_to_delta_table,
 )
 
 
@@ -190,6 +192,21 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     )
     write_amounts_per_charge_to_delta_table(
         spark, amounts_per_charge_df, input_database_location
+    )
+
+    monthly_amounts_per_charge_df = standard_wholesale_fixing_scenario_data_generator.create_monthly_amounts_per_charge(
+        spark
+    )
+    write_monthly_amounts_per_charge_to_delta_table(
+        spark, monthly_amounts_per_charge_df, input_database_location
+    )
+    total_monthly_amounts_df = (
+        standard_wholesale_fixing_scenario_data_generator.create_total_monthly_amounts(
+            spark
+        )
+    )
+    write_total_monthly_amounts_to_delta_table(
+        spark, total_monthly_amounts_df, input_database_location
     )
 
 
