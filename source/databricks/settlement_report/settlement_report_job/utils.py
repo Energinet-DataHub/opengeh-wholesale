@@ -15,6 +15,7 @@ from dataclasses import dataclass
 import itertools
 from pathlib import Path
 import re
+from uuid import UUID
 import zipfile
 
 from typing import Any
@@ -25,10 +26,11 @@ from pyspark.sql.window import Window
 from pyspark.sql.types import DecimalType, DoubleType, FloatType
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
+from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
+    CsvColumnNames,
 )
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 
 @dataclass
@@ -103,23 +105,30 @@ def get_dbutils(spark: SparkSession) -> Any:
 
 
 def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
+    options_to_always_include = {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
     if locale.lower() == "en-gb":
-        return {"locale": "en-gb", "delimiter": ","}
+        return options_to_always_include | {"locale": "en-gb", "delimiter": ","}
     if locale.lower() == "da-dk":
-        return {"locale": "da-dk", "delimiter": ";"}
+        return options_to_always_include | {"locale": "da-dk", "delimiter": ";"}
     else:
-        return {"locale": "en-us", "delimiter": ","}
+        return options_to_always_include | {"locale": "en-us", "delimiter": ","}
 
 
 def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
-    data_types_to_convert = [FloatType(), DecimalType(), DoubleType()]
+    data_types_to_convert = [
+        FloatType().typeName(),
+        DecimalType().typeName(),
+        DoubleType().typeName(),
+    ]
     fields_to_convert = [
-        field for field in df.schema if field.dataType in data_types_to_convert
+        field
+        for field in df.schema
+        if field.dataType.typeName() in data_types_to_convert
     ]
 
     for field in fields_to_convert:
         df = df.withColumn(
-            field.name, F.regexp_replace(F.col(field.name).cast("string"), "\\.", ",")
+            field.name, F.translate(F.col(field.name).cast("string"), ".", ",")
         )
 
     return df
@@ -147,12 +156,11 @@ def write_files(
     """
     if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
-        chunk_index_col = F.floor(
-            (F.row_number().over(w) - F.lit(1)) / F.lit(rows_per_file)
-        )  # Subtract one as row_number starts at 1
+        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
 
-    df = df.orderBy(order_by)
+    if len(order_by) > 0:
+        df = df.orderBy(*order_by)
 
     if locale.lower() == "da-dk":
         df = _convert_all_floats_to_danish_csv_format(df)
@@ -192,8 +200,11 @@ def get_new_files(
     new_files = []
 
     regex = spark_output_path
-    if DataProductColumnNames.grid_area_code in partition_columns:
-        regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
+    if CsvColumnNames.grid_area_code in partition_columns:
+        regex = f"{regex}/{CsvColumnNames.grid_area_code}=(\\w{{3}})"
+
+    if EphemeralColumns.grid_area_code in partition_columns:
+        regex = f"{regex}/{EphemeralColumns.grid_area_code}=(\\w{{3}})"
 
     if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
@@ -204,20 +215,36 @@ def get_new_files(
             raise ValueError(f"File {f} does not match the expected pattern")
 
         groups = partition_match.groups()
-        grid_area = groups[0]
-        chunk_index = groups[1] if len(groups) > 1 else None
+        group_count = 0
+
+        if (
+            CsvColumnNames.grid_area_code in partition_columns
+            or EphemeralColumns.grid_area_code in partition_columns
+        ):
+            grid_area = groups[group_count]
+            group_count += 1
+        else:
+            grid_area = None
+
+        if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
+            chunk_index = groups[group_count]
+            group_count += 1
+        else:
+            chunk_index = None
 
         file_name = file_name_factory.create(
-            grid_area, energy_supplier_id=None, chunk_index=chunk_index
+            grid_area_code=grid_area,
+            chunk_index=chunk_index,
         )
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))
+
     return new_files
 
 
 def merge_files(
-    dbutils: Any, new_files: list[TmpFile], headers: list[str]
+    dbutils: Any, new_files: list[TmpFile], headers: list[str], locale: str
 ) -> list[str]:
     """Merges the new files and moves them to the final location.
 
@@ -231,11 +258,12 @@ def merge_files(
         list[str]: List of the final file paths.
     """
     print("Files to merge: " + str(new_files))
+    csv_delimiter = _get_csv_writer_options_based_on_locale(locale)["delimiter"]
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
             print("Creating " + str(tmp_dst))
-            f_tmp_dst.write(",".join(headers) + "\n")
+            f_tmp_dst.write(csv_delimiter.join(headers) + "\n")
 
     for _file in new_files:
         with _file.src.open("r") as f_src:
@@ -247,3 +275,30 @@ def merge_files(
         dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
     return list(set([str(_file.dst) for _file in new_files]))
+
+
+def should_include_ephemeral_grid_area(
+    calculation_id_by_grid_area: dict[str, UUID] | None,
+    grid_area_codes: list[str] | None,
+    split_report_by_grid_area: bool,
+) -> bool:
+    return (
+        _is_exactly_one_grid_area_selected(calculation_id_by_grid_area, grid_area_codes)
+        or split_report_by_grid_area
+    )
+
+
+def _is_exactly_one_grid_area_selected(
+    calculation_id_by_grid_area: dict[str, UUID] | None,
+    grid_area_codes: list[str] | None,
+) -> bool:
+    only_one_grid_area_from_calc_ids = (
+        calculation_id_by_grid_area is not None
+        and len(calculation_id_by_grid_area) == 1
+    )
+
+    only_one_grid_area_from_grid_area_codes = (
+        grid_area_codes is not None and len(grid_area_codes) == 1
+    )
+
+    return only_one_grid_area_from_calc_ids or only_one_grid_area_from_grid_area_codes

@@ -2,20 +2,26 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
-from settlement_report_job.domain import time_series_writer
-from settlement_report_job.domain.metering_point_resolution import (
-    DataProductMeteringPointResolution,
-)
+from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.domain.time_series_factory import (
+from settlement_report_job.domain.energy_results.energy_results_factory import (
+    create_energy_results,
+)
+from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
+    create_time_series_for_balance_fixing,
 )
 from settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 from settlement_report_job.utils import create_zip_file
-from settlement_report_job.logger import Logger
+from settlement_report_job.logging import Logger
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
+)
+from settlement_report_job.domain.market_role import MarketRole
 
 log = Logger(__name__)
 
@@ -27,9 +33,8 @@ def execute_hourly_time_series(
         spark,
         dbutils,
         args,
-        DataProductMeteringPointResolution.HOUR,
         ReportDataType.TimeSeriesHourly,
-        "hourly_time_series_files",
+        task_key="hourly_time_series_files",
     )
 
 
@@ -40,9 +45,8 @@ def execute_quarterly_time_series(
         spark,
         dbutils,
         args,
-        DataProductMeteringPointResolution.QUARTER,
         ReportDataType.TimeSeriesQuarterly,
-        "quarterly_time_series_files",
+        task_key="quarterly_time_series_files",
     )
 
 
@@ -50,7 +54,6 @@ def _execute_time_series(
     spark: SparkSession,
     dbutils: Any,
     args: SettlementReportArgs,
-    resolution: DataProductMeteringPointResolution,
     report_data_type: ReportDataType,
     task_key: str,
 ) -> None:
@@ -60,19 +63,39 @@ def _execute_time_series(
     if not args.include_basis_data:
         return
 
+    if report_data_type is ReportDataType.TimeSeriesHourly:
+        metering_point_resolution = MeteringPointResolutionDataProductValue.HOUR
+    elif report_data_type is ReportDataType.TimeSeriesQuarterly:
+        metering_point_resolution = MeteringPointResolutionDataProductValue.QUARTER
+    else:
+        raise ValueError(f"Unsupported report data type: {report_data_type}")
+
     repository = WholesaleRepository(spark, args.catalog_name)
-    time_series_df = create_time_series_for_wholesale(
-        period_start=args.period_start,
-        period_end=args.period_end,
-        calculation_id_by_grid_area=args.calculation_id_by_grid_area,
-        time_zone=args.time_zone,
-        energy_supplier_ids=args.energy_supplier_ids,
-        resolution=resolution,
-        repository=repository,
-        requesting_actor_market_role=args.requesting_actor_market_role,
-        requesting_actor_id=args.requesting_actor_id,
-    )
-    time_series_files = time_series_writer.write(
+    if args.calculation_type is CalculationType.BALANCE_FIXING:
+        time_series_df = create_time_series_for_balance_fixing(
+            period_start=args.period_start,
+            period_end=args.period_end,
+            grid_area_codes=args.grid_area_codes,
+            time_zone=args.time_zone,
+            energy_supplier_ids=args.energy_supplier_ids,
+            metering_point_resolution=metering_point_resolution,
+            requesting_market_role=args.requesting_actor_market_role,
+            repository=repository,
+        )
+    else:
+        time_series_df = create_time_series_for_wholesale(
+            period_start=args.period_start,
+            period_end=args.period_end,
+            calculation_id_by_grid_area=args.calculation_id_by_grid_area,
+            time_zone=args.time_zone,
+            energy_supplier_ids=args.energy_supplier_ids,
+            metering_point_resolution=metering_point_resolution,
+            repository=repository,
+            requesting_actor_market_role=args.requesting_actor_market_role,
+            requesting_actor_id=args.requesting_actor_id,
+        )
+
+    time_series_files = csv_writer.write(
         dbutils,
         args,
         time_series_df,
@@ -82,23 +105,50 @@ def _execute_time_series(
     dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
 
+def execute_energy_results(
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
+) -> None:
+    """
+    Entry point for the logic of creating energy results.
+    """
+    if args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        return
+
+    repository = WholesaleRepository(spark, args.catalog_name)
+    energy_results_df = create_energy_results(args=args, repository=repository)
+
+    energy_result_files = csv_writer.write(
+        dbutils,
+        args,
+        energy_results_df,
+        ReportDataType.EnergyResults,
+    )
+
+    dbutils.jobs.taskValues.set(key="energy_result_files", value=energy_result_files)
+
+
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating the final zip file.
     """
     files_to_zip = []
-    files_to_zip.extend(
-        dbutils.jobs.taskValues.get(
-            taskKey=TaskType.HOURLY_TIME_SERIES.value,
-            key="hourly_time_series_files",
-        )
-    )
-    files_to_zip.extend(
-        dbutils.jobs.taskValues.get(
-            taskKey=TaskType.QUARTERLY_TIME_SERIES.value,
-            key="quarterly_time_series_files",
-        )
-    )
+
+    task_types_to_zip = {
+        TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
+        TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
+        TaskType.ENERGY_RESULTS: "energy_result_files",
+    }
+
+    for taskKey, key in task_types_to_zip.items():
+        try:
+            files_to_zip.extend(
+                dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
+            )
+        except ValueError:
+            log.info(
+                f"Task Key {taskKey.value} was not found in TaskValues, continuing without it."
+            )
+
     log.info(f"Files to zip: {files_to_zip}")
     zip_file_path = f"{args.settlement_reports_output_path}/{args.report_id}.zip"
     log.info(f"Creating zip file: '{zip_file_path}'")

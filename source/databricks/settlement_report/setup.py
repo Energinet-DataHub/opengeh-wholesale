@@ -34,6 +34,7 @@ setup(
         "console_scripts": [
             "create_hourly_time_series    = settlement_report_job.entry_point:start_hourly_time_series",
             "create_quarterly_time_series = settlement_report_job.entry_point:start_quarterly_time_series",
+            "create_energy_results        = settlement_report_job.entry_point:start_energy_results",
             "create_zip                   = settlement_report_job.entry_point:start_zip",
         ]
     },

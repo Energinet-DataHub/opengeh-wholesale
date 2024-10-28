@@ -49,7 +49,7 @@ class PreparedDataReader:
         self._wholesale_internal_repository = wholesale_internal_repository
 
     @logging_configuration.use_span("get_metering_point_periods")
-    def get_metering_point_periods_df(
+    def get_metering_point_periods(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
@@ -206,7 +206,7 @@ class PreparedDataReader:
             fees=fees,
         )
 
-    def get_metering_point_periods_without_grid_loss(
+    def get_metering_point_periods__except_grid_loss(
         self, metering_point_periods_df: DataFrame
     ) -> DataFrame:
         # Remove grid loss metering point periods
