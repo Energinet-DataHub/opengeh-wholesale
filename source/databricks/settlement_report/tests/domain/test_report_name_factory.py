@@ -61,10 +61,11 @@ def test_create__when_energy_supplier__returns_expected_file_name(
     grid_area_code = "123"
     args.requesting_actor_id = energy_supplier_id
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
+    args.energy_supplier_ids = [energy_supplier_id]
     sut = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier_id, chunk_index=None)
+    actual = sut.create(grid_area_code, chunk_index=None)
 
     # Assert
     assert (
@@ -83,10 +84,11 @@ def test_create__when_grid_access_provider__returns_expected_file_name(
     requesting_actor_id = "1111111111111"
     args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
     args.requesting_actor_id = requesting_actor_id
+    args.energy_supplier_ids = None
     sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier_id=None, chunk_index=None)
+    actual = sut.create(grid_area_code, chunk_index=None)
 
     # Assert
     assert (
@@ -126,11 +128,12 @@ def test_create__when_system_operator_or_datahub_admin__returns_expected_file_na
     # Arrange
     args = default_settlement_report_args
     args.requesting_actor_market_role = market_role
+    args.energy_supplier_ids = [energy_supplier_id] if energy_supplier_id else None
     grid_area_code = "123"
     sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
-    actual = sut.create(grid_area_code, energy_supplier_id, chunk_index=None)
+    actual = sut.create(grid_area_code, chunk_index=None)
 
     # Assert
     assert actual == expected_file_name
@@ -145,12 +148,11 @@ def test_create__when_split_index_is_set__returns_file_name_that_include_split_i
     energy_supplier_id = "222222222222"
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
     args.requesting_actor_id = energy_supplier_id
+    args.energy_supplier_ids = [energy_supplier_id]
     sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
-    actual = sut.create(
-        grid_area_code="123", energy_supplier_id=energy_supplier_id, chunk_index="17"
-    )
+    actual = sut.create(grid_area_code="123", chunk_index="17")
 
     # Assert
     assert actual == f"TSSD60_123_{energy_supplier_id}_DDQ_01-07-2024_31-07-2024_17.csv"
@@ -185,10 +187,11 @@ def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
     args = default_settlement_report_args
     args.period_start = period_start
     args.period_end = period_end
+    args.energy_supplier_ids = None
     sut = FileNameFactory(ReportDataType.TimeSeriesHourly, args)
 
     # Act
-    actual = sut.create(grid_area_code="123", energy_supplier_id=None, chunk_index="17")
+    actual = sut.create(grid_area_code="123", chunk_index="17")
 
     # Assert
     assert actual == f"TSSD60_123_{expected_start_date}_{expected_end_date}_17.csv"
@@ -219,13 +222,12 @@ def test_create__when_energy_supplier_requests_report_not_combined(
     args = default_settlement_report_args
     args.split_report_by_grid_area = True
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
+    args.energy_supplier_ids = args.requesting_actor_id
 
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code="123", energy_supplier_id=None, chunk_index=None
-    )
+    actual = factory.create(grid_area_code="123", chunk_index=None)
 
     # Assert
     assert (
@@ -264,13 +266,12 @@ def test_create__when_energy_supplier_requests_report_combined(
 
     args.split_report_by_grid_area = False
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
+    args.energy_supplier_ids = [args.requesting_actor_id]
 
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code=None, energy_supplier_id=None, chunk_index=None
-    )
+    actual = factory.create(grid_area_code=None, chunk_index=None)
 
     # Assert
     assert (
@@ -306,13 +307,12 @@ def test_create__when_grid_access_provider_requests_report(
     args.calculation_id_by_grid_area = {
         "456": uuid.UUID("32e49805-20ef-4db2-ac84-c4455de7a373"),
     }
+    args.energy_supplier_ids = [args.requesting_actor_id]
 
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code="456", energy_supplier_id=None, chunk_index=None
-    )
+    actual = factory.create(grid_area_code="456", chunk_index=None)
 
     # Assert
     assert (
@@ -353,9 +353,7 @@ def test_create__when_datahub_administrator_requests_report_single_grid(
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code="456", energy_supplier_id=None, chunk_index=None
-    )
+    actual = factory.create(grid_area_code="456", chunk_index=None)
 
     # Assert
     assert actual == f"{pre_fix}_456_01-07-2024_31-07-2024.csv"
@@ -394,9 +392,7 @@ def test_create__when_datahub_administrator_requests_report_multi_grid_not_combi
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code="456", energy_supplier_id=None, chunk_index=None
-    )
+    actual = factory.create(grid_area_code="456", chunk_index=None)
 
     # Assert
     assert actual == f"{pre_fix}_456_01-07-2024_31-07-2024.csv"
@@ -437,9 +433,7 @@ def test_create__when_datahub_administrator_requests_report_multi_grid_single_pr
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code=None, energy_supplier_id=energy_supplier_id, chunk_index=None
-    )
+    actual = factory.create(grid_area_code=None, chunk_index=None)
 
     # Assert
     assert (
@@ -481,9 +475,7 @@ def test_create__when_datahub_administrator_requests_result_report_multi_grid_al
     factory = FileNameFactory(report_data_type, args)
 
     # Act
-    actual = factory.create(
-        grid_area_code=None, energy_supplier_id=None, chunk_index=None
-    )
+    actual = factory.create(grid_area_code=None, chunk_index=None)
 
     # Assert
     assert actual == f"{pre_fix}_flere-net_01-07-2024_31-07-2024.csv"

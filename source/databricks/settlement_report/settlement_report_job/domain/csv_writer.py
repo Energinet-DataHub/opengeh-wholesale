@@ -47,12 +47,10 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    df_ready_for_writing = _apply_report_type_df_changes(df, args, report_data_type)
-
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
     headers = write_files(
-        df=df_ready_for_writing,
+        df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
         rows_per_file=rows_per_file,
@@ -94,13 +92,11 @@ def _get_partition_columns_for_report_type(
     ):
         partition_columns = [EphemeralColumns.grid_area_code]
 
-    if _is_partitioning_by_energy_supplier_id_needed(args):
-        partition_columns.append(CsvColumnNames.energy_supplier_id)
-
     if args.prevent_large_text_files:
         partition_columns.append(EphemeralColumns.chunk_index)
 
     return partition_columns
+
 
 
 def _apply_report_type_df_changes(
@@ -127,25 +123,3 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "energy_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
-
-
-def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) -> bool:
-    """
-    When this partitioning by energy_supplier_id, the energy_supplier_id will be included in the file name
-
-    """
-    if args.requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.DATAHUB_ADMINISTRATOR,
-    ]:
-        return (
-            args.energy_supplier_ids is not None and len(args.energy_supplier_ids) == 1
-        )
-    elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
-        return True
-    elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        return False
-    else:
-        raise ValueError(
-            f"Unsupported requesting actor market role: {args.requesting_actor_market_role}"
-        )

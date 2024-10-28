@@ -55,7 +55,10 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
-    if DataProductColumnNames.energy_supplier_id in energy.columns:
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(

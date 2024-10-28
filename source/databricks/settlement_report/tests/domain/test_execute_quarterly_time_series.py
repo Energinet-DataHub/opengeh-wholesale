@@ -117,6 +117,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         f"TSSD15_805_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
+        CsvColumnNames.energy_supplier_id,
         CsvColumnNames.metering_point_id,
         CsvColumnNames.type_of_mp,
         CsvColumnNames.start_date_time,
