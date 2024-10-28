@@ -18,6 +18,7 @@ from settlement_report_job.domain.csv_column_names import (
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
+    MeteringPointTypeDataProductValue,
 )
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
@@ -27,6 +28,39 @@ DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
 NOT_SYSTEM_OPERATOR_ID = "4444444444444"
 DEFAULT_MARKET_ROLE = MarketRole.GRID_ACCESS_PROVIDER
+
+
+def _create_time_series_with_many_combinations(
+    spark: SparkSession,
+    from_date: datetime,
+    to_date: datetime,
+    resolution: MeteringPointResolutionDataProductValue,
+) -> DataFrame:
+
+    df = None
+    for grid_area_code in ["804", "805"]:
+        for mp_type in [
+            MeteringPointTypeDataProductValue.CONSUMPTION,
+            MeteringPointTypeDataProductValue.PRODUCTION,
+        ]:
+            for mp_id in ["1", "2"]:
+                for energy_supplier_id in ["1000000000000", "2000000000000"]:
+                    spec = default_data.create_time_series_data_spec(
+                        from_date=from_date,
+                        to_date=to_date,
+                        grid_area_code=grid_area_code,
+                        metering_point_type=mp_type,
+                        metering_point_id=mp_id,
+                        energy_supplier_id=energy_supplier_id,
+                        resolution=resolution,
+                    )
+                    current_df = time_series_factory.create(spark, spec)
+                    if df is None:
+                        df = current_df
+                    else:
+                        df = df.union(current_df)
+
+    return df
 
 
 def _create_time_series_with_increasing_quantity(
@@ -175,3 +209,62 @@ def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_expected_
     for i in range(1, total_columns):
         expected_value = None if i > expected_columns_with_data else Decimal(i - 1)
         assert dst_day[f"ENERGYQUANTITY{i}"] == expected_value
+
+
+EXPECTED_ORDERING_FOR_DATAHUB_ADMINISTRATOR_AND_SYSTEM_OPERATOR = [
+    CsvColumnNames.energy_supplier_id,
+    CsvColumnNames.type_of_mp,
+    CsvColumnNames.metering_point_id,
+    CsvColumnNames.start_date_time,
+]
+
+EXPECTED_ORDERING_FOR_ENERGY_SUPPLIER_AND_GRID_ACCESS_PROVIDER = [
+    CsvColumnNames.type_of_mp,
+    CsvColumnNames.metering_point_id,
+    CsvColumnNames.start_date_time,
+]
+
+
+@pytest.mark.parametrize(
+    "requesting_actor_market_role,expected_order",
+    [
+        (
+            MarketRole.DATAHUB_ADMINISTRATOR,
+            EXPECTED_ORDERING_FOR_DATAHUB_ADMINISTRATOR_AND_SYSTEM_OPERATOR,
+        ),
+        (
+            MarketRole.SYSTEM_OPERATOR,
+            EXPECTED_ORDERING_FOR_DATAHUB_ADMINISTRATOR_AND_SYSTEM_OPERATOR,
+        ),
+        (
+            MarketRole.ENERGY_SUPPLIER,
+            EXPECTED_ORDERING_FOR_ENERGY_SUPPLIER_AND_GRID_ACCESS_PROVIDER,
+        ),
+        (
+            MarketRole.GRID_ACCESS_PROVIDER,
+            EXPECTED_ORDERING_FOR_ENERGY_SUPPLIER_AND_GRID_ACCESS_PROVIDER,
+        ),
+    ],
+)
+def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_dataframe_with_expected_ordering(
+    spark: SparkSession,
+    requesting_actor_market_role: MarketRole,
+    expected_order: list[str],
+) -> None:
+    # Arrange
+    from_date = datetime(2023, 3, 10, 22)
+    to_date = datetime(2023, 3, 12, 22)
+    df = _create_time_series_with_many_combinations(
+        spark, from_date, to_date, MeteringPointResolutionDataProductValue.HOUR
+    ).orderBy(F.rand())
+
+    # Act
+    actual_df = prepare_for_csv(
+        filtered_time_series_points=df,
+        metering_point_resolution=MeteringPointResolutionDataProductValue.HOUR,
+        time_zone=DEFAULT_TIME_ZONE,
+        requesting_actor_market_role=requesting_actor_market_role,
+    )
+
+    # Assert
+    assert actual_df.collect() == actual_df.orderBy(expected_order).collect()
