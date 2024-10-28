@@ -99,7 +99,6 @@ def test_prepare_for_csv__returns_expected_energy_quantity_columns(
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         requesting_actor_market_role=DEFAULT_MARKET_ROLE,
-        energy_supplier_ids=DEFAULT_ENERGY_SUPPLIER_IDS,
     )
 
     # Assert
@@ -166,7 +165,6 @@ def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_expected_
         metering_point_resolution=resolution,
         time_zone=DEFAULT_TIME_ZONE,
         requesting_actor_market_role=DEFAULT_MARKET_ROLE,
-        energy_supplier_ids=DEFAULT_ENERGY_SUPPLIER_IDS,
     )
 
     # Assert
