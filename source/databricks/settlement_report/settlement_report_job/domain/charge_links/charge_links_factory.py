@@ -24,7 +24,7 @@ from settlement_report_job.domain.charge_links.prepare_for_csv import (
 )
 
 
-def create_energy_results(
+def create_charge_links(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
