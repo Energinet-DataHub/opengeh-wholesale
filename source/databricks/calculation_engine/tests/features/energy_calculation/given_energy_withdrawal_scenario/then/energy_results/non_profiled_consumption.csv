@@ -1,9 +1,9 @@
 grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
-800;;;7.202;['measured'];2023-07-02 02:00:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;8f37fd02-c7d2-5207-8d2a-a6a2d1dc6db5;;PT15M
-111;;;50.000;['measured'];2023-07-02 02:00:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;dc5d01eb-0460-5be5-88c3-c7db1d25245d;;PT15M
-800;;;2.202;['missing', 'measured'];2023-07-02 02:15:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;8f37fd02-c7d2-5207-8d2a-a6a2d1dc6db5;;PT15M
-111;;;50.000;['measured'];2023-07-02 02:15:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;dc5d01eb-0460-5be5-88c3-c7db1d25245d;;PT15M
-800;;;2.201;['missing', 'measured'];2023-07-02 02:30:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;8f37fd02-c7d2-5207-8d2a-a6a2d1dc6db5;;PT15M
-111;;;50.000;['measured'];2023-07-02 02:30:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;dc5d01eb-0460-5be5-88c3-c7db1d25245d;;PT15M
-800;;;2.202;['missing', 'measured'];2023-07-02 02:45:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;8f37fd02-c7d2-5207-8d2a-a6a2d1dc6db5;;PT15M
-111;;;50.000;['measured'];2023-07-02 02:45:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;dc5d01eb-0460-5be5-88c3-c7db1d25245d;;PT15M
+800;;;7.202;['measured'];2023-07-02 02:00:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M
+111;;;50.000;['measured'];2023-07-02 02:00:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;cc5e3439-6322-546d-b792-bda5cecd575a;;PT15M
+800;;;2.202;['missing', 'measured'];2023-07-02 02:15:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M
+111;;;50.000;['measured'];2023-07-02 02:15:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;cc5e3439-6322-546d-b792-bda5cecd575a;;PT15M
+800;;;2.201;['missing', 'measured'];2023-07-02 02:30:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M
+111;;;50.000;['measured'];2023-07-02 02:30:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;cc5e3439-6322-546d-b792-bda5cecd575a;;PT15M
+800;;;2.202;['missing', 'measured'];2023-07-02 02:45:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M
+111;;;50.000;['measured'];2023-07-02 02:45:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;aggregation;2024-01-31 09:39:00;;cc5e3439-6322-546d-b792-bda5cecd575a;;PT15M
