@@ -196,11 +196,16 @@ def get_new_files(
     files = [f for f in Path(spark_output_path).rglob("*.csv")]
     new_files = []
 
+    partition_by_grid_area = (
+        EphemeralColumns.grid_area_code_partitioning in partition_columns
+    )
+    partition_by_chunk_index = EphemeralColumns.chunk_index in partition_columns
+
     regex = spark_output_path
-    if EphemeralColumns.grid_area_code_partitioning in partition_columns:
+    if partition_by_grid_area:
         regex = f"{regex}/{EphemeralColumns.grid_area_code_partitioning}=(\\w{{3}})"
 
-    if EphemeralColumns.chunk_index in partition_columns:
+    if partition_by_chunk_index:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
     for f in files:
@@ -211,13 +216,13 @@ def get_new_files(
         groups = partition_match.groups()
         group_count = 0
 
-        if EphemeralColumns.grid_area_code_partitioning in partition_columns:
+        if partition_by_grid_area:
             grid_area = groups[group_count]
             group_count += 1
         else:
             grid_area = None
 
-        if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
+        if partition_by_chunk_index and len(files) > 1:
             chunk_index = groups[group_count]
             group_count += 1
         else:
