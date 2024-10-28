@@ -125,13 +125,13 @@ def _get_desired_quantity_column_count(
 def _get_order_by_columns(
     has_energy_supplier_id_column: bool,
 ) -> list[str]:
+
     order_by_columns = [
-        CsvColumnNames.grid_area_code,
         CsvColumnNames.type_of_mp,
         CsvColumnNames.metering_point_id,
         CsvColumnNames.start_date_time,
     ]
     if has_energy_supplier_id_column:
-        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
+        order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
 
     return order_by_columns

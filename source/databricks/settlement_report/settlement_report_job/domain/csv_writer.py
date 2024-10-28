@@ -98,21 +98,6 @@ def _get_partition_columns_for_report_type(
     return partition_columns
 
 
-def _apply_report_type_df_changes(
-    df: DataFrame,
-    args: SettlementReportArgs,
-    report_type: ReportDataType,
-) -> DataFrame:
-    if (
-        report_type
-        in [ReportDataType.TimeSeriesHourly, ReportDataType.TimeSeriesQuarterly]
-        and args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER
-    ):
-        df = df.drop(DataProductColumnNames.energy_supplier_id)
-
-    return df
-
-
 def _get_folder_name(report_data_type: ReportDataType) -> str:
     if report_data_type == ReportDataType.TimeSeriesHourly:
         return "time_series_hourly"
