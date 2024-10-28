@@ -2,7 +2,7 @@ from pathlib import Path
 import pytest
 from datetime import datetime
 from tempfile import TemporaryDirectory
-from pyspark.sql import SparkSession, DataFrame, Row, functions as F
+from pyspark.sql import SparkSession, Row, functions as F
 from pyspark.sql.types import (
     StructType,
     StructField,
