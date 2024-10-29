@@ -77,7 +77,6 @@ def parse_job_arguments(
                 env_vars.get_catalog_name()
             ),
             include_basis_data=job_args.include_basis_data,
-            locale=job_args.locale,
         )
 
         return settlement_report_args
@@ -110,7 +109,6 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument(
         "--include-basis-data", action="store_true"
     )  # true if present, false otherwise
-    p.add_argument("--locale", type=str, required=False, default="da-DK")
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
