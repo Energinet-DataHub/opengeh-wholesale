@@ -202,7 +202,6 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
         df,
         csv_path,
         partition_columns=["key"],
-        order_by=["value"],
         rows_per_file=1000,
     )
 
