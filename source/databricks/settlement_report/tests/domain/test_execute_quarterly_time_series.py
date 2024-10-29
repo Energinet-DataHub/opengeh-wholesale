@@ -9,6 +9,7 @@ from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
+from domain.assertion import assert_files
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_generator import execute_quarterly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -31,7 +32,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = copy.deepcopy(standard_wholesale_fixing_scenario_args)
+    args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
     energy_supplier_id = (
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
@@ -53,12 +54,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
-    assert len(actual_files) == len(expected_file_names)
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
-        assert any(file_name in file_path for file_name in expected_file_names)
+    assert_files(actual_files, expected_columns, expected_file_names, spark)
 
 
 def test_execute_quarterly_time_series__when_grid_access_provider__returns_expected(
@@ -68,7 +64,7 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = copy.deepcopy(standard_wholesale_fixing_scenario_args)
+    args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
     args.energy_supplier_ids = None
     expected_file_names = [
@@ -86,12 +82,7 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert len(actual_files) == len(expected_file_names)
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
-        assert any(file_name in file_path for file_name in expected_file_names)
+    assert_files(actual_files, expected_columns, expected_file_names, spark)
 
 
 @pytest.mark.parametrize(
@@ -106,7 +97,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     market_role: MarketRole,
 ):
     # Arrange
-    args = copy.deepcopy(standard_wholesale_fixing_scenario_args)
+    args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = market_role
     energy_supplier_id = (
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
@@ -128,12 +119,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert len(actual_files) == len(expected_file_names)
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
-        assert any(file_name in file_path for file_name in expected_file_names)
+    assert_files(actual_files, expected_columns, expected_file_names, spark)
 
 
 @pytest.mark.parametrize(
@@ -148,7 +134,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     market_role: MarketRole,
 ):
     # Arrange
-    args = copy.deepcopy(standard_wholesale_fixing_scenario_args)
+    args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = market_role
     args.energy_supplier_ids = None
     expected_file_names = [
@@ -167,12 +153,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert len(actual_files) == len(expected_file_names)
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
-        assert any(file_name in file_path for file_name in expected_file_names)
+    assert_files(actual_files, expected_columns, expected_file_names, spark)
 
 
 def test_execute_quarterly_time_series__when_include_basis_data_false__returns_no_file_paths(
@@ -182,7 +163,7 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = copy.deepcopy(standard_wholesale_fixing_scenario_args)
+    args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
 
     # Act
@@ -200,7 +181,7 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
     standard_balance_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = copy.deepcopy(standard_balance_fixing_scenario_args)
+    args = standard_balance_fixing_scenario_args
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
     energy_supplier_id = (
         standard_balance_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
@@ -222,9 +203,4 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
-    assert len(actual_files) == len(expected_file_names)
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
-        assert any(file_name in file_path for file_name in expected_file_names)
+    assert_files(actual_files, expected_columns, expected_file_names, spark)

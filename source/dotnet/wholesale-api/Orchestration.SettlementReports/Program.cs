@@ -12,41 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication(worker =>
-    {
-        // Http => Authentication
-        worker.UseUserMiddlewareForIsolatedWorker<FrontendUser>();
-    })
-    .ConfigureServices((context, services) =>
+    .ConfigureFunctionsWebApplication()
+    .ConfigureServices((_, services) =>
     {
         // Common
         services.AddApplicationInsightsForIsolatedWorker(TelemetryConstants.SubsystemName);
         services.AddHealthChecksForIsolatedWorker();
-
-        // Http => Authentication
-        services.AddUserAuthenticationForIsolatedWorker<FrontendUser, FrontendUserProvider>();
-
-        // Shared by modules
-        services.AddNodaTimeForApplication();
-
-        // Modules
-        services.AddCalculationsModule(context.Configuration);
-        services.AddCalculationResultsV2Module(context.Configuration);
-    })
-    .ConfigureLogging((hostingContext, logging) =>
-    {
-        logging.AddLoggingConfigurationForIsolatedWorker(hostingContext);
+        services.AddHealthChecks();
     })
     .Build();
 
