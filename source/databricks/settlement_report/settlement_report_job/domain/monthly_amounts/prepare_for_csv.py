@@ -37,29 +37,27 @@ def prepare_for_csv(
     select_columns = [
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(CsvColumnNames.energy_business_process),
+        ].alias(CsvColumnNames.calculation_type),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_PROCESS_VARIANT)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(CsvColumnNames.process_variant),
+        ].alias(CsvColumnNames.correction_settlement_number),
         F.col(DataProductColumnNames.grid_area_code).alias(
             CsvColumnNames.grid_area_code
         ),
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
         ),
-        F.col(DataProductColumnNames.time).alias(CsvColumnNames.start_date_time),
-        F.col(DataProductColumnNames.resolution).alias(
-            CsvColumnNames.resolution_duration
-        ),
-        F.col(DataProductColumnNames.quantity_unit).alias(CsvColumnNames.measure_unit),
-        F.col(DataProductColumnNames.currency).alias(CsvColumnNames.energy_currency),
+        F.col(DataProductColumnNames.time).alias(CsvColumnNames.time),
+        F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
+        F.col(DataProductColumnNames.quantity_unit).alias(CsvColumnNames.quantity_unit),
+        F.col(DataProductColumnNames.currency).alias(CsvColumnNames.currency),
         F.col(DataProductColumnNames.amount).alias(CsvColumnNames.amount),
         map_from_dict(market_naming.CHARGE_TYPES)[
             F.col(DataProductColumnNames.charge_type)
         ].alias(CsvColumnNames.charge_type),
-        F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_id),
+        F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
         F.col(DataProductColumnNames.charge_owner_id).alias(
-            CsvColumnNames.charge_owner
+            CsvColumnNames.charge_owner_id
         ),
     ]
 

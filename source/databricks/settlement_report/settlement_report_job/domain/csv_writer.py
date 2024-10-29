@@ -142,10 +142,10 @@ def _get_order_by_columns_for_report_type(
         return [
             CsvColumnNames.grid_area_code,
             CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.charge_owner,
+            CsvColumnNames.charge_owner_id,
             CsvColumnNames.charge_type,
-            CsvColumnNames.charge_id,
-            CsvColumnNames.resolution_duration,
+            CsvColumnNames.charge_code,
+            CsvColumnNames.resolution,
         ]
 
     return []

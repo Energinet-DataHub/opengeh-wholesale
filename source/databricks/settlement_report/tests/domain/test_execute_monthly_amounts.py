@@ -33,18 +33,18 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
 
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
-            CsvColumnNames.energy_business_process,
-            CsvColumnNames.process_variant,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.correction_settlement_number,
             CsvColumnNames.grid_area_code,
             CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.start_date_time,
-            CsvColumnNames.resolution_duration,
-            CsvColumnNames.measure_unit,
-            CsvColumnNames.energy_currency,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.quantity_unit,
+            CsvColumnNames.currency,
             CsvColumnNames.amount,
             CsvColumnNames.charge_type,
-            CsvColumnNames.charge_id,
-            CsvColumnNames.charge_owner,
+            CsvColumnNames.charge_code,
+            CsvColumnNames.charge_owner_id,
         ]
 
         expected_file_names = [
@@ -59,7 +59,7 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
         actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
 
@@ -86,18 +86,18 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
         # Arrange
         expected_file_count = 1
         expected_columns = [
-            CsvColumnNames.energy_business_process,
-            CsvColumnNames.process_variant,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.correction_settlement_number,
             CsvColumnNames.grid_area_code,
             CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.start_date_time,
-            CsvColumnNames.resolution_duration,
-            CsvColumnNames.measure_unit,
-            CsvColumnNames.energy_currency,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.quantity_unit,
+            CsvColumnNames.currency,
             CsvColumnNames.amount,
             CsvColumnNames.charge_type,
-            CsvColumnNames.charge_id,
-            CsvColumnNames.charge_owner,
+            CsvColumnNames.charge_code,
+            CsvColumnNames.charge_owner_id,
         ]
 
         expected_file_names = [
@@ -112,7 +112,7 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
 
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
 
