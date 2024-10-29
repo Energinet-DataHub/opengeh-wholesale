@@ -45,9 +45,7 @@ def prepare_for_csv(
             CsvColumnNames.energy_supplier_id
         ),
         F.col(DataProductColumnNames.time).alias(CsvColumnNames.time),
-        F.col(DataProductColumnNames.resolution).alias(
-            CsvColumnNames.resolution
-        ),
+        F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
         map_from_dict(market_naming.METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(CsvColumnNames.metering_point_type),

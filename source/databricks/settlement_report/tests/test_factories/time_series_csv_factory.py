@@ -42,8 +42,7 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     CsvColumnNames.metering_point_id: str(1000000000000 + counter),
                     CsvColumnNames.metering_point_type: data_spec.metering_point_type.value,
                     CsvColumnNames.grid_area_code: grid_area_code,
-                    CsvColumnNames.time: data_spec.start_of_day
-                                         + timedelta(days=i),
+                    CsvColumnNames.time: data_spec.start_of_day + timedelta(days=i),
                 }
                 for j in range(
                     25
@@ -51,9 +50,7 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     == MeteringPointResolutionDataProductValue.HOUR
                     else 100
                 ):
-                    row[f"{CsvColumnNames.quantity}{j + 1}"] = (
-                        data_spec.energy_quantity
-                    )
+                    row[f"{CsvColumnNames.quantity}{j + 1}"] = data_spec.energy_quantity
                 rows.append(row)
 
     df = spark.createDataFrame(rows)
