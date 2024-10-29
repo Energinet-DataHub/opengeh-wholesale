@@ -43,7 +43,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     ]
     expected_columns = [
         CsvColumnNames.calculation_type,
-        CsvColumnNames.correction_settlement_variant,
+        CsvColumnNames.correction_settlement_number,
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.time,

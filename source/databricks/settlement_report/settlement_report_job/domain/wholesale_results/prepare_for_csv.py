@@ -37,7 +37,7 @@ def prepare_for_csv(
         ].alias(CsvColumnNames.calculation_type),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_PROCESS_VARIANT)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(CsvColumnNames.correction_settlement_variant),
+        ].alias(CsvColumnNames.correction_settlement_number),
         F.col(DataProductColumnNames.grid_area_code).alias(
             CsvColumnNames.grid_area_code
         ),
