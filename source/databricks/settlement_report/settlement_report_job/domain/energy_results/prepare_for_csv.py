@@ -32,7 +32,7 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def prepare_for_csv(
     energy: DataFrame,
-    create_ephemeral_grid_area_column: bool,
+    one_file_per_grid_area: bool,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     select_columns = [
@@ -53,24 +53,6 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
     ]
 
-    if requesting_actor_market_role not in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
-    ]:
-        select_columns.insert(
-            1,
-            F.col(DataProductColumnNames.energy_supplier_id).alias(
-                CsvColumnNames.energy_supplier_id
-            ),
-        )
-
-    if create_ephemeral_grid_area_column:
-        select_columns.append(
-            F.col(DataProductColumnNames.grid_area_code).alias(
-                EphemeralColumns.grid_area_code
-            ),
-        )
-
     order_by_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.metering_point_type,
@@ -82,6 +64,19 @@ def prepare_for_csv(
         MarketRole.GRID_ACCESS_PROVIDER,
         MarketRole.ENERGY_SUPPLIER,
     ]:
+        select_columns.insert(
+            1,
+            F.col(DataProductColumnNames.energy_supplier_id).alias(
+                CsvColumnNames.energy_supplier_id
+            ),
+        )
         order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
+
+    if one_file_per_grid_area:
+        select_columns.append(
+            F.col(DataProductColumnNames.grid_area_code).alias(
+                EphemeralColumns.grid_area_code_partitioning
+            ),
+        )
 
     return energy.select(select_columns).orderBy(*order_by_columns)

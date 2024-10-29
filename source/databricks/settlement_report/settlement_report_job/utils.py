@@ -15,22 +15,16 @@ from dataclasses import dataclass
 import itertools
 from pathlib import Path
 import re
-from uuid import UUID
 import zipfile
 
 from typing import Any
 from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.window import Window
 from pyspark.sql.types import DecimalType, DoubleType, FloatType
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.domain.csv_column_names import (
-    EphemeralColumns,
-    CsvColumnNames,
-)
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.domain.csv_column_names import EphemeralColumns
 
 
 @dataclass
@@ -166,14 +160,16 @@ def get_new_files(
     files = [f for f in Path(spark_output_path).rglob("*.csv")]
     new_files = []
 
+    partition_by_grid_area = (
+        EphemeralColumns.grid_area_code_partitioning in partition_columns
+    )
+    partition_by_chunk_index = EphemeralColumns.chunk_index in partition_columns
+
     regex = spark_output_path
-    if CsvColumnNames.grid_area_code in partition_columns:
-        regex = f"{regex}/{CsvColumnNames.grid_area_code}=(\\w{{3}})"
+    if partition_by_grid_area:
+        regex = f"{regex}/{EphemeralColumns.grid_area_code_partitioning}=(\\w{{3}})"
 
-    if EphemeralColumns.grid_area_code in partition_columns:
-        regex = f"{regex}/{EphemeralColumns.grid_area_code}=(\\w{{3}})"
-
-    if EphemeralColumns.chunk_index in partition_columns:
+    if partition_by_chunk_index:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
     for f in files:
@@ -184,16 +180,13 @@ def get_new_files(
         groups = partition_match.groups()
         group_count = 0
 
-        if (
-            CsvColumnNames.grid_area_code in partition_columns
-            or EphemeralColumns.grid_area_code in partition_columns
-        ):
+        if partition_by_grid_area:
             grid_area = groups[group_count]
             group_count += 1
         else:
             grid_area = None
 
-        if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
+        if partition_by_chunk_index and len(files) > 1:
             chunk_index = groups[group_count]
             group_count += 1
         else:
@@ -241,30 +234,3 @@ def merge_files(
         dbutils.fs.mv("file:" + str(tmp_dst), str(dst))
 
     return list(set([str(_file.dst) for _file in new_files]))
-
-
-def should_include_ephemeral_grid_area(
-    calculation_id_by_grid_area: dict[str, UUID] | None,
-    grid_area_codes: list[str] | None,
-    split_report_by_grid_area: bool,
-) -> bool:
-    return (
-        _is_exactly_one_grid_area_selected(calculation_id_by_grid_area, grid_area_codes)
-        or split_report_by_grid_area
-    )
-
-
-def _is_exactly_one_grid_area_selected(
-    calculation_id_by_grid_area: dict[str, UUID] | None,
-    grid_area_codes: list[str] | None,
-) -> bool:
-    only_one_grid_area_from_calc_ids = (
-        calculation_id_by_grid_area is not None
-        and len(calculation_id_by_grid_area) == 1
-    )
-
-    only_one_grid_area_from_grid_area_codes = (
-        grid_area_codes is not None and len(grid_area_codes) == 1
-    )
-
-    return only_one_grid_area_from_calc_ids or only_one_grid_area_from_grid_area_codes
