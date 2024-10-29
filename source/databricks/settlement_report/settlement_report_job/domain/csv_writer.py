@@ -110,17 +110,17 @@ def _get_order_by_columns_for_report_type(
     ]:
         return [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.metering_point_id,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         ]
 
     if report_type in [ReportDataType.EnergyResults]:
         order_by_columns = [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         ]
 
         if args.requesting_actor_market_role not in [

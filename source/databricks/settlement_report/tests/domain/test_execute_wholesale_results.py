@@ -42,22 +42,22 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         f"RESULTWHOLESALE_flere-net_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.process_variant,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.correction_settlement_number,
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.measure_unit,
-        CsvColumnNames.energy_currency,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity_unit,
+        CsvColumnNames.currency,
+        CsvColumnNames.quantity,
         CsvColumnNames.price,
         CsvColumnNames.amount,
         CsvColumnNames.charge_type,
-        CsvColumnNames.charge_id,
-        CsvColumnNames.charge_owner,
+        CsvColumnNames.charge_code,
+        CsvColumnNames.charge_owner_id,
     ]
 
     # Act
