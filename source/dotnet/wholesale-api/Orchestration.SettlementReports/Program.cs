@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
@@ -22,6 +23,7 @@ var host = new HostBuilder()
         // Common
         services.AddApplicationInsightsForIsolatedWorker(TelemetryConstants.SubsystemName);
         services.AddHealthChecksForIsolatedWorker();
+        services.AddHealthChecks();
     })
     .Build();
 
