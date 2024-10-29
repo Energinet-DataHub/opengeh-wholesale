@@ -48,7 +48,7 @@ def prepare_for_csv(
     )
 
     filtered_time_series_points = filtered_time_series_points.withColumn(
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
         get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
@@ -57,7 +57,7 @@ def prepare_for_csv(
         DataProductColumnNames.energy_supplier_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ).orderBy(DataProductColumnNames.observation_time)
     filtered_time_series_points = filtered_time_series_points.withColumn(
         "chronological_order", F.row_number().over(win)
@@ -69,7 +69,7 @@ def prepare_for_csv(
             DataProductColumnNames.energy_supplier_id,
             DataProductColumnNames.metering_point_id,
             DataProductColumnNames.metering_point_type,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         )
         .pivot(
             "chronological_order",
@@ -79,7 +79,7 @@ def prepare_for_csv(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"{CsvColumnNames.energy_quantity}{i}")
+        F.col(str(i)).alias(f"{CsvColumnNames.quantity}{i}")
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 
@@ -95,8 +95,8 @@ def prepare_for_csv(
         ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(CsvColumnNames.type_of_mp),
-        F.col(CsvColumnNames.start_date_time),
+        ].alias(CsvColumnNames.metering_point_type),
+        F.col(CsvColumnNames.time),
         *quantity_column_names,
     )
 

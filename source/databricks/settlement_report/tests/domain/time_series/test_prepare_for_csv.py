@@ -203,9 +203,7 @@ def test_prepare_for_csv__when_daylight_saving_tim_transition__returns_expected_
 
     # Assert
     assert actual_df.count() == 2
-    dst_day = actual_df.where(
-        F.col(CsvColumnNames.start_date_time) == from_date
-    ).collect()[0]
+    dst_day = actual_df.where(F.col(CsvColumnNames.time) == from_date).collect()[0]
     for i in range(1, total_columns):
         expected_value = None if i > expected_columns_with_data else Decimal(i - 1)
         assert dst_day[f"ENERGYQUANTITY{i}"] == expected_value
