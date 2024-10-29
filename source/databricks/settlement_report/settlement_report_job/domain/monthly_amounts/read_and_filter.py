@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from collections.abc import Callable
-
 from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
@@ -20,12 +18,8 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
-    filter_by_energy_supplier_ids,
-    filter_by_grid_area_codes,
     filter_by_calculation_id_by_grid_area,
-    read_and_filter_by_latest_calculations,
 )
 
 log = logging.Logger(__name__)
@@ -36,11 +30,17 @@ def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
     df_monthly_amounts_per_charge = repository.read_monthly_amounts_per_charge_v1()
+    df_monthly_amounts_per_charge = extend_monthly_amounts_per_charge_columns_for_union(
+        df_monthly_amounts_per_charge
+    )
     df_monthly_amounts_per_charge = filter_monthly_amounts_per_charge(
         df_monthly_amounts_per_charge, args
     )
 
     df_total_monthly_amounts = repository.read_total_monthly_amounts_v1()
+    df_total_monthly_amounts = extend_total_monthly_amounts_columns_for_union(
+        df_total_monthly_amounts
+    )
     df_total_monthly_amounts = filter_total_monthly_amounts(
         df_total_monthly_amounts, args
     )
@@ -85,4 +85,44 @@ def filter_total_monthly_amounts(
         & (F.col(DataProductColumnNames.charge_code).isNull())
         & (F.col(DataProductColumnNames.charge_type).isNull())
         & (F.col(DataProductColumnNames.is_tax).isNull())
+    )
+
+
+def extend_monthly_amounts_per_charge_columns_for_union(df: DataFrame) -> DataFrame:
+    return df.select(
+        F.col(DataProductColumnNames.calculation_id),
+        F.col(DataProductColumnNames.calculation_type),
+        F.col(DataProductColumnNames.calculation_version),
+        F.col(DataProductColumnNames.result_id),
+        F.col(DataProductColumnNames.grid_area_code),
+        F.col(DataProductColumnNames.energy_supplier_id),
+        F.col(DataProductColumnNames.time),
+        F.lit("P1M").alias(DataProductColumnNames.resolution),
+        F.col(DataProductColumnNames.quantity_unit),
+        F.lit("DKK").alias(DataProductColumnNames.currency),
+        F.col(DataProductColumnNames.amount),
+        F.col(DataProductColumnNames.charge_type),
+        F.col(DataProductColumnNames.charge_code),
+        F.col(DataProductColumnNames.charge_owner_id),
+        F.col(DataProductColumnNames.is_tax),
+    )
+
+
+def extend_total_monthly_amounts_columns_for_union(df: DataFrame) -> DataFrame:
+    return df.select(
+        F.col(DataProductColumnNames.calculation_id),
+        F.col(DataProductColumnNames.calculation_type),
+        F.col(DataProductColumnNames.calculation_version),
+        F.col(DataProductColumnNames.result_id),
+        F.col(DataProductColumnNames.grid_area_code),
+        F.col(DataProductColumnNames.energy_supplier_id),
+        F.col(DataProductColumnNames.time),
+        F.lit("P1M").alias(DataProductColumnNames.resolution),
+        F.lit(None).alias(DataProductColumnNames.quantity_unit),
+        F.lit("DKK").alias(DataProductColumnNames.currency),
+        F.col(DataProductColumnNames.amount),
+        F.lit(None).alias(DataProductColumnNames.charge_type),
+        F.lit(None).alias(DataProductColumnNames.charge_code),
+        F.col(DataProductColumnNames.charge_owner_id),
+        F.lit(None).alias(DataProductColumnNames.is_tax),
     )

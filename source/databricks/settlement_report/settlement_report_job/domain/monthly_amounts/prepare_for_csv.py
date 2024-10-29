@@ -32,6 +32,7 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def prepare_for_csv(
     monthly_amounts: DataFrame,
+    create_ephemeral_grid_area_column: bool,
 ) -> DataFrame:
     select_columns = [
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
@@ -61,5 +62,12 @@ def prepare_for_csv(
             CsvColumnNames.charge_owner
         ),
     ]
+
+    if create_ephemeral_grid_area_column:
+        select_columns.append(
+            F.col(DataProductColumnNames.grid_area_code).alias(
+                EphemeralColumns.grid_area_code
+            ),
+        )
 
     return monthly_amounts.select(select_columns)

@@ -24,6 +24,7 @@ from settlement_report_job.domain.monthly_amounts.read_and_filter import (
 from settlement_report_job.domain.monthly_amounts.prepare_for_csv import (
     prepare_for_csv,
 )
+from settlement_report_job.utils import should_include_ephemeral_grid_area
 
 
 def create_monthly_amounts(
@@ -34,4 +35,9 @@ def create_monthly_amounts(
 
     return prepare_for_csv(
         monthly_amounts,
+        should_include_ephemeral_grid_area(
+            args.calculation_id_by_grid_area,
+            args.grid_area_codes,
+            args.split_report_by_grid_area,
+        ),
     )
