@@ -1,12 +1,16 @@
+from datetime import datetime
+
 import pytest
 from pyspark.sql import SparkSession
 
+from settlement_report_job.domain.csv_column_names import CsvColumnNames
 from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
     prepare_for_csv,
 )
 from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
     MeteringPointTypeDataProductValue,
+    ChargeTypeDataProductValue,
 )
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
@@ -234,3 +238,59 @@ def test_mapping_of_settlement_method(
 
     # Assert
     assert actual.collect()[0]["SETTLEMENTMETHOD"] == expected_settlement_method
+
+
+def test_when_multiple_rows__returns_dataframe_with_expected_ordering(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    spec = [
+        create_amounts_per_charge_row(
+            grid_area_code="222",
+            energy_supplier_id="1234567890123",
+            metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+            settlement_method=SettlementMethodDataProductValue.NON_PROFILED,
+            time=datetime(2024, 1, 2),
+            charge_owner_id="7412345678521",
+            charge_type=ChargeTypeDataProductValue.FEE,
+            charge_code="11111",
+        ),
+        create_amounts_per_charge_row(
+            grid_area_code="111",
+            energy_supplier_id="9876543210987",
+            metering_point_type=MeteringPointTypeDataProductValue.EXCHANGE,
+            settlement_method=SettlementMethodDataProductValue.NON_PROFILED,
+            time=datetime(2024, 1, 3),
+            charge_owner_id="4569852153698",
+            charge_type=ChargeTypeDataProductValue.SUBSCRIPTION,
+            charge_code="33333",
+        ),
+        create_amounts_per_charge_row(
+            grid_area_code="333",
+            energy_supplier_id="5678901234567",
+            metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION,
+            settlement_method=SettlementMethodDataProductValue.FLEX,
+            time=datetime(2024, 1, 1),
+            charge_owner_id="7516982463359",
+            charge_type=ChargeTypeDataProductValue.TARIFF,
+            charge_code="22222",
+        ),
+    ]
+    wholesale = create(spark, spec)
+
+    expected_order = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.energy_supplier_id,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.settlement_method,
+        CsvColumnNames.time,
+        CsvColumnNames.charge_owner_id,
+        CsvColumnNames.charge_type,
+        CsvColumnNames.charge_code,
+    ]
+
+    # Act
+    actual = prepare_for_csv(wholesale)
+
+    # Assert
+    assert actual.collect() == actual.orderBy(expected_order).collect()
