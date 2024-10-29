@@ -39,7 +39,7 @@ def prepare_for_csv(
             F.col(DataProductColumnNames.calculation_type)
         ].alias(CsvColumnNames.process_variant),
         F.col(DataProductColumnNames.grid_area_code).alias(
-            CsvColumnNames.metering_grid_area
+            CsvColumnNames.grid_area_code
         ),
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
@@ -69,7 +69,7 @@ def prepare_for_csv(
     ]
 
     return wholesale.select(select_columns).orderBy(
-        F.col(CsvColumnNames.metering_grid_area),
+        F.col(CsvColumnNames.grid_area_code),
         F.col(CsvColumnNames.energy_supplier_id),
         F.col(CsvColumnNames.type_of_mp),
         F.col(CsvColumnNames.settlement_method),

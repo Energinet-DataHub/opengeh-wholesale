@@ -487,7 +487,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     # Arrange
     expected_file_count = 1  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     expected_columns = [
-        CsvColumnNames.metering_grid_area,
+        CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.energy_business_process,
         CsvColumnNames.start_date_time,
@@ -551,7 +551,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     # Arrange
     expected_file_count = 1
     expected_columns = [
-        CsvColumnNames.metering_grid_area,
+        CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_business_process,
         CsvColumnNames.start_date_time,
         CsvColumnNames.resolution_duration,
@@ -623,7 +623,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     # Arrange
     expected_file_count = 4  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     expected_columns = [
-        CsvColumnNames.metering_grid_area,
+        CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.energy_business_process,
         CsvColumnNames.start_date_time,

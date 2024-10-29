@@ -37,7 +37,7 @@ def prepare_for_csv(
 ) -> DataFrame:
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
-            CsvColumnNames.metering_grid_area
+            CsvColumnNames.grid_area_code
         ),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)

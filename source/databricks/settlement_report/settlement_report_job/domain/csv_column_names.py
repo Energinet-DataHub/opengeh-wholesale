@@ -2,7 +2,7 @@ class CsvColumnNames:
     energy_business_process = "ENERGYBUSINESSPROCESS"
     energy_quantity = "ENERGYQUANTITY"
     energy_supplier_id = "ENERGYSUPPLIERID"
-    metering_grid_area = "METERINGGRIDAREAID"
+    grid_area_code = "METERINGGRIDAREAID"
     type_of_mp = "TYPEOFMP"
     metering_point_id = "METERINGPOINTID"
     resolution_duration = "RESOLUTIONDURATION"

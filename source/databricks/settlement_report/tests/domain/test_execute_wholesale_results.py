@@ -44,7 +44,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     expected_columns = [
         CsvColumnNames.energy_business_process,
         CsvColumnNames.process_variant,
-        CsvColumnNames.metering_grid_area,
+        CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.start_date_time,
         CsvColumnNames.resolution_duration,
