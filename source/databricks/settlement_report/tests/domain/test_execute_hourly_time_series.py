@@ -2,6 +2,8 @@ import pytest
 from pyspark.sql import SparkSession
 
 from tests.dbutils_fixture import DBUtilsFixture
+
+from domain.assertion import assert_files
 from settlement_report_job.domain.report_generator import execute_hourly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
@@ -42,9 +44,4 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
-    assert len(actual_files) == len(expected_file_names)
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
-        assert any(file_name in file_path for file_name in expected_file_names)
+    assert_files(actual_files, expected_columns, expected_file_names, spark)
