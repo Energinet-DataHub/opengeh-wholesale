@@ -15,24 +15,13 @@
 from pyspark.sql import DataFrame, functions as F, Window
 
 from settlement_report_job import logging
-from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
-    get_start_of_day,
-)
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.domain.csv_column_names import (
-    CsvColumnNames,
-    EphemeralColumns,
-)
-from settlement_report_job.utils import (
-    map_from_dict,
-)
+from settlement_report_job.domain.csv_column_names import CsvColumnNames
+from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
-    MeteringPointResolutionDataProductValue,
-)
 
 log = logging.Logger(__name__)
 
@@ -48,15 +37,17 @@ def prepare_for_csv(
         ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(CsvColumnNames.type_of_mp),
+        ].alias(CsvColumnNames.metering_point_type),
         F.col(DataProductColumnNames.charge_type).alias(CsvColumnNames.charge_type),
         F.col(DataProductColumnNames.charge_owner_id).alias(
-            CsvColumnNames.charge_owner
+            CsvColumnNames.charge_owner_id
         ),
-        F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_id),
+        F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.charge_occurrences),
         F.col(DataProductColumnNames.from_date).alias(CsvColumnNames.period_start),
-        F.col(DataProductColumnNames.to_date).alias(CsvColumnNames.period_end),
+        F.col(DataProductColumnNames.to_date).alias(
+            CsvColumnNames.charge_link_from_date
+        ),
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
         ),
@@ -78,11 +69,11 @@ def _get_order_by_columns(
 ) -> list[str]:
 
     order_by_columns = [
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.charge_owner,
-        CsvColumnNames.charge_id,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.charge_owner_id,
+        CsvColumnNames.charge_code,
+        CsvColumnNames.time,
     ]
     if has_energy_supplier_id_column:
         order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
