@@ -44,7 +44,7 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)

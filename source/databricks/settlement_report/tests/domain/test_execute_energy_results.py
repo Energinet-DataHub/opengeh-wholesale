@@ -53,7 +53,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
 
@@ -112,7 +112,7 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
 
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
 
@@ -156,7 +156,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
 
             for i, column in enumerate(df.columns):
@@ -208,7 +208,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             for i, column in enumerate(df.columns):
                 assert column == expected_columns[i]
