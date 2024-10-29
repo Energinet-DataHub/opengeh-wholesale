@@ -1,16 +1,22 @@
 from pathlib import Path
 import pytest
+from datetime import datetime
 from tempfile import TemporaryDirectory
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession, Row, functions as F
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    FloatType,
+    DecimalType,
+    DoubleType,
+)
+from decimal import Decimal
 
 from settlement_report_job.utils import (
     create_zip_file,
     get_dbutils,
     map_from_dict,
     write_files,
-)
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
 )
 
 
@@ -116,38 +122,9 @@ def test_create_zip_file__when_files_to_zip__create_zip_file(dbutils):
     tmp_dir.cleanup()
 
 
-def test_write_files__when_locale_set_to_danish(spark: SparkSession):
-    # Arrange
-    df = spark.createDataFrame([("a", 1.1), ("b", 2.2), ("c", 3.3)], ["key", "value"])
-    tmp_dir = TemporaryDirectory()
-    csv_path = f"{tmp_dir.name}/csv_file"
-
-    # Act
-    write_files(
-        df,
-        csv_path,
-        partition_columns=[],
-        order_by=[],
-        locale="da-dk",
-        rows_per_file=1000,
-    )
-
-    # Assert
-    assert Path(csv_path).exists()
-
-    for x in Path(csv_path).iterdir():
-        if x.is_file() and x.name[-4:] == ".csv":
-            with x.open(mode="r") as f:
-                all_lines_written = f.readlines()
-
-                assert all_lines_written[0] == "a;1,1\n"
-                assert all_lines_written[1] == "b;2,2\n"
-                assert all_lines_written[2] == "c;3,3\n"
-
-    tmp_dir.cleanup()
-
-
-def test_write_files__when_locale_set_to_english(spark: SparkSession):
+def test_write_files__csv_separator_is_comma_and_decimals_use_points(
+    spark: SparkSession,
+):
     # Arrange
     df = spark.createDataFrame([("a", 1.1), ("b", 2.2), ("c", 3.3)], ["key", "value"])
     tmp_dir = TemporaryDirectory()
@@ -158,8 +135,6 @@ def test_write_files__when_locale_set_to_english(spark: SparkSession):
         df,
         csv_path,
         partition_columns=[],
-        order_by=[],
-        locale="en-gb",
         rows_per_file=1000,
     )
 
@@ -174,39 +149,6 @@ def test_write_files__when_locale_set_to_english(spark: SparkSession):
                 assert all_lines_written[0] == "a,1.1\n"
                 assert all_lines_written[1] == "b,2.2\n"
                 assert all_lines_written[2] == "c,3.3\n"
-
-    assert columns == ["key", "value"]
-
-    tmp_dir.cleanup()
-
-
-def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSession):
-    # Arrange
-    df = spark.createDataFrame([("b", 2.2), ("a", 1.1), ("c", 3.3)], ["key", "value"])
-    tmp_dir = TemporaryDirectory()
-    csv_path = f"{tmp_dir.name}/csv_file"
-
-    # Act
-    columns = write_files(
-        df,
-        csv_path,
-        partition_columns=[],
-        order_by=["value"],
-        locale="da-dk",
-        rows_per_file=1000,
-    )
-
-    # Assert
-    assert Path(csv_path).exists()
-
-    for x in Path(csv_path).iterdir():
-        if x.is_file() and x.name[-4:] == ".csv":
-            with x.open(mode="r") as f:
-                all_lines_written = f.readlines()
-
-                assert all_lines_written[0] == "a;1,1\n"
-                assert all_lines_written[1] == "b;2,2\n"
-                assert all_lines_written[2] == "c;3,3\n"
 
     assert columns == ["key", "value"]
 
@@ -229,8 +171,6 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
         df,
         csv_path,
         partition_columns=["key"],
-        order_by=["value"],
-        locale="da-dk",
         rows_per_file=1000,
     )
 
@@ -251,5 +191,45 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
                     raise AssertionError("Found unexpected csv file.")
 
     assert columns == ["value"]
+
+    tmp_dir.cleanup()
+
+
+def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseconds(
+    spark: SparkSession,
+):
+    # Arrange
+    df = spark.createDataFrame(
+        [
+            ("a", datetime(2024, 10, 21, 12, 10, 30, 0)),
+            ("b", datetime(2024, 10, 21, 12, 10, 30, 30)),
+            ("c", datetime(2024, 10, 21, 12, 10, 30, 123)),
+        ],
+        ["key", "value"],
+    )
+    tmp_dir = TemporaryDirectory()
+    csv_path = f"{tmp_dir.name}/csv_file"
+
+    # Act
+    columns = write_files(
+        df,
+        csv_path,
+        partition_columns=[],
+        rows_per_file=1000,
+    )
+
+    # Assert
+    assert Path(csv_path).exists()
+
+    for x in Path(csv_path).iterdir():
+        if x.is_file() and x.name[-4:] == ".csv":
+            with x.open(mode="r") as f:
+                all_lines_written = f.readlines()
+
+                assert all_lines_written[0] == "a,2024-10-21T12:10:30Z\n"
+                assert all_lines_written[1] == "b,2024-10-21T12:10:30Z\n"
+                assert all_lines_written[2] == "c,2024-10-21T12:10:30Z\n"
+
+    assert columns == ["key", "value"]
 
     tmp_dir.cleanup()

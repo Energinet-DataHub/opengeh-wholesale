@@ -11,31 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, List
+from typing import Any
 
 from pyspark.sql import DataFrame
 
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job import logging
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
-    TimeSeriesPointCsvColumnNames,
+from settlement_report_job.domain.csv_column_names import (
+    CsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.utils import (
+    should_include_ephemeral_grid_area,
     write_files,
     get_new_files,
     merge_files,
 )
-from settlement_report_job.infrastructure import logging_configuration
 
-log = Logger(__name__)
+log = logging.Logger(__name__)
 
 
-@logging_configuration.use_span("settlement_report_job.csv_writer.write")
+@logging.use_span()
 def write(
     dbutils: Any,
     args: SettlementReportArgs,
@@ -47,19 +45,13 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    df_ready_for_writing = _apply_report_type_df_changes(df, args, report_data_type)
-
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
-    order_by_columns = _get_order_by_columns_for_report_type(report_data_type)
-
     headers = write_files(
-        df=df_ready_for_writing,
+        df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
-        order_by=order_by_columns,
         rows_per_file=rows_per_file,
-        locale=args.locale,
     )
 
     file_name_factory = FileNameFactory(report_data_type, args)
@@ -79,50 +71,27 @@ def write(
 
 def _get_partition_columns_for_report_type(
     report_type: ReportDataType, args: SettlementReportArgs
-) -> List[str]:
+) -> list[str]:
     partition_columns = []
     if report_type in [
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
     ]:
-        partition_columns = [DataProductColumnNames.grid_area_code]
-        if _is_partitioning_by_energy_supplier_id_needed(args):
-            partition_columns.append(DataProductColumnNames.energy_supplier_id)
+        partition_columns = [CsvColumnNames.grid_area_code]
 
-        if args.prevent_large_text_files:
-            partition_columns.append(EphemeralColumns.chunk_index)
+    if report_type in [ReportDataType.EnergyResults] and (
+        should_include_ephemeral_grid_area(
+            args.calculation_id_by_grid_area,
+            args.grid_area_codes,
+            args.split_report_by_grid_area,
+        )
+    ):
+        partition_columns = [EphemeralColumns.grid_area_code]
+
+    if args.prevent_large_text_files:
+        partition_columns.append(EphemeralColumns.chunk_index)
 
     return partition_columns
-
-
-def _get_order_by_columns_for_report_type(report_type: ReportDataType) -> List[str]:
-    if report_type in [
-        ReportDataType.TimeSeriesHourly,
-        ReportDataType.TimeSeriesQuarterly,
-    ]:
-        return [
-            DataProductColumnNames.grid_area_code,
-            TimeSeriesPointCsvColumnNames.metering_point_type,
-            TimeSeriesPointCsvColumnNames.metering_point_id,
-            TimeSeriesPointCsvColumnNames.start_of_day,
-        ]
-
-    return []
-
-
-def _apply_report_type_df_changes(
-    df: DataFrame,
-    args: SettlementReportArgs,
-    report_type: ReportDataType,
-) -> DataFrame:
-    if (
-        report_type
-        in [ReportDataType.TimeSeriesHourly, ReportDataType.TimeSeriesQuarterly]
-        and args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER
-    ):
-        df = df.drop(DataProductColumnNames.energy_supplier_id)
-
-    return df
 
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
@@ -130,25 +99,9 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.EnergyResults:
+        return "energy_results"
+    elif report_data_type == ReportDataType.WholesaleResults:
+        return "wholesale_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
-
-
-def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) -> bool:
-    """
-    When this partitioning by energy_supplier_id, the energy_supplier_id will be included in the file name
-
-    """
-    if args.requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.DATAHUB_ADMINISTRATOR,
-    ]:
-        return args.energy_supplier_ids is not None
-    elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
-        return True
-    elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        return False
-    else:
-        raise ValueError(
-            f"Unsupported requesting actor market role: {args.requesting_actor_market_role}"
-        )

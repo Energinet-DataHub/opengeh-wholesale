@@ -11,51 +11,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
-from uuid import UUID
 
-from pyspark.sql import DataFrame, functions as F, Window, Column
+from pyspark.sql import DataFrame, functions as F, Window
 
+from settlement_report_job import logging
+from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
+    get_start_of_day,
+)
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.domain.DataProductValues.metering_point_resolution import (
-    MeteringPointResolutionDataProductValue,
-)
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.system_operator_filter import (
-    filter_time_series_on_charge_owner,
-)
-from settlement_report_job.logger import Logger
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
-    TimeSeriesPointCsvColumnNames,
-    EphemeralColumns,
+from settlement_report_job.domain.csv_column_names import (
+    CsvColumnNames,
 )
 from settlement_report_job.utils import (
     map_from_dict,
 )
-from settlement_report_job.infrastructure import logging_configuration
-
-log = Logger(__name__)
-
-
-@logging_configuration.use_span(
-    "settlement_report_job.time_series_factory.prepare_for_csv"
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointResolutionDataProductValue,
 )
+
+log = logging.Logger(__name__)
+
+
+@logging.use_span()
 def prepare_for_csv(
     filtered_time_series_points: DataFrame,
     metering_point_resolution: MeteringPointResolutionDataProductValue,
     time_zone: str,
+    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     desired_number_of_quantity_columns = _get_desired_quantity_column_count(
         metering_point_resolution
     )
 
     filtered_time_series_points = filtered_time_series_points.withColumn(
-        EphemeralColumns.start_of_day,
-        _get_start_of_day(DataProductColumnNames.observation_time, time_zone),
+        CsvColumnNames.time,
+        get_start_of_day(DataProductColumnNames.observation_time, time_zone),
     )
 
     win = Window.partitionBy(
@@ -63,7 +57,7 @@ def prepare_for_csv(
         DataProductColumnNames.energy_supplier_id,
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
-        EphemeralColumns.start_of_day,
+        CsvColumnNames.time,
     ).orderBy(DataProductColumnNames.observation_time)
     filtered_time_series_points = filtered_time_series_points.withColumn(
         "chronological_order", F.row_number().over(win)
@@ -75,7 +69,7 @@ def prepare_for_csv(
             DataProductColumnNames.energy_supplier_id,
             DataProductColumnNames.metering_point_id,
             DataProductColumnNames.metering_point_type,
-            EphemeralColumns.start_of_day,
+            CsvColumnNames.time,
         )
         .pivot(
             "chronological_order",
@@ -85,33 +79,36 @@ def prepare_for_csv(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"{TimeSeriesPointCsvColumnNames.energy_prefix}{i}")
+        F.col(str(i)).alias(f"{CsvColumnNames.quantity}{i}")
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 
-    return pivoted_df.select(
-        F.col(DataProductColumnNames.grid_area_code),
-        F.col(DataProductColumnNames.metering_point_id).alias(
-            TimeSeriesPointCsvColumnNames.metering_point_id
-        ),
+    csv_df = pivoted_df.select(
         F.col(DataProductColumnNames.energy_supplier_id).alias(
-            TimeSeriesPointCsvColumnNames.energy_supplier_id
+            CsvColumnNames.energy_supplier_id
+        ),
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            CsvColumnNames.grid_area_code
+        ),
+        F.col(DataProductColumnNames.metering_point_id).alias(
+            CsvColumnNames.metering_point_id
         ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(TimeSeriesPointCsvColumnNames.metering_point_type),
-        F.col(EphemeralColumns.start_of_day).alias(
-            TimeSeriesPointCsvColumnNames.start_of_day
-        ),
+        ].alias(CsvColumnNames.metering_point_type),
+        F.col(CsvColumnNames.time),
         *quantity_column_names,
     )
 
+    if requesting_actor_market_role in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
+        csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
-def _get_start_of_day(col: Column | str, time_zone: str) -> Column:
-    col = F.col(col) if isinstance(col, str) else col
-    return F.to_utc_timestamp(
-        F.date_trunc("DAY", F.from_utc_timestamp(col, time_zone)), time_zone
-    )
+    has_energy_supplier_id_column = CsvColumnNames.energy_supplier_id in csv_df.columns
+
+    return csv_df.orderBy(_get_order_by_columns(has_energy_supplier_id_column))
 
 
 def _get_desired_quantity_column_count(
@@ -123,3 +120,18 @@ def _get_desired_quantity_column_count(
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution}")
+
+
+def _get_order_by_columns(
+    has_energy_supplier_id_column: bool,
+) -> list[str]:
+
+    order_by_columns = [
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.time,
+    ]
+    if has_energy_supplier_id_column:
+        order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
+
+    return order_by_columns

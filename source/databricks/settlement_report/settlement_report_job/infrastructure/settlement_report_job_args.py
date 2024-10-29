@@ -19,16 +19,15 @@ from argparse import Namespace
 import configargparse
 from configargparse import argparse
 
-from settlement_report_job.infrastructure import logging_configuration
 from settlement_report_job.infrastructure.args_helper import (
     valid_date,
     valid_energy_supplier_ids,
 )
-from settlement_report_job.domain.calculation_type import CalculationType
-from settlement_report_job.infrastructure.database_definitions import (
+from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.infrastructure.paths import (
     get_settlement_reports_output_path,
 )
-from settlement_report_job.logger import Logger
+from settlement_report_job.logging import Logger, logging_configuration
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import settlement_report_job.infrastructure.environment_variables as env_vars
@@ -46,6 +45,20 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("settlement_report.parse_job_arguments"):
 
+        grid_area_codes = (
+            _create_grid_area_codes(job_args.grid_area_codes)
+            if job_args.calculation_type is CalculationType.BALANCE_FIXING
+            else None
+        )
+
+        calculation_id_by_grid_area = (
+            _create_calculation_ids_by_grid_area_code(
+                job_args.calculation_id_by_grid_area
+            )
+            if job_args.calculation_type is not CalculationType.BALANCE_FIXING
+            else None
+        )
+
         settlement_report_args = SettlementReportArgs(
             report_id=job_args.report_id,
             period_start=job_args.period_start,
@@ -53,9 +66,8 @@ def parse_job_arguments(
             calculation_type=job_args.calculation_type,
             requesting_actor_market_role=job_args.requesting_actor_market_role,
             requesting_actor_id=job_args.requesting_actor_id,
-            calculation_id_by_grid_area=_create_calculation_id_by_grid_area_dict(
-                job_args.calculation_id_by_grid_area
-            ),
+            calculation_id_by_grid_area=calculation_id_by_grid_area,
+            grid_area_codes=grid_area_codes,
             energy_supplier_ids=job_args.energy_supplier_ids,
             split_report_by_grid_area=job_args.split_report_by_grid_area,
             prevent_large_text_files=job_args.prevent_large_text_files,
@@ -65,7 +77,6 @@ def parse_job_arguments(
                 env_vars.get_catalog_name()
             ),
             include_basis_data=job_args.include_basis_data,
-            locale=job_args.locale if job_args.locale is not None else "da-DK",
         )
 
         return settlement_report_args
@@ -84,7 +95,8 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument("--calculation-type", type=CalculationType, required=True)
     p.add_argument("--requesting-actor-market-role", type=MarketRole, required=True)
     p.add_argument("--requesting-actor-id", type=str, required=True)
-    p.add_argument("--calculation-id-by-grid-area", type=str, required=True)
+    p.add_argument("--calculation-id-by-grid-area", type=str, required=False)
+    p.add_argument("--grid-area-codes", type=str, required=False)
     p.add_argument(
         "--energy-supplier-ids", type=valid_energy_supplier_ids, required=False
     )
@@ -94,10 +106,9 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add_argument(
         "--prevent-large-text-files", action="store_true"
     )  # true if present, false otherwise
-    p.add(
+    p.add_argument(
         "--include-basis-data", action="store_true"
     )  # true if present, false otherwise
-    p.add("--locale", type=str, required=False)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
@@ -107,7 +118,25 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     return args
 
 
-def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid.UUID]:
+def _create_grid_area_codes(grid_area_codes: str) -> list[str]:
+    if not grid_area_codes.startswith("[") or not grid_area_codes.endswith("]"):
+        msg = "Grid area codes must be a list enclosed by an opening '[' and a closing ']'"
+        raise configargparse.ArgumentTypeError(msg)
+
+    # 1. Remove enclosing list characters 2. Split each grid area code 3. Remove possibly enclosing spaces.
+    tokens = [token.strip() for token in grid_area_codes.strip("[]").split(",")]
+
+    # Grid area codes must always consist of 3 digits
+    if any(
+        len(token) != 3 or any(c < "0" or c > "9" for c in token) for token in tokens
+    ):
+        msg = "Grid area codes must consist of 3 digits"
+        raise configargparse.ArgumentTypeError(msg)
+
+    return tokens
+
+
+def _create_calculation_ids_by_grid_area_code(json_str: str) -> dict[str, uuid.UUID]:
     try:
         calculation_id_by_grid_area = json.loads(json_str)
     except json.JSONDecodeError as e:
@@ -122,5 +151,3 @@ def _create_calculation_id_by_grid_area_dict(json_str: str) -> dict[str, uuid.UU
             raise ValueError(f"Calculation ID for grid area {grid_area} is not a uuid")
 
     return calculation_id_by_grid_area
-
-    # Verify that all values are not empty strings or None

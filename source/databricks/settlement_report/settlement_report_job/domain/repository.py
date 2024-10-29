@@ -13,8 +13,8 @@
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
 
-from settlement_report_job.infrastructure.database_definitions import (
-    WholesaleWholesaleResultsDatabase,
+from settlement_report_job.wholesale.database_definitions import (
+    WholesaleResultsDatabase,
     WholesaleBasisDataDatabase,
 )
 
@@ -27,6 +27,12 @@ class WholesaleRepository:
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
+
+    def read_metering_point_periods(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleBasisDataDatabase.DATABASE_NAME,
+            WholesaleBasisDataDatabase.METERING_POINT_PERIODS_VIEW_NAME,
+        )
 
     def read_metering_point_time_series(self) -> DataFrame:
         return self._read_view_or_table(
@@ -48,8 +54,26 @@ class WholesaleRepository:
 
     def read_energy(self) -> DataFrame:
         return self._read_view_or_table(
-            WholesaleWholesaleResultsDatabase.DATABASE_NAME,
-            WholesaleWholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+        )
+
+    def read_latest_calculations(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.LATEST_CALCULATIONS_BY_DAY_VIEW_NAME,
+        )
+
+    def read_energy_per_es(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+        )
+
+    def read_amounts_per_charge(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME,
         )
 
     def _read_view_or_table(

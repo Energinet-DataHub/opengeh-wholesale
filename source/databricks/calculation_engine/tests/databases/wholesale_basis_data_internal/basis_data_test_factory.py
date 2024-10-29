@@ -255,6 +255,6 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
         args=calculation_args,
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
-        input_charges_container=input_charges_container,
         grid_loss_metering_point_ids=grid_loss_metering_point_ids,
+        input_charges_container=input_charges_container,
     )
