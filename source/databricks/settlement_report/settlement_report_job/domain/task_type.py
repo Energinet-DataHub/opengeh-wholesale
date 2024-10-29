@@ -10,5 +10,5 @@ class TaskType(Enum):
     HOURLY_TIME_SERIES = "hourly_time_series"
     QUARTERLY_TIME_SERIES = "quarterly_time_series"
     ENERGY_RESULTS = "energy_results"
-    MONTLY_AMOUNTS = "monthly_amounts"
+    MONTHLY_AMOUNTS = "monthly_amounts"
     ZIP = "zip"
