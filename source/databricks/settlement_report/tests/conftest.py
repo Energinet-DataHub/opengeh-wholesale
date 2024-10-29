@@ -89,7 +89,6 @@ def standard_wholesale_fixing_scenario_args(
         requesting_actor_id=standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID,
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
-        locale="da-dk",
     )
 
 
@@ -113,7 +112,6 @@ def standard_balance_fixing_scenario_args(
         requesting_actor_id="1212121212121",
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
-        locale="da-dk",
     )
 
 
