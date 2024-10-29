@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     ChargeTypeDataProductValue,

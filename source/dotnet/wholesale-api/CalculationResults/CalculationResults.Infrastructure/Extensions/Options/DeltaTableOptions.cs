@@ -41,11 +41,6 @@ public class DeltaTableOptions
     public string BasisDataSchemaName { get; set; } = "basis_data";
 
     /// <summary>
-    /// Name of the schema/database under which the settlement report views are associated.
-    /// </summary>
-    public string SettlementReportSchemaName { get; set; } = "settlement_report";
-
-    /// <summary>
     /// Name of the schema/database to which the calculation result views belong.
     /// </summary>
     public string WholesaleCalculationResultsSchemaName { get; set; } = "wholesale_results";
@@ -59,29 +54,6 @@ public class DeltaTableOptions
     /// Name of the wholesale results delta table.
     /// </summary>
     public string WHOLESALE_RESULTS_TABLE_NAME { get; set; } = "wholesale_results";
-
-    /// <summary>
-    /// Name of the wholesale results delta table.
-    /// </summary>
-    public string TOTAL_MONTHLY_AMOUNTS_TABLE_NAME { get; set; } = "total_monthly_amounts";
-
-    public string CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME { get; set; } = "current_balance_fixing_calculation_version_v1";
-
-    public string WHOLESALE_RESULTS_V1_VIEW_NAME { get; set; } = "wholesale_results_v1";
-
-    public string ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_per_ga_v1";
-
-    public string ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_per_es_ga_v1";
-
-    public string ENERGY_RESULTS_METERING_POINT_TIME_SERIES_V1_VIEW_NAME { get; set; } = "metering_point_time_series_v1";
-
-    public string CHARGE_LINK_PERIODS_V1_VIEW_NAME { get; set; } = "charge_link_periods_v1";
-
-    public string METERING_POINT_MASTER_DATA_V1_VIEW_NAME { get; set; } = "metering_point_periods_v1";
-
-    public string MONTHLY_AMOUNTS_V1_VIEW_NAME { get; set; } = "monthly_amounts_v1";
-
-    public string CHARGE_PRICES_V1_VIEW_NAME { get; set; } = "charge_prices_v1";
 
     public string CALCULATIONS_TABLE_NAME { get; set; } = "calculations";
 
