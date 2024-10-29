@@ -110,7 +110,7 @@ def test_mapping_of_energy_business_process(
 
 
 @pytest.mark.parametrize(
-    "metering_point_type, expected_type_of_mp",
+    "metering_point_type, expected_metering_point_type",
     [
         pytest.param(
             MeteringPointTypeDataProductValue.CONSUMPTION,
@@ -189,10 +189,10 @@ def test_mapping_of_energy_business_process(
         ),
     ],
 )
-def test_mapping_of_type_of_mp(
+def test_mapping_of_metering_point_type(
     spark: SparkSession,
     metering_point_type: MeteringPointTypeDataProductValue,
-    expected_type_of_mp: str,
+    expected_metering_point_type: str,
 ) -> None:
     # Arrange
     spec = create_amounts_per_charge_row(metering_point_type=metering_point_type)
@@ -202,7 +202,7 @@ def test_mapping_of_type_of_mp(
     actual = prepare_for_csv(wholesale)
 
     # Assert
-    assert actual.collect()[0]["TYPEOFMP"] == expected_type_of_mp
+    assert actual.collect()[0]["TYPEOFMP"] == expected_metering_point_type
 
 
 @pytest.mark.parametrize(

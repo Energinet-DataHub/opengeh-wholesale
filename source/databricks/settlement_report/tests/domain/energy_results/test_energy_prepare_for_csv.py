@@ -80,9 +80,9 @@ def test_prepare_for_csv__when_energy_supplier_or_grid_access_provider__returns_
 
     expected_order = [
         CsvColumnNames.grid_area_code,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
 
     df = _create_energy_with_many_combinations(
@@ -110,9 +110,9 @@ def test_prepare_for_csv__when_datahub_admin__returns_dataframe_with_expected_or
     expected_order = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
 
     df = _create_energy_with_many_combinations(spark, from_date, to_date, True).orderBy(

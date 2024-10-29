@@ -127,9 +127,9 @@ def _get_order_by_columns(
 ) -> list[str]:
 
     order_by_columns = [
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
     if has_energy_supplier_id_column:
         order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
