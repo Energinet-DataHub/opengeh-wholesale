@@ -64,8 +64,17 @@ def prepare_for_csv(
     if create_ephemeral_grid_area_column:
         select_columns.append(
             F.col(DataProductColumnNames.grid_area_code).alias(
-                EphemeralColumns.grid_area_code
+                EphemeralColumns.grid_area_code_partitioning
             ),
         )
 
-    return monthly_amounts.select(select_columns)
+    order_by_columns = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.energy_supplier_id,
+        CsvColumnNames.charge_owner_id,
+        CsvColumnNames.charge_type,
+        CsvColumnNames.charge_code,
+        CsvColumnNames.resolution,
+    ]
+
+    return monthly_amounts.select(select_columns).orderBy(order_by_columns)

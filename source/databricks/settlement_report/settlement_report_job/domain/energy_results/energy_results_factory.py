@@ -50,6 +50,7 @@ def _should_have_one_file_per_grid_area(
     exactly_one_grid_area_from_grid_area_codes = (
         args.grid_area_codes is not None and len(args.grid_area_codes) == 1
     )
+
     return (
         exactly_one_grid_area_from_calc_ids
         or exactly_one_grid_area_from_grid_area_codes

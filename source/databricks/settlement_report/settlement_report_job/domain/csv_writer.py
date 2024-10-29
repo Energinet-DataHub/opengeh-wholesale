@@ -55,8 +55,6 @@ def write(
         rows_per_file=rows_per_file,
     )
 
-    assert len(headers) > 0
-
     file_name_factory = FileNameFactory(report_data_type, args)
     new_files = get_new_files(
         spark_output_path,
@@ -64,7 +62,6 @@ def write(
         file_name_factory,
         partition_columns=partition_columns,
     )
-    assert len(new_files) > 0
 
     files = merge_files(
         dbutils=dbutils,

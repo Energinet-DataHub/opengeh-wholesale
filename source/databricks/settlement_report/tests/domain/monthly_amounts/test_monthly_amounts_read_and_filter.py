@@ -9,7 +9,6 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.utils import should_include_ephemeral_grid_area
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,

@@ -3,7 +3,6 @@ from unittest.mock import Mock
 import pytest
 from pyspark.sql import SparkSession, functions as F
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.utils import should_include_ephemeral_grid_area
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
@@ -67,7 +66,7 @@ def test_prepare_for_csv__returns_expected_columns(
     ]
 
     if create_ephemeral_grid_loss_column:
-        expected_columns.append(EphemeralColumns.grid_area_code)
+        expected_columns.append(EphemeralColumns.grid_area_code_partitioning)
 
     # Act
     actual_df = prepare_for_csv(
