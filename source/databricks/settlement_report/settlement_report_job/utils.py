@@ -112,7 +112,6 @@ def write_files(
     df: DataFrame,
     path: str,
     partition_columns: list[str],
-    order_by: list[str],
     rows_per_file: int,
 ) -> list[str]:
     """Write a DataFrame to multiple files.
@@ -128,12 +127,10 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        w = Window().orderBy(order_by)
-        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
-        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
-
-    if len(order_by) > 0:
-        df = df.orderBy(*order_by)
+        df = df.withColumn(
+            EphemeralColumns.chunk_index,
+            F.floor(F.monotonically_increasing_id() / F.lit(rows_per_file)) + F.lit(1),
+        )
 
     csv_writer_options = _get_csv_writer_options()
 
