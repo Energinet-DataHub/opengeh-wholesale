@@ -9,7 +9,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 class MarketRoleInFileName:
     """
     Market role identifiers used in the csv file name in the settlement report.
-    This is not the role of the requesting actor, but the role of the actor that the data is related to.
+    System operator and datahub admin are not included as they are not part of the file name.
     """
 
     ENERGY_SUPPLIER = "DDQ"
@@ -23,43 +23,56 @@ class FileNameFactory:
 
     def create(
         self,
-        grid_area_code: str,
-        energy_supplier_id: str | None,
+        grid_area_code: str | None,
         chunk_index: str | None,
     ) -> str:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
         }:
-            return self._create_time_series_filename(
-                grid_area_code, energy_supplier_id, chunk_index
-            )
+            return self._create_time_series_filename(grid_area_code, chunk_index)
+        if self.report_data_type in [
+            ReportDataType.EnergyResults,
+            ReportDataType.WholesaleResults,
+        ]:
+            return self._create_result_filename(grid_area_code, chunk_index)
         else:
             raise NotImplementedError(
                 f"Report data type {self.report_data_type} is not supported."
             )
 
+    def _create_result_filename(
+        self,
+        grid_area_code: str | None,
+        chunk_index: str | None,
+    ) -> str:
+        filename_parts = [
+            self._get_pre_fix(),
+            grid_area_code if grid_area_code is not None else "flere-net",
+            self._get_actor_id_in_file_name(),
+            self._get_market_role_in_file_name(),
+            self._get_start_date(),
+            self._get_end_date(),
+            chunk_index,
+        ]
+
+        filename_parts_without_none = [
+            part for part in filename_parts if part is not None
+        ]
+
+        return "_".join(filename_parts_without_none) + ".csv"
+
     def _create_time_series_filename(
         self,
-        grid_area_code: str,
-        energy_supplier_id: str | None,
+        grid_area_code: str | None,
         chunk_index: str | None,
     ) -> str:
 
         filename_parts = [
             self._get_pre_fix(),
             grid_area_code,
-            (
-                self.args.requesting_actor_id
-                if self.args.requesting_actor_market_role
-                is MarketRole.GRID_ACCESS_PROVIDER
-                else energy_supplier_id
-            ),
-            (
-                MarketRoleInFileName.GRID_ACCESS_PROVIDER
-                if energy_supplier_id is None
-                else MarketRoleInFileName.ENERGY_SUPPLIER
-            ),
+            self._get_actor_id_in_file_name(),
+            self._get_market_role_in_file_name(),
             self._get_start_date(),
             self._get_end_date(),
             chunk_index,
@@ -86,6 +99,32 @@ class FileNameFactory:
             return "TSSD60"
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
+        elif self.report_data_type == ReportDataType.EnergyResults:
+            return "RESULTENERGY"
+        elif self.report_data_type == ReportDataType.WholesaleResults:
+            return "RESULTWHOLESALE"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )
+
+    def _get_actor_id_in_file_name(self) -> str | None:
+
+        if self.args.requesting_actor_market_role in [
+            MarketRole.GRID_ACCESS_PROVIDER,
+            MarketRole.ENERGY_SUPPLIER,
+        ]:
+            return self.args.requesting_actor_id
+        elif (
+            self.args.energy_supplier_ids is not None
+            and len(self.args.energy_supplier_ids) == 1
+        ):
+            return self.args.energy_supplier_ids[0]
+        return None
+
+    def _get_market_role_in_file_name(self) -> str | None:
+        if self.args.requesting_actor_market_role == MarketRole.ENERGY_SUPPLIER:
+            return MarketRoleInFileName.ENERGY_SUPPLIER
+        elif self.args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+            return MarketRoleInFileName.GRID_ACCESS_PROVIDER
+
+        return None

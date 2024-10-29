@@ -31,6 +31,9 @@ from package.databases.table_column_names import TableColumnNames
 
 
 def cast_column_types(df: DataFrame, table_or_view_name: str = "") -> DataFrame:
+    """
+    Cast the columns of a DataFrame to the correct types.
+    """
     for column in df.schema:
         df = _cast_column(df, column.name, table_or_view_name)
     return df
@@ -42,7 +45,12 @@ def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> Da
     if column_name == "time_series_type":
         return df
 
-    if "time" in column_name or "period" in column_name or "date" in column_name:
+    if (
+        "time" in column_name
+        or "period" in column_name
+        or "date" in column_name
+        or "day" in column_name
+    ):
         return df.withColumn(column_name, f.col(column_name).cast(TimestampType()))
 
     if column_name.endswith("version"):

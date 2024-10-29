@@ -38,7 +38,7 @@ public class DatabricksCalculatorJobRunnerTests
     [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Completed, RunLifeCycleState.TERMINATED, RunResultState.SUCCESS)]
     [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, RunLifeCycleState.TERMINATED, RunResultState.FAILED)]
     [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, RunLifeCycleState.TERMINATED, RunResultState.CANCELED)]
-    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, RunLifeCycleState.TERMINATED, RunResultState.TIMEDOUT)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, RunLifeCycleState.TERMINATED, RunResultState.TIMEDOUT)]
 
     // LifeCycleState determine JobState since LifeCycleState is not Terminated
     [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, RunLifeCycleState.TERMINATING, RunResultState.SUCCESS)]
