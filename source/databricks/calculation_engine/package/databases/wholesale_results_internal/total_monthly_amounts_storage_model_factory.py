@@ -61,4 +61,5 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
         Colname.charge_owner,
         Colname.grid_area_code,
         Colname.energy_supplier_id,
+        "table_name",
     ]

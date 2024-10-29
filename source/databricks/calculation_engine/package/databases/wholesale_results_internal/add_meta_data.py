@@ -68,8 +68,8 @@ def _add_calculation_result_id(
     uuid5_udf = f.udf(_generate_uuid5, StringType())
 
     # Add the column "table_name" with the value of the table name
-    table_name = "table_name"
-    df = df.withColumn(table_name, lit(table_name))
+    table_name_column = "table_name"
+    df = df.withColumn(table_name_column, lit(table_name))
 
     columns_for_uuid_generation = [
         col(c) for c in column_group_for_calculation_result_id
@@ -87,4 +87,4 @@ def _add_calculation_result_id(
         uuid5_udf(col(concat_placeholder)),
     )
 
-    return df.drop(concat_placeholder).drop(table_name)
+    return df.drop(concat_placeholder).drop(table_name_column)

@@ -87,4 +87,5 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
         Colname.energy_supplier_id,
         Colname.metering_point_type,
         Colname.settlement_method,
+        "table_name",
     ]
