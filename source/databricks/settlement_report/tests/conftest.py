@@ -150,6 +150,10 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     spark: SparkSession,
     input_database_location: str,
 ) -> None:
+    metering_point_periods = (
+        standard_wholesale_fixing_scenario_data_generator.create_metering_point_periods()
+    )
+
     time_series_df = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
         spark
     )

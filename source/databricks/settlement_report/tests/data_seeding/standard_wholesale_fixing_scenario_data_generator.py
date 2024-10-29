@@ -10,12 +10,14 @@ from settlement_report_job.wholesale.data_values import (
     ChargeResolutionDataProductValue,
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
+    SettlementMethodDataProductValue,
 )
 from test_factories.default_test_data_spec import (
     create_energy_results_data_spec,
     create_amounts_per_charge_row,
 )
 from test_factories import (
+    metering_point_periods_factory,
     metering_point_time_series_factory,
     charge_link_periods_factory,
     charge_price_information_periods_factory,
@@ -54,6 +56,34 @@ class MeteringPointSpec:
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue
+
+
+def create_metering_point_periods(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with metering point periods for testing purposes.
+    """
+
+    rows = []
+    for metering_point in _get_all_metering_points():
+        rows.append(
+            metering_point_periods_factory.MeteringPointPeriodsRow(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                calculation_version=1,
+                metering_point_id=metering_point.metering_point_id,
+                metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+                settlement_method=SettlementMethodDataProductValue.FLEX,
+                grid_area_code=metering_point.grid_area_code,
+                resolution=metering_point.resolution,
+                from_grid_area_code=None,
+                parent_metering_point_id=None,
+                energy_supplier_id=metering_point.energy_supplier_id,
+                balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
+                from_date=FROM_DATE,
+                to_date=TO_DATE,
+            )
+        )
+    return metering_point_periods_factory.create(spark, rows)
 
 
 def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
