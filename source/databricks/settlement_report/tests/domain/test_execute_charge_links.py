@@ -62,8 +62,8 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
 ):
     # Arrange
     expected_file_names = [
-        f"CHARGELINK_804_{args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
-        f"CHARGELINK_805_{args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"CHARGELINK_804_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"CHARGELINK_805_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
