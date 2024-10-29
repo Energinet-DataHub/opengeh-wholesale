@@ -112,7 +112,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.calculation_type,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
