@@ -67,24 +67,27 @@ def _add_calculation_result_id(
     # User defined function to generate a deterministic uuid5 from a string
     uuid5_udf = f.udf(_generate_uuid5, StringType())
 
-    # Add the column "table_name" with the value of the table name
+    # Add the column "table_name" with the value of the actual table name
     table_name_column = "table_name"
     df = df.withColumn(table_name_column, lit(table_name))
+
+    # Add string "table_name" to the list of columns to be concatenated
+    column_group_for_calculation_result_id.append(table_name_column)
 
     columns_for_uuid_generation = [
         col(c) for c in column_group_for_calculation_result_id
     ]
 
-    concat_placeholder = "concat_placeholder"
+    concatenated_column = "concatenated_column"
     df = df.withColumn(
-        concat_placeholder,
+        concatenated_column,
         f.concat_ws("", *columns_for_uuid_generation),
     )
 
     df = df.withColumn(
         # TODO AJW: Rename to result_id when we are on Unity Catalog.
         TableColumnNames.calculation_result_id,
-        uuid5_udf(col(concat_placeholder)),
+        uuid5_udf(col(concatenated_column)),
     )
 
-    return df.drop(concat_placeholder).drop(table_name_column)
+    return df.drop(concatenated_column).drop(table_name_column)

@@ -85,7 +85,6 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
         Colname.energy_supplier_id,
         TableColumnNames.time_series_type,
         TableColumnNames.aggregation_level,
-        "table_name",
     ]
 
 
