@@ -65,6 +65,7 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202408202024_Add_CanceledByUserId_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202408221540_Add_IsInternalCalculation_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202409171950_Add_Outbox_table.sql" />
+    <EmbeddedResource Include="Scripts\202410250920_Drop_SettlementReport_table.sql" />
   </ItemGroup>
 
   <ItemGroup>

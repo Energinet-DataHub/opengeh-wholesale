@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.Orchestration.SettlementReports</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Orchestration.SettlementReports</RootNamespace>
@@ -22,11 +22,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
-    <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -37,5 +32,8 @@
   </ItemGroup>
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
