@@ -32,11 +32,6 @@ ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
 """TO_DATE is exclusive"""
-# CHARGE_CODE = "4000"
-# CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
-CHARGE_OWNER_ID = "5790001330552"
-# CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
-IS_TAX = False
 METERING_POINT_TYPES = [
     MeteringPointTypeDataProductValue.CONSUMPTION,
     MeteringPointTypeDataProductValue.EXCHANGE,
@@ -47,6 +42,8 @@ CALCULATION_PERIOD_END = TO_DATE
 QUANTITY_UNIT = "kwh"
 QUANTITY_QUALITIES = ["measured"]
 BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
+CHARGE_OWNER_ID_WITHOUT_TAX = "5790001330552"
+CHARGE_OWNER_ID_WITH_TAX = "5790001330553"
 
 
 @dataclass
@@ -170,8 +167,8 @@ def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
                 charge_key=charge.charge_key,
                 charge_code=charge.charge_code,
                 charge_type=charge.charge_type,
-                charge_owner_id=CHARGE_OWNER_ID,
-                is_tax=IS_TAX,
+                charge_owner_id=charge.charge_owner_id,
+                is_tax=charge.is_tax,
                 resolution=ChargeResolutionDataProductValue.HOUR,
                 from_date=FROM_DATE,
                 to_date=TO_DATE,
@@ -290,14 +287,14 @@ def _get_all_charges() -> list[Charge]:
             charge_key=f"4000_{ChargeTypeDataProductValue.TARIFF.value}_5790001330552",
             charge_code="4000",
             charge_type=ChargeTypeDataProductValue.TARIFF,
-            charge_owner_id="5790001330552",
+            charge_owner_id=CHARGE_OWNER_ID_WITHOUT_TAX,
             is_tax=False,
         ),
         Charge(
             charge_key=f"4001_{ChargeTypeDataProductValue.TARIFF.value}_5790001330553",
             charge_code="4001",
             charge_type=ChargeTypeDataProductValue.TARIFF,
-            charge_owner_id="5790001330553",
+            charge_owner_id=CHARGE_OWNER_ID_WITH_TAX,
             is_tax=True,
         ),
     ]
