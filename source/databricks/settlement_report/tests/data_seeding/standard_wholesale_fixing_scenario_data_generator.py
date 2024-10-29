@@ -32,10 +32,10 @@ ENERGY_SUPPLIER_IDS = ["1000000000000", "2000000000000"]
 FROM_DATE = datetime(2024, 1, 1, 23)
 TO_DATE = FROM_DATE + timedelta(days=1)
 """TO_DATE is exclusive"""
-CHARGE_CODE = "4000"
-CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
+# CHARGE_CODE = "4000"
+# CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 CHARGE_OWNER_ID = "5790001330552"
-CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
+# CHARGE_KEY = f"{CHARGE_CODE}_{CHARGE_TYPE}_{CHARGE_OWNER_ID}"
 IS_TAX = False
 METERING_POINT_TYPES = [
     MeteringPointTypeDataProductValue.CONSUMPTION,
@@ -56,6 +56,15 @@ class MeteringPointSpec:
     grid_area_code: str
     energy_supplier_id: str
     resolution: MeteringPointResolutionDataProductValue
+
+
+@dataclass
+class Charge:
+    charge_key: str
+    charge_code: str
+    charge_type: ChargeTypeDataProductValue
+    charge_owner_id: str
+    is_tax: bool
 
 
 def create_metering_point_periods(spark: SparkSession) -> DataFrame:
@@ -124,52 +133,51 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
     Creates a DataFrame with charge link periods data for testing purposes.
     """
 
-    df = None
+    rows = []
 
     for metering_point in _get_all_metering_points():
-        data_spec = charge_link_periods_factory.ChargeLinkPeriodsRow(
-            calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE,
-            calculation_version=1,
-            charge_key=CHARGE_KEY,
-            charge_code=CHARGE_CODE,
-            charge_type=CHARGE_TYPE,
-            charge_owner_id=CHARGE_OWNER_ID,
-            metering_point_id=metering_point.metering_point_id,
-            quantity=1,
-            from_date=FROM_DATE,
-            to_date=TO_DATE,
-        )
-        next_df = charge_link_periods_factory.create(spark, data_spec)
-        if df is None:
-            df = next_df
-        else:
-            df = df.union(next_df)
+        for charge in _get_all_charges():
+            rows.append(
+                charge_link_periods_factory.ChargeLinkPeriodsRow(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    calculation_version=1,
+                    charge_key=charge.charge_key,
+                    charge_code=charge.charge_code,
+                    charge_type=charge.charge_type,
+                    charge_owner_id=CHARGE_OWNER_ID,
+                    metering_point_id=metering_point.metering_point_id,
+                    quantity=1,
+                    from_date=FROM_DATE,
+                    to_date=TO_DATE,
+                )
+            )
 
-    return df
+    return charge_link_periods_factory.create(spark, rows)
 
 
 def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with charge price information periods data for testing purposes.
     """
-
-    data_spec = (
-        charge_price_information_periods_factory.ChargePriceInformationPeriodsRow(
-            calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE,
-            calculation_version=1,
-            charge_key=CHARGE_KEY,
-            charge_code=CHARGE_CODE,
-            charge_type=CHARGE_TYPE,
-            charge_owner_id=CHARGE_OWNER_ID,
-            is_tax=IS_TAX,
-            resolution=ChargeResolutionDataProductValue.HOUR,
-            from_date=FROM_DATE,
-            to_date=TO_DATE,
+    rows = []
+    for charge in _get_all_charges():
+        rows.append(
+            charge_price_information_periods_factory.ChargePriceInformationPeriodsRow(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                calculation_version=1,
+                charge_key=charge.charge_key,
+                charge_code=charge.charge_code,
+                charge_type=charge.charge_type,
+                charge_owner_id=CHARGE_OWNER_ID,
+                is_tax=IS_TAX,
+                resolution=ChargeResolutionDataProductValue.HOUR,
+                from_date=FROM_DATE,
+                to_date=TO_DATE,
+            )
         )
-    )
-    return charge_price_information_periods_factory.create(spark, data_spec)
+    return charge_price_information_periods_factory.create(spark, rows)
 
 
 def create_energy(spark: SparkSession) -> DataFrame:
@@ -213,7 +221,7 @@ def create_amounts_per_charge(spark: SparkSession) -> DataFrame:
             time=FROM_DATE,
             grid_area_code=metering_point.grid_area_code,
             metering_point_type=metering_point.metering_point_type,
-            resolution=metering_point.resolution,
+            resolution=ChargeResolutionDataProductValue.HOUR,
             energy_supplier_id=metering_point.energy_supplier_id,
         )
         next_df = amounts_per_charge_factory.create(spark, row)
@@ -273,3 +281,23 @@ def _get_all_metering_points() -> list[MeteringPointSpec]:
                     )
 
     return metering_points
+
+
+def _get_all_charges() -> list[Charge]:
+
+    return [
+        Charge(
+            charge_key=f"4000_{ChargeTypeDataProductValue.TARIFF.value}_5790001330552",
+            charge_code="4000",
+            charge_type=ChargeTypeDataProductValue.TARIFF,
+            charge_owner_id="5790001330552",
+            is_tax=False,
+        ),
+        Charge(
+            charge_key=f"4001_{ChargeTypeDataProductValue.TARIFF.value}_5790001330553",
+            charge_code="4001",
+            charge_type=ChargeTypeDataProductValue.TARIFF,
+            charge_owner_id="5790001330553",
+            is_tax=True,
+        ),
+    ]
