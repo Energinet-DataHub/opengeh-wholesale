@@ -27,7 +27,6 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-
     standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
         MarketRole.DATAHUB_ADMINISTRATOR
     )
@@ -35,12 +34,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [
@@ -78,12 +77,12 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [
@@ -112,12 +111,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
 
     expected_columns = [
         CsvColumnNames.grid_area_code,
-        CsvColumnNames.energy_business_process,
+        CsvColumnNames.calculation_type,
         CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [
@@ -147,12 +146,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = ["1000000000000"]
     expected_columns = [
         CsvColumnNames.grid_area_code,
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [

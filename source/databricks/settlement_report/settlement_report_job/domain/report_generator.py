@@ -14,6 +14,9 @@ from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_balance_fixing,
 )
 from settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.domain.wholesale_results.wholesale_results_factory import (
+    create_wholesale_results,
+)
 from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 from settlement_report_job.utils import create_zip_file
@@ -125,6 +128,27 @@ def execute_energy_results(
     )
 
     dbutils.jobs.taskValues.set(key="energy_result_files", value=energy_result_files)
+
+
+def execute_wholesale_results(
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
+) -> None:
+    """
+    Entry point for the logic of creating wholesale results.
+    """
+    repository = WholesaleRepository(spark, args.catalog_name)
+    wholesale_results_df = create_wholesale_results(args=args, repository=repository)
+
+    wholesale_result_files = csv_writer.write(
+        dbutils,
+        args,
+        wholesale_results_df,
+        ReportDataType.WholesaleResults,
+    )
+
+    dbutils.jobs.taskValues.set(
+        key="wholesale_result_files", value=wholesale_result_files
+    )
 
 
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:

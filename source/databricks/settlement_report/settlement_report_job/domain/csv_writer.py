@@ -53,7 +53,6 @@ def write(
         path=spark_output_path,
         partition_columns=partition_columns,
         rows_per_file=rows_per_file,
-        locale=args.locale,
     )
 
     file_name_factory = FileNameFactory(report_data_type, args)
@@ -67,7 +66,6 @@ def write(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
-        locale=args.locale,
     )
     return files
 
@@ -79,5 +77,7 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_quarterly"
     elif report_data_type == ReportDataType.EnergyResults:
         return "energy_results"
+    elif report_data_type == ReportDataType.WholesaleResults:
+        return "wholesale_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
