@@ -22,6 +22,9 @@ module "st_this" {
     {
       name = "esett-deprecated"
     },
+    {
+      name = "esett-deprecated-ccoe-sub"
+    },
   ]
 
   audit_storage_account = var.enable_audit_logs ? {
