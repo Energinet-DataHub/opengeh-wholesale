@@ -38,6 +38,7 @@ from data_seeding.write_test_data import (
     write_energy_per_es_to_delta_table,
     write_latest_calculations_by_day_to_delta_table,
     write_amounts_per_charge_to_delta_table,
+    write_metering_point_periods_to_delta_table,
 )
 
 
