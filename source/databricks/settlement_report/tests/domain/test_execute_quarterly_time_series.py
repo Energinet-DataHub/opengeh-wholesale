@@ -44,8 +44,8 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.type_of_mp,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -55,7 +55,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)
@@ -77,8 +77,8 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.type_of_mp,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -88,7 +88,7 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)
@@ -119,8 +119,8 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     expected_columns = [
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.type_of_mp,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -130,7 +130,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)
@@ -158,8 +158,8 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     expected_columns = [
         CsvColumnNames.energy_supplier_id,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.type_of_mp,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -169,7 +169,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)
@@ -213,8 +213,8 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.type_of_mp,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
 
     # Act
@@ -224,7 +224,7 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
     actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
     assert len(actual_files) == len(expected_file_names)
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_names)

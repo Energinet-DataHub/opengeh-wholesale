@@ -57,7 +57,6 @@ def write(
         partition_columns=partition_columns,
         order_by=order_by_columns,
         rows_per_file=rows_per_file,
-        locale=args.locale,
     )
 
     assert len(headers) > 0
@@ -75,7 +74,6 @@ def write(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
-        locale=args.locale,
     )
     assert len(files) > 0
 
@@ -119,17 +117,17 @@ def _get_order_by_columns_for_report_type(
     ]:
         return [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.metering_point_id,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         ]
 
     if report_type in [ReportDataType.EnergyResults]:
         order_by_columns = [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         ]
 
         if args.requesting_actor_market_role not in [
@@ -162,5 +160,7 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "energy_results"
     elif report_data_type == ReportDataType.MonthlyAmounts:
         return "monthly_amounts"
+    elif report_data_type == ReportDataType.WholesaleResults:
+        return "wholesale_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
