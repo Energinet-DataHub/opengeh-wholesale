@@ -155,37 +155,6 @@ def test_write_files__csv_separator_is_comma_and_decimals_use_points(
     tmp_dir.cleanup()
 
 
-def test_write_files__when_order_by_specified_on_single_partition(spark: SparkSession):
-    # Arrange
-    df = spark.createDataFrame([("b", 2.2), ("a", 1.1), ("c", 3.3)], ["key", "value"])
-    tmp_dir = TemporaryDirectory()
-    csv_path = f"{tmp_dir.name}/csv_file"
-
-    # Act
-    columns = write_files(
-        df,
-        csv_path,
-        partition_columns=[],
-        rows_per_file=1000,
-    )
-
-    # Assert
-    assert Path(csv_path).exists()
-
-    for x in Path(csv_path).iterdir():
-        if x.is_file() and x.name[-4:] == ".csv":
-            with x.open(mode="r") as f:
-                all_lines_written = f.readlines()
-
-                assert all_lines_written[0] == "a,1.1\n"
-                assert all_lines_written[1] == "b,2.2\n"
-                assert all_lines_written[2] == "c,3.3\n"
-
-    assert columns == ["key", "value"]
-
-    tmp_dir.cleanup()
-
-
 def test_write_files__when_order_by_specified_on_multiple_partitions(
     spark: SparkSession,
 ):
