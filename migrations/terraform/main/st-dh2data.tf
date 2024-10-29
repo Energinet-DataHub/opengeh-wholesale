@@ -16,6 +16,14 @@ module "st_dh2data" {
   } : null
 }
 
+module "kvs_st_dh2_data_lake_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "st-dh2-data-lake-name"
+  value        = module.st_dh2data.name
+  key_vault_id = module.kv_internal.id
+}
+
 #---- System Topic for all storage account events
 
 resource "azurerm_eventgrid_system_topic" "st_dh2data" {

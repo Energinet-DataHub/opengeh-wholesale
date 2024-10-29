@@ -16,6 +16,14 @@ module "st_dh2timeseries_audit" {
   } : null
 }
 
+module "kvs_st_dh2timeseries_audit" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "st-dh2timeseries-audit-name"
+  value        = module.st_dh2timeseries_audit.name
+  key_vault_id = module.kv_internal.id
+}
+
 #---- System Topic for all storage account events
 
 resource "azurerm_eventgrid_system_topic" "st_dh2timeseries_audit" {

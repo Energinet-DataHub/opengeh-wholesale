@@ -22,6 +22,14 @@ module "st_migrations" {
   } : null
 }
 
+module "kvs_st_migrations_data_lake_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "st-migrations-data-lake-name"
+  value        = module.st_migrations.name
+  key_vault_id = module.kv_internal.id
+}
+
 data "azurerm_key_vault_secret" "shared_access_connector_principal_id" {
   name         = "shared-access-connector-principal-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
