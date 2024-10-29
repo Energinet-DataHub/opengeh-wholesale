@@ -185,6 +185,7 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
     task_types_to_zip = {
         TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
         TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
+        TaskType.CHARGE_LINKS: "charge_links_files",
         TaskType.ENERGY_RESULTS: "energy_result_files",
     }
 
