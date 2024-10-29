@@ -50,10 +50,10 @@ def prepare_for_csv(
         ),
         F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
         F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.charge_quantity),
-        F.col(DataProductColumnNames.from_date).alias(CsvColumnNames.period_start),
-        F.col(DataProductColumnNames.to_date).alias(
+        F.col(DataProductColumnNames.from_date).alias(
             CsvColumnNames.charge_link_from_date
         ),
+        F.col(DataProductColumnNames.to_date).alias(CsvColumnNames.charge_link_to_date),
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
         ),

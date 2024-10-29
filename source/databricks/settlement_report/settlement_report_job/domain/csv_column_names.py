@@ -14,7 +14,6 @@ class CsvColumnNames:
     grid_area_code = "METERINGGRIDAREAID"
     metering_point_id = "METERINGPOINTID"
     metering_point_type = "TYPEOFMP"
-    period_start = "period_start"
     price = "PRICE"
     quantity_unit = "MEASUREUNIT"
     resolution = "RESOLUTIONDURATION"
