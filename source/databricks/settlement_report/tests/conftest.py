@@ -153,45 +153,48 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     metering_point_periods = (
         standard_wholesale_fixing_scenario_data_generator.create_metering_point_periods()
     )
+    write_metering_point_periods_to_delta_table(
+        spark, metering_point_periods, input_database_location
+    )
 
-    time_series_df = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
+    time_series = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
         spark
     )
     write_metering_point_time_series_to_delta_table(
-        spark, time_series_df, input_database_location
+        spark, time_series, input_database_location
     )
 
-    charge_link_periods_df = (
+    charge_link_periods = (
         standard_wholesale_fixing_scenario_data_generator.create_charge_link_periods(
             spark
         )
     )
     write_charge_link_periods_to_delta_table(
-        spark, charge_link_periods_df, input_database_location
+        spark, charge_link_periods, input_database_location
     )
 
-    charge_price_information_periods_df = standard_wholesale_fixing_scenario_data_generator.create_charge_price_information_periods(
+    charge_price_information_periods = standard_wholesale_fixing_scenario_data_generator.create_charge_price_information_periods(
         spark
     )
     write_charge_price_information_periods_to_delta_table(
-        spark, charge_price_information_periods_df, input_database_location
+        spark, charge_price_information_periods, input_database_location
     )
 
-    energy_df = standard_wholesale_fixing_scenario_data_generator.create_energy(spark)
-    write_energy_to_delta_table(spark, energy_df, input_database_location)
+    energy = standard_wholesale_fixing_scenario_data_generator.create_energy(spark)
+    write_energy_to_delta_table(spark, energy, input_database_location)
 
-    energy_per_es_df = (
+    energy_per_es = (
         standard_wholesale_fixing_scenario_data_generator.create_energy_per_es(spark)
     )
-    write_energy_per_es_to_delta_table(spark, energy_per_es_df, input_database_location)
+    write_energy_per_es_to_delta_table(spark, energy_per_es, input_database_location)
 
-    amounts_per_charge_df = (
+    amounts_per_charge = (
         standard_wholesale_fixing_scenario_data_generator.create_amounts_per_charge(
             spark
         )
     )
     write_amounts_per_charge_to_delta_table(
-        spark, amounts_per_charge_df, input_database_location
+        spark, amounts_per_charge, input_database_location
     )
 
 
