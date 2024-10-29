@@ -1,26 +1,31 @@
--- Delete from grid_loss_metering_points where the calculation is an aggregation
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.grid_loss_metering_points
-WHERE calculation_id IN (
-    SELECT calculation_id
-    FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-    WHERE calculation_type = 'aggregation'
-)
+-- Delete aggregations from the basis data tables
+
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.grid_loss_metering_points AS target
+USING (
+      SELECT calculation_id
+      FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
+      WHERE calculation_type = 'aggregation'
+) AS source
+ON target.calculation_id = source.calculation_id
+WHEN MATCHED THEN DELETE
 GO
 
--- Delete from metering_point_periods where the calculation is an aggregation
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods
-WHERE calculation_id IN (
-    SELECT calculation_id
-    FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-    WHERE calculation_type = 'aggregation'
-)
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.metering_point_periods AS target
+USING (
+      SELECT calculation_id
+      FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
+      WHERE calculation_type = 'aggregation'
+) AS source
+ON target.calculation_id = source.calculation_id
+WHEN MATCHED THEN DELETE
 GO
 
--- Delete from time_series_points where the calculation is an aggregation
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_series_points
-WHERE calculation_id IN (
-    SELECT calculation_id
-    FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-    WHERE calculation_type = 'aggregation'
-)
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}.time_series_points AS target
+USING (
+      SELECT calculation_id
+      FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
+      WHERE calculation_type = 'aggregation'
+) AS source
+ON target.calculation_id = source.calculation_id
+WHEN MATCHED THEN DELETE
 GO
