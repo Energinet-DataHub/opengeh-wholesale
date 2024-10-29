@@ -152,7 +152,7 @@ def test_read_and_filter_from_view__returns_expected_columns(
     assert expected_columns == actual_df.columns
 
 
-def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from_itself(
+def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from_itself_but_all_charge_owners(
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     monthly_amounts_read_and_filter_mock_repository: Mock,
 ) -> None:
@@ -208,6 +208,12 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
             )
         ).count()
         == 0
+    )
+    assert (
+        actual_df.select(F.col(DataProductColumnNames.charge_owner_id))
+        .distinct()
+        .count()
+        > 1
     )
 
 
@@ -277,4 +283,10 @@ def test_read_and_filter_from_view__when_grid_access_provider__returns_multiple_
         .distinct()
         .count()
         > 1
+    )
+    assert (
+        actual_df.select(F.col(DataProductColumnNames.charge_owner_id))
+        .distinct()
+        .collect()[0][DataProductColumnNames.charge_owner_id]
+        == standard_wholesale_fixing_scenario_args.requesting_actor_id
     )
