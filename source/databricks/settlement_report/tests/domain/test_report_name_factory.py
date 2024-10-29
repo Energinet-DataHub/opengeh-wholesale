@@ -46,6 +46,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
         (ReportDataType.TimeSeriesQuarterly, "TSSD15"),
         (ReportDataType.EnergyResults, "RESULTENERGY"),
         (ReportDataType.WholesaleResults, "RESULTWHOLESALE"),
+        (ReportDataType.MonthlyAmounts, "RESULTMONTHLY"),
     ],
 )
 def test_create__when_energy_supplier__returns_expected_file_name(
@@ -209,6 +210,11 @@ def test_create__when_daylight_saving_time__returns_expected_dates_in_file_name(
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
         ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
+        ),
     ],
 )
 def test_create__when_energy_supplier_requests_report_not_combined(
@@ -247,6 +253,11 @@ def test_create__when_energy_supplier_requests_report_not_combined(
             ReportDataType.WholesaleResults,
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
+        ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
         ),
     ],
 )
@@ -292,6 +303,11 @@ def test_create__when_energy_supplier_requests_report_combined(
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
         ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
+        ),
     ],
 )
 def test_create__when_grid_access_provider_requests_report(
@@ -333,6 +349,11 @@ def test_create__when_grid_access_provider_requests_report(
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
         ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
+        ),
     ],
 )
 def test_create__when_datahub_administrator_requests_report_single_grid(
@@ -370,6 +391,11 @@ def test_create__when_datahub_administrator_requests_report_single_grid(
             ReportDataType.WholesaleResults,
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
+        ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
         ),
     ],
 )
@@ -409,6 +435,11 @@ def test_create__when_datahub_administrator_requests_report_multi_grid_not_combi
             ReportDataType.WholesaleResults,
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
+        ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
         ),
     ],
 )
@@ -452,6 +483,11 @@ def test_create__when_datahub_administrator_requests_report_multi_grid_single_pr
             ReportDataType.WholesaleResults,
             "RESULTWHOLESALE",
             id="returns correct wholesale file name",
+        ),
+        pytest.param(
+            ReportDataType.MonthlyAmounts,
+            "RESULTMONTHLY",
+            id="returns correct monthly amounts file name",
         ),
     ],
 )

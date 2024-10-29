@@ -20,6 +20,7 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_calculation_id_by_grid_area,
+    filter_by_energy_supplier_ids,
 )
 
 log = logging.Logger(__name__)
@@ -57,6 +58,17 @@ def apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
 
+    if args.energy_supplier_ids:
+        df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
+
+    if args.requesting_actor_market_role in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.SYSTEM_OPERATOR,
+    ]:
+        df = df.where(
+            F.col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id
+        )
+
     return df
 
 
@@ -78,12 +90,15 @@ def filter_total_monthly_amounts(
 ) -> DataFrame:
     total_monthly_amounts = apply_shared_filters(total_monthly_amounts, args)
 
-    return total_monthly_amounts.where(
-        (F.col(DataProductColumnNames.charge_owner_id).isNull())
-        & (F.col(DataProductColumnNames.charge_code).isNull())
-        & (F.col(DataProductColumnNames.charge_type).isNull())
-        & (F.col(DataProductColumnNames.is_tax).isNull())
-    )
+    if args.requesting_actor_market_role in [
+        MarketRole.ENERGY_SUPPLIER,
+        MarketRole.DATAHUB_ADMINISTRATOR,
+    ]:
+        total_monthly_amounts = total_monthly_amounts.where(
+            F.col(DataProductColumnNames.charge_owner_id).isNull()
+        )
+
+    return total_monthly_amounts
 
 
 def extend_monthly_amounts_per_charge_columns_for_union(

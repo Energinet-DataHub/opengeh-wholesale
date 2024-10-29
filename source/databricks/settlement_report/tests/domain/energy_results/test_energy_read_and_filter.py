@@ -28,7 +28,7 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 DEFAULT_CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def energy_read_and_filter_mock_repository(
     spark: SparkSession,
 ) -> Mock:

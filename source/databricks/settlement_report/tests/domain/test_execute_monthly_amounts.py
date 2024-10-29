@@ -1,6 +1,5 @@
 from pyspark.sql import SparkSession
 
-from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
 from tests.dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.report_generator import execute_monthly_amounts
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
