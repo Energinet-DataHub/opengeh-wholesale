@@ -19,7 +19,10 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.domain.csv_column_names import CsvColumnNames
+from settlement_report_job.domain.csv_column_names import (
+    CsvColumnNames,
+    EphemeralColumns,
+)
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
@@ -32,6 +35,9 @@ def prepare_for_csv(
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     csv_df = charge_link_periods.select(
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            EphemeralColumns.grid_area_code_partitioning
+        ),
         F.col(DataProductColumnNames.metering_point_id).alias(
             CsvColumnNames.metering_point_id
         ),
