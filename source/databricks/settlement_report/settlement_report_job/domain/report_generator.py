@@ -137,12 +137,12 @@ def execute_monthly_amounts(
     Entry point for the logic of monthly amounts.
     """
     repository = WholesaleRepository(spark, args.catalog_name)
-    monthly_amounts_df = create_monthly_amounts(args=args, repository=repository)
+    monthly_amounts = create_monthly_amounts(args=args, repository=repository)
 
     monthly_amounts_files = csv_writer.write(
         dbutils,
         args,
-        monthly_amounts_df,
+        monthly_amounts,
         ReportDataType.MonthlyAmounts,
     )
 
