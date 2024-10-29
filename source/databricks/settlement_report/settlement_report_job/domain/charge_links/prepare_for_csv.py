@@ -73,7 +73,7 @@ def _get_order_by_columns(
         CsvColumnNames.metering_point_id,
         CsvColumnNames.charge_owner_id,
         CsvColumnNames.charge_code,
-        CsvColumnNames.time,
+        CsvColumnNames.charge_link_from_date,
     ]
     if has_energy_supplier_id_column:
         order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
