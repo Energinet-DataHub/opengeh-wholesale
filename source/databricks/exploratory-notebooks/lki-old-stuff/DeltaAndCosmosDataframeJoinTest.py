@@ -153,8 +153,8 @@ args, unknown_args = p.parse_known_args()
 
 areas = []
 
-if args.grid_area_code:
-    areasParsed = json.loads(args.grid_area_code)
+if args.metering_grid_area:
+    areasParsed = json.loads(args.metering_grid_area)
     areas = areasParsed["areas"]
 if unknown_args:
     print("Unknown args: {0}".format(args))

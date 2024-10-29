@@ -200,8 +200,8 @@ def get_new_files(
     new_files = []
 
     regex = spark_output_path
-    if CsvColumnNames.grid_area_code in partition_columns:
-        regex = f"{regex}/{CsvColumnNames.grid_area_code}=(\\w{{3}})"
+    if CsvColumnNames.metering_grid_area in partition_columns:
+        regex = f"{regex}/{CsvColumnNames.metering_grid_area}=(\\w{{3}})"
 
     if EphemeralColumns.grid_area_code in partition_columns:
         regex = f"{regex}/{EphemeralColumns.grid_area_code}=(\\w{{3}})"
@@ -218,7 +218,7 @@ def get_new_files(
         group_count = 0
 
         if (
-            CsvColumnNames.grid_area_code in partition_columns
+            CsvColumnNames.metering_grid_area in partition_columns
             or EphemeralColumns.grid_area_code in partition_columns
         ):
             grid_area = groups[group_count]

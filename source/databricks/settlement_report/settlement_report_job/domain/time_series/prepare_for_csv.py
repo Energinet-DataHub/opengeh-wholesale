@@ -88,7 +88,7 @@ def prepare_for_csv(
             CsvColumnNames.energy_supplier_id
         ),
         F.col(DataProductColumnNames.grid_area_code).alias(
-            CsvColumnNames.grid_area_code
+            CsvColumnNames.metering_grid_area
         ),
         F.col(DataProductColumnNames.metering_point_id).alias(
             CsvColumnNames.metering_point_id

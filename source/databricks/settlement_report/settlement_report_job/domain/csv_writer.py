@@ -84,7 +84,7 @@ def _get_partition_columns_for_report_type(
         ReportDataType.TimeSeriesHourly,
         ReportDataType.TimeSeriesQuarterly,
     ]:
-        partition_columns = [CsvColumnNames.grid_area_code]
+        partition_columns = [CsvColumnNames.metering_grid_area]
 
     if report_type in [ReportDataType.EnergyResults] and (
         should_include_ephemeral_grid_area(
@@ -109,7 +109,7 @@ def _get_order_by_columns_for_report_type(
         ReportDataType.TimeSeriesQuarterly,
     ]:
         return [
-            CsvColumnNames.grid_area_code,
+            CsvColumnNames.metering_grid_area,
             CsvColumnNames.type_of_mp,
             CsvColumnNames.metering_point_id,
             CsvColumnNames.start_date_time,
@@ -117,7 +117,7 @@ def _get_order_by_columns_for_report_type(
 
     if report_type in [ReportDataType.EnergyResults]:
         order_by_columns = [
-            CsvColumnNames.grid_area_code,
+            CsvColumnNames.metering_grid_area,
             CsvColumnNames.type_of_mp,
             CsvColumnNames.settlement_method,
             CsvColumnNames.start_date_time,
