@@ -173,6 +173,7 @@ resource "databricks_job" "migration_workflow" {
     job_cluster_key = "subsystemtest_job_cluster"
     new_cluster {
       instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
+      num_workers      = 1
       spark_version    = local.databricks_runtime_version
       spark_conf = {
         "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"

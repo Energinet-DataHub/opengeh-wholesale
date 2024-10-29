@@ -30,7 +30,7 @@ resource "azurerm_role_assignment" "sbns_self" {
 resource "azurerm_role_assignment" "sbns_spn_ci" {
   scope                = azurerm_servicebus_namespace.this.id
   role_definition_name = "Azure Service Bus Data Owner"
-  principal_id         = azuread_service_principal.spn_ci.id
+  principal_id         = azuread_service_principal.spn_ci.object_id
 }
 
 resource "azurerm_role_assignment" "sbns_developers" {

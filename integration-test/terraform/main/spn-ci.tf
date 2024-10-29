@@ -27,7 +27,7 @@ resource "azuread_application_password" "ap_spn_ci" {
 resource "azurerm_role_assignment" "ra_ci" {
   scope                = azurerm_resource_group.this.id
   role_definition_name = "Contributor"
-  principal_id         = azuread_service_principal.spn_ci.id
+  principal_id         = azuread_service_principal.spn_ci.object_id
 }
 
 #

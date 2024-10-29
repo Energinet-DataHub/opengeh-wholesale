@@ -29,7 +29,7 @@ resource "azurerm_role_assignment" "evhns_self" {
 resource "azurerm_role_assignment" "evhns_spn_ci" {
   scope                = azurerm_eventhub_namespace.this.id
   role_definition_name = "Azure Event Hubs Data Owner"
-  principal_id         = azuread_service_principal.spn_ci.id
+  principal_id         = azuread_service_principal.spn_ci.object_id
 }
 
 resource "azurerm_role_assignment" "evhns_developers" {

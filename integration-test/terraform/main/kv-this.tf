@@ -22,7 +22,7 @@ resource "azurerm_role_assignment" "kv_self" {
 resource "azurerm_role_assignment" "kv_spn_ci" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Administrator"
-  principal_id         = azuread_service_principal.spn_ci.id
+  principal_id         = azuread_service_principal.spn_ci.object_id
 }
 
 resource "azurerm_role_assignment" "kv_omada_developer_ad_group" {

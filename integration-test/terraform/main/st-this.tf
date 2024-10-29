@@ -21,7 +21,7 @@ resource "azurerm_storage_account" "this" {
 resource "azurerm_role_assignment" "ra_migrations_subsystem_test_contributor" {
   scope                = azurerm_storage_account.this.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_ci.id
+  principal_id         = azuread_service_principal.spn_ci.object_id
 }
 
 #---- Containers
