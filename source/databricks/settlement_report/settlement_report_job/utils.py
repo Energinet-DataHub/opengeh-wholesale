@@ -104,43 +104,15 @@ def get_dbutils(spark: SparkSession) -> Any:
     return dbutils
 
 
-def _get_csv_writer_options_based_on_locale(locale: str) -> dict[str, str]:
-    options_to_always_include = {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
-    if locale.lower() == "en-gb":
-        return options_to_always_include | {"locale": "en-gb", "delimiter": ","}
-    if locale.lower() == "da-dk":
-        return options_to_always_include | {"locale": "da-dk", "delimiter": ";"}
-    else:
-        return options_to_always_include | {"locale": "en-us", "delimiter": ","}
-
-
-def _convert_all_floats_to_danish_csv_format(df: DataFrame) -> DataFrame:
-    data_types_to_convert = [
-        FloatType().typeName(),
-        DecimalType().typeName(),
-        DoubleType().typeName(),
-    ]
-    fields_to_convert = [
-        field
-        for field in df.schema
-        if field.dataType.typeName() in data_types_to_convert
-    ]
-
-    for field in fields_to_convert:
-        df = df.withColumn(
-            field.name, F.translate(F.col(field.name).cast("string"), ".", ",")
-        )
-
-    return df
+def _get_csv_writer_options() -> dict[str, str]:
+    return {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
 
 
 def write_files(
     df: DataFrame,
     path: str,
     partition_columns: list[str],
-    order_by: list[str],
     rows_per_file: int,
-    locale: str = "en-us",
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -155,17 +127,12 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        w = Window().orderBy(order_by)
-        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
-        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+        df = df.withColumn(
+            EphemeralColumns.chunk_index,
+            F.floor(F.monotonically_increasing_id() / F.lit(rows_per_file)) + F.lit(1),
+        )
 
-    if len(order_by) > 0:
-        df = df.orderBy(*order_by)
-
-    if locale.lower() == "da-dk":
-        df = _convert_all_floats_to_danish_csv_format(df)
-
-    csv_writer_options = _get_csv_writer_options_based_on_locale(locale)
+    csv_writer_options = _get_csv_writer_options()
 
     print("writing to path: " + path)
     if partition_columns:
@@ -244,7 +211,7 @@ def get_new_files(
 
 
 def merge_files(
-    dbutils: Any, new_files: list[TmpFile], headers: list[str], locale: str
+    dbutils: Any, new_files: list[TmpFile], headers: list[str]
 ) -> list[str]:
     """Merges the new files and moves them to the final location.
 
@@ -258,12 +225,11 @@ def merge_files(
         list[str]: List of the final file paths.
     """
     print("Files to merge: " + str(new_files))
-    csv_delimiter = _get_csv_writer_options_based_on_locale(locale)["delimiter"]
     for tmp_dst in set([f.tmp_dst for f in new_files]):
         tmp_dst.parent.mkdir(parents=True, exist_ok=True)
         with tmp_dst.open("w+") as f_tmp_dst:
             print("Creating " + str(tmp_dst))
-            f_tmp_dst.write(csv_delimiter.join(headers) + "\n")
+            f_tmp_dst.write(",".join(headers) + "\n")
 
     for _file in new_files:
         with _file.src.open("r") as f_src:

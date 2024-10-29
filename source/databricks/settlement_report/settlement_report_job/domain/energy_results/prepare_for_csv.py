@@ -41,18 +41,16 @@ def prepare_for_csv(
         ),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(CsvColumnNames.energy_business_process),
-        F.col(DataProductColumnNames.time).alias(CsvColumnNames.start_date_time),
-        F.col(DataProductColumnNames.resolution).alias(
-            CsvColumnNames.resolution_duration
-        ),
+        ].alias(CsvColumnNames.calculation_type),
+        F.col(DataProductColumnNames.time).alias(CsvColumnNames.time),
+        F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
         map_from_dict(market_naming.METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(CsvColumnNames.type_of_mp),
+        ].alias(CsvColumnNames.metering_point_type),
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
     ]
 
     if requesting_actor_market_role not in [
@@ -73,4 +71,17 @@ def prepare_for_csv(
             ),
         )
 
-    return energy.select(select_columns)
+    order_by_columns = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.settlement_method,
+        CsvColumnNames.time,
+    ]
+
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
+        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
+
+    return energy.select(select_columns).orderBy(*order_by_columns)

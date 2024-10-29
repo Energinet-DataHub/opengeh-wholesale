@@ -16,7 +16,6 @@ from typing import Any
 from pyspark.sql import DataFrame
 
 from settlement_report_job import logging
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -30,7 +29,6 @@ from settlement_report_job.utils import (
     get_new_files,
     merge_files,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 log = logging.Logger(__name__)
 
@@ -49,15 +47,11 @@ def write(
 
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
-    order_by_columns = _get_order_by_columns_for_report_type(report_data_type, args)
-
     headers = write_files(
         df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
-        order_by=order_by_columns,
         rows_per_file=rows_per_file,
-        locale=args.locale,
     )
 
     file_name_factory = FileNameFactory(report_data_type, args)
@@ -71,7 +65,6 @@ def write(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
-        locale=args.locale,
     )
     return files
 
@@ -99,39 +92,6 @@ def _get_partition_columns_for_report_type(
         partition_columns.append(EphemeralColumns.chunk_index)
 
     return partition_columns
-
-
-def _get_order_by_columns_for_report_type(
-    report_type: ReportDataType, args: SettlementReportArgs
-) -> list[str]:
-    if report_type in [
-        ReportDataType.TimeSeriesHourly,
-        ReportDataType.TimeSeriesQuarterly,
-    ]:
-        return [
-            CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
-            CsvColumnNames.metering_point_id,
-            CsvColumnNames.start_date_time,
-        ]
-
-    if report_type in [ReportDataType.EnergyResults]:
-        order_by_columns = [
-            CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
-            CsvColumnNames.settlement_method,
-            CsvColumnNames.start_date_time,
-        ]
-
-        if args.requesting_actor_market_role not in [
-            MarketRole.GRID_ACCESS_PROVIDER,
-            MarketRole.ENERGY_SUPPLIER,
-        ]:
-            order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
-
-        return order_by_columns
-
-    return []
 
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
