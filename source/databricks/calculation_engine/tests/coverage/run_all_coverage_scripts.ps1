@@ -11,32 +11,55 @@ if (-Not (Test-Path -Path $coverageScriptsPath))
     exit
 }
 
-# Get all PowerShell script files (.ps1) in the specified directory
-$scriptFiles = Get-ChildItem -Path $coverageScriptsPath -Filter "*.ps1" -Recurse
+# Get all PowerShell script files (.ps1) in the specified directory, excluding 'update_covernator.ps1'
+$scriptFiles = Get-ChildItem -Path $coverageScriptsPath -Filter "*.ps1" -Recurse |
+               Where-Object { $_.Name -ne 'update_covernator.ps1' }
 
 # Check if any scripts were found
 if ($scriptFiles.Count -eq 0)
 {
-    Write-Host "No PowerShell scripts found in the directory: $coverageScriptsPath"
-    exit
+    Write-Host "No other PowerShell scripts found in the directory: $coverageScriptsPath"
+}
+else
+{
+    # Loop through each script and execute it, except 'update_covernator.ps1'
+    foreach ($scriptFile in $scriptFiles)
+    {
+        Write-Host "Running script: $($scriptFile.FullName)"
+        try
+        {
+            # Execute the script
+            & $scriptFile.FullName
+            Write-Host "Script executed successfully: $($scriptFile.FullName)"
+        }
+        catch
+        {
+            Write-Error "An error occurred while executing script: $($scriptFile.FullName)"
+            Write-Error $_.Exception.Message
+        }
+    }
 }
 
-# Loop through each script and execute it
-foreach ($scriptFile in $scriptFiles)
+# Finally, run 'update_covernator.ps1' last if it exists
+$updateScriptPath = Join-Path -Path $coverageScriptsPath -ChildPath "update_covernator.ps1"
+if (Test-Path -Path $updateScriptPath)
 {
-    Write-Host "Running script: $( $scriptFile.FullName )"
-
+    Write-Host "Running script: $updateScriptPath"
     try
     {
-        # Execute the script
-        & $scriptFile.FullName
-        Write-Host "Script executed successfully: $( $scriptFile.FullName )"
+        # Execute the 'update_covernator.ps1' script
+        & $updateScriptPath
+        Write-Host "Script executed successfully: $updateScriptPath"
     }
     catch
     {
-        Write-Error "An error occurred while executing script: $( $scriptFile.FullName )"
+        Write-Error "An error occurred while executing script: $updateScriptPath"
         Write-Error $_.Exception.Message
     }
+}
+else
+{
+    Write-Host "'update_covernator.ps1' does not exist in the directory: $coverageScriptsPath"
 }
 
 Write-Host "All scripts have been executed."
