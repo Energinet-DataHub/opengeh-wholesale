@@ -14,3 +14,11 @@ module "kv_internal" {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
 }
+
+module "kvs_mssql_wholesale_connection_string" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+
+  name         = "mssql-wholesale-connection-string"
+  value        = local.CONNECTION_STRING_DB_MIGRATIONS
+  key_vault_id = module.kv_internal.id
+}
