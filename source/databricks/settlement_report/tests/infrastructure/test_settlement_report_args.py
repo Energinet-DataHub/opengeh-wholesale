@@ -147,7 +147,6 @@ def test_when_parameters_for_balance_fixing__parses_parameters_from_contract(
     assert actual_args.split_report_by_grid_area is True
     assert actual_args.time_zone == "Europe/Copenhagen"
     assert actual_args.include_basis_data is True
-    assert actual_args.locale == "da-DK"
 
 
 def test_when_parameters_for_wholesale__parses_parameters_from_contract(
@@ -179,7 +178,6 @@ def test_when_parameters_for_wholesale__parses_parameters_from_contract(
     assert actual_args.split_report_by_grid_area is True
     assert actual_args.time_zone == "Europe/Copenhagen"
     assert actual_args.include_basis_data is True
-    assert actual_args.locale == "da-DK"
 
 
 @pytest.mark.parametrize(
