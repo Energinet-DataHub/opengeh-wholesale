@@ -71,4 +71,17 @@ def prepare_for_csv(
             ),
         )
 
-    return energy.select(select_columns)
+    order_by_columns = [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.settlement_method,
+        CsvColumnNames.time,
+    ]
+
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
+        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
+
+    return energy.select(select_columns).orderBy(*order_by_columns)
