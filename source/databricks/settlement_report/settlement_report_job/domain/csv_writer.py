@@ -47,14 +47,12 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    df_ready_for_writing = _apply_report_type_df_changes(df, args, report_data_type)
-
     partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
 
     order_by_columns = _get_order_by_columns_for_report_type(report_data_type, args)
 
     headers = write_files(
-        df=df_ready_for_writing,
+        df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
         order_by=order_by_columns,
@@ -95,9 +93,6 @@ def _get_partition_columns_for_report_type(
     ):
         partition_columns = [EphemeralColumns.grid_area_code]
 
-    if _is_partitioning_by_energy_supplier_id_needed(args):
-        partition_columns.append(CsvColumnNames.energy_supplier_id)
-
     if args.prevent_large_text_files:
         partition_columns.append(EphemeralColumns.chunk_index)
 
@@ -113,40 +108,28 @@ def _get_order_by_columns_for_report_type(
     ]:
         return [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.metering_point_id,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         ]
 
     if report_type in [ReportDataType.EnergyResults]:
         order_by_columns = [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.start_date_time,
+            CsvColumnNames.time,
         ]
 
-        if args.requesting_actor_market_role == MarketRole.DATAHUB_ADMINISTRATOR:
+        if args.requesting_actor_market_role not in [
+            MarketRole.GRID_ACCESS_PROVIDER,
+            MarketRole.ENERGY_SUPPLIER,
+        ]:
             order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
         return order_by_columns
 
     return []
-
-
-def _apply_report_type_df_changes(
-    df: DataFrame,
-    args: SettlementReportArgs,
-    report_type: ReportDataType,
-) -> DataFrame:
-    if (
-        report_type
-        in [ReportDataType.TimeSeriesHourly, ReportDataType.TimeSeriesQuarterly]
-        and args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER
-    ):
-        df = df.drop(DataProductColumnNames.energy_supplier_id)
-
-    return df
 
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
@@ -156,27 +139,7 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_quarterly"
     elif report_data_type == ReportDataType.EnergyResults:
         return "energy_results"
+    elif report_data_type == ReportDataType.WholesaleResults:
+        return "wholesale_results"
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
-
-
-def _is_partitioning_by_energy_supplier_id_needed(args: SettlementReportArgs) -> bool:
-    """
-    When this partitioning by energy_supplier_id, the energy_supplier_id will be included in the file name
-
-    """
-    if args.requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.DATAHUB_ADMINISTRATOR,
-    ]:
-        return (
-            args.energy_supplier_ids is not None and len(args.energy_supplier_ids) == 1
-        )
-    elif args.requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
-        return True
-    elif args.requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        return False
-    else:
-        raise ValueError(
-            f"Unsupported requesting actor market role: {args.requesting_actor_market_role}"
-        )

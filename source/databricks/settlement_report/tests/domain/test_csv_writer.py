@@ -188,9 +188,9 @@ def test_write__files_have_correct_ordering_for_each_file(
 ):
     # Arrange
     expected_order_by = [
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
@@ -239,9 +239,9 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
 ):
     # Arrange
     expected_order_by = [
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
@@ -280,9 +280,9 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     expected_file_count = 3
     individual_dataframes = []
     expected_order_by = [
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
@@ -349,9 +349,9 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     # Arrange
     individual_dataframes = []
     expected_order_by = [
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.metering_point_id,
-        CsvColumnNames.start_date_time,
+        CsvColumnNames.time,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
@@ -470,12 +470,12 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [
@@ -500,6 +500,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
             spark, create_energy_results_data_spec(grid_area_code="804")
         ),
         standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
     )
 
     # Act
@@ -532,12 +533,12 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     expected_file_count = 1
     expected_columns = [
         CsvColumnNames.grid_area_code,
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [
@@ -571,6 +572,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
             standard_wholesale_fixing_scenario_args.grid_area_codes,
             standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         ),
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
     )
 
     # Act
@@ -604,12 +606,12 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.energy_business_process,
-        CsvColumnNames.start_date_time,
-        CsvColumnNames.resolution_duration,
-        CsvColumnNames.type_of_mp,
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.energy_quantity,
+        CsvColumnNames.quantity,
     ]
 
     expected_file_names = [
@@ -644,6 +646,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
             None,
             standard_wholesale_fixing_scenario_args.split_report_by_grid_area,
         ),
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
     )
 
     # Act

@@ -19,6 +19,7 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.utils import (
     map_from_dict,
 )
@@ -32,6 +33,7 @@ log = logging.Logger(__name__)
 def prepare_for_csv(
     energy: DataFrame,
     create_ephemeral_grid_area_column: bool,
+    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     select_columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
@@ -39,21 +41,22 @@ def prepare_for_csv(
         ),
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
             F.col(DataProductColumnNames.calculation_type)
-        ].alias(CsvColumnNames.energy_business_process),
-        F.col(DataProductColumnNames.time).alias(CsvColumnNames.start_date_time),
-        F.col(DataProductColumnNames.resolution).alias(
-            CsvColumnNames.resolution_duration
-        ),
+        ].alias(CsvColumnNames.calculation_type),
+        F.col(DataProductColumnNames.time).alias(CsvColumnNames.time),
+        F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
         map_from_dict(market_naming.METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
-        ].alias(CsvColumnNames.type_of_mp),
+        ].alias(CsvColumnNames.metering_point_type),
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
     ]
 
-    if DataProductColumnNames.energy_supplier_id in energy.columns:
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(

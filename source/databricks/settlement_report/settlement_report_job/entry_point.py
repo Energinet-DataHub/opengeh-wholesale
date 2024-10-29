@@ -48,6 +48,10 @@ def start_energy_results() -> None:
     _start_task(report_generator.execute_energy_results)
 
 
+def start_wholesale_results() -> None:
+    _start_task(report_generator.execute_wholesale_results)
+
+
 def start_zip() -> None:
     _start_task(report_generator.execute_zip)
 

@@ -176,9 +176,6 @@ def get_new_files(
     if EphemeralColumns.grid_area_code in partition_columns:
         regex = f"{regex}/{EphemeralColumns.grid_area_code}=(\\w{{3}})"
 
-    if CsvColumnNames.energy_supplier_id in partition_columns:
-        regex = f"{regex}/{CsvColumnNames.energy_supplier_id}=(\\w+)"
-
     if EphemeralColumns.chunk_index in partition_columns:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
 
@@ -199,12 +196,6 @@ def get_new_files(
         else:
             grid_area = None
 
-        if CsvColumnNames.energy_supplier_id in partition_columns:
-            energy_supplier_id = groups[group_count]
-            group_count += 1
-        else:
-            energy_supplier_id = None
-
         if EphemeralColumns.chunk_index in partition_columns and len(files) > 1:
             chunk_index = groups[group_count]
             group_count += 1
@@ -213,7 +204,6 @@ def get_new_files(
 
         file_name = file_name_factory.create(
             grid_area_code=grid_area,
-            energy_supplier_id=energy_supplier_id,
             chunk_index=chunk_index,
         )
         new_name = Path(report_output_path) / file_name
