@@ -131,7 +131,6 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
     """
 
     rows = []
-
     for metering_point in _get_all_metering_points():
         for charge in _get_all_charges():
             rows.append(
@@ -142,7 +141,7 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
                     charge_key=charge.charge_key,
                     charge_code=charge.charge_code,
                     charge_type=charge.charge_type,
-                    charge_owner_id=CHARGE_OWNER_ID,
+                    charge_owner_id=charge.charge_owner_id,
                     metering_point_id=metering_point.metering_point_id,
                     quantity=1,
                     from_date=FROM_DATE,
