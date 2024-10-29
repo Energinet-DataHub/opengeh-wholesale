@@ -41,16 +41,15 @@ from settlement_report_job.wholesale.data_values import (
 )
 from settlement_report_job.utils import (
     should_include_ephemeral_grid_area,
-    _get_csv_writer_options_based_on_locale,
+    _get_csv_writer_options,
 )
 
 
 def _read_csv_file(
-    file_name: str, spark: SparkSession, expected_delimiter: str
+    file_name: str,
+    spark: SparkSession,
 ) -> DataFrame:
-    return spark.read.option("delimiter", expected_delimiter).csv(
-        file_name, header=True, sep=expected_delimiter
-    )
+    return spark.read.csv(file_name, header=True)
 
 
 @pytest.mark.parametrize(
@@ -213,12 +212,8 @@ def test_write__files_have_correct_ordering_for_each_file(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
-
-    expected_delimiter = _get_csv_writer_options_based_on_locale(
-        standard_wholesale_fixing_scenario_args.locale
-    )["delimiter"]
     for file in result_files:
-        df_actual = _read_csv_file(file, spark, expected_delimiter)
+        df_actual = _read_csv_file(file, spark)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -266,12 +261,8 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
-
-    expected_delimiter = _get_csv_writer_options_based_on_locale(
-        standard_wholesale_fixing_scenario_args.locale
-    )["delimiter"]
     for file in result_files:
-        df_actual = _read_csv_file(file, spark, expected_delimiter)
+        df_actual = _read_csv_file(file, spark)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -323,11 +314,8 @@ def test_write__files_have_correct_sorting_across_multiple_files(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
-    expected_delimiter = _get_csv_writer_options_based_on_locale(
-        standard_wholesale_fixing_scenario_args.locale
-    )["delimiter"]
     for file in result_files:
-        individual_dataframes.append(_read_csv_file(file, spark, expected_delimiter))
+        individual_dataframes.append(_read_csv_file(file, spark))
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
     assert df_actual.collect() == df_expected.collect()
@@ -342,7 +330,6 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
     expected_file_count = 3
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    standard_wholesale_fixing_scenario_args.locale = "en-gb"
     test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -378,7 +365,6 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
     expected_file_count = 1
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    standard_wholesale_fixing_scenario_args.locale = "en-gb"
     test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -470,7 +456,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
 
     assert len(actual_files) == expected_file_count
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
 
@@ -542,7 +528,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
 
     assert len(actual_files) == expected_file_count
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
 
@@ -615,6 +601,6 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
 
     assert len(actual_files) == expected_file_count
     for file_path in actual_files:
-        df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+        df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
