@@ -33,12 +33,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         expected_columns = [
             CsvColumnNames.grid_area_code,
             CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.energy_business_process,
-            CsvColumnNames.start_date_time,
-            CsvColumnNames.resolution_duration,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.energy_quantity,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -53,7 +53,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
 
@@ -88,12 +88,12 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
         expected_columns = [
             CsvColumnNames.grid_area_code,
             CsvColumnNames.energy_supplier_id,
-            CsvColumnNames.energy_business_process,
-            CsvColumnNames.start_date_time,
-            CsvColumnNames.resolution_duration,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.energy_quantity,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -112,7 +112,7 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
 
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             assert df.columns == expected_columns
 
@@ -136,12 +136,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.energy_business_process,
-            CsvColumnNames.start_date_time,
-            CsvColumnNames.resolution_duration,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.energy_quantity,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -156,7 +156,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
 
             for i, column in enumerate(df.columns):
@@ -188,12 +188,12 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
         expected_file_count = 2  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
         expected_columns = [
             CsvColumnNames.grid_area_code,
-            CsvColumnNames.energy_business_process,
-            CsvColumnNames.start_date_time,
-            CsvColumnNames.resolution_duration,
-            CsvColumnNames.type_of_mp,
+            CsvColumnNames.calculation_type,
+            CsvColumnNames.time,
+            CsvColumnNames.resolution,
+            CsvColumnNames.metering_point_type,
             CsvColumnNames.settlement_method,
-            CsvColumnNames.energy_quantity,
+            CsvColumnNames.quantity,
         ]
 
         expected_file_names = [
@@ -208,7 +208,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
         actual_files = dbutils.jobs.taskValues.get("energy_result_files")
         assert len(actual_files) == expected_file_count
         for file_path in actual_files:
-            df = spark.read.option("delimiter", ";").csv(file_path, header=True)
+            df = spark.read.csv(file_path, header=True)
             assert df.count() > 0
             for i, column in enumerate(df.columns):
                 assert column == expected_columns[i]

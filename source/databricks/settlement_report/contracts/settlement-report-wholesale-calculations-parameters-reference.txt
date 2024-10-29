@@ -17,4 +17,3 @@
 --split-report-by-grid-area
 --prevent-large-text-files
 --include-basis-data
---locale=da-DK
