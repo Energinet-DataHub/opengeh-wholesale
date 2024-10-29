@@ -37,5 +37,6 @@ class CalculationOutputService:
                 calculation_output.wholesale_results_output
             )
 
-        # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
-        basis_data_database.write_basis_data(calculation_output.basis_data_output)
+        if calculation_output.basis_data_output is not None:
+            # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
+            basis_data_database.write_basis_data(calculation_output.basis_data_output)
