@@ -87,7 +87,7 @@ def standard_wholesale_fixing_scenario_args(
         catalog_name="spark_catalog",
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,  # using system operator since it is more complex (requires filter based on charge owner)
-        requesting_actor_id=standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITH_TAX,
+        requesting_actor_id=standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITHOUT_TAX,
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
     )
