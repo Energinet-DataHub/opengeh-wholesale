@@ -25,20 +25,13 @@ def reset_task_values(dbutils: DBUtilsFixture):
 def test_execute_charge_links__when_energy_supplier__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = standard_wholesale_fixing_scenario_args
-    args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
-    energy_supplier_id = (
-        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
-    )
-    args.requesting_actor_id = energy_supplier_id
-    args.energy_supplier_ids = [energy_supplier_id]
     expected_file_names = [
-        f"CHARGELINK_804_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
-        f"CHARGELINK_805_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"CHARGELINK_804_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"CHARGELINK_805_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
@@ -52,7 +45,9 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
     ]
 
     # Act
-    execute_charge_links(spark, dbutils, args)
+    execute_charge_links(
+        spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
+    )
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="charge_links_files")
@@ -62,13 +57,10 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
 def test_execute_charge_links__when_grid_access_provider__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = standard_wholesale_fixing_scenario_args
-    args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
-    args.energy_supplier_ids = None
     expected_file_names = [
         f"CHARGELINK_804_{args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
         f"CHARGELINK_805_{args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
@@ -85,7 +77,9 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
     ]
 
     # Act
-    execute_charge_links(spark, dbutils, args)
+    execute_charge_links(
+        spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
+    )
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
