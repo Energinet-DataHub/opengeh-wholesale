@@ -22,6 +22,7 @@ from settlement_report_job.domain.wholesale_results.read_and_filter import (
 from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
     prepare_for_csv,
 )
+from settlement_report_job.utils import should_include_ephemeral_grid_area
 
 
 def create_wholesale_results(
@@ -36,4 +37,11 @@ def create_wholesale_results(
         repository,
     )
 
-    return prepare_for_csv(wholesale)
+    return prepare_for_csv(
+        wholesale,
+        should_include_ephemeral_grid_area(
+            args.calculation_id_by_grid_area,
+            args.grid_area_codes,
+            args.split_report_by_grid_area,
+        ),
+    )

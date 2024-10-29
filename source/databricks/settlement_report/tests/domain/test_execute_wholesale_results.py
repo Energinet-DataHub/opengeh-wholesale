@@ -71,3 +71,54 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         assert df.count() > 0
         assert df.columns == expected_columns
         assert any(file_name in file_path for file_name in expected_file_name)
+
+
+def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_true__returns_expected(
+    spark: SparkSession,
+    dbutils: DBUtilsFixture,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_data_written_to_delta: None,
+):
+    # Arrange
+    args = standard_wholesale_fixing_scenario_args
+    args.split_report_by_grid_area = True
+    args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
+    energy_supplier_id = (
+        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
+    )
+    args.requesting_actor_id = energy_supplier_id
+    args.energy_supplier_ids = [energy_supplier_id]
+    expected_file_names = [
+        f"RESULTWHOLESALE_804_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"RESULTWHOLESALE_805_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
+    ]
+    expected_columns = [
+        CsvColumnNames.calculation_type,
+        CsvColumnNames.correction_settlement_number,
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.energy_supplier_id,
+        CsvColumnNames.time,
+        CsvColumnNames.resolution,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.settlement_method,
+        CsvColumnNames.quantity_unit,
+        CsvColumnNames.currency,
+        CsvColumnNames.quantity,
+        CsvColumnNames.price,
+        CsvColumnNames.amount,
+        CsvColumnNames.charge_type,
+        CsvColumnNames.charge_code,
+        CsvColumnNames.charge_owner_id,
+    ]
+
+    # Act
+    execute_wholesale_results(spark, dbutils, args)
+
+    # Assert
+    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
+    assert len(actual_files) == len(expected_file_names)
+    for file_path in actual_files:
+        df = spark.read.csv(file_path, header=True)
+        assert df.count() > 0
+        assert df.columns == expected_columns
+        assert any(file_name in file_path for file_name in expected_file_names)
