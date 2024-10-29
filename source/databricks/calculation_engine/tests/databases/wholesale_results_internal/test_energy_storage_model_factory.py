@@ -383,12 +383,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         map(_map_colname_to_energy_result_column_name, included_columns)
     )
 
-    print(all_columns)
-    print(included_columns)
-
     actual_other_columns = set(all_columns) - set(included_columns)
-
-    print(actual_other_columns)
 
     assert set(actual_other_columns) == set(expected_other_columns)
 
