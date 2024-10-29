@@ -152,7 +152,9 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     input_database_location: str,
 ) -> None:
     metering_point_periods = (
-        standard_wholesale_fixing_scenario_data_generator.create_metering_point_periods()
+        standard_wholesale_fixing_scenario_data_generator.create_metering_point_periods(
+            spark
+        )
     )
     write_metering_point_periods_to_delta_table(
         spark, metering_point_periods, input_database_location
