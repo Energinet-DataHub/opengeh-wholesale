@@ -35,6 +35,7 @@ def write(
     args: SettlementReportArgs,
     df: DataFrame,
     report_data_type: ReportDataType,
+    order_by_columns: list[str],
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
 
@@ -52,6 +53,7 @@ def write(
         df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
+        order_by=order_by_columns,
         rows_per_file=rows_per_file,
     )
 
@@ -78,6 +80,8 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.ChargeLinks:
+        return "charge_links"
     elif report_data_type == ReportDataType.EnergyResults:
         return "energy_results"
     elif report_data_type == ReportDataType.MonthlyAmounts:

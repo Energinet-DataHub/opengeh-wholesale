@@ -7,6 +7,7 @@ from pyspark.sql.types import StructType
 from settlement_report_job.wholesale import database_definitions
 from settlement_report_job.wholesale.schemas import (
     charge_link_periods_v1,
+    metering_point_periods_v1,
 )
 from settlement_report_job.wholesale.schemas import (
     charge_price_information_periods_v1,
@@ -166,6 +167,21 @@ def write_metering_point_time_series_to_delta_table(
         table_name=database_definitions.WholesaleBasisDataDatabase.TIME_SERIES_POINTS_VIEW_NAME,
         table_location=f"{table_location}/{database_definitions.WholesaleBasisDataDatabase.TIME_SERIES_POINTS_VIEW_NAME}",
         schema=metering_point_time_series_v1,
+    )
+
+
+def write_metering_point_periods_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleBasisDataDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleBasisDataDatabase.METERING_POINT_PERIODS_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleBasisDataDatabase.METERING_POINT_PERIODS_VIEW_NAME}",
+        schema=metering_point_periods_v1,
     )
 
 

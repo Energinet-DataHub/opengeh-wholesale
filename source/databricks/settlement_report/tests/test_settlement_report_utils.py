@@ -2,15 +2,7 @@ from pathlib import Path
 import pytest
 from datetime import datetime
 from tempfile import TemporaryDirectory
-from pyspark.sql import SparkSession, Row, functions as F
-from pyspark.sql.types import (
-    StructType,
-    StructField,
-    FloatType,
-    DecimalType,
-    DoubleType,
-)
-from decimal import Decimal
+from pyspark.sql import SparkSession, functions as F
 
 from settlement_report_job.utils import (
     create_zip_file,
@@ -135,6 +127,7 @@ def test_write_files__csv_separator_is_comma_and_decimals_use_points(
         df,
         csv_path,
         partition_columns=[],
+        order_by=[],
         rows_per_file=1000,
     )
 
@@ -171,6 +164,7 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
         df,
         csv_path,
         partition_columns=["key"],
+        order_by=["value"],
         rows_per_file=1000,
     )
 
@@ -215,6 +209,7 @@ def test_write_files__when_df_includes_timestamps__creates_csv_without_milliseco
         df,
         csv_path,
         partition_columns=[],
+        order_by=[],
         rows_per_file=1000,
     )
 

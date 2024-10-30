@@ -18,7 +18,6 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput, BasisDataOutput
-from package.databases.table_column_names import TableColumnNames
 from testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
@@ -31,17 +30,12 @@ def assert_output(
     actual_results, expected_results = actual_and_expected
 
     actual_result = _get_actual_for_output(actual_results, output_name)
+
     expected_result = _get_expected_for_output(expected_results, output_name)
 
     if actual_result is None:
         assert expected_result.count() == 0, f"Expected empty result for {output_name}"
         return
-
-    columns_to_skip = []
-    if TableColumnNames.calculation_result_id in expected_result.columns:
-        columns_to_skip.append(TableColumnNames.calculation_result_id)
-    if "result_id" in expected_result.columns:
-        columns_to_skip.append("result_id")
 
     # Sort actual_result and expected_result
     actual_result = actual_result.sort(actual_result.columns)
@@ -53,8 +47,6 @@ def assert_output(
         feature_tests_configuration,
         ignore_decimal_precision=True,
         ignore_nullability=True,
-        ignore_decimal_scale=True,
-        columns_to_skip=columns_to_skip,
     )
 
 
