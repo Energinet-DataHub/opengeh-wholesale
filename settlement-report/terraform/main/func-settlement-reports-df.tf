@@ -41,6 +41,11 @@ module "func_settlement_reports_df" {
       // Blob
       resource_id          = data.azurerm_key_vault_secret.st_settlement_report_id.value
       role_definition_name = "Storage Blob Data Reader"
+    },
+    {
+      // ServiceBus Integration Events Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
 }

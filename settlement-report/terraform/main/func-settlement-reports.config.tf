@@ -1,10 +1,7 @@
 
 locals {
-  func_settlement_reports_df = {
+  func_settlement_reports = {
     app_settings = {
-      # Timeout
-      "AzureFunctionsJobHost__functionTimeout" = "11:00:00"
-      
       #Logging
       "Logging__ApplicationInsights__LogLevel__Default" = "Information"
       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Wholesale" = "Information"
@@ -33,9 +30,6 @@ locals {
       "IntegrationEvents:SubscriptionName"                        = module.sbtsub_settlement_reports_event_listener.name
       "ServiceBus:FullyQualifiedNamespace"                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
 
-      # Durable Functions Task Hub Name
-      # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
-      "OrchestrationsTaskHubName" = "SettlementReportTaskHub"
     }
   }
 }

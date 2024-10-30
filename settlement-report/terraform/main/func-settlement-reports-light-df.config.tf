@@ -27,6 +27,11 @@ locals {
 	  
       # Revision Log
       "RevisionLogOptions:ApiAddress" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
+	  
+      # Notifications
+      "IntegrationEvents:TopicName"                               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
+      "IntegrationEvents:SubscriptionName"                        = module.sbtsub_settlement_reports_event_listener.name
+      "ServiceBus:FullyQualifiedNamespace"                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
 
       # Durable Functions Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
