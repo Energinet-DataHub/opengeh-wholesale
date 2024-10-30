@@ -51,7 +51,9 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     == MeteringPointResolutionDataProductValue.HOUR
                     else 100
                 ):
-                    row[f"{CsvColumnNames.quantity}{j + 1}"] = data_spec.energy_quantity
+                    row[f"{CsvColumnNames.energy_quantity}{j + 1}"] = (
+                        data_spec.energy_quantity
+                    )
                 rows.append(row)
 
     df = spark.createDataFrame(rows)

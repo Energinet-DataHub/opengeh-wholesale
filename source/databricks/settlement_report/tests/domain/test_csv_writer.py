@@ -411,7 +411,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
@@ -474,7 +474,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
@@ -543,7 +543,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [

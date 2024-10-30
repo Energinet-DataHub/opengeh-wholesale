@@ -44,6 +44,7 @@ def default_settlement_report_args() -> SettlementReportArgs:
     [
         (ReportDataType.TimeSeriesHourly, "TSSD60"),
         (ReportDataType.TimeSeriesQuarterly, "TSSD15"),
+        (ReportDataType.ChargeLinks, "CHARGELINK"),
         (ReportDataType.EnergyResults, "RESULTENERGY"),
         (ReportDataType.WholesaleResults, "RESULTWHOLESALE"),
     ],
