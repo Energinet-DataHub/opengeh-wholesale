@@ -216,17 +216,74 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
     )
 
 
-def test_read_and_filter_from_view__when_grid_access_provider__returns_multiple_energy_suppliers(
+def test_read_and_filter_from_view__when_datahub_administrator__returns_all_suppliers_and_charge_owners(
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     monthly_amounts_read_and_filter_mock_repository: Mock,
 ) -> None:
     # Arrange
     standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-        MarketRole.GRID_ACCESS_PROVIDER
+        MarketRole.DATAHUB_ADMINISTRATOR
     )
     standard_wholesale_fixing_scenario_args.requesting_actor_id = (
-        GRID_ACCESS_PROVIDER_ID
+        DATAHUB_ADMINISTRATOR_ID
     )
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+
+    expected_columns = [
+        DataProductColumnNames.calculation_id,
+        DataProductColumnNames.calculation_type,
+        DataProductColumnNames.calculation_version,
+        DataProductColumnNames.result_id,
+        DataProductColumnNames.grid_area_code,
+        DataProductColumnNames.energy_supplier_id,
+        DataProductColumnNames.time,
+        DataProductColumnNames.resolution,
+        DataProductColumnNames.quantity_unit,
+        DataProductColumnNames.currency,
+        DataProductColumnNames.amount,
+        DataProductColumnNames.charge_type,
+        DataProductColumnNames.charge_code,
+        DataProductColumnNames.charge_owner_id,
+        DataProductColumnNames.is_tax,
+    ]
+
+    # Act
+    actual_df = read_and_filter_from_view(
+        args=standard_wholesale_fixing_scenario_args,
+        repository=monthly_amounts_read_and_filter_mock_repository,
+    )
+
+    # Assert
+    assert expected_columns == actual_df.columns
+    assert (
+        actual_df.select(F.col(DataProductColumnNames.energy_supplier_id)).count() > 1
+    )
+    assert (
+        actual_df.select(F.col(DataProductColumnNames.charge_owner_id))
+        .distinct()
+        .count()
+        > 1
+    )
+
+
+@pytest.mark.parametrize(
+    "requesting_actor_market_role,actor_id",
+    [
+        (MarketRole.GRID_ACCESS_PROVIDER, GRID_ACCESS_PROVIDER_ID),
+        (MarketRole.SYSTEM_OPERATOR, SYSTEM_OPERATOR_ID),
+    ],
+)
+def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multiple_energy_suppliers(
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    monthly_amounts_read_and_filter_mock_repository: Mock,
+    requesting_actor_market_role: MarketRole,
+    actor_id: str,
+) -> None:
+    # Arrange
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        requesting_actor_market_role
+    )
+    standard_wholesale_fixing_scenario_args.requesting_actor_id = actor_id
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
 
     standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area = dict(

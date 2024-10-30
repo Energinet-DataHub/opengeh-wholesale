@@ -31,23 +31,23 @@ def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
     monthly_amounts_per_charge = repository.read_monthly_amounts_per_charge_v1()
-    monthly_amounts_per_charge = extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts_per_charge = _extend_monthly_amounts_per_charge_columns_for_union(
         monthly_amounts_per_charge
     )
-    monthly_amounts_per_charge = filter_monthly_amounts_per_charge(
+    monthly_amounts_per_charge = _filter_monthly_amounts_per_charge(
         monthly_amounts_per_charge, args
     )
 
     total_monthly_amounts = repository.read_total_monthly_amounts_v1()
-    total_monthly_amounts = extend_total_monthly_amounts_columns_for_union(
+    total_monthly_amounts = _extend_total_monthly_amounts_columns_for_union(
         total_monthly_amounts
     )
-    total_monthly_amounts = filter_total_monthly_amounts(total_monthly_amounts, args)
+    total_monthly_amounts = _filter_total_monthly_amounts(total_monthly_amounts, args)
 
     return monthly_amounts_per_charge.union(total_monthly_amounts)
 
 
-def apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
+def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
     df = df.where(
         (F.col(DataProductColumnNames.time) >= args.period_start)
         & (F.col(DataProductColumnNames.time) < args.period_end)
@@ -72,10 +72,10 @@ def apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame
     return df
 
 
-def filter_monthly_amounts_per_charge(
+def _filter_monthly_amounts_per_charge(
     monthly_amounts_per_charge: DataFrame, args: SettlementReportArgs
 ) -> DataFrame:
-    monthly_amounts_per_charge = apply_shared_filters(monthly_amounts_per_charge, args)
+    monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
 
     return monthly_amounts_per_charge.where(
         (F.col(DataProductColumnNames.charge_owner_id).isNotNull())
@@ -85,10 +85,10 @@ def filter_monthly_amounts_per_charge(
     )
 
 
-def filter_total_monthly_amounts(
+def _filter_total_monthly_amounts(
     total_monthly_amounts: DataFrame, args: SettlementReportArgs
 ) -> DataFrame:
-    total_monthly_amounts = apply_shared_filters(total_monthly_amounts, args)
+    total_monthly_amounts = _apply_shared_filters(total_monthly_amounts, args)
 
     if args.requesting_actor_market_role in [
         MarketRole.ENERGY_SUPPLIER,
@@ -101,7 +101,7 @@ def filter_total_monthly_amounts(
     return total_monthly_amounts
 
 
-def extend_monthly_amounts_per_charge_columns_for_union(
+def _extend_monthly_amounts_per_charge_columns_for_union(
     base_monthly_amounts_per_charge_columns: DataFrame,
 ) -> DataFrame:
     return base_monthly_amounts_per_charge_columns.select(
@@ -123,7 +123,7 @@ def extend_monthly_amounts_per_charge_columns_for_union(
     )
 
 
-def extend_total_monthly_amounts_columns_for_union(
+def _extend_total_monthly_amounts_columns_for_union(
     base_total_monthly_amounts: DataFrame,
 ) -> DataFrame:
     return base_total_monthly_amounts.select(

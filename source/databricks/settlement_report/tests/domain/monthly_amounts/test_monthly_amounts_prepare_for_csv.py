@@ -8,7 +8,7 @@ from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.domain.monthly_amounts.read_and_filter import (
-    extend_monthly_amounts_per_charge_columns_for_union,
+    _extend_monthly_amounts_per_charge_columns_for_union,
 )
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
@@ -46,7 +46,7 @@ def test_prepare_for_csv__returns_expected_columns(
     monthly_amounts_per_charge = monthly_amounts_per_charge_factory.create(
         spark, testing_spec
     )
-    monthly_amounts_per_charge = extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts_per_charge = _extend_monthly_amounts_per_charge_columns_for_union(
         monthly_amounts_per_charge
     )
 
@@ -117,7 +117,7 @@ def test_mapping_of_process_variant(
         calculation_type=calculation_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts = _extend_monthly_amounts_per_charge_columns_for_union(
         monthly_amounts
     )
 
@@ -168,7 +168,7 @@ def test_mapping_of_energy_business_process(
         calculation_type=calculation_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts = _extend_monthly_amounts_per_charge_columns_for_union(
         monthly_amounts
     )
 
@@ -212,7 +212,7 @@ def test_mapping_of_charge_type(
         charge_type=charge_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts = _extend_monthly_amounts_per_charge_columns_for_union(
         monthly_amounts
     )
 
