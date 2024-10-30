@@ -17,9 +17,6 @@ from uuid import UUID
 from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
-from settlement_report_job.domain.dataframe_utils.factory_filters import (
-    filter_by_calculation_id_by_grid_area,
-)
 from settlement_report_job.domain.dataframe_utils.merge_periods import (
     merge_connected_periods,
 )
@@ -31,7 +28,7 @@ logger = logging.Logger(__name__)
 
 
 @logging.use_span()
-def read_and_filter_for_balance_fixing(
+def read_and_filter_for_wholesale(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
@@ -46,6 +43,10 @@ def read_and_filter_for_balance_fixing(
         calculation_id_by_grid_area=calculation_id_by_grid_area,
         energy_supplier_ids=energy_supplier_ids,
     )
+
+    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+
+
     charge_link_periods = _read_charge_link_periods(
         period_start=period_start,
         period_end=period_end,
