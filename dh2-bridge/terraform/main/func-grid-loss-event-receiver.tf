@@ -1,5 +1,5 @@
 module "func_entrypoint_grid_loss_event_receiver" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.1.1"
 
   name                                   = "grid-loss-event-receiver"
   project_name                           = var.domain_name_short
