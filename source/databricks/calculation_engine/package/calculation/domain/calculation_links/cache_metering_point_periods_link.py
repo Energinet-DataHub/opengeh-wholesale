@@ -20,14 +20,20 @@ from package.calculation.domain.calculation_links.calculation_link import (
     CalculationLink,
 )
 from package.calculation.domain.chains.cache_bucket import CacheBucket
+from package.calculation.preparation.transformations.clamp_period import clamp_period
+from package.calculation.preparation.transformations.metering_point_periods import (
+    _fix_settlement_method,
+    _fix_metering_point_type,
+)
 from package.calculation.wholesale.links.metering_point_period_repository import (
     IMeteringPointPeriodsRepository,
 )
+from package.constants import Colname
 from package.container import Container
 from package.infrastructure import logging_configuration
 
 
-class GetMeteringPointPeriodsLink(CalculationLink):
+class CacheMeteringPointPeriodsLink(CalculationLink):
 
     @inject
     def __init__(
@@ -50,6 +56,32 @@ class GetMeteringPointPeriodsLink(CalculationLink):
             self.args.calculation_period_start_datetime,
             self.args.calculation_period_end_datetime,
             self.args.calculation_grid_areas,
+        )
+
+        metering_point_periods = clamp_period(
+            metering_point_periods,
+            self.args.calculation_period_start_datetime,
+            self.args.calculation_period_end_datetime,
+            Colname.from_date,
+            Colname.to_date,
+        )
+        metering_point_periods = _fix_settlement_method(metering_point_periods)
+        metering_point_periods = _fix_metering_point_type(metering_point_periods)
+
+        metering_point_periods = metering_point_periods.select(
+            Colname.metering_point_id,
+            Colname.metering_point_type,
+            Colname.calculation_type,
+            Colname.settlement_method,
+            Colname.grid_area_code,
+            Colname.resolution,
+            Colname.from_grid_area_code,
+            Colname.to_grid_area_code,
+            Colname.parent_metering_point_id,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_party_id,
+            Colname.from_date,
+            Colname.to_date,
         )
 
         self.cache_bucket.metering_point_periods = metering_point_periods

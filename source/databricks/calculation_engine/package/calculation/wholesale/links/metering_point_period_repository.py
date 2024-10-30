@@ -35,6 +35,9 @@ class IMeteringPointPeriodsRepository(ABC):
     ) -> DataFrame:
         pass
 
+    def get(self) -> DataFrame:
+        pass
+
 
 class MeteringPointPeriodsRepository(IMeteringPointPeriodsRepository):
 
@@ -74,7 +77,7 @@ class MeteringPointPeriodsRepository(IMeteringPointPeriodsRepository):
             )
         )
 
-        metering_point_periods_df.cache()
+        metering_point_periods_df = metering_point_periods_df.cache()
 
         return metering_point_periods_df
 

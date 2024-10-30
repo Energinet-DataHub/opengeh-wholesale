@@ -2,7 +2,7 @@ from package.calculation.calculation_output import CalculationOutput
 from package.calculation.domain.calculation_links import (
     StartCalculationLink,
     EndCalculationLink,
-    GetMeteringPointPeriodsLink,
+    CacheMeteringPointPeriodsLink,
     CalculateGridLossMeteringPointPeriodsLink,
     CalculateTotalEnergyConsumptionLink,
 )
@@ -17,9 +17,14 @@ class Chain:
         # Set up the calculation chain
         self.start_link = StartCalculationLink()
         (
-            self.start_link.set_next(GetMeteringPointPeriodsLink())
+            self.start_link
+            #
+            .set_next(CacheMeteringPointPeriodsLink())
+            #
             .set_next(CalculateGridLossMeteringPointPeriodsLink())
+            #
             .set_next(CalculateTotalEnergyConsumptionLink())
+            #
             .set_next(EndCalculationLink())
         )
 

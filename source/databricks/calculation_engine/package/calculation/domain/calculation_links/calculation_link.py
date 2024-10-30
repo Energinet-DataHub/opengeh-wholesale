@@ -15,13 +15,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar, Any
 
 from package.calculation.calculation_output import CalculationOutput
-
-# Define generic type variables
-RequestType = TypeVar("RequestType")
-ResponseType = TypeVar("ResponseType")
 
 
 class Link(ABC):
@@ -37,13 +32,13 @@ class Link(ABC):
 
 class CalculationLink(Link):
     """
-    The default chaining behavior can be implemented inside a base handler class.
+    The calculation link base class with default behavior.
     """
 
     def __init__(
         self,
     ) -> None:
-        self._next_handler = None
+        self._next_handler: Link | None = None
 
     def set_next(self, handler: Link) -> Link:
         self._next_handler = handler
@@ -53,6 +48,3 @@ class CalculationLink(Link):
         if self._next_handler:
             return self._next_handler.execute(output)
         return output
-
-    def get_class_name(cls: Any) -> str:
-        return cls.__name__

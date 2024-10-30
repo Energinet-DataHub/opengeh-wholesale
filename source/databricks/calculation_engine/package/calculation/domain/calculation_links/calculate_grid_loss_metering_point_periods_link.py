@@ -48,8 +48,6 @@ class CalculateGridLossMeteringPointPeriodsLink(CalculationLink):
             self.wholesale_internal_repository.read_grid_loss_metering_point_ids()
         )
 
-        grid_loss_metering_points.show()
-
         grid_loss_responsible = grid_loss_metering_points.join(
             self.cache_bucket.metering_point_periods,
             Colname.metering_point_id,
@@ -66,10 +64,6 @@ class CalculateGridLossMeteringPointPeriodsLink(CalculationLink):
 
         _throw_if_no_grid_loss_responsible(
             self.calculator_args.calculation_grid_areas, grid_loss_responsible
-        )
-
-        calculation_output.basis_data_output.grid_loss_metering_points = (
-            grid_loss_metering_points
         )
 
         return super().execute(calculation_output)

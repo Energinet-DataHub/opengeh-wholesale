@@ -48,11 +48,4 @@ class CalculateTotalEnergyConsumptionLink(CalculationLink):
 
         self.metering_point_periods_repository.get_by()
 
-        ##   self.calculator_args,
-        #  grid_loss_aggr.calculate_total_consumption(production, exchange),
-        # TimeSeriesType.TOTAL_CONSUMPTION,
-        # AggregationLevel.GRID_AREA,
-        # )
-
-        # output.energy_results_output.total_consumption = total_consumption
         return super().execute(output)
