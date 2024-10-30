@@ -1,6 +1,7 @@
 from typing import Any
 
 from pyspark.sql import SparkSession
+from settlement_report_job import logging
 
 from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.repository import WholesaleRepository
@@ -29,6 +30,7 @@ from settlement_report_job.domain.market_role import MarketRole
 log = Logger(__name__)
 
 
+@logging.use_span()
 def execute_hourly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -41,6 +43,7 @@ def execute_hourly_time_series(
     )
 
 
+@logging.use_span()
 def execute_quarterly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -108,6 +111,7 @@ def _execute_time_series(
     dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
 
+@logging.use_span()
 def execute_energy_results(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -130,6 +134,7 @@ def execute_energy_results(
     dbutils.jobs.taskValues.set(key="energy_result_files", value=energy_result_files)
 
 
+@logging.use_span()
 def execute_wholesale_results(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -151,6 +156,7 @@ def execute_wholesale_results(
     )
 
 
+@logging.use_span()
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating the final zip file.

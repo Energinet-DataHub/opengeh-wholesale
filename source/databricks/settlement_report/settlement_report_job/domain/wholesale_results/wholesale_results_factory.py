@@ -15,6 +15,7 @@
 from pyspark.sql import DataFrame
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job import logging
 
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
@@ -24,6 +25,7 @@ from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
 )
 
 
+@logging.use_span()
 def create_wholesale_results(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
