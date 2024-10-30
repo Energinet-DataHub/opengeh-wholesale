@@ -52,7 +52,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         CsvColumnNames.settlement_method,
         CsvColumnNames.quantity_unit,
         CsvColumnNames.currency,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
         CsvColumnNames.price,
         CsvColumnNames.amount,
         CsvColumnNames.charge_type,

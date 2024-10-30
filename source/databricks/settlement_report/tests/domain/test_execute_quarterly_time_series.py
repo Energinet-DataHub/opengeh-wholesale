@@ -126,7 +126,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__scenario__returns_expected(
+def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
