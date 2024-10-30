@@ -31,11 +31,6 @@ module "func_orchestrationsdf" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
-      // Blob
-      resource_id          = module.storage_settlement_reports.id
-      role_definition_name = "Storage Blob Data Contributor"
-    },
-    {
       // Key Vault
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"

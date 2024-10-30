@@ -21,10 +21,6 @@ locals {
       STORAGE_CONTAINER_NAME = local.STORAGE_CONTAINER_NAME
       STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
 
-      # Storage (Blob)
-      "SettlementReportStorage__StorageAccountUri"    = local.BLOB_STORAGE_ACCOUNT_URI
-      "SettlementReportStorage__StorageContainerName" = local.BLOB_CONTAINER_SETTLEMENTREPORTS_NAME
-
       # Service Bus
       "ServiceBus__FullyQualifiedNamespace" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
       "IntegrationEvents__TopicName"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"

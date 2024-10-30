@@ -7,10 +7,6 @@ locals {
   STORAGE_CONTAINER_NAME = "wholesale"
   STORAGE_ACCOUNT_URI    = "https://${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net"
 
-  # Storage (Blob)
-  BLOB_STORAGE_ACCOUNT_URI              = "https://${module.storage_settlement_reports.name}.blob.core.windows.net"
-  BLOB_CONTAINER_SETTLEMENTREPORTS_NAME = "settlement-reports"
-
   # Database
   DB_CONNECTION_STRING            = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
   CONNECTION_STRING_DB_MIGRATIONS = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;Authentication=Active Directory Default;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
