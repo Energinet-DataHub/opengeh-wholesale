@@ -29,6 +29,8 @@ from tests.test_factories.default_test_data_spec import (
 from tests.dbutils_fixture import DBUtilsFixture
 from functools import reduce
 import pytest
+
+from settlement_report_job.domain.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.report_data_type import ReportDataType
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -87,6 +89,10 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=get_order_by_columns(
+            report_data_type=report_data_type,
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
     )
 
     # Assert
@@ -116,6 +122,10 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=get_order_by_columns(
+            report_data_type=report_data_type,
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
     )
 
     # Assert
@@ -155,6 +165,10 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=get_order_by_columns(
+            report_data_type=report_data_type,
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
         rows_per_file=rows_per_file,
     )
 
@@ -203,6 +217,7 @@ def test_write__files_have_correct_ordering_for_each_file(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=expected_order_by,
         rows_per_file=rows_per_file,
     )
 
@@ -245,7 +260,7 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         num_metering_points=number_of_rows,
     )
     df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(expected_order_by)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
@@ -253,6 +268,7 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=expected_order_by,
     )
 
     # Assert
@@ -264,6 +280,66 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         df_actual = _read_csv_file(file, spark)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
+
+
+def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 3
+    individual_dataframes = []
+    expected_order_by = [
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.time,
+    ]
+    report_data_type = ReportDataType.TimeSeriesQuarterly
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=10,
+    )
+    test_spec_production = time_series_factory.TimeSeriesCsvTestDataSpec(
+        metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=20,
+    )
+    df_prepared_time_series_consumption = time_series_factory.create(
+        spark, test_spec_consumption
+    )
+    df_prepared_time_series_production = time_series_factory.create(
+        spark, test_spec_production
+    )
+    df_prepared_time_series = df_prepared_time_series_consumption.union(
+        df_prepared_time_series_production
+    ).orderBy(F.rand())
+
+    # Act
+    result_files = csv_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df_prepared_time_series,
+        report_data_type=report_data_type,
+        order_by_columns=expected_order_by,
+        rows_per_file=10,
+    )
+    result_files.sort()
+
+    # Assert
+    assert len(result_files) == expected_file_count
+
+    # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
+    # Asserting that the dataframe is unchanged
+    for file in result_files:
+        individual_dataframes.append(_read_csv_file(file, spark))
+    df_actual = reduce(DataFrame.unionByName, individual_dataframes)
+    df_expected = df_actual.orderBy(expected_order_by)
+    print(df_actual.collect()[0], df_expected.collect()[0])
+    print(df_actual.collect()[-1], df_expected.collect()[-1])
+    assert df_actual.collect() == df_expected.collect()
 
 
 @pytest.mark.parametrize(
@@ -304,6 +380,7 @@ def test_write__files_have_correct_sorting_across_multiple_files(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=expected_order_by,
         rows_per_file=rows_per_file,
     )
     result_files.sort()
@@ -342,6 +419,10 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=get_order_by_columns(
+            report_data_type=report_data_type,
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
         rows_per_file=10,
     )
 
@@ -377,6 +458,10 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
+        order_by_columns=get_order_by_columns(
+            report_data_type=report_data_type,
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
         rows_per_file=31,
     )
 
@@ -441,11 +526,15 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
 
     # Act
     actual_files = csv_writer.write(
-        dbutils,
-        standard_wholesale_fixing_scenario_args,
-        df,
-        ReportDataType.EnergyResults,
-        10000,
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df,
+        report_data_type=ReportDataType.EnergyResults,
+        order_by_columns=get_order_by_columns(
+            report_data_type=ReportDataType.EnergyResults,
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
+        rows_per_file=10000,
     )
 
     # Assert
@@ -509,11 +598,15 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
 
     # Act
     actual_files = csv_writer.write(
-        dbutils,
-        standard_wholesale_fixing_scenario_args,
-        df,
-        ReportDataType.EnergyResults,
-        10000,
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df,
+        report_data_type=ReportDataType.EnergyResults,
+        order_by_columns=get_order_by_columns(
+            ReportDataType.EnergyResults,
+            standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
+        rows_per_file=10000,
     )
 
     # Assert
@@ -579,10 +672,14 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
 
     # Act
     actual_files = csv_writer.write(
-        dbutils,
-        standard_wholesale_fixing_scenario_args,
-        df,
-        ReportDataType.EnergyResults,
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df,
+        report_data_type=ReportDataType.EnergyResults,
+        order_by_columns=get_order_by_columns(
+            ReportDataType.EnergyResults,
+            standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
         rows_per_file=df.count() // expected_file_count + 1,
     )
 
