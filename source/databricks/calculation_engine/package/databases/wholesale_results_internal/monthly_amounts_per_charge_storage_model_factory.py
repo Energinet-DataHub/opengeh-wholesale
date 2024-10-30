@@ -20,11 +20,15 @@ from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
 def create(args: CalculatorArgs, monthly_amounts: MonthlyAmountPerCharge) -> DataFrame:
     monthly_amounts = add_metadata(
-        args, _get_column_group_for_calculation_result_id(), monthly_amounts.df
+        args,
+        _get_column_group_for_calculation_result_id(),
+        monthly_amounts.df,
+        WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
     )
     monthly_amounts = _select_output_columns(monthly_amounts)
 
