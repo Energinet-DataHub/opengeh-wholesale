@@ -20,10 +20,6 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal import (
-    wholesale_storage_model_factory as sut,
-)
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
     wholesale_results_schema,
@@ -39,6 +35,10 @@ from package.codelists import (
     AmountType,
 )
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_results_internal import (
+    amounts_per_charge_storage_model_factory as sut,
+)
 from package.databases.wholesale_results_internal.schemas import (
     hive_wholesale_results_schema,
 )

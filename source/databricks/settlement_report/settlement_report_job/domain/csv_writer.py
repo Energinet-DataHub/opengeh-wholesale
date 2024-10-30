@@ -19,12 +19,8 @@ from settlement_report_job import logging
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.domain.csv_column_names import (
-    CsvColumnNames,
-    EphemeralColumns,
-)
+from settlement_report_job.domain.csv_column_names import EphemeralColumns
 from settlement_report_job.utils import (
-    should_include_ephemeral_grid_area,
     write_files,
     get_new_files,
     merge_files,
@@ -45,7 +41,12 @@ def write(
     report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
-    partition_columns = _get_partition_columns_for_report_type(report_data_type, args)
+    partition_columns = []
+    if EphemeralColumns.grid_area_code_partitioning in df.columns:
+        partition_columns.append(EphemeralColumns.grid_area_code_partitioning)
+
+    if args.prevent_large_text_files:
+        partition_columns.append(EphemeralColumns.chunk_index)
 
     headers = write_files(
         df=df,
@@ -67,31 +68,6 @@ def write(
         headers=headers,
     )
     return files
-
-
-def _get_partition_columns_for_report_type(
-    report_type: ReportDataType, args: SettlementReportArgs
-) -> list[str]:
-    partition_columns = []
-    if report_type in [
-        ReportDataType.TimeSeriesHourly,
-        ReportDataType.TimeSeriesQuarterly,
-    ]:
-        partition_columns = [CsvColumnNames.grid_area_code]
-
-    if report_type in [ReportDataType.EnergyResults] and (
-        should_include_ephemeral_grid_area(
-            args.calculation_id_by_grid_area,
-            args.grid_area_codes,
-            args.split_report_by_grid_area,
-        )
-    ):
-        partition_columns = [EphemeralColumns.grid_area_code]
-
-    if args.prevent_large_text_files:
-        partition_columns.append(EphemeralColumns.chunk_index)
-
-    return partition_columns
 
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
