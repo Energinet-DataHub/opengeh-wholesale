@@ -68,6 +68,27 @@
         },
         {
           "position": {
+            "x": 21,
+            "y": 0,
+            "colSpan": 7,
+            "rowSpan": 1
+          },
+          "metadata": {
+            "inputs": [],
+            "type": "Extension/HubsExtension/PartType/MarkdownPart",
+            "settings": {
+              "content": {
+                "content": "# Message generation ",
+                "title": "",
+                "subtitle": "",
+                "markdownSource": 1,
+                "markdownUri": ""
+              }
+            }
+          }
+        },
+        {
+          "position": {
             "x": 0,
             "y": 1,
             "colSpan": 7,
@@ -454,6 +475,125 @@
         },
         {
           "position": {
+            "x": 21,
+            "y": 1,
+            "colSpan": 7,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyAggregatedMeasureDataJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyAggregatedMeasureDataJson"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyAggregatedMeasureDataResponseJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyAggregatedMeasureDataResponseJson"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "RejectRequestAggregatedMeasureDataJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "RejectRequestAggregatedMeasureDataJson"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyWholesaleServicesJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyWholesaleServicesJson"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyWholesaleServicesResponseJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyWholesaleServicesResponseJson"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "RejectRequestWholesaleSettlementJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "RejectRequestWholesaleSettlementJson"
+                        }
+                      }
+                    ],
+                    "title": "Number of new JSON messages",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 1,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "position": {
             "x": 0,
             "y": 5,
             "colSpan": 7,
@@ -744,6 +884,124 @@
               }
             }
           }
+        },{
+          "position": {
+            "x": 21,
+            "y": 5,
+            "colSpan": 7,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyAggregatedMeasureDataXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyAggregatedMeasureDataXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyAggregatedMeasureDataResponseXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyAggregatedMeasureDataResponseXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "RejectRequestAggregatedMeasureDataXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "RejectRequestAggregatedMeasureDataXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyWholesaleServicesXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyWholesaleServicesXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyWholesaleServicesResponseXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyWholesaleServicesResponseXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "RejectRequestWholesaleSettlementXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "RejectRequestWholesaleSettlementXml"
+                        }
+                      }
+                    ],
+                    "title": "Number of new XML messages",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 1,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         {
           "position": {
@@ -946,6 +1204,125 @@
                     "titleKind": 2,
                     "visualization": {
                       "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "position": {
+            "x": 21,
+            "y": 9,
+            "colSpan": 7,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyAggregatedMeasureDataEbix",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyAggregatedMeasureDataEbix"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyAggregatedMeasureDataResponseEbix",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyAggregatedMeasureDataResponseEbix"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "RejectRequestAggregatedMeasureDataEbix",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "RejectRequestAggregatedMeasureDataEbix"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyWholesaleServicesEbix",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyWholesaleServicesEbix"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyWholesaleServicesResponseEbix",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyWholesaleServicesResponseEbix"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "RejectRequestWholesaleSettlementEbix",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "RejectRequestWholesaleSettlementEbix"
+                        }
+                      }
+                    ],
+                    "title": "Number of new EBIX messages",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 1,
                       "legendVisualization": {
                         "isVisible": true,
                         "position": 2,

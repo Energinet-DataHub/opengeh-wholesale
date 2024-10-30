@@ -20,6 +20,7 @@ esett-exchange/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-racco
 edi/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 edi/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 edi/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
+edi/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 
 # revision-log configurations
 revision-log/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
