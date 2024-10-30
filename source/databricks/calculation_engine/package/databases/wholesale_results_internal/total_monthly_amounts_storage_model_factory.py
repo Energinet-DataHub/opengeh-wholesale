@@ -16,17 +16,21 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_results_internal.add_meta_data import add_metadata
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
 def create(
     args: CalculatorArgs, total_monthly_amounts: TotalMonthlyAmount
 ) -> DataFrame:
     total_monthly_amounts = add_metadata(
-        args, _get_column_group_for_calculation_result_id(), total_monthly_amounts.df
+        args,
+        _get_column_group_for_calculation_result_id(),
+        total_monthly_amounts.df,
+        WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
     )
     total_monthly_amounts = _select_output_columns(total_monthly_amounts)
 
