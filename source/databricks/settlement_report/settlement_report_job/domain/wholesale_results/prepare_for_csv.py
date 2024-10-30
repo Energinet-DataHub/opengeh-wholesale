@@ -56,7 +56,7 @@ def prepare_for_csv(
         ].alias(CsvColumnNames.settlement_method),
         F.col(DataProductColumnNames.quantity_unit).alias(CsvColumnNames.quantity_unit),
         F.col(DataProductColumnNames.currency).alias(CsvColumnNames.currency),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
         F.col(DataProductColumnNames.price).alias(CsvColumnNames.price),
         F.col(DataProductColumnNames.amount).alias(CsvColumnNames.amount),
         map_from_dict(market_naming.CHARGE_TYPES)[

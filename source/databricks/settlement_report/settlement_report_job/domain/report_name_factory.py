@@ -29,8 +29,9 @@ class FileNameFactory:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
+            ReportDataType.ChargeLinks,
         }:
-            return self._create_time_series_filename(grid_area_code, chunk_index)
+            return self._create_basis_data_filename(grid_area_code, chunk_index)
         if self.report_data_type in [
             ReportDataType.EnergyResults,
             ReportDataType.WholesaleResults,
@@ -62,7 +63,7 @@ class FileNameFactory:
 
         return "_".join(filename_parts_without_none) + ".csv"
 
-    def _create_time_series_filename(
+    def _create_basis_data_filename(
         self,
         grid_area_code: str | None,
         chunk_index: str | None,
@@ -99,6 +100,8 @@ class FileNameFactory:
             return "TSSD60"
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
+        elif self.report_data_type == ReportDataType.ChargeLinks:
+            return "CHARGELINK"
         elif self.report_data_type == ReportDataType.EnergyResults:
             return "RESULTENERGY"
         elif self.report_data_type == ReportDataType.WholesaleResults:
