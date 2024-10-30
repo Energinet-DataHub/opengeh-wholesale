@@ -19,19 +19,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Fixtures;
 
 public static class DatabricksTestHelper
 {
-    public static IEnumerable<Dictionary<string, object?>> CreateSettlementRow(int rowCount)
-    {
-        var rows = new List<Dictionary<string, object?>>();
-        for (var row = 0; row < rowCount; row++)
-        {
-            var dummyQuantity = $@"{row}.1";
-            var newRow = CreateNewRow(quantity: dummyQuantity);
-            rows.Add(newRow);
-        }
-
-        return new List<Dictionary<string, object?>>(rows);
-    }
-
     public static async IAsyncEnumerable<IDictionary<string, object?>> GetRowsAsync(TableChunk tableChunk, int rowCount)
     {
         await Task.Delay(0);
@@ -39,26 +26,6 @@ public static class DatabricksTestHelper
         {
             yield return GetRow(tableChunk, i);
         }
-    }
-
-    private static Dictionary<string, object?> CreateNewRow(
-        string gridAre = "123",
-        string calculationType = "balance_fixing",
-        string time = "2022-05-16T01:00:00.000Z",
-        string timeSeriesType = "non_profiled_consumption",
-        string quantity = "1.234",
-        string resolution = "PT15M")
-    {
-        var newRow = new Dictionary<string, object?>
-        {
-            { EnergyResultColumnNames.GridArea, gridAre },
-            { EnergyResultColumnNames.CalculationType, calculationType },
-            { EnergyResultColumnNames.Time, time },
-            { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
-            { EnergyResultColumnNames.Quantity, $@"{quantity}" },
-            { EnergyResultColumnNames.Resolution, resolution },
-        };
-        return newRow;
     }
 
     private static IDictionary<string, object?> GetRow(TableChunk tableChunk, int i = 0)

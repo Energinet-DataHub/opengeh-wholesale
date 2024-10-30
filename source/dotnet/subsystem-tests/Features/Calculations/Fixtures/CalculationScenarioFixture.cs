@@ -285,17 +285,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return await LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
     }
 
-    /// <summary>
-    /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
-    /// </summary>
-    public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
-    {
-        return await ParseCsvAsync(
-            testFileName,
-            "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,neighbor_grid_area_code,calculation_result_id,metering_point_id,resolution",
-            ParseGridLossProducedV1TimeSeriesPoint);
-    }
-
     public async Task<IReadOnlyList<(bool IsAccessible, string ErrorMessage)>> ArePublicDataModelsAccessibleAsync(
         IReadOnlyList<(string ModelName, string TableName)> modelsAndTables)
     {
@@ -398,53 +387,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         WholesaleOrchestrationsApiClient.Dispose();
     }
 
-    /// <summary>
-    /// Load CSV file and parse each data row into T./>.
-    /// Expects the first row to be a specific header to ensure we read data from the correct columns.
-    /// </summary>
-    /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
-    /// <param name="expectedHeader">The expected headers in the CVS file.</param>
-    /// <param name="createResult">Delegate function that create an specific result object.</param>
-    private static async Task<IReadOnlyCollection<T>> ParseCsvAsync<T>(string testFileName, string expectedHeader, Func<string[], T> createResult)
-    {
-        var hasVerifiedHeader = false;
-        await using var stream = EmbeddedResources.GetStream<Root>($"Features.Calculations.TestData.{testFileName}");
-        using var reader = new StreamReader(stream);
-
-        var resultList = new List<T>();
-
-        while (!reader.EndOfStream)
-        {
-            var line = await reader.ReadLineAsync();
-            if (!hasVerifiedHeader)
-            {
-                if (line != expectedHeader)
-                {
-                    throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{expectedHeader}'.");
-                }
-
-                hasVerifiedHeader = true;
-                continue;
-            }
-
-            var columns = line!.Split(',', ';');
-            var result = createResult(columns);
-            resultList.Add(result);
-        }
-
-        return resultList;
-    }
-
-    private static GridLossResultProducedV1.Types.TimeSeriesPoint ParseGridLossProducedV1TimeSeriesPoint(string[] columns)
-    {
-        var result = new GridLossResultProducedV1.Types.TimeSeriesPoint
-        {
-            Time = ParseTimestamp(columns[5]),
-            Quantity = ParseDecimalValue(columns[3]),
-        };
-        return result;
-    }
-
     private async Task CreateTopicSubscriptionAsync()
     {
         if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName))
@@ -475,15 +417,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
 
             switch (message.Subject)
             {
-                case GridLossResultProducedV1.EventName:
-                    var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
-                    if (gridLossResultProduced.CalculationId == calculationId.ToString())
-                    {
-                        eventMessage = gridLossResultProduced;
-                        shouldCollect = true;
-                    }
-
-                    break;
                 case CalculationCompletedV1.EventName:
                     var calculationCompleted = CalculationCompletedV1.Parser.ParseFrom(data);
                     if (calculationCompleted.CalculationId == calculationId.ToString())
@@ -504,15 +437,5 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         }
 
         return (shouldCollect, eventMessage);
-    }
-
-    private static Timestamp ParseTimestamp(string value)
-    {
-        return DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal).ToTimestamp();
-    }
-
-    private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
-    {
-        return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
     }
 }
