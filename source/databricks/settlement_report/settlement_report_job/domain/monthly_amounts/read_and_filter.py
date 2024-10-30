@@ -77,12 +77,7 @@ def _filter_monthly_amounts_per_charge(
 ) -> DataFrame:
     monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
 
-    return monthly_amounts_per_charge.where(
-        (F.col(DataProductColumnNames.charge_owner_id).isNotNull())
-        & (F.col(DataProductColumnNames.charge_code).isNotNull())
-        & (F.col(DataProductColumnNames.charge_type).isNotNull())
-        & (F.col(DataProductColumnNames.is_tax).isNotNull())
-    )
+    return monthly_amounts_per_charge
 
 
 def _filter_total_monthly_amounts(
