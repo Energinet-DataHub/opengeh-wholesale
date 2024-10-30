@@ -31,7 +31,7 @@ logger = logging.Logger(__name__)
 
 
 @logging.use_span()
-def read_and_filter_for_wholesale(
+def read_and_filter_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
@@ -40,8 +40,6 @@ def read_and_filter_for_wholesale(
     requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    logger.info("Creating charge links")
-
     metering_point_periods = repository.read_filtered_metering_point_periods(
         period_start=period_start,
         period_end=period_end,

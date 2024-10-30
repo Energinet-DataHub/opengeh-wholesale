@@ -11,8 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
+from datetime import datetime
+from uuid import UUID
 
+from pyspark.sql import DataFrame, SparkSession, functions as F
+
+from settlement_report_job.domain.dataframe_utils.factory_filters import (
+    filter_by_calculation_id_by_grid_area,
+)
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.database_definitions import (
     WholesaleResultsDatabase,
     WholesaleBasisDataDatabase,
@@ -33,6 +40,31 @@ class WholesaleRepository:
             WholesaleBasisDataDatabase.DATABASE_NAME,
             WholesaleBasisDataDatabase.METERING_POINT_PERIODS_VIEW_NAME,
         )
+
+    def read_filtered_metering_point_periods(
+        self,
+        period_start: datetime,
+        period_end: datetime,
+        energy_supplier_ids: list[str] | None,
+        calculation_id_by_grid_area: dict[str, UUID],
+    ) -> DataFrame:
+        metering_point_periods = self.read_metering_point_periods().where(
+            (F.col(DataProductColumnNames.from_date) < period_end)
+            & (F.col(DataProductColumnNames.to_date) > period_start)
+        )
+
+        metering_point_periods = metering_point_periods.where(
+            filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area)
+        )
+
+        if energy_supplier_ids is not None:
+            metering_point_periods = metering_point_periods.where(
+                F.col(DataProductColumnNames.energy_supplier_id).isin(
+                    energy_supplier_ids
+                )
+            )
+
+        return metering_point_periods
 
     def read_metering_point_time_series(self) -> DataFrame:
         return self._read_view_or_table(
