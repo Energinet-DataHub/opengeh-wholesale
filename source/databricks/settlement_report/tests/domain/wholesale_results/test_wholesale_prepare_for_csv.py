@@ -238,4 +238,3 @@ def test_mapping_of_settlement_method(
 
     # Assert
     assert actual.collect()[0]["SETTLEMENTMETHOD"] == expected_settlement_method
-

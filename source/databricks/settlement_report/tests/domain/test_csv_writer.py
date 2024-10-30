@@ -14,6 +14,7 @@
 from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
+import pyspark.sql.functions as F
 from settlement_report_job.domain.market_role import (
     MarketRole,
 )
@@ -40,9 +41,6 @@ from settlement_report_job.domain.csv_column_names import CsvColumnNames
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
-)
-from settlement_report_job.utils import (
-    _get_csv_writer_options,
 )
 
 
