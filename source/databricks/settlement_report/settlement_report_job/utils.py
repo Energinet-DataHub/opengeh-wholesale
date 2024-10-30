@@ -21,10 +21,12 @@ from typing import Any
 from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import DecimalType, DoubleType, FloatType
+from pyspark.sql.window import Window
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.domain.csv_column_names import EphemeralColumns
+from settlement_report_job.domain.csv_column_names import (
+    EphemeralColumns,
+)
 
 
 @dataclass
@@ -106,6 +108,7 @@ def write_files(
     df: DataFrame,
     path: str,
     partition_columns: list[str],
+    order_by: list[str],
     rows_per_file: int,
 ) -> list[str]:
     """Write a DataFrame to multiple files.
@@ -121,14 +124,15 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        df = df.withColumn(
-            EphemeralColumns.chunk_index,
-            F.floor(F.monotonically_increasing_id() / F.lit(rows_per_file)) + F.lit(1),
-        )
+        w = Window().orderBy(order_by)
+        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
+        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+
+    if len(order_by) > 0:
+        df = df.orderBy(*order_by)
 
     csv_writer_options = _get_csv_writer_options()
 
-    print("writing to path: " + path)
     if partition_columns:
         df.write.mode("overwrite").options(**csv_writer_options).partitionBy(
             partition_columns

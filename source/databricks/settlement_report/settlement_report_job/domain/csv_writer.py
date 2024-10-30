@@ -35,6 +35,7 @@ def write(
     args: SettlementReportArgs,
     df: DataFrame,
     report_data_type: ReportDataType,
+    order_by_columns: list[str],
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
 
@@ -52,6 +53,7 @@ def write(
         df=df,
         path=spark_output_path,
         partition_columns=partition_columns,
+        order_by=order_by_columns,
         rows_per_file=rows_per_file,
     )
 
