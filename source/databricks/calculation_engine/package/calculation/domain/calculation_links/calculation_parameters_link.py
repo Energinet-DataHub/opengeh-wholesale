@@ -16,7 +16,7 @@
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.domain.chains.calculation_step import BaseCalculationLink
+from package.calculation.domain.chains.calculation_link import BaseCalculationLink
 from package.calculation.wholesale.links.metering_point_period_repository import (
     CalculationMetaData,
 )

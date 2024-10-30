@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import Provide, Container
+from dependency_injector.wiring import Provide
 
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
@@ -21,15 +21,16 @@ from package.calculation.domain.calculation_links.calculation_link import (
 from package.calculation.wholesale.links.metering_point_period_repository import (
     IMeteringPointPeriodsRepository,
 )
+from package.container import Container
 
 
 class CalculateTotalEnergyConsumptionLink(CalculationLink):
 
     def __init__(
         self,
-        calculator_args: CalculatorArgs = Provide[Container.args],
+        calculator_args: CalculatorArgs = Provide[Container.calculator_args],
         metering_point_periods_repository: IMeteringPointPeriodsRepository = Provide[
-            Container.service
+            Container.metering_point_periods_repository
         ],
     ):
         super().__init__()

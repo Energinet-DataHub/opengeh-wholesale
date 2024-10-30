@@ -16,6 +16,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.calculation_output import CalculationOutput
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.domain.calculation_links.calculation_link import (
     CalculationLink,
 )
@@ -30,16 +31,14 @@ class CalculateGridLossMeteringPointPeriodsLink(CalculationLink):
 
     def __init__(
         self,
-        grid_areas: list[str] = Provide[
-            Container.calculator_args.calculation_grid_areas
-        ],
+        calculator_args: CalculatorArgs = Provide[Container.calculator_args],
         wholesale_internal_repository: WholesaleInternalRepository = Provide[
             Container.wholesale_internal_repository
         ],
         cache_bucket: CacheBucket = Provide[Container.cache_bucket],
     ):
         super().__init__()
-        self.grid_areas = grid_areas
+        self.calculator_args = calculator_args
         self.wholesale_internal_repository = wholesale_internal_repository
         self.cache_bucket = cache_bucket
 
@@ -48,6 +47,8 @@ class CalculateGridLossMeteringPointPeriodsLink(CalculationLink):
         grid_loss_metering_points = (
             self.wholesale_internal_repository.read_grid_loss_metering_point_ids()
         )
+
+        grid_loss_metering_points.show()
 
         grid_loss_responsible = grid_loss_metering_points.join(
             self.cache_bucket.metering_point_periods,
@@ -63,7 +64,9 @@ class CalculateGridLossMeteringPointPeriodsLink(CalculationLink):
             col(Colname.balance_responsible_party_id),
         )
 
-        _throw_if_no_grid_loss_responsible(self.grid_areas, grid_loss_responsible)
+        _throw_if_no_grid_loss_responsible(
+            self.calculator_args.calculation_grid_areas, grid_loss_responsible
+        )
 
         calculation_output.basis_data_output.grid_loss_metering_points = (
             grid_loss_metering_points

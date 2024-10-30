@@ -20,7 +20,7 @@ from package.calculation.domain.calculation_links.calculation_link import (
     CalculationLink,
 )
 from package.calculation.domain.chains.cache_bucket import CacheBucket
-from package.calculation.wholesale.links.imetering_point_period_repository import (
+from package.calculation.wholesale.links.metering_point_period_repository import (
     IMeteringPointPeriodsRepository,
 )
 from package.container import Container
@@ -34,7 +34,7 @@ class GetMeteringPointPeriodsLink(CalculationLink):
         self,
         args: CalculatorArgs = Provide[Container.calculator_args],
         metering_point_periods_repository: IMeteringPointPeriodsRepository = Provide[
-            Container.metering_point_period_repository
+            Container.metering_point_periods_repository
         ],
         cache_bucket: CacheBucket = Provide[Container.cache_bucket],
     ) -> None:

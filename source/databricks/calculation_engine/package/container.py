@@ -21,7 +21,8 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 class Container(containers.DeclarativeContainer):
     infrastructure_settings = providers.Configuration()
     spark = providers.Factory(lambda: None)
-    metering_point_period_repository = providers.Factory(lambda: None)
+    metering_point_periods_repository = providers.Factory(lambda: None)
+    wholesale_internal_repository = providers.Factory(lambda: None)
     cache_bucket = providers.Factory(lambda: None)
     calculator_args = providers.Factory(lambda: None)
 

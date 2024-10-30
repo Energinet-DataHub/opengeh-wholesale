@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
 
 
 class CacheBucket:
@@ -19,11 +20,11 @@ class CacheBucket:
         self._metering_points = None
 
     @property
-    def metering_point_periods(self):
+    def metering_point_periods(self) -> DataFrame:
         return self._metering_points
 
     @metering_point_periods.setter
-    def metering_point_periods(self, value) -> None:
+    def metering_point_periods(self, value: DataFrame) -> None:
         if self._metering_points is not None:
             raise AttributeError("metering_points can only be set once.")
         self._metering_points = value

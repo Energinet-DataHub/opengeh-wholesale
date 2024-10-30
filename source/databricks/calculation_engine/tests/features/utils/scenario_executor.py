@@ -45,8 +45,9 @@ class ScenarioExecutor:
         self.migrations_wholesale_repository = Mock()
         self.wholesale_internal_repository = Mock()
         self.wholesale_results_internal_repository = Mock()
-        self.metering_point_period_repository = Mock()
+        self.metering_point_periods_repository = Mock()
         self.infrastructure_settings = infrastructure_settings
+        self.wholesale_internal_repository = Mock()
 
     def execute(
         self, scenario_folder_path: str
@@ -59,8 +60,11 @@ class ScenarioExecutor:
         container = Container()
         container.spark.override(self.spark)
         container.infrastructure_settings.from_value(self.infrastructure_settings)
-        container.metering_point_period_repository.override(
-            self.metering_point_period_repository
+        container.metering_point_periods_repository.override(
+            self.metering_point_periods_repository
+        )
+        container.wholesale_internal_repository.override(
+            self.wholesale_internal_repository
         )
         container.cache_bucket.override(CacheBucket())
         container.calculator_args.override(self.test_calculation_args)
@@ -84,7 +88,7 @@ class ScenarioExecutor:
             self.migrations_wholesale_repository,
             self.wholesale_internal_repository,
             self.wholesale_results_internal_repository,
-            self.metering_point_period_repository,
+            self.metering_point_periods_repository,
         )
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
