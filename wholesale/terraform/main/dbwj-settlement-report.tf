@@ -250,6 +250,9 @@ resource "databricks_job" "settlement_report_job_wholesale" {
       entry_point = "create_zip"
     }
     depends_on {
+      task_key = "charge_links"
+    }
+    depends_on {
       task_key = "hourly_time_series"
     }
     depends_on {
