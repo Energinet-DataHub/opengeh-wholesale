@@ -14,7 +14,6 @@
 
 from pyspark.sql import DataFrame
 
-import settlement_report_job.domain.report_naming_convention as market_naming
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 

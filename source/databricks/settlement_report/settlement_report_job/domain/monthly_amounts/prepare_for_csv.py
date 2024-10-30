@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, functions as F, Window
+from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.utils import (
     map_from_dict,
 )
