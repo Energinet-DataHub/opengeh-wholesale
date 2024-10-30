@@ -362,11 +362,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     # Arrange
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
-        TableColumnNames.calculation_id,
         TableColumnNames.calculation_type,
         TableColumnNames.calculation_execution_time_start,
-        TableColumnNames.time_series_type,
-        TableColumnNames.aggregation_level,
         # Data that does vary but does not define distinct results
         TableColumnNames.time,
         TableColumnNames.quantity_qualities,
@@ -376,7 +373,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         TableColumnNames.metering_point_id,
         TableColumnNames.resolution,
     ]
-
     all_columns = _get_energy_result_column_names()
 
     # Act
@@ -386,7 +382,9 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     included_columns = list(
         map(_map_colname_to_energy_result_column_name, included_columns)
     )
+
     actual_other_columns = set(all_columns) - set(included_columns)
+
     assert set(actual_other_columns) == set(expected_other_columns)
 
 
