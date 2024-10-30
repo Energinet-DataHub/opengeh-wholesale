@@ -77,6 +77,8 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.ChargeLinks:
+        return "charge_links"
     elif report_data_type == ReportDataType.EnergyResults:
         return "energy_results"
     elif report_data_type == ReportDataType.WholesaleResults:

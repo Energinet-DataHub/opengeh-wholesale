@@ -3,6 +3,9 @@ from typing import Any
 from pyspark.sql import SparkSession
 
 from settlement_report_job.domain import csv_writer
+from settlement_report_job.domain.charge_links.charge_links_factory import (
+    create_charge_links,
+)
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -108,6 +111,28 @@ def _execute_time_series(
     dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
 
+def execute_charge_links(
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
+) -> None:
+    """
+    Entry point for the logic of creating charge links.
+    """
+    if not args.include_basis_data:
+        return
+
+    repository = WholesaleRepository(spark, args.catalog_name)
+    charge_links = create_charge_links(args=args, repository=repository)
+
+    charge_links_files = csv_writer.write(
+        dbutils,
+        args,
+        charge_links,
+        ReportDataType.ChargeLinks,
+    )
+
+    dbutils.jobs.taskValues.set(key="charge_links_files", value=charge_links_files)
+
+
 def execute_energy_results(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -160,6 +185,7 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
     task_types_to_zip = {
         TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
         TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
+        TaskType.CHARGE_LINKS: "charge_links_files",
         TaskType.ENERGY_RESULTS: "energy_result_files",
     }
 

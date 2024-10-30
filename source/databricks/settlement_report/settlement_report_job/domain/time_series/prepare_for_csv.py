@@ -80,7 +80,7 @@ def prepare_for_csv(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"{CsvColumnNames.quantity}{i}")
+        F.col(str(i)).alias(f"{CsvColumnNames.energy_quantity}{i}")
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 

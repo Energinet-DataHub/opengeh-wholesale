@@ -39,7 +39,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
@@ -82,7 +82,7 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
@@ -116,7 +116,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
@@ -151,7 +151,7 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [

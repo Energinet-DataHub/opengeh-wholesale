@@ -50,7 +50,7 @@ def prepare_for_csv(
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
     order_by_columns = [
