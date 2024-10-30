@@ -207,7 +207,7 @@ def test_write__files_have_correct_ordering_for_each_file(
         num_days_per_metering_point=number_of_days_for_each_mp,
     )
     df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(expected_order_by)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
@@ -370,7 +370,7 @@ def test_write__files_have_correct_sorting_across_multiple_files(
         num_metering_points=number_of_rows,
     )
     df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(expected_order_by)
+    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
