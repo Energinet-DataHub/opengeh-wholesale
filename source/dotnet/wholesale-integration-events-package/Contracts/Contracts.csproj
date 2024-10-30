@@ -84,9 +84,6 @@ limitations under the License.
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationCompletedV1\CalculationCompletedV1.cs">
       <Link>Contracts\IntegrationEvents\CalculationCompletedV1.cs</Link>
     </Compile>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\GridLossResultProducedV1\GridLossResultProducedV1.cs">
-      <Link>Contracts\IntegrationEvents\GridLossResultProducedV1.cs</Link>
-    </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\IEventMessage.cs">
       <Link>Contracts\IntegrationEvents\IEventMessage.cs</Link>
     </Compile>
