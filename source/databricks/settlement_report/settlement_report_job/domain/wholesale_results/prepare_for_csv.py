@@ -71,7 +71,7 @@ def prepare_for_csv(
     if create_ephemeral_grid_area_column:
         select_columns.append(
             F.col(DataProductColumnNames.grid_area_code).alias(
-                EphemeralColumns.grid_area_code
+                EphemeralColumns.grid_area_code_partitioning
             ),
         )
 

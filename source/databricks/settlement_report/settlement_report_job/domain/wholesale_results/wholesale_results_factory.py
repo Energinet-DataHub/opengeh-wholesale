@@ -22,7 +22,6 @@ from settlement_report_job.domain.wholesale_results.read_and_filter import (
 from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.utils import should_include_ephemeral_grid_area
 
 
 def create_wholesale_results(
@@ -39,9 +38,23 @@ def create_wholesale_results(
 
     return prepare_for_csv(
         wholesale,
-        should_include_ephemeral_grid_area(
-            args.calculation_id_by_grid_area,
-            args.grid_area_codes,
-            args.split_report_by_grid_area,
-        ),
+        _should_have_one_file_per_grid_area(args),
+    )
+
+
+def _should_have_one_file_per_grid_area(
+    args: SettlementReportArgs,
+) -> bool:
+    exactly_one_grid_area_from_calc_ids = (
+        args.calculation_id_by_grid_area is not None
+        and len(args.calculation_id_by_grid_area) == 1
+    )
+
+    exactly_one_grid_area_from_grid_area_codes = (
+        args.grid_area_codes is not None and len(args.grid_area_codes) == 1
+    )
+    return (
+        exactly_one_grid_area_from_calc_ids
+        or exactly_one_grid_area_from_grid_area_codes
+        or args.split_report_by_grid_area
     )
