@@ -46,7 +46,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 
     energy_supplier_id = args.energy_supplier_ids[0]
 
-    expected_file_name = [
+    expected_file_names = [
         f"RESULTWHOLESALE_flere-net_{energy_supplier_id}_{market_role_in_file_name}_{start_time}_{end_time}.csv",
     ]
     expected_columns = [
@@ -73,7 +73,13 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
-    assert_files(actual_files, expected_columns, expected_file_name, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_true__returns_expected(
