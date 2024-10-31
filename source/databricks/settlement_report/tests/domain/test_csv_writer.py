@@ -356,8 +356,6 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
         individual_dataframes.append(_read_csv_file(directory, file, spark))
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
-    print(df_actual.collect()[0], df_expected.collect()[0])
-    print(df_actual.collect()[-1], df_expected.collect()[-1])
     assert df_actual.collect() == df_expected.collect()
 
 
