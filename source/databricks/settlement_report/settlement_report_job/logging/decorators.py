@@ -10,7 +10,7 @@ def use_span(name: str | None = None) -> Callable[..., Any]:
     If name is not provided then the __qualname__ of the decorated function is used.
     """
     logger = Logger("test")
-    logger.info("tmp")
+    logger.error("can I find this?")
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         def wrapper(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Any:
