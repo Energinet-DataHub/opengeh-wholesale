@@ -50,27 +50,16 @@ def prepare_for_csv(
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
-    order_by_columns = [
-        CsvColumnNames.grid_area_code,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.settlement_method,
-        CsvColumnNames.time,
-    ]
-
-    if requesting_actor_market_role not in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
-    ]:
+    if requesting_actor_market_role is MarketRole.DATAHUB_ADMINISTRATOR:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(
                 CsvColumnNames.energy_supplier_id
             ),
         )
-        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
 
     if one_file_per_grid_area:
         select_columns.append(
@@ -79,4 +68,4 @@ def prepare_for_csv(
             ),
         )
 
-    return energy.select(select_columns).orderBy(*order_by_columns)
+    return energy.select(select_columns)

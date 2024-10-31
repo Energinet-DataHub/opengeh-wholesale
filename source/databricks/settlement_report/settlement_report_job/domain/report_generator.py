@@ -4,6 +4,10 @@ from pyspark.sql import SparkSession
 from settlement_report_job import logging
 
 from settlement_report_job.domain import csv_writer
+from settlement_report_job.domain.charge_links.charge_links_factory import (
+    create_charge_links,
+)
+from settlement_report_job.domain.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -102,13 +106,42 @@ def _execute_time_series(
         )
 
     time_series_files = csv_writer.write(
-        dbutils,
-        args,
-        time_series_df,
-        report_data_type,
+        dbutils=dbutils,
+        args=args,
+        df=time_series_df,
+        report_data_type=report_data_type,
+        order_by_columns=get_order_by_columns(
+            report_data_type, args.requesting_actor_market_role
+        ),
     )
 
     dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
+
+
+@logging.use_span()
+def execute_charge_links(
+    spark: SparkSession, dbutils: Any, args: SettlementReportArgs
+) -> None:
+    """
+    Entry point for the logic of creating charge links.
+    """
+    if not args.include_basis_data:
+        return
+
+    repository = WholesaleRepository(spark, args.catalog_name)
+    charge_links = create_charge_links(args=args, repository=repository)
+
+    charge_links_files = csv_writer.write(
+        dbutils=dbutils,
+        args=args,
+        df=charge_links,
+        report_data_type=ReportDataType.ChargeLinks,
+        order_by_columns=get_order_by_columns(
+            ReportDataType.ChargeLinks, args.requesting_actor_market_role
+        ),
+    )
+
+    dbutils.jobs.taskValues.set(key="charge_links_files", value=charge_links_files)
 
 
 @logging.use_span()
@@ -125,10 +158,13 @@ def execute_energy_results(
     energy_results_df = create_energy_results(args=args, repository=repository)
 
     energy_result_files = csv_writer.write(
-        dbutils,
-        args,
-        energy_results_df,
-        ReportDataType.EnergyResults,
+        dbutils=dbutils,
+        args=args,
+        df=energy_results_df,
+        report_data_type=ReportDataType.EnergyResults,
+        order_by_columns=get_order_by_columns(
+            ReportDataType.EnergyResults, args.requesting_actor_market_role
+        ),
     )
 
     dbutils.jobs.taskValues.set(key="energy_result_files", value=energy_result_files)
@@ -145,10 +181,13 @@ def execute_wholesale_results(
     wholesale_results_df = create_wholesale_results(args=args, repository=repository)
 
     wholesale_result_files = csv_writer.write(
-        dbutils,
-        args,
-        wholesale_results_df,
-        ReportDataType.WholesaleResults,
+        dbutils=dbutils,
+        args=args,
+        df=wholesale_results_df,
+        report_data_type=ReportDataType.WholesaleResults,
+        order_by_columns=get_order_by_columns(
+            ReportDataType.WholesaleResults, args.requesting_actor_market_role
+        ),
     )
 
     dbutils.jobs.taskValues.set(
@@ -166,6 +205,7 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
     task_types_to_zip = {
         TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
         TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
+        TaskType.CHARGE_LINKS: "charge_links_files",
         TaskType.ENERGY_RESULTS: "energy_result_files",
     }
 

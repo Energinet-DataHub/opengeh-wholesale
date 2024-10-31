@@ -27,6 +27,7 @@ from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
 def create(
@@ -39,7 +40,12 @@ def create(
     df = _add_aggregation_level_and_time_series_type(
         energy_results.df, aggregation_level, time_series_type
     )
-    df = add_metadata(args, _get_column_group_for_calculation_result_id(), df)
+    df = add_metadata(
+        args,
+        _get_column_group_for_calculation_result_id(),
+        df,
+        WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+    )
     metering_point_resolution = get_energy_result_resolution(
         args.quarterly_resolution_transition_datetime,
         args.calculation_period_end_datetime,
@@ -72,10 +78,13 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     and are thus neither part of this list.
     """
     return [
+        Colname.calculation_id,
         Colname.grid_area_code,
         Colname.from_grid_area_code,
         Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
+        TableColumnNames.time_series_type,
+        TableColumnNames.aggregation_level,
     ]
 
 

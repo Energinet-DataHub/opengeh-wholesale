@@ -45,6 +45,10 @@ def start_quarterly_time_series() -> None:
     _start_task(report_generator.execute_quarterly_time_series)
 
 
+def start_charge_links() -> None:
+    _start_task(report_generator.execute_charge_links)
+
+
 def start_energy_results() -> None:
     _start_task(report_generator.execute_energy_results)
 
