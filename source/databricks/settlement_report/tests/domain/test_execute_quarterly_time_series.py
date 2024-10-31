@@ -172,7 +172,13 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_files(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_quarterly_time_series__when_include_basis_data_false__returns_no_file_paths(
