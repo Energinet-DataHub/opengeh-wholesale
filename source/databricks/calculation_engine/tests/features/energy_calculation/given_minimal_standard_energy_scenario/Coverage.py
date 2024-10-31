@@ -7,7 +7,7 @@ time period (one hour).
 
 ## DESIGN CONSIDERATIONS
 - Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
-  metering point type
+  metering point type.
 - Input quantities have been set so production, flex, and nonprofiled do not produce the same result.
 - Input data has MPs not included in calculation
 - Energy Supplier and Balance Responsible id's have set so that ga_es, ga_brp and ga_brp_es do not produce the same
