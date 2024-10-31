@@ -33,7 +33,6 @@ from settlement_report_job.wholesale.data_values import (
 from settlement_report_job.domain.market_role import MarketRole
 
 log = Logger(__name__)
-log.info("test info")
 
 
 @logging.use_span()
