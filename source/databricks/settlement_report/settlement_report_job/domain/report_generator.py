@@ -204,8 +204,12 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
 
     for taskKey, key in task_types_to_zip.items():
         try:
+            file_names = dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
             files_to_zip.extend(
-                dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
+                [
+                    f"{args.settlement_reports_output_path}/{file_name}"
+                    for file_name in file_names
+                ]
             )
         except ValueError:
             log.info(

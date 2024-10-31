@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from typing import Any
 
 from pyspark.sql import DataFrame
@@ -64,12 +65,15 @@ def write(
         file_name_factory,
         partition_columns=partition_columns,
     )
-    files = merge_files(
+    files_paths = merge_files(
         dbutils=dbutils,
         new_files=new_files,
         headers=headers,
     )
-    return files
+
+    file_names = [os.path.basename(file_path) for file_path in files_paths]
+
+    return file_names
 
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
