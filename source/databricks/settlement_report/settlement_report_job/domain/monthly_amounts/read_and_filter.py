@@ -32,12 +32,10 @@ def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
     monthly_amounts_per_charge = repository.read_monthly_amounts_per_charge_v1()
-    monthly_amounts_per_charge = _filter_monthly_amounts_per_charge(
-        monthly_amounts_per_charge, args
-    )
+    monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
 
     total_monthly_amounts = repository.read_total_monthly_amounts_v1()
-    total_monthly_amounts = _filter_total_monthly_amounts(total_monthly_amounts, args)
+    total_monthly_amounts = _apply_shared_filters(total_monthly_amounts, args)
     total_monthly_amounts = _extend_total_monthly_amounts_columns_for_union(
         total_monthly_amounts,
         monthly_amounts_per_charge_column_ordering=monthly_amounts_per_charge.columns,
@@ -72,48 +70,11 @@ def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFram
     return df
 
 
-def _filter_monthly_amounts_per_charge(
-    monthly_amounts_per_charge: DataFrame, args: SettlementReportArgs
-) -> DataFrame:
-    monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
-
-    return monthly_amounts_per_charge
-
-
-def _filter_total_monthly_amounts(
-    total_monthly_amounts: DataFrame, args: SettlementReportArgs
-) -> DataFrame:
-    total_monthly_amounts = _apply_shared_filters(total_monthly_amounts, args)
-
-    if args.requesting_actor_market_role in [
-        MarketRole.ENERGY_SUPPLIER,
-        MarketRole.DATAHUB_ADMINISTRATOR,
-    ]:
-        total_monthly_amounts = total_monthly_amounts.where(
-            col(DataProductColumnNames.charge_owner_id).isNull()
-        )
-
-    return total_monthly_amounts
-
-
 def _extend_monthly_amounts_with_resolution_and_currency(
     base_monthly_amounts_per_charge_columns: DataFrame,
 ) -> DataFrame:
-    return base_monthly_amounts_per_charge_columns.select(
-        col(DataProductColumnNames.calculation_id),
-        col(DataProductColumnNames.calculation_type),
-        col(DataProductColumnNames.calculation_version),
-        col(DataProductColumnNames.grid_area_code),
-        col(DataProductColumnNames.energy_supplier_id),
-        col(DataProductColumnNames.time),
-        lit("P1M").alias(DataProductColumnNames.resolution),
-        col(DataProductColumnNames.quantity_unit),
-        lit("DKK").alias(DataProductColumnNames.currency),
-        col(DataProductColumnNames.amount),
-        col(DataProductColumnNames.charge_type),
-        col(DataProductColumnNames.charge_code),
-        col(DataProductColumnNames.charge_owner_id),
-        col(DataProductColumnNames.is_tax),
+    return base_monthly_amounts_per_charge_columns.withColumn(
+        DataProductColumnNames.resolution, lit("P1M")
     )
 
 

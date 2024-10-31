@@ -123,7 +123,7 @@ def test_read_and_filter_from_view__returns_expected_columns(
         DEFAULT_ENERGY_SUPPLIER_ID
     )
 
-    expected_columns = [
+    expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
         DataProductColumnNames.calculation_version,
@@ -138,6 +138,7 @@ def test_read_and_filter_from_view__returns_expected_columns(
         DataProductColumnNames.charge_code,
         DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.is_tax,
+        DataProductColumnNames.result_id,
     ]
 
     # Act
@@ -147,7 +148,7 @@ def test_read_and_filter_from_view__returns_expected_columns(
     )
 
     # Assert
-    assert expected_columns == actual_df.columns
+    assert set(expected_unordered_columns) == set(actual_df.columns)
 
 
 def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from_itself_but_all_charge_owners(
@@ -165,7 +166,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
         DEFAULT_ENERGY_SUPPLIER_ID
     ]
 
-    expected_columns = [
+    expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
         DataProductColumnNames.calculation_version,
@@ -180,6 +181,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
         DataProductColumnNames.charge_code,
         DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.is_tax,
+        DataProductColumnNames.result_id,
     ]
 
     # Act
@@ -189,7 +191,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
     )
 
     # Assert
-    assert expected_columns == actual_df.columns
+    assert set(expected_unordered_columns) == set(actual_df.columns)
     assert (
         actual_df.where(
             F.col(DataProductColumnNames.energy_supplier_id).isin(
@@ -227,7 +229,7 @@ def test_read_and_filter_from_view__when_datahub_administrator__returns_all_supp
     )
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
 
-    expected_columns = [
+    expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
         DataProductColumnNames.calculation_version,
@@ -242,6 +244,7 @@ def test_read_and_filter_from_view__when_datahub_administrator__returns_all_supp
         DataProductColumnNames.charge_code,
         DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.is_tax,
+        DataProductColumnNames.result_id,
     ]
 
     # Act
@@ -251,7 +254,7 @@ def test_read_and_filter_from_view__when_datahub_administrator__returns_all_supp
     )
 
     # Assert
-    assert expected_columns == actual_df.columns
+    assert set(expected_unordered_columns) == set(actual_df.columns)
     assert (
         actual_df.select(F.col(DataProductColumnNames.energy_supplier_id)).count() > 1
     )
@@ -292,7 +295,7 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
     )[0]
 
-    expected_columns = [
+    expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
         DataProductColumnNames.calculation_version,
@@ -307,6 +310,7 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         DataProductColumnNames.charge_code,
         DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.is_tax,
+        DataProductColumnNames.result_id,
     ]
 
     # Act
@@ -316,7 +320,7 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
     )
 
     # Assert
-    assert expected_columns == actual_df.columns
+    assert set(expected_unordered_columns) == set(actual_df.columns)
     assert actual_df.count() > 0
     assert (
         actual_df.where(

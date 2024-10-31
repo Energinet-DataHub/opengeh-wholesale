@@ -23,7 +23,7 @@ from settlement_report_job.domain.monthly_amounts.read_and_filter import (
 from settlement_report_job.domain.monthly_amounts.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.domain.factory_utils import (
+from settlement_report_job.domain.settlement_report_args_utils import (
     should_have_one_file_per_grid_area,
 )
 
