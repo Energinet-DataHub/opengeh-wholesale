@@ -1,5 +1,5 @@
 module "func_log_ingestion" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.1.1"
 
   name                                   = "log-ingestion"
   project_name                           = var.domain_name_short
@@ -32,7 +32,7 @@ module "func_log_ingestion" {
 }
 
 module "kvs_func_log_ingestion_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "func-log-ingestion-api-url"
   value        = "https://${module.func_log_ingestion.default_hostname}/api/revision-logs"

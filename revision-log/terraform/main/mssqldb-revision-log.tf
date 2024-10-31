@@ -1,5 +1,5 @@
 module "mssqldb_revision_log" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
 
   name                 = "revision-log"
   location             = azurerm_resource_group.this.location
@@ -40,7 +40,7 @@ module "mssqldb_revision_log" {
 }
 
 module "kvs_sql_ms_revision_log_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-revision-log-database-name"
   value        = module.mssqldb_revision_log.name
@@ -48,7 +48,7 @@ module "kvs_sql_ms_revision_log_database_name" {
 }
 
 module "kvs_mssql_grid_loss_imbalance_prices_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-revision-log-connection-string"
   value        = local.CONNECTION_STRING_DB_MIGRATIONS
