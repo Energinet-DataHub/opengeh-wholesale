@@ -22,6 +22,10 @@ from settlement_report_job.domain.dataframe_utils.merge_periods import (
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.domain.repository_filtering import (
+    read_metering_point_periods_by_calculation_ids,
+    read_charge_link_periods,
+)
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 logger = logging.Logger(__name__)
@@ -37,7 +41,8 @@ def read_and_filter_for_wholesale(
     requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    metering_point_periods = repository.read_filtered_metering_point_periods(
+    metering_point_periods = read_metering_point_periods_by_calculation_ids(
+        repository=repository,
         period_start=period_start,
         period_end=period_end,
         calculation_id_by_grid_area=calculation_id_by_grid_area,
@@ -45,67 +50,52 @@ def read_and_filter_for_wholesale(
     )
 
     if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        charge_link_periods = _read_charge_link_periods(
+        metering_point_periods = _filter_by_charge_owner(
+            metering_point_periods=metering_point_periods,
             period_start=period_start,
             period_end=period_end,
+            requesting_actor_market_role=requesting_actor_market_role,
             requesting_actor_id=requesting_actor_id,
-            requesting_actor_market_role=requesting_actor_market_role,
             repository=repository,
-        )
-
-        charge_link_periods = _join_charge_link_and_metering_point_periods(
-            charge_link_periods=charge_link_periods,
-            metering_point_periods=metering_point_periods,
-            requesting_actor_market_role=requesting_actor_market_role,
         )
 
     return metering_point_periods
 
-
-def _read_charge_link_periods(
-    period_start: datetime,
-    period_end: datetime,
-    requesting_actor_id: str,
-    requesting_actor_market_role: MarketRole,
-    repository: WholesaleRepository,
+def _filter_by_charge_owner(
+        metering_point_periods: DataFrame,
+        period_start: datetime,
+        period_end: datetime,
+        requesting_actor_market_role: MarketRole,
+        requesting_actor_id: str,
+        repository: WholesaleRepository
 ) -> DataFrame:
-    charge_link_periods = repository.read_charge_link_periods().where(
-        (F.col(DataProductColumnNames.from_date) < period_end)
-        & (F.col(DataProductColumnNames.to_date) > period_start)
+    charge_link_periods = read_charge_link_periods(
+        repository=repository,
+        period_start=period_start,
+        period_end=period_end,
+        charge_owner_id=requesting_actor_id,
+        requesting_actor_market_role=requesting_actor_market_role,
     )
+    metering_point_periods = _join_metering_point_periods_and_charge_link_periods(
+        charge_link_periods=charge_link_periods,
+        metering_point_periods=metering_point_periods,
+    )
+    return metering_point_periods
 
-    if requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.GRID_ACCESS_PROVIDER,
-    ]:
-        charge_price_information_periods = (
-            repository.read_charge_price_information_periods()
-        )
-
-        is_tax = (
-            False
-            if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR
-            else True
-        )
-
-        charge_link_periods = _filter_by_charge_owner_and_tax(
-            charge_link_periods=charge_link_periods,
-            charge_price_information_periods=charge_price_information_periods,
-            charge_owner_id=requesting_actor_id,
-            is_tax=is_tax,
-        )
-
-    return charge_link_periods
-
-
-def _join_charge_link_and_metering_point_periods(
+def _join_metering_point_periods_and_charge_link_periods(
     charge_link_periods: DataFrame,
     metering_point_periods: DataFrame,
-    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
-    metering_point_periods = _merge_metering_point_periods(
-        metering_point_periods, requesting_actor_market_role
+    select_columns = metering_point_periods.columns
+
+    charge_link_periods = charge_link_periods.select(
+        DataProductColumnNames.calculation_id,
+        DataProductColumnNames.metering_point_id,
+        DataProductColumnNames.from_date,
+        DataProductColumnNames.to_date,
     )
+
+    charge_link_periods = merge_connected_periods(charge_link_periods)
 
     link_from_date = "link_from_date"
     link_to_date = "link_to_date"
@@ -119,9 +109,9 @@ def _join_charge_link_and_metering_point_periods(
         DataProductColumnNames.from_date, metering_point_from_date
     ).withColumnRenamed(DataProductColumnNames.to_date, metering_point_to_date)
 
-    charge_link_periods = (
-        charge_link_periods.join(
-            metering_point_periods,
+    metering_point_periods = (
+        metering_point_periods.join(
+            charge_link_periods,
             on=[
                 DataProductColumnNames.calculation_id,
                 DataProductColumnNames.metering_point_id,
@@ -132,79 +122,21 @@ def _join_charge_link_and_metering_point_periods(
             (F.col(link_from_date) < F.col(metering_point_to_date))
             & (F.col(link_to_date) > F.col(metering_point_from_date))
         )
-        .select(
-            DataProductColumnNames.metering_point_id,
-            DataProductColumnNames.metering_point_type,
-            DataProductColumnNames.charge_type,
-            DataProductColumnNames.charge_code,
-            DataProductColumnNames.charge_owner_id,
-            DataProductColumnNames.quantity,
-            F.greatest(F.col(link_from_date), F.col(metering_point_from_date)).alias(
-                DataProductColumnNames.from_date
-            ),
-            F.least(F.col(link_to_date), F.col(metering_point_to_date)).alias(
-                DataProductColumnNames.to_date
-            ),
-            DataProductColumnNames.grid_area_code,
-            DataProductColumnNames.energy_supplier_id,
+        .withColumn(
+            DataProductColumnNames.from_date,
+            F.greatest(F.col(link_from_date), F.col(metering_point_from_date)),
+        )
+        .withColumn(
+            DataProductColumnNames.to_date,
+            F.least(F.col(link_to_date), F.col(metering_point_to_date)),
         )
     )
 
-    return charge_link_periods
+    return metering_point_periods.select(*select_columns)
 
 
-def _filter_by_charge_owner_and_tax(
-    charge_link_periods: DataFrame,
-    charge_price_information_periods: DataFrame,
-    charge_owner_id: str,
-    is_tax: bool,
-) -> DataFrame:
-    charge_link_periods = charge_link_periods.join(
-        charge_price_information_periods,
-        on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
-        how="inner",
-    ).select(
-        charge_link_periods["*"],
-        charge_price_information_periods[DataProductColumnNames.is_tax],
-    )
-
-    return charge_link_periods.where(
-        (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
-        & (F.col(DataProductColumnNames.is_tax) == F.lit(is_tax))
-    )
-
-
-def _merge_metering_point_periods(
-    metering_point_periods: DataFrame,
+def _merge_periods(
+    charge_links: DataFrame,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
-    """
-    Before joining metering point periods on the charge link periods, the metering point periods must be merged if
-    for instance a period is split in two for instance due to a change in resolution, balance responsible party or energy
-    supplier (grid access providers only)
-    """
-    metering_point_periods = metering_point_periods.select(
-        DataProductColumnNames.calculation_id,
-        DataProductColumnNames.metering_point_id,
-        DataProductColumnNames.metering_point_type,
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.from_date,
-        DataProductColumnNames.to_date,
-        DataProductColumnNames.energy_supplier_id,
-    )
-    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        # grid access provider should not see energy suppliers. We need to remove this columns so that a potential
-        # change in energy supplier will not be appearing in the merged periods
-        metering_point_periods = metering_point_periods.drop(
-            DataProductColumnNames.energy_supplier_id
-        )
 
-    metering_point_periods = merge_connected_periods(metering_point_periods)
-
-    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        # add the energy_supplier_id column again to have the same columns in all cases
-        metering_point_periods = metering_point_periods.withColumn(
-            DataProductColumnNames.energy_supplier_id, F.lit(None)
-        )
-
-    return metering_point_periods

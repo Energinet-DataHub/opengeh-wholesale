@@ -17,7 +17,7 @@ from pyspark.sql import DataFrame
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.metering_point_periods.read_and_filter import (
-    read_and_filter,
+    read_and_filter_for_wholesale,
 )
 from settlement_report_job.domain.charge_links.prepare_for_csv import (
     prepare_for_csv,
@@ -28,7 +28,7 @@ def create_metering_point_periods_for_wholesale(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    charge_link_periods = read_and_filter(
+    charge_link_periods = read_and_filter_for_wholesale(
         args.period_start,
         args.period_end,
         args.calculation_id_by_grid_area,
