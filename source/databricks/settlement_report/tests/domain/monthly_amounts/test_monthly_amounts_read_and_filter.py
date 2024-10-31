@@ -112,17 +112,10 @@ def monthly_amounts_read_and_filter_mock_repository(
 
 
 def test_read_and_filter_from_view__returns_expected_columns(
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     monthly_amounts_read_and_filter_mock_repository: Mock,
 ) -> None:
     # Arrange
-    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
-    standard_wholesale_fixing_scenario_args.requesting_actor_id = (
-        DEFAULT_ENERGY_SUPPLIER_ID
-    )
-
     expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
@@ -143,7 +136,7 @@ def test_read_and_filter_from_view__returns_expected_columns(
 
     # Act
     actual_df = read_and_filter_from_view(
-        args=standard_wholesale_fixing_scenario_args,
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
         repository=monthly_amounts_read_and_filter_mock_repository,
     )
 
@@ -152,20 +145,11 @@ def test_read_and_filter_from_view__returns_expected_columns(
 
 
 def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from_itself_but_all_charge_owners(
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     monthly_amounts_read_and_filter_mock_repository: Mock,
 ) -> None:
     # Arrange
-    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-        MarketRole.ENERGY_SUPPLIER
-    )
-    standard_wholesale_fixing_scenario_args.requesting_actor_id = (
-        DEFAULT_ENERGY_SUPPLIER_ID
-    )
-    standard_wholesale_fixing_scenario_args.energy_supplier_ids = [
-        DEFAULT_ENERGY_SUPPLIER_ID
-    ]
-
+    args = standard_wholesale_fixing_scenario_energy_supplier_args
     expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
@@ -186,7 +170,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
 
     # Act
     actual_df = read_and_filter_from_view(
-        args=standard_wholesale_fixing_scenario_args,
+        args=args,
         repository=monthly_amounts_read_and_filter_mock_repository,
     )
 
@@ -195,7 +179,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
     assert (
         actual_df.where(
             F.col(DataProductColumnNames.energy_supplier_id).isin(
-                [DEFAULT_ENERGY_SUPPLIER_ID]
+                [args.requesting_actor_id]
             )
         ).count()
         > 0
@@ -203,7 +187,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
     assert (
         actual_df.where(
             ~F.col(DataProductColumnNames.energy_supplier_id).isin(
-                [DEFAULT_ENERGY_SUPPLIER_ID]
+                [args.requesting_actor_id]
             )
         ).count()
         == 0
