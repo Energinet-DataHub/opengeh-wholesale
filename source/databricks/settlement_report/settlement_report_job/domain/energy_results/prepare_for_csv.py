@@ -32,7 +32,7 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def prepare_for_csv(
     energy: DataFrame,
-    create_ephemeral_grid_area_column: bool,
+    one_file_per_grid_area: bool,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     select_columns = [
@@ -50,13 +50,10 @@ def prepare_for_csv(
         map_from_dict(market_naming.SETTLEMENT_METHODS)[
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
     ]
 
-    if requesting_actor_market_role not in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
-    ]:
+    if requesting_actor_market_role is MarketRole.DATAHUB_ADMINISTRATOR:
         select_columns.insert(
             1,
             F.col(DataProductColumnNames.energy_supplier_id).alias(
@@ -64,24 +61,11 @@ def prepare_for_csv(
             ),
         )
 
-    if create_ephemeral_grid_area_column:
+    if one_file_per_grid_area:
         select_columns.append(
             F.col(DataProductColumnNames.grid_area_code).alias(
-                EphemeralColumns.grid_area_code
+                EphemeralColumns.grid_area_code_partitioning
             ),
         )
 
-    order_by_columns = [
-        CsvColumnNames.grid_area_code,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.settlement_method,
-        CsvColumnNames.time,
-    ]
-
-    if requesting_actor_market_role not in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
-    ]:
-        order_by_columns.insert(1, CsvColumnNames.energy_supplier_id)
-
-    return energy.select(select_columns).orderBy(*order_by_columns)
+    return energy.select(select_columns)

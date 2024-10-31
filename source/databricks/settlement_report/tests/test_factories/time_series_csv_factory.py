@@ -5,6 +5,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
@@ -39,9 +40,10 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
             counter += 1
             for i in range(data_spec.num_days_per_metering_point):
                 row = {
+                    CsvColumnNames.energy_supplier_id: "1234567890123",
                     CsvColumnNames.metering_point_id: str(1000000000000 + counter),
                     CsvColumnNames.metering_point_type: data_spec.metering_point_type.value,
-                    CsvColumnNames.grid_area_code: grid_area_code,
+                    EphemeralColumns.grid_area_code_partitioning: grid_area_code,
                     CsvColumnNames.time: data_spec.start_of_day + timedelta(days=i),
                 }
                 for j in range(
@@ -50,7 +52,9 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
                     == MeteringPointResolutionDataProductValue.HOUR
                     else 100
                 ):
-                    row[f"{CsvColumnNames.quantity}{j + 1}"] = data_spec.energy_quantity
+                    row[f"{CsvColumnNames.energy_quantity}{j + 1}"] = (
+                        data_spec.energy_quantity
+                    )
                 rows.append(row)
 
     df = spark.createDataFrame(rows)

@@ -24,6 +24,7 @@ from settlement_report_job.domain.report_naming_convention import (
 )
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -79,16 +80,16 @@ def prepare_for_csv(
     )
 
     quantity_column_names = [
-        F.col(str(i)).alias(f"{CsvColumnNames.quantity}{i}")
+        F.col(str(i)).alias(f"{CsvColumnNames.energy_quantity}{i}")
         for i in range(1, desired_number_of_quantity_columns + 1)
     ]
 
     csv_df = pivoted_df.select(
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            EphemeralColumns.grid_area_code_partitioning
+        ),
         F.col(DataProductColumnNames.energy_supplier_id).alias(
             CsvColumnNames.energy_supplier_id
-        ),
-        F.col(DataProductColumnNames.grid_area_code).alias(
-            CsvColumnNames.grid_area_code
         ),
         F.col(DataProductColumnNames.metering_point_id).alias(
             CsvColumnNames.metering_point_id
@@ -106,9 +107,7 @@ def prepare_for_csv(
     ]:
         csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
-    has_energy_supplier_id_column = CsvColumnNames.energy_supplier_id in csv_df.columns
-
-    return csv_df.orderBy(_get_order_by_columns(has_energy_supplier_id_column))
+    return csv_df
 
 
 def _get_desired_quantity_column_count(
@@ -120,18 +119,3 @@ def _get_desired_quantity_column_count(
         return 25 * 4
     else:
         raise ValueError(f"Unknown time series resolution: {resolution}")
-
-
-def _get_order_by_columns(
-    has_energy_supplier_id_column: bool,
-) -> list[str]:
-
-    order_by_columns = [
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.time,
-    ]
-    if has_energy_supplier_id_column:
-        order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
-
-    return order_by_columns
