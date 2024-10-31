@@ -21,6 +21,7 @@ from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import EphemeralColumns
+from settlement_report_job.infrastructure.paths import get_report_output_path
 from settlement_report_job.utils import (
     write_files,
     get_new_files,
@@ -40,7 +41,7 @@ def write(
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
 
-    report_output_path = f"{args.settlement_reports_output_path}/{args.report_id}"
+    report_output_path = get_report_output_path(args)
     spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
 
     partition_columns = []

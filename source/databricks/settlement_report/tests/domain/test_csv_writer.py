@@ -45,9 +45,11 @@ from settlement_report_job.wholesale.data_values import (
 
 
 def _read_csv_file(
+    directory: str,
     file_name: str,
     spark: SparkSession,
 ) -> DataFrame:
+    file_name = f"{directory}/{file_name}"
     return spark.read.csv(file_name, header=True)
 
 
@@ -225,7 +227,7 @@ def test_write__files_have_correct_ordering_for_each_file(
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
     for file in result_files:
-        df_actual = _read_csv_file(file, spark)
+        df_actual = _read_csv_file(standard_wholesale_fixing_scenario_args.file, spark)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -523,7 +525,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     )
 
     # Act
-    actual_files = csv_writer.write(
+    actual_file_names = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df,
@@ -536,12 +538,11 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     )
 
     # Assert
-    actual_file_names = [file.split("/")[-1] for file in actual_files]
-    for actual_file_name in actual_file_names:
-        assert actual_file_name in expected_file_names
+    assert set(actual_file_names) == set(expected_file_names)
 
-    assert len(actual_files) == expected_file_count
-    for file_path in actual_files:
+    assert len(actual_file_names) == expected_file_count
+    for file_name in actual_file_names:
+        file_path = f"{standard_wholesale_fixing_scenario_args.file}/{file_name}"
         df = spark.read.csv(file_path, header=True)
         assert df.count() > 0
         assert df.columns == expected_columns
