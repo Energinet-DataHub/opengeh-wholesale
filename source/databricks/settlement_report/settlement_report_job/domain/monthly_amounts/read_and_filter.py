@@ -42,7 +42,10 @@ def read_and_filter_from_view(
     )
 
     monthly_amounts = monthly_amounts_per_charge.union(total_monthly_amounts)
-    return _extend_monthly_amounts_with_resolution(monthly_amounts)
+    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
+    monthly_amounts = _drop_columns_based_on_requester(
+        monthly_amounts, args.requesting_actor_market_role
+    )
 
 
 def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
@@ -111,3 +114,11 @@ def _extend_total_monthly_amounts_columns_for_union(
     return base_total_monthly_amounts.select(
         monthly_amounts_per_charge_column_ordering,
     )
+
+
+def _drop_columns_based_on_requester(
+    monthly_amounts: DataFrame, market_role: MarketRole
+):
+    if market_role in [MarketRole.GRID_ACCESS_PROVIDER, MarketRole.SYSTEM_OPERATOR]:
+        monthly_amounts = monthly_amounts.drop(DataProductColumnNames.charge_owner_id)
+    return monthly_amounts

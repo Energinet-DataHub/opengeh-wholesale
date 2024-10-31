@@ -55,10 +55,14 @@ def prepare_for_csv(
             F.col(DataProductColumnNames.charge_type)
         ].alias(CsvColumnNames.charge_type),
         F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
-        F.col(DataProductColumnNames.charge_owner_id).alias(
-            CsvColumnNames.charge_owner_id
-        ),
     ]
+
+    if DataProductColumnNames.charge_owner_id in monthly_amounts.columns:
+        select_columns.append(
+            F.col(DataProductColumnNames.charge_owner_id).alias(
+                CsvColumnNames.charge_owner_id
+            )
+        )
 
     if create_ephemeral_grid_area_column:
         select_columns.append(
