@@ -67,13 +67,4 @@ def prepare_for_csv(
             ),
         )
 
-    order_by_columns = [
-        CsvColumnNames.grid_area_code,
-        CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.resolution,
-    ]
-
-    return monthly_amounts.select(select_columns).orderBy(order_by_columns)
+    return monthly_amounts.select(select_columns)

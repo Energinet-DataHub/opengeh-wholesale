@@ -240,19 +240,20 @@ def create_monthly_amounts_per_charge(spark: SparkSession) -> DataFrame:
     """
 
     df = None
-    for metering_point in _get_all_metering_points():
-        row = create_monthly_amounts_per_charge_row(
-            calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE,
-            time=FROM_DATE,
-            grid_area_code=metering_point.grid_area_code,
-            energy_supplier_id=metering_point.energy_supplier_id,
-        )
-        next_df = monthly_amounts_per_charge_factory.create(spark, row)
-        if df is None:
-            df = next_df
-        else:
-            df = df.union(next_df)
+    for grid_area_code in GRID_AREAS:
+        for energy_supplier_id in ENERGY_SUPPLIER_IDS:
+            row = create_monthly_amounts_per_charge_row(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                time=FROM_DATE,
+                grid_area_code=grid_area_code,
+                energy_supplier_id=energy_supplier_id,
+            )
+            next_df = monthly_amounts_per_charge_factory.create(spark, row)
+            if df is None:
+                df = next_df
+            else:
+                df = df.union(next_df)
 
     return df
 
@@ -264,19 +265,20 @@ def create_total_monthly_amounts(spark: SparkSession) -> DataFrame:
     """
 
     df = None
-    for metering_point in _get_all_metering_points():
-        row = create_total_monthly_amounts_row(
-            calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE,
-            time=FROM_DATE,
-            grid_area_code=metering_point.grid_area_code,
-            energy_supplier_id=metering_point.energy_supplier_id,
-        )
-        next_df = total_monthly_amounts_factory.create(spark, row)
-        if df is None:
-            df = next_df
-        else:
-            df = df.union(next_df)
+    for grid_area_code in GRID_AREAS:
+        for energy_supplier_id in ENERGY_SUPPLIER_IDS:
+            row = create_total_monthly_amounts_row(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                time=FROM_DATE,
+                grid_area_code=grid_area_code,
+                energy_supplier_id=energy_supplier_id,
+            )
+            next_df = total_monthly_amounts_factory.create(spark, row)
+            if df is None:
+                df = next_df
+            else:
+                df = df.union(next_df)
 
     return df
 

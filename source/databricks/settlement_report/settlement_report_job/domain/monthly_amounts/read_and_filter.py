@@ -52,6 +52,7 @@ def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFram
     )
 
     if args.calculation_id_by_grid_area:
+        # Can never be null, but mypy requires it be specified
         df = df.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )

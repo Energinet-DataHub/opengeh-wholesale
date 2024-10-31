@@ -35,11 +35,10 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 DEFAULT_CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
 
 
-@pytest.mark.parametrize("create_ephemeral_grid_loss_column", [True, False])
+@pytest.mark.parametrize("should_have_one_file_per_grid_area", [True, False])
 def test_prepare_for_csv__returns_expected_columns(
     spark: SparkSession,
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-    create_ephemeral_grid_loss_column: bool,
+    should_have_one_file_per_grid_area: bool,
 ) -> None:
     # Arrange
     testing_spec = default_data.create_total_monthly_amounts_row()
@@ -61,11 +60,11 @@ def test_prepare_for_csv__returns_expected_columns(
         CsvColumnNames.charge_owner_id,
     ]
 
-    if create_ephemeral_grid_loss_column:
+    if should_have_one_file_per_grid_area:
         expected_columns.append(EphemeralColumns.grid_area_code_partitioning)
 
     # Act
-    actual_df = prepare_for_csv(monthly_amounts, create_ephemeral_grid_loss_column)
+    actual_df = prepare_for_csv(monthly_amounts, should_have_one_file_per_grid_area)
 
     # Assert
     assert expected_columns == actual_df.columns
