@@ -35,14 +35,14 @@ def read_and_filter_from_view(
     monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
 
     total_monthly_amounts = repository.read_total_monthly_amounts_v1()
-    total_monthly_amounts = _apply_shared_filters(total_monthly_amounts, args)
+    total_monthly_amounts = _filter_total_monthly_amounts(total_monthly_amounts, args)
     total_monthly_amounts = _extend_total_monthly_amounts_columns_for_union(
         total_monthly_amounts,
         monthly_amounts_per_charge_column_ordering=monthly_amounts_per_charge.columns,
     )
 
     monthly_amounts = monthly_amounts_per_charge.union(total_monthly_amounts)
-    return _extend_monthly_amounts_with_resolution_and_currency(monthly_amounts)
+    return _extend_monthly_amounts_with_resolution(monthly_amounts)
 
 
 def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
@@ -70,7 +70,22 @@ def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFram
     return df
 
 
-def _extend_monthly_amounts_with_resolution_and_currency(
+def _filter_total_monthly_amounts(
+    total_monthly_amounts: DataFrame, args: SettlementReportArgs
+) -> DataFrame:
+    total_monthly_amounts = _apply_shared_filters(total_monthly_amounts, args)
+
+    if args.requesting_actor_market_role in [
+        MarketRole.ENERGY_SUPPLIER,
+    ]:
+        total_monthly_amounts = total_monthly_amounts.where(
+            col(DataProductColumnNames.charge_owner_id).isNull()
+        )
+
+    return total_monthly_amounts
+
+
+def _extend_monthly_amounts_with_resolution(
     base_monthly_amounts_per_charge_columns: DataFrame,
 ) -> DataFrame:
     return base_monthly_amounts_per_charge_columns.withColumn(

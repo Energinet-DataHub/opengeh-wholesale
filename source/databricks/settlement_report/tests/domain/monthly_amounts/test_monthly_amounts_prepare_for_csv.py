@@ -8,7 +8,7 @@ from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.domain.monthly_amounts.read_and_filter import (
-    _extend_monthly_amounts_with_resolution_and_currency,
+    _extend_monthly_amounts_with_resolution,
 )
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
@@ -44,9 +44,7 @@ def test_prepare_for_csv__returns_expected_columns(
     # Arrange
     testing_spec = default_data.create_total_monthly_amounts_row()
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
-        monthly_amounts
-    )
+    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
 
     expected_columns = [
         CsvColumnNames.calculation_type,
@@ -113,9 +111,7 @@ def test_mapping_of_process_variant(
         calculation_type=calculation_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
-        monthly_amounts
-    )
+    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
 
     # Act
     actual = prepare_for_csv(monthly_amounts, create_ephemeral_grid_area_column=False)
@@ -164,9 +160,7 @@ def test_mapping_of_energy_business_process(
         calculation_type=calculation_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
-        monthly_amounts
-    )
+    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
 
     # Act
     actual = prepare_for_csv(monthly_amounts, create_ephemeral_grid_area_column=False)
@@ -208,9 +202,7 @@ def test_mapping_of_charge_type(
         charge_type=charge_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
-        monthly_amounts
-    )
+    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
 
     # Act
     actual = prepare_for_csv(monthly_amounts, create_ephemeral_grid_area_column=False)
