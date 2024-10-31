@@ -61,13 +61,14 @@ def read_and_filter_for_wholesale(
 
     return metering_point_periods
 
+
 def _filter_by_charge_owner(
-        metering_point_periods: DataFrame,
-        period_start: datetime,
-        period_end: datetime,
-        requesting_actor_market_role: MarketRole,
-        requesting_actor_id: str,
-        repository: WholesaleRepository
+    metering_point_periods: DataFrame,
+    period_start: datetime,
+    period_end: datetime,
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
+    repository: WholesaleRepository,
 ) -> DataFrame:
     charge_link_periods = read_charge_link_periods(
         repository=repository,
@@ -81,6 +82,7 @@ def _filter_by_charge_owner(
         metering_point_periods=metering_point_periods,
     )
     return metering_point_periods
+
 
 def _join_metering_point_periods_and_charge_link_periods(
     charge_link_periods: DataFrame,
@@ -133,10 +135,3 @@ def _join_metering_point_periods_and_charge_link_periods(
     )
 
     return metering_point_periods.select(*select_columns)
-
-
-def _merge_periods(
-    charge_links: DataFrame,
-    requesting_actor_market_role: MarketRole,
-) -> DataFrame:
-
