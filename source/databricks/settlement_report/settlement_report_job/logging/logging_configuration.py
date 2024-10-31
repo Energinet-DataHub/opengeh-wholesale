@@ -25,13 +25,11 @@ DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
 _IS_INSTRUMENTED: bool = False
 _TRACER: Tracer | None = None
-_TRACER_NAME: str
 
 
 def configure_logging(
     *,
     cloud_role_name: str,
-    tracer_name: str,
     applicationinsights_connection_string: str | None = None,
     extras: dict[str, Any] | None = None,
 ) -> None:
@@ -47,9 +45,6 @@ def configure_logging(
     If connection string is None, then logging will not be sent to Azure Monitor.
     This is useful for unit testing.
     """
-
-    global _TRACER_NAME
-    _TRACER_NAME = tracer_name
 
     # Only configure logging once.
     global _IS_INSTRUMENTED
@@ -85,8 +80,7 @@ def add_extras(extras: dict[str, Any]) -> None:
 def get_tracer() -> Tracer:
     global _TRACER
     if _TRACER is None:
-        global _TRACER_NAME
-        _TRACER = trace.get_tracer(_TRACER_NAME)
+        _TRACER = trace.get_tracer("settlement-report-job")
     return _TRACER
 
 
