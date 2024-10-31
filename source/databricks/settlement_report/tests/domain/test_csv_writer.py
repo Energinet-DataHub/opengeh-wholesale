@@ -572,7 +572,6 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
 ):
     # Arrange
-    expected_file_count = 1
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.calculation_type,
