@@ -22,6 +22,7 @@ from settlement_report_job.domain.wholesale_results.wholesale_results_factory im
     create_wholesale_results,
 )
 from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.infrastructure.paths import get_report_output_path
 
 from settlement_report_job.utils import create_zip_file
 from settlement_report_job.logging import Logger
@@ -207,7 +208,7 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
             file_names = dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
             files_to_zip.extend(
                 [
-                    f"{args.settlement_reports_output_path}/{file_name}"
+                    f"{get_report_output_path(args)}/{file_name}"
                     for file_name in file_names
                 ]
             )
