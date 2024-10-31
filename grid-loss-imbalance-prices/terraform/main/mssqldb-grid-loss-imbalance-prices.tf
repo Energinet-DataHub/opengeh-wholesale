@@ -1,5 +1,5 @@
 module "mssqldb_grid_loss_imbalance_prices" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
 
   name                 = "grid-loss-imbalance-prices"
   location             = azurerm_resource_group.this.location
@@ -24,7 +24,7 @@ module "mssqldb_grid_loss_imbalance_prices" {
 }
 
 module "kvs_sql_ms_grid_loss_imbalance_prices_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-grid-loss-imbalance-prices-database-name"
   value        = module.mssqldb_grid_loss_imbalance_prices.name
@@ -32,7 +32,7 @@ module "kvs_sql_ms_grid_loss_imbalance_prices_database_name" {
 }
 
 module "kvs_mssql_grid_loss_imbalance_prices_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-grid-loss-imbalance-prices-connection-string"
   value        = local.CONNECTION_STRING_DB_MIGRATIONS
