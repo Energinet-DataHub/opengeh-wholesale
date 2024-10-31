@@ -2,10 +2,10 @@ from pyspark.sql import SparkSession
 import pytest
 
 
-from data_seeding import (
+from tests.data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
 )
-from dbutils_fixture import DBUtilsFixture
+from tests.dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_generator import (
     execute_wholesale_results,

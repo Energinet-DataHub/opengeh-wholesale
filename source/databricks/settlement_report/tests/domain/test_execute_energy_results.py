@@ -4,7 +4,7 @@ from pyspark.sql import SparkSession
 from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
 from tests.dbutils_fixture import DBUtilsFixture
 
-from domain.assertion import assert_files
+from tests.domain.assertion import assert_files
 from settlement_report_job.domain.report_generator import execute_energy_results
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
