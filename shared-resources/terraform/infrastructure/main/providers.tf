@@ -4,17 +4,17 @@ terraform {
 
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.3.0"
+      version = "4.6.0"
     }
 
     azuread = {
       source  = "hashicorp/azuread"
-      version = "2.47.0"
+      version = "3.0.2"
     }
 
     databricks = {
       source  = "databricks/databricks"
-      version = "1.49.1"
+      version = "1.56.0"
     }
 
     shell = {
@@ -24,7 +24,7 @@ terraform {
 
     grafana = {
       source  = "grafana/grafana"
-      version = "3.8.2"
+      version = "3.10.0"
     }
   }
 }

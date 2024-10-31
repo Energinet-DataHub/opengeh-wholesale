@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "audit_logs" {
 }
 
 module "st_audit_logs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.0.1"
 
   name                       = "audit"
   project_name               = var.domain_name_short
@@ -40,7 +40,7 @@ module "st_audit_logs" {
 }
 
 module "kvs_st_audit_shres_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-audit-shres-name"
   value        = module.st_audit_logs.name
@@ -48,7 +48,7 @@ module "kvs_st_audit_shres_name" {
 }
 
 module "kvs_st_audit_shres_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-audit-shres-id"
   value        = module.st_audit_logs.id
@@ -82,7 +82,7 @@ resource "azurerm_storage_management_policy" "retention_audit" {
 module "pim_reader_security_group_permissions_audit" {
   count = var.pim_reader_group_name != "" ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_6.0.1"
 
   resource_group_name = azurerm_resource_group.audit_logs.name
   security_group_name = var.pim_reader_group_name
@@ -95,7 +95,7 @@ module "pim_reader_security_group_permissions_audit" {
 module "developer_security_group_permissions_reader_audit" {
   count = var.developer_security_group_reader_access == true ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_6.0.1"
 
   resource_group_name = azurerm_resource_group.audit_logs.name
   security_group_name = var.developer_security_group_name
@@ -107,7 +107,7 @@ module "developer_security_group_permissions_reader_audit" {
 module "platform_security_group_permissions_reader_audit" {
   count = var.platform_security_group_reader_access == true ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_6.0.1"
 
   resource_group_name = azurerm_resource_group.audit_logs.name
   security_group_name = var.platform_security_group_name

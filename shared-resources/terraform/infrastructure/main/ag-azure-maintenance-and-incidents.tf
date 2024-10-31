@@ -1,7 +1,7 @@
 module "monitor_action_group_azuremaintenance" {
   count = var.azure_maintenance_alerts_email_address != null ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_6.0.1"
 
   name                 = "azure-maintenance"
   project_name         = var.domain_name_short

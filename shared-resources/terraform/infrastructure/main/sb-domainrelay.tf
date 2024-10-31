@@ -1,5 +1,5 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_8.0.1"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
@@ -20,7 +20,7 @@ resource "azurerm_role_assignment" "spn_sbns" {
 }
 
 module "kvs_sb_domain_relay_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sb-domain-relay-namespace-id"
   value        = module.sb_domain_relay.id
@@ -28,7 +28,7 @@ module "kvs_sb_domain_relay_id" {
 }
 
 module "kvs_sb_domain_relay_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sb-domain-relay-namespace-name"
   value        = module.sb_domain_relay.name
@@ -36,7 +36,7 @@ module "kvs_sb_domain_relay_name" {
 }
 
 module "kvs_sb_domain_relay_endpoint" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sb-domain-relay-namespace-endpoint"
   value        = module.sb_domain_relay.endpoint

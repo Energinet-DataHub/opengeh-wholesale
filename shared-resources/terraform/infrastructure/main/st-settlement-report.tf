@@ -1,5 +1,5 @@
 module "st_settlement_report" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
 
   name                       = "settlrep"
   project_name               = var.domain_name_short
@@ -27,7 +27,7 @@ module "st_settlement_report" {
 }
 
 module "kvs_st_settlement_report_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-settlement-report-name"
   value        = module.st_settlement_report.name
@@ -35,7 +35,7 @@ module "kvs_st_settlement_report_name" {
 }
 
 module "kvs_st_settlement_report_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-settlement-report-id"
   value        = module.st_settlement_report.id
@@ -44,7 +44,7 @@ module "kvs_st_settlement_report_id" {
 
 
 module "kvs_st_settlement_report_blob_private_ip_address" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-settlement-report-blob-private-ip-address"
   value        = module.st_settlement_report.blob_private_ip_address
@@ -52,7 +52,7 @@ module "kvs_st_settlement_report_blob_private_ip_address" {
 }
 
 module "kvs_st_settlement_report_dfs_private_ip_address" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-settlement-report-dfs-private-ip-address"
   value        = module.st_settlement_report.dfs_private_ip_address

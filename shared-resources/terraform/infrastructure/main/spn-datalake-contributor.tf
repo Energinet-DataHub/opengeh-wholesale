@@ -17,7 +17,7 @@ resource "azuread_application_password" "spn_datalake_contributor_secret" {
 }
 
 module "kvs_app_datalake_contributor_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "spn-datalake-contributor-secret"
   value        = azuread_application_password.spn_datalake_contributor_secret.value
@@ -25,7 +25,7 @@ module "kvs_app_datalake_contributor_password" {
 }
 
 module "kvs_app_datalake_contributor_app_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "spn-datalake-contributor-app-id"
   value        = azuread_application.app_datalake_contributor.client_id
@@ -35,5 +35,5 @@ module "kvs_app_datalake_contributor_app_id" {
 resource "azurerm_role_assignment" "ra_datalake_contributor" {
   scope                = module.st_data_lake.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.spn_datalake_contributor.id
+  principal_id         = azuread_service_principal.spn_datalake_contributor.object_id
 }

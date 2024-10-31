@@ -4,7 +4,7 @@ resource "azurerm_servicebus_queue" "wholesale_inbox_messagequeue" {
 }
 
 module "kvs_sbq_wholesale_inbox_messagequeue_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sbq-wholesale-inbox-messagequeue-name"
   value        = azurerm_servicebus_queue.wholesale_inbox_messagequeue.name
@@ -12,7 +12,7 @@ module "kvs_sbq_wholesale_inbox_messagequeue_name" {
 }
 
 module "kvs_sbq_wholesale_inbox_messagequeue_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sbq-wholesale-inbox-messagequeue-id"
   value        = azurerm_servicebus_queue.wholesale_inbox_messagequeue.id
@@ -26,7 +26,7 @@ resource "azurerm_servicebus_queue" "edi_inbox_messagequeue" {
 }
 
 module "kvs_sbq_edi_inbox_messagequeue" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sbq-edi-inbox-messagequeue-name"
   value        = azurerm_servicebus_queue.edi_inbox_messagequeue.name
@@ -34,7 +34,7 @@ module "kvs_sbq_edi_inbox_messagequeue" {
 }
 
 module "kvs_sbq_edi_inbox_messagequeue_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "sbq-edi-inbox-messagequeue-id"
   value        = azurerm_servicebus_queue.edi_inbox_messagequeue.id

@@ -43,7 +43,7 @@ resource "azurerm_monitor_metric_alert" "adf_failed_runs" {
 }
 
 module "kvs_azure_data_factory_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "adf-id"
   value        = azurerm_data_factory.this.id
@@ -51,7 +51,7 @@ module "kvs_azure_data_factory_id" {
 }
 
 module "kvs_azure_data_factory_principal_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "adf-principal-id"
   value        = azurerm_data_factory.this.identity[0].principal_id

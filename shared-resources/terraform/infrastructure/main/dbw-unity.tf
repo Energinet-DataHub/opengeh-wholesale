@@ -109,7 +109,7 @@ resource "azurerm_role_assignment" "st_settlement_report_contributor" {
 }
 
 module "settlement_report_external_location" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "settlement-report-external-location-url"
   value        = databricks_external_location.settlement_report.url
@@ -117,7 +117,7 @@ module "settlement_report_external_location" {
 }
 
 module "shared_unity_catalog_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "shared-unity-catalog-name"
   value        = databricks_catalog.shared.id # ID is the same as the name
@@ -125,7 +125,7 @@ module "shared_unity_catalog_name" {
 }
 
 module "unity_storage_credential_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "unity-storage-credential-id"
   value        = local.credential_name
@@ -133,7 +133,7 @@ module "unity_storage_credential_id" {
 }
 
 module "shared_access_connector_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "shared-access-connector-principal-id"
   value        = data.azurerm_databricks_access_connector.this.identity[0].principal_id
