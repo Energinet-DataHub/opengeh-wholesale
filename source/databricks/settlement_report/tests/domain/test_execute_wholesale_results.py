@@ -28,20 +28,25 @@ def reset_task_values(dbutils: DBUtilsFixture):
 def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_false__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    args = standard_wholesale_fixing_scenario_args
+    args = standard_wholesale_fixing_scenario_energy_supplier_args
     args.split_report_by_grid_area = False
     args.requesting_actor_market_role = MarketRole.ENERGY_SUPPLIER
-    energy_supplier_id = (
-        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
+
+    market_role_in_file_name = get_market_role_in_file_name(
+        args.requesting_actor_market_role
     )
-    args.requesting_actor_id = energy_supplier_id
-    args.energy_supplier_ids = [energy_supplier_id]
+
+    start_time = get_start_date(args.period_start)
+    end_time = get_end_date(args.period_end)
+
+    energy_supplier_id = args.energy_supplier_ids[0]
+
     expected_file_name = [
-        f"RESULTWHOLESALE_flere-net_{energy_supplier_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"RESULTWHOLESALE_flere-net_{energy_supplier_id}_{market_role_in_file_name}_{start_time}_{end_time}.csv",
     ]
     expected_columns = [
         CsvColumnNames.calculation_type,
@@ -84,6 +89,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     market_role_in_file_name = get_market_role_in_file_name(
         args.requesting_actor_market_role
     )
+
     start_time = get_start_date(args.period_start)
     end_time = get_end_date(args.period_end)
 
