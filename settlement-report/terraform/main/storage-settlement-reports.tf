@@ -1,5 +1,5 @@
 module "storage_settlement_reports" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.0.1"
 
   name                       = "reports"
   project_name               = var.domain_name_short

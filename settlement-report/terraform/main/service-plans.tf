@@ -1,5 +1,5 @@
 module "func_settlement_report_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
 
   type                         = "func"
   project_name                 = var.domain_name_short
@@ -9,6 +9,7 @@ module "func_settlement_report_service_plan" {
   location                     = azurerm_resource_group.this.location
   sku_name                     = "EP2"
   maximum_elastic_worker_count = 5
+  worker_count                 = 2
 
   monitor_alerts_action_group_id = length(module.monitor_action_group_setr) != 1 ? null : module.monitor_action_group_setr[0].id
 
@@ -30,7 +31,7 @@ module "func_settlement_report_service_plan" {
 }
 
 module "func_settlement_report_light_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
 
   name                         = "light"
   type                         = "func"
@@ -62,7 +63,7 @@ module "func_settlement_report_light_service_plan" {
 }
 
 module "webapp_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
 
   type                 = "webapp"
   project_name         = var.domain_name_short

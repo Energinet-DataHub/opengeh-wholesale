@@ -49,7 +49,7 @@ module "func_settlement_reports_light_df" {
 }
 
 module "kvs_func_settlement_reports_light_df_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "func-settlement-reports-light-df-base-url"
   value        = "https://${module.func_settlement_reports_light_df.default_hostname}"
