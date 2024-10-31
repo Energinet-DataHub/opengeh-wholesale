@@ -86,6 +86,7 @@ def start_task_with_deps(
 
     config.configure_logging(
         cloud_role_name=cloud_role_name,
+        tracer_name="settlement-report-job",
         applicationinsights_connection_string=applicationinsights_connection_string,
         extras={"Subsystem": "wholesale-aggregations"},
     )
