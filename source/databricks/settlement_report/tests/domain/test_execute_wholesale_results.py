@@ -1,10 +1,6 @@
 from pyspark.sql import SparkSession
 import pytest
 
-
-from data_seeding import (
-    standard_wholesale_fixing_scenario_data_generator,
-)
 from dbutils_fixture import DBUtilsFixture
 from domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole

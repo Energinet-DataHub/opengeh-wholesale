@@ -1,5 +1,3 @@
-import copy
-
 from pyspark.sql import SparkSession
 import pytest
 
