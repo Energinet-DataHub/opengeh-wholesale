@@ -45,23 +45,21 @@ def read_and_filter_for_wholesale(
     )
 
     if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        charge_link_periods = _read_charge_link_periods(
+            period_start=period_start,
+            period_end=period_end,
+            requesting_actor_id=requesting_actor_id,
+            requesting_actor_market_role=requesting_actor_market_role,
+            repository=repository,
+        )
 
+        charge_link_periods = _join_charge_link_and_metering_point_periods(
+            charge_link_periods=charge_link_periods,
+            metering_point_periods=metering_point_periods,
+            requesting_actor_market_role=requesting_actor_market_role,
+        )
 
-    charge_link_periods = _read_charge_link_periods(
-        period_start=period_start,
-        period_end=period_end,
-        requesting_actor_id=requesting_actor_id,
-        requesting_actor_market_role=requesting_actor_market_role,
-        repository=repository,
-    )
-
-    charge_link_periods = _join_charge_link_and_metering_point_periods(
-        charge_link_periods=charge_link_periods,
-        metering_point_periods=metering_point_periods,
-        requesting_actor_market_role=requesting_actor_market_role,
-    )
-
-    return charge_link_periods
+    return metering_point_periods
 
 
 def _read_charge_link_periods(
