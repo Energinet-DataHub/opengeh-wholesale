@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, functions as F
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import lit, col
 
 from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole
@@ -31,32 +32,30 @@ def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
     monthly_amounts_per_charge = repository.read_monthly_amounts_per_charge_v1()
-    monthly_amounts_per_charge = _extend_monthly_amounts_per_charge_columns_for_union(
-        monthly_amounts_per_charge
-    )
     monthly_amounts_per_charge = _filter_monthly_amounts_per_charge(
         monthly_amounts_per_charge, args
     )
 
     total_monthly_amounts = repository.read_total_monthly_amounts_v1()
-    total_monthly_amounts = _extend_total_monthly_amounts_columns_for_union(
-        total_monthly_amounts
-    )
     total_monthly_amounts = _filter_total_monthly_amounts(total_monthly_amounts, args)
+    total_monthly_amounts = _extend_total_monthly_amounts_columns_for_union(
+        total_monthly_amounts,
+        monthly_amounts_per_charge_column_ordering=monthly_amounts_per_charge.columns,
+    )
 
-    return monthly_amounts_per_charge.union(total_monthly_amounts)
+    monthly_amounts = monthly_amounts_per_charge.union(total_monthly_amounts)
+    return _extend_monthly_amounts_with_resolution_and_currency(monthly_amounts)
 
 
 def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
     df = df.where(
-        (F.col(DataProductColumnNames.time) >= args.period_start)
-        & (F.col(DataProductColumnNames.time) < args.period_end)
+        (col(DataProductColumnNames.time) >= args.period_start)
+        & (col(DataProductColumnNames.time) < args.period_end)
     )
 
-    if args.calculation_id_by_grid_area:
-        df = df.where(
-            filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
-        )
+    df = df.where(
+        filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
+    )
 
     if args.energy_supplier_ids:
         df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
@@ -66,7 +65,7 @@ def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFram
         MarketRole.SYSTEM_OPERATOR,
     ]:
         df = df.where(
-            F.col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id
+            col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id
         )
 
     return df
@@ -90,51 +89,47 @@ def _filter_total_monthly_amounts(
         MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
         total_monthly_amounts = total_monthly_amounts.where(
-            F.col(DataProductColumnNames.charge_owner_id).isNull()
+            col(DataProductColumnNames.charge_owner_id).isNull()
         )
 
     return total_monthly_amounts
 
 
-def _extend_monthly_amounts_per_charge_columns_for_union(
+def _extend_monthly_amounts_with_resolution_and_currency(
     base_monthly_amounts_per_charge_columns: DataFrame,
 ) -> DataFrame:
     return base_monthly_amounts_per_charge_columns.select(
-        F.col(DataProductColumnNames.calculation_id),
-        F.col(DataProductColumnNames.calculation_type),
-        F.col(DataProductColumnNames.calculation_version),
-        F.col(DataProductColumnNames.result_id),
-        F.col(DataProductColumnNames.grid_area_code),
-        F.col(DataProductColumnNames.energy_supplier_id),
-        F.col(DataProductColumnNames.time),
-        F.lit("P1M").alias(DataProductColumnNames.resolution),
-        F.col(DataProductColumnNames.quantity_unit),
-        F.lit("DKK").alias(DataProductColumnNames.currency),
-        F.col(DataProductColumnNames.amount),
-        F.col(DataProductColumnNames.charge_type),
-        F.col(DataProductColumnNames.charge_code),
-        F.col(DataProductColumnNames.charge_owner_id),
-        F.col(DataProductColumnNames.is_tax),
+        col(DataProductColumnNames.calculation_id),
+        col(DataProductColumnNames.calculation_type),
+        col(DataProductColumnNames.calculation_version),
+        col(DataProductColumnNames.grid_area_code),
+        col(DataProductColumnNames.energy_supplier_id),
+        col(DataProductColumnNames.time),
+        lit("P1M").alias(DataProductColumnNames.resolution),
+        col(DataProductColumnNames.quantity_unit),
+        lit("DKK").alias(DataProductColumnNames.currency),
+        col(DataProductColumnNames.amount),
+        col(DataProductColumnNames.charge_type),
+        col(DataProductColumnNames.charge_code),
+        col(DataProductColumnNames.charge_owner_id),
+        col(DataProductColumnNames.is_tax),
     )
 
 
 def _extend_total_monthly_amounts_columns_for_union(
     base_total_monthly_amounts: DataFrame,
+    monthly_amounts_per_charge_column_ordering: list[str],
 ) -> DataFrame:
+    for null_column in [
+        DataProductColumnNames.quantity_unit,
+        DataProductColumnNames.charge_type,
+        DataProductColumnNames.charge_code,
+        DataProductColumnNames.is_tax,
+    ]:
+        base_total_monthly_amounts = base_total_monthly_amounts.withColumn(
+            null_column, lit(None)
+        )
+
     return base_total_monthly_amounts.select(
-        F.col(DataProductColumnNames.calculation_id),
-        F.col(DataProductColumnNames.calculation_type),
-        F.col(DataProductColumnNames.calculation_version),
-        F.col(DataProductColumnNames.result_id),
-        F.col(DataProductColumnNames.grid_area_code),
-        F.col(DataProductColumnNames.energy_supplier_id),
-        F.col(DataProductColumnNames.time),
-        F.lit("P1M").alias(DataProductColumnNames.resolution),
-        F.lit(None).alias(DataProductColumnNames.quantity_unit),
-        F.lit("DKK").alias(DataProductColumnNames.currency),
-        F.col(DataProductColumnNames.amount),
-        F.lit(None).alias(DataProductColumnNames.charge_type),
-        F.lit(None).alias(DataProductColumnNames.charge_code),
-        F.col(DataProductColumnNames.charge_owner_id),
-        F.lit(None).alias(DataProductColumnNames.is_tax),
+        monthly_amounts_per_charge_column_ordering,
     )

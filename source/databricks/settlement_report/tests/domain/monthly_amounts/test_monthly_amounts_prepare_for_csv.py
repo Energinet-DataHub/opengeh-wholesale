@@ -8,7 +8,7 @@ from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.domain.monthly_amounts.read_and_filter import (
-    _extend_monthly_amounts_per_charge_columns_for_union,
+    _extend_monthly_amounts_with_resolution_and_currency,
 )
 from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
@@ -43,11 +43,9 @@ def test_prepare_for_csv__returns_expected_columns(
 ) -> None:
     # Arrange
     testing_spec = default_data.create_total_monthly_amounts_row()
-    monthly_amounts_per_charge = monthly_amounts_per_charge_factory.create(
-        spark, testing_spec
-    )
-    monthly_amounts_per_charge = _extend_monthly_amounts_per_charge_columns_for_union(
-        monthly_amounts_per_charge
+    monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
+    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
+        monthly_amounts
     )
 
     expected_columns = [
@@ -69,9 +67,7 @@ def test_prepare_for_csv__returns_expected_columns(
         expected_columns.append(EphemeralColumns.grid_area_code_partitioning)
 
     # Act
-    actual_df = prepare_for_csv(
-        monthly_amounts_per_charge, create_ephemeral_grid_loss_column
-    )
+    actual_df = prepare_for_csv(monthly_amounts, create_ephemeral_grid_loss_column)
 
     # Assert
     assert expected_columns == actual_df.columns
@@ -117,7 +113,7 @@ def test_mapping_of_process_variant(
         calculation_type=calculation_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
         monthly_amounts
     )
 
@@ -168,7 +164,7 @@ def test_mapping_of_energy_business_process(
         calculation_type=calculation_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
         monthly_amounts
     )
 
@@ -212,7 +208,7 @@ def test_mapping_of_charge_type(
         charge_type=charge_type
     )
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_per_charge_columns_for_union(
+    monthly_amounts = _extend_monthly_amounts_with_resolution_and_currency(
         monthly_amounts
     )
 

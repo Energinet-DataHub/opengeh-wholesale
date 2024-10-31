@@ -198,6 +198,9 @@ def execute_monthly_amounts(
     """
     Entry point for the logic of monthly amounts.
     """
+    if args.calculation_type == CalculationType.BALANCE_FIXING:
+        return
+
     repository = WholesaleRepository(spark, args.catalog_name)
     monthly_amounts = create_monthly_amounts(args=args, repository=repository)
 
