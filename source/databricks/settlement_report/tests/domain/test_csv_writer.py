@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
@@ -52,21 +53,6 @@ def _read_csv_file(
 ) -> DataFrame:
     file_name = f"{directory}/{file_name}"
     return spark.read.csv(file_name, header=True)
-
-
-def _assert_file_names_and_columns(
-    actual_file_names,
-    expected_columns,
-    expected_file_names,
-    spark,
-    args,
-):
-    assert set(actual_file_names) == set(expected_file_names)
-    for file_name in actual_file_names:
-        file_path = f"{get_report_output_path(args)}/{file_name}"
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
 
 
 @pytest.mark.parametrize(
@@ -112,7 +98,6 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
     )
 
     # Assert
-    assert len(result_files) > 0
     assert len(result_files) == expected_file_count
 
 
@@ -145,7 +130,6 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
     )
 
     # Assert
-    assert len(result_files) > 0
     assert len(result_files) == expected_file_count
 
 
@@ -190,7 +174,6 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
 
     # Assert
     assert df_prepared_time_series.count() == number_of_rows
-    assert len(result_files) > 0
     assert len(result_files) == expected_file_count
 
 
@@ -555,12 +538,12 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     )
 
     # Assert
-    _assert_file_names_and_columns(
-        actual_file_names,
-        expected_columns,
-        expected_file_names,
-        spark,
-        standard_wholesale_fixing_scenario_args,
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_file_names,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
     )
 
 
@@ -624,12 +607,12 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     )
 
     # Assert
-    _assert_file_names_and_columns(
-        actual_file_names,
-        expected_columns,
-        expected_file_names,
-        spark,
-        standard_wholesale_fixing_scenario_args,
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_file_names,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
     )
 
 
@@ -696,10 +679,10 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     )
 
     # Assert
-    _assert_file_names_and_columns(
-        actual_file_names,
-        expected_columns,
-        expected_file_names,
-        spark,
-        standard_wholesale_fixing_scenario_args,
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_file_names,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
     )

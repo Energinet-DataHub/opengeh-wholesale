@@ -6,7 +6,7 @@ from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
 )
 from dbutils_fixture import DBUtilsFixture
-from domain.assertion import assert_files
+from domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_generator import (
     execute_wholesale_results,
@@ -67,7 +67,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
-    assert_files(
+    assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
         expected_columns=expected_columns,

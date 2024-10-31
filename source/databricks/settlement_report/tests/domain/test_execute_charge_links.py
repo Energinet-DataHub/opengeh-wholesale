@@ -6,7 +6,7 @@ import pytest
 from tests.dbutils_fixture import DBUtilsFixture
 
 from data_seeding import standard_wholesale_fixing_scenario_data_generator
-from domain.assertion import assert_files
+from domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_generator import execute_charge_links
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -52,7 +52,7 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="charge_links_files")
-    assert_files(
+    assert_file_names_and_columns(
         path=get_report_output_path(
             standard_wholesale_fixing_scenario_energy_supplier_args
         ),
@@ -92,7 +92,7 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
-    assert_files(
+    assert_file_names_and_columns(
         path=get_report_output_path(
             standard_wholesale_fixing_scenario_grid_access_provider_args
         ),
@@ -142,7 +142,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
-    assert_files(
+    assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
         expected_columns=expected_columns,
@@ -186,7 +186,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_e
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
-    assert_files(
+    assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
         expected_columns=expected_columns,

@@ -3,7 +3,7 @@ from pyspark.sql import SparkSession
 
 from tests.dbutils_fixture import DBUtilsFixture
 
-from domain.assertion import assert_files
+from domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.report_generator import execute_hourly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
@@ -46,7 +46,7 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
-    assert_files(
+    assert_file_names_and_columns(
         path=get_report_output_path(standard_wholesale_fixing_scenario_args),
         actual_files=actual_files,
         expected_columns=expected_columns,
