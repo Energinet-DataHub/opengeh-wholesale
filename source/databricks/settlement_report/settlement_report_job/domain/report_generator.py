@@ -206,6 +206,9 @@ def execute_monthly_amounts(
         args,
         monthly_amounts,
         ReportDataType.MonthlyAmounts,
+        order_by_columns=get_order_by_columns(
+            ReportDataType.MonthlyAmounts, args.requesting_actor_market_role
+        ),
     )
 
     dbutils.jobs.taskValues.set(
