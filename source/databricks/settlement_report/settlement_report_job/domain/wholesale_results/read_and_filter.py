@@ -17,6 +17,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
@@ -29,6 +30,8 @@ def read_and_filter_from_view(
     calculation_id_by_grid_area: dict[str, UUID],
     period_start: datetime,
     period_end: datetime,
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
     df = repository.read_amounts_per_charge().where(
@@ -53,5 +56,17 @@ def read_and_filter_from_view(
                 F.col(DataProductColumnNames.calculation_id),
             ).isin(calculation_id_by_grid_area_structs)
         )
+
+    if (
+        requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER
+        or requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR
+    ):
+        df = df.where(
+            F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id
+        )
+        if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+            df = df.where(F.col(DataProductColumnNames.is_tax) == True)
+        elif requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+            df = df.where(F.col(DataProductColumnNames.is_tax) == False)
 
     return df
