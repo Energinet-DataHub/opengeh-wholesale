@@ -65,8 +65,8 @@ def read_and_filter_from_view(
             F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id
         )
         if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-            df = df.where(F.col(DataProductColumnNames.is_tax) == True)
+            df = df.where(F.col(DataProductColumnNames.is_tax) == F.lit(True))
         elif requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-            df = df.where(F.col(DataProductColumnNames.is_tax) == False)
+            df = df.where(F.col(DataProductColumnNames.is_tax) == F.lit(False))
 
     return df
