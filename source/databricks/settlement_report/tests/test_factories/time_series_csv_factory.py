@@ -40,6 +40,7 @@ def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFra
             counter += 1
             for i in range(data_spec.num_days_per_metering_point):
                 row = {
+                    CsvColumnNames.energy_supplier_id: "1234567890123",
                     CsvColumnNames.metering_point_id: str(1000000000000 + counter),
                     CsvColumnNames.metering_point_type: data_spec.metering_point_type.value,
                     EphemeralColumns.grid_area_code_partitioning: grid_area_code,

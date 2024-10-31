@@ -75,13 +75,4 @@ def prepare_for_csv(
             ),
         )
 
-    return wholesale.select(select_columns).orderBy(
-        F.col(CsvColumnNames.grid_area_code),
-        F.col(CsvColumnNames.energy_supplier_id),
-        F.col(CsvColumnNames.metering_point_type),
-        F.col(CsvColumnNames.settlement_method),
-        F.col(CsvColumnNames.time),
-        F.col(CsvColumnNames.charge_owner_id),
-        F.col(CsvColumnNames.charge_type),
-        F.col(CsvColumnNames.charge_code),
-    )
+    return wholesale.select(select_columns)
