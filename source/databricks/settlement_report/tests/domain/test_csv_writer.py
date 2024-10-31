@@ -38,6 +38,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 import test_factories.time_series_csv_factory as time_series_factory
 import test_factories.energy_factory as energy_factory
 from settlement_report_job.domain.csv_column_names import CsvColumnNames
+from settlement_report_job.infrastructure.paths import get_report_output_path
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
@@ -51,6 +52,21 @@ def _read_csv_file(
 ) -> DataFrame:
     file_name = f"{directory}/{file_name}"
     return spark.read.csv(file_name, header=True)
+
+
+def _assert_file_names_and_columns(
+    actual_file_names,
+    expected_columns,
+    expected_file_names,
+    spark,
+    args,
+):
+    assert set(actual_file_names) == set(expected_file_names)
+    for file_name in actual_file_names:
+        file_path = f"{get_report_output_path(args)}/{file_name}"
+        df = spark.read.csv(file_path, header=True)
+        assert df.count() > 0
+        assert df.columns == expected_columns
 
 
 @pytest.mark.parametrize(
@@ -226,8 +242,9 @@ def test_write__files_have_correct_ordering_for_each_file(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
-    for file in result_files:
-        df_actual = _read_csv_file(standard_wholesale_fixing_scenario_args.file, spark)
+    for file_name in result_files:
+        directory = get_report_output_path(standard_wholesale_fixing_scenario_args)
+        df_actual = _read_csv_file(directory, file_name, spark)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -276,8 +293,9 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
-    for file in result_files:
-        df_actual = _read_csv_file(file, spark)
+    for file_name in result_files:
+        directory = get_report_output_path(standard_wholesale_fixing_scenario_args)
+        df_actual = _read_csv_file(directory, file_name, spark)
         df_expected = df_actual.orderBy(expected_order_by)
         assert df_actual.collect() == df_expected.collect()
 
@@ -333,8 +351,9 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
+    directory = get_report_output_path(standard_wholesale_fixing_scenario_args)
     for file in result_files:
-        individual_dataframes.append(_read_csv_file(file, spark))
+        individual_dataframes.append(_read_csv_file(directory, file, spark))
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
     print(df_actual.collect()[0], df_expected.collect()[0])
@@ -390,8 +409,9 @@ def test_write__files_have_correct_sorting_across_multiple_files(
 
     # Assert that the files are ordered by metering_point_type, metering_point_id, start_of_day
     # Asserting that the dataframe is unchanged
+    directory = get_report_output_path(standard_wholesale_fixing_scenario_args)
     for file in result_files:
-        individual_dataframes.append(_read_csv_file(file, spark))
+        individual_dataframes.append(_read_csv_file(directory, file, spark))
     df_actual = reduce(DataFrame.unionByName, individual_dataframes)
     df_expected = df_actual.orderBy(expected_order_by)
     assert df_actual.collect() == df_expected.collect()
@@ -429,7 +449,7 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
     # Assert
     assert len(result_files) == expected_file_count
     for result_file in result_files:
-        file_name = result_file[:-4].split("/")[-1]
+        file_name = result_file[:-4]
         file_name_components = file_name.split("_")
 
         chunk_id_if_present = file_name_components[-1]
@@ -468,7 +488,7 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
     # Assert
     assert len(result_files) == expected_file_count
     file_name = result_files[0]
-    file_name = file_name[:-4].split("/")[-1]
+    file_name = file_name[:-4]
     file_name_components = file_name.split("_")
 
     chunk_id_if_present = file_name_components[-1]
@@ -487,7 +507,6 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
 ):
     # Arrange
-    expected_file_count = 1  # corresponding to the number of grid areas in standard_wholesale_fixing_scenario
     expected_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
@@ -538,14 +557,13 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
     )
 
     # Assert
-    assert set(actual_file_names) == set(expected_file_names)
-
-    assert len(actual_file_names) == expected_file_count
-    for file_name in actual_file_names:
-        file_path = f"{standard_wholesale_fixing_scenario_args.file}/{file_name}"
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
+    _assert_file_names_and_columns(
+        actual_file_names,
+        expected_columns,
+        expected_file_names,
+        spark,
+        standard_wholesale_fixing_scenario_args,
+    )
 
 
 def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_correct_columns_and_files(
@@ -596,7 +614,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     )
 
     # Act
-    actual_files = csv_writer.write(
+    actual_file_names = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df,
@@ -609,15 +627,13 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
     )
 
     # Assert
-    actual_file_names = [file.split("/")[-1] for file in actual_files]
-    for actual_file_name in actual_file_names:
-        assert actual_file_name in expected_file_names
-
-    assert len(actual_files) == expected_file_count
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
+    _assert_file_names_and_columns(
+        actual_file_names,
+        expected_columns,
+        expected_file_names,
+        spark,
+        standard_wholesale_fixing_scenario_args,
+    )
 
 
 def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_files_and_content(
@@ -670,7 +686,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     )
 
     # Act
-    actual_files = csv_writer.write(
+    actual_file_names = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df,
@@ -683,11 +699,10 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
     )
 
     # Assert
-    actual_file_names = [file.split("/")[-1] for file in actual_files]
-    assert sorted(actual_file_names) == sorted(expected_file_names)
-
-    assert len(actual_files) == expected_file_count
-    for file_path in actual_files:
-        df = spark.read.csv(file_path, header=True)
-        assert df.count() > 0
-        assert df.columns == expected_columns
+    _assert_file_names_and_columns(
+        actual_file_names,
+        expected_columns,
+        expected_file_names,
+        spark,
+        standard_wholesale_fixing_scenario_args,
+    )
