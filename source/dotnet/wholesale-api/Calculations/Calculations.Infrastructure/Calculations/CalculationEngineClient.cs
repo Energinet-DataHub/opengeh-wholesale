@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
@@ -50,7 +51,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
         return new CalculationJobId(runId);
     }
 
-    public async Task<Application.Model.CalculationState> GetStatusAsync(CalculationJobId calculationJobId)
+    public async Task<CalculationState> GetStatusAsync(CalculationJobId calculationJobId)
     {
         var runState = await _client
             .Jobs
@@ -59,19 +60,28 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
 
         return runState.Item1.State.LifeCycleState switch
         {
-            RunLifeCycleState.PENDING => Application.Model.CalculationState.Pending,
-            RunLifeCycleState.RUNNING => Application.Model.CalculationState.Running,
-            RunLifeCycleState.TERMINATING => Application.Model.CalculationState.Running,
-            RunLifeCycleState.SKIPPED => Application.Model.CalculationState.Canceled,
-            RunLifeCycleState.INTERNAL_ERROR => Application.Model.CalculationState.Failed,
+            RunLifeCycleState.PENDING => CalculationState.Pending,
+            RunLifeCycleState.RUNNING => CalculationState.Running,
+            RunLifeCycleState.TERMINATING => CalculationState.Running,
+            RunLifeCycleState.SKIPPED => CalculationState.Canceled,
+            RunLifeCycleState.INTERNAL_ERROR => CalculationState.Failed,
             RunLifeCycleState.TERMINATED => runState.Item1.State.ResultState switch
             {
-                RunResultState.SUCCESS => Application.Model.CalculationState.Completed,
-                RunResultState.FAILED => Application.Model.CalculationState.Failed,
-                RunResultState.CANCELED => Application.Model.CalculationState.Canceled,
-                RunResultState.TIMEDOUT => Application.Model.CalculationState.Canceled,
+                RunResultState.SUCCESS => CalculationState.Completed,
+                RunResultState.FAILED => CalculationState.Failed,
+                RunResultState.CANCELED => CalculationState.Canceled,
+                RunResultState.TIMEDOUT => CalculationState.Failed,
+                RunResultState.MAXIMUM_CONCURRENT_RUNS_REACHED => CalculationState.Failed,
+                RunResultState.EXCLUDED => CalculationState.Failed,
+                RunResultState.SUCCESS_WITH_FAILURES => CalculationState.Failed,
+                RunResultState.UPSTREAM_FAILED => CalculationState.Failed,
+                RunResultState.UPSTREAM_CANCELED => CalculationState.Canceled,
+                null => CalculationState.Failed,
                 _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
             },
+            RunLifeCycleState.BLOCKED => CalculationState.Failed,
+            RunLifeCycleState.WAITING_FOR_RETRY => CalculationState.Pending,
+            RunLifeCycleState.QUEUED => CalculationState.Pending,
             _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
         };
     }

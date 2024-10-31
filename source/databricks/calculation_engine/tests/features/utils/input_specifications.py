@@ -23,14 +23,23 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
 )
 from package.databases.wholesale_internal.schemas import (
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
     calculations_schema,
 )
+from package.databases.wholesale_results import WholesaleResultsInternalRepository
+from package.databases.wholesale_results_internal.schemas import (
+    energy_schema,
+    energy_per_es_schema,
+    energy_per_brp_schema,
+    amounts_per_charge_schema,
+)
+from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
 def get_data_input_specifications(
     migrations_wholesale_repository: MigrationsWholesaleRepository,
     wholesale_internal_repository: wholesale_internal.WholesaleInternalRepository,
+    wholesale_results_internal_repository: WholesaleResultsInternalRepository,
 ) -> dict[str, tuple[StructType, callable]]:
     """
     Contains the mapping between the csv file name, the schema name and the function
@@ -50,8 +59,8 @@ def get_data_input_specifications(
             migrations_wholesale_repository.read_time_series_points,
         ),
         "grid_loss_metering_points.csv": (
-            grid_loss_metering_points_schema,
-            wholesale_internal_repository.read_grid_loss_metering_points,
+            grid_loss_metering_point_ids_schema,
+            wholesale_internal_repository.read_grid_loss_metering_point_ids,
         ),
         "charge_price_information_periods.csv": (
             charge_price_information_periods_schema,
@@ -64,5 +73,21 @@ def get_data_input_specifications(
         "charge_price_points.csv": (
             charge_price_points_schema,
             migrations_wholesale_repository.read_charge_price_points,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME}.csv": (
+            energy_schema,
+            wholesale_results_internal_repository.read_energy,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME}.csv": (
+            energy_per_es_schema,
+            wholesale_results_internal_repository.read_energy_per_es,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME}.csv": (
+            energy_per_brp_schema,
+            wholesale_results_internal_repository.read_energy_per_brp,
+        ),
+        f"{WholesaleResultsInternalDatabase.DATABASE_NAME}/{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}.csv": (
+            amounts_per_charge_schema,
+            wholesale_results_internal_repository.read_amount_per_charge,
         ),
     }

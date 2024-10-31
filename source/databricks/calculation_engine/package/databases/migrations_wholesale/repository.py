@@ -35,7 +35,7 @@ class MigrationsWholesaleRepository:
         calculation_input_database_name: str,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
-        grid_loss_metering_points_table_name: str | None = None,
+        grid_loss_metering_point_ids_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
@@ -48,9 +48,9 @@ class MigrationsWholesaleRepository:
             metering_point_periods_table_name
             or MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME
         )
-        self._grid_loss_metering_points_table_name = (
-            grid_loss_metering_points_table_name
-            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
+        self._grid_loss_metering_point_ids_table_name = (
+            grid_loss_metering_point_ids_table_name
+            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
         )
 
     def read_metering_point_periods(

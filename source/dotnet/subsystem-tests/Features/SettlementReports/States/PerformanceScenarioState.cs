@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.Fixtures;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReports.States;
@@ -21,6 +22,8 @@ public class PerformanceScenarioState
 {
     public Guid ReportId { get; set; }
 
+    public SettlementReportJobName JobName { get; set; }
+
     [NotNull]
     public IReadOnlyCollection<string>? JobParameters { get; set; }
 
@@ -28,7 +31,7 @@ public class PerformanceScenarioState
     /// The expected max. duration of the job.
     /// Use this to monitor (set expectations for) the performance of the job.
     /// </summary>
-    public TimeSpan ExpectedJobTimeLimit { get; internal set; }
+    public TimeSpan ExpectedJobTimeLimit { get; set; }
 
     [NotNull]
     public string? ExpectedRelativeOutputFilePath { get; set; }

@@ -27,7 +27,7 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
     charge_link_periods_schema,
     charge_price_points_schema,
-    grid_loss_metering_points_schema,
+    grid_loss_metering_point_ids_schema,
     metering_point_periods_schema_uc,
     time_series_points_schema,
 )
@@ -354,8 +354,8 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
             charge_price_points_schema,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-            grid_loss_metering_points_schema,
+            paths.WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+            grid_loss_metering_point_ids_schema,
         ),
     ],
 )

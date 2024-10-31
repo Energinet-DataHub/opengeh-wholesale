@@ -24,8 +24,8 @@ schema_config = [
                 schema=internal_schemas.calculations_schema,
             ),
             Table(
-                name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
-                schema=internal_schemas.grid_loss_metering_points_schema,
+                name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+                schema=internal_schemas.grid_loss_metering_point_ids_schema,
             ),
             Table(
                 name=paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME,

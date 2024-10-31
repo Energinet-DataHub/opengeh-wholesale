@@ -28,7 +28,7 @@ import package.calculation.preparation.data_structures as d
         d.ChargePrices,
         d.ChargePriceInformation,
         d.ChargeLinkMeteringPointPeriods,
-        d.GridLossResponsible,
+        d.GridLossMeteringPointPeriods,
     ],
 )
 def test__constructor__when_invalid_input_schema__raise_assertion_error(

@@ -11,6 +11,7 @@ class Cases:
         Typical_wholesale_scenario: str
         Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change: str
         Calculation_input_data_includes_other_ga: str
+        Aggregations_do_not_generate_basis_data: str
 
         class MeteringPointMasterDataUpdates:
             Change_of_settlement_method_on_an_MP: str
@@ -47,6 +48,21 @@ class Cases:
             Calculation_covers_multiple_grid_areas: str
             Calculation_includes_2_out_of_3_MP_grid_areas_in_input_data: str
 
+        class WithDrawalTests:
+            WithDrawal_when_child_mp_relation_to_parent_ends_in_period_but_chargelink_not_updated: str
+            WithDrawal_when_combination_previously_missing_reintroduced: str
+            WithDrawal_when_mp_changes_es: str
+            WithDrawal_when_mp_changes_es_and_brp: str
+            WithDrawal_when_mp_changes_settlement_method: str
+            WithDrawal_when_mp_is_closed_down: str
+            WithDrawal_when_price_element_disappears: str
+            WithDrawal_when_price_element_disappears_but_chargelink_remains: str
+            WithDrawal_when_time_series_removed_which_were_previously_withdrawn: str
+            WithDrawal_when_previous_calculation_was_internal: str
+            WithDrawal_when_current_calculation_is_internal: str
+            WithDrawal_when_new_calculation_period_only_partially_covers_previous_calculation: str
+            WithDrawal_when_new_calculation_period_before_quarterly_transition: str
+
     class DataProductTests:
 
         class WholesaleResultsTests:
@@ -54,6 +70,10 @@ class Cases:
             Only_external_calculation_ids_included: str
             Calculation_ids_without_calculation_succeeded_time_not_included: str
             Correct_mp_types_included_in_energy_v1_output: str
+            Latest_calculation_by_day_splits_period_in_correct_amount_of_days: str
+            Latest_calculation_by_day_sets_correct_latest_calculation_when_periods_overlap: str
+            Latest_calculation_by_day_includes_correct_calculation_ids_in_output: str
+            Latest_calculation_by_day_only_includes_succeeded_external_calculations: str
 
         class SapResultsTests:
             Calculation_history_splits_period_in_correct_amount_of_days: str

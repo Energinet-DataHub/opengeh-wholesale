@@ -9,4 +9,6 @@ class TaskType(Enum):
 
     HOURLY_TIME_SERIES = "hourly_time_series"
     QUARTERLY_TIME_SERIES = "quarterly_time_series"
+    CHARGE_LINKS = "charge_links"
+    ENERGY_RESULTS = "energy_results"
     ZIP = "zip"

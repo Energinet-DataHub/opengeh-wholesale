@@ -1,0 +1,13 @@
+grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
+111;;1100000000000;0.000;['calculated'];2023-07-02 02:00:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;c3577afe-06d1-5467-8b11-c7b049c518ce;;PT15M
+111;;1100000000000;0.000;['calculated'];2023-07-02 02:15:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;c3577afe-06d1-5467-8b11-c7b049c518ce;;PT15M
+111;;1100000000000;0.000;['calculated'];2023-07-02 02:30:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;c3577afe-06d1-5467-8b11-c7b049c518ce;;PT15M
+111;;1100000000000;0.000;['calculated'];2023-07-02 02:45:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;c3577afe-06d1-5467-8b11-c7b049c518ce;;PT15M
+800;;1100000000000;12.500;['measured', 'calculated'];2023-07-02 02:00:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;3f76560f-032c-5865-8230-e8e7b7d1fb80;;PT15M
+800;;1100000000000;3.958;['measured', 'missing', 'calculated'];2023-07-02 02:15:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;3f76560f-032c-5865-8230-e8e7b7d1fb80;;PT15M
+800;;1100000000000;3.957;['measured', 'missing', 'calculated'];2023-07-02 02:30:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;3f76560f-032c-5865-8230-e8e7b7d1fb80;;PT15M
+800;;1100000000000;3.959;['measured', 'missing', 'calculated'];2023-07-02 02:45:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;3f76560f-032c-5865-8230-e8e7b7d1fb80;;PT15M
+800;;2200000000000;0.063;['measured'];2023-07-02 02:00:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d80226e8-ec50-5206-b7df-ccbd2874ac7c;;PT15M
+800;;2200000000000;0.062;['measured'];2023-07-02 02:15:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d80226e8-ec50-5206-b7df-ccbd2874ac7c;;PT15M
+800;;2200000000000;0.063;['measured'];2023-07-02 02:30:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d80226e8-ec50-5206-b7df-ccbd2874ac7c;;PT15M
+800;;2200000000000;0.062;['measured'];2023-07-02 02:45:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d80226e8-ec50-5206-b7df-ccbd2874ac7c;;PT15M

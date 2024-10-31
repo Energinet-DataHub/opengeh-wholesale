@@ -46,7 +46,7 @@ class InputDatabase:
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
-    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+    GRID_LOSS_METERING_POINT_IDS_TABLE_NAME = "grid_loss_metering_points"
 
 
 class MigrationsWholesaleDatabase:
@@ -64,13 +64,13 @@ class WholesaleInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
     CALCULATIONS_TABLE_NAME = "calculations"
-    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+    GRID_LOSS_METERING_POINT_IDS_TABLE_NAME = "grid_loss_metering_points"
     CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
 
     TABLE_NAMES = [
         EXECUTED_MIGRATIONS_TABLE_NAME,
         CALCULATIONS_TABLE_NAME,
-        GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
         CALCULATION_GRID_AREAS_TABLE_NAME,
     ]
 
@@ -163,14 +163,14 @@ class WholesaleBasisDataInternalDatabase:
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
-    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+    GRID_LOSS_METERING_POINT_IDS_TABLE_NAME = "grid_loss_metering_points"
     TABLE_NAMES = [
         METERING_POINT_PERIODS_TABLE_NAME,
         TIME_SERIES_POINTS_TABLE_NAME,
         CHARGE_LINK_PERIODS_TABLE_NAME,
         CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         CHARGE_PRICE_POINTS_TABLE_NAME,
-        GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
     ]
 
 

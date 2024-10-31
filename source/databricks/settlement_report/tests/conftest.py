@@ -12,25 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
 import uuid
 import pytest
-from datetime import datetime
 from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType
 
-from settlement_report_job.domain.calculation_type import CalculationType
+from dbutils_fixture import DBUtilsFixture
+from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from tests.fixtures import DBUtilsFixture
 
-from settlement_report_job.infrastructure import database_definitions
-from settlement_report_job.infrastructure.schemas.metering_point_time_series_v1 import (
-    metering_point_time_series_v1,
+
+from data_seeding import (
+    standard_wholesale_fixing_scenario_data_generator,
+    standard_balance_fixing_scenario_data_generator,
 )
-from test_data_helper import write_input_test_data_to_table
+from data_seeding.write_test_data import (
+    write_metering_point_time_series_to_delta_table,
+    write_charge_link_periods_to_delta_table,
+    write_charge_price_information_periods_to_delta_table,
+    write_energy_to_delta_table,
+    write_energy_per_es_to_delta_table,
+    write_latest_calculations_by_day_to_delta_table,
+    write_amounts_per_charge_to_delta_table,
+    write_metering_point_periods_to_delta_table,
+)
 
 
 @pytest.fixture(scope="session")
@@ -41,41 +50,183 @@ def dbutils() -> DBUtilsFixture:
     return DBUtilsFixture()
 
 
-@pytest.fixture(scope="session")
-def default_wholesale_fixing_settlement_report_args(
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_before_tests(
+    input_database_location: str,
+):
+
+    if os.path.exists(input_database_location):
+        shutil.rmtree(input_database_location)
+
+    yield
+
+    # Add cleanup code to be run after the tests
+
+
+@pytest.fixture(scope="function")
+def standard_wholesale_fixing_scenario_args(
     settlement_reports_output_path: str,
 ) -> SettlementReportArgs:
     return SettlementReportArgs(
         report_id=str(uuid.uuid4()),
-        period_start=datetime(2024, 6, 30, 22, 0, 0),
-        period_end=datetime(2024, 7, 31, 22, 0, 0),
+        period_start=standard_wholesale_fixing_scenario_data_generator.FROM_DATE,
+        period_end=standard_wholesale_fixing_scenario_data_generator.TO_DATE,
         calculation_type=CalculationType.WHOLESALE_FIXING,
         calculation_id_by_grid_area={
-            "804": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
-            "805": uuid.UUID("6aea02f6-6f20-40c5-9a95-f419a1245d7e"),
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[0]: uuid.UUID(
+                standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
+            ),
+            standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[1]: uuid.UUID(
+                standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
+            ),
         },
+        grid_area_codes=None,
         split_report_by_grid_area=True,
         prevent_large_text_files=False,
         time_zone="Europe/Copenhagen",
         catalog_name="spark_catalog",
-        energy_supplier_id="1234567890123",
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        requesting_actor_id="1111111111111",
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,  # using system operator since it is more complex (requires filter based on charge owner)
+        requesting_actor_id=standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITHOUT_TAX,
         settlement_reports_output_path=settlement_reports_output_path,
+        include_basis_data=True,
+    )
+
+
+@pytest.fixture(scope="function")
+def standard_wholesale_fixing_scenario_energy_supplier_args(
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> SettlementReportArgs:
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.ENERGY_SUPPLIER
+    )
+    energy_supplier_id = (
+        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
+    )
+    standard_wholesale_fixing_scenario_args.requesting_actor_id = energy_supplier_id
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = [energy_supplier_id]
+    return standard_wholesale_fixing_scenario_args
+
+
+@pytest.fixture(scope="function")
+def standard_wholesale_fixing_scenario_grid_access_provider_args(
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> SettlementReportArgs:
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    standard_wholesale_fixing_scenario_args.requesting_actor_id = (
+        standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITH_TAX
+    )
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+    return standard_wholesale_fixing_scenario_args
+
+
+@pytest.fixture(scope="function")
+def standard_balance_fixing_scenario_args(
+    settlement_reports_output_path: str,
+) -> SettlementReportArgs:
+    return SettlementReportArgs(
+        report_id=str(uuid.uuid4()),
+        period_start=standard_balance_fixing_scenario_data_generator.FROM_DATE,
+        period_end=standard_balance_fixing_scenario_data_generator.TO_DATE,
+        calculation_type=CalculationType.BALANCE_FIXING,
+        calculation_id_by_grid_area=None,
+        grid_area_codes=standard_balance_fixing_scenario_data_generator.GRID_AREAS,
+        split_report_by_grid_area=True,
+        prevent_large_text_files=False,
+        time_zone="Europe/Copenhagen",
+        catalog_name="spark_catalog",
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
+        requesting_actor_id="1212121212121",
+        settlement_reports_output_path=settlement_reports_output_path,
+        include_basis_data=True,
     )
 
 
 @pytest.fixture(scope="session")
-def metering_point_time_series_written_to_delta_table(
-    spark: SparkSession, input_database_location: str, test_files_folder_path: str
+def standard_balance_fixing_scenario_data_written_to_delta(
+    spark: SparkSession,
+    input_database_location: str,
 ) -> None:
-    write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/metering_point_time_series_v1.csv",
-        database_name=database_definitions.WholesaleSettlementReportDatabase.DATABASE_NAME,
-        table_name=database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME,
-        table_location=f"{input_database_location}/{database_definitions.WholesaleSettlementReportDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME}",
-        schema=metering_point_time_series_v1,
+    time_series_df = standard_balance_fixing_scenario_data_generator.create_metering_point_time_series(
+        spark
+    )
+    write_metering_point_time_series_to_delta_table(
+        spark, time_series_df, input_database_location
+    )
+
+    energy_df = standard_balance_fixing_scenario_data_generator.create_energy(spark)
+    write_energy_to_delta_table(spark, energy_df, input_database_location)
+
+    energy_per_es_df = (
+        standard_balance_fixing_scenario_data_generator.create_energy_per_es(spark)
+    )
+    write_energy_per_es_to_delta_table(spark, energy_per_es_df, input_database_location)
+
+    latest_calculations_by_day = (
+        standard_balance_fixing_scenario_data_generator.create_latest_calculations(
+            spark
+        )
+    )
+    write_latest_calculations_by_day_to_delta_table(
+        spark, latest_calculations_by_day, input_database_location
+    )
+
+
+@pytest.fixture(scope="session")
+def standard_wholesale_fixing_scenario_data_written_to_delta(
+    spark: SparkSession,
+    input_database_location: str,
+) -> None:
+    metering_point_periods = (
+        standard_wholesale_fixing_scenario_data_generator.create_metering_point_periods(
+            spark
+        )
+    )
+    write_metering_point_periods_to_delta_table(
+        spark, metering_point_periods, input_database_location
+    )
+
+    time_series = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
+        spark
+    )
+    write_metering_point_time_series_to_delta_table(
+        spark, time_series, input_database_location
+    )
+
+    charge_link_periods = (
+        standard_wholesale_fixing_scenario_data_generator.create_charge_link_periods(
+            spark
+        )
+    )
+    write_charge_link_periods_to_delta_table(
+        spark, charge_link_periods, input_database_location
+    )
+
+    charge_price_information_periods = standard_wholesale_fixing_scenario_data_generator.create_charge_price_information_periods(
+        spark
+    )
+    write_charge_price_information_periods_to_delta_table(
+        spark, charge_price_information_periods, input_database_location
+    )
+
+    energy = standard_wholesale_fixing_scenario_data_generator.create_energy(spark)
+    write_energy_to_delta_table(spark, energy, input_database_location)
+
+    energy_per_es = (
+        standard_wholesale_fixing_scenario_data_generator.create_energy_per_es(spark)
+    )
+    write_energy_per_es_to_delta_table(spark, energy_per_es, input_database_location)
+
+    amounts_per_charge = (
+        standard_wholesale_fixing_scenario_data_generator.create_amounts_per_charge(
+            spark
+        )
+    )
+    write_amounts_per_charge_to_delta_table(
+        spark, amounts_per_charge, input_database_location
     )
 
 
@@ -214,3 +365,14 @@ def spark(
 
     yield session
     session.stop()
+
+
+@pytest.fixture(autouse=True)
+def configure_dummy_logging() -> None:
+    """Ensure that logging hooks don't fail due to _TRACER_NAME not being set."""
+
+    from settlement_report_job.logging.logging_configuration import configure_logging
+
+    configure_logging(
+        cloud_role_name="any-cloud-role-name", tracer_name="any-tracer-name"
+    )

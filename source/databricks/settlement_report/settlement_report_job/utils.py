@@ -24,8 +24,7 @@ from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.infrastructure.column_names import (
-    DataProductColumnNames,
+from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 
@@ -101,13 +100,16 @@ def get_dbutils(spark: SparkSession) -> Any:
     return dbutils
 
 
+def _get_csv_writer_options() -> dict[str, str]:
+    return {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+
+
 def write_files(
     df: DataFrame,
     path: str,
-    partition_by_chunk_index: bool,
-    partition_by_grid_area: bool,
+    partition_columns: list[str],
     order_by: list[str],
-    rows_per_file: int = 1_000_000,
+    rows_per_file: int,
 ) -> list[str]:
     """Write a DataFrame to multiple files.
 
@@ -115,31 +117,28 @@ def write_files(
         df (DataFrame): DataFrame to write.
         path (str): Path to write the files.
         rows_per_file (int): Number of rows per file.
-        partition_by_chunk_index (bool): Whether to split the files.
-        partition_by_grid_area (bool): Whether to split the files by grid area.
+        partition_columns: list[str]: Columns to partition by.
         order_by (list[str]): Columns to order by.
 
     Returns:
         list[str]: Headers for the csv file.
     """
-
-    partition_columns: list[str] = []
-    if partition_by_grid_area:
-        partition_columns.append(DataProductColumnNames.grid_area_code)
-
-    if partition_by_chunk_index:
+    if EphemeralColumns.chunk_index in partition_columns:
         w = Window().orderBy(order_by)
-        chunk_index_col = F.floor(F.row_number().over(w) / F.lit(rows_per_file))
+        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
-        partition_columns.append(EphemeralColumns.chunk_index)
 
-    df = df.orderBy(order_by)
+    if len(order_by) > 0:
+        df = df.orderBy(*order_by)
 
-    print("writing to path: " + path)
+    csv_writer_options = _get_csv_writer_options()
+
     if partition_columns:
-        df.write.mode("overwrite").partitionBy(partition_columns).csv(path)
+        df.write.mode("overwrite").options(**csv_writer_options).partitionBy(
+            partition_columns
+        ).csv(path)
     else:
-        df.write.mode("overwrite").csv(path)
+        df.write.mode("overwrite").options(**csv_writer_options).csv(path)
 
     return [c for c in df.columns if c not in partition_columns]
 
@@ -148,17 +147,15 @@ def get_new_files(
     spark_output_path: str,
     report_output_path: str,
     file_name_factory: FileNameFactory,
-    partition_by_chunk_index: bool,
-    partition_by_grid_area: bool,
+    partition_columns: list[str],
 ) -> list[TmpFile]:
     """Get the new files to move to the final location.
 
     Args:
+        partition_columns:
         spark_output_path (str): The path where the files are written.
         report_output_path: The path where the files will be moved.
         file_name_factory (FileNameFactory): Factory class for creating file names for the csv files.
-        partition_by_chunk_index (bool): Whether the files are split or not.
-        partition_by_grid_area (bool): Whether the files are split by grid area or not.
 
     Returns:
         list[dict[str, Path]]: List of dictionaries with the source and destination
@@ -167,9 +164,14 @@ def get_new_files(
     files = [f for f in Path(spark_output_path).rglob("*.csv")]
     new_files = []
 
+    partition_by_grid_area = (
+        EphemeralColumns.grid_area_code_partitioning in partition_columns
+    )
+    partition_by_chunk_index = EphemeralColumns.chunk_index in partition_columns
+
     regex = spark_output_path
     if partition_by_grid_area:
-        regex = f"{regex}/{DataProductColumnNames.grid_area_code}=(\\w{{3}})"
+        regex = f"{regex}/{EphemeralColumns.grid_area_code_partitioning}=(\\w{{3}})"
 
     if partition_by_chunk_index:
         regex = f"{regex}/{EphemeralColumns.chunk_index}=(\\d+)"
@@ -180,15 +182,28 @@ def get_new_files(
             raise ValueError(f"File {f} does not match the expected pattern")
 
         groups = partition_match.groups()
-        grid_area = groups[0]
-        chunk_index = groups[1] if len(groups) > 1 else None
+        group_count = 0
+
+        if partition_by_grid_area:
+            grid_area = groups[group_count]
+            group_count += 1
+        else:
+            grid_area = None
+
+        if partition_by_chunk_index and len(files) > 1:
+            chunk_index = groups[group_count]
+            group_count += 1
+        else:
+            chunk_index = None
 
         file_name = file_name_factory.create(
-            grid_area, energy_supplier_id=None, chunk_index=chunk_index
+            grid_area_code=grid_area,
+            chunk_index=chunk_index,
         )
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
         new_files.append(TmpFile(f, new_name, tmp_dst))
+
     return new_files
 
 

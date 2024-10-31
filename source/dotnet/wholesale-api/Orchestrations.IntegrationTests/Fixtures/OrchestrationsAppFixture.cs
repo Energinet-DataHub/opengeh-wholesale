@@ -32,7 +32,6 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.RevisionLog.Integration.Options;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -76,11 +75,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            IntegrationTestConfiguration.Credential);
 
         ServiceBusListenerMock = new ServiceBusListenerMock(
             TestLogger,
-            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace);
+            IntegrationTestConfiguration.ServiceBusFullyQualifiedNamespace,
+            IntegrationTestConfiguration.Credential);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
@@ -372,14 +373,6 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.FullyQualifiedNamespace)}",
             ServiceBusResourceProvider.FullyQualifiedNamespace);
-
-        // Settlement Report blob storage configuration
-        appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{SettlementReportStorageOptions.SectionName}__{nameof(SettlementReportStorageOptions.StorageContainerName)}",
-            "settlement-report-container");
-        appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{SettlementReportStorageOptions.SectionName}__{nameof(SettlementReportStorageOptions.StorageAccountUri)}",
-            AzuriteManager.BlobStorageServiceUri + "/");
 
         // Override default CalculationJob status monitor configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
