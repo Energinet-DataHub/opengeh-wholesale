@@ -1,5 +1,5 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_8.0.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
@@ -8,28 +8,6 @@ module "sb_domain_relay" {
   location                   = azurerm_resource_group.this.location
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_restrictions            = var.ip_restrictions
-  # TODO: remove auth_rules when subsystems use RBAC
-  auth_rules = [
-    {
-      name   = "listen",
-      listen = true
-    },
-    {
-      name = "send",
-      send = true
-    },
-    {
-      name   = "transceiver",
-      send   = true
-      listen = true
-    },
-    {
-      name   = "manage",
-      send   = true
-      listen = true
-      manage = true
-    },
-  ]
   audit_storage_account = var.enable_audit_logs ? {
     id = module.st_audit_logs.id
   } : null
@@ -39,42 +17,6 @@ resource "azurerm_role_assignment" "spn_sbns" {
   scope                = module.sb_domain_relay.id
   role_definition_name = "Azure Service Bus Data Owner"
   principal_id         = data.azurerm_client_config.current.object_id
-}
-
-# TODO: remove this when subsystems use RBAC
-module "kvs_sb_domain_relay_listen_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
-
-  name         = "sb-domain-relay-listen-connection-string"
-  value        = module.sb_domain_relay.primary_connection_strings["listen"]
-  key_vault_id = module.kv_shared.id
-}
-
-# TODO: remove this when subsystems use RBAC
-module "kvs_sb_domain_relay_send_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
-
-  name         = "sb-domain-relay-send-connection-string"
-  value        = module.sb_domain_relay.primary_connection_strings["send"]
-  key_vault_id = module.kv_shared.id
-}
-
-# TODO: remove this when subsystems use RBAC
-module "kvs_sb_domain_relay_transceiver_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
-
-  name         = "sb-domain-relay-transceiver-connection-string"
-  value        = module.sb_domain_relay.primary_connection_strings["transceiver"]
-  key_vault_id = module.kv_shared.id
-}
-
-# TODO: remove this when subsystems use RBAC
-module "kvs_sb_domain_relay_manage_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
-
-  name         = "sb-domain-relay-manage-connection-string"
-  value        = module.sb_domain_relay.primary_connection_strings["manage"]
-  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_sb_domain_relay_id" {
