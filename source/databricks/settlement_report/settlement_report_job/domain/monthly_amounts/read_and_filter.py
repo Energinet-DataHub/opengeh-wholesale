@@ -53,9 +53,10 @@ def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFram
         & (col(DataProductColumnNames.time) < args.period_end)
     )
 
-    df = df.where(
-        filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
-    )
+    if args.calculation_id_by_grid_area:
+        df = df.where(
+            filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
+        )
 
     if args.energy_supplier_ids:
         df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
