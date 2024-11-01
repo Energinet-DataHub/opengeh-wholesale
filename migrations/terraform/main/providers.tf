@@ -3,17 +3,17 @@ terraform {
     # It is recommended to pin to a given version of the Azure provider
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.3.0"
+      version = "4.6.0"
     }
 
     databricks = {
       source  = "databricks/databricks"
-      version = "1.49.1"
+      version = "1.55.0"
     }
 
     azuread = {
       source  = "hashicorp/azuread"
-      version = "3.0.1"
+      version = "3.0.2"
     }
 
     azapi = {

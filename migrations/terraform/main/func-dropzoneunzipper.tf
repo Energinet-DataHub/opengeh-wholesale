@@ -1,5 +1,5 @@
 module "func_dropzoneunzipper" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.1.1"
 
   name                                   = "dropzoneunzipper"
   project_name                           = var.domain_name_short

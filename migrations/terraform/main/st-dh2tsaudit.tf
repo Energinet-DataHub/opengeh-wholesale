@@ -1,5 +1,5 @@
 module "st_dh2timeseries_audit" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
 
   name                       = "dh2tsaudit"
   project_name               = var.domain_name_short
@@ -17,7 +17,7 @@ module "st_dh2timeseries_audit" {
 }
 
 module "kvs_st_dh2timeseries_audit" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-dh2timeseries-audit-name"
   value        = module.st_dh2timeseries_audit.name

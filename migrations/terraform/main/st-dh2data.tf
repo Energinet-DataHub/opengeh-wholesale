@@ -1,5 +1,5 @@
 module "st_dh2data" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
 
   name                       = "dh2data"
   project_name               = var.domain_name_short
@@ -17,7 +17,7 @@ module "st_dh2data" {
 }
 
 module "kvs_st_dh2_data_lake_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "st-dh2-data-lake-name"
   value        = module.st_dh2data.name

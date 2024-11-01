@@ -1,5 +1,5 @@
 module "func_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_3.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.0.0"
 
   name                                   = "timeseriesretriever"
   project_name                           = var.domain_name_short
@@ -65,7 +65,7 @@ module "func_timeseriesretriever" {
 }
 
 module "durabletask_storage_account_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.0.1"
 
   name                       = "tsretrdrbl"
   project_name               = var.domain_name_short
