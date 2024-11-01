@@ -18,6 +18,7 @@ from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
+    CHARGE_TYPES,
 )
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
@@ -43,7 +44,9 @@ def prepare_for_csv(
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(CsvColumnNames.metering_point_type),
-        F.col(DataProductColumnNames.charge_type).alias(CsvColumnNames.charge_type),
+        map_from_dict(CHARGE_TYPES)[F.col(DataProductColumnNames.charge_type)].alias(
+            CsvColumnNames.charge_type
+        ),
         F.col(DataProductColumnNames.charge_owner_id).alias(
             CsvColumnNames.charge_owner_id
         ),
