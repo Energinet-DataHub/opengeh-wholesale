@@ -36,6 +36,7 @@ setup(
             "create_quarterly_time_series = settlement_report_job.entry_point:start_quarterly_time_series",
             "create_charge_links          = settlement_report_job.entry_point:start_charge_links",
             "create_energy_results        = settlement_report_job.entry_point:start_energy_results",
+            "create_wholesale_results     = settlement_report_job.entry_point:start_wholesale_results",
             "create_zip                   = settlement_report_job.entry_point:start_zip",
         ]
     },
