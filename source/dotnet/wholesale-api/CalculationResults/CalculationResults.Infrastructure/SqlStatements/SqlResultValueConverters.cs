@@ -39,13 +39,6 @@ public static class SqlResultValueConverters
         return int.Parse(value, CultureInfo.InvariantCulture);
     }
 
-    public static long? ToLong(string? value)
-    {
-        if (value == null)
-            return null;
-        return long.Parse(value, CultureInfo.InvariantCulture);
-    }
-
     public static decimal? ToDecimal(string? value)
     {
         if (value == null)
@@ -73,25 +66,5 @@ public static class SqlResultValueConverters
     public static Guid ToGuid(string value)
     {
         return Guid.Parse(value);
-    }
-
-    public static bool ToBool(string value)
-    {
-        return value switch
-        {
-            "true" => true,
-            "false" => false,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(value),
-                actualValue: value,
-                "Value does not contain a valid string representation of a boolean."),
-        };
-    }
-
-    public static T ToType<T>(string value)
-    {
-        if (value == null)
-            return default!;
-        return JsonSerializer.Deserialize<T>(value)!;
     }
 }
