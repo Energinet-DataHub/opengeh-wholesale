@@ -112,7 +112,7 @@ def start_task_with_deps(
 
             report_generator_instance = ReportGenerator(spark, dbutils, args)
 
-            execute_task(report_generator_instance, spark, dbutils, args)
+            execute_task(report_generator_instance)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
