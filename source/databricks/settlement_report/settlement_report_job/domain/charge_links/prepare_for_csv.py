@@ -32,9 +32,8 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def prepare_for_csv(
     charge_link_periods: DataFrame,
-    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
-    csv_df = charge_link_periods.select(
+    columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
             EphemeralColumns.grid_area_code_partitioning
         ),
@@ -54,12 +53,12 @@ def prepare_for_csv(
             CsvColumnNames.charge_link_from_date
         ),
         F.col(DataProductColumnNames.to_date).alias(CsvColumnNames.charge_link_to_date),
-        F.when(
-            F.lit(
-                DataProductColumnNames.energy_supplier_id in charge_link_periods.columns
-            ),
-            F.col(DataProductColumnNames.energy_supplier_id),
-        ).alias(CsvColumnNames.energy_supplier_id),
-    )
+    ]
+    if DataProductColumnNames.energy_supplier_id in charge_link_periods.columns:
+        columns.append(
+            F.col(DataProductColumnNames.energy_supplier_id).alias(
+                CsvColumnNames.energy_supplier_id
+            )
+        )
 
-    return csv_df
+    return charge_link_periods.select(columns)
