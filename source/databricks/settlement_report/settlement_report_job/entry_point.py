@@ -24,7 +24,7 @@ from opentelemetry.trace import SpanKind
 
 import settlement_report_job.logging.logging_configuration as config
 from settlement_report_job.logging.span_recording import span_record_exception
-import settlement_report_job.domain.report_generator as report_generator
+from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_job_arguments,
@@ -38,27 +38,27 @@ from settlement_report_job.utils import get_dbutils
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start_hourly_time_series() -> None:
-    _start_task(report_generator.execute_hourly_time_series)
+    _start_task(ReportGenerator.execute_hourly_time_series)
 
 
 def start_quarterly_time_series() -> None:
-    _start_task(report_generator.execute_quarterly_time_series)
+    _start_task(ReportGenerator.execute_quarterly_time_series)
 
 
 def start_charge_links() -> None:
-    _start_task(report_generator.execute_charge_links)
+    _start_task(ReportGenerator.execute_charge_links)
 
 
 def start_energy_results() -> None:
-    _start_task(report_generator.execute_energy_results)
+    _start_task(ReportGenerator.execute_energy_results)
 
 
 def start_wholesale_results() -> None:
-    _start_task(report_generator.execute_wholesale_results)
+    _start_task(ReportGenerator.execute_wholesale_results)
 
 
 def start_zip() -> None:
-    _start_task(report_generator.execute_zip)
+    _start_task(ReportGenerator.execute_zip)
 
 
 def _start_task(
@@ -110,9 +110,7 @@ def start_task_with_deps(
             spark = initialize_spark()
             dbutils = get_dbutils(spark)
 
-            report_generator_instance = report_generator.ReportGenerator(
-                spark, dbutils, args
-            )
+            report_generator_instance = ReportGenerator(spark, dbutils, args)
 
             execute_task(report_generator_instance, spark, dbutils, args)
 
