@@ -14,7 +14,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pyspark.sql import DataFrame, functions as F
+from pyspark.sql import DataFrame
 
 from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
@@ -54,26 +54,30 @@ def read_and_filter(
         requesting_actor_market_role=requesting_actor_market_role,
     )
 
-    charge_link_periods = _add_additional_columns_from_metering_point_periods(
+    charge_link_periods = _join_with_metering_point_periods(
         charge_link_periods,
         period_start,
         period_end,
         calculation_id_by_grid_area,
         energy_supplier_ids,
-        requesting_actor_market_role,
         repository,
     )
+
+    charge_link_periods = charge_link_periods.select(
+        _get_select_columns(requesting_actor_market_role)
+    )
+
+    charge_link_periods = merge_connected_periods(charge_link_periods)
 
     return charge_link_periods
 
 
-def _add_additional_columns_from_metering_point_periods(
+def _join_with_metering_point_periods(
     charge_link_periods,
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
-    requesting_actor_market_role: MarketRole,
     repository: WholesaleRepository,
 ):
     metering_point_periods = read_metering_point_periods_by_calculation_ids(
@@ -84,15 +88,17 @@ def _add_additional_columns_from_metering_point_periods(
         energy_supplier_ids=energy_supplier_ids,
     )
 
-    metering_point_periods = _merge_metering_point_periods(
-        metering_point_periods, requesting_actor_market_role
-    )
-
     charge_link_periods = join_metering_points_periods_and_charge_links_periods(
         charge_link_periods, metering_point_periods
     )
 
-    return charge_link_periods.select(
+    return charge_link_periods
+
+
+def _get_select_columns(
+    requesting_actor_market_role: MarketRole,
+) -> list[str]:
+    select_columns = [
         DataProductColumnNames.metering_point_id,
         DataProductColumnNames.metering_point_type,
         DataProductColumnNames.charge_type,
@@ -102,41 +108,11 @@ def _add_additional_columns_from_metering_point_periods(
         DataProductColumnNames.from_date,
         DataProductColumnNames.to_date,
         DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.energy_supplier_id,
-    )
+    ]
+    if requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.DATAHUB_ADMINISTRATOR,
+    ]:
+        select_columns.append(DataProductColumnNames.energy_supplier_id)
 
-
-def _merge_metering_point_periods(
-    metering_point_periods: DataFrame,
-    requesting_actor_market_role: MarketRole,
-) -> DataFrame:
-    """
-    Before joining metering point periods on the charge link periods, the metering point periods must be merged if
-    for instance a period is split in two for instance due to a change in resolution, balance responsible party or energy
-    supplier (grid access providers only)
-    """
-    metering_point_periods = metering_point_periods.select(
-        DataProductColumnNames.calculation_id,
-        DataProductColumnNames.metering_point_id,
-        DataProductColumnNames.metering_point_type,
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.from_date,
-        DataProductColumnNames.to_date,
-        DataProductColumnNames.energy_supplier_id,
-    )
-    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        # grid access provider should not see energy suppliers. We need to remove this columns so that a potential
-        # change in energy supplier will not be appearing in the merged periods
-        metering_point_periods = metering_point_periods.drop(
-            DataProductColumnNames.energy_supplier_id
-        )
-
-    metering_point_periods = merge_connected_periods(metering_point_periods)
-
-    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
-        # add the energy_supplier_id column again to have the same columns in all cases
-        metering_point_periods = metering_point_periods.withColumn(
-            DataProductColumnNames.energy_supplier_id, F.lit(None)
-        )
-
-    return metering_point_periods
+    return select_columns

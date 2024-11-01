@@ -54,15 +54,12 @@ def prepare_for_csv(
             CsvColumnNames.charge_link_from_date
         ),
         F.col(DataProductColumnNames.to_date).alias(CsvColumnNames.charge_link_to_date),
-        F.col(DataProductColumnNames.energy_supplier_id).alias(
-            CsvColumnNames.energy_supplier_id
-        ),
+        F.when(
+            F.lit(
+                DataProductColumnNames.energy_supplier_id in charge_link_periods.columns
+            ),
+            F.col(DataProductColumnNames.energy_supplier_id),
+        ).alias(CsvColumnNames.energy_supplier_id),
     )
-
-    if requesting_actor_market_role in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
-    ]:
-        csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
 
     return csv_df

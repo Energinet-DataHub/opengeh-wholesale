@@ -14,7 +14,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pyspark.sql import DataFrame, functions as F
+from pyspark.sql import DataFrame
 
 from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
