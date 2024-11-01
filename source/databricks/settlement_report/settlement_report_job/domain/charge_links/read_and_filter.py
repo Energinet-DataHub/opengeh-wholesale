@@ -73,13 +73,13 @@ def read_and_filter(
 
 
 def _join_with_metering_point_periods(
-    charge_link_periods,
+    charge_link_periods: DataFrame,
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
     repository: WholesaleRepository,
-):
+) -> DataFrame:
     metering_point_periods = read_metering_point_periods_by_calculation_ids(
         repository=repository,
         period_start=period_start,
