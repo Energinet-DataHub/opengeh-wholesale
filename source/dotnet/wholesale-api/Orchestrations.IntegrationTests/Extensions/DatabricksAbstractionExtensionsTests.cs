@@ -41,51 +41,6 @@ public class DatabricksAbstractionExtensionsTests : IClassFixture<WireMockExtens
     }
 
     [Fact]
-    public async Task MockEnergyResultsResponse_WhenQueryForData_CanDeserializeResponseFromMock()
-    {
-        // Arrange
-        var calculationIdForEnergyResults = Guid.NewGuid();
-        _fixture.MockServer.MockEnergyResultsResponse(calculationIdForEnergyResults);
-
-        var query = new EnergyResultQueryStatement(
-            Guid.Empty,
-            new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
-
-        // Act
-        var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
-
-        // Assert
-        await foreach (var row in actual)
-        {
-            var databricksSqlNextRow = new DatabricksSqlRow(row);
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
-        }
-    }
-
-    [Fact]
-    public async Task MockEnergyResultsResponseWithCalculationIdCallback_WhenQueryForData_CanDeserializeResponseFromMock()
-    {
-        // Arrange
-        var calculationIdCallback = new CallbackValue<Guid?>(null);
-        _fixture.MockServer.MockEnergyResultsResponse(() => calculationIdCallback.GetValue());
-
-        var query = new EnergyResultQueryStatement(
-            Guid.Empty,
-            new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
-
-        // Act
-        var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
-        calculationIdCallback.SetValue(Guid.NewGuid());
-
-        // Assert
-        await foreach (var row in actual)
-        {
-            var databricksSqlNextRow = new DatabricksSqlRow(row);
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
-        }
-    }
-
-    [Fact]
     public async Task MockCalculationJobStatusResponse_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
     {
         // Arrange

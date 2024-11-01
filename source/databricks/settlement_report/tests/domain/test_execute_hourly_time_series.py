@@ -3,7 +3,8 @@ from pyspark.sql import SparkSession
 
 from tests.dbutils_fixture import DBUtilsFixture
 
-from domain.assertion import assert_file_names_and_columns
+
+from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.report_generator import execute_hourly_time_series
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
