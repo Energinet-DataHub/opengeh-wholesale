@@ -33,7 +33,7 @@ public sealed class PeriodValidationRule(
 
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for 3 år og 3 måneder tilbage i tid / It is not possible to request data 3 years and 3 months back in time",
+            "Der kan ikke anmodes om data for 3 år og 6 måneder tilbage i tid / It is not possible to request data 3 years and 6 months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
@@ -99,7 +99,7 @@ public sealed class PeriodValidationRule(
 
     private void MustNotBe3YearsAnd3MonthsOld(Instant periodStart, ICollection<ValidationError> errors)
     {
-        if (_periodValidationHelper.IsMonthOlder3Years2Months(periodStart))
+        if (_periodValidationHelper.IsMonthOfDateOlderThanXYearsAndYMonths(periodStart, 3, 6))
         {
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
         }
@@ -135,8 +135,9 @@ public sealed class PeriodValidationRule(
         if (_periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
-        errors.Add(zonedDateTime.IsDaylightSavingTime()
-            ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
-            : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
+        errors.Add(
+            zonedDateTime.IsDaylightSavingTime()
+                ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
+                : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
     }
 }

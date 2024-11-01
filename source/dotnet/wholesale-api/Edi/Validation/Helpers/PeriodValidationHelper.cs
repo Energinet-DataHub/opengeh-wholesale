@@ -46,17 +46,19 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
         return zonedEndDateTime.LocalDateTime > monthsFromStart;
     }
 
-    public bool IsMonthOlder3Years2Months(Instant periodStart)
+    public bool IsMonthOfDateOlderThanXYearsAndYMonths(Instant periodStart, int years, int months)
     {
-        var zonedDateTime = new ZonedDateTime(periodStart, _dateTimeZone);
-        var zonedCurrentDataTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
-        var threeYearsAndTwoMonthsAgo = zonedCurrentDataTime.LocalDateTime.PlusYears(-3).PlusMonths(-2);
+        var dateInQuestion = periodStart.InZone(_dateTimeZone);
+        var threeYearsAndTwoMonthsAgo = _clock.GetCurrentInstant()
+            .InZone(_dateTimeZone)
+            .Date.PlusYears(-years)
+            .PlusMonths(-months);
 
-        if (zonedDateTime.Year > threeYearsAndTwoMonthsAgo.Year)
+        if (dateInQuestion.Year > threeYearsAndTwoMonthsAgo.Year)
             return false;
 
-        if (zonedDateTime.Year == threeYearsAndTwoMonthsAgo.Year)
-            return zonedDateTime.Month < threeYearsAndTwoMonthsAgo.Month;
+        if (dateInQuestion.Year == threeYearsAndTwoMonthsAgo.Year)
+            return dateInQuestion.Month < threeYearsAndTwoMonthsAgo.Month;
 
         return true;
     }

@@ -95,29 +95,36 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodIsLessThan3AndAHalfYearBackInTime_ReturnsSuccessfulValidation()
+    public async Task
+        Validate_WhenPeriodIsMoreThan3AndAHalfYearBackInTimeButPartOfCutOffMonth_ReturnsSuccessfulValidation()
     {
-        // Arrange
-        var periodStart = _clockMock.Object.GetCurrentInstant()
-            .InZone(_timeZone)
-            .Date.PlusYears(-3)
-            .PlusMonths(-6)
-            .PlusDays(1)
-            .AtMidnight()
-            .InZoneStrictly(_timeZone);
+        // Prerequisite: The current time is NOT the start of a month.
+        _clockMock.Object.GetCurrentInstant().ToDateTimeUtc().Date.Should().NotHaveDay(1).And.NotHaveDay(2);
 
-        var periodEnd = _clockMock.Object.GetCurrentInstant()
-            .InZone(_timeZone)
-            .Date.PlusYears(-3)
-            .PlusMonths(-6)
-            .PlusDays(2)
-            .AtMidnight()
-            .InZoneStrictly(_timeZone);
+        // Arrange
+        var periodStart = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
+            .InZone(_timeZone) // 2024-11-15 17:46:43 CET
+            .Date.PlusYears(-3) // 2021-11-15
+            .PlusMonths(-6) // 2021-05-15
+            .With(DateAdjusters.StartOfMonth) // 2021-05-01
+            .AtMidnight() // 2021-05-01 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-05-01 00:00:00 CEST
+            .ToInstant(); // 2021-04-30 22:00:00 UTC
+
+        var periodEnd = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
+            .InZone(_timeZone) // 2024-11-15 17:46:43 CET
+            .Date.PlusYears(-3) // 2021-11-15
+            .PlusMonths(-6) // 2021-05-15
+            .With(DateAdjusters.StartOfMonth) // 2021-05-01
+            .PlusDays(1) // 2021-05-02
+            .AtMidnight() // 2021-05-02 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-05-02 00:00:00 CEST
+            .ToInstant(); // 2021-05-01 22:00:00 UTC
 
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(periodStart.ToInstant().ToString())
-            .WithEndDate(periodEnd.ToInstant().ToString())
+            .WithStartDate(periodStart.ToString())
+            .WithEndDate(periodEnd.ToString())
             .Build();
 
         // Act
@@ -128,31 +135,69 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodIsMoreThan3AndAHalfYearBackInTime_ReturnsUnsuccessfulValidation()
+    public async Task
+        Validate_WhenPeriodOverlapsCutOffAt3AndAHalfYearBackInTime_ReturnsSuccessfulValidation()
     {
+        // Prerequisite: The current time is NOT the start of a month.
+        _clockMock.Object.GetCurrentInstant().ToDateTimeUtc().Date.Should().NotHaveDay(1).And.NotHaveDay(2);
+
         // Arrange
         var periodStart = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
             .InZone(_timeZone) // 2024-11-15 17:46:43 CET
             .Date.PlusYears(-3) // 2021-11-15
             .PlusMonths(-6) // 2021-05-15
-            .AtMidnight() // 2021-05-15 00:00:00 UTC
-            .InZoneStrictly(_timeZone) // 2021-05-15 00:00:00 CEST
-            .ToInstant(); // 2021-05-14 22:00:00 UTC
-                          // As this is strictly more than 3.5 years ago (compared to the starting UTC instant),
-                          // the validation will fail.
+            .PlusDays(-1) // 2021-05-14
+            .AtMidnight() // 2021-05-14 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-05-14 00:00:00 CEST
+            .ToInstant(); // 2021-05-13 22:00:00 UTC
 
-        var periodEnd = _clockMock.Object.GetCurrentInstant()
-            .InZone(_timeZone)
-            .Date.PlusYears(-3)
-            .PlusMonths(-6)
-            .PlusDays(1)
-            .AtMidnight()
-            .InZoneStrictly(_timeZone);
+        var periodEnd = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
+            .InZone(_timeZone) // 2024-11-15 17:46:43 CET
+            .Date.PlusYears(-3) // 2021-11-15
+            .PlusMonths(-6) // 2021-05-15
+            .PlusDays(1) // 2021-05-16
+            .AtMidnight() // 2021-05-16 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-05-16 00:00:00 CEST
+            .ToInstant(); // 2021-05-15 22:00:00 UTC
 
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithStartDate(periodStart.ToString())
-            .WithEndDate(periodEnd.ToInstant().ToString())
+            .WithEndDate(periodEnd.ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodIsMoreThan3AndAHalfYearBackInTimeAndNotPartOfCutOffMonth_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var periodStart = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
+            .InZone(_timeZone) // 2024-11-15 17:46:43 CET
+            .Date.PlusYears(-3) // 2021-11-15
+            .PlusMonths(-7) // 2021-04-15
+            .AtMidnight() // 2021-04-15 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-04-15 00:00:00 CEST
+            .ToInstant(); // 2021-04-14 22:00:00 UTC
+
+        var periodEnd = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
+            .InZone(_timeZone) // 2024-11-15 17:46:43 CET
+            .Date.PlusYears(-3) // 2021-11-15
+            .PlusMonths(-7) // 2021-04-15
+            .PlusDays(1) // 2021-04-16
+            .AtMidnight() // 2021-04-16 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-04-16 00:00:00 CEST
+            .ToInstant(); // 2021-04-15 22:00:00 UTC
+
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(periodStart.ToString())
+            .WithEndDate(periodEnd.ToString())
             .Build();
 
         // Act
