@@ -18,17 +18,20 @@ namespace Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
 public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
 {
+    private readonly DateTimeZone _dateTimeZone = dateTimeZone;
+    private readonly IClock _clock = clock;
+
     public bool IsMidnight(Instant instant, out ZonedDateTime zonedDateTime)
     {
-        zonedDateTime = new ZonedDateTime(instant, dateTimeZone);
+        zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
 
         return zonedDateTime.TimeOfDay == LocalTime.Midnight;
     }
 
     public bool IsDateOlderThanAllowed(Instant date, int maxYears, int maxMonths)
     {
-        var zonedStartDateTime = new ZonedDateTime(date, dateTimeZone);
-        var zonedCurrentDateTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
+        var zonedStartDateTime = new ZonedDateTime(date, _dateTimeZone);
+        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
         var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-maxYears).PlusMonths(-maxMonths);
 
         return zonedStartDateTime.LocalDateTime < latestStartDate;
@@ -36,8 +39,8 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
 
     public bool IntervalMustBeLessThanAllowedPeriodSize(Instant start, Instant end, int maxAllowedPeriodSizeInMonths)
     {
-        var zonedStartDateTime = new ZonedDateTime(start, dateTimeZone);
-        var zonedEndDateTime = new ZonedDateTime(end, dateTimeZone);
+        var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
+        var zonedEndDateTime = new ZonedDateTime(end, _dateTimeZone);
         var monthsFromStart = zonedStartDateTime.LocalDateTime.PlusMonths(maxAllowedPeriodSizeInMonths);
 
         return zonedEndDateTime.LocalDateTime > monthsFromStart;
@@ -45,8 +48,8 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
 
     public bool IsMonthOlder3Years2Months(Instant periodStart)
     {
-        var zonedDateTime = new ZonedDateTime(periodStart, dateTimeZone);
-        var zonedCurrentDataTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
+        var zonedDateTime = new ZonedDateTime(periodStart, _dateTimeZone);
+        var zonedCurrentDataTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
         var threeYearsAndTwoMonthsAgo = zonedCurrentDataTime.LocalDateTime.PlusYears(-3).PlusMonths(-2);
 
         if (zonedDateTime.Year > threeYearsAndTwoMonthsAgo.Year)

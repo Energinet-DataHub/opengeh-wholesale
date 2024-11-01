@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
@@ -22,21 +23,31 @@ using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
+[SuppressMessage(
+    "StyleCop.CSharp.LayoutRules",
+    "SA1512:Single-line comments should not be followed by blank line",
+    Justification = "Tests")]
 public class AggregatedTimeSeriesRequestValidatorTests
 {
     private readonly IValidator<DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _sut;
+    private readonly Mock<IClock> _clockMock;
+    private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
 
     public AggregatedTimeSeriesRequestValidatorTests()
     {
+        _clockMock = new Mock<IClock>();
+        _clockMock.Setup(c => c.GetCurrentInstant()).Returns(Instant.FromUtc(2024, 11, 15, 16, 46, 43));
+
         IServiceCollection services = new ServiceCollection();
 
-        services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
-        services.AddTransient<IClock>(s => SystemClock.Instance);
+        services.AddTransient<DateTimeZone>(s => _timeZone);
+        services.AddTransient<IClock>(s => _clockMock.Object);
         services.AddTransient<PeriodValidationHelper>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         services.AddScoped<IDatabaseContext, DatabaseContext>();
@@ -77,8 +88,81 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("E17");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("E17");
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodIsLessThan3AndAHalfYearBackInTime_ReturnsSuccessfulValidation()
+    {
+        // Arrange
+        var periodStart = _clockMock.Object.GetCurrentInstant()
+            .InZone(_timeZone)
+            .Date.PlusYears(-3)
+            .PlusMonths(-6)
+            .PlusDays(1)
+            .AtMidnight()
+            .InZoneStrictly(_timeZone);
+
+        var periodEnd = _clockMock.Object.GetCurrentInstant()
+            .InZone(_timeZone)
+            .Date.PlusYears(-3)
+            .PlusMonths(-6)
+            .PlusDays(2)
+            .AtMidnight()
+            .InZoneStrictly(_timeZone);
+
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(periodStart.ToInstant().ToString())
+            .WithEndDate(periodEnd.ToInstant().ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodIsMoreThan3AndAHalfYearBackInTime_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var periodStart = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
+            .InZone(_timeZone) // 2024-11-15 17:46:43 CET
+            .Date.PlusYears(-3) // 2021-11-15
+            .PlusMonths(-6) // 2021-05-15
+            .AtMidnight() // 2021-05-15 00:00:00 UTC
+            .InZoneStrictly(_timeZone) // 2021-05-15 00:00:00 CEST
+            .ToInstant(); // 2021-05-14 22:00:00 UTC
+                          // As this is strictly more than 3.5 years ago (compared to the starting UTC instant),
+                          // the validation will fail.
+
+        var periodEnd = _clockMock.Object.GetCurrentInstant()
+            .InZone(_timeZone)
+            .Date.PlusYears(-3)
+            .PlusMonths(-6)
+            .PlusDays(1)
+            .AtMidnight()
+            .InZoneStrictly(_timeZone);
+
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(periodStart.ToString())
+            .WithEndDate(periodEnd.ToInstant().ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("E17");
     }
 
     [Fact]
@@ -94,8 +178,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("D18");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("D18");
     }
 
     [Fact]
@@ -113,8 +199,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("E16");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("E16");
     }
 
     [Fact]
@@ -130,8 +218,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("D15");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("D15");
     }
 
     [Fact]
@@ -148,8 +238,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("E86");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("E86");
     }
 
     [Fact]
@@ -169,8 +261,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("D11");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("D11");
     }
 
     [Fact]
@@ -188,7 +282,9 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("D11");
+        validationErrors.Should()
+            .ContainSingle()
+            .Which.ErrorCode.Should()
+            .Be("D11");
     }
 }

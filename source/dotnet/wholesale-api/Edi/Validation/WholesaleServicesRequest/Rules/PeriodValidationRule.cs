@@ -18,9 +18,14 @@ using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper)
+public sealed class PeriodValidationRule(
+    DateTimeZone dateTimeZone,
+    PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
+    private readonly PeriodValidationHelper _periodValidationHelper = periodValidationHelper;
+    private readonly DateTimeZone _dateTimeZone = dateTimeZone;
+
     private static readonly ValidationError _invalidDateFormat =
         new(
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z",
@@ -94,7 +99,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
     private void MustNotBe3YearsAnd3MonthsOld(Instant periodStart, ICollection<ValidationError> errors)
     {
-        if (periodValidationHelper.IsMonthOlder3Years2Months(periodStart))
+        if (_periodValidationHelper.IsMonthOlder3Years2Months(periodStart))
         {
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
         }
@@ -105,8 +110,8 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         Instant periodEnd,
         ICollection<ValidationError> errors)
     {
-        var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
-        var zonedEndDateTime = new ZonedDateTime(periodEnd, dateTimeZone);
+        var zonedStartDateTime = new ZonedDateTime(periodStart, _dateTimeZone);
+        var zonedEndDateTime = new ZonedDateTime(periodEnd, _dateTimeZone);
         if (zonedEndDateTime.LocalDateTime.Month > zonedStartDateTime.LocalDateTime.Month
             && zonedEndDateTime.LocalDateTime.Day > zonedStartDateTime.LocalDateTime.Day)
         {
@@ -127,7 +132,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
     {
-        if (periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
+        if (_periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
         errors.Add(zonedDateTime.IsDaylightSavingTime()

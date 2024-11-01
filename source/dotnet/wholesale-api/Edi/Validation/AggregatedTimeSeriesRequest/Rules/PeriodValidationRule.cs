@@ -22,7 +22,9 @@ public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     private readonly int _maxAllowedPeriodSizeInMonths = 1;
-    private readonly int _allowedTimeFrameInYearsFromNow = 3;
+    private readonly int _allowedTimeFrameYearsFromNow = 3;
+    private readonly int _allowedTimeFrameMonthsFromNow = 6;
+    private readonly PeriodValidationHelper _periodValidationHelper = periodValidationHelper;
 
     private static readonly ValidationError _invalidDateFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z", "D66");
     private static readonly ValidationError _invalidWinterMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT23:00:00Z", "D66");
@@ -71,13 +73,13 @@ public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
 
     private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IntervalMustBeLessThanAllowedPeriodSize(start, end, _maxAllowedPeriodSizeInMonths))
+        if (_periodValidationHelper.IntervalMustBeLessThanAllowedPeriodSize(start, end, _maxAllowedPeriodSizeInMonths))
             errors.Add(_periodIsGreaterThenAllowedPeriodSize);
     }
 
     private void StartDateMustBeGreaterThenAllowedYears(Instant start, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IsDateOlderThanAllowed(start, maxYears: _allowedTimeFrameInYearsFromNow, maxMonths: 0))
+        if (_periodValidationHelper.IsDateOlderThanAllowed(start, maxYears: _allowedTimeFrameYearsFromNow, maxMonths: _allowedTimeFrameMonthsFromNow))
             errors.Add(_startDateMustBeLessThen3Years);
     }
 
@@ -93,7 +95,7 @@ public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
 
     private void MustBeMidnight(Instant instant, string propertyName, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
+        if (_periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
         errors.Add(zonedDateTime.IsDaylightSavingTime()
