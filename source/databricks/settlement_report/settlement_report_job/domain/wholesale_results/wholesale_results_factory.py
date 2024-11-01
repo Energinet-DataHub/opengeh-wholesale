@@ -33,6 +33,8 @@ def create_wholesale_results(
         args.calculation_id_by_grid_area,
         args.period_start,
         args.period_end,
+        args.requesting_actor_market_role,
+        args.requesting_actor_id,
         repository,
     )
 
