@@ -31,8 +31,5 @@ public class CalculationScenarioState
 
     public CalculationDto? Calculation { get; set; }
 
-    public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
-        = [];
-
     public IReadOnlyCollection<CalculationCompletedV1> ReceivedCalculationCompletedV1 { get; set; } = [];
 }

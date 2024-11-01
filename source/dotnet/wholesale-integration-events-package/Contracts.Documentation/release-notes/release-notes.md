@@ -1,5 +1,10 @@
 # Wholesale Contracts Release notes
 
+## Version 11.0.0
+
+- Removed the following contracts:
+    - GridLossResultProducedV1
+
 ## Version 10.0.0
 
 - Removed the following contracts:
