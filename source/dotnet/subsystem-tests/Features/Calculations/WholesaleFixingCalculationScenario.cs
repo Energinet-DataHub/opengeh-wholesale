@@ -153,8 +153,8 @@ AppTraces
     {
         var query = $@"
 AppDependencies
-| where Target == ""calculate_exchange""
-| where Name == ""calculate_exchange""
+| where Target == ""energy""
+| where Name == ""energy""
 | where DependencyType == ""InProc""
 | where Success == true
 | where ResultCode == 0
