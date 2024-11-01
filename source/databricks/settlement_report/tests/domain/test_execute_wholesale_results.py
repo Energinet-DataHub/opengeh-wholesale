@@ -1,8 +1,8 @@
 from pyspark.sql import SparkSession
 import pytest
 
-from dbutils_fixture import DBUtilsFixture
-from domain.assertion import assert_file_names_and_columns
+from tests.dbutils_fixture import DBUtilsFixture
+from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_generator import (
     execute_wholesale_results,

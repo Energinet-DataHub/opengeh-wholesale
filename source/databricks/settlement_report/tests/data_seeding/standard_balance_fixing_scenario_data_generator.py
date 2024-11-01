@@ -9,8 +9,8 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
-from test_factories.default_test_data_spec import create_energy_results_data_spec
-from test_factories import (
+from tests.test_factories.default_test_data_spec import create_energy_results_data_spec
+from tests.test_factories import (
     metering_point_time_series_factory,
     latest_calculations_factory,
     energy_factory,

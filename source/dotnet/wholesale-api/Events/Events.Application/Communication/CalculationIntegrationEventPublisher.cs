@@ -32,7 +32,6 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
     private readonly ServiceBusSender _sender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ICalculationCompletedEventProvider _calculationCompletedEventProvider;
-    private readonly IEnergyResultEventProvider _energyResultEventProvider;
     private readonly ILogger _logger;
 
     public CalculationIntegrationEventPublisher(
@@ -40,13 +39,11 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         IAzureClientFactory<ServiceBusSender> senderFactory,
         IServiceBusMessageFactory serviceBusMessageFactory,
         ICalculationCompletedEventProvider calculationCompletedEventProvider,
-        IEnergyResultEventProvider energyResultEventProvider,
         ILogger<CalculationIntegrationEventPublisher> logger)
     {
         _sender = senderFactory.CreateClient(integrationEventsOptions.Value.TopicName);
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _calculationCompletedEventProvider = calculationCompletedEventProvider;
-        _energyResultEventProvider = energyResultEventProvider;
         _logger = logger;
     }
 
@@ -54,7 +51,7 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
     {
         var messageBatch = await _sender.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
-        await foreach (var @event in GetAsync(completedCalculation, orchestrationInstanceId).WithCancellation(cancellationToken).ConfigureAwait(false))
+        foreach (var @event in GetCalculationCompletedEvent(completedCalculation, orchestrationInstanceId))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -81,46 +78,12 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
         }
     }
 
-    private async IAsyncEnumerable<IntegrationEvent> GetAsync(CalculationDto completedCalculation, string orchestrationInstanceId)
+    private IReadOnlyCollection<IntegrationEvent> GetCalculationCompletedEvent(CalculationDto completedCalculation, string orchestrationInstanceId)
     {
-        var hasFailed = false;
-
-        // Publish integration events for energy results
-        var energyResultCount = 0;
-        var energyResultEventProviderEnumerator = _energyResultEventProvider.GetAsync(completedCalculation.CalculationId).GetAsyncEnumerator();
-        try
-        {
-            var hasResult = true;
-            while (hasResult)
-            {
-                try
-                {
-                    hasResult = await energyResultEventProviderEnumerator.MoveNextAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    hasResult = false;
-                    hasFailed = true;
-                    _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{energy_result_count}' energy results before failing.", completedCalculation.CalculationId, energyResultCount);
-                }
-
-                if (hasResult)
-                {
-                    energyResultCount++;
-                    yield return energyResultEventProviderEnumerator.Current;
-                }
-            }
-        }
-        finally
-        {
-            if (energyResultEventProviderEnumerator != null)
-            {
-                await energyResultEventProviderEnumerator.DisposeAsync().ConfigureAwait(false);
-            }
-        }
-
         // Publish integration events for calculation completed
         IntegrationEvent? calculationCompletedEvent = default;
+        var hasFailed = false;
+
         try
         {
             calculationCompletedEvent = _calculationCompletedEventProvider.Get(completedCalculation, orchestrationInstanceId);
@@ -133,7 +96,8 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
 
         if (calculationCompletedEvent != null)
         {
-            yield return calculationCompletedEvent;
+            _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus.", completedCalculation.CalculationId);
+            return [calculationCompletedEvent];
         }
 
         if (hasFailed)
@@ -141,7 +105,8 @@ public class CalculationIntegrationEventPublisher : ICalculationIntegrationEvent
             throw new Exception($"Publish failed for completed calculation (id: {completedCalculation.CalculationId})");
         }
 
-        _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus ({energy_result_count} integration events).", completedCalculation.CalculationId, energyResultCount);
+        _logger.LogInformation("Published no events for calculation {calculation_id} to the service bus.", completedCalculation.CalculationId);
+        return [];
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
