@@ -6,6 +6,7 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.test_factories.default_test_data_spec as default_data
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
 )
@@ -62,6 +63,8 @@ def test_time_within_and_outside_of_date_range_scenarios(
         },
         period_start=args_start_date,
         period_end=args_end_date,
+        requesting_actor_market_role=MarketRole.ENERGY_SUPPLIER,
+        requesting_actor_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         repository=mock_repository,
     )
 
@@ -113,6 +116,8 @@ def test_energy_supplier_ids_scenarios(
         },
         period_start=default_data.DEFAULT_FROM_DATE,
         period_end=default_data.DEFAULT_TO_DATE,
+        requesting_actor_market_role=MarketRole.ENERGY_SUPPLIER,
+        requesting_actor_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         repository=mock_repository,
     )
 
@@ -171,6 +176,75 @@ def test_calculation_id_by_grid_loss_scenarios(
         calculation_id_by_grid_area=args_calculation_id_by_grid_area,
         period_start=default_data.DEFAULT_FROM_DATE,
         period_end=default_data.DEFAULT_TO_DATE,
+        requesting_actor_market_role=MarketRole.ENERGY_SUPPLIER,
+        requesting_actor_id=default_data.DEFAULT_CHARGE_OWNER_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "args_requesting_actor_market_role, args_requesting_actor_id, is_tax, expected_rows",
+    [
+        pytest.param(
+            MarketRole.GRID_ACCESS_PROVIDER,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            True,
+            1,
+            id="When grid_access_provider and charge_owner_id equals requesting_actor_id and is_tax is True, return 1 row",
+        ),
+        pytest.param(
+            MarketRole.GRID_ACCESS_PROVIDER,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            False,
+            0,
+            id="When grid_access_provider and charge_owner_id equals requesting_actor_id and is_tax is False, return 0 rows",
+        ),
+        pytest.param(
+            MarketRole.SYSTEM_OPERATOR,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            True,
+            0,
+            id="When system_operator and charge_owner_id equals requesting_actor_id and is_tax is True, return 0 rows",
+        ),
+        pytest.param(
+            MarketRole.SYSTEM_OPERATOR,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            False,
+            1,
+            id="When system_operator and charge_owner_id equals requesting_actor_id and is_tax is False, return 1 rows",
+        ),
+    ],
+)
+def test_grid_access_provider_and_system_operator_scenarios(
+    spark: SparkSession,
+    args_requesting_actor_market_role: MarketRole,
+    args_requesting_actor_id: str,
+    is_tax: bool,
+    expected_rows: int,
+) -> None:
+    # Arrange
+    df = create(
+        spark,
+        create_amounts_per_charge_row(is_tax=is_tax),
+    )
+    mock_repository = Mock()
+    mock_repository.read_amounts_per_charge.return_value = df
+
+    # Act
+    actual = read_and_filter_from_view(
+        energy_supplier_ids=ENERGY_SUPPLIER_IDS,
+        calculation_id_by_grid_area={
+            default_data.DEFAULT_GRID_AREA_CODE: UUID(
+                default_data.DEFAULT_CALCULATION_ID
+            )
+        },
+        period_start=default_data.DEFAULT_FROM_DATE,
+        period_end=default_data.DEFAULT_TO_DATE,
+        requesting_actor_market_role=args_requesting_actor_market_role,
+        requesting_actor_id=args_requesting_actor_id,
         repository=mock_repository,
     )
 

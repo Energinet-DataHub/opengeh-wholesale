@@ -5,7 +5,7 @@ from tests.dbutils_fixture import DBUtilsFixture
 
 
 from tests.domain.assertion import assert_file_names_and_columns
-from settlement_report_job.domain.report_generator import execute_hourly_time_series
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
@@ -41,9 +41,12 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
+    report_generator_instance = report_generator.ReportGenerator(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    execute_hourly_time_series(spark, dbutils, standard_wholesale_fixing_scenario_args)
+    report_generator_instance.execute_hourly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")

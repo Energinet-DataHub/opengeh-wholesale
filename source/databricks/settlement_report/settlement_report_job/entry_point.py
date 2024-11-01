@@ -24,7 +24,7 @@ from opentelemetry.trace import SpanKind
 
 import settlement_report_job.logging.logging_configuration as config
 from settlement_report_job.logging.span_recording import span_record_exception
-from settlement_report_job.domain import report_generator
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_job_arguments,
@@ -109,7 +109,12 @@ def start_task_with_deps(
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
             dbutils = get_dbutils(spark)
-            execute_task(spark, dbutils, args)
+
+            report_generator_instance = report_generator.ReportGenerator(
+                spark, dbutils, args
+            )
+
+            execute_task(report_generator_instance, spark, dbutils, args)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:

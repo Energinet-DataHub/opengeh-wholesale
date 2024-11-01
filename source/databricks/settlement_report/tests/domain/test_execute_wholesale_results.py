@@ -4,15 +4,13 @@ import pytest
 from tests.dbutils_fixture import DBUtilsFixture
 from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_generator import (
-    execute_wholesale_results,
-)
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from utils import get_market_role_in_file_name, get_start_date, get_end_date
+from tests.utils import get_market_role_in_file_name, get_start_date, get_end_date
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -63,9 +61,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_wholesale_results(spark, dbutils, args)
+    report_generator_instance.execute_wholesale_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
@@ -125,9 +124,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_wholesale_results(spark, dbutils, args)
+    report_generator_instance.execute_wholesale_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
