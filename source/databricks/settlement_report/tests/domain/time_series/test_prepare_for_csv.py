@@ -7,8 +7,8 @@ from pyspark.sql.functions import monotonically_increasing_id
 import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 
-import test_factories.default_test_data_spec as default_data
-import test_factories.metering_point_time_series_factory as time_series_factory
+import tests.test_factories.default_test_data_spec as default_data
+import tests.test_factories.metering_point_time_series_factory as time_series_factory
 from settlement_report_job.domain.market_role import MarketRole
 
 from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv

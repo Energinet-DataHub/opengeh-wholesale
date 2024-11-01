@@ -1,6 +1,7 @@
 from typing import Any
 
 from pyspark.sql import SparkSession
+from settlement_report_job import logging
 
 from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.charge_links.charge_links_factory import (
@@ -22,6 +23,7 @@ from settlement_report_job.domain.wholesale_results.wholesale_results_factory im
     create_wholesale_results,
 )
 from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.infrastructure.paths import get_report_output_path
 
 from settlement_report_job.utils import create_zip_file
 from settlement_report_job.logging import Logger
@@ -33,6 +35,7 @@ from settlement_report_job.domain.market_role import MarketRole
 log = Logger(__name__)
 
 
+@logging.use_span()
 def execute_hourly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -45,6 +48,7 @@ def execute_hourly_time_series(
     )
 
 
+@logging.use_span()
 def execute_quarterly_time_series(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -115,6 +119,7 @@ def _execute_time_series(
     dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
 
+@logging.use_span()
 def execute_charge_links(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -140,6 +145,7 @@ def execute_charge_links(
     dbutils.jobs.taskValues.set(key="charge_links_files", value=charge_links_files)
 
 
+@logging.use_span()
 def execute_energy_results(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -165,6 +171,7 @@ def execute_energy_results(
     dbutils.jobs.taskValues.set(key="energy_result_files", value=energy_result_files)
 
 
+@logging.use_span()
 def execute_wholesale_results(
     spark: SparkSession, dbutils: Any, args: SettlementReportArgs
 ) -> None:
@@ -189,6 +196,7 @@ def execute_wholesale_results(
     )
 
 
+@logging.use_span()
 def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -> None:
     """
     Entry point for the logic of creating the final zip file.
@@ -204,8 +212,12 @@ def execute_zip(spark: SparkSession, dbutils: Any, args: SettlementReportArgs) -
 
     for taskKey, key in task_types_to_zip.items():
         try:
+            file_names = dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
             files_to_zip.extend(
-                dbutils.jobs.taskValues.get(taskKey=taskKey.value, key=key)
+                [
+                    f"{get_report_output_path(args)}/{file_name}"
+                    for file_name in file_names
+                ]
             )
         except ValueError:
             log.info(
