@@ -42,7 +42,6 @@ public static class CalculationResultsExtensions
             .Bind(configuration)
             .ValidateDataAnnotations();
 
-        services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<WholesaleServicesQuerySnippetProviderFactory>();
