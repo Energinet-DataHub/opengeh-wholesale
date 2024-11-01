@@ -1,5 +1,5 @@
 module "app_ui" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/ui-web-app?ref=ui-web-app_3.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/ui-web-app?ref=ui-web-app_3.0.1"
 
   name                                   = "ui"
   project_name                           = var.domain_name_short
