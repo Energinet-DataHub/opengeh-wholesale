@@ -12,11 +12,11 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     SettlementMethodDataProductValue,
 )
-from test_factories.default_test_data_spec import (
+from tests.test_factories.default_test_data_spec import (
     create_energy_results_data_spec,
     create_amounts_per_charge_row,
 )
-from test_factories import (
+from tests.test_factories import (
     metering_point_periods_factory,
     metering_point_time_series_factory,
     charge_link_periods_factory,

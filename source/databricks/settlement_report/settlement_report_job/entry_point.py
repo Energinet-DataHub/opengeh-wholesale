@@ -20,9 +20,10 @@ from typing import Any
 
 from pyspark.sql.session import SparkSession
 
-from opentelemetry.trace import SpanKind, Status, StatusCode, Span
+from opentelemetry.trace import SpanKind
 
 import settlement_report_job.logging.logging_configuration as config
+from settlement_report_job.logging.span_recording import span_record_exception
 from settlement_report_job.domain import report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
@@ -113,18 +114,9 @@ def start_task_with_deps(
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
             if e.code != 0:
-                _record_exception(e, span)
+                span_record_exception(e, span)
             sys.exit(e.code)
 
         except Exception as e:
-            _record_exception(e, span)
+            span_record_exception(e, span)
             sys.exit(4)
-
-
-def _record_exception(exception: SystemExit | Exception, span: Span) -> None:
-    span.set_status(Status(StatusCode.ERROR))
-    span.record_exception(
-        exception,
-        attributes=config.get_extras()
-        | {"CategoryName": f"Energinet.DataHub.{__name__}"},
-    )
