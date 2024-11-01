@@ -5,5 +5,5 @@ feature_flag_datahub2_time_series_import    = false
 feature_flag_purge_durable_function_history = true
 feature_flag_new_ts_orchestration           = true
 datahub2_migration_url                      = "https://b2b.datahub.dk/dh3"
-datahub2_ip_whitelist                       = "86.106.96.2,81.7.132.36"
+datahub2_ip_whitelist                       = "86.106.96.2"
 alert_email_address                         = "1f20f5cd.energinet.onmicrosoft.com@emea.teams.ms"
