@@ -11,12 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from azure.monitor.opentelemetry import configure_azure_monitor
-import logging
+import logging as logger
 
-logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(
-    logging.WARNING
+logger.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(
+    logger.WARNING
 )
-logging.getLogger("azure.monitor.opentelemetry.exporter.export").setLevel(
-    logging.WARNING
-)
+logger.getLogger("azure.monitor.opentelemetry.exporter.export").setLevel(logger.WARNING)
