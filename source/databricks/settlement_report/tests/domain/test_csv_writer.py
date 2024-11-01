@@ -36,8 +36,8 @@ from settlement_report_job.domain.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.report_data_type import ReportDataType
 
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-import test_factories.time_series_csv_factory as time_series_factory
-import test_factories.energy_factory as energy_factory
+import tests.test_factories.time_series_csv_factory as time_series_factory
+import tests.test_factories.energy_factory as energy_factory
 from settlement_report_job.domain.csv_column_names import CsvColumnNames
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from settlement_report_job.wholesale.data_values import (
