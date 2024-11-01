@@ -25,7 +25,7 @@ resource "azurerm_app_service_certificate" "esett_biztalk_certificate_app" {
 }
 
 module "esett_biztalk_certificate_thumbprint" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "cert-esett-biztalk-thumbprint"
   value        = azurerm_key_vault_certificate.esett_biztalk_certificate.thumbprint
