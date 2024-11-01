@@ -17,7 +17,7 @@ resource "azurerm_static_site" "ui" {
 }
 
 module "kvs_stapp_ui_web_app_api_key" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "stapp-ui-web-app-api-key"
   value        = azurerm_static_site.ui.api_key
