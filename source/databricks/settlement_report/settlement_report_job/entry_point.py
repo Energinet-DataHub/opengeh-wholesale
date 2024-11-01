@@ -61,9 +61,7 @@ def start_zip() -> None:
     _start_task(ReportGenerator.execute_zip)
 
 
-def _start_task(
-    execute_task: Callable[[SparkSession, Any, SettlementReportArgs], None]
-) -> None:
+def _start_task(execute_task: Callable[[ReportGenerator], None]) -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
@@ -76,7 +74,7 @@ def _start_task(
 
 def start_task_with_deps(
     *,
-    execute_task: Callable[[SparkSession, Any, SettlementReportArgs], None],
+    execute_task: Callable[[ReportGenerator], None],
     cloud_role_name: str = "dbr-settlement-report",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
