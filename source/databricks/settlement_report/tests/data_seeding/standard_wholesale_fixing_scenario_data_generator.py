@@ -82,6 +82,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
                 grid_area_code=metering_point.grid_area_code,
                 resolution=metering_point.resolution,
                 from_grid_area_code=None,
+                to_grid_area_code=None,
                 parent_metering_point_id=None,
                 energy_supplier_id=metering_point.energy_supplier_id,
                 balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,

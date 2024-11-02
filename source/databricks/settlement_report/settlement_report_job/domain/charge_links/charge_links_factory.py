@@ -40,5 +40,4 @@ def create_charge_links(
 
     return prepare_for_csv(
         charge_link_periods,
-        args.requesting_actor_market_role,
     )

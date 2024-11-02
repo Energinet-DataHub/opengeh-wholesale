@@ -28,6 +28,7 @@ class MeteringPointPeriodsRow:
     grid_area_code: str
     resolution: MeteringPointResolutionDataProductValue
     from_grid_area_code: str | None
+    to_grid_area_code: str | None
     parent_metering_point_id: str | None
     energy_supplier_id: str
     balance_responsible_party_id: str
@@ -57,6 +58,7 @@ def create(
                 DataProductColumnNames.grid_area_code: row.grid_area_code,
                 DataProductColumnNames.resolution: row.resolution.value,
                 DataProductColumnNames.from_grid_area_code: row.from_grid_area_code,
+                DataProductColumnNames.to_grid_area_code: row.to_grid_area_code,
                 DataProductColumnNames.parent_metering_point_id: row.parent_metering_point_id,
                 DataProductColumnNames.energy_supplier_id: row.energy_supplier_id,
                 DataProductColumnNames.balance_responsible_party_id: row.balance_responsible_party_id,
