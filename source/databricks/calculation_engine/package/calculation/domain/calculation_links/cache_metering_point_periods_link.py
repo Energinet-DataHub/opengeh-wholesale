@@ -21,10 +21,6 @@ from package.calculation.domain.calculation_links.calculation_link import (
 )
 from package.calculation.domain.chains.cache_bucket import CacheBucket
 from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.calculation.preparation.transformations.metering_point_periods import (
-    _fix_settlement_method,
-    _fix_metering_point_type,
-)
 from package.calculation.wholesale.links.metering_point_period_repository import (
     IMeteringPointPeriodsRepository,
 )
@@ -49,9 +45,10 @@ class CacheMeteringPointPeriodsLink(CalculationLink):
         self.cache_bucket = cache_bucket
         self.args = args
 
-    @logging_configuration.use_span("get_metering_point_periods")
+    @logging_configuration.use_span("cache_metering_point_periods")
     def execute(self, output: CalculationOutput) -> CalculationOutput:
 
+        # Should return a typed value
         metering_point_periods = self.metering_point_periods_repository.get_by(
             self.args.calculation_period_start_datetime,
             self.args.calculation_period_end_datetime,
@@ -62,24 +59,6 @@ class CacheMeteringPointPeriodsLink(CalculationLink):
             metering_point_periods,
             self.args.calculation_period_start_datetime,
             self.args.calculation_period_end_datetime,
-            Colname.from_date,
-            Colname.to_date,
-        )
-        metering_point_periods = _fix_settlement_method(metering_point_periods)
-        metering_point_periods = _fix_metering_point_type(metering_point_periods)
-
-        metering_point_periods = metering_point_periods.select(
-            Colname.metering_point_id,
-            Colname.metering_point_type,
-            Colname.calculation_type,
-            Colname.settlement_method,
-            Colname.grid_area_code,
-            Colname.resolution,
-            Colname.from_grid_area_code,
-            Colname.to_grid_area_code,
-            Colname.parent_metering_point_id,
-            Colname.energy_supplier_id,
-            Colname.balance_responsible_party_id,
             Colname.from_date,
             Colname.to_date,
         )

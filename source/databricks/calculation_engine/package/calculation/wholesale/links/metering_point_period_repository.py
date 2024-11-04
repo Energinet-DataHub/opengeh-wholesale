@@ -21,6 +21,10 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.preparation.transformations.metering_point_periods import (
+    _fix_settlement_method,
+    _fix_metering_point_type,
+)
 from package.constants import Colname
 from package.databases import read_table
 from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
@@ -77,8 +81,26 @@ class MeteringPointPeriodsRepository(IMeteringPointPeriodsRepository):
             )
         )
 
-        metering_point_periods_df = metering_point_periods_df.cache()
+        metering_point_periods_df = _fix_settlement_method(metering_point_periods_df)
+        metering_point_periods_df = _fix_metering_point_type(metering_point_periods_df)
 
+        metering_point_periods_df = metering_point_periods_df.select(
+            Colname.metering_point_id,
+            Colname.metering_point_type,
+            Colname.calculation_type,
+            Colname.settlement_method,
+            Colname.grid_area_code,
+            Colname.resolution,
+            Colname.from_grid_area_code,
+            Colname.to_grid_area_code,
+            Colname.parent_metering_point_id,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_party_id,
+            Colname.from_date,
+            Colname.to_date,
+        )
+
+        metering_point_periods_df = metering_point_periods_df.cache()
         return metering_point_periods_df
 
 
