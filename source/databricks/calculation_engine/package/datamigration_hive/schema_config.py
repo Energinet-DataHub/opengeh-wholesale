@@ -14,12 +14,9 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
-# calculation_input
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
-
-# calculation_output
 
 schema_config = [
     Schema(
