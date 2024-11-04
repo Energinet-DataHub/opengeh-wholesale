@@ -197,9 +197,10 @@ def test_when_market_role_is(
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_wholesale_results(spark, dbutils, args)
+    report_generator_instance.execute_wholesale_results(spark, dbutils, args)
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
