@@ -35,9 +35,7 @@ def get_metering_point_periods_basis_data(
     return metering_point_df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
-        f.col(TableColumnNames.metering_point_type).alias(
-            TableColumnNames.metering_point_type
-        ),
+        f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),
         f.col(Colname.settlement_method).alias(TableColumnNames.settlement_method),
         f.col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
         f.col(Colname.resolution).alias(TableColumnNames.resolution),

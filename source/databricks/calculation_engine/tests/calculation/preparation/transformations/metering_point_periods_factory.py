@@ -23,8 +23,8 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname
-from package.databases.wholesale_basis_data_internal.schemas import (
-    metering_point_periods_schema_uc,
+from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+    hive_metering_point_period_schema,
 )
 
 DEFAULT_CALCULATION_ID = "12345"
@@ -85,4 +85,4 @@ def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFram
     elif isinstance(data, Row):
         data = [data]
 
-    return spark.createDataFrame(data, schema=metering_point_periods_schema_uc)
+    return spark.createDataFrame(data, schema=hive_metering_point_period_schema)
