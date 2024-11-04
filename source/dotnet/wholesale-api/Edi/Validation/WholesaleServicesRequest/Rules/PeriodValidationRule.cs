@@ -23,6 +23,8 @@ public sealed class PeriodValidationRule(
     PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
+    private const int AllowedTimeFrameYearsFromNow = 3;
+    private const int AllowedTimeFrameMonthsFromNow = 6;
     private readonly PeriodValidationHelper _periodValidationHelper = periodValidationHelper;
     private readonly DateTimeZone _dateTimeZone = dateTimeZone;
 
@@ -33,7 +35,7 @@ public sealed class PeriodValidationRule(
 
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for 3 år og 6 måneder tilbage i tid / It is not possible to request data 3 years and 6 months back in time",
+            $"Der kan ikke anmodes om data for {AllowedTimeFrameYearsFromNow} år og {AllowedTimeFrameMonthsFromNow} måneder tilbage i tid / It is not possible to request data {AllowedTimeFrameYearsFromNow} years and {AllowedTimeFrameMonthsFromNow} months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
@@ -99,7 +101,10 @@ public sealed class PeriodValidationRule(
 
     private void MustNotBeOlderThan3YearsAnd6Months(Instant periodStart, ICollection<ValidationError> errors)
     {
-        if (_periodValidationHelper.IsMonthOfDateOlderThanXYearsAndYMonths(periodStart, 3, 6))
+        if (_periodValidationHelper.IsMonthOfDateOlderThanXYearsAndYMonths(
+                periodStart,
+                AllowedTimeFrameYearsFromNow,
+                AllowedTimeFrameMonthsFromNow))
         {
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
         }
