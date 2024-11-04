@@ -78,7 +78,7 @@ public sealed class PeriodValidationRule(
         MustBeMidnight(startInstant.Value, "Period Start", errors);
         MustBeMidnight(endInstant.Value, "Period End", errors);
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
-        MustNotBe3YearsAnd3MonthsOld(startInstant.Value, errors);
+        MustNotBeOlderThan3YearsAnd6Months(startInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
@@ -97,7 +97,7 @@ public sealed class PeriodValidationRule(
         return null;
     }
 
-    private void MustNotBe3YearsAnd3MonthsOld(Instant periodStart, ICollection<ValidationError> errors)
+    private void MustNotBeOlderThan3YearsAnd6Months(Instant periodStart, ICollection<ValidationError> errors)
     {
         if (_periodValidationHelper.IsMonthOfDateOlderThanXYearsAndYMonths(periodStart, 3, 6))
         {
