@@ -22,8 +22,5 @@ from .charge_price_points_schema import charge_price_points_schema
 from .grid_loss_metering_point_ids_schema import (
     grid_loss_metering_point_ids_schema,
 )
-from .metering_point_periods_schema import (
-    hive_metering_point_period_schema,
-    metering_point_periods_schema_uc,
-)
+from .metering_point_periods_schema import metering_point_periods_schema_uc
 from .time_series_points_schema import time_series_points_schema
