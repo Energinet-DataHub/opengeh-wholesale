@@ -1,5 +1,5 @@
 module "kv_internal" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_7.0.1"
 
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
@@ -16,7 +16,7 @@ module "kv_internal" {
 }
 
 module "kvs_mssql_wholesale_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-wholesale-connection-string"
   value        = local.CONNECTION_STRING_DB_MIGRATIONS

@@ -64,7 +64,7 @@ module "func_orchestrationsdf" {
 }
 
 module "kvs_func_orchestrationsdf_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "func-wholesale-orchestrationsdf-base-url"
   value        = "https://${module.func_orchestrationsdf.default_hostname}"

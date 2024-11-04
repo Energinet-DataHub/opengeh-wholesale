@@ -39,7 +39,7 @@ resource "databricks_permissions" "databricks_permissions_deployment_warehouse" 
 #
 
 module "kvs_databricks_sql_endpoint_id_deployment" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "dbw-databricks-sql-endpoint-id-deployment"
   value        = databricks_sql_endpoint.deployment_warehouse.id

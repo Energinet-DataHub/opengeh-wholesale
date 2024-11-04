@@ -110,7 +110,7 @@ resource "databricks_permissions" "backup_endpoint" {
 }
 
 module "st_dbw_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
 
   name                       = "dbwbackup"
   project_name               = var.domain_name_short

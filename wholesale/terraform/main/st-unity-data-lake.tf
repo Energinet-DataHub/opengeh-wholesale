@@ -1,5 +1,5 @@
 module "st_data_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
 
   name                       = "data"
   project_name               = var.domain_name_short

@@ -69,7 +69,7 @@ resource "azurerm_role_assignment" "spn_datahub_bi_workspace_access" {
 
   scope                = data.azurerm_databricks_workspace.dbw[0].id
   role_definition_name = "Reader"
-  principal_id         = azuread_service_principal.spn_datahub_bi[0].id
+  principal_id         = azuread_service_principal.spn_datahub_bi[0].object_id
 }
 
 resource "azuread_application_password" "spn_secret" {
