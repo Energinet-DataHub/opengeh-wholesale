@@ -15,7 +15,7 @@ from uuid import UUID
 from datetime import datetime
 
 from pyspark.sql import DataFrame, functions as F
-import settlement_report_job.logging.logging_configuration as config
+import telemetry.logging.logging_configuration as config
 
 from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole

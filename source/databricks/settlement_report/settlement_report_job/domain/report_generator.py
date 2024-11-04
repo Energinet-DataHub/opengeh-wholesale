@@ -26,7 +26,7 @@ from settlement_report_job.infrastructure.calculation_type import CalculationTyp
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
 from settlement_report_job.utils import create_zip_file
-from settlement_report_job.logging import Logger
+from telemetry.logging import Logger
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )

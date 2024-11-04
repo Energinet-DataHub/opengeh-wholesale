@@ -27,7 +27,7 @@ from settlement_report_job.infrastructure.calculation_type import CalculationTyp
 from settlement_report_job.infrastructure.paths import (
     get_settlement_reports_output_path,
 )
-from settlement_report_job.logging import Logger, logging_configuration
+from telemetry.logging import Logger, logging_configuration
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 import settlement_report_job.infrastructure.environment_variables as env_vars

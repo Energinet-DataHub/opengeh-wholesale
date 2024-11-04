@@ -371,7 +371,7 @@ def spark(
 def configure_dummy_logging() -> None:
     """Ensure that logging hooks don't fail due to _TRACER_NAME not being set."""
 
-    from settlement_report_job.logging.logging_configuration import configure_logging
+    from telemetry.logging.logging_configuration import configure_logging
 
     configure_logging(
         cloud_role_name="any-cloud-role-name", tracer_name="any-tracer-name"
