@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from domain.assertion import assert_file_names_and_columns
+from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
