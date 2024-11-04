@@ -13,52 +13,31 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
+
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job import logging
-
-from settlement_report_job.domain.wholesale_results.read_and_filter import (
-    read_and_filter_from_view,
+from settlement_report_job.domain.charge_links.read_and_filter import (
+    read_and_filter,
 )
-from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
+from settlement_report_job.domain.charge_links.prepare_for_csv import (
     prepare_for_csv,
 )
 
 
-@logging.use_span()
-def create_wholesale_results(
+def create_charge_links(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    wholesale = read_and_filter_from_view(
-        args.energy_supplier_ids,
-        args.calculation_id_by_grid_area,
+    charge_link_periods = read_and_filter(
         args.period_start,
         args.period_end,
+        args.calculation_id_by_grid_area,
+        args.energy_supplier_ids,
         args.requesting_actor_market_role,
         args.requesting_actor_id,
         repository,
     )
 
     return prepare_for_csv(
-        wholesale,
-        _should_have_one_file_per_grid_area(args),
-    )
-
-
-def _should_have_one_file_per_grid_area(
-    args: SettlementReportArgs,
-) -> bool:
-    exactly_one_grid_area_from_calc_ids = (
-        args.calculation_id_by_grid_area is not None
-        and len(args.calculation_id_by_grid_area) == 1
-    )
-
-    exactly_one_grid_area_from_grid_area_codes = (
-        args.grid_area_codes is not None and len(args.grid_area_codes) == 1
-    )
-    return (
-        exactly_one_grid_area_from_calc_ids
-        or exactly_one_grid_area_from_grid_area_codes
-        or args.split_report_by_grid_area
+        charge_link_periods,
     )

@@ -21,7 +21,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>10.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>11.0.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -83,9 +83,6 @@ limitations under the License.
   <ItemGroup>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationCompletedV1\CalculationCompletedV1.cs">
       <Link>Contracts\IntegrationEvents\CalculationCompletedV1.cs</Link>
-    </Compile>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\GridLossResultProducedV1\GridLossResultProducedV1.cs">
-      <Link>Contracts\IntegrationEvents\GridLossResultProducedV1.cs</Link>
     </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\IEventMessage.cs">
       <Link>Contracts\IntegrationEvents\IEventMessage.cs</Link>

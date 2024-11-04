@@ -29,4 +29,5 @@ class DataProductColumnNames:
     settlement_method = "settlement_method"
     start_of_day = "start_of_day"
     time = "time"
+    to_grid_area_code = "to_grid_area_code"
     to_date = "to_date"

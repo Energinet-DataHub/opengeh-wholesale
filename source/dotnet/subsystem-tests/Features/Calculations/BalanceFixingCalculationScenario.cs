@@ -52,7 +52,6 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void AndGiven_SubscribedIntegrationEvents()
     {
-        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationCompletedV1.EventName);
     }
 
@@ -137,8 +136,6 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
                 Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
                 waitTimeLimit: TimeSpan.FromMinutes(8));
 
-            Fixture.ScenarioState.ReceivedGridLossProducedV1 =
-                actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
                 .OfType<CalculationCompletedV1>().ToList();
         }
@@ -146,53 +143,10 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // Assert
         using var assertionScope = new AssertionScope();
         // => Not empty
-        Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
     }
 
     [ScenarioStep(7)]
-    [SubsystemFact]
-    public void AndThen_ReceivedGridLossProducedEventsCountIsEqualToExpected()
-    {
-        var expected = 2;
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(expected);
-    }
-
-    [ScenarioStep(8)]
-    [SubsystemFact]
-    public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
-    {
-        var actualMeteringPointTypesForGridLossProducedV1 = Fixture.ScenarioState.ReceivedGridLossProducedV1
-            .Select(x => Enum.GetName(x.MeteringPointType))
-            .ToList();
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
-        actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
-    }
-
-    [ScenarioStep(9)]
-    [SubsystemFact]
-    public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
-    {
-        // Arrange
-        var expectedTimeSeriesPoints = await Fixture.ParseGridLossTimeSeriesPointsFromCsvAsync("Positive_gridLoss 543.csv");
-        var energyResults = Fixture.ScenarioState.ReceivedGridLossProducedV1
-            .Where(x => x.MeteringPointType == GridLossResultProducedV1.Types.MeteringPointType.Consumption)
-            .Where(x => x.MeteringPointId == "571313154312753911")
-            .Select(x => x.TimeSeriesPoints)
-            .ToList();
-
-        // Assert
-        Assert.Single(energyResults);
-        energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
-    }
-
-    [ScenarioStep(10)]
     [SubsystemFact]
     public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
     {
@@ -204,7 +158,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 
-    [ScenarioStep(11)]
+    [ScenarioStep(8)]
     [SubsystemFact]
     public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
     {
@@ -233,7 +187,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             "because calculation should be in ActorMessagesEnqueuing state or later");
     }
 
-    [ScenarioStep(12)]
+    [ScenarioStep(9)]
     [SubsystemFact]
     public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
     {
@@ -244,7 +198,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             Fixture.ScenarioState.OrchestrationInstanceId);
     }
 
-    [ScenarioStep(13)]
+    [ScenarioStep(10)]
     [SubsystemFact]
     public async Task AndThen_CalculationOrchestrationIsCompleted()
     {

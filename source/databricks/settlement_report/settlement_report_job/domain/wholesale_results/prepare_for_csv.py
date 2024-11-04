@@ -17,6 +17,7 @@ from pyspark.sql import DataFrame, functions as F
 from settlement_report_job import logging
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
+    EphemeralColumns,
 )
 from settlement_report_job.utils import (
     map_from_dict,
@@ -30,6 +31,7 @@ log = logging.Logger(__name__)
 @logging.use_span()
 def prepare_for_csv(
     wholesale: DataFrame,
+    one_file_per_grid_area: bool = False,
 ) -> DataFrame:
     select_columns = [
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
@@ -54,7 +56,7 @@ def prepare_for_csv(
         ].alias(CsvColumnNames.settlement_method),
         F.col(DataProductColumnNames.quantity_unit).alias(CsvColumnNames.quantity_unit),
         F.col(DataProductColumnNames.currency).alias(CsvColumnNames.currency),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.quantity),
+        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.energy_quantity),
         F.col(DataProductColumnNames.price).alias(CsvColumnNames.price),
         F.col(DataProductColumnNames.amount).alias(CsvColumnNames.amount),
         map_from_dict(market_naming.CHARGE_TYPES)[
@@ -66,13 +68,11 @@ def prepare_for_csv(
         ),
     ]
 
-    return wholesale.select(select_columns).orderBy(
-        F.col(CsvColumnNames.grid_area_code),
-        F.col(CsvColumnNames.energy_supplier_id),
-        F.col(CsvColumnNames.metering_point_type),
-        F.col(CsvColumnNames.settlement_method),
-        F.col(CsvColumnNames.time),
-        F.col(CsvColumnNames.charge_owner_id),
-        F.col(CsvColumnNames.charge_type),
-        F.col(CsvColumnNames.charge_code),
-    )
+    if one_file_per_grid_area:
+        select_columns.append(
+            F.col(DataProductColumnNames.grid_area_code).alias(
+                EphemeralColumns.grid_area_code_partitioning
+            ),
+        )
+
+    return wholesale.select(select_columns)

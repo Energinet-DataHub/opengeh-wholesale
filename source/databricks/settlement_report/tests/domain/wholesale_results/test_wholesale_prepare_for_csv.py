@@ -15,8 +15,8 @@ from settlement_report_job.wholesale.data_values import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from test_factories.default_test_data_spec import create_amounts_per_charge_row
-from test_factories.amounts_per_charge_factory import create
+from tests.test_factories.default_test_data_spec import create_amounts_per_charge_row
+from tests.test_factories.amounts_per_charge_factory import create
 
 
 @pytest.mark.parametrize(
@@ -238,44 +238,3 @@ def test_mapping_of_settlement_method(
 
     # Assert
     assert actual.collect()[0]["SETTLEMENTMETHOD"] == expected_settlement_method
-
-
-def test_when_multiple_rows__returns_dataframe_with_expected_ordering(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    spec = [
-        create_amounts_per_charge_row(),
-        create_amounts_per_charge_row(grid_area_code="111"),
-        create_amounts_per_charge_row(energy_supplier_id="1111111111111"),
-        create_amounts_per_charge_row(
-            metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION
-        ),
-        create_amounts_per_charge_row(
-            settlement_method=SettlementMethodDataProductValue.FLEX
-        ),
-        create_amounts_per_charge_row(time=datetime(2024, 1, 2, 23)),
-        create_amounts_per_charge_row(charge_owner_id="1234567890123"),
-        create_amounts_per_charge_row(
-            charge_type=ChargeTypeDataProductValue.SUBSCRIPTION
-        ),
-        create_amounts_per_charge_row(charge_code="22222"),
-    ]
-    wholesale = create(spark, spec).orderBy(F.rand())
-
-    expected_order = [
-        CsvColumnNames.grid_area_code,
-        CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.settlement_method,
-        CsvColumnNames.time,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_code,
-    ]
-
-    # Act
-    actual = prepare_for_csv(wholesale)
-
-    # Assert
-    assert actual.collect() == actual.orderBy(expected_order).collect()

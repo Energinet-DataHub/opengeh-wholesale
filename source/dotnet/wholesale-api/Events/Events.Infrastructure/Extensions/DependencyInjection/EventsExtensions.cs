@@ -16,7 +16,6 @@ using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Builder;
-using Energinet.DataHub.Core.Messaging.Communication.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication.Extensions.Options;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
@@ -24,7 +23,6 @@ using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -53,11 +51,9 @@ public static class EventsExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         services
-            .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<ICalculationCompletedFactory, CalculationCompletedV1Factory>();
 
         services
-            .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<ICalculationCompletedEventProvider, CalculationCompletedEventProvider>()
             .AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>()
             .AddScoped<ICalculationIntegrationEventPublisher, CalculationIntegrationEventPublisher>();

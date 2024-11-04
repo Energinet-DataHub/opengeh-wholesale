@@ -21,10 +21,13 @@ from typing import Any
 from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import DecimalType, DoubleType, FloatType
+from pyspark.sql.window import Window
 
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.domain.csv_column_names import EphemeralColumns
+from settlement_report_job import logging
+from settlement_report_job.domain.csv_column_names import (
+    EphemeralColumns,
+)
 
 
 @dataclass
@@ -46,6 +49,7 @@ def map_from_dict(d: dict) -> Column:
     return F.create_map([F.lit(x) for x in itertools.chain(*d.items())])
 
 
+@logging.use_span()
 def create_zip_file(
     dbutils: Any, report_id: str, save_path: str, files_to_zip: list[str]
 ) -> None:
@@ -102,10 +106,12 @@ def _get_csv_writer_options() -> dict[str, str]:
     return {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
 
 
+@logging.use_span()
 def write_files(
     df: DataFrame,
     path: str,
     partition_columns: list[str],
+    order_by: list[str],
     rows_per_file: int,
 ) -> list[str]:
     """Write a DataFrame to multiple files.
@@ -121,14 +127,18 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        df = df.withColumn(
-            EphemeralColumns.chunk_index,
-            F.floor(F.monotonically_increasing_id() / F.lit(rows_per_file)) + F.lit(1),
-        )
+        partition_columns_without_chunk = [
+            col for col in partition_columns if col != EphemeralColumns.chunk_index
+        ]
+        w = Window().partitionBy(partition_columns_without_chunk).orderBy(order_by)
+        chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
+        df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
+
+    if len(order_by) > 0:
+        df = df.orderBy(*order_by)
 
     csv_writer_options = _get_csv_writer_options()
 
-    print("writing to path: " + path)
     if partition_columns:
         df.write.mode("overwrite").options(**csv_writer_options).partitionBy(
             partition_columns
@@ -139,6 +149,7 @@ def write_files(
     return [c for c in df.columns if c not in partition_columns]
 
 
+@logging.use_span()
 def get_new_files(
     spark_output_path: str,
     report_output_path: str,
@@ -203,6 +214,7 @@ def get_new_files(
     return new_files
 
 
+@logging.use_span()
 def merge_files(
     dbutils: Any, new_files: list[TmpFile], headers: list[str]
 ) -> list[str]:

@@ -4,13 +4,14 @@ from pyspark.sql import SparkSession
 from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
 from tests.dbutils_fixture import DBUtilsFixture
 
-from domain.assertion import assert_files
-from settlement_report_job.domain.report_generator import execute_energy_results
+from tests.domain.assertion import assert_file_names_and_columns
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.infrastructure.paths import get_report_output_path
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -39,20 +40,29 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
         "RESULTENERGY_804_1000000000000_02-01-2024_02-01-2024.csv",
         "RESULTENERGY_805_1000000000000_02-01-2024_02-01-2024.csv",
     ]
+    report_generator_instance = report_generator.ReportGenerator(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    execute_energy_results(spark, dbutils, standard_wholesale_fixing_scenario_args)
+    report_generator_instance.execute_energy_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("energy_result_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_energy_results__when_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(
@@ -82,19 +92,28 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
         "RESULTENERGY_804_02-01-2024_02-01-2024.csv",
     ]
+    report_generator_instance = report_generator.ReportGenerator(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    execute_energy_results(spark, dbutils, standard_wholesale_fixing_scenario_args)
+    report_generator_instance.execute_energy_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("energy_result_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_access__returns_expected_number_of_files_and_content(
@@ -116,20 +135,29 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
         "RESULTENERGY_804_1234567890123_DDM_02-01-2024_02-01-2024.csv",
         "RESULTENERGY_805_1234567890123_DDM_02-01-2024_02-01-2024.csv",
     ]
+    report_generator_instance = report_generator.ReportGenerator(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    execute_energy_results(spark, dbutils, standard_wholesale_fixing_scenario_args)
+    report_generator_instance.execute_energy_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("energy_result_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_supplier__returns_expected_number_of_files_and_content(
@@ -151,17 +179,26 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
         CsvColumnNames.resolution,
         CsvColumnNames.metering_point_type,
         CsvColumnNames.settlement_method,
-        CsvColumnNames.quantity,
+        CsvColumnNames.energy_quantity,
     ]
 
     expected_file_names = [
         "RESULTENERGY_804_1000000000000_DDQ_02-01-2024_02-01-2024.csv",
         "RESULTENERGY_805_1000000000000_DDQ_02-01-2024_02-01-2024.csv",
     ]
+    report_generator_instance = report_generator.ReportGenerator(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    execute_energy_results(spark, dbutils, standard_wholesale_fixing_scenario_args)
+    report_generator_instance.execute_energy_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("energy_result_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
