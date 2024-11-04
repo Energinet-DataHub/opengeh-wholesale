@@ -19,7 +19,7 @@ module "func_timeseriesretriever" {
   app_settings                           = local.func_timeseriesretriever.app_settings
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
-  allowed_monitor_reader_entra_groups    = [var.developer_security_group_name]
+  allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
   durabletask_storage_connection_string  = module.durabletask_storage_account_timeseriesretriever.primary_connection_string
   health_check_path                      = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {

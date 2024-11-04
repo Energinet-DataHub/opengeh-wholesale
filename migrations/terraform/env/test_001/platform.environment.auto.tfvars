@@ -9,3 +9,4 @@ pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Test-001-Con
 developer_security_group_reader_access             = true
 function_app_sku_name                              = "EP3"
 enable_audit_logs                                  = false
+developer_security_group_name                      = "SEC-G-Datahub-DevelopersAzure"

@@ -17,7 +17,7 @@ module "func_timeseriesprocessor" {
   use_dotnet_isolated_runtime            = true
   use_32_bit_worker                      = false
   app_settings                           = local.func_timeseriesprocessor.app_settings
-  allowed_monitor_reader_entra_groups    = [var.developer_security_group_name]
+  allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
   durabletask_storage_connection_string  = module.durabletask_storage_account_timeseriesprocesser.primary_connection_string
   health_check_path                      = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
