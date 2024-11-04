@@ -198,7 +198,7 @@ class ReportGenerator:
             args=self.args, repository=repository
         )
 
-        wholesale_result_files = csv_writer.write(
+        monthly_amounts_files = csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=wholesale_results_df,
@@ -209,7 +209,7 @@ class ReportGenerator:
         )
 
         self.dbutils.jobs.taskValues.set(
-            key="wholesale_result_files", value=wholesale_result_files
+            key="monthly_amounts_files", value=monthly_amounts_files
         )
 
     @logging.use_span()
