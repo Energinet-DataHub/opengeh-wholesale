@@ -36,6 +36,8 @@ DEFAULT_METERING_POINT_ID = "3456789012345"
 DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
 DEFAULT_RESOLUTION = MeteringPointResolutionDataProductValue.HOUR
 DEFAULT_GRID_AREA_CODE = "804"
+DEFAULT_FROM_GRID_AREA_CODE = None
+DEFAULT_TO_GRID_AREA_CODE = None
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
 DEFAULT_CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
@@ -115,7 +117,8 @@ def create_metering_point_periods_row(
     settlement_method: SettlementMethodDataProductValue = DEFAULT_SETTLEMENT_METHOD,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     resolution: MeteringPointResolutionDataProductValue = DEFAULT_RESOLUTION,
-    from_grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    from_grid_area_code: str = DEFAULT_FROM_GRID_AREA_CODE,
+    to_grid_area_code: str = DEFAULT_TO_GRID_AREA_CODE,
     parent_metering_point_id: str | None = None,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_party_id: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
@@ -132,6 +135,7 @@ def create_metering_point_periods_row(
         grid_area_code=grid_area_code,
         resolution=resolution,
         from_grid_area_code=from_grid_area_code,
+        to_grid_area_code=grid_area_code,
         parent_metering_point_id=parent_metering_point_id,
         energy_supplier_id=energy_supplier_id,
         balance_responsible_party_id=balance_responsible_party_id,
