@@ -49,16 +49,16 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
     public bool IsMonthOfDateOlderThanXYearsAndYMonths(Instant periodStart, int years, int months)
     {
         var dateInQuestion = periodStart.InZone(_dateTimeZone);
-        var threeYearsAndTwoMonthsAgo = _clock.GetCurrentInstant()
+        var someYearsAndSomeMonthsAgo = _clock.GetCurrentInstant()
             .InZone(_dateTimeZone)
             .Date.PlusYears(-years)
             .PlusMonths(-months);
 
-        if (dateInQuestion.Year > threeYearsAndTwoMonthsAgo.Year)
+        if (dateInQuestion.Year > someYearsAndSomeMonthsAgo.Year)
             return false;
 
-        if (dateInQuestion.Year == threeYearsAndTwoMonthsAgo.Year)
-            return dateInQuestion.Month < threeYearsAndTwoMonthsAgo.Month;
+        if (dateInQuestion.Year == someYearsAndSomeMonthsAgo.Year)
+            return dateInQuestion.Month < someYearsAndSomeMonthsAgo.Month;
 
         return true;
     }
