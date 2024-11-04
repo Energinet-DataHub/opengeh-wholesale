@@ -29,10 +29,6 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
-[SuppressMessage(
-    "StyleCop.CSharp.LayoutRules",
-    "SA1512:Single-line comments should not be followed by blank line",
-    Justification = "Tests")]
 public class AggregatedTimeSeriesRequestValidatorTests
 {
     private readonly IValidator<DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _sut;
