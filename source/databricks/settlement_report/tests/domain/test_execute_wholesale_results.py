@@ -15,7 +15,6 @@ from settlement_report_job.domain.csv_column_names import (
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_market_role_in_file_name, get_start_date, get_end_date
-from tests.test_factories.default_test_data_spec import DEFAULT_CHARGE_OWNER_ID
 from tests.utils import get_market_role_in_file_name, get_start_date, get_end_date
 
 
@@ -266,9 +265,10 @@ def test_when_market_role_is_grid_access_provider_return_correct_file_name(
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_wholesale_results(spark, dbutils, args)
+    report_generator_instance.execute_wholesale_results(spark, dbutils, args)
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
