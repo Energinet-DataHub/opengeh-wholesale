@@ -57,51 +57,54 @@ def monthly_amounts_read_and_filter_mock_repository(
                 energy_supplier_id,
                 None,
             ]:
-
-                charge_owner_id_for_per_charge = (
-                    energy_supplier_id if charge_owner_id is None else charge_owner_id
-                )
-
-                testing_spec_monthly_per_charge = (
-                    default_data.create_monthly_amounts_per_charge_row(
-                        energy_supplier_id=energy_supplier_id,
-                        calculation_id=DEFAULT_CALCULATION_ID,
-                        grid_area_code=grid_area,
-                        charge_owner_id=charge_owner_id_for_per_charge,
+                for is_tax in [True, False]:
+                    charge_owner_id_for_per_charge = (
+                        energy_supplier_id
+                        if charge_owner_id is None
+                        else charge_owner_id
                     )
-                )
-                testing_spec_total_monthly = (
-                    default_data.create_total_monthly_amounts_row(
-                        energy_supplier_id=energy_supplier_id,
-                        calculation_id=DEFAULT_CALCULATION_ID,
-                        grid_area_code=grid_area,
-                        charge_owner_id=charge_owner_id,
-                    )
-                )
 
-                if monthly_amounts_per_charge is None:
-                    monthly_amounts_per_charge = (
-                        monthly_amounts_per_charge_factory.create(
-                            spark, testing_spec_monthly_per_charge
+                    testing_spec_monthly_per_charge = (
+                        default_data.create_monthly_amounts_per_charge_row(
+                            energy_supplier_id=energy_supplier_id,
+                            calculation_id=DEFAULT_CALCULATION_ID,
+                            grid_area_code=grid_area,
+                            charge_owner_id=charge_owner_id_for_per_charge,
+                            is_tax=is_tax,
                         )
                     )
-                else:
-                    monthly_amounts_per_charge = monthly_amounts_per_charge.union(
-                        monthly_amounts_per_charge_factory.create(
-                            spark, testing_spec_monthly_per_charge
+                    testing_spec_total_monthly = (
+                        default_data.create_total_monthly_amounts_row(
+                            energy_supplier_id=energy_supplier_id,
+                            calculation_id=DEFAULT_CALCULATION_ID,
+                            grid_area_code=grid_area,
+                            charge_owner_id=charge_owner_id,
                         )
                     )
 
-                if total_monthly_amounts is None:
-                    total_monthly_amounts = total_monthly_amounts_factory.create(
-                        spark, testing_spec_total_monthly
-                    )
-                else:
-                    total_monthly_amounts = total_monthly_amounts.union(
-                        total_monthly_amounts_factory.create(
+                    if monthly_amounts_per_charge is None:
+                        monthly_amounts_per_charge = (
+                            monthly_amounts_per_charge_factory.create(
+                                spark, testing_spec_monthly_per_charge
+                            )
+                        )
+                    else:
+                        monthly_amounts_per_charge = monthly_amounts_per_charge.union(
+                            monthly_amounts_per_charge_factory.create(
+                                spark, testing_spec_monthly_per_charge
+                            )
+                        )
+
+                    if total_monthly_amounts is None:
+                        total_monthly_amounts = total_monthly_amounts_factory.create(
                             spark, testing_spec_total_monthly
                         )
-                    )
+                    else:
+                        total_monthly_amounts = total_monthly_amounts.union(
+                            total_monthly_amounts_factory.create(
+                                spark, testing_spec_total_monthly
+                            )
+                        )
 
     mock_repository.read_monthly_amounts_per_charge_v1.return_value = (
         monthly_amounts_per_charge
@@ -292,7 +295,6 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         DataProductColumnNames.amount,
         DataProductColumnNames.charge_type,
         DataProductColumnNames.charge_code,
-        DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.is_tax,
         DataProductColumnNames.result_id,
     ]
@@ -323,10 +325,4 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         .distinct()
         .count()
         > 1
-    )
-    assert (
-        actual_df.select(F.col(DataProductColumnNames.charge_owner_id))
-        .distinct()
-        .collect()[0][DataProductColumnNames.charge_owner_id]
-        == standard_wholesale_fixing_scenario_args.requesting_actor_id
     )

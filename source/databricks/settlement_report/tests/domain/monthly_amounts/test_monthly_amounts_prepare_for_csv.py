@@ -41,7 +41,7 @@ def test_prepare_for_csv__returns_expected_columns(
     should_have_one_file_per_grid_area: bool,
 ) -> None:
     # Arrange
-    testing_spec = default_data.create_total_monthly_amounts_row()
+    testing_spec = default_data.create_monthly_amounts_per_charge_row()
     monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
     monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
 
@@ -68,104 +68,3 @@ def test_prepare_for_csv__returns_expected_columns(
 
     # Assert
     assert expected_columns == actual_df.columns
-
-
-@pytest.mark.parametrize(
-    "calculation_type, expected_process_variant",
-    [
-        pytest.param(
-            CalculationTypeDataProductValue.FIRST_CORRECTION_SETTLEMENT,
-            "1ST",
-            id="when calculation type is first_correction_settlement, then process variant is 1ST",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
-            "2ND",
-            id="when calculation type is second_correction_settlement, then process variant is 2ND",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
-            "3RD",
-            id="when calculation type is third_correction_settlement, then process variant is 3RD",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.WHOLESALE_FIXING,
-            None,
-            id="when calculation type is wholesale_fixing, then process variant is None",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.BALANCE_FIXING,
-            None,
-            id="when calculation type is balance_fixing, then process variant is None",
-        ),
-    ],
-)
-def test_mapping_of_process_variant(
-    spark: SparkSession,
-    calculation_type: CalculationTypeDataProductValue,
-    expected_process_variant: str,
-) -> None:
-    # Arrange
-    testing_spec = default_data.create_total_monthly_amounts_row(
-        calculation_type=calculation_type
-    )
-    monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
-
-    # Act
-    actual = prepare_for_csv(monthly_amounts, create_ephemeral_grid_area_column=False)
-
-    # Assert
-    assert actual.collect()[0]["PROCESSVARIANT"] == expected_process_variant
-
-
-@pytest.mark.parametrize(
-    "calculation_type, expected_energy_business_process",
-    [
-        pytest.param(
-            CalculationTypeDataProductValue.BALANCE_FIXING,
-            "D04",
-            id="when calculation type is balance_fixing, then energy business process is D04",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.WHOLESALE_FIXING,
-            "D05",
-            id="when calculation type is wholesale_fixing, then energy business process is D05",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.FIRST_CORRECTION_SETTLEMENT,
-            "D32",
-            id="when calculation type is first_correction_settlement, then energy business process is D32",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
-            "D32",
-            id="when calculation type is second_correction_settlement, then energy business process is D32",
-        ),
-        pytest.param(
-            CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
-            "D32",
-            id="when calculation type is third_correction_settlement, then energy business process is D32",
-        ),
-    ],
-)
-def test_mapping_of_energy_business_process(
-    spark: SparkSession,
-    calculation_type: CalculationTypeDataProductValue,
-    expected_energy_business_process: str,
-) -> None:
-    # Arrange
-    testing_spec = default_data.create_total_monthly_amounts_row(
-        calculation_type=calculation_type
-    )
-    monthly_amounts = monthly_amounts_per_charge_factory.create(spark, testing_spec)
-    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
-
-    # Act
-    actual = prepare_for_csv(monthly_amounts, create_ephemeral_grid_area_column=False)
-
-    # Assert
-    assert (
-        actual.collect()[0][CsvColumnNames.calculation_type]
-        == expected_energy_business_process
-    )

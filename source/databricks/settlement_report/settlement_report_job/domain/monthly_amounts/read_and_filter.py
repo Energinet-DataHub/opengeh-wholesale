@@ -32,7 +32,9 @@ def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
     monthly_amounts_per_charge = repository.read_monthly_amounts_per_charge_v1()
-    monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
+    monthly_amounts_per_charge = _filter_monthly_amounts_per_charge(
+        monthly_amounts_per_charge, args
+    )
 
     total_monthly_amounts = repository.read_total_monthly_amounts_v1()
     total_monthly_amounts = _filter_total_monthly_amounts(total_monthly_amounts, args)
@@ -46,6 +48,8 @@ def read_and_filter_from_view(
     monthly_amounts = _drop_columns_based_on_requester(
         monthly_amounts, args.requesting_actor_market_role
     )
+
+    return monthly_amounts
 
 
 def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
@@ -74,6 +78,23 @@ def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFram
     return df
 
 
+def _filter_monthly_amounts_per_charge(
+    monthly_amounts_per_charge: DataFrame, args: SettlementReportArgs
+) -> DataFrame:
+    monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
+
+    if args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        monthly_amounts_per_charge = monthly_amounts_per_charge.filter(
+            col(DataProductColumnNames.is_tax)
+        )
+    elif args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        monthly_amounts_per_charge = monthly_amounts_per_charge.filter(
+            ~col(DataProductColumnNames.is_tax)
+        )
+
+    return monthly_amounts_per_charge
+
+
 def _filter_total_monthly_amounts(
     total_monthly_amounts: DataFrame, args: SettlementReportArgs
 ) -> DataFrame:
@@ -81,6 +102,7 @@ def _filter_total_monthly_amounts(
 
     if args.requesting_actor_market_role in [
         MarketRole.ENERGY_SUPPLIER,
+        MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
         total_monthly_amounts = total_monthly_amounts.where(
             col(DataProductColumnNames.charge_owner_id).isNull()
