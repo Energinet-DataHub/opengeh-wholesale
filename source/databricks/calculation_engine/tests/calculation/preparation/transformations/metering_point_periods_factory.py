@@ -17,16 +17,18 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.databases.migrations_wholesale.schemas import (
-    metering_point_periods_schema,
-)
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     MeteringPointResolution,
 )
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_basis_data_internal.schemas import (
+    metering_point_periods_schema_uc,
+)
 
+DEFAULT_CALCULATION_ID = "12345"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.PRODUCTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
@@ -42,6 +44,7 @@ DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 
 
 def create_row(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
@@ -55,12 +58,11 @@ def create_row(
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime | None = DEFAULT_TO_DATE,
 ) -> Row:
-    calculation_type = None
 
     row = {
+        Colname.calculation_id: calculation_id,
         Colname.metering_point_id: metering_point_id,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.calculation_type: calculation_type,
+        TableColumnNames.metering_point_type: metering_point_type.value,
         Colname.settlement_method: (
             settlement_method.value if settlement_method else None
         ),
@@ -83,4 +85,5 @@ def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFram
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data, schema=metering_point_periods_schema)
+
+    return spark.createDataFrame(data, schema=metering_point_periods_schema_uc)
