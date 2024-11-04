@@ -23,7 +23,6 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
     metering_point_periods_schema_uc,
 )
@@ -62,7 +61,7 @@ def create_row(
     row = {
         Colname.calculation_id: calculation_id,
         Colname.metering_point_id: metering_point_id,
-        TableColumnNames.metering_point_type: metering_point_type.value,
+        Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: (
             settlement_method.value if settlement_method else None
         ),
