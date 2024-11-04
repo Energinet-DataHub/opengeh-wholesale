@@ -200,7 +200,7 @@ def test_when_market_role_is(
     report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_wholesale_results(spark, dbutils, args)
+    report_generator_instance.execute_wholesale_results()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
