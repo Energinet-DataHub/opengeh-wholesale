@@ -142,7 +142,6 @@ class HiveOutputDatabase:
     """The folder in the storage account container"""
 
     DATABASE_NAME = "wholesale_output"
-    WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
     SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
 
 
