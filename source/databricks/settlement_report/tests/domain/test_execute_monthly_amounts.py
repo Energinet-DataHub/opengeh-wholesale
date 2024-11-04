@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 
 import pytest
-from tests.domain.assertion import assert_files
+from tests.domain.assertion import assert_file_names_and_columns
 from tests.dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.report_generator import execute_monthly_amounts
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -52,7 +52,9 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        actual_files, expected_columns, expected_file_names, spark
+    )
 
 
 def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(
@@ -88,4 +90,6 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        actual_files, expected_columns, expected_file_names, spark
+    )
