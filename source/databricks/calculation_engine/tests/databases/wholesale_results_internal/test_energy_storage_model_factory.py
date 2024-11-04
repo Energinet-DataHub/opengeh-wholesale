@@ -33,10 +33,7 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import (
-    hive_energy_results_schema,
-)
-from package.infrastructure.paths import HiveOutputDatabase
+from package.databases.wholesale_results_internal.schemas import energy_schema
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -69,11 +66,6 @@ OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
 OTHER_OBSERVATION_TIME = datetime(2021, 1, 1, 0, 0)
 OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
-
-
-TABLE_NAME = (
-    f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.ENERGY_RESULT_TABLE_NAME}"
-)
 
 
 @pytest.fixture(scope="module")
@@ -362,16 +354,13 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     # Arrange
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_execution_time_start,
         # Data that does vary but does not define distinct results
         TableColumnNames.time,
         TableColumnNames.quantity_qualities,
         TableColumnNames.quantity,
         # The field that defines results
-        TableColumnNames.calculation_result_id,
-        TableColumnNames.metering_point_id,
         TableColumnNames.resolution,
+        TableColumnNames.result_id,
     ]
     all_columns = _get_energy_result_column_names()
 
@@ -379,32 +368,10 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     included_columns = sut._get_column_group_for_calculation_result_id()
 
     # Assert
-    included_columns = list(
-        map(_map_colname_to_energy_result_column_name, included_columns)
-    )
-
     actual_other_columns = set(all_columns) - set(included_columns)
 
     assert set(actual_other_columns) == set(expected_other_columns)
 
 
-def _map_colname_to_energy_result_column_name(field_name: str) -> str:
-    """
-    Test workaround as the contract specifies the Delta table column names
-    while some of the data frame column names are using `Colname` names.
-    """
-    if field_name == Colname.grid_area_code:
-        return TableColumnNames.grid_area_code
-    if field_name == Colname.from_grid_area_code:
-        return TableColumnNames.neighbor_grid_area_code
-    if field_name == Colname.balance_responsible_party_id:
-        return TableColumnNames.balance_responsible_id
-    if field_name == Colname.balance_responsible_party_id:
-        return TableColumnNames.balance_responsible_party_id
-    if field_name == Colname.energy_supplier_id:
-        return TableColumnNames.energy_supplier_id
-    return field_name
-
-
 def _get_energy_result_column_names() -> List[str]:
-    return [f.name for f in hive_energy_results_schema.fields]
+    return [f.name for f in energy_schema.fields]
