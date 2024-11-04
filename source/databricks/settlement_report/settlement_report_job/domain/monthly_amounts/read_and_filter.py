@@ -140,7 +140,7 @@ def _extend_total_monthly_amounts_columns_for_union(
 
 def _drop_columns_based_on_requester(
     monthly_amounts: DataFrame, market_role: MarketRole
-):
+) -> DataFrame:
     if market_role in [MarketRole.GRID_ACCESS_PROVIDER, MarketRole.SYSTEM_OPERATOR]:
         monthly_amounts = monthly_amounts.drop(DataProductColumnNames.charge_owner_id)
     return monthly_amounts
