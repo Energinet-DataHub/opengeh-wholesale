@@ -3,10 +3,10 @@ import pytest
 
 from tests.dbutils_fixture import DBUtilsFixture
 
-from data_seeding import standard_wholesale_fixing_scenario_data_generator
-from domain.assertion import assert_file_names_and_columns
+from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
+from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_generator import execute_charge_links
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
@@ -42,11 +42,12 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
         CsvColumnNames.charge_link_from_date,
         CsvColumnNames.charge_link_to_date,
     ]
-
-    # Act
-    execute_charge_links(
+    report_generator_instance = report_generator.ReportGenerator(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
+
+    # Act
+    report_generator_instance.execute_charge_links()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="charge_links_files")
@@ -82,11 +83,12 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
         CsvColumnNames.charge_link_from_date,
         CsvColumnNames.charge_link_to_date,
     ]
-
-    # Act
-    execute_charge_links(
+    report_generator_instance = report_generator.ReportGenerator(
         spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
     )
+
+    # Act
+    report_generator_instance.execute_charge_links()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
@@ -134,9 +136,10 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
         CsvColumnNames.charge_link_to_date,
         CsvColumnNames.energy_supplier_id,
     ]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_charge_links(spark, dbutils, args)
+    report_generator_instance.execute_charge_links()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
@@ -179,8 +182,10 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_e
         CsvColumnNames.charge_link_to_date,
         CsvColumnNames.energy_supplier_id,
     ]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+
     # Act
-    execute_charge_links(spark, dbutils, args)
+    report_generator_instance.execute_charge_links()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
@@ -202,9 +207,10 @@ def test_execute_charge_links__when_include_basis_data_false__returns_no_file_pa
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_charge_links(spark, dbutils, args)
+    report_generator_instance.execute_charge_links()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("charge_links_files")
