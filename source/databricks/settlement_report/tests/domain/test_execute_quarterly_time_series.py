@@ -5,17 +5,18 @@ import pytest
 
 from tests.dbutils_fixture import DBUtilsFixture
 
-from data_seeding import (
+from tests.data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
-from domain.assertion import assert_files
+from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_generator import execute_quarterly_time_series
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
+from settlement_report_job.infrastructure.paths import get_report_output_path
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -48,13 +49,20 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_quarterly_time_series(spark, dbutils, args)
+    report_generator_instance.execute_quarterly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_quarterly_time_series__when_grid_access_provider__returns_expected(
@@ -76,13 +84,20 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_quarterly_time_series(spark, dbutils, args)
+    report_generator_instance.execute_quarterly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 @pytest.mark.parametrize(
@@ -113,13 +128,20 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_quarterly_time_series(spark, dbutils, args)
+    report_generator_instance.execute_quarterly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 @pytest.mark.parametrize(
@@ -147,13 +169,20 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_quarterly_time_series(spark, dbutils, args)
+    report_generator_instance.execute_quarterly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
 
 
 def test_execute_quarterly_time_series__when_include_basis_data_false__returns_no_file_paths(
@@ -165,9 +194,10 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_quarterly_time_series(spark, dbutils, args)
+    report_generator_instance.execute_quarterly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
@@ -197,10 +227,17 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
-    execute_quarterly_time_series(spark, dbutils, args)
+    report_generator_instance.execute_quarterly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )

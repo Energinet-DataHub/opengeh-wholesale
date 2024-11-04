@@ -13,8 +13,6 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from test_factories.total_monthly_amounts_factory import TotalMonthlyAmountsRow
-from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
 from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsRow,
 )
@@ -23,12 +21,13 @@ from test_factories.metering_point_periods_factory import MeteringPointPeriodsRo
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
+from test_factories.monthly_amounts_per_charge_factory import MonthlyAmountsPerChargeRow
+from test_factories.total_monthly_amounts_factory import TotalMonthlyAmountsRow
+from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
 from test_factories.energy_factory import EnergyTestDataSpec
 from test_factories.amounts_per_charge_factory import AmountsPerChargeRow
-from test_factories.monthly_amounts_per_charge_factory import MonthlyAmountsPerChargeRow
 
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
-DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 DEFAULT_PERIOD_START = DEFAULT_FROM_DATE
 DEFAULT_PERIOD_END = DEFAULT_TO_DATE
@@ -38,6 +37,8 @@ DEFAULT_METERING_POINT_ID = "3456789012345"
 DEFAULT_METERING_TYPE = MeteringPointTypeDataProductValue.CONSUMPTION
 DEFAULT_RESOLUTION = MeteringPointResolutionDataProductValue.HOUR
 DEFAULT_GRID_AREA_CODE = "804"
+DEFAULT_FROM_GRID_AREA_CODE = None
+DEFAULT_TO_GRID_AREA_CODE = None
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
 DEFAULT_CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
@@ -117,7 +118,8 @@ def create_metering_point_periods_row(
     settlement_method: SettlementMethodDataProductValue = DEFAULT_SETTLEMENT_METHOD,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     resolution: MeteringPointResolutionDataProductValue = DEFAULT_RESOLUTION,
-    from_grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    from_grid_area_code: str = DEFAULT_FROM_GRID_AREA_CODE,
+    to_grid_area_code: str = DEFAULT_TO_GRID_AREA_CODE,
     parent_metering_point_id: str | None = None,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_party_id: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
@@ -134,6 +136,7 @@ def create_metering_point_periods_row(
         grid_area_code=grid_area_code,
         resolution=resolution,
         from_grid_area_code=from_grid_area_code,
+        to_grid_area_code=grid_area_code,
         parent_metering_point_id=parent_metering_point_id,
         energy_supplier_id=energy_supplier_id,
         balance_responsible_party_id=balance_responsible_party_id,

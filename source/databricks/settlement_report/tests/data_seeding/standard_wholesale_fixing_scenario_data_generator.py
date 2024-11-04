@@ -12,13 +12,13 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     SettlementMethodDataProductValue,
 )
-from test_factories.default_test_data_spec import (
+from tests.test_factories.default_test_data_spec import (
     create_energy_results_data_spec,
     create_amounts_per_charge_row,
     create_monthly_amounts_per_charge_row,
     create_total_monthly_amounts_row,
 )
-from test_factories import (
+from tests.test_factories import (
     metering_point_periods_factory,
     metering_point_time_series_factory,
     charge_link_periods_factory,
@@ -86,6 +86,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
                 grid_area_code=metering_point.grid_area_code,
                 resolution=metering_point.resolution,
                 from_grid_area_code=None,
+                to_grid_area_code=None,
                 parent_metering_point_id=None,
                 energy_supplier_id=metering_point.energy_supplier_id,
                 balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,

@@ -3,12 +3,15 @@ from pyspark.sql import SparkSession
 
 from tests.dbutils_fixture import DBUtilsFixture
 
-from domain.assertion import assert_files
-from settlement_report_job.domain.report_generator import execute_hourly_time_series
+
+from tests.domain.assertion import assert_file_names_and_columns
+import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
+from settlement_report_job.infrastructure.paths import get_report_output_path
+
 
 # NOTE: The tests in test_execute_quarterly_time_series.py should cover execute_hourly also, so we don't need to test
 # all the same things again here also.
@@ -38,10 +41,19 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
+    report_generator_instance = report_generator.ReportGenerator(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    execute_hourly_time_series(spark, dbutils, standard_wholesale_fixing_scenario_args)
+    report_generator_instance.execute_hourly_time_series()
 
     # Assert
     actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
-    assert_files(actual_files, expected_columns, expected_file_names, spark)
+    assert_file_names_and_columns(
+        path=get_report_output_path(standard_wholesale_fixing_scenario_args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )

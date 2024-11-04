@@ -9,9 +9,9 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 from settlement_report_job.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
-from test_factories import latest_calculations_factory
-import test_factories.default_test_data_spec as default_data
-import test_factories.energy_factory as energy_factory
+from tests.test_factories import latest_calculations_factory
+import tests.test_factories.default_test_data_spec as default_data
+import tests.test_factories.energy_factory as energy_factory
 
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.energy_results.read_and_filter import (
