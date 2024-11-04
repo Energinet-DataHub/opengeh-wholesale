@@ -27,6 +27,7 @@ from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
 from test_factories.energy_factory import EnergyTestDataSpec
 from test_factories.amounts_per_charge_factory import AmountsPerChargeRow
 
+DEFAULT_TO_DATE = datetime(2024, 1, 2, 23)
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 DEFAULT_PERIOD_START = DEFAULT_FROM_DATE
