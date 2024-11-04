@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 
 import pytest
+from settlement_report_job.infrastructure.paths import get_report_output_path
 from tests.domain.assertion import assert_file_names_and_columns
 from tests.dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.report_generator import ReportGenerator
@@ -55,7 +56,13 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
     # Assert
     actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
     assert_file_names_and_columns(
-        actual_files, expected_columns, expected_file_names, spark
+        path=get_report_output_path(
+            standard_wholesale_fixing_scenario_energy_supplier_args
+        ),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
     )
 
 
@@ -97,5 +104,11 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
     # Assert
     actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
     assert_file_names_and_columns(
-        actual_files, expected_columns, expected_file_names, spark
+        path=get_report_output_path(
+            standard_wholesale_fixing_scenario_energy_supplier_args
+        ),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
     )
