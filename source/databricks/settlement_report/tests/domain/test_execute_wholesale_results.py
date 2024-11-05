@@ -15,7 +15,6 @@ from settlement_report_job.domain.csv_column_names import (
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_market_role_in_file_name, get_start_date, get_end_date
-from tests.utils import get_market_role_in_file_name, get_start_date, get_end_date
 
 
 @pytest.fixture(scope="function", autouse=True)
