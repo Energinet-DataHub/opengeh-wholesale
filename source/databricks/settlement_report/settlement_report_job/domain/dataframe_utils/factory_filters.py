@@ -7,6 +7,7 @@ from settlement_report_job.domain.csv_column_names import EphemeralColumns
 from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
     get_start_of_day,
 )
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.repository import (
     WholesaleRepository,
@@ -95,3 +96,25 @@ def filter_by_energy_supplier_ids(energy_supplier_ids: list[str]) -> Column:
 
 def filter_by_grid_area_codes(grid_area_codes: list[str]) -> Column:
     return F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes)
+
+
+def filter_by_charge_owner_and_tax_depending_on_market_role(
+    df: DataFrame,
+    requesting_actor_market_role: MarketRole,
+    charge_owner_id: str,
+) -> DataFrame:
+    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        df = df.where(
+            F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id
+        ).where(F.col(DataProductColumnNames.is_tax) == F.lit(False))
+
+    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        df = df.where(
+            (
+                (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
+                & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
+            )
+            | (F.col(DataProductColumnNames.is_tax) == F.lit(True))
+        )
+
+    return df
