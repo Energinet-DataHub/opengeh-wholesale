@@ -61,60 +61,53 @@ def _get_repository_mock(
             JAN_1ST,
             JAN_2ND,
             False,
-            id="charge link period stops before selected period",
+            id="metering point period stops before selected period",
         ),
         pytest.param(
             JAN_1ST,
             JAN_3RD,
             True,
-            id="charge link starts before and ends within selected period",
+            id="metering point starts before and ends within selected period",
         ),
         pytest.param(
             JAN_3RD,
             JAN_4TH,
             True,
-            id="charge link period is within selected period",
+            id="metering point period is within selected period",
         ),
         pytest.param(
             JAN_3RD,
             JAN_5TH,
             True,
-            id="charge link starts within but stops after selected period",
+            id="metering point starts within but stops after selected period",
         ),
         pytest.param(
-            JAN_4TH, JAN_5TH, False, id="charge link starts after selected period"
+            JAN_4TH, JAN_5TH, False, id="metering point starts after selected period"
         ),
     ],
 )
 def test_read_and_filter_for_wholesale__returns_charge_link_periods_that_overlap_with_selected_period(
     spark: SparkSession,
-    charge_link_from_date: datetime,
-    charge_link_to_date: datetime,
+    from_date: datetime,
+    to_date: datetime,
     is_included: bool,
 ) -> None:
     # Arrange
-    period_start = JAN_2ND
-    period_end = JAN_4TH
+    calculation_period_start = JAN_2ND
+    calculation_period_end = JAN_4TH
 
     metering_point_periods = metering_point_periods_factory.create(
         spark,
         default_data.create_metering_point_periods_row(
-            from_date=charge_link_from_date, to_date=charge_link_to_date
+            from_date=from_date, to_date=to_date
         ),
     )
-
-    charge_link_periods = charge_links_factory.create(
-        spark,
-        default_data.create_charge_link_periods_row(
-            from_date=charge_link_from_date, to_date=charge_link_to_date
-        ),
-    )
-    mock_repository = _get_repository_mock(metering_point_periods, charge_link_periods)
+    mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
     actual_df = read_and_filter_for_wholesale(
-        period_start=period_start,
-        period_end=period_end,
+        period_start=calculation_period_start,
+        period_end=calculation_period_end,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
