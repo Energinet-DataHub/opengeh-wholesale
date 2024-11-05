@@ -24,14 +24,11 @@ from settlement_report_job.domain.dataframe_utils.factory_filters import (
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
     join_metering_points_periods_and_charge_links_periods,
 )
-from settlement_report_job.domain.dataframe_utils.merge_periods import (
-    merge_connected_periods,
-)
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
-    read_charge_link_periods,
     read_metering_point_periods_by_calculation_ids,
+    read_charge_link_periods,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
@@ -48,7 +45,7 @@ def read_and_filter(
     requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    logger.info("Creating charge links")
+    logger.info("Creating charge prices")
 
     charge_prices = repository.read_charge_prices().where(
         (F.col(DataProductColumnNames.time) >= period_start)
@@ -59,6 +56,15 @@ def read_and_filter(
             charge_prices = charge_prices.where(
                 filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area)
             )
+
+    charge_prices = _join_with_charge_link_and_metering_point_periods(
+        charge_prices,
+        period_start,
+        period_end,
+        calculation_id_by_grid_area,
+        energy_supplier_ids,
+        repository,
+    )
 
     if requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
@@ -88,5 +94,47 @@ def read_and_filter(
             charge_price_information_periods[DataProductColumnNames.is_tax],
             charge_price_information_periods[DataProductColumnNames.resolution],
         )
+
+    return charge_prices
+
+
+def _join_with_charge_link_and_metering_point_periods(
+    charge_prices: DataFrame,
+    requesting_actor_id: str,
+    requesting_actor_market_role: MarketRole,
+    period_start: datetime,
+    period_end: datetime,
+    calculation_id_by_grid_area: dict[str, UUID],
+    energy_supplier_ids: list[str] | None,
+    repository: WholesaleRepository,
+) -> DataFrame:
+    charge_link_periods = read_charge_link_periods(
+        repository=repository,
+        period_start=period_start,
+        period_end=period_end,
+        charge_owner_id=requesting_actor_id,
+        requesting_actor_market_role=requesting_actor_market_role,
+    )
+
+    metering_point_periods = read_metering_point_periods_by_calculation_ids(
+        repository=repository,
+        period_start=period_start,
+        period_end=period_end,
+        calculation_id_by_grid_area=calculation_id_by_grid_area,
+        energy_supplier_ids=energy_supplier_ids,
+    )
+
+    charge_link_periods = join_metering_points_periods_and_charge_links_periods(
+        charge_link_periods, metering_point_periods
+    )
+
+    charge_prices = charge_prices.join(
+        charge_link_periods,
+        on=[
+            DataProductColumnNames.calculation_id,
+            DataProductColumnNames.charge_key,
+        ],
+        how="inner",
+    ).select(charge_prices["*"])
 
     return charge_prices
