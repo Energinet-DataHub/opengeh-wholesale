@@ -6,7 +6,6 @@ import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as input_charge_links_factory
 import test_factories.metering_point_periods_factory as input_metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as input_charge_price_information_periods_factory
-from package.codelists import MeteringPointType
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods_for_wholesale,
 )
