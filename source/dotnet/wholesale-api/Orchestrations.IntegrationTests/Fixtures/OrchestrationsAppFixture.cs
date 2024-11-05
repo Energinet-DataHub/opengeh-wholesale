@@ -70,7 +70,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
 
         DurableTaskManager = new DurableTaskManager(
-            "DURABLETASK_STORAGE_CONNECTION_STRING",
+            "OrchestrationsStorageConnectionString",
             AzuriteManager.FullConnectionString);
 
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
@@ -317,7 +317,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             "OrchestrationsTaskHubName",
             TaskHubName);
         appHostSettings.ProcessEnvironmentVariables.Add(
-            "DURABLETASK_STORAGE_CONNECTION_STRING",
+            "OrchestrationsStorageConnectionString",
             AzuriteManager.FullConnectionString);
 
         // => Authentication
