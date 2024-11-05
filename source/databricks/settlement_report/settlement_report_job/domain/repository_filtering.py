@@ -79,17 +79,11 @@ def read_charge_link_periods(
             repository.read_charge_price_information_periods()
         )
 
-        is_tax = (
-            False
-            if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR
-            else True
-        )
-
         charge_link_periods = _filter_by_charge_owner_and_tax(
             charge_link_periods=charge_link_periods,
             charge_price_information_periods=charge_price_information_periods,
             charge_owner_id=charge_owner_id,
-            is_tax=is_tax,
+            requesting_actor_market_role=requesting_actor_market_role,
         )
 
     return charge_link_periods
@@ -99,7 +93,7 @@ def _filter_by_charge_owner_and_tax(
     charge_link_periods: DataFrame,
     charge_price_information_periods: DataFrame,
     charge_owner_id: str,
-    is_tax: bool,
+    requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
     charge_link_periods = charge_link_periods.join(
         charge_price_information_periods,
@@ -110,7 +104,18 @@ def _filter_by_charge_owner_and_tax(
         charge_price_information_periods[DataProductColumnNames.is_tax],
     )
 
-    return charge_link_periods.where(
-        (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
-        & (F.col(DataProductColumnNames.is_tax) == F.lit(is_tax))
-    )
+    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        charge_link_periods = charge_link_periods.where(
+            F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id
+        ).where(F.col(DataProductColumnNames.is_tax) == F.lit(False))
+
+    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        charge_link_periods = charge_link_periods.where(
+            (
+                (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
+                & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
+            )
+            | (F.col(DataProductColumnNames.is_tax) == F.lit(True))
+        )
+
+    return charge_link_periods
