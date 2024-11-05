@@ -13,6 +13,7 @@ class CsvColumnNames:
     energy_supplier_id = "ENERGYSUPPLIERID"
     from_grid_area_code = "FROMGRIDAREAID"
     grid_area_code = "METERINGGRIDAREAID"
+    grid_area_code_in_metering_points_csv = "GRIDAREAID"
     metering_point_from_date = "VALIDFROM"
     metering_point_id = "METERINGPOINTID"
     metering_point_to_date = "VALIDTO"

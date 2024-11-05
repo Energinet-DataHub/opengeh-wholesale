@@ -1,16 +1,20 @@
+import uuid
 from unittest.mock import Mock
 
-from boltons.strutils import args2sh
 from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as input_charge_links_factory
 import test_factories.metering_point_periods_factory as input_metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as input_charge_price_information_periods_factory
-from settlement_report_job.domain.market_role import MarketRole
+from package.codelists import MeteringPointType
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods_for_wholesale,
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.wholesale.data_values import (
+    MeteringPointTypeDataProductValue,
+    SettlementMethodDataProductValue,
+)
 
 
 def _get_repository_mock(
@@ -30,6 +34,53 @@ def _get_repository_mock(
         )
 
     return mock_repository
+
+
+def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_values(
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_datahub_admin_args: SettlementReportArgs,
+) -> None:
+    # Arrange
+    args = standard_wholesale_fixing_scenario_datahub_admin_args
+    args.period_start = default_data.DEFAULT_PERIOD_START
+    args.period_end = default_data.DEFAULT_PERIOD_END
+    args.calculation_id_by_grid_area = {
+        default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(
+            default_data.DEFAULT_CALCULATION_ID
+        )
+    }
+    expected = {
+        "grid_area_code_partitioning": default_data.DEFAULT_GRID_AREA_CODE,
+        "METERINGPOINTID": default_data.DEFAULT_METERING_POINT_ID,
+        "VALIDFROM": default_data.DEFAULT_PERIOD_START,
+        "VALIDTO": default_data.DEFAULT_PERIOD_END,
+        "GRIDAREAID": default_data.DEFAULT_GRID_AREA_CODE,
+        "TOGRIDAREAID": default_data.DEFAULT_TO_GRID_AREA_CODE,
+        "FROMGRIDAREAID": default_data.DEFAULT_FROM_GRID_AREA_CODE,
+        "TYPEOFMP": "E17",
+        "SETTLEMENTMETHOD": "D01",
+        "ENERGYSUPPLIERID": default_data.DEFAULT_ENERGY_SUPPLIER_ID,
+    }
+    metering_point_periods = input_metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(
+            metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+            settlement_method=SettlementMethodDataProductValue.FLEX,
+        ),
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = create_metering_point_periods_for_wholesale(
+        args=args,
+        repository=mock_repository,
+    )
+
+    # Assert
+    print(actual.collect())
+    print(expected)
+    assert actual.count() == 1
+    assert actual.collect()[0].asDict() == expected
 
 
 def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_columns(
@@ -76,7 +127,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_c
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
-        "METERINGGRIDAREAID",
+        "GRIDAREAID",
         "TOGRIDAREAID",
         "FROMGRIDAREAID",
         "TYPEOFMP",
@@ -127,7 +178,7 @@ def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_c
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
-        "METERINGGRIDAREAID",
+        "GRIDAREAID",
         "TOGRIDAREAID",
         "FROMGRIDAREAID",
         "TYPEOFMP",
@@ -161,7 +212,7 @@ def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expec
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
-        "METERINGGRIDAREAID",
+        "GRIDAREAID",
         "TOGRIDAREAID",
         "FROMGRIDAREAID",
         "TYPEOFMP",

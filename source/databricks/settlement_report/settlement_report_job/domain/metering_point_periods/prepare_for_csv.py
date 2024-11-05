@@ -50,7 +50,7 @@ def prepare_for_csv(
             CsvColumnNames.metering_point_to_date
         ),
         F.col(DataProductColumnNames.grid_area_code).alias(
-            CsvColumnNames.grid_area_code
+            CsvColumnNames.grid_area_code_in_metering_points_csv
         ),
         F.col(DataProductColumnNames.to_grid_area_code).alias(
             CsvColumnNames.to_grid_area_code
