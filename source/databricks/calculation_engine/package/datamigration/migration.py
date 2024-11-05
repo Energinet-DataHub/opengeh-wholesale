@@ -11,7 +11,6 @@ from .schema_config import schema_config
 from .substitutions import get_substitutions
 
 MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
-UNUSED = "UNUSED"  # Marks fields that were only used in the old hive implementation
 
 
 def migrate_data_lake(

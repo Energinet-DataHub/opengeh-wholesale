@@ -22,9 +22,7 @@ schema_config = [
     Schema(
         name=paths.HiveOutputDatabase.DATABASE_NAME,
         tables=[],
-        views=[
-            View(name=paths.HiveOutputDatabase.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
-        ],
+        views=[],
     ),
     Schema(
         # Tables in this schema are externals and schemas are not defined in the SQL scripts.
