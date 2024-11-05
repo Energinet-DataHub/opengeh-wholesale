@@ -20,6 +20,7 @@ import test_factories.total_monthly_amounts_factory as total_monthly_amounts_fac
 
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.monthly_amounts.read_and_filter import (
+    _filter_monthly_amounts_per_charge,
     read_and_filter_from_view,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -114,11 +115,7 @@ def monthly_amounts_read_and_filter_mock_repository(
     return mock_repository
 
 
-def test_read_and_filter_from_view__returns_expected_columns(
-    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
-    monthly_amounts_read_and_filter_mock_repository: Mock,
-) -> None:
-    # Arrange
+def get_expected_unordered_columns(include_charge_owner=True) -> list[str]:
     expected_unordered_columns = [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
@@ -132,10 +129,22 @@ def test_read_and_filter_from_view__returns_expected_columns(
         DataProductColumnNames.amount,
         DataProductColumnNames.charge_type,
         DataProductColumnNames.charge_code,
-        DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.is_tax,
         DataProductColumnNames.result_id,
     ]
+
+    if include_charge_owner:
+        expected_unordered_columns.append(DataProductColumnNames.charge_owner_id)
+
+    return expected_unordered_columns
+
+
+def test_read_and_filter_from_view__returns_expected_columns(
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
+    monthly_amounts_read_and_filter_mock_repository: Mock,
+) -> None:
+    # Arrange
+    expected_unordered_columns = get_expected_unordered_columns()
 
     # Act
     actual_df = read_and_filter_from_view(
@@ -153,23 +162,7 @@ def test_read_and_filter_from_view__when_energy_supplier__returns_only_data_from
 ) -> None:
     # Arrange
     args = standard_wholesale_fixing_scenario_energy_supplier_args
-    expected_unordered_columns = [
-        DataProductColumnNames.calculation_id,
-        DataProductColumnNames.calculation_type,
-        DataProductColumnNames.calculation_version,
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.energy_supplier_id,
-        DataProductColumnNames.time,
-        DataProductColumnNames.resolution,
-        DataProductColumnNames.quantity_unit,
-        DataProductColumnNames.currency,
-        DataProductColumnNames.amount,
-        DataProductColumnNames.charge_type,
-        DataProductColumnNames.charge_code,
-        DataProductColumnNames.charge_owner_id,
-        DataProductColumnNames.is_tax,
-        DataProductColumnNames.result_id,
-    ]
+    expected_unordered_columns = get_expected_unordered_columns()
 
     # Act
     actual_df = read_and_filter_from_view(
@@ -215,24 +208,7 @@ def test_read_and_filter_from_view__when_datahub_administrator__returns_all_supp
         DATAHUB_ADMINISTRATOR_ID
     )
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
-
-    expected_unordered_columns = [
-        DataProductColumnNames.calculation_id,
-        DataProductColumnNames.calculation_type,
-        DataProductColumnNames.calculation_version,
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.energy_supplier_id,
-        DataProductColumnNames.time,
-        DataProductColumnNames.resolution,
-        DataProductColumnNames.quantity_unit,
-        DataProductColumnNames.currency,
-        DataProductColumnNames.amount,
-        DataProductColumnNames.charge_type,
-        DataProductColumnNames.charge_code,
-        DataProductColumnNames.charge_owner_id,
-        DataProductColumnNames.is_tax,
-        DataProductColumnNames.result_id,
-    ]
+    expected_unordered_columns = get_expected_unordered_columns()
 
     # Act
     actual_df = read_and_filter_from_view(
@@ -282,22 +258,9 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
     )[0]
 
-    expected_unordered_columns = [
-        DataProductColumnNames.calculation_id,
-        DataProductColumnNames.calculation_type,
-        DataProductColumnNames.calculation_version,
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.energy_supplier_id,
-        DataProductColumnNames.time,
-        DataProductColumnNames.resolution,
-        DataProductColumnNames.quantity_unit,
-        DataProductColumnNames.currency,
-        DataProductColumnNames.amount,
-        DataProductColumnNames.charge_type,
-        DataProductColumnNames.charge_code,
-        DataProductColumnNames.is_tax,
-        DataProductColumnNames.result_id,
-    ]
+    expected_unordered_columns = get_expected_unordered_columns(
+        include_charge_owner=False
+    )
 
     # Act
     actual_df = read_and_filter_from_view(
@@ -326,3 +289,161 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         .count()
         > 1
     )
+
+
+def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_their_charges_and_correct_tax(
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> None:
+    # Arrange
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    standard_wholesale_fixing_scenario_args.requesting_actor_id = (
+        GRID_ACCESS_PROVIDER_ID
+    )
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+
+    standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area = dict(
+        list(
+            standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area.items()
+        )[:-1]
+    )
+    targeted_grid_area = list(
+        standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
+    )[0]
+
+    passing_row_because_of_charge_owner_id = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code=targeted_grid_area,
+            is_tax=False,
+            charge_owner_id=GRID_ACCESS_PROVIDER_ID,
+        ),
+    )
+    passing_row_due_to_tax = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code=targeted_grid_area,
+            is_tax=True,
+            charge_owner_id="Not our requesting actor",
+        ),
+    )
+    failing_row_due_to_charge_owner = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code=targeted_grid_area,
+            is_tax=False,
+            charge_owner_id="Not our requesting actor",
+        ),
+    )
+    failing_row_due_to_grid_area = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code="Not our grid area",
+            is_tax=False,
+            charge_owner_id=GRID_ACCESS_PROVIDER_ID,
+        ),
+    )
+    testing_data = (
+        passing_row_because_of_charge_owner_id.union(passing_row_due_to_tax)
+        .union(failing_row_due_to_charge_owner)
+        .union(failing_row_due_to_grid_area)
+    )
+
+    expected_count = 2
+
+    # Act
+    actual_df = _filter_monthly_amounts_per_charge(
+        testing_data,
+        standard_wholesale_fixing_scenario_args,
+    )
+
+    # Assert
+    assert actual_df.count() == expected_count
+    assert (
+        actual_df.where(
+            F.col(DataProductColumnNames.grid_area_code).isin([targeted_grid_area])
+        ).count()
+        == expected_count
+    )
+    assert actual_df.select(DataProductColumnNames.is_tax).distinct().count() == 2
+
+
+def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_charges_and_correct_tax(
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> None:
+    # Arrange
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.SYSTEM_OPERATOR
+    )
+    standard_wholesale_fixing_scenario_args.requesting_actor_id = SYSTEM_OPERATOR_ID
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+
+    standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area = dict(
+        list(
+            standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area.items()
+        )[:-1]
+    )
+    targeted_grid_area = list(
+        standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
+    )[0]
+
+    passing_row = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code=targeted_grid_area,
+            is_tax=False,
+            charge_owner_id=SYSTEM_OPERATOR_ID,
+        ),
+    )
+    failing_row_due_to_tax = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code=targeted_grid_area,
+            is_tax=True,
+            charge_owner_id=SYSTEM_OPERATOR_ID,
+        ),
+    )
+    failing_row_due_to_charge_owner = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code=targeted_grid_area,
+            is_tax=False,
+            charge_owner_id="Not our requesting actor",
+        ),
+    )
+    failing_row_due_to_grid_area = monthly_amounts_per_charge_factory.create(
+        spark,
+        default_data.create_monthly_amounts_per_charge_row(
+            grid_area_code="Not our grid area",
+            is_tax=False,
+            charge_owner_id=SYSTEM_OPERATOR_ID,
+        ),
+    )
+    testing_data = (
+        passing_row.union(failing_row_due_to_tax)
+        .union(failing_row_due_to_charge_owner)
+        .union(failing_row_due_to_grid_area)
+    )
+
+    expected_count = 1
+
+    # Act
+    actual_df = _filter_monthly_amounts_per_charge(
+        testing_data,
+        standard_wholesale_fixing_scenario_args,
+    )
+
+    print(type(actual_df))
+    actual_df.count()
+    # Assert
+    assert actual_df.count() == expected_count
+    assert (
+        actual_df.where(
+            F.col(DataProductColumnNames.grid_area_code).isin([targeted_grid_area])
+        ).count()
+        == expected_count
+    )
+    assert actual_df.filter(DataProductColumnNames.is_tax).count() == expected_count

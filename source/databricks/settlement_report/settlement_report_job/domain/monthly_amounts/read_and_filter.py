@@ -52,30 +52,26 @@ def read_and_filter_from_view(
     return monthly_amounts
 
 
-def _apply_shared_filters(df: DataFrame, args: SettlementReportArgs) -> DataFrame:
-    df = df.where(
+def _apply_shared_filters(
+    monthly_amounts: DataFrame, args: SettlementReportArgs
+) -> DataFrame:
+    monthly_amounts = monthly_amounts.where(
         (col(DataProductColumnNames.time) >= args.period_start)
         & (col(DataProductColumnNames.time) < args.period_end)
     )
 
     if args.calculation_id_by_grid_area:
         # Can never be null, but mypy requires it be specified
-        df = df.where(
+        monthly_amounts = monthly_amounts.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
 
     if args.energy_supplier_ids:
-        df = df.where(filter_by_energy_supplier_ids(args.energy_supplier_ids))
-
-    if args.requesting_actor_market_role in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.SYSTEM_OPERATOR,
-    ]:
-        df = df.where(
-            col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id
+        monthly_amounts = monthly_amounts.where(
+            filter_by_energy_supplier_ids(args.energy_supplier_ids)
         )
 
-    return df
+    return monthly_amounts
 
 
 def _filter_monthly_amounts_per_charge(
@@ -83,13 +79,21 @@ def _filter_monthly_amounts_per_charge(
 ) -> DataFrame:
     monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
 
-    if args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-        monthly_amounts_per_charge = monthly_amounts_per_charge.filter(
-            col(DataProductColumnNames.is_tax)
+    if args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        monthly_amounts_per_charge = monthly_amounts_per_charge.where(
+            (col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id)
+            & (~col(DataProductColumnNames.is_tax))
         )
-    elif args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        monthly_amounts_per_charge = monthly_amounts_per_charge.filter(
-            ~col(DataProductColumnNames.is_tax)
+    if args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        monthly_amounts_per_charge = monthly_amounts_per_charge.where(
+            (
+                (
+                    col(DataProductColumnNames.charge_owner_id)
+                    == args.requesting_actor_id
+                )
+                & (~col(DataProductColumnNames.is_tax))
+            )
+            | (col(DataProductColumnNames.is_tax))
         )
 
     return monthly_amounts_per_charge
@@ -107,14 +111,20 @@ def _filter_total_monthly_amounts(
         total_monthly_amounts = total_monthly_amounts.where(
             col(DataProductColumnNames.charge_owner_id).isNull()
         )
-
+    elif args.requesting_actor_market_role in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.SYSTEM_OPERATOR,
+    ]:
+        total_monthly_amounts = total_monthly_amounts.where(
+            col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id
+        )
     return total_monthly_amounts
 
 
 def _extend_monthly_amounts_with_resolution(
-    base_monthly_amounts_per_charge_columns: DataFrame,
+    monthly_amounts_without_resolution: DataFrame,
 ) -> DataFrame:
-    return base_monthly_amounts_per_charge_columns.withColumn(
+    return monthly_amounts_without_resolution.withColumn(
         DataProductColumnNames.resolution, lit("P1M")
     )
 
