@@ -5,6 +5,7 @@ from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_calculation_id_by_grid_area,
+    filter_by_charge_owner_and_tax_depending_on_market_role,
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
@@ -95,6 +96,14 @@ def _filter_by_charge_owner_and_tax(
     charge_owner_id: str,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
+    charge_price_information_periods = (
+        filter_by_charge_owner_and_tax_depending_on_market_role(
+            charge_price_information_periods,
+            requesting_actor_market_role,
+            charge_owner_id,
+        )
+    )
+
     charge_link_periods = charge_link_periods.join(
         charge_price_information_periods,
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
@@ -103,19 +112,5 @@ def _filter_by_charge_owner_and_tax(
         charge_link_periods["*"],
         charge_price_information_periods[DataProductColumnNames.is_tax],
     )
-
-    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        charge_link_periods = charge_link_periods.where(
-            F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id
-        ).where(F.col(DataProductColumnNames.is_tax) == F.lit(False))
-
-    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-        charge_link_periods = charge_link_periods.where(
-            (
-                (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
-                & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
-            )
-            | (F.col(DataProductColumnNames.is_tax) == F.lit(True))
-        )
 
     return charge_link_periods
