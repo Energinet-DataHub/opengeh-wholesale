@@ -13,6 +13,9 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
+from data_seeding import (
+    standard_wholesale_fixing_scenario_data_generator,
+)
 from test_factories import latest_calculations_factory
 import test_factories.default_test_data_spec as default_data
 import test_factories.monthly_amounts_per_charge_factory as monthly_amounts_per_charge_factory
@@ -296,53 +299,48 @@ def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_t
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
 ) -> None:
     # Arrange
-    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-        MarketRole.GRID_ACCESS_PROVIDER
-    )
-    standard_wholesale_fixing_scenario_args.requesting_actor_id = (
-        GRID_ACCESS_PROVIDER_ID
-    )
-    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
-
-    standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area = dict(
-        list(
-            standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area.items()
-        )[:-1]
-    )
-    targeted_grid_area = list(
-        standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
-    )[0]
+    args = standard_wholesale_fixing_scenario_args
+    args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
+    args.requesting_actor_id = GRID_ACCESS_PROVIDER_ID
+    args.energy_supplier_ids = None
+    targeted_grid_area = standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[0]
+    calc_id = standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
 
     passing_row_because_of_charge_owner_id = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
-            grid_area_code=targeted_grid_area,
+            calculation_id=calc_id,
             is_tax=False,
             charge_owner_id=GRID_ACCESS_PROVIDER_ID,
+            time=args.period_start,
         ),
     )
     passing_row_due_to_tax = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
-            grid_area_code=targeted_grid_area,
+            calculation_id=calc_id,
             is_tax=True,
             charge_owner_id="Not our requesting actor",
+            time=args.period_start,
         ),
     )
     failing_row_due_to_charge_owner = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
-            grid_area_code=targeted_grid_area,
+            calculation_id=calc_id,
             is_tax=False,
             charge_owner_id="Not our requesting actor",
+            time=args.period_start,
         ),
     )
     failing_row_due_to_grid_area = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
+            calculation_id=calc_id,
             grid_area_code="Not our grid area",
             is_tax=False,
             charge_owner_id=GRID_ACCESS_PROVIDER_ID,
+            time=args.period_start,
         ),
     )
     testing_data = (
@@ -356,7 +354,7 @@ def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_t
     # Act
     actual_df = _filter_monthly_amounts_per_charge(
         testing_data,
-        standard_wholesale_fixing_scenario_args,
+        args,
     )
 
     # Assert
@@ -375,51 +373,48 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
 ) -> None:
     # Arrange
-    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
-        MarketRole.SYSTEM_OPERATOR
-    )
-    standard_wholesale_fixing_scenario_args.requesting_actor_id = SYSTEM_OPERATOR_ID
-    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
-
-    standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area = dict(
-        list(
-            standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area.items()
-        )[:-1]
-    )
-    targeted_grid_area = list(
-        standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
-    )[0]
+    args = standard_wholesale_fixing_scenario_args
+    args.requesting_actor_market_role = MarketRole.SYSTEM_OPERATOR
+    args.requesting_actor_id = SYSTEM_OPERATOR_ID
+    args.energy_supplier_ids = None
+    targeted_grid_area = standard_wholesale_fixing_scenario_data_generator.GRID_AREAS[0]
+    calc_id = standard_wholesale_fixing_scenario_data_generator.CALCULATION_ID
 
     passing_row = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
-            grid_area_code=targeted_grid_area,
+            calculation_id=calc_id,
             is_tax=False,
             charge_owner_id=SYSTEM_OPERATOR_ID,
+            time=args.period_start,
         ),
     )
     failing_row_due_to_tax = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
-            grid_area_code=targeted_grid_area,
+            calculation_id=calc_id,
             is_tax=True,
             charge_owner_id=SYSTEM_OPERATOR_ID,
+            time=args.period_start,
         ),
     )
     failing_row_due_to_charge_owner = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
-            grid_area_code=targeted_grid_area,
+            calculation_id=calc_id,
             is_tax=False,
             charge_owner_id="Not our requesting actor",
+            time=args.period_start,
         ),
     )
     failing_row_due_to_grid_area = monthly_amounts_per_charge_factory.create(
         spark,
         default_data.create_monthly_amounts_per_charge_row(
+            calculation_id=calc_id,
             grid_area_code="Not our grid area",
             is_tax=False,
             charge_owner_id=SYSTEM_OPERATOR_ID,
+            time=args.period_start,
         ),
     )
     testing_data = (
@@ -433,11 +428,9 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
     # Act
     actual_df = _filter_monthly_amounts_per_charge(
         testing_data,
-        standard_wholesale_fixing_scenario_args,
+        args,
     )
 
-    print(type(actual_df))
-    actual_df.count()
     # Assert
     assert actual_df.count() == expected_count
     assert (
@@ -446,4 +439,7 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
         ).count()
         == expected_count
     )
-    assert actual_df.filter(DataProductColumnNames.is_tax).count() == expected_count
+    assert (
+        actual_df.filter(~F.col(DataProductColumnNames.is_tax)).count()
+        == expected_count
+    )

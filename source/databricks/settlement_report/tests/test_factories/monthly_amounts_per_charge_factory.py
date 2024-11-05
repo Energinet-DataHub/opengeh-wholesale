@@ -55,19 +55,4 @@ def create(spark: SparkSession, data_spec: MonthlyAmountsPerChargeRow) -> DataFr
         DataProductColumnNames.amount: data_spec.amount,
     }
 
-    assert row[DataProductColumnNames.calculation_id] is not None
-    assert row[DataProductColumnNames.calculation_type] is not None
-    assert row[DataProductColumnNames.calculation_version] is not None
-    assert row[DataProductColumnNames.result_id] is not None
-    assert row[DataProductColumnNames.grid_area_code] is not None
-    assert row[DataProductColumnNames.energy_supplier_id] is not None
-    assert row[DataProductColumnNames.charge_code] is not None
-    assert row[DataProductColumnNames.charge_type] is not None
-    assert row[DataProductColumnNames.charge_owner_id] is not None
-    assert row[DataProductColumnNames.quantity_unit] is not None
-    assert row[DataProductColumnNames.is_tax] is not None
-    assert row[DataProductColumnNames.currency] is not None
-    assert row[DataProductColumnNames.time] is not None
-    assert row[DataProductColumnNames.amount] is not None
-
     return spark.createDataFrame([row], monthly_amounts_per_charge_v1)

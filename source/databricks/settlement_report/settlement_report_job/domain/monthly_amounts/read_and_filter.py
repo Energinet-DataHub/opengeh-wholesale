@@ -21,6 +21,7 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_calculation_id_by_grid_area,
+    filter_by_charge_owner_and_tax_depending_on_market_role,
     filter_by_energy_supplier_ids,
 )
 
@@ -59,18 +60,15 @@ def _apply_shared_filters(
         (col(DataProductColumnNames.time) >= args.period_start)
         & (col(DataProductColumnNames.time) < args.period_end)
     )
-
     if args.calculation_id_by_grid_area:
         # Can never be null, but mypy requires it be specified
         monthly_amounts = monthly_amounts.where(
             filter_by_calculation_id_by_grid_area(args.calculation_id_by_grid_area)
         )
-
     if args.energy_supplier_ids:
         monthly_amounts = monthly_amounts.where(
             filter_by_energy_supplier_ids(args.energy_supplier_ids)
         )
-
     return monthly_amounts
 
 
@@ -79,22 +77,13 @@ def _filter_monthly_amounts_per_charge(
 ) -> DataFrame:
     monthly_amounts_per_charge = _apply_shared_filters(monthly_amounts_per_charge, args)
 
-    if args.requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        monthly_amounts_per_charge = monthly_amounts_per_charge.where(
-            (col(DataProductColumnNames.charge_owner_id) == args.requesting_actor_id)
-            & (~col(DataProductColumnNames.is_tax))
+    monthly_amounts_per_charge = (
+        filter_by_charge_owner_and_tax_depending_on_market_role(
+            monthly_amounts_per_charge,
+            args.requesting_actor_market_role,
+            args.requesting_actor_id,
         )
-    if args.requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-        monthly_amounts_per_charge = monthly_amounts_per_charge.where(
-            (
-                (
-                    col(DataProductColumnNames.charge_owner_id)
-                    == args.requesting_actor_id
-                )
-                & (~col(DataProductColumnNames.is_tax))
-            )
-            | (col(DataProductColumnNames.is_tax))
-        )
+    )
 
     return monthly_amounts_per_charge
 
