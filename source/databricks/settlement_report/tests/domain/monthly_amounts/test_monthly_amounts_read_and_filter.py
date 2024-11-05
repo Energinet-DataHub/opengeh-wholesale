@@ -312,7 +312,6 @@ def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_t
             calculation_id=calc_id,
             is_tax=False,
             charge_owner_id=GRID_ACCESS_PROVIDER_ID,
-            time=args.period_start,
         ),
     )
     passing_row_due_to_tax = monthly_amounts_per_charge_factory.create(
@@ -321,7 +320,6 @@ def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_t
             calculation_id=calc_id,
             is_tax=True,
             charge_owner_id="Not our requesting actor",
-            time=args.period_start,
         ),
     )
     failing_row_due_to_charge_owner = monthly_amounts_per_charge_factory.create(
@@ -330,7 +328,6 @@ def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_t
             calculation_id=calc_id,
             is_tax=False,
             charge_owner_id="Not our requesting actor",
-            time=args.period_start,
         ),
     )
     failing_row_due_to_grid_area = monthly_amounts_per_charge_factory.create(
@@ -340,7 +337,6 @@ def test_filter_monthly_amounts_per_charge__when_grid_access_provider__returns_t
             grid_area_code="Not our grid area",
             is_tax=False,
             charge_owner_id=GRID_ACCESS_PROVIDER_ID,
-            time=args.period_start,
         ),
     )
     testing_data = (
@@ -386,7 +382,6 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
             calculation_id=calc_id,
             is_tax=False,
             charge_owner_id=SYSTEM_OPERATOR_ID,
-            time=args.period_start,
         ),
     )
     failing_row_due_to_tax = monthly_amounts_per_charge_factory.create(
@@ -395,7 +390,6 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
             calculation_id=calc_id,
             is_tax=True,
             charge_owner_id=SYSTEM_OPERATOR_ID,
-            time=args.period_start,
         ),
     )
     failing_row_due_to_charge_owner = monthly_amounts_per_charge_factory.create(
@@ -404,7 +398,6 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
             calculation_id=calc_id,
             is_tax=False,
             charge_owner_id="Not our requesting actor",
-            time=args.period_start,
         ),
     )
     failing_row_due_to_grid_area = monthly_amounts_per_charge_factory.create(
@@ -414,7 +407,6 @@ def test_filter_monthly_amounts_per_charge__when_system_operator__returns_their_
             grid_area_code="Not our grid area",
             is_tax=False,
             charge_owner_id=SYSTEM_OPERATOR_ID,
-            time=args.period_start,
         ),
     )
     testing_data = (
