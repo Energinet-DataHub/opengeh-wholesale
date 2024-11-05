@@ -24,10 +24,10 @@ from package.common.logger import Logger
 @pytest.mark.parametrize(
     "log_method, log_func",
     [
-        ("debug", logging.Logger.debug),
-        ("info", logging.Logger.info),
-        ("warning", logging.Logger.warning),
-        ("warning", logging.Logger.error),
+        ("debug", Logger.debug),
+        ("info", Logger.info),
+        ("warning", Logger.warning),
+        ("warning", Logger.error),
     ],
 )
 def test__log_method__when_called_with_custom_extras__passes_correct_extras(
@@ -39,7 +39,7 @@ def test__log_method__when_called_with_custom_extras__passes_correct_extras(
     custom_extras = {"key": "value"}
     expected_extras = custom_extras | logger._extras
 
-    with patch.object(logging.Logger, log_method) as mock_log_method:
+    with patch.object(Logger, log_method) as mock_log_method:
         # Act
         getattr(logger, log_method)(test_message, extras=custom_extras)
 

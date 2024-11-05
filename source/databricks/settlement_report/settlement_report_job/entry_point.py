@@ -22,8 +22,8 @@ from pyspark.sql.session import SparkSession
 
 from opentelemetry.trace import SpanKind
 
-import telemetry.logging.logging_configuration as config
-from telemetry.logging.span_recording import span_record_exception
+import telemetry_logging.logging_configuration as config
+from telemetry_logging.span_recording import span_record_exception
 from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
