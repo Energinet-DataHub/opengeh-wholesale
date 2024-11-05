@@ -17,6 +17,9 @@ from datetime import datetime
 from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
+from settlement_report_job.domain.dataframe_utils.factory_filters import (
+    filter_by_charge_owner_and_tax_depending_on_market_role,
+)
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -57,18 +60,8 @@ def read_and_filter_from_view(
             ).isin(calculation_id_by_grid_area_structs)
         )
 
-    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
-        df = df.where(
-            F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id
-        ).where(F.col(DataProductColumnNames.is_tax) == F.lit(False))
-
-    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-        df = df.where(
-            (
-                (F.col(DataProductColumnNames.charge_owner_id) == requesting_actor_id)
-                & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
-            )
-            | (F.col(DataProductColumnNames.is_tax) == F.lit(True))
-        )
+    df = filter_by_charge_owner_and_tax_depending_on_market_role(
+        df, requesting_actor_market_role, requesting_actor_id
+    )
 
     return df
