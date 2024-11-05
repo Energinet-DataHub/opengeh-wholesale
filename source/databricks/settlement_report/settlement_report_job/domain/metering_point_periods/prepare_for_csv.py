@@ -18,6 +18,7 @@ from settlement_report_job import logging
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
+    SETTLEMENT_METHODS,
 )
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
@@ -31,57 +32,50 @@ log = logging.Logger(__name__)
 
 @logging.use_span()
 def prepare_for_csv(
-    charge_link_periods: DataFrame,
+    metering_point_periods: DataFrame,
     requesting_actor_market_role: MarketRole,
 ) -> DataFrame:
-    csv_df = charge_link_periods.select(
+
+    columns = [
         F.col(DataProductColumnNames.grid_area_code).alias(
             EphemeralColumns.grid_area_code_partitioning
         ),
         F.col(DataProductColumnNames.metering_point_id).alias(
             CsvColumnNames.metering_point_id
         ),
+        F.col(DataProductColumnNames.from_date).alias(
+            CsvColumnNames.metering_point_from_date
+        ),
+        F.col(DataProductColumnNames.to_date).alias(
+            CsvColumnNames.metering_point_to_date
+        ),
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            CsvColumnNames.grid_area_code
+        ),
+        F.col(DataProductColumnNames.to_grid_area_code).alias(
+            CsvColumnNames.to_grid_area_code
+        ),
+        F.col(DataProductColumnNames.from_grid_area_code).alias(
+            CsvColumnNames.from_grid_area_code
+        ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(CsvColumnNames.metering_point_type),
-        F.col(DataProductColumnNames.charge_type).alias(CsvColumnNames.charge_type),
-        F.col(DataProductColumnNames.charge_owner_id).alias(
-            CsvColumnNames.charge_owner_id
-        ),
-        F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
-        F.col(DataProductColumnNames.quantity).alias(CsvColumnNames.charge_quantity),
-        F.col(DataProductColumnNames.from_date).alias(
-            CsvColumnNames.charge_link_from_date
-        ),
-        F.col(DataProductColumnNames.to_date).alias(CsvColumnNames.charge_link_to_date),
-        F.col(DataProductColumnNames.energy_supplier_id).alias(
-            CsvColumnNames.energy_supplier_id
-        ),
-    )
+        map_from_dict(SETTLEMENT_METHODS)[
+            F.col(DataProductColumnNames.settlement_method)
+        ].alias(CsvColumnNames.settlement_method),
+    ]
 
     if requesting_actor_market_role in [
-        MarketRole.GRID_ACCESS_PROVIDER,
-        MarketRole.ENERGY_SUPPLIER,
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
-        csv_df = csv_df.drop(CsvColumnNames.energy_supplier_id)
+        columns.append(
+            F.col(DataProductColumnNames.energy_supplier_id).alias(
+                CsvColumnNames.energy_supplier_id
+            )
+        )
 
-    has_energy_supplier_id_column = CsvColumnNames.energy_supplier_id in csv_df.columns
+    csv_df = metering_point_periods.select(columns)
 
-    return csv_df.orderBy(_get_order_by_columns(has_energy_supplier_id_column))
-
-
-def _get_order_by_columns(
-    has_energy_supplier_id_column: bool,
-) -> list[str]:
-
-    order_by_columns = [
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_link_from_date,
-    ]
-    if has_energy_supplier_id_column:
-        order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
-
-    return order_by_columns
+    return csv_df

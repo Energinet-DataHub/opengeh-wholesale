@@ -55,7 +55,7 @@ def _get_repository_mock(
 
 
 @pytest.mark.parametrize(
-    "charge_link_from_date,charge_link_to_date,is_included",
+    "from_date,to_date,is_included",
     [
         pytest.param(
             JAN_1ST,

@@ -19,7 +19,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 from settlement_report_job.domain.metering_point_periods.read_and_filter import (
     read_and_filter_for_wholesale,
 )
-from settlement_report_job.domain.charge_links.prepare_for_csv import (
+from settlement_report_job.domain.metering_point_periods.prepare_for_csv import (
     prepare_for_csv,
 )
 
@@ -28,7 +28,7 @@ def create_metering_point_periods_for_wholesale(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    charge_link_periods = read_and_filter_for_wholesale(
+    metering_point_periods = read_and_filter_for_wholesale(
         args.period_start,
         args.period_end,
         args.calculation_id_by_grid_area,
@@ -39,6 +39,6 @@ def create_metering_point_periods_for_wholesale(
     )
 
     return prepare_for_csv(
-        charge_link_periods,
+        metering_point_periods,
         args.requesting_actor_market_role,
     )

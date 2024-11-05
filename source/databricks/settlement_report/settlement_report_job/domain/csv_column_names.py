@@ -11,14 +11,18 @@ class CsvColumnNames:
     currency = "ENERGYCURRENCY"
     energy_quantity = "ENERGYQUANTITY"
     energy_supplier_id = "ENERGYSUPPLIERID"
+    from_grid_area_code = "FROMGRIDAREAID"
     grid_area_code = "METERINGGRIDAREAID"
+    metering_point_from_date = "VALIDFROM"
     metering_point_id = "METERINGPOINTID"
+    metering_point_to_date = "VALIDTO"
     metering_point_type = "TYPEOFMP"
     price = "PRICE"
     quantity_unit = "MEASUREUNIT"
     resolution = "RESOLUTIONDURATION"
     settlement_method = "SETTLEMENTMETHOD"
     time = "STARTDATETIME"
+    to_grid_area_code = "TOGRIDAREAID"
 
 
 class EphemeralColumns:
