@@ -436,7 +436,7 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter__when_grid_loss_responsible_and_energy_supplier_changes_on_metering_point__returns_expected_one_link_periods(
+def test_read_and_filter__when_energy_supplier_changes_on_metering_point__returns_one_link_period(
     spark: SparkSession,
 ) -> None:
     # Arrange
