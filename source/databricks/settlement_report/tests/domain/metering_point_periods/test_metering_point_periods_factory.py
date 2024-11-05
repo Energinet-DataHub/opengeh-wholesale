@@ -92,7 +92,7 @@ def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_col
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
-        "METERINGGRIDAREAID",
+        "GRIDAREAID",
         "TOGRIDAREAID",
         "FROMGRIDAREAID",
         "TYPEOFMP",
