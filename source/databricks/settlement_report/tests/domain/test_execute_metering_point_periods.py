@@ -21,6 +21,25 @@ def reset_task_values(dbutils: DBUtilsFixture):
     dbutils.jobs.taskValues.reset()
 
 
+def _get_expected_columns(requesting_actor_market_role: MarketRole) -> list[str]:
+    expected_column_names = [
+        CsvColumnNames.metering_point_id,
+        CsvColumnNames.metering_point_from_date,
+        CsvColumnNames.metering_point_to_date,
+        CsvColumnNames.grid_area_code_in_metering_points_csv,
+        CsvColumnNames.metering_point_type,
+        CsvColumnNames.settlement_method,
+    ]
+
+    if requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.DATAHUB_ADMINISTRATOR,
+    ]:
+        expected_column_names.append(CsvColumnNames.energy_supplier_id)
+
+    return expected_column_names
+
+
 def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
@@ -32,16 +51,9 @@ def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
         f"MDMP_804_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
         f"MDMP_805_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-    ]
+    expected_columns = _get_expected_columns(
+        standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_market_role
+    )
     report_generator_instance = report_generator.ReportGenerator(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
@@ -73,16 +85,9 @@ def test_execute_metering_point_periods__when_grid_access_provider__returns_expe
         f"MDMP_804_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
         f"MDMP_805_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-    ]
+    expected_columns = _get_expected_columns(
+        standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_market_role
+    )
     report_generator_instance = report_generator.ReportGenerator(
         spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
     )
@@ -125,17 +130,9 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
         f"MDMP_804_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
         f"MDMP_805_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-        CsvColumnNames.energy_supplier_id,
-    ]
+    expected_columns = _get_expected_columns(
+        standard_wholesale_fixing_scenario_data_generator.requesting_actor_market_role
+    )
     report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
@@ -171,17 +168,9 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
         "MDMP_804_02-01-2024_02-01-2024.csv",
         "MDMP_805_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-        CsvColumnNames.energy_supplier_id,
-    ]
+    expected_columns = _get_expected_columns(
+        standard_wholesale_fixing_scenario_args.requesting_actor_market_role
+    )
     report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
