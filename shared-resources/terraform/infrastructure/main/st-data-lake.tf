@@ -27,7 +27,6 @@ module "st_data_lake" {
       name = "wholesaleinput"
     }
   ]
-  prevent_deletion = false
 }
 
 module "kvs_st_data_lake_name" {

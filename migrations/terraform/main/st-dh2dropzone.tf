@@ -8,7 +8,6 @@ module "st_dh2dropzone" {
   resource_group_name          = azurerm_resource_group.this.name
   location                     = azurerm_resource_group.this.location
   account_replication_type     = "LRS"
-  prevent_deletion             = false
   access_tier                  = "Hot"
   private_endpoint_subnet_id   = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                     = var.datahub2_ip_whitelist != null ? format("%s,%s", local.ip_restrictions_as_string, var.datahub2_ip_whitelist) : local.ip_restrictions_as_string

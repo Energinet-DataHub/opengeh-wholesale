@@ -20,7 +20,6 @@ module "st_data_backup_wholesale" {
   ]
 
   audit_storage_account = null
-  prevent_deletion      = false
 }
 
 # The storage containers are not created in the module, as they are used in schema creation. I.e., we want it dynamically

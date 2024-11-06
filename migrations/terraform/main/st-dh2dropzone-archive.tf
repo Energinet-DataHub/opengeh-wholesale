@@ -9,7 +9,6 @@ module "st_dh2dropzone_archive" {
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
   access_tier                = "Cool"
-  prevent_deletion           = false
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {

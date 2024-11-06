@@ -24,8 +24,6 @@ module "mssqldb_revision_log" {
   }
 
   # All backup and retention policies are set explicitly for revision log.
-  prevent_deletion = true
-
   short_term_retention_policy = {
     retention_days           = 22
     backup_interval_in_hours = 12
