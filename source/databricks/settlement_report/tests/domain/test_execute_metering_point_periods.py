@@ -29,8 +29,8 @@ def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
 ):
     # Arrange
     expected_file_names = [
-        f"CHARGELINK_804_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
-        f"CHARGELINK_805_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"MDMP_804_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"MDMP_805_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
@@ -70,8 +70,8 @@ def test_execute_metering_point_periods__when_grid_access_provider__returns_expe
 ):
     # Arrange
     expected_file_names = [
-        f"CHARGELINK_804_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
-        f"CHARGELINK_805_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"MDMP_804_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"MDMP_805_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
@@ -168,8 +168,8 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
     args.requesting_actor_market_role = market_role
     args.energy_supplier_ids = None
     expected_file_names = [
-        "CHARGELINK_804_02-01-2024_02-01-2024.csv",
-        "CHARGELINK_805_02-01-2024_02-01-2024.csv",
+        "MDMP_804_02-01-2024_02-01-2024.csv",
+        "MDMP_805_02-01-2024_02-01-2024.csv",
     ]
     expected_columns = [
         CsvColumnNames.metering_point_id,
