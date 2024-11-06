@@ -1,5 +1,5 @@
 module "st_dh2timeseries_audit" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
 
   name                       = "dh2tsaudit"
   project_name               = var.domain_name_short
@@ -9,6 +9,7 @@ module "st_dh2timeseries_audit" {
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
   prevent_deletion           = false
+  use_queue                  = true
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {

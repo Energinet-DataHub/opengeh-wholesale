@@ -1,5 +1,5 @@
 module "st_documents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
 
   name                                  = "documents"
   project_name                          = var.domain_name_short
@@ -30,7 +30,7 @@ resource "azurerm_storage_container" "archived" {
 }
 
 module "st_documents_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
 
   name                                  = "backupdocs"
   project_name                          = var.domain_name_short

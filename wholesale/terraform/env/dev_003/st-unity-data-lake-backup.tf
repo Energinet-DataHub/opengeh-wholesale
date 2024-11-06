@@ -1,7 +1,7 @@
 # Backup of the wholesale data lake storage account to be used by the task force
 
 module "st_data_backup_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
 
   name                       = "databack"
   project_name               = var.domain_name_short
