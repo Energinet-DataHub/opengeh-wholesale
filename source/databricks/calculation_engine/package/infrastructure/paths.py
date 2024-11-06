@@ -232,9 +232,6 @@ class HiveSettlementReportPublicDataModel:
     MONTHLY_AMOUNTS_VIEW_NAME_V1 = "monthly_amounts_v1"
 
 
-TEST = ""
-"""Used to differentiate behavior of SQL migrations in tests from behavior in production"""
-
 WHOLESALE_CONTAINER_NAME = "wholesale"
 """The name of the container in the storage account"""
 

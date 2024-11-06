@@ -19,7 +19,4 @@ TBLPROPERTIES (
     delta.constraints.is_internal_calculation_chk = "is_internal_calculation IS NOT NULL",
     delta.columnMapping.mode = 'name'
 )
--- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
--- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/calculations'
 GO

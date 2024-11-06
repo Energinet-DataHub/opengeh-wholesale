@@ -37,7 +37,4 @@ TBLPROPERTIES (
     delta.constraints.neighbor_grid_area_code_chk = "neighbor_grid_area_code IS NULL OR LENGTH ( neighbor_grid_area_code ) = 3",
     delta.constraints.resolution_chk = "resolution IN ( 'PT15M' , 'PT1H' )"
 )
--- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
--- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/result'
 GO

@@ -18,7 +18,4 @@ TBLPROPERTIES (
     delta.constraints.charge_owner_id_chk = "LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16",
     delta.constraints.resolution_chk = "resolution IN ( 'PT1H' , 'P1D' , 'P1M' )"
 )
--- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
--- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_price_information_periods'
 GO

@@ -29,7 +29,4 @@ TBLPROPERTIES (
     delta.constraints.energy_supplier_id_chk = "energy_supplier_id IS NULL OR LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
     delta.constraints.balance_responsible_id_chk = "balance_responsible_id IS NULL OR LENGTH ( balance_responsible_id ) = 13 OR LENGTH ( balance_responsible_id ) = 16"
 )
--- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
--- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/metering_point_periods'
 GO
