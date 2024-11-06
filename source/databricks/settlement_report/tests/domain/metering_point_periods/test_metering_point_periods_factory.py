@@ -35,7 +35,7 @@ def _get_repository_mock(
     return mock_repository
 
 
-def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_values(
+def test_create_metering_point_periods_for_wholesale__when_datahub_admin__returns_expected_values(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_datahub_admin_args: SettlementReportArgs,
 ) -> None:
@@ -82,7 +82,7 @@ def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_val
     assert actual.collect()[0].asDict() == expected
 
 
-def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_columns(
+def test_create_metering_point_periods_for_wholesale__when_datahub_admin__returns_expected_columns(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_datahub_admin_args: SettlementReportArgs,
 ) -> None:
@@ -115,7 +115,7 @@ def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_col
     assert actual.columns == expected_columns
 
 
-def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_columns(
+def test_create_metering_point_periods_for_wholesale__when_system_operator__returns_expected_columns(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_system_operator_args: SettlementReportArgs,
 ) -> None:
@@ -166,7 +166,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_c
     assert actual.columns == expected_columns
 
 
-def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_columns(
+def test_create_metering_point_periods_for_wholesale__when_energy_supplier__returns_expected_columns(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
 ) -> None:
@@ -200,7 +200,75 @@ def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_c
     assert actual.columns == expected_columns
 
 
-def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expected_columns(
+def test_create_metering_point_periods_for_wholesale__when_grid_access_provider__returns_expected_columns(
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
+) -> None:
+
+    # Arrange
+    expected_columns = [
+        "grid_area_code_partitioning",
+        "METERINGPOINTID",
+        "VALIDFROM",
+        "VALIDTO",
+        "GRIDAREAID",
+        "TOGRIDAREAID",
+        "FROMGRIDAREAID",
+        "TYPEOFMP",
+        "SETTLEMENTMETHOD",
+    ]
+
+    metering_point_periods = input_metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(),
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = create_metering_point_periods_for_wholesale(
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.columns == expected_columns
+
+
+def test_create_metering_point_periods_for_balance_fixing__when_grid_access_provider__returns_expected_columns(
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
+) -> None:
+
+    # Arrange
+    expected_columns = [
+        "grid_area_code_partitioning",
+        "METERINGPOINTID",
+        "VALIDFROM",
+        "VALIDTO",
+        "GRIDAREAID",
+        "TOGRIDAREAID",
+        "FROMGRIDAREAID",
+        "TYPEOFMP",
+        "SETTLEMENTMETHOD",
+    ]
+
+    metering_point_periods = input_metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(),
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = create_metering_point_periods_for_wholesale(
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.columns == expected_columns
+
+
+def test_create_metering_point_periods_for_balance_fixing__when_metering_point_period_exceeds_selected_period__returns_period_that_ends_on_the_selected_end_date(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
 ) -> None:
