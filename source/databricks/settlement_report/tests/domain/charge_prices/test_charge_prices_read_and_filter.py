@@ -85,7 +85,6 @@ def test_read_and_filter(
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
     )
-    actual_df.show()
 
     # Assert
     assert actual_df.count() == 1
