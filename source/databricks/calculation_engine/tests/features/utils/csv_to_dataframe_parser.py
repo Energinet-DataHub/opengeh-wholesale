@@ -17,7 +17,7 @@ from pathlib import Path
 
 from pyspark.sql import SparkSession
 
-from features.utils.views.dataframe_wrapper import DataframeWrapper
+from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
 
 
 class CsvToDataframeWrapperParser:

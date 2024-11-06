@@ -22,7 +22,7 @@ from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution_adjusted_metering_point_time_series,
 )
 from package.codelists import MeteringPointResolution, CalculationType
-import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
+import tests.calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
 
 
 class TestGetEnergyResultResolution:

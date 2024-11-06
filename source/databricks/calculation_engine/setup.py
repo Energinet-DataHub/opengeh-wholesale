@@ -42,7 +42,7 @@ setup(
         "azure-monitor-opentelemetry==1.6.0",
         "azure-core==1.30.0",
         "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.9.0#subdirectory=source/spark_sql_migrations",
-        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.0.1#subdirectory=source/telemetry",
+        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.1.0#subdirectory=source/telemetry",
     ],
     entry_points={
         "console_scripts": [

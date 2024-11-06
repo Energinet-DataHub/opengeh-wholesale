@@ -18,7 +18,7 @@ from unittest.mock import patch
 
 import pytest
 
-from package.common.logger import Logger
+from telemetry_logging import Logger
 
 
 @pytest.mark.parametrize(

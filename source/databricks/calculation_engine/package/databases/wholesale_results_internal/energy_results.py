@@ -22,14 +22,14 @@ from package.calculation.calculation_output import EnergyResultsOutput
 from package.codelists import MeteringPointType
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
 
 
-@logging_configuration.use_span("calculation.write.energy")
+@use_span("calculation.write.energy")
 def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     """Write each energy result to the output table."""
 

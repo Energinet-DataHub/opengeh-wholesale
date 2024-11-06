@@ -29,8 +29,8 @@ from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
     is_midnight_in_time_zone,
 )
-from package.common.logger import Logger
-from package.infrastructure import valid_date, valid_list, logging_configuration, paths
+from telemetry_logging import Logger, use_span, logging_configuration
+from package.infrastructure import valid_date, valid_list, paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
@@ -38,6 +38,7 @@ def parse_command_line_arguments() -> Namespace:
     return _parse_args_or_throw(sys.argv[1:])
 
 
+@use_span()
 def parse_job_arguments(
     job_args: Namespace,
 ) -> Tuple[CalculatorArgs, InfrastructureSettings]:

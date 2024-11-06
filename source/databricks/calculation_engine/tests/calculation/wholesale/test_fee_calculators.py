@@ -24,7 +24,7 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.constants import Colname
-import calculation.wholesale.factories.prepared_fees_factory as factory
+import tests.calculation.wholesale.factories.prepared_fees_factory as factory
 
 
 def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:

@@ -18,8 +18,6 @@ from argparse import Namespace
 from collections.abc import Callable
 from typing import Any
 
-from pyspark.sql.session import SparkSession
-
 from opentelemetry.trace import SpanKind
 
 import telemetry_logging.logging_configuration as config

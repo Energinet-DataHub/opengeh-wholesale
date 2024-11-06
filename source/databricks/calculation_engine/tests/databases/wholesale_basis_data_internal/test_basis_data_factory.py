@@ -21,7 +21,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from databases.wholesale_basis_data_internal.basis_data_test_factory import (
+from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
     create_basis_data_factory,
 )
 from package.databases.table_column_names import TableColumnNames

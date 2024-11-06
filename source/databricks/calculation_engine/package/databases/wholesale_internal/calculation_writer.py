@@ -17,7 +17,7 @@ from pyspark.sql import DataFrame, SparkSession
 from package.calculation.calculator_args import CalculatorArgs
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleInternalDatabase,
@@ -26,7 +26,7 @@ from package.infrastructure.paths import (
 timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
 
 
-@logging_configuration.use_span("calculation.write-succeeded-calculation")
+@use_span("calculation.write-succeeded-calculation")
 @inject
 def write_calculation(
     args: CalculatorArgs,
@@ -54,7 +54,7 @@ def write_calculation(
     )
 
 
-@logging_configuration.use_span("calculation.write-calculation-grid-areas")
+@use_span("calculation.write-calculation-grid-areas")
 @inject
 def write_calculation_grid_areas(
     calculations_grid_areas: DataFrame,

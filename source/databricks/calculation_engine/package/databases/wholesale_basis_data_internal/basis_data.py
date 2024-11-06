@@ -24,10 +24,10 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span
 
 
-@logging_configuration.use_span("get_metering_point_periods_basis_data")
+@use_span("get_metering_point_periods_basis_data")
 def get_metering_point_periods_basis_data(
     calculation_id: str,
     metering_point_df: DataFrame,
@@ -53,7 +53,7 @@ def get_metering_point_periods_basis_data(
     )
 
 
-@logging_configuration.use_span("get_time_series_points_basis_data")
+@use_span("get_time_series_points_basis_data")
 def get_time_series_points_basis_data(
     calculation_id: str,
     metering_point_time_series: PreparedMeteringPointTimeSeries,
@@ -73,7 +73,7 @@ def get_time_series_points_basis_data(
     )
 
 
-@logging_configuration.use_span("get_charge_price_information_basis_data")
+@use_span("get_charge_price_information_basis_data")
 def get_charge_price_information_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
@@ -93,7 +93,7 @@ def get_charge_price_information_basis_data(
     )
 
 
-@logging_configuration.use_span("get_charge_price_points_basis_data")
+@use_span("get_charge_price_points_basis_data")
 def get_charge_prices_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
@@ -109,7 +109,7 @@ def get_charge_prices_basis_data(
     )
 
 
-@logging_configuration.use_span("get_charge_link_periods_basis_data")
+@use_span("get_charge_link_periods_basis_data")
 def get_charge_links_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
@@ -127,7 +127,7 @@ def get_charge_links_basis_data(
     )
 
 
-@logging_configuration.use_span("get_grid_loss_metering_point_ids_basis_data")
+@use_span("get_grid_loss_metering_point_ids_basis_data")
 def get_grid_loss_metering_point_ids_basis_data(
     calculation_id: str,
     grid_loss_metering_point_ids: GridLossMeteringPointIds,

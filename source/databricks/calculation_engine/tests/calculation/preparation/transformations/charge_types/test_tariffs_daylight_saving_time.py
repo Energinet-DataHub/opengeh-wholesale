@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession
 
 import package.codelists as e
 import tests.calculation.charges_factory as factory
-from calculation.preparation.transformations import (
+from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
 from package.calculation.preparation.transformations import (

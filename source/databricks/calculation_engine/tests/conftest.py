@@ -49,7 +49,7 @@ from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
-from testsession_configuration import (
+from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
 

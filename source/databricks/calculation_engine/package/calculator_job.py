@@ -17,10 +17,11 @@ import sys
 from argparse import Namespace
 from typing import Callable, Tuple
 
-from opentelemetry.trace import SpanKind, Status, StatusCode, Span
+from opentelemetry.trace import SpanKind
 from pyspark.sql import SparkSession
 
-import package.infrastructure.logging_configuration as config
+import telemetry_logging.logging_configuration as config
+from telemetry_logging.span_recording import span_record_exception
 from package import calculation
 from package.calculation import CalculationCore
 from package.calculation.calculation_metadata_service import CalculationMetadataService
@@ -105,21 +106,12 @@ def start_with_deps(
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
             if e.code != 0:
-                record_exception(e, span)
+                span_record_exception(e, span)
             sys.exit(e.code)
 
         except Exception as e:
-            record_exception(e, span)
+            span_record_exception(e, span)
             sys.exit(4)
-
-
-def record_exception(exception: SystemExit | Exception, span: Span) -> None:
-    span.set_status(Status(StatusCode.ERROR))
-    span.record_exception(
-        exception,
-        attributes=config.get_extras()
-        | {"CategoryName": f"Energinet.DataHub.{__name__}"},
-    )
 
 
 def create_prepared_data_reader(
