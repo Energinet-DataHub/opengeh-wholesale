@@ -62,35 +62,37 @@ class CalculateGridLossMeteringPointPeriodsLink(CalculationLink):
             col(Colname.balance_responsible_party_id),
         )
 
-        _throw_if_no_grid_loss_responsible(
+        self._throw_if_no_grid_loss_responsible(
             self.calculator_args.calculation_grid_areas, grid_loss_responsible
         )
 
         return super().execute(calculation_output)
 
-
-def _throw_if_no_grid_loss_responsible(
-    grid_areas: list[str], grid_loss_responsible_df: DataFrame
-) -> None:
-    for grid_area in grid_areas:
-        current_grid_loss_metering_points = grid_loss_responsible_df.filter(
-            col(Colname.grid_area_code) == grid_area
-        )
-        if (
-            current_grid_loss_metering_points.filter(
-                col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value
-            ).count()
-            == 0
-        ):
-            raise ValueError(
-                f"No responsible for negative grid loss found for grid area {grid_area}"
+    @staticmethod
+    def _throw_if_no_grid_loss_responsible(
+        grid_areas: list[str], grid_loss_responsible_df: DataFrame
+    ) -> None:
+        for grid_area in grid_areas:
+            current_grid_loss_metering_points = grid_loss_responsible_df.filter(
+                col(Colname.grid_area_code) == grid_area
             )
-        if (
-            current_grid_loss_metering_points.filter(
-                col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
-            ).count()
-            == 0
-        ):
-            raise ValueError(
-                f"No responsible for positive grid loss found for grid area {grid_area}"
-            )
+            if (
+                current_grid_loss_metering_points.filter(
+                    col(Colname.metering_point_type)
+                    == MeteringPointType.PRODUCTION.value
+                ).count()
+                == 0
+            ):
+                raise ValueError(
+                    f"No responsible for negative grid loss found for grid area {grid_area}"
+                )
+            if (
+                current_grid_loss_metering_points.filter(
+                    col(Colname.metering_point_type)
+                    == MeteringPointType.CONSUMPTION.value
+                ).count()
+                == 0
+            ):
+                raise ValueError(
+                    f"No responsible for positive grid loss found for grid area {grid_area}"
+                )
