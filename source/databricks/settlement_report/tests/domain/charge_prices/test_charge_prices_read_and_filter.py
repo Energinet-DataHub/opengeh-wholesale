@@ -88,3 +88,4 @@ def test_read_and_filter(
     actual_df.show()
 
     # Assert
+    assert actual_df.count() == 1
