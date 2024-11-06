@@ -76,6 +76,18 @@ class WholesaleRepository:
             WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME,
         )
 
+    def read_monthly_amounts_per_charge_v1(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME,
+        )
+
+    def read_total_monthly_amounts_v1(self) -> DataFrame:
+        return self._read_view_or_table(
+            WholesaleResultsDatabase.DATABASE_NAME,
+            WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME,
+        )
+
     def _read_view_or_table(
         self,
         database_name: str,

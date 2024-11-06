@@ -35,6 +35,7 @@ class FileNameFactory:
         if self.report_data_type in [
             ReportDataType.EnergyResults,
             ReportDataType.WholesaleResults,
+            ReportDataType.MonthlyAmounts,
         ]:
             return self._create_result_filename(grid_area_code, chunk_index)
         else:
@@ -106,6 +107,8 @@ class FileNameFactory:
             return "RESULTENERGY"
         elif self.report_data_type == ReportDataType.WholesaleResults:
             return "RESULTWHOLESALE"
+        elif self.report_data_type == ReportDataType.MonthlyAmounts:
+            return "RESULTMONTHLY"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )
