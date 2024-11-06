@@ -10,6 +10,9 @@ from settlement_report_job.domain.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.monthly_amounts.monthly_amounts_factory import (
+    create_monthly_amounts,
+)
 from settlement_report_job.domain.energy_results.energy_results_factory import (
     create_energy_results,
 )
@@ -185,6 +188,30 @@ class ReportGenerator:
         )
 
     @use_span()
+    def execute_monthly_amounts(self) -> None:
+        """
+        Entry point for the logic of creating wholesale results.
+        """
+        repository = WholesaleRepository(self.spark, self.args.catalog_name)
+        wholesale_results_df = create_monthly_amounts(
+            args=self.args, repository=repository
+        )
+
+        monthly_amounts_files = csv_writer.write(
+            dbutils=self.dbutils,
+            args=self.args,
+            df=wholesale_results_df,
+            report_data_type=ReportDataType.MonthlyAmounts,
+            order_by_columns=get_order_by_columns(
+                ReportDataType.MonthlyAmounts, self.args.requesting_actor_market_role
+            ),
+        )
+
+        self.dbutils.jobs.taskValues.set(
+            key="monthly_amounts_files", value=monthly_amounts_files
+        )
+
+    @use_span()
     def execute_zip(self) -> None:
         """
         Entry point for the logic of creating the final zip file.
@@ -195,6 +222,7 @@ class ReportGenerator:
             TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
             TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
             TaskType.CHARGE_LINKS: "charge_links_files",
+            TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
             TaskType.ENERGY_RESULTS: "energy_result_files",
         }
 

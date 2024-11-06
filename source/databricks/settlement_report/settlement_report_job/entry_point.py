@@ -55,6 +55,10 @@ def start_wholesale_results() -> None:
     _start_task(ReportGenerator.execute_wholesale_results)
 
 
+def start_monthly_amounts() -> None:
+    _start_task(ReportGenerator.execute_monthly_amounts)
+
+
 def start_zip() -> None:
     _start_task(ReportGenerator.execute_zip)
 
