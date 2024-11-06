@@ -21,8 +21,6 @@ from test_factories.metering_point_periods_factory import MeteringPointPeriodsRo
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
-from test_factories.energy_factory import EnergyTestDataSpec
-from test_factories.amounts_per_charge_factory import AmountsPerChargeRow
 
 from test_factories.charge_prices_factory import ChargePricesRow
 from test_factories.monthly_amounts_per_charge_factory import MonthlyAmountsPerChargeRow
