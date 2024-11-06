@@ -70,6 +70,10 @@ def read_and_filter_for_wholesale(
 
     metering_point_periods = merge_connected_periods(metering_point_periods)
 
+    metering_point_periods = _clamp_to_selected_period(
+        metering_point_periods, period_start, period_end
+    )
+
     return metering_point_periods
 
 
