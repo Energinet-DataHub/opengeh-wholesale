@@ -26,3 +26,4 @@ class ReportDataType(Enum):
     ChargeLinks = 3
     EnergyResults = 4
     WholesaleResults = 5
+    MonthlyAmounts = 6
