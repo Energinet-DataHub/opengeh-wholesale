@@ -105,16 +105,17 @@ def filter_by_charge_owner_and_tax_depending_on_market_role(
 ) -> DataFrame:
     if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
         df = df.where(
-            F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id
-        ).where(F.col(DataProductColumnNames.is_tax) == F.lit(False))
+            (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
+            & (~F.col(DataProductColumnNames.is_tax))
+        )
 
     if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
         df = df.where(
             (
                 (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
-                & (F.col(DataProductColumnNames.is_tax) == F.lit(False))
+                & (~F.col(DataProductColumnNames.is_tax))
             )
-            | (F.col(DataProductColumnNames.is_tax) == F.lit(True))
+            | (F.col(DataProductColumnNames.is_tax))
         )
 
     return df
