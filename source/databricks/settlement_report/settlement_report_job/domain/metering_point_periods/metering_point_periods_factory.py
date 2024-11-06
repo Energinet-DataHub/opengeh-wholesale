@@ -18,25 +18,37 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.metering_point_periods.read_and_filter import (
     read_and_filter_for_wholesale,
+    read_and_filter_for_balance_fixing,
 )
 from settlement_report_job.domain.metering_point_periods.prepare_for_csv import (
     prepare_for_csv,
 )
+from settlement_report_job.infrastructure.calculation_type import CalculationType
 
 
-def create_metering_point_periods_for_wholesale(
+def create_metering_point_periods(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    metering_point_periods = read_and_filter_for_wholesale(
-        args.period_start,
-        args.period_end,
-        args.calculation_id_by_grid_area,
-        args.energy_supplier_ids,
-        args.requesting_actor_market_role,
-        args.requesting_actor_id,
-        repository,
-    )
+    if args.calculation_type is CalculationType.BALANCE_FIXING:
+        metering_point_periods = read_and_filter_for_balance_fixing(
+            args.period_start,
+            args.period_end,
+            args.grid_area_codes,
+            args.energy_supplier_ids,
+            args.requesting_actor_market_role,
+            repository,
+        )
+    else:
+        metering_point_periods = read_and_filter_for_wholesale(
+            args.period_start,
+            args.period_end,
+            args.calculation_id_by_grid_area,
+            args.energy_supplier_ids,
+            args.requesting_actor_market_role,
+            args.requesting_actor_id,
+            repository,
+        )
 
     return prepare_for_csv(
         metering_point_periods,
