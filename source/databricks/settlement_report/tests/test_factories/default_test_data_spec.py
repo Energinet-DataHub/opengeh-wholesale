@@ -137,7 +137,7 @@ def create_metering_point_periods_row(
         grid_area_code=grid_area_code,
         resolution=resolution,
         from_grid_area_code=from_grid_area_code,
-        to_grid_area_code=grid_area_code,
+        to_grid_area_code=to_grid_area_code,
         parent_metering_point_id=parent_metering_point_id,
         energy_supplier_id=energy_supplier_id,
         balance_responsible_party_id=balance_responsible_party_id,

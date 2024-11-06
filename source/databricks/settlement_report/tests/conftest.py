@@ -96,6 +96,17 @@ def standard_wholesale_fixing_scenario_args(
 
 
 @pytest.fixture(scope="function")
+def standard_wholesale_fixing_scenario_datahub_admin_args(
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> SettlementReportArgs:
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.DATAHUB_ADMINISTRATOR
+    )
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+    return standard_wholesale_fixing_scenario_args
+
+
+@pytest.fixture(scope="function")
 def standard_wholesale_fixing_scenario_energy_supplier_args(
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
 ) -> SettlementReportArgs:
@@ -119,6 +130,20 @@ def standard_wholesale_fixing_scenario_grid_access_provider_args(
     )
     standard_wholesale_fixing_scenario_args.requesting_actor_id = (
         standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITH_TAX
+    )
+    standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
+    return standard_wholesale_fixing_scenario_args
+
+
+@pytest.fixture(scope="function")
+def standard_wholesale_fixing_scenario_system_operator_args(
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> SettlementReportArgs:
+    standard_wholesale_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.SYSTEM_OPERATOR
+    )
+    standard_wholesale_fixing_scenario_args.requesting_actor_id = (
+        standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITHOUT_TAX
     )
     standard_wholesale_fixing_scenario_args.energy_supplier_ids = None
     return standard_wholesale_fixing_scenario_args
