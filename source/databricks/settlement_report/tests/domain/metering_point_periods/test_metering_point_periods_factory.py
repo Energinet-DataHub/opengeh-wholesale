@@ -6,7 +6,6 @@ import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as input_charge_links_factory
 import test_factories.metering_point_periods_factory as input_metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as input_charge_price_information_periods_factory
-from data_seeding import standard_balance_fixing_scenario_data_generator
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods,
 )
@@ -253,10 +252,9 @@ def test_create_metering_point_periods__when_balance_fixing_and_metering_point_p
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
-
     metering_point_periods = input_metering_point_periods_factory.create(
         spark,
-        standard_balance_fixing_scenario_data_generator.cre.create_metering_point_periods_row(),
+        default_data.create_metering_point_periods_row(),
     )
     mock_repository = _get_repository_mock(metering_point_periods)
 
