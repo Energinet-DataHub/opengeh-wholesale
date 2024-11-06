@@ -4,14 +4,12 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from contracts.data_products.wholesale_settlement_reports.charge_prices_v1 import (
-    charge_prices_v1,
-)
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     ChargeTypeDataProductValue,
     CalculationTypeDataProductValue,
 )
+from settlement_report_job.wholesale.schemas.charge_prices_v1 import charge_prices_v1
 
 
 @dataclass
@@ -45,8 +43,8 @@ def create(
                 DataProductColumnNames.charge_code: row.charge_code,
                 DataProductColumnNames.charge_type: row.charge_type.value,
                 DataProductColumnNames.charge_owner_id: row.charge_owner_id,
-                DataProductColumnNames.price: row.charge_price,
-                DataProductColumnNames.time: row.charge_time,
+                DataProductColumnNames.charge_price: row.charge_price,
+                DataProductColumnNames.charge_time: row.charge_time,
             }
         )
 

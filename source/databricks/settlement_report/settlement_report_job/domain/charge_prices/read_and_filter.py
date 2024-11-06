@@ -48,17 +48,13 @@ def read_and_filter(
     logger.info("Creating charge prices")
 
     charge_prices = repository.read_charge_prices().where(
-        (F.col(DataProductColumnNames.time) >= period_start)
+        (F.col(DataProductColumnNames.charge_time) >= period_start)
     )
-
-    if calculation_id_by_grid_area is not None:
-        if calculation_id_by_grid_area is not None:
-            charge_prices = charge_prices.where(
-                filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area)
-            )
 
     charge_prices = _join_with_charge_link_and_metering_point_periods(
         charge_prices,
+        requesting_actor_id,
+        requesting_actor_market_role,
         period_start,
         period_end,
         calculation_id_by_grid_area,
@@ -66,14 +62,14 @@ def read_and_filter(
         repository,
     )
 
+    charge_price_information_periods = (
+        repository.read_charge_price_information_periods()
+    )
+
     if requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.GRID_ACCESS_PROVIDER,
     ]:
-        charge_price_information_periods = (
-            repository.read_charge_price_information_periods()
-        )
-
         charge_price_information_periods = (
             filter_by_charge_owner_and_tax_depending_on_market_role(
                 charge_price_information_periods,
@@ -82,18 +78,18 @@ def read_and_filter(
             )
         )
 
-        charge_prices = charge_prices.join(
-            charge_price_information_periods,
-            on=[
-                DataProductColumnNames.calculation_id,
-                DataProductColumnNames.charge_key,
-            ],
-            how="inner",
-        ).select(
-            charge_prices["*"],
-            charge_price_information_periods[DataProductColumnNames.is_tax],
-            charge_price_information_periods[DataProductColumnNames.resolution],
-        )
+    charge_prices = charge_prices.join(
+        charge_price_information_periods,
+        on=[
+            DataProductColumnNames.calculation_id,
+            DataProductColumnNames.charge_key,
+        ],
+        how="inner",
+    ).select(
+        charge_prices["*"],
+        charge_price_information_periods[DataProductColumnNames.is_tax],
+        charge_price_information_periods[DataProductColumnNames.resolution],
+    )
 
     return charge_prices
 
@@ -124,17 +120,20 @@ def _join_with_charge_link_and_metering_point_periods(
         energy_supplier_ids=energy_supplier_ids,
     )
 
-    charge_link_periods = join_metering_points_periods_and_charge_links_periods(
+    df = join_metering_points_periods_and_charge_links_periods(
         charge_link_periods, metering_point_periods
     )
 
     charge_prices = charge_prices.join(
-        charge_link_periods,
+        df,
         on=[
             DataProductColumnNames.calculation_id,
             DataProductColumnNames.charge_key,
         ],
         how="inner",
-    ).select(charge_prices["*"])
+    ).select(
+        charge_prices["*"],
+        df[DataProductColumnNames.grid_area_code],
+    )
 
     return charge_prices
