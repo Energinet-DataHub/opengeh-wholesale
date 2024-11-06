@@ -333,7 +333,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_m
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter__when_balance_responsible_party_changes_on_metering_point__returns_single_period(
+def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_on_metering_point__returns_single_period(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -384,7 +384,7 @@ def test_read_and_filter__when_balance_responsible_party_changes_on_metering_poi
     assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
 
 
-def test_read_and_filter__when_datahub_user_and_energy_supplier_changes_on_metering_point__returns_two_link_periods(
+def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_changes_on_metering_point__returns_two_link_periods(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -486,10 +486,9 @@ def test_read_and_filter_for_balance_fixing__when_duplicate_metering_point_perio
     actual = read_and_filter_for_balance_fixing(
         period_start=JAN_1ST,
         period_end=JAN_3RD,
-        calculation_id_by_grid_area=default_data.DEFAULT_GRID_AREA_CODE,
+        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
     )
 
@@ -570,12 +569,37 @@ def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__ret
     actual = actual.orderBy(DataProductColumnNames.from_date)
     assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
     assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_2ND
-    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_3RD
+    assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_3RD
+    assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_4TH
+
+
+def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_period__returns_period_that_ends_on_the_selection_end_date(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                from_date=JAN_1ST,
+                to_date=JAN_5TH,
+            ),
+        ],
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = read_and_filter_for_balance_fixing(
+        period_start=JAN_2ND,
+        period_end=JAN_4TH,
+        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == 1
+    actual = actual.orderBy(DataProductColumnNames.from_date)
+    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_2ND
     assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH
-
-
-#
-# def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_period__returns_period_that_ends_on_the_selection_end_date(
-#     spark: SparkSession,
-# ) -> None:
-#     # Arrange

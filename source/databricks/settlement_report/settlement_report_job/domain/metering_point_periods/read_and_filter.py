@@ -15,6 +15,7 @@ from datetime import datetime
 from uuid import UUID
 
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as F
 
 from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
@@ -96,6 +97,29 @@ def read_and_filter_for_balance_fixing(
 
     metering_point_periods = merge_connected_periods(metering_point_periods)
 
+    metering_point_periods = _clamp_to_selected_period(
+        metering_point_periods, period_start, period_end
+    )
+
+    return metering_point_periods
+
+
+def _clamp_to_selected_period(
+    metering_point_periods: DataFrame, period_start: datetime, period_end: datetime
+) -> DataFrame:
+    metering_point_periods = metering_point_periods.withColumn(
+        DataProductColumnNames.to_date,
+        F.when(
+            F.col(DataProductColumnNames.to_date) > period_end,
+            period_end,
+        ).otherwise(F.col(DataProductColumnNames.to_date)),
+    ).withColumn(
+        DataProductColumnNames.from_date,
+        F.when(
+            F.col(DataProductColumnNames.from_date) < period_start,
+            period_start,
+        ).otherwise(F.col(DataProductColumnNames.from_date)),
+    )
     return metering_point_periods
 
 
