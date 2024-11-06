@@ -14,29 +14,15 @@
 from spark_sql_migrations import Schema, Table, View
 
 import package.infrastructure.paths as paths
-
-# calculation_input
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
-)
-
-# calculation_output
-from package.databases.wholesale_results_internal.schemas.hive_wholesale_results_schema import (
-    hive_wholesale_results_schema,
 )
 
 schema_config = [
     Schema(
         name=paths.HiveOutputDatabase.DATABASE_NAME,
-        tables=[
-            Table(
-                name=paths.HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
-                schema=hive_wholesale_results_schema,
-            ),
-        ],
-        views=[
-            View(name=paths.HiveOutputDatabase.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
-        ],
+        tables=[],
+        views=[],
     ),
     Schema(
         # Tables in this schema are externals and schemas are not defined in the SQL scripts.
