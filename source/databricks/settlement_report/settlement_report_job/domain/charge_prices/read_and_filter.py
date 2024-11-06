@@ -53,8 +53,6 @@ def read_and_filter(
 
     charge_prices = _join_with_charge_link_and_metering_point_periods(
         charge_prices,
-        requesting_actor_id,
-        requesting_actor_market_role,
         period_start,
         period_end,
         calculation_id_by_grid_area,
@@ -65,18 +63,6 @@ def read_and_filter(
     charge_price_information_periods = (
         repository.read_charge_price_information_periods()
     )
-
-    if requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.GRID_ACCESS_PROVIDER,
-    ]:
-        charge_price_information_periods = (
-            filter_by_charge_owner_and_tax_depending_on_market_role(
-                charge_price_information_periods,
-                requesting_actor_market_role,
-                requesting_actor_id,
-            )
-        )
 
     charge_prices = charge_prices.join(
         charge_price_information_periods,
@@ -91,25 +77,30 @@ def read_and_filter(
         charge_price_information_periods[DataProductColumnNames.resolution],
     )
 
+    if requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.GRID_ACCESS_PROVIDER,
+    ]:
+        charge_prices = filter_by_charge_owner_and_tax_depending_on_market_role(
+            charge_prices,
+            requesting_actor_market_role,
+            requesting_actor_id,
+        )
+
     return charge_prices
 
 
 def _join_with_charge_link_and_metering_point_periods(
     charge_prices: DataFrame,
-    requesting_actor_id: str,
-    requesting_actor_market_role: MarketRole,
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    charge_link_periods = read_charge_link_periods(
-        repository=repository,
-        period_start=period_start,
-        period_end=period_end,
-        charge_owner_id=requesting_actor_id,
-        requesting_actor_market_role=requesting_actor_market_role,
+    charge_link_periods = repository.read_charge_link_periods().where(
+        (F.col(DataProductColumnNames.from_date) < period_end)
+        & (F.col(DataProductColumnNames.to_date) > period_start)
     )
 
     metering_point_periods = read_metering_point_periods_by_calculation_ids(
@@ -133,7 +124,6 @@ def _join_with_charge_link_and_metering_point_periods(
         how="inner",
     ).select(
         charge_prices["*"],
-        df[DataProductColumnNames.grid_area_code],
     )
 
     return charge_prices

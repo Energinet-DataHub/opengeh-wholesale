@@ -25,16 +25,6 @@ DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
     default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
 }
 
-JAN_1ST = datetime(2023, 12, 31, 23)
-JAN_2ND = datetime(2024, 1, 1, 23)
-JAN_3RD = datetime(2024, 1, 2, 23)
-JAN_4TH = datetime(2024, 1, 3, 23)
-JAN_5TH = datetime(2024, 1, 4, 23)
-JAN_6TH = datetime(2024, 1, 5, 23)
-JAN_7TH = datetime(2024, 1, 6, 23)
-JAN_8TH = datetime(2024, 1, 7, 23)
-JAN_9TH = datetime(2024, 1, 8, 23)
-
 
 def _get_repository_mock(
     metering_point_period: DataFrame,
@@ -95,5 +85,6 @@ def test_read_and_filter(
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
     )
+    actual_df.show()
 
     # Assert
