@@ -22,7 +22,7 @@ def reset_task_values(dbutils: DBUtilsFixture):
     dbutils.jobs.taskValues.reset()
 
 
-def get_expected_filenmaes(args: SettlementReportArgs) -> list[str]:
+def get_expected_filenames(args: SettlementReportArgs) -> list[str]:
     market_role_in_file_name = get_market_role_in_file_name(
         args.requesting_actor_market_role
     )
@@ -66,7 +66,7 @@ def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    expected_file_names = get_expected_filenmaes(
+    expected_file_names = get_expected_filenames(
         standard_wholesale_fixing_scenario_energy_supplier_args
     )
     expected_columns = _get_expected_columns(
@@ -99,7 +99,7 @@ def test_execute_metering_point_periods__when_grid_access_provider__returns_expe
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    expected_file_names = get_expected_filenmaes(
+    expected_file_names = get_expected_filenames(
         standard_wholesale_fixing_scenario_grid_access_provider_args
     )
     expected_columns = _get_expected_columns(
@@ -143,7 +143,7 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
     )
     args.energy_supplier_ids = [energy_supplier_id]
-    expected_file_names = get_expected_filenmaes(args)
+    expected_file_names = get_expected_filenames(args)
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_data_generator.requesting_actor_market_role
     )
@@ -178,7 +178,7 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
     args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = market_role
     args.energy_supplier_ids = None
-    expected_file_names = get_expected_filenmaes(args)
+    expected_file_names = get_expected_filenames(args)
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role
     )
