@@ -25,7 +25,7 @@ from package.infrastructure.paths import (
 )
 
 timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
-METADATA_CHANGED_RETRIES = 3
+METADATA_CHANGED_RETRIES = 10
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
