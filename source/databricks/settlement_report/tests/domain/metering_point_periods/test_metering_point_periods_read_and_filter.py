@@ -11,6 +11,7 @@ import test_factories.metering_point_periods_factory as metering_point_periods_f
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.metering_point_periods.read_and_filter import (
     read_and_filter_for_wholesale,
+    read_and_filter_for_balance_fixing,
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -466,3 +467,110 @@ def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__r
 
     # Assert
     assert actual.count() == 1
+
+
+def test_read_and_filter_for_balance_fixing__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(),
+            default_data.create_metering_point_periods_row(),
+        ],
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = read_and_filter_for_balance_fixing(
+        period_start=JAN_1ST,
+        period_end=JAN_3RD,
+        calculation_id_by_grid_area=default_data.DEFAULT_GRID_AREA_CODE,
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == 1
+
+
+def test_read_and_filter_for_balance_fixing__when_overlapping_metering_period__returns_merged_periods(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                calculation_id="11111111-9fc8-409a-a169-fbd49479d718",
+                from_date=JAN_1ST,
+                to_date=JAN_3RD,
+            ),
+            default_data.create_metering_point_periods_row(
+                calculation_id="22222222-9fc8-409a-a169-fbd49479d718",
+                from_date=JAN_2ND,
+                to_date=JAN_4TH,
+            ),
+        ],
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = read_and_filter_for_wholesale(
+        period_start=JAN_1ST,
+        period_end=JAN_4TH,
+        calculation_id_by_grid_area=default_data.DEFAULT_GRID_AREA_CODE,
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == 1
+    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
+    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH
+
+
+def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__returns_separate_periods(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                calculation_id="11111111-9fc8-409a-a169-fbd49479d718",
+                from_date=JAN_1ST,
+                to_date=JAN_2ND,
+            ),
+            default_data.create_metering_point_periods_row(
+                calculation_id="22222222-9fc8-409a-a169-fbd49479d718",
+                from_date=JAN_3RD,
+                to_date=JAN_4TH,
+            ),
+        ],
+    )
+    mock_repository = _get_repository_mock(metering_point_periods)
+
+    # Act
+    actual = read_and_filter_for_wholesale(
+        period_start=JAN_1ST,
+        period_end=JAN_4TH,
+        calculation_id_by_grid_area=default_data.DEFAULT_GRID_AREA_CODE,
+        energy_supplier_ids=None,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == 2
+    actual = actual.orderBy(DataProductColumnNames.from_date)
+    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
+    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_2ND
+    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_3RD
+    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH

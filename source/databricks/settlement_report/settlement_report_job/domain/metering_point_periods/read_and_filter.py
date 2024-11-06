@@ -28,6 +28,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
     read_metering_point_periods_by_calculation_ids,
     read_charge_link_periods,
+    read_filtered_metering_point_periods_by_grid_area_codes,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
@@ -63,6 +64,33 @@ def read_and_filter_for_wholesale(
             requesting_actor_id=requesting_actor_id,
             repository=repository,
         )
+
+    metering_point_periods = metering_point_periods.select(*select_columns)
+
+    metering_point_periods = merge_connected_periods(metering_point_periods)
+
+    return metering_point_periods
+
+
+@logging.use_span()
+def read_and_filter_for_balance_fixing(
+    period_start: datetime,
+    period_end: datetime,
+    grid_area_codes: list[str],
+    energy_supplier_ids: list[str] | None,
+    requesting_actor_market_role: MarketRole,
+    repository: WholesaleRepository,
+) -> DataFrame:
+
+    select_columns = _get_select_columns(requesting_actor_market_role)
+
+    metering_point_periods = read_filtered_metering_point_periods_by_grid_area_codes(
+        repository=repository,
+        period_start=period_start,
+        period_end=period_end,
+        grid_area_codes=grid_area_codes,
+        energy_supplier_ids=energy_supplier_ids,
+    )
 
     metering_point_periods = metering_point_periods.select(*select_columns)
 
