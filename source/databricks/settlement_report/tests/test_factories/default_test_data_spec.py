@@ -13,17 +13,17 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from tests.test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
-from tests.test_factories.charge_price_information_periods_factory import (
+from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
+from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsRow,
 )
-from tests.test_factories.latest_calculations_factory import LatestCalculationsPerDayRow
-from tests.test_factories.metering_point_periods_factory import MeteringPointPeriodsRow
-from tests.test_factories.metering_point_time_series_factory import (
+from test_factories.latest_calculations_factory import LatestCalculationsPerDayRow
+from test_factories.metering_point_periods_factory import MeteringPointPeriodsRow
+from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
-from tests.test_factories.energy_factory import EnergyTestDataSpec
-from tests.test_factories.amounts_per_charge_factory import AmountsPerChargeRow
+from test_factories.energy_factory import EnergyTestDataSpec
+from test_factories.amounts_per_charge_factory import AmountsPerChargeRow
 
 from test_factories.charge_prices_factory import ChargePricesRow
 
@@ -91,7 +91,7 @@ def create_charge_prices_row(
     charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     charge_time: datetime = DEFAULT_PERIOD_START,
-) -> ChargeLinkPeriodsRow:
+) -> ChargePricesRow:
     charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
     return ChargePricesRow(
         calculation_id=calculation_id,
