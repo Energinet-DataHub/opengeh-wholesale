@@ -19,6 +19,8 @@ def get_order_by_columns(
         return _order_by_energy_results(requesting_actor_market_role)
     elif report_data_type == ReportDataType.WholesaleResults:
         return _order_by_wholesale_results()
+    elif report_data_type == ReportDataType.MonthlyAmounts:
+        return _order_by_monthly_amounts()
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
 
@@ -102,4 +104,15 @@ def _order_by_wholesale_results() -> list:
         F.col(CsvColumnNames.charge_owner_id),
         F.col(CsvColumnNames.charge_type),
         F.col(CsvColumnNames.charge_code),
+    ]
+
+
+def _order_by_monthly_amounts() -> list:
+    return [
+        CsvColumnNames.grid_area_code,
+        CsvColumnNames.energy_supplier_id,
+        CsvColumnNames.charge_owner_id,
+        CsvColumnNames.charge_type,
+        CsvColumnNames.charge_code,
+        CsvColumnNames.resolution,
     ]
