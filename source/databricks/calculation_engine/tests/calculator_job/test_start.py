@@ -70,7 +70,7 @@ class TestWhenInvokedWithValidArguments:
         integration_test_configuration: IntegrationTestConfiguration,
     ) -> None:
         """
-        Assert that the calculator job adds log records to Azure Monitor with the expected settings:
+         Assert that the calculator job adds log records to Azure Monitor with the expected settings:
         - cloud role name = "dbr-calculation-engine"
         - severity level = 1
         - message <the message>
