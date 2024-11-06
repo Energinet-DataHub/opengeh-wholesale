@@ -312,10 +312,12 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             "APPLICATIONINSIGHTS_CONNECTION_STRING",
             IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
-        // Durable Functions Task Hub Name
+        // Durable Functions
+        // => Task Hub Name
         appHostSettings.ProcessEnvironmentVariables.Add(
             "OrchestrationsTaskHubName",
             TaskHubName);
+        // => Task Hub Storage account connection string
         appHostSettings.ProcessEnvironmentVariables.Add(
             "OrchestrationsStorageConnectionString",
             AzuriteManager.FullConnectionString);
