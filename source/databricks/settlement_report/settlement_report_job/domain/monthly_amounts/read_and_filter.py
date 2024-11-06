@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import lit, col
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -25,10 +25,10 @@ from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_energy_supplier_ids,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
