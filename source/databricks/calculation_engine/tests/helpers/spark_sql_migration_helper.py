@@ -16,16 +16,13 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
-from pyspark.sql import SparkSession
+import package.datamigration_hive.constants as c
 import pyspark.sql.functions as f
+from pyspark.sql import SparkSession
 from spark_sql_migrations import SparkSqlMigrationsConfiguration
 from spark_sql_migrations.utility import delta_table_helper
 
-import package.datamigration_hive.constants as c
 from package.datamigration.migration import migrate_data_lake
-from package.datamigration_hive.migration_script_args import MigrationScriptArgs
-from package.datamigration_hive.schema_config import schema_config as schema_config_hive
-from package.datamigration_hive.substitutions import substitutions
 from package.infrastructure.paths import UnityCatalogDatabaseNames
 
 catalog_name = "spark_catalog"
