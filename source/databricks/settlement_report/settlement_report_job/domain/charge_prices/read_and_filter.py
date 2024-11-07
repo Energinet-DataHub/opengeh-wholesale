@@ -47,8 +47,10 @@ def read_and_filter(
 ) -> DataFrame:
     logger.info("Creating charge prices")
 
-    charge_prices = repository.read_charge_prices().where(
-        (F.col(DataProductColumnNames.charge_time) >= period_start)
+    charge_prices = (
+        repository.read_charge_prices()
+        .where((F.col(DataProductColumnNames.charge_time) >= period_start))
+        .where(F.col(DataProductColumnNames.charge_time) < period_end)
     )
 
     charge_prices = _join_with_charge_link_and_metering_point_periods(
@@ -115,15 +117,21 @@ def _join_with_charge_link_and_metering_point_periods(
         charge_link_periods, metering_point_periods
     )
 
-    charge_prices = charge_prices.join(
-        df,
-        on=[
-            DataProductColumnNames.calculation_id,
-            DataProductColumnNames.charge_key,
-        ],
-        how="inner",
-    ).select(
-        charge_prices["*"],
+    charge_prices = (
+        charge_prices.join(
+            df,
+            on=[
+                DataProductColumnNames.calculation_id,
+                DataProductColumnNames.charge_key,
+            ],
+            how="inner",
+        )
+        .where((F.col(DataProductColumnNames.charge_time) >= period_start))
+        .where(F.col(DataProductColumnNames.charge_time) < period_end)
+        .select(
+            charge_prices["*"],
+            df[DataProductColumnNames.grid_area_code],
+        )
     )
 
     return charge_prices
