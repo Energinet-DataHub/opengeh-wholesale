@@ -1,16 +1,3 @@
-removed {
-  from = azurerm_static_site.ui
-  lifecycle {
-    destroy = false
-  }
-}
-
-import {
-  id = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.this.name}/providers/Microsoft.Web/staticSites/stapp-ui-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
-  to = azurerm_static_web_app.ui
-}
-
-
 resource "azurerm_static_web_app" "ui" {
   name                = "stapp-ui-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   resource_group_name = azurerm_resource_group.this.name
