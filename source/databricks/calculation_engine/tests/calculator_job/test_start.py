@@ -106,8 +106,10 @@ AppTraces
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count
         """
+        print(query)
 
         workspace_id = integration_test_configuration.get_analytics_workspace_id()
+        print(workspace_id)
 
         def assert_logged():
             actual = logs_client.query_workspace(
