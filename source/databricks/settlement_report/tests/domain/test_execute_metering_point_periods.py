@@ -68,9 +68,16 @@ def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    expected_file_names = get_expected_filenames(
-        standard_wholesale_fixing_scenario_energy_supplier_args
-    )
+    args = standard_wholesale_fixing_scenario_energy_supplier_args
+    start_time = get_start_date(args.period_start)
+    end_time = get_end_date(args.period_end)
+    grid_area_codes = list(args.calculation_id_by_grid_area.keys())
+    grid_area_code_1 = grid_area_codes[0]
+    grid_area_code_2 = grid_area_codes[1]
+    expected_file_names = [
+        f"MDMP_{grid_area_code_1}_{args.requesting_actor_id}_DDQ_{start_time}_{end_time}.csv",
+        f"MDMP_{grid_area_code_2}_{args.requesting_actor_id}_DDQ_{start_time}_{end_time}.csv",
+    ]
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_market_role
     )
@@ -101,9 +108,16 @@ def test_execute_metering_point_periods__when_grid_access_provider__returns_expe
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-    expected_file_names = get_expected_filenames(
-        standard_wholesale_fixing_scenario_grid_access_provider_args
-    )
+    args = standard_wholesale_fixing_scenario_grid_access_provider_args
+    start_time = get_start_date(args.period_start)
+    end_time = get_end_date(args.period_end)
+    grid_area_codes = list(args.calculation_id_by_grid_area.keys())
+    grid_area_code_1 = grid_area_codes[0]
+    grid_area_code_2 = grid_area_codes[1]
+    expected_file_names = [
+        f"MDMP_{grid_area_code_1}_{args.requesting_actor_id}_DDM_{start_time}_{end_time}.csv",
+        f"MDMP_{grid_area_code_2}_{args.requesting_actor_id}_DDM_{start_time}_{end_time}.csv",
+    ]
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_market_role
     )
@@ -145,10 +159,16 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
         standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
     )
     args.energy_supplier_ids = [energy_supplier_id]
-    expected_file_names = get_expected_filenames(args)
-    expected_columns = _get_expected_columns(
-        standard_wholesale_fixing_scenario_data_generator.requesting_actor_market_role
-    )
+    start_time = get_start_date(args.period_start)
+    end_time = get_end_date(args.period_end)
+    grid_area_codes = list(args.calculation_id_by_grid_area.keys())
+    grid_area_code_1 = grid_area_codes[0]
+    grid_area_code_2 = grid_area_codes[1]
+    expected_file_names = [
+        f"MDMP_{grid_area_code_1}_{args.requesting_actor_id}_{start_time}_{end_time}.csv",
+        f"MDMP_{grid_area_code_2}_{args.requesting_actor_id}_{start_time}_{end_time}.csv",
+    ]
+    expected_columns = _get_expected_columns(args.requesting_actor_market_role)
     report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
 
     # Act
@@ -180,7 +200,15 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
     args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = market_role
     args.energy_supplier_ids = None
-    expected_file_names = get_expected_filenames(args)
+    start_time = get_start_date(args.period_start)
+    end_time = get_end_date(args.period_end)
+    grid_area_codes = list(args.calculation_id_by_grid_area.keys())
+    grid_area_code_1 = grid_area_codes[0]
+    grid_area_code_2 = grid_area_codes[1]
+    expected_file_names = [
+        f"MDMP_{grid_area_code_1}_{start_time}_{end_time}.csv",
+        f"MDMP_{grid_area_code_2}_{start_time}_{end_time}.csv",
+    ]
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role
     )
