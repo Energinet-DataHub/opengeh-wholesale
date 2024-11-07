@@ -52,6 +52,10 @@ def _get_expected_columns(requesting_actor_market_role: MarketRole) -> list[str]
         CsvColumnNames.settlement_method,
     ]
 
+    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        expected_column_names.insert(5, CsvColumnNames.to_grid_area_code)
+        expected_column_names.insert(6, CsvColumnNames.from_grid_area_code)
+
     if requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
