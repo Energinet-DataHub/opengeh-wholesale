@@ -92,22 +92,6 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
   }
 
   task {
-    task_key    = "monthly_amounts"
-    max_retries = 1
-	job_cluster_key = "settlement_report_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "opengeh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_monthly_amounts"
-    }
-  }
-
-  task { 
     task_key        = "zip"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -129,9 +113,6 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
     }
     depends_on {
       task_key = "energy_results"
-    }
-    depends_on {
-      task_key = "monthly_amounts"
     }
   }
 
@@ -271,6 +252,22 @@ resource "databricks_job" "settlement_report_job_wholesale" {
   }
 
   task {
+    task_key    = "monthly_amounts"
+    max_retries = 1
+	job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_monthly_amounts"
+    }
+  }
+
+  task {
     task_key        = "zip"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -298,6 +295,9 @@ resource "databricks_job" "settlement_report_job_wholesale" {
     }
     depends_on {
       task_key = "wholesale_results"
+    }
+    depends_on {
+      task_key = "monthly_amounts"
     }
   }
 
