@@ -31,6 +31,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+import telemetry_logging.logging_configuration as config
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.databases.migrations_wholesale.schemas import (
@@ -429,6 +430,17 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     )
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_logging() -> None:
+    """
+    Configures the logging initially.
+    """
+    config.configure_logging(
+        cloud_role_name="dbr-calculation-engine-tests",
+        tracer_name="unit-tests",
     )
 
 
