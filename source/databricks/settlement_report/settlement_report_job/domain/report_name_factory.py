@@ -29,6 +29,7 @@ class FileNameFactory:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
+            ReportDataType.MeteringPointPeriods,
             ReportDataType.ChargeLinks,
         }:
             return self._create_basis_data_filename(grid_area_code, chunk_index)
