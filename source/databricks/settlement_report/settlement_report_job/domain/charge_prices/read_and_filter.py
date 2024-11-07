@@ -124,12 +124,18 @@ def _join_with_charge_link_and_metering_point_periods(
             ],
             how="inner",
         )
-        .where((F.col(DataProductColumnNames.charge_time) >= period_start))
-        .where(F.col(DataProductColumnNames.charge_time) < period_end)
+        .where(
+            F.col(DataProductColumnNames.charge_time)
+            >= F.col(DataProductColumnNames.from_date)
+        )
+        .where(
+            F.col(DataProductColumnNames.charge_time)
+            < F.col(DataProductColumnNames.to_date)
+        )
         .select(
             charge_prices["*"],
             df[DataProductColumnNames.grid_area_code],
         )
-    )
+    ).distinct()
 
     return charge_prices

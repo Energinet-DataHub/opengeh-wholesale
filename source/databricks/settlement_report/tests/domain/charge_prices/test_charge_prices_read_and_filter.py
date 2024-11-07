@@ -25,6 +25,16 @@ DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
     default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
 }
 
+JAN_1ST = datetime(2023, 12, 31, 23)
+JAN_2ND = datetime(2024, 1, 1, 23)
+JAN_3RD = datetime(2024, 1, 2, 23)
+JAN_4TH = datetime(2024, 1, 3, 23)
+JAN_5TH = datetime(2024, 1, 4, 23)
+JAN_6TH = datetime(2024, 1, 5, 23)
+JAN_7TH = datetime(2024, 1, 6, 23)
+JAN_8TH = datetime(2024, 1, 7, 23)
+JAN_9TH = datetime(2024, 1, 8, 23)
+
 
 def _get_repository_mock(
     metering_point_period: DataFrame,
@@ -50,12 +60,18 @@ def test_read_and_filter(
     # Arrange
     metering_point_periods = metering_point_periods_factory.create(
         spark,
-        default_data.create_metering_point_periods_row(),
+        [
+            default_data.create_metering_point_periods_row(metering_point_id="1"),
+            default_data.create_metering_point_periods_row(metering_point_id="2"),
+        ],
     )
 
     charge_link_periods = charge_links_factory.create(
         spark,
-        default_data.create_charge_link_periods_row(),
+        [
+            default_data.create_charge_link_periods_row(metering_point_id="1"),
+            default_data.create_charge_link_periods_row(metering_point_id="2"),
+        ],
     )
 
     charge_prices = charge_prices_factory.create(
@@ -85,6 +101,87 @@ def test_read_and_filter(
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
     )
+    actual_df.show()
 
     # Assert
     assert actual_df.count() == 1
+
+
+@pytest.mark.parametrize(
+    "args_energy_supplier_ids, charge_time, expected_rows",
+    [
+        pytest.param(
+            ["1"],
+            JAN_2ND,
+            1,
+            id="this",
+        ),
+    ],
+)
+def test_read_and_filter_2(
+    spark: SparkSession,
+    args_energy_supplier_ids: list[str] | None,
+    charge_time: datetime,
+    expected_rows: int,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                metering_point_id="1",
+                energy_supplier_id="1",
+                from_date=JAN_1ST,
+                to_date=JAN_4TH,
+            ),
+            default_data.create_metering_point_periods_row(
+                metering_point_id="2",
+                energy_supplier_id="2",
+                from_date=JAN_3RD,
+                to_date=JAN_4TH,
+            ),
+        ],
+    )
+
+    charge_link_periods = charge_links_factory.create(
+        spark,
+        [
+            default_data.create_charge_link_periods_row(
+                metering_point_id="1", from_date=JAN_1ST, to_date=JAN_4TH
+            ),
+            default_data.create_charge_link_periods_row(
+                metering_point_id="2", from_date=JAN_3RD, to_date=JAN_4TH
+            ),
+        ],
+    )
+
+    charge_prices = charge_prices_factory.create(
+        spark,
+        default_data.create_charge_prices_row(charge_time=charge_time),
+    )
+
+    charge_price_information_periods = charge_price_information_periods_factory.create(
+        spark,
+        default_data.create_charge_price_information_periods_row(),
+    )
+
+    mock_repository = _get_repository_mock(
+        metering_point_periods,
+        charge_link_periods,
+        charge_prices,
+        charge_price_information_periods,
+    )
+
+    # Act
+    actual_df = read_and_filter(
+        period_start=JAN_1ST,
+        period_end=JAN_4TH,
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
+        energy_supplier_ids=args_energy_supplier_ids,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == expected_rows
