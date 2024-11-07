@@ -123,8 +123,6 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_c
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
@@ -196,7 +194,7 @@ def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_c
 
 def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expected_columns(
     spark: SparkSession,
-    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
 ) -> None:
 
     # Arrange
