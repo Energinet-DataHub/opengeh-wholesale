@@ -19,7 +19,6 @@ from pyspark.sql import DataFrame, functions as F
 from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
     filter_by_charge_owner_and_tax_depending_on_market_role,
-    filter_by_calculation_id_by_grid_area,
 )
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
     join_metering_points_periods_and_charge_links_periods,
@@ -28,7 +27,6 @@ from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
     read_metering_point_periods_by_calculation_ids,
-    read_charge_link_periods,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
