@@ -43,26 +43,39 @@ def get_expected_filenames(args: SettlementReportArgs) -> list[str]:
 
 
 def _get_expected_columns(requesting_actor_market_role: MarketRole) -> list[str]:
-    expected_column_names = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_from_date,
-        CsvColumnNames.metering_point_to_date,
-        CsvColumnNames.grid_area_code_in_metering_points_csv,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.settlement_method,
-    ]
-
     if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
-        expected_column_names.insert(5, CsvColumnNames.to_grid_area_code)
-        expected_column_names.insert(6, CsvColumnNames.from_grid_area_code)
-
-    if requesting_actor_market_role in [
+        return [
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.metering_point_from_date,
+            CsvColumnNames.metering_point_to_date,
+            CsvColumnNames.grid_area_code_in_metering_points_csv,
+            CsvColumnNames.to_grid_area_code,
+            CsvColumnNames.from_grid_area_code,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+        ]
+    elif requesting_actor_market_role is MarketRole.ENERGY_SUPPLIER:
+        return [
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.metering_point_from_date,
+            CsvColumnNames.metering_point_to_date,
+            CsvColumnNames.grid_area_code_in_metering_points_csv,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+        ]
+    elif requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.DATAHUB_ADMINISTRATOR,
     ]:
-        expected_column_names.append(CsvColumnNames.energy_supplier_id)
-
-    return expected_column_names
+        return [
+            CsvColumnNames.metering_point_id,
+            CsvColumnNames.metering_point_from_date,
+            CsvColumnNames.metering_point_to_date,
+            CsvColumnNames.grid_area_code_in_metering_points_csv,
+            CsvColumnNames.metering_point_type,
+            CsvColumnNames.settlement_method,
+            CsvColumnNames.energy_supplier_id,
+        ]
 
 
 def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
