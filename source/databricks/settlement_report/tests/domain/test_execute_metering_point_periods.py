@@ -22,26 +22,6 @@ def reset_task_values(dbutils: DBUtilsFixture):
     dbutils.jobs.taskValues.reset()
 
 
-def get_expected_filenames(args: SettlementReportArgs) -> list[str]:
-    market_role_in_file_name = get_market_role_in_file_name(
-        args.requesting_actor_market_role
-    )
-    start_time = get_start_date(args.period_start)
-    end_time = get_end_date(args.period_end)
-    grid_area_codes = list(args.calculation_id_by_grid_area.keys())
-    grid_area_code_1 = grid_area_codes[0]
-    grid_area_code_2 = grid_area_codes[1]
-    energy_supplier_id = (
-        args.energy_supplier_ids[0] if args.energy_supplier_ids else None
-    )
-
-    expected_file_names = [
-        f"MDMP_{grid_area_code_1}_{energy_supplier_id}_{market_role_in_file_name}_{start_time}_{end_time}.csv",
-        f"MDMP_{grid_area_code_2}_{energy_supplier_id}_{market_role_in_file_name}_{start_time}_{end_time}.csv",
-    ]
-    return expected_file_names
-
-
 def _get_expected_columns(requesting_actor_market_role: MarketRole) -> list[str]:
     if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
         return [
