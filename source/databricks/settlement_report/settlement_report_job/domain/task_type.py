@@ -13,4 +13,5 @@ class TaskType(Enum):
     CHARGE_LINKS = "charge_links"
     ENERGY_RESULTS = "energy_results"
     MONTHLY_AMOUNTS = "monthly_amounts"
+    WHOLESALE_RESULTS = "wholesale_results"
     ZIP = "zip"
