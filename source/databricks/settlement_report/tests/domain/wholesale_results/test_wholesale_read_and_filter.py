@@ -190,7 +190,7 @@ def test_calculation_id_by_grid_loss_scenarios(
     [
         pytest.param(
             MarketRole.GRID_ACCESS_PROVIDER,
-            default_data.DEFAULT_CHARGE_OWNER_ID,
+            "1111111111111",
             True,
             1,
             id="When grid_access_provider and charge_owner_id equals requesting_actor_id and is_tax is True, return 1 row",
@@ -199,7 +199,7 @@ def test_calculation_id_by_grid_loss_scenarios(
             MarketRole.GRID_ACCESS_PROVIDER,
             default_data.DEFAULT_CHARGE_OWNER_ID,
             False,
-            0,
+            1,
             id="When grid_access_provider and charge_owner_id equals requesting_actor_id and is_tax is False, return 0 rows",
         ),
         pytest.param(

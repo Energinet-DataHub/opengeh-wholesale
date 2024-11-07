@@ -13,17 +13,19 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
 from settlement_report_job.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from tests.test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
-from tests.test_factories.charge_price_information_periods_factory import (
+from test_factories.charge_price_information_periods_factory import (
     ChargePriceInformationPeriodsRow,
 )
-from tests.test_factories.latest_calculations_factory import LatestCalculationsPerDayRow
-from tests.test_factories.metering_point_periods_factory import MeteringPointPeriodsRow
-from tests.test_factories.metering_point_time_series_factory import (
+from test_factories.latest_calculations_factory import LatestCalculationsPerDayRow
+from test_factories.metering_point_periods_factory import MeteringPointPeriodsRow
+from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
-from tests.test_factories.energy_factory import EnergyTestDataSpec
-from tests.test_factories.amounts_per_charge_factory import AmountsPerChargeRow
+from test_factories.monthly_amounts_per_charge_factory import MonthlyAmountsPerChargeRow
+from test_factories.total_monthly_amounts_factory import TotalMonthlyAmountsRow
+from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
+from test_factories.energy_factory import EnergyTestDataSpec
+from test_factories.amounts_per_charge_factory import AmountsPerChargeRow
 
 DEFAULT_FROM_DATE = datetime(2024, 1, 1, 23)
 DEFAULT_TO_DATE = DEFAULT_FROM_DATE + timedelta(days=1)
@@ -135,7 +137,7 @@ def create_metering_point_periods_row(
         grid_area_code=grid_area_code,
         resolution=resolution,
         from_grid_area_code=from_grid_area_code,
-        to_grid_area_code=grid_area_code,
+        to_grid_area_code=to_grid_area_code,
         parent_metering_point_id=parent_metering_point_id,
         energy_supplier_id=energy_supplier_id,
         balance_responsible_party_id=balance_responsible_party_id,
@@ -213,6 +215,64 @@ def create_amounts_per_charge_row(
         quantity=quantity,
         quantity_qualities=quantity_qualities,
         price=price,
+        amount=amount,
+    )
+
+
+def create_monthly_amounts_per_charge_row(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_version: int = DEFAULT_CALCULATION_VERSION,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
+    charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
+    charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
+    quantity_unit: str = "kWh",
+    is_tax: bool = False,
+    currency: str = "DKK",
+    time: datetime = DEFAULT_PERIOD_START,
+    amount: Decimal = Decimal("0.005"),
+) -> MonthlyAmountsPerChargeRow:
+    return MonthlyAmountsPerChargeRow(
+        calculation_id=calculation_id,
+        calculation_type=calculation_type,
+        calculation_version=calculation_version,
+        result_id="result_id_placeholder",  # Add appropriate value
+        grid_area_code=grid_area_code,
+        energy_supplier_id=energy_supplier_id,
+        charge_code=charge_code,
+        charge_type=charge_type,
+        charge_owner_id=charge_owner_id,
+        quantity_unit=quantity_unit,
+        is_tax=is_tax,
+        currency=currency,
+        time=time,
+        amount=amount,
+    )
+
+
+def create_total_monthly_amounts_row(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_version: int = DEFAULT_CALCULATION_VERSION,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
+    currency: str = "DKK",
+    time: datetime = DEFAULT_PERIOD_START,
+    amount: Decimal = Decimal("0.005"),
+) -> TotalMonthlyAmountsRow:
+    return TotalMonthlyAmountsRow(
+        calculation_id=calculation_id,
+        calculation_type=calculation_type,
+        calculation_version=calculation_version,
+        result_id="result_id_placeholder",  # Add appropriate value
+        grid_area_code=grid_area_code,
+        energy_supplier_id=energy_supplier_id,
+        charge_owner_id=charge_owner_id,
+        currency=currency,
+        time=time,
         amount=amount,
     )
 

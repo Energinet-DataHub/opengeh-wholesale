@@ -16,27 +16,29 @@ from pyspark.sql import DataFrame
 
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-
-
-from settlement_report_job.domain.energy_results.read_and_filter import (
-    read_and_filter_from_view,
+from settlement_report_job.domain.metering_point_periods.read_and_filter import (
+    read_and_filter_for_wholesale,
 )
-from settlement_report_job.domain.energy_results.prepare_for_csv import (
+from settlement_report_job.domain.metering_point_periods.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.domain.settlement_report_args_utils import (
-    should_have_one_file_per_grid_area,
-)
 
 
-def create_energy_results(
+def create_metering_point_periods_for_wholesale(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:
-    energy = read_and_filter_from_view(args, repository)
+    metering_point_periods = read_and_filter_for_wholesale(
+        args.period_start,
+        args.period_end,
+        args.calculation_id_by_grid_area,
+        args.energy_supplier_ids,
+        args.requesting_actor_market_role,
+        args.requesting_actor_id,
+        repository,
+    )
 
     return prepare_for_csv(
-        energy,
-        should_have_one_file_per_grid_area(args),
+        metering_point_periods,
         args.requesting_actor_market_role,
     )
