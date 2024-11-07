@@ -13,6 +13,7 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame, SparkSession
+from delta.exceptions import MetadataChangedException
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.container import Container
@@ -24,6 +25,7 @@ from package.infrastructure.paths import (
 )
 
 timestamp_format = "%Y-%m-%dT%H:%M:%S.%f"
+METADATA_CHANGED_RETRIES = 10
 
 
 @use_span("calculation.write-succeeded-calculation")
@@ -47,11 +49,22 @@ def write_calculation(
         timestamp_format
     )[:-3]
     # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
-    spark.sql(
-        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
-        f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
-    )
+    # Also, since IDENTITY COLUMN requires an exclusive lock on the table, we allow up to METADATA_CHANGED_RETRIES retries of the transaction.
+    for attempt in range(METADATA_CHANGED_RETRIES):
+        try:
+            spark.sql(
+                f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+                f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
+                f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
+            )
+            break
+        except MetadataChangedException as e:
+            if attempt == METADATA_CHANGED_RETRIES:
+                raise e
+            else:
+                spark.catalog.uncacheTable(
+                    f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+                )
 
 
 @use_span("calculation.write-calculation-grid-areas")
