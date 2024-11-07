@@ -52,12 +52,6 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.grid_area_code).alias(
             CsvColumnNames.grid_area_code_in_metering_points_csv
         ),
-        F.col(DataProductColumnNames.to_grid_area_code).alias(
-            CsvColumnNames.to_grid_area_code
-        ),
-        F.col(DataProductColumnNames.from_grid_area_code).alias(
-            CsvColumnNames.from_grid_area_code
-        ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(CsvColumnNames.metering_point_type),

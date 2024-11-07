@@ -11,7 +11,6 @@ class CsvColumnNames:
     currency = "ENERGYCURRENCY"
     energy_quantity = "ENERGYQUANTITY"
     energy_supplier_id = "ENERGYSUPPLIERID"
-    from_grid_area_code = "FROMGRIDAREAID"
     grid_area_code = "METERINGGRIDAREAID"
     grid_area_code_in_metering_points_csv = "GRIDAREAID"
     metering_point_from_date = "VALIDFROM"
@@ -23,7 +22,6 @@ class CsvColumnNames:
     resolution = "RESOLUTIONDURATION"
     settlement_method = "SETTLEMENTMETHOD"
     time = "STARTDATETIME"
-    to_grid_area_code = "TOGRIDAREAID"
 
 
 class EphemeralColumns:
