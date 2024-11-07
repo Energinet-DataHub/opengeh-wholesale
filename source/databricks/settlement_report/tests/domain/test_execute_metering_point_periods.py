@@ -31,7 +31,9 @@ def get_expected_filenames(args: SettlementReportArgs) -> list[str]:
     grid_area_codes = list(args.calculation_id_by_grid_area.keys())
     grid_area_code_1 = grid_area_codes[0]
     grid_area_code_2 = grid_area_codes[1]
-    energy_supplier_id = args.energy_supplier_ids[0]
+    energy_supplier_id = (
+        args.energy_supplier_ids[0] if args.energy_supplier_ids else None
+    )
 
     expected_file_names = [
         f"MDMP_{grid_area_code_1}_{energy_supplier_id}_{market_role_in_file_name}_{start_time}_{end_time}.csv",
