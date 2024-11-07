@@ -225,6 +225,7 @@ class ReportGenerator:
             TaskType.CHARGE_LINKS: "charge_links_files",
             TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
             TaskType.ENERGY_RESULTS: "energy_result_files",
+            TaskType.WHOLESALE_RESULTS: "wholesale_result_files",
         }
 
         for task_key, key in task_types_to_zip.items():
