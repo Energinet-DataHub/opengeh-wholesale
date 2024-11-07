@@ -212,6 +212,8 @@ class TestWhenInvokedWithValidArguments:
         | count
         """
 
+        print(query)
+
         workspace_id = integration_test_configuration.get_analytics_workspace_id()
 
         def assert_logged():
