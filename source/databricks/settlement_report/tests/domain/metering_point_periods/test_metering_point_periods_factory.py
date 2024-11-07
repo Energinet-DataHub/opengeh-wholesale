@@ -218,7 +218,7 @@ def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expec
 
     # Act
     actual = create_metering_point_periods_for_wholesale(
-        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+        args=standard_wholesale_fixing_scenario_grid_access_provider_args,
         repository=mock_repository,
     )
 
