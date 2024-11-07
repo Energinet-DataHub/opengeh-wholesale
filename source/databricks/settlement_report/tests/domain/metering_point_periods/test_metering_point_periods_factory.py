@@ -206,6 +206,8 @@ def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expec
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
+        "TOGRIDAREAID",
+        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
