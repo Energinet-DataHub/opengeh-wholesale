@@ -288,12 +288,6 @@ jobs:
       matrix:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
-          - name: Test All Hive Scripts
-            paths: datamigration/all_hive_scripts
-          - name: Current State Scripts
-            paths: datamigration/current_state
-          - name: Test Migration scripts
-            paths: datamigration/migration_scripts
           - name: Test Unity Catalog
             paths: datamigration/unity_catalog
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
@@ -350,9 +344,6 @@ jobs:
           infrastructure/
           entry_points/
           optimize_job/
-          datamigration/all_hive_scripts
-          datamigration/current_state
-          datamigration/migration_scripts
           datamigration/unity_catalog"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter

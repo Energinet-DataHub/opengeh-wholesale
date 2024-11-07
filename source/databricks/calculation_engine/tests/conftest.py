@@ -33,6 +33,8 @@ from pyspark.sql.types import StructType
 
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
+from package.codelists import CalculationType
+from package.container import create_and_configure_container, Container
 from package.databases.migrations_wholesale.schemas import (
     time_series_points_schema,
     metering_point_periods_schema,
@@ -40,8 +42,6 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
-from package.codelists import CalculationType
-from package.container import create_and_configure_container, Container
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
@@ -233,14 +233,8 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 
 
 @pytest.fixture(scope="session")
-def calculation_output_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/{paths.HiveOutputDatabase.FOLDER_NAME}"
-
-
-@pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
-    calculation_output_path: str,
     energy_input_data_written_to_delta: None,  # TODO JVM: can be removed when all migrations are on unity catalog
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
