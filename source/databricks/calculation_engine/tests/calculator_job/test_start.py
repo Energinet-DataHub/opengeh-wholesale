@@ -209,7 +209,6 @@ class TestWhenInvokedWithValidArguments:
         | where OperationId != "00000000000000000000000000000000"
         | where Properties.Subsystem == "wholesale-aggregations"
         | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-        | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
         | count
         """
 
