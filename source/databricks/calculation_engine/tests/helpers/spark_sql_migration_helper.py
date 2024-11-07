@@ -16,10 +16,8 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 
-import package.datamigration_hive.constants as c
 import pyspark.sql.functions as f
 from pyspark.sql import SparkSession
-from spark_sql_migrations import SparkSqlMigrationsConfiguration
 from spark_sql_migrations.utility import delta_table_helper
 
 from package.datamigration.migration import migrate_data_lake
@@ -62,7 +60,6 @@ def _create_databases(spark: SparkSession) -> None:
 
 def migrate(
     spark: SparkSession,
-    substitution_variables: dict[str, str] | None = None,
     migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
     print(
@@ -78,10 +75,7 @@ def migrate(
 
     _create_databases(spark)
 
-    spark_config = create_spark_sql_migrations_configuration(
-        spark, "", substitution_variables=substitution_variables
-    )
-    migrate_data_lake(catalog_name, spark_config_hive=spark_config, is_testing=True)
+    migrate_data_lake(catalog_name, is_testing=True)
 
 
 def _remove_registration_of_modified_scripts(
@@ -113,81 +107,8 @@ def _remove_registration_of_modified_scripts(
         spark.sql(sql)
 
 
-def create_spark_sql_migrations_configuration(
-    spark: SparkSession,
-    table_prefix: str = "",
-    substitution_variables: dict[str, str] | None = None,
-) -> SparkSqlMigrationsConfiguration:
-    if substitution_variables is None:
-        substitution_variables = update_substitutions(get_migration_script_args(spark))
-
-    return SparkSqlMigrationsConfiguration(
-        migration_schema_name=schema_migration_schema_name,
-        migration_table_name=schema_migration_table_name,
-        migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
-        current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
-        current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
-        current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
-        schema_config=schema_config_hive,
-        substitution_variables=substitution_variables,
-        table_prefix=table_prefix,
-        catalog_name=catalog_name,
-    )
-
-
-def get_migration_script_args(spark: SparkSession) -> MigrationScriptArgs:
-    return MigrationScriptArgs(
-        data_storage_account_url="url",
-        data_storage_account_name="data",
-        calculation_input_folder="calculation_input",
-        spark=spark,
-        storage_container_path="container",
-    )
-
-
-def migrate_with_current_state(spark: SparkSession) -> None:
-    """
-    This function enforces the next migration to be executed to be the current state scripts.
-
-    This is based on a hack where all scripts are registered in the "executed_migrations" table,
-    but no tables exist. This forces the next migration to be the current state scripts.
-    """
-
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {schema_migration_schema_name}.{schema_migration_table_name} (migration_name STRING NOT NULL, execution_datetime TIMESTAMP NOT NULL) USING delta LOCATION '{schema_migration_location}/{schema_migration_table_name}'"
-    )
-
-    # Get all SQL files from migration_scripts folder
-    directory_path = _get_migration_scripts_path()
-    files = [
-        file
-        for file in os.listdir(directory_path)
-        if os.path.isfile(os.path.join(directory_path, file))
-    ]
-
-    # Filter only SQL files
-    sql_files = [file for file in files if file.endswith(".sql")]
-    for sql_file in sql_files:
-        spark.sql(
-            f"INSERT INTO {schema_migration_schema_name}.{schema_migration_table_name} (migration_name, execution_datetime) VALUES ('{sql_file}', '2021-01-01')"
-        )
-
-
-def update_substitutions(
-    migration_args: MigrationScriptArgs, replacements: dict[str, str] | None = None
-) -> dict[str, str]:
-    replacements = replacements or {}
-    _substitutions = substitutions(migration_args)
-
-    for key, value in replacements.items():
-        _substitutions[key] = value
-
-    return _substitutions
-
-
 def _get_migration_scripts_path() -> str:
-    return f"{os.path.dirname(c.__file__)}/migration_scripts/"
+    return f"{os.path.dirname(__file__)}/migration_scripts/"
 
 
 def _get_recently_modified_migration_scripts(

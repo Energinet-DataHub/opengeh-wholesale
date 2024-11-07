@@ -14,7 +14,6 @@ MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
 
 def migrate_data_lake(
     catalog_name: str | None = None,
-    spark_config_hive: SparkSqlMigrationsConfiguration = None,
     is_testing: bool = False,
 ) -> None:
     """
