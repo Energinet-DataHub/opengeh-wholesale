@@ -90,31 +90,3 @@ def test_create_metering_point_periods__when_and_metering_point_period_exceeds_s
     assert actual.count() == 1
     assert actual.collect()[0][CsvColumnNames.metering_point_from_date] == d.JAN_2ND
     assert actual.collect()[0][CsvColumnNames.metering_point_to_date] == d.JAN_3RD
-
-
-def test_create_metering_point_periods__when_and_metering_point_period_exceeds_selected_period__returns_period_that_ends_on_the_selected_end_date(
-    spark: SparkSession,
-    standard_balance_fixing_scenario_args: SettlementReportArgs,
-) -> None:
-    # Arrange
-    standard_balance_fixing_scenario_args.period_start = d.JAN_2ND
-    standard_balance_fixing_scenario_args.period_end = d.JAN_3RD
-
-    metering_point_periods = input_metering_point_periods_factory.create(
-        spark,
-        default_data.create_metering_point_periods_row(
-            from_date=d.JAN_1ST, to_date=d.JAN_4TH
-        ),
-    )
-    mock_repository = _get_repository_mock(metering_point_periods)
-
-    # Act
-    actual = create_metering_point_periods(
-        args=standard_balance_fixing_scenario_args,
-        repository=mock_repository,
-    )
-
-    # Assert
-    assert actual.count() == 1
-    assert actual.collect()[0][CsvColumnNames.metering_point_from_date] == d.JAN_2ND
-    assert actual.collect()[0][CsvColumnNames.metering_point_to_date] == d.JAN_3RD
