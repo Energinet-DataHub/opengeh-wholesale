@@ -129,11 +129,6 @@ def test_energy_supplier_ids_scenarios(
     "args_calculation_id_by_grid_area, expected_rows",
     [
         pytest.param(
-            None,
-            1,
-            id="When calculation_id_by_grid_area is None, return 1 row",
-        ),
-        pytest.param(
             {"804": UUID(default_data.DEFAULT_CALCULATION_ID)},
             1,
             id="when calculation_id and grid_area_code is in calculation_id_by_grid_area, return 1 row",
@@ -155,7 +150,7 @@ def test_energy_supplier_ids_scenarios(
         ),
     ],
 )
-def test_calculation_id_by_grid_loss_scenarios(
+def test_calculation_id_by_grid_area_scenarios(
     spark: SparkSession,
     args_calculation_id_by_grid_area: dict[str, UUID],
     expected_rows: int,

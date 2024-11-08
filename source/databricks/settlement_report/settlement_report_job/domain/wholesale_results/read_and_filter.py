@@ -48,10 +48,7 @@ def read_and_filter_from_view(
             F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
         )
 
-    if calculation_id_by_grid_area is not None:
-        df = df.where(
-            filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area)
-        )
+    df = df.where(filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area))
 
     df = filter_by_charge_owner_and_tax_depending_on_market_role(
         df, requesting_actor_market_role, requesting_actor_id
