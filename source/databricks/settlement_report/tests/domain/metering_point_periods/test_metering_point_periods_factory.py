@@ -194,7 +194,7 @@ def test_create_metering_point_periods__when_wholesale_and_grid_access_provider_
 
 def test_create_metering_point_periods__when_balance_fixing_and_grid_access_provider__returns_expected_columns(
     spark: SparkSession,
-    standard_balance_fixing_scenario_args: SettlementReportArgs,
+    standard_balance_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
 ) -> None:
 
     # Arrange
@@ -204,6 +204,8 @@ def test_create_metering_point_periods__when_balance_fixing_and_grid_access_prov
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
+        "TOGRIDAREAID",
+        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
