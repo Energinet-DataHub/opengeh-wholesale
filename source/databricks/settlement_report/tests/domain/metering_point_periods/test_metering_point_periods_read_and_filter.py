@@ -15,7 +15,7 @@ from settlement_report_job.domain.metering_point_periods.read_and_filter import 
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-
+from utils import Dates as d
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
@@ -26,16 +26,6 @@ OTHER_ID = "9999999999999"
 DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
     default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
 }
-
-JAN_1ST = datetime(2023, 12, 31, 23)
-JAN_2ND = datetime(2024, 1, 1, 23)
-JAN_3RD = datetime(2024, 1, 2, 23)
-JAN_4TH = datetime(2024, 1, 3, 23)
-JAN_5TH = datetime(2024, 1, 4, 23)
-JAN_6TH = datetime(2024, 1, 5, 23)
-JAN_7TH = datetime(2024, 1, 6, 23)
-JAN_8TH = datetime(2024, 1, 7, 23)
-JAN_9TH = datetime(2024, 1, 8, 23)
 
 
 def _get_repository_mock(
@@ -61,31 +51,34 @@ def _get_repository_mock(
     "from_date,to_date,is_included",
     [
         pytest.param(
-            JAN_1ST,
-            JAN_2ND,
+            d.JAN_1ST,
+            d.JAN_2ND,
             False,
             id="metering point period stops before selected period",
         ),
         pytest.param(
-            JAN_1ST,
-            JAN_3RD,
+            d.JAN_1ST,
+            d.JAN_3RD,
             True,
             id="metering point starts before and ends within selected period",
         ),
         pytest.param(
-            JAN_3RD,
-            JAN_4TH,
+            d.JAN_3RD,
+            d.JAN_4TH,
             True,
             id="metering point period is within selected period",
         ),
         pytest.param(
-            JAN_3RD,
-            JAN_5TH,
+            d.JAN_3RD,
+            d.JAN_5TH,
             True,
             id="metering point starts within but stops after selected period",
         ),
         pytest.param(
-            JAN_4TH, JAN_5TH, False, id="metering point starts after selected period"
+            d.JAN_4TH,
+            d.JAN_5TH,
+            False,
+            id="metering point starts after selected period",
         ),
     ],
 )
@@ -96,8 +89,8 @@ def test_read_and_filter_for_wholesale__returns_charge_link_periods_that_overlap
     is_included: bool,
 ) -> None:
     # Arrange
-    calculation_period_start = JAN_2ND
-    calculation_period_end = JAN_4TH
+    calculation_period_start = d.JAN_2ND
+    calculation_period_end = d.JAN_4TH
 
     metering_point_periods = metering_point_periods_factory.create(
         spark,
@@ -341,24 +334,26 @@ def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_o
         spark,
         [
             default_data.create_metering_point_periods_row(
-                balance_responsible_party_id="1", from_date=JAN_1ST, to_date=JAN_2ND
+                balance_responsible_party_id="1", from_date=d.JAN_1ST, to_date=d.JAN_2ND
             ),
             default_data.create_metering_point_periods_row(
-                balance_responsible_party_id="2", from_date=JAN_2ND, to_date=JAN_3RD
+                balance_responsible_party_id="2", from_date=d.JAN_2ND, to_date=d.JAN_3RD
             ),
         ],
     )
     charge_link_periods = charge_links_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
-            from_date=JAN_1ST, to_date=JAN_3RD, charge_owner_id=GRID_ACCESS_PROVIDER_ID
+            from_date=d.JAN_1ST,
+            to_date=d.JAN_3RD,
+            charge_owner_id=GRID_ACCESS_PROVIDER_ID,
         ),
     )
     charge_price_information_periods = charge_price_information_periods_factory.create(
         spark,
         default_data.create_charge_price_information_periods_row(
-            from_date=JAN_1ST,
-            to_date=JAN_3RD,
+            from_date=d.JAN_1ST,
+            to_date=d.JAN_3RD,
             is_tax=True,
             charge_owner_id=GRID_ACCESS_PROVIDER_ID,
         ),
@@ -369,8 +364,8 @@ def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_o
 
     # Act
     actual = read_and_filter_for_wholesale(
-        period_start=JAN_1ST,
-        period_end=JAN_3RD,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.GRID_ACCESS_PROVIDER,
@@ -380,8 +375,8 @@ def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_o
 
     # Assert
     assert actual.count() == 1
-    assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == JAN_1ST
-    assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == JAN_3RD
+    assert actual.select(DataProductColumnNames.from_date).collect()[0][0] == d.JAN_1ST
+    assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == d.JAN_3RD
 
 
 def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_changes_on_metering_point__returns_two_link_periods(
@@ -395,26 +390,28 @@ def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_ch
         [
             default_data.create_metering_point_periods_row(
                 energy_supplier_id=es_id_a,
-                from_date=JAN_1ST,
-                to_date=JAN_2ND,
+                from_date=d.JAN_1ST,
+                to_date=d.JAN_2ND,
             ),
             default_data.create_metering_point_periods_row(
                 energy_supplier_id=es_id_b,
-                from_date=JAN_2ND,
-                to_date=JAN_3RD,
+                from_date=d.JAN_2ND,
+                to_date=d.JAN_3RD,
             ),
         ],
     )
     charge_link_periods = charge_links_factory.create(
         spark,
-        default_data.create_charge_link_periods_row(from_date=JAN_1ST, to_date=JAN_3RD),
+        default_data.create_charge_link_periods_row(
+            from_date=d.JAN_1ST, to_date=d.JAN_3RD
+        ),
     )
     mock_repository = _get_repository_mock(metering_point_periods, charge_link_periods)
 
     # Act
     actual = read_and_filter_for_wholesale(
-        period_start=JAN_1ST,
-        period_end=JAN_3RD,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -428,13 +425,13 @@ def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_ch
 
     actual_row_1 = actual.collect()[0]
     assert actual_row_1[DataProductColumnNames.energy_supplier_id] == es_id_a
-    assert actual_row_1[DataProductColumnNames.from_date] == JAN_1ST
-    assert actual_row_1[DataProductColumnNames.to_date] == JAN_2ND
+    assert actual_row_1[DataProductColumnNames.from_date] == d.JAN_1ST
+    assert actual_row_1[DataProductColumnNames.to_date] == d.JAN_2ND
 
     actual_row_2 = actual.collect()[1]
     assert actual_row_2[DataProductColumnNames.energy_supplier_id] == es_id_b
-    assert actual_row_2[DataProductColumnNames.from_date] == JAN_2ND
-    assert actual_row_2[DataProductColumnNames.to_date] == JAN_3RD
+    assert actual_row_2[DataProductColumnNames.from_date] == d.JAN_2ND
+    assert actual_row_2[DataProductColumnNames.to_date] == d.JAN_3RD
 
 
 def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
@@ -456,8 +453,8 @@ def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__r
 
     # Act
     actual = read_and_filter_for_wholesale(
-        period_start=JAN_1ST,
-        period_end=JAN_3RD,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -484,8 +481,8 @@ def test_read_and_filter_for_balance_fixing__when_duplicate_metering_point_perio
 
     # Act
     actual = read_and_filter_for_balance_fixing(
-        period_start=JAN_1ST,
-        period_end=JAN_3RD,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_3RD,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -505,13 +502,13 @@ def test_read_and_filter_for_balance_fixing__when_overlapping_metering_period__r
         [
             default_data.create_metering_point_periods_row(
                 calculation_id="11111111-9fc8-409a-a169-fbd49479d718",
-                from_date=JAN_1ST,
-                to_date=JAN_3RD,
+                from_date=d.JAN_1ST,
+                to_date=d.JAN_3RD,
             ),
             default_data.create_metering_point_periods_row(
                 calculation_id="22222222-9fc8-409a-a169-fbd49479d718",
-                from_date=JAN_2ND,
-                to_date=JAN_4TH,
+                from_date=d.JAN_2ND,
+                to_date=d.JAN_4TH,
             ),
         ],
     )
@@ -519,8 +516,8 @@ def test_read_and_filter_for_balance_fixing__when_overlapping_metering_period__r
 
     # Act
     actual = read_and_filter_for_balance_fixing(
-        period_start=JAN_1ST,
-        period_end=JAN_4TH,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_4TH,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -529,8 +526,8 @@ def test_read_and_filter_for_balance_fixing__when_overlapping_metering_period__r
 
     # Assert
     assert actual.count() == 1
-    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
-    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH
+    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_1ST
+    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_4TH
 
 
 def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__returns_separate_periods(
@@ -542,13 +539,13 @@ def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__ret
         [
             default_data.create_metering_point_periods_row(
                 calculation_id="11111111-9fc8-409a-a169-fbd49479d718",
-                from_date=JAN_1ST,
-                to_date=JAN_2ND,
+                from_date=d.JAN_1ST,
+                to_date=d.JAN_2ND,
             ),
             default_data.create_metering_point_periods_row(
                 calculation_id="22222222-9fc8-409a-a169-fbd49479d718",
-                from_date=JAN_3RD,
-                to_date=JAN_4TH,
+                from_date=d.JAN_3RD,
+                to_date=d.JAN_4TH,
             ),
         ],
     )
@@ -556,8 +553,8 @@ def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__ret
 
     # Act
     actual = read_and_filter_for_balance_fixing(
-        period_start=JAN_1ST,
-        period_end=JAN_4TH,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_4TH,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -567,10 +564,10 @@ def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__ret
     # Assert
     assert actual.count() == 2
     actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_1ST
-    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_2ND
-    assert actual.collect()[1][DataProductColumnNames.from_date] == JAN_3RD
-    assert actual.collect()[1][DataProductColumnNames.to_date] == JAN_4TH
+    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_1ST
+    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_2ND
+    assert actual.collect()[1][DataProductColumnNames.from_date] == d.JAN_3RD
+    assert actual.collect()[1][DataProductColumnNames.to_date] == d.JAN_4TH
 
 
 def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_period__returns_period_that_ends_on_the_selection_end_date(
@@ -581,8 +578,8 @@ def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_perio
         spark,
         [
             default_data.create_metering_point_periods_row(
-                from_date=JAN_1ST,
-                to_date=JAN_5TH,
+                from_date=d.JAN_1ST,
+                to_date=d.JAN_5TH,
             ),
         ],
     )
@@ -590,8 +587,8 @@ def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_perio
 
     # Act
     actual = read_and_filter_for_balance_fixing(
-        period_start=JAN_2ND,
-        period_end=JAN_4TH,
+        period_start=d.JAN_2ND,
+        period_end=d.JAN_4TH,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
@@ -601,5 +598,5 @@ def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_perio
     # Assert
     assert actual.count() == 1
     actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.collect()[0][DataProductColumnNames.from_date] == JAN_2ND
-    assert actual.collect()[0][DataProductColumnNames.to_date] == JAN_4TH
+    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_2ND
+    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_4TH
