@@ -23,7 +23,8 @@ class ReportDataType(Enum):
 
     TimeSeriesHourly = 1
     TimeSeriesQuarterly = 2
-    ChargeLinks = 3
-    EnergyResults = 4
-    WholesaleResults = 5
-    MonthlyAmounts = 6
+    MeteringPointPeriods = 3
+    ChargeLinks = 4
+    EnergyResults = 5
+    WholesaleResults = 6
+    MonthlyAmounts = 7

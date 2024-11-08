@@ -54,8 +54,6 @@ def test_create_metering_point_periods__when_wholesale_and_datahub_admin__return
         "VALIDFROM": default_data.DEFAULT_PERIOD_START,
         "VALIDTO": default_data.DEFAULT_PERIOD_END,
         "GRIDAREAID": default_data.DEFAULT_GRID_AREA_CODE,
-        "TOGRIDAREAID": default_data.DEFAULT_TO_GRID_AREA_CODE,
-        "FROMGRIDAREAID": default_data.DEFAULT_FROM_GRID_AREA_CODE,
         "TYPEOFMP": "E17",
         "SETTLEMENTMETHOD": "D01",
         "ENERGYSUPPLIERID": default_data.DEFAULT_ENERGY_SUPPLIER_ID,
@@ -94,8 +92,6 @@ def test_create_metering_point_periods_for_wholesale__when_wholesale_and_system_
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
@@ -179,8 +175,6 @@ def test_create_metering_point_periods__when_wholesale_and_grid_access_provider_
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
@@ -213,8 +207,6 @@ def test_create_metering_point_periods__when_balance_fixing_and_grid_access_prov
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
@@ -238,6 +230,7 @@ def test_create_metering_point_periods__when_balance_fixing_and_grid_access_prov
 def test_create_metering_point_periods__when_balance_fixing_and_metering_point_period_exceeds_selected_period__returns_period_that_ends_on_the_selected_end_date(
     spark: SparkSession,
     standard_balance_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
 ) -> None:
 
     # Arrange
