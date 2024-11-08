@@ -425,3 +425,86 @@ def test_calculation_id_by_grid_area_scenarios(
 
     # Assert
     assert actual_df.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "args_requesting_actor_market_role, args_requesting_actor_id, is_tax, expected_rows",
+    [
+        pytest.param(
+            MarketRole.GRID_ACCESS_PROVIDER,
+            "1111111111111",
+            True,
+            1,
+            id="When grid_access_provider and charge_owner_id equals requesting_actor_id and is_tax is True, return 1 row",
+        ),
+        pytest.param(
+            MarketRole.GRID_ACCESS_PROVIDER,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            False,
+            1,
+            id="When grid_access_provider and charge_owner_id equals requesting_actor_id and is_tax is False, return 0 rows",
+        ),
+        pytest.param(
+            MarketRole.SYSTEM_OPERATOR,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            True,
+            0,
+            id="When system_operator and charge_owner_id equals requesting_actor_id and is_tax is True, return 0 rows",
+        ),
+        pytest.param(
+            MarketRole.SYSTEM_OPERATOR,
+            default_data.DEFAULT_CHARGE_OWNER_ID,
+            False,
+            1,
+            id="When system_operator and charge_owner_id equals requesting_actor_id and is_tax is False, return 1 rows",
+        ),
+    ],
+)
+def test_grid_access_provider_and_system_operator_scenarios(
+    spark: SparkSession,
+    args_requesting_actor_market_role: MarketRole,
+    args_requesting_actor_id: str,
+    is_tax: bool,
+    expected_rows: int,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(),
+    )
+
+    charge_link_periods = charge_links_factory.create(
+        spark,
+        default_data.create_charge_link_periods_row(),
+    )
+
+    charge_prices = charge_prices_factory.create(
+        spark,
+        default_data.create_charge_prices_row(),
+    )
+
+    charge_price_information_periods = charge_price_information_periods_factory.create(
+        spark,
+        default_data.create_charge_price_information_periods_row(is_tax=is_tax),
+    )
+
+    mock_repository = _get_repository_mock(
+        metering_point_periods,
+        charge_link_periods,
+        charge_prices,
+        charge_price_information_periods,
+    )
+
+    # Act
+    actual_df = read_and_filter(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
+        energy_supplier_ids=ENERGY_SUPPLIER_IDS,
+        requesting_actor_market_role=args_requesting_actor_market_role,
+        requesting_actor_id=args_requesting_actor_id,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == expected_rows
