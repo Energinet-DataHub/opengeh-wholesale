@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
-from functools import reduce
 from unittest.mock import Mock
+from uuid import UUID
 
 import pytest
 from pyspark.sql import SparkSession, DataFrame
@@ -12,7 +12,6 @@ import test_factories.charge_prices_factory as charge_prices_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
 from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
@@ -338,6 +337,87 @@ def test_energy_supplier_ids_scenarios(
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=args_energy_supplier_ids,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "args_calculation_id_by_grid_area, expected_rows",
+    [
+        pytest.param(
+            {"804": UUID(default_data.DEFAULT_CALCULATION_ID)},
+            1,
+            id="when calculation_id and grid_area_code is in calculation_id_by_grid_area, return 1 row",
+        ),
+        pytest.param(
+            {"500": UUID(default_data.DEFAULT_CALCULATION_ID)},
+            0,
+            id="when grid_area_code is not in calculation_id_by_grid_area, return 0 rows",
+        ),
+        pytest.param(
+            {"804": UUID("11111111-1111-2222-1111-111111111111")},
+            0,
+            id="when calculation_id is not in calculation_id_by_grid_area, return 0 row",
+        ),
+        pytest.param(
+            {"500": UUID("11111111-1111-2222-1111-111111111111")},
+            0,
+            id="when calculation_id and grid_area_code is not in calculation_id_by_grid_area, return 0 row",
+        ),
+    ],
+)
+def test_calculation_id_by_grid_area_scenarios(
+    spark: SparkSession,
+    args_calculation_id_by_grid_area: dict[str, UUID],
+    expected_rows: int,
+) -> None:
+    # Arrange
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        default_data.create_metering_point_periods_row(
+            calculation_id=default_data.DEFAULT_CALCULATION_ID, grid_area_code="804"
+        ),
+    )
+
+    charge_link_periods = charge_links_factory.create(
+        spark,
+        default_data.create_charge_link_periods_row(
+            calculation_id=default_data.DEFAULT_CALCULATION_ID
+        ),
+    )
+
+    charge_prices = charge_prices_factory.create(
+        spark,
+        default_data.create_charge_prices_row(
+            calculation_id=default_data.DEFAULT_CALCULATION_ID
+        ),
+    )
+
+    charge_price_information_periods = charge_price_information_periods_factory.create(
+        spark,
+        default_data.create_charge_price_information_periods_row(
+            calculation_id=default_data.DEFAULT_CALCULATION_ID
+        ),
+    )
+
+    mock_repository = _get_repository_mock(
+        metering_point_periods,
+        charge_link_periods,
+        charge_prices,
+        charge_price_information_periods,
+    )
+
+    # Act
+    actual_df = read_and_filter(
+        period_start=DEFAULT_FROM_DATE,
+        period_end=DEFAULT_TO_DATE,
+        calculation_id_by_grid_area=args_calculation_id_by_grid_area,
+        energy_supplier_ids=ENERGY_SUPPLIER_IDS,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
