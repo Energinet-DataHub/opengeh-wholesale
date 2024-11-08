@@ -22,6 +22,18 @@ DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
 }
 
 
+DEFAULT_SELECT_COLUMNS = [
+    DataProductColumnNames.metering_point_id,
+    DataProductColumnNames.from_date,
+    DataProductColumnNames.to_date,
+    DataProductColumnNames.grid_area_code,
+    DataProductColumnNames.from_grid_area_code,
+    DataProductColumnNames.to_grid_area_code,
+    DataProductColumnNames.metering_point_type,
+    DataProductColumnNames.settlement_method,
+]
+
+
 def _get_repository_mock(
     metering_point_period: DataFrame,
     charge_link_periods: DataFrame | None = None,
@@ -61,6 +73,7 @@ def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_per
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -96,6 +109,7 @@ def test_read_and_filter__when_overlapping_metering_period__returns_merged_perio
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -133,6 +147,7 @@ def test_read_and_filter__when_metering_periods_with_gap__returns_separate_perio
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -167,6 +182,7 @@ def test_read_and_filter__when_period_exceeds_selection_period__returns_period_t
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 

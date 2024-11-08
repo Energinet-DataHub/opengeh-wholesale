@@ -48,6 +48,17 @@ def read_and_filter(
         energy_supplier_ids=energy_supplier_ids,
     )
 
+    # get from latest calculations
+    latest_balance_fixing_calculations = repository.read_latest_calculations().where(
+        (
+            F.col(DataProductColumnNames.calculation_type)
+            == CalculationTypeDataProductValue.BALANCE_FIXING.value
+        )
+        & (F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes))
+        & (F.col(DataProductColumnNames.start_of_day) >= period_start)
+        & (F.col(DataProductColumnNames.start_of_day) < period_end)
+    )
+
     metering_point_periods = metering_point_periods.select(*select_columns)
 
     metering_point_periods = merge_connected_periods(metering_point_periods)
@@ -57,3 +68,32 @@ def read_and_filter(
     )
 
     return metering_point_periods
+
+
+def filter_by_latest_calculations(
+    df: DataFrame,
+    latest_calculations: DataFrame,
+    df_time_column: str | Column,
+    time_zone: str,
+) -> DataFrame:
+    df = df.withColumn(
+        EphemeralColumns.start_of_day,
+        get_start_of_day(df_time_column, time_zone),
+    )
+
+    return (
+        df.join(
+            latest_calculations,
+            on=[
+                df[DataProductColumnNames.calculation_id]
+                == latest_calculations[DataProductColumnNames.calculation_id],
+                df[DataProductColumnNames.grid_area_code]
+                == latest_calculations[DataProductColumnNames.grid_area_code],
+                df[EphemeralColumns.start_of_day]
+                == latest_calculations[DataProductColumnNames.start_of_day],
+            ],
+            how="inner",
+        )
+        .select(df["*"])
+        .drop(EphemeralColumns.start_of_day)
+    )

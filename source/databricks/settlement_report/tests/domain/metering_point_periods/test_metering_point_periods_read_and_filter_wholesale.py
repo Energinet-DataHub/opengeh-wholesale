@@ -27,6 +27,18 @@ DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
 }
 
 
+DEFAULT_SELECT_COLUMNS = [
+    DataProductColumnNames.metering_point_id,
+    DataProductColumnNames.from_date,
+    DataProductColumnNames.to_date,
+    DataProductColumnNames.grid_area_code,
+    DataProductColumnNames.from_grid_area_code,
+    DataProductColumnNames.to_grid_area_code,
+    DataProductColumnNames.metering_point_type,
+    DataProductColumnNames.settlement_method,
+]
+
+
 def _get_repository_mock(
     metering_point_period: DataFrame,
     charge_link_periods: DataFrame | None = None,
@@ -107,6 +119,7 @@ def test_read_and_filter__returns_charge_link_periods_that_overlap_with_selected
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -150,6 +163,7 @@ def test_read_and_filter__returns_only_selected_grid_area(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -260,6 +274,7 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
         energy_supplier_ids=selected_energy_supplier_ids,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -318,6 +333,7 @@ def test_read_and_filter__when_system_operator__returns_expected_metering_points
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.SYSTEM_OPERATOR,
         requesting_actor_id=SYSTEM_OPERATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -369,6 +385,7 @@ def test_read_and_filter__when_balance_responsible_party_changes_on_metering_poi
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.GRID_ACCESS_PROVIDER,
         requesting_actor_id=GRID_ACCESS_PROVIDER_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -415,6 +432,7 @@ def test_read_and_filter__when_datahub_user_and_energy_supplier_changes_on_meter
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
@@ -458,6 +476,7 @@ def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_per
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
