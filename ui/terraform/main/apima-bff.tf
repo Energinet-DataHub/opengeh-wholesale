@@ -12,6 +12,10 @@ module "apima_bff" {
   logger_verbosity           = "verbose"
   path                       = "bff"
   backend_service_url        = "https://${module.backend_for_frontend.default_hostname}"
+  import = {
+    content_format = "openapi+json"
+    content_value  = data.local_file.swagger_file.content
+  }
   policies = [
     {
       xml_content = <<XML
@@ -103,6 +107,10 @@ module "apima_bff" {
       XML
     }
   ]
+}
+
+data "local_file" "swagger_file" {
+  filename = "${path.module}/../../swagger.json"
 }
 
 resource "azurerm_api_management_authorization_server" "oauth_server_bff" {
