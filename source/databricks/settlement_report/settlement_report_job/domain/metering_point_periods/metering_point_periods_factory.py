@@ -17,8 +17,8 @@ from pyspark.sql import DataFrame
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.metering_point_periods.read_and_filter import (
-    read_and_filter_for_wholesale,
-    read_and_filter_for_balance_fixing,
+    read_and_filter_wholesale,
+    read_and_filter_balance_fixing,
 )
 from settlement_report_job.domain.metering_point_periods.prepare_for_csv import (
     prepare_for_csv,
@@ -31,7 +31,7 @@ def create_metering_point_periods(
     repository: WholesaleRepository,
 ) -> DataFrame:
     if args.calculation_type is CalculationType.BALANCE_FIXING:
-        metering_point_periods = read_and_filter_for_balance_fixing(
+        metering_point_periods = read_and_filter_balance_fixing(
             args.period_start,
             args.period_end,
             args.grid_area_codes,
@@ -40,7 +40,7 @@ def create_metering_point_periods(
             repository,
         )
     else:
-        metering_point_periods = read_and_filter_for_wholesale(
+        metering_point_periods = read_and_filter_wholesale(
             args.period_start,
             args.period_end,
             args.calculation_id_by_grid_area,

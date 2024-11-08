@@ -37,7 +37,7 @@ logger = logging.Logger(__name__)
 
 
 @logging.use_span()
-def read_and_filter_for_wholesale(
+def read_and_filter_wholesale(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
@@ -78,7 +78,7 @@ def read_and_filter_for_wholesale(
 
 
 @logging.use_span()
-def read_and_filter_for_balance_fixing(
+def read_and_filter_balance_fixing(
     period_start: datetime,
     period_end: datetime,
     grid_area_codes: list[str],

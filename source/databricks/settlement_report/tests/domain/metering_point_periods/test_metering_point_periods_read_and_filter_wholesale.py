@@ -10,8 +10,7 @@ import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.metering_point_periods.read_and_filter import (
-    read_and_filter_for_wholesale,
-    read_and_filter_for_balance_fixing,
+    read_and_filter_wholesale,
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -101,7 +100,7 @@ def test_read_and_filter_for_wholesale__returns_charge_link_periods_that_overlap
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter_wholesale(
         period_start=calculation_period_start,
         period_end=calculation_period_end,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -142,7 +141,7 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -188,7 +187,7 @@ def test_read_and_filter_for_wholesale__returns_only_rows_from_selected_calculat
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -254,7 +253,7 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_for_wholesale(
+    actual_df = read_and_filter_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -312,7 +311,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_m
     )
 
     # Act
-    actual = read_and_filter_for_wholesale(
+    actual = read_and_filter_wholesale(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -363,7 +362,7 @@ def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_o
     )
 
     # Act
-    actual = read_and_filter_for_wholesale(
+    actual = read_and_filter_wholesale(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -409,7 +408,7 @@ def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_ch
     mock_repository = _get_repository_mock(metering_point_periods, charge_link_periods)
 
     # Act
-    actual = read_and_filter_for_wholesale(
+    actual = read_and_filter_wholesale(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -452,7 +451,7 @@ def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__r
     mock_repository = _get_repository_mock(metering_point_periods, charge_link_periods)
 
     # Act
-    actual = read_and_filter_for_wholesale(
+    actual = read_and_filter_wholesale(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -464,139 +463,3 @@ def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__r
 
     # Assert
     assert actual.count() == 1
-
-
-def test_read_and_filter_for_balance_fixing__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_periods = metering_point_periods_factory.create(
-        spark,
-        [
-            default_data.create_metering_point_periods_row(),
-            default_data.create_metering_point_periods_row(),
-        ],
-    )
-    mock_repository = _get_repository_mock(metering_point_periods)
-
-    # Act
-    actual = read_and_filter_for_balance_fixing(
-        period_start=d.JAN_1ST,
-        period_end=d.JAN_3RD,
-        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
-        energy_supplier_ids=None,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        repository=mock_repository,
-    )
-
-    # Assert
-    assert actual.count() == 1
-
-
-def test_read_and_filter_for_balance_fixing__when_overlapping_metering_period__returns_merged_periods(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_periods = metering_point_periods_factory.create(
-        spark,
-        [
-            default_data.create_metering_point_periods_row(
-                calculation_id="11111111-9fc8-409a-a169-fbd49479d718",
-                from_date=d.JAN_1ST,
-                to_date=d.JAN_3RD,
-            ),
-            default_data.create_metering_point_periods_row(
-                calculation_id="22222222-9fc8-409a-a169-fbd49479d718",
-                from_date=d.JAN_2ND,
-                to_date=d.JAN_4TH,
-            ),
-        ],
-    )
-    mock_repository = _get_repository_mock(metering_point_periods)
-
-    # Act
-    actual = read_and_filter_for_balance_fixing(
-        period_start=d.JAN_1ST,
-        period_end=d.JAN_4TH,
-        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
-        energy_supplier_ids=None,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        repository=mock_repository,
-    )
-
-    # Assert
-    assert actual.count() == 1
-    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_1ST
-    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_4TH
-
-
-def test_read_and_filter_for_balance_fixing__when_metering_periods_with_gap__returns_separate_periods(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_periods = metering_point_periods_factory.create(
-        spark,
-        [
-            default_data.create_metering_point_periods_row(
-                calculation_id="11111111-9fc8-409a-a169-fbd49479d718",
-                from_date=d.JAN_1ST,
-                to_date=d.JAN_2ND,
-            ),
-            default_data.create_metering_point_periods_row(
-                calculation_id="22222222-9fc8-409a-a169-fbd49479d718",
-                from_date=d.JAN_3RD,
-                to_date=d.JAN_4TH,
-            ),
-        ],
-    )
-    mock_repository = _get_repository_mock(metering_point_periods)
-
-    # Act
-    actual = read_and_filter_for_balance_fixing(
-        period_start=d.JAN_1ST,
-        period_end=d.JAN_4TH,
-        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
-        energy_supplier_ids=None,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        repository=mock_repository,
-    )
-
-    # Assert
-    assert actual.count() == 2
-    actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_1ST
-    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_2ND
-    assert actual.collect()[1][DataProductColumnNames.from_date] == d.JAN_3RD
-    assert actual.collect()[1][DataProductColumnNames.to_date] == d.JAN_4TH
-
-
-def test_read_and_filter_for_balance_fixing__when_period_exceeds_selection_period__returns_period_that_ends_on_the_selection_end_date(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_periods = metering_point_periods_factory.create(
-        spark,
-        [
-            default_data.create_metering_point_periods_row(
-                from_date=d.JAN_1ST,
-                to_date=d.JAN_5TH,
-            ),
-        ],
-    )
-    mock_repository = _get_repository_mock(metering_point_periods)
-
-    # Act
-    actual = read_and_filter_for_balance_fixing(
-        period_start=d.JAN_2ND,
-        period_end=d.JAN_4TH,
-        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
-        energy_supplier_ids=None,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        repository=mock_repository,
-    )
-
-    # Assert
-    assert actual.count() == 1
-    actual = actual.orderBy(DataProductColumnNames.from_date)
-    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_2ND
-    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_4TH
