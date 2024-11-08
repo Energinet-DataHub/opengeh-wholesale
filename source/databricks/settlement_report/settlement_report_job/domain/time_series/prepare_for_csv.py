@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame, functions as F, Window
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
     get_start_of_day,
 )
@@ -34,10 +34,10 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def prepare_for_csv(
     filtered_time_series_points: DataFrame,
     metering_point_resolution: MeteringPointResolutionDataProductValue,

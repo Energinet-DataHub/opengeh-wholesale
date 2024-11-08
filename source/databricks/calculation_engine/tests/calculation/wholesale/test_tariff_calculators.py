@@ -20,7 +20,7 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession
 
-import calculation.wholesale.factories.prepared_tariffs_factory as factory
+import tests.calculation.wholesale.factories.prepared_tariffs_factory as factory
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_co_es,
 )

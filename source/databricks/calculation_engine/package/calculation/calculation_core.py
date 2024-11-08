@@ -23,7 +23,7 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     is_parent_metering_point,
 )
 from package.databases.wholesale_basis_data_internal import basis_data_factory
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 from .calculation_output import (
     CalculationOutput,
 )
@@ -50,7 +50,7 @@ class CalculationCore:
             return CalculationCore._execute_energy(args, prepared_data_reader)
 
     @staticmethod
-    @logging_configuration.use_span("calculation.wholesale.prepare")
+    @use_span("calculation.wholesale.prepare")
     def _execute_wholesale(
         args: CalculatorArgs,
         prepared_data_reader: PreparedDataReader,
@@ -145,7 +145,7 @@ class CalculationCore:
         return calculation_output
 
     @staticmethod
-    @logging_configuration.use_span("calculation.energy.prepare")
+    @use_span("calculation.energy.prepare")
     def _execute_energy(
         args: CalculatorArgs,
         prepared_data_reader: PreparedDataReader,

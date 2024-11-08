@@ -20,7 +20,7 @@ import pyspark.sql.functions as f
 
 from package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
-import databases.migrations_wholesale.repository.input_metering_point_periods_factory as factory
+import tests.databases.migrations_wholesale.repository.input_metering_point_periods_factory as factory
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
