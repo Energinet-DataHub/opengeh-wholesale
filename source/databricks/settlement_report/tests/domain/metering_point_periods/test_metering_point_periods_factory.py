@@ -84,7 +84,6 @@ def test_create_metering_point_periods_for_wholesale__when_wholesale_and_system_
     spark: SparkSession,
     standard_wholesale_fixing_scenario_system_operator_args: SettlementReportArgs,
 ) -> None:
-
     # Arrange
     expected_columns = [
         "grid_area_code_partitioning",
@@ -96,8 +95,6 @@ def test_create_metering_point_periods_for_wholesale__when_wholesale_and_system_
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
     ]
-
-    # Arrange
     metering_point_periods = input_metering_point_periods_factory.create(
         spark,
         default_data.create_metering_point_periods_row(),
@@ -141,8 +138,6 @@ def test_create_metering_point_periods__when_wholesale_and_energy_supplier__retu
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
@@ -245,6 +240,7 @@ def test_create_metering_point_periods__when_balance_fixing_and_metering_point_p
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
+
     metering_point_periods = input_metering_point_periods_factory.create(
         spark,
         default_data.create_metering_point_periods_row(),
