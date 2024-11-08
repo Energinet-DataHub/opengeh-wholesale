@@ -111,13 +111,15 @@ def _join_with_charge_link_and_metering_point_periods(
         energy_supplier_ids=energy_supplier_ids,
     )
 
-    df = join_metering_points_periods_and_charge_links_periods(
-        charge_link_periods, metering_point_periods
+    charge_links_and_metering_point_periods = (
+        join_metering_points_periods_and_charge_links_periods(
+            charge_link_periods, metering_point_periods
+        )
     )
 
     charge_prices = (
         charge_prices.join(
-            df,
+            charge_links_and_metering_point_periods,
             on=[
                 DataProductColumnNames.calculation_id,
                 DataProductColumnNames.charge_key,
@@ -134,7 +136,9 @@ def _join_with_charge_link_and_metering_point_periods(
         )
         .select(
             charge_prices["*"],
-            df[DataProductColumnNames.grid_area_code],
+            charge_links_and_metering_point_periods[
+                DataProductColumnNames.grid_area_code
+            ],
         )
     ).distinct()
 

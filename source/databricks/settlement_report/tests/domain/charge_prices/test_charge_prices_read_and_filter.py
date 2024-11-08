@@ -54,24 +54,18 @@ def _get_repository_mock(
     return mock_repository
 
 
-def test_read_and_filter(
+def test_default_case(
     spark: SparkSession,
 ) -> None:
     # Arrange
     metering_point_periods = metering_point_periods_factory.create(
         spark,
-        [
-            default_data.create_metering_point_periods_row(metering_point_id="1"),
-            default_data.create_metering_point_periods_row(metering_point_id="2"),
-        ],
+        default_data.create_metering_point_periods_row(),
     )
 
     charge_link_periods = charge_links_factory.create(
         spark,
-        [
-            default_data.create_charge_link_periods_row(metering_point_id="1"),
-            default_data.create_charge_link_periods_row(metering_point_id="2"),
-        ],
+        default_data.create_charge_link_periods_row(),
     )
 
     charge_prices = charge_prices_factory.create(
@@ -101,7 +95,6 @@ def test_read_and_filter(
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
     )
-    actual_df.show()
 
     # Assert
     assert actual_df.count() == 1
@@ -114,11 +107,29 @@ def test_read_and_filter(
             ["1"],
             JAN_2ND,
             1,
-            id="this",
+            id="When energy_supplier_ids is set to ['1'] and charge_time is JAN_2ND, then 1 row is returned",
+        ),
+        pytest.param(
+            ["2"],
+            JAN_2ND,
+            0,
+            id="When energy_supplier_ids is set to ['2'] and charge_time is JAN_2ND, then 0 row is returned",
+        ),
+        pytest.param(
+            ["1", "2"],
+            JAN_2ND,
+            1,
+            id="When energy_supplier_ids is set to ['1', '2'] and charge_time is JAN_2ND, then 1 row is returned",
+        ),
+        pytest.param(
+            ["1", "2"],
+            JAN_3RD,
+            1,
+            id="When energy_supplier_ids is set to ['1', '2'] and charge_time is JAN_3RD, then 1 row is returned",
         ),
     ],
 )
-def test_read_and_filter_2(
+def test_changing_energy_supplier_ids_and_charge_time(
     spark: SparkSession,
     args_energy_supplier_ids: list[str] | None,
     charge_time: datetime,
