@@ -17,6 +17,7 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
+ENERGY_SUPPLIER_IDS = ["1234567890123", "2345678901234"]
 DATAHUB_ADMINISTRATOR_ID = "1234567890123"
 SYSTEM_OPERATOR_ID = "3333333333333"
 GRID_ACCESS_PROVIDER_ID = "4444444444444"
@@ -195,6 +196,83 @@ def test_changing_energy_supplier_ids_and_charge_time(
         period_end=JAN_4TH,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
         energy_supplier_ids=args_energy_supplier_ids,
+        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
+        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual_df.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "args_start_date, args_end_date, expected_rows",
+    [
+        pytest.param(
+            JAN_2ND,
+            JAN_9TH,
+            1,
+            id="when time is within the range, return 1 row",
+        ),
+        pytest.param(
+            JAN_5TH,
+            JAN_9TH,
+            0,
+            id="when time is outside the range, return 0 rows",
+        ),
+    ],
+)
+def test_time_within_and_outside_of_date_range_scenarios(
+    spark: SparkSession,
+    args_start_date: datetime,
+    args_end_date: datetime,
+    expected_rows: int,
+) -> None:
+    # Arrange
+    charge_time = JAN_3RD
+
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                from_date=JAN_1ST,
+                to_date=JAN_4TH,
+            )
+        ],
+    )
+
+    charge_link_periods = charge_links_factory.create(
+        spark,
+        [
+            default_data.create_charge_link_periods_row(
+                from_date=JAN_1ST, to_date=JAN_4TH
+            )
+        ],
+    )
+
+    charge_prices = charge_prices_factory.create(
+        spark,
+        default_data.create_charge_prices_row(charge_time=charge_time),
+    )
+
+    charge_price_information_periods = charge_price_information_periods_factory.create(
+        spark,
+        default_data.create_charge_price_information_periods_row(),
+    )
+
+    mock_repository = _get_repository_mock(
+        metering_point_periods,
+        charge_link_periods,
+        charge_prices,
+        charge_price_information_periods,
+    )
+
+    # Act
+    actual_df = read_and_filter(
+        period_start=args_start_date,
+        period_end=args_end_date,
+        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
+        energy_supplier_ids=ENERGY_SUPPLIER_IDS,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
