@@ -127,6 +127,12 @@ def test_default_case(
             1,
             id="When energy_supplier_ids is set to ['1', '2'] and charge_time is JAN_3RD, then 1 row is returned",
         ),
+        pytest.param(
+            ["1", "2"],
+            JAN_5TH,
+            1,
+            id="When energy_supplier_ids is set to ['1', '2'] and charge_time is JAN_5TH, then 0 row is returned",
+        ),
     ],
 )
 def test_changing_energy_supplier_ids_and_charge_time(
