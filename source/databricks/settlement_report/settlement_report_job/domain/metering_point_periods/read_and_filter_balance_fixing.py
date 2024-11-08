@@ -12,32 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-from uuid import UUID
 
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
 
 from settlement_report_job import logging
-from settlement_report_job.domain.dataframe_utils.factory_filters import (
-    read_and_filter_by_latest_calculations,
-)
-from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
-    join_metering_points_periods_and_charge_links_periods,
-)
 from settlement_report_job.domain.dataframe_utils.merge_periods import (
     merge_connected_periods,
 )
-from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.metering_point_periods.clamp_period import (
     clamp_to_selected_period,
 )
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
-    read_metering_point_periods_by_calculation_ids,
-    read_charge_link_periods,
     read_filtered_metering_point_periods_by_grid_area_codes,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 logger = logging.Logger(__name__)
 
