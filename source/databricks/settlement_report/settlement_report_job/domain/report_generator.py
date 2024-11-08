@@ -141,10 +141,7 @@ class ReportGenerator:
             key="charge_links_files", value=charge_links_files
         )
 
-<<<<<<< HEAD
     @use_span()
-=======
-    @logging.use_span()
     def execute_metering_point_periods(self) -> None:
         """
         Entry point for the logic of creating metering point periods.
@@ -172,8 +169,7 @@ class ReportGenerator:
             key="metering_point_periods_files", value=metering_point_periods_files
         )
 
-    @logging.use_span()
->>>>>>> bfc1610bc251498da3661872c50fa84c0111488e
+    @use_span()
     def execute_energy_results(self) -> None:
         """
         Entry point for the logic of creating energy results.
