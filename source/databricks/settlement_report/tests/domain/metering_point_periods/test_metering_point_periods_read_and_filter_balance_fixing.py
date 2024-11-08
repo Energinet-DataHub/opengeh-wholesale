@@ -4,8 +4,8 @@ from unittest.mock import Mock
 from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
-from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesale import (
-    read_and_filter_balance_fixing,
+from settlement_report_job.domain.metering_point_periods.read_and_filter_balance_fixing import (
+    read_and_filter,
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -41,7 +41,7 @@ def _get_repository_mock(
     return mock_repository
 
 
-def test_read_and_filter_balance_fixing__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
+def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -55,7 +55,7 @@ def test_read_and_filter_balance_fixing__when_duplicate_metering_point_periods__
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = read_and_filter_balance_fixing(
+    actual = read_and_filter(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
@@ -68,7 +68,7 @@ def test_read_and_filter_balance_fixing__when_duplicate_metering_point_periods__
     assert actual.count() == 1
 
 
-def test_read_and_filter_balance_fixing__when_overlapping_metering_period__returns_merged_periods(
+def test_read_and_filter__when_overlapping_metering_period__returns_merged_periods(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -90,7 +90,7 @@ def test_read_and_filter_balance_fixing__when_overlapping_metering_period__retur
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = read_and_filter_balance_fixing(
+    actual = read_and_filter(
         period_start=d.JAN_1ST,
         period_end=d.JAN_4TH,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
@@ -105,7 +105,7 @@ def test_read_and_filter_balance_fixing__when_overlapping_metering_period__retur
     assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_4TH
 
 
-def test_read_and_filter_balance_fixing__when_metering_periods_with_gap__returns_separate_periods(
+def test_read_and_filter__when_metering_periods_with_gap__returns_separate_periods(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -127,7 +127,7 @@ def test_read_and_filter_balance_fixing__when_metering_periods_with_gap__returns
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = read_and_filter_balance_fixing(
+    actual = read_and_filter(
         period_start=d.JAN_1ST,
         period_end=d.JAN_4TH,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
@@ -145,7 +145,7 @@ def test_read_and_filter_balance_fixing__when_metering_periods_with_gap__returns
     assert actual.collect()[1][DataProductColumnNames.to_date] == d.JAN_4TH
 
 
-def test_read_and_filter_balance_fixing__when_period_exceeds_selection_period__returns_period_that_ends_on_the_selection_end_date(
+def test_read_and_filter__when_period_exceeds_selection_period__returns_period_that_ends_on_the_selection_end_date(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -161,7 +161,7 @@ def test_read_and_filter_balance_fixing__when_period_exceeds_selection_period__r
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = read_and_filter_balance_fixing(
+    actual = read_and_filter(
         period_start=d.JAN_2ND,
         period_end=d.JAN_4TH,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,

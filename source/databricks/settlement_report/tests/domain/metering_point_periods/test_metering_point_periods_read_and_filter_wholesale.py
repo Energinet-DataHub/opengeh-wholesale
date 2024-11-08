@@ -10,7 +10,7 @@ import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesale import (
-    read_and_filter_wholesale,
+    read_and_filter,
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -81,7 +81,7 @@ def _get_repository_mock(
         ),
     ],
 )
-def test_read_and_filter_for_wholesale__returns_charge_link_periods_that_overlap_with_selected_period(
+def test_read_and_filter__returns_charge_link_periods_that_overlap_with_selected_period(
     spark: SparkSession,
     from_date: datetime,
     to_date: datetime,
@@ -100,7 +100,7 @@ def test_read_and_filter_for_wholesale__returns_charge_link_periods_that_overlap
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_wholesale(
+    actual_df = read_and_filter(
         period_start=calculation_period_start,
         period_end=calculation_period_end,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -114,7 +114,7 @@ def test_read_and_filter_for_wholesale__returns_charge_link_periods_that_overlap
     assert (actual_df.count() > 0) == is_included
 
 
-def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
+def test_read_and_filter__returns_only_selected_grid_area(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -141,7 +141,7 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_wholesale(
+    actual_df = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -161,7 +161,7 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     assert actual_grid_area_codes[0][0] == selected_grid_area_code
 
 
-def test_read_and_filter_for_wholesale__returns_only_rows_from_selected_calculation_id(
+def test_read_and_filter__returns_only_rows_from_selected_calculation_id(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -187,7 +187,7 @@ def test_read_and_filter_for_wholesale__returns_only_rows_from_selected_calculat
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_wholesale(
+    actual_df = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area={
@@ -229,7 +229,7 @@ METERING_POINT_ID_ABC = ["123", "456", "789"]
         (ENERGY_SUPPLIERS_ABC, ENERGY_SUPPLIERS_ABC),
     ],
 )
-def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_suppliers(
+def test_read_and_filter__returns_data_for_expected_energy_suppliers(
     spark: SparkSession,
     selected_energy_supplier_ids: list[str] | None,
     expected_energy_supplier_ids: list[str],
@@ -253,7 +253,7 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual_df = read_and_filter_wholesale(
+    actual_df = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -284,7 +284,7 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
         pytest.param(OTHER_ID, True, False, id="other charge owner with tax: exclude"),
     ],
 )
-def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_metering_points(
+def test_read_and_filter__when_system_operator__returns_expected_metering_points(
     spark: SparkSession,
     charge_owner_id: str,
     is_tax: bool,
@@ -311,7 +311,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_m
     )
 
     # Act
-    actual = read_and_filter_wholesale(
+    actual = read_and_filter(
         period_start=DEFAULT_FROM_DATE,
         period_end=DEFAULT_TO_DATE,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -325,7 +325,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_m
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_on_metering_point__returns_single_period(
+def test_read_and_filter__when_balance_responsible_party_changes_on_metering_point__returns_single_period(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -362,7 +362,7 @@ def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_o
     )
 
     # Act
-    actual = read_and_filter_wholesale(
+    actual = read_and_filter(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -378,7 +378,7 @@ def test_read_and_filter_for_wholesale__when_balance_responsible_party_changes_o
     assert actual.select(DataProductColumnNames.to_date).collect()[0][0] == d.JAN_3RD
 
 
-def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_changes_on_metering_point__returns_two_link_periods(
+def test_read_and_filter__when_datahub_user_and_energy_supplier_changes_on_metering_point__returns_two_link_periods(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -408,7 +408,7 @@ def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_ch
     mock_repository = _get_repository_mock(metering_point_periods, charge_link_periods)
 
     # Act
-    actual = read_and_filter_wholesale(
+    actual = read_and_filter(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
@@ -433,7 +433,7 @@ def test_read_and_filter_for_wholesale__when_datahub_user_and_energy_supplier_ch
     assert actual_row_2[DataProductColumnNames.to_date] == d.JAN_3RD
 
 
-def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
+def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_period_per_duplicate(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -451,7 +451,7 @@ def test_read_and_filter_for_wholesale__when_duplicate_metering_point_periods__r
     mock_repository = _get_repository_mock(metering_point_periods, charge_link_periods)
 
     # Act
-    actual = read_and_filter_wholesale(
+    actual = read_and_filter(
         period_start=d.JAN_1ST,
         period_end=d.JAN_3RD,
         calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
