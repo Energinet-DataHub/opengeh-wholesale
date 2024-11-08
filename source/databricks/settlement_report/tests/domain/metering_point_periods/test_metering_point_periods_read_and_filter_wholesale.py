@@ -36,6 +36,7 @@ DEFAULT_SELECT_COLUMNS = [
     DataProductColumnNames.to_grid_area_code,
     DataProductColumnNames.metering_point_type,
     DataProductColumnNames.settlement_method,
+    DataProductColumnNames.energy_supplier_id,
 ]
 
 
