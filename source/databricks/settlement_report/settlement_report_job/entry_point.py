@@ -45,6 +45,10 @@ def start_quarterly_time_series() -> None:
     _start_task(ReportGenerator.execute_quarterly_time_series)
 
 
+def start_metering_point_periods() -> None:
+    _start_task(ReportGenerator.execute_metering_point_periods)
+
+
 def start_charge_links() -> None:
     _start_task(ReportGenerator.execute_charge_links)
 
