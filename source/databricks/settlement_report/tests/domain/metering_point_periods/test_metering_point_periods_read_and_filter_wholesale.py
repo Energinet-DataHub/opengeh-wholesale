@@ -211,6 +211,7 @@ def test_read_and_filter__returns_only_rows_from_selected_calculation_id(
         energy_supplier_ids=None,
         requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
+        select_columns=DEFAULT_SELECT_COLUMNS,
         repository=mock_repository,
     )
 
