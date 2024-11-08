@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
-from settlement_report_job.domain.metering_point_periods.read_and_filter import (
+from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesale import (
     read_and_filter_balance_fixing,
 )
 from settlement_report_job.domain.market_role import MarketRole

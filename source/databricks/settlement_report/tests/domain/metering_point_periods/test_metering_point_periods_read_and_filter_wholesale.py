@@ -9,7 +9,7 @@ import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
-from settlement_report_job.domain.metering_point_periods.read_and_filter import (
+from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesale import (
     read_and_filter_wholesale,
 )
 from settlement_report_job.domain.market_role import MarketRole
