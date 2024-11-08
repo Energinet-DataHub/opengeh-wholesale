@@ -8,7 +8,7 @@ from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
 )
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
-    create_metering_point_periods_for_wholesale,
+    create_metering_point_periods,
 )
 from settlement_report_job.domain.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.repository import WholesaleRepository
@@ -151,7 +151,7 @@ class ReportGenerator:
             return
 
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
-        charge_links = create_metering_point_periods_for_wholesale(
+        charge_links = create_metering_point_periods(
             args=self.args, repository=repository
         )
 
