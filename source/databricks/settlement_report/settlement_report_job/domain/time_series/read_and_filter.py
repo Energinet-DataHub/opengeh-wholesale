@@ -61,7 +61,7 @@ def read_and_filter_for_balance_fixing(
         period_start=period_start,
         period_end=period_end,
         time_zone=time_zone,
-        observation_time_column=DataProductColumnNames.observation_time,
+        time_column=DataProductColumnNames.observation_time,
     )
 
     return time_series_points
