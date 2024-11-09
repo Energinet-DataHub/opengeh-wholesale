@@ -17,14 +17,14 @@ from pyspark.sql import DataFrame
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
 
 
-@logging_configuration.use_span("calculation.write.wholesale")
+@use_span("calculation.write.wholesale")
 def write_monthly_amounts_per_charge(
     wholesale_results_output: WholesaleResultsOutput,
 ) -> None:

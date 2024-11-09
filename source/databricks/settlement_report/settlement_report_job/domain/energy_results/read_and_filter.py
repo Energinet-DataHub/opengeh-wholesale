@@ -15,7 +15,7 @@ from collections.abc import Callable
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -28,7 +28,7 @@ from settlement_report_job.domain.dataframe_utils.factory_filters import (
     read_and_filter_by_latest_calculations,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
 def _get_view_read_function(
@@ -41,7 +41,7 @@ def _get_view_read_function(
         return repository.read_energy_per_es
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
