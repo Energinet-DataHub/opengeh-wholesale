@@ -62,11 +62,13 @@ def read_and_filter(
 
     metering_point_periods_from_latest_calculations = (
         read_and_filter_by_latest_calculations(
-            metering_point_periods_daily,
-            grid_area_codes,
-            period_start,
-            period_end,
-            time_zone,
+            df=metering_point_periods_daily,
+            grid_area_codes=grid_area_codes,
+            period_start=period_start,
+            period_end=period_end,
+            time_zone=time_zone,
+            time_column_name=DataProductColumnNames.from_date,
+            repository=repository,
         )
     )
 
