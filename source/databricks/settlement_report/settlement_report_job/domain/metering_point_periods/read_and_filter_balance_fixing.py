@@ -13,9 +13,15 @@
 # limitations under the License.
 from datetime import datetime
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, functions as F
 
 from settlement_report_job import logging
+from settlement_report_job.domain.dataframe_utils.factory_filters import (
+    read_and_filter_by_latest_calculations,
+)
+from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
+    get_start_of_day,
+)
 from settlement_report_job.domain.dataframe_utils.merge_periods import (
     merge_connected_periods,
 )
@@ -26,6 +32,7 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
     read_filtered_metering_point_periods_by_grid_area_codes,
 )
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 logger = logging.Logger(__name__)
 
@@ -37,6 +44,7 @@ def read_and_filter(
     grid_area_codes: list[str],
     energy_supplier_ids: list[str] | None,
     select_columns: list[str],
+    time_zone: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
 
@@ -48,12 +56,56 @@ def read_and_filter(
         energy_supplier_ids=energy_supplier_ids,
     )
 
-    metering_point_periods = metering_point_periods.select(*select_columns)
-
-    metering_point_periods = merge_connected_periods(metering_point_periods)
-
-    metering_point_periods = clamp_to_selected_period(
-        metering_point_periods, period_start, period_end
+    metering_point_periods_daily = _explode_into_daily_period(
+        metering_point_periods, time_zone
     )
 
-    return metering_point_periods
+    metering_point_periods_from_latest_calculations = (
+        read_and_filter_by_latest_calculations(
+            metering_point_periods_daily,
+            grid_area_codes,
+            period_start,
+            period_end,
+            time_zone,
+        )
+    )
+
+    metering_point_periods_from_latest_calculations = (
+        metering_point_periods_from_latest_calculations.select(*select_columns)
+    )
+
+    metering_point_periods_from_latest_calculations = merge_connected_periods(
+        metering_point_periods_from_latest_calculations
+    )
+
+    metering_point_periods_from_latest_calculations = clamp_to_selected_period(
+        metering_point_periods_from_latest_calculations, period_start, period_end
+    )
+
+    return metering_point_periods_from_latest_calculations
+
+
+def _explode_into_daily_period(df: DataFrame, time_zone: str) -> DataFrame:
+    df = df.withColumn(
+        "local_daily_from_date",
+        F.explode(
+            F.sequence(
+                F.from_utc_timestamp(DataProductColumnNames.from_date, time_zone),
+                F.date_sub(
+                    F.from_utc_timestamp(DataProductColumnNames.to_date, time_zone), 1
+                ),
+                F.expr("interval 1 day"),
+            )
+        ),
+    )
+    df = df.withColumn("local_daily_from_date", F.date_add("local_daily_from_date", 1))
+
+    df = df.withColumn(
+        DataProductColumnNames.from_date,
+        F.to_utc_timestamp("local_daily_from_date"),
+    ).withColumn(
+        DataProductColumnNames.to_date,
+        F.to_utc_timestamp(F.date_add("local_daily_from_date", 1)),
+    )
+
+    return df
