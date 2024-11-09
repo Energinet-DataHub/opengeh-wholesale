@@ -15,12 +15,11 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, functions as F
 
+from telemetry_logging import Logger, use_span
+
 from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.factory_filters import (
     read_and_filter_by_latest_calculations,
-)
-from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
-    get_start_of_day,
 )
 from settlement_report_job.domain.dataframe_utils.merge_periods import (
     merge_connected_periods,
@@ -37,7 +36,7 @@ from settlement_report_job.wholesale.column_names import DataProductColumnNames
 logger = logging.Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter(
     period_start: datetime,
     period_end: datetime,
