@@ -34,7 +34,6 @@ def reset_task_values(settlement_reports_output_path: str):
 
 def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_false__returns_expected(
     spark: SparkSession,
-    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
@@ -94,7 +93,6 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 
 def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_true__returns_expected(
     spark: SparkSession,
-    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
@@ -172,7 +170,6 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 )
 def test_when_market_role_is(
     spark: SparkSession,
-    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
     market_role: MarketRole,
@@ -235,7 +232,6 @@ def test_when_market_role_is(
 
 def test_when_market_role_is_grid_access_provider_return_correct_file_name(
     spark: SparkSession,
-    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
