@@ -16,6 +16,7 @@ from settlement_report_job.infrastructure.paths import get_report_output_path
 
 def test_execute_charge_links__when_energy_supplier__returns_expected(
     spark: SparkSession,
+    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
@@ -56,6 +57,7 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
 
 def test_execute_charge_links__when_grid_access_provider__returns_expected(
     spark: SparkSession,
+    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
@@ -148,6 +150,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
 )
 def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
     spark: SparkSession,
+    dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
     market_role: MarketRole,
