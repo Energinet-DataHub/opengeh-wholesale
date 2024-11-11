@@ -10,6 +10,8 @@ class DataProductColumnNames:
     charge_key = "charge_key"
     charge_owner_id = "charge_owner_id"
     charge_type = "charge_type"
+    charge_time = "charge_time"
+    charge_price = "charge_price"
     currency = "currency"
     energy_supplier_id = "energy_supplier_id"
     from_date = "from_date"

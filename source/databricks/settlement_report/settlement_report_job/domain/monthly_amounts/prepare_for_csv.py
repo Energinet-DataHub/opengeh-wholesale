@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
@@ -25,10 +25,10 @@ from settlement_report_job.utils import (
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 import settlement_report_job.domain.report_naming_convention as market_naming
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def prepare_for_csv(
     monthly_amounts: DataFrame,
     create_ephemeral_grid_area_column: bool,

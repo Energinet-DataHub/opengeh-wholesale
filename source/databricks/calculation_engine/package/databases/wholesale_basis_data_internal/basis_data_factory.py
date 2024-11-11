@@ -24,10 +24,10 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.databases.wholesale_basis_data_internal import basis_data
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 
 
-@logging_configuration.use_span("calculation.basis_data.prepare")
+@use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,
     metering_point_periods_df: DataFrame,

@@ -25,10 +25,10 @@ from .sum_within_month import sum_within_month
 from ..calculation_output import WholesaleResultsOutput
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
-from ...infrastructure import logging_configuration
+from telemetry_logging import use_span
 
 
-@logging_configuration.use_span("calculation.wholesale.execute")
+@use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
     prepared_charges: d.PreparedChargesContainer,
@@ -71,7 +71,7 @@ def execute(
     return wholesale_results_output
 
 
-@logging_configuration.use_span("calculate_fees")
+@use_span("calculate_fees")
 def _calculate_fees(
     args: CalculatorArgs,
     prepared_fees: d.PreparedFees,
@@ -108,7 +108,7 @@ def _calculate_fees(
     return monthly_fee_per_co_es_as_monthly_amount
 
 
-@logging_configuration.use_span("calculate_subscriptions")
+@use_span("calculate_subscriptions")
 def _calculate_subscriptions(
     args: CalculatorArgs,
     prepared_subscriptions: d.PreparedSubscriptions,
@@ -152,7 +152,7 @@ def _calculate_subscriptions(
     return monthly_subscription_per_co_es_as_monthly_amount
 
 
-@logging_configuration.use_span("calculate_hourly_tariffs")
+@use_span("calculate_hourly_tariffs")
 def _calculate_hourly_tariffs(
     args: CalculatorArgs,
     prepared_hourly_tariffs: d.PreparedTariffs,
@@ -199,7 +199,7 @@ def _calculate_hourly_tariffs(
     return monthly_tariff_from_hourly_per_co_es_as_monthly_amount
 
 
-@logging_configuration.use_span("calculate_daily_tariffs")
+@use_span("calculate_daily_tariffs")
 def _calculate_daily_tariffs(
     args: CalculatorArgs,
     prepared_daily_tariffs: d.PreparedTariffs,
@@ -244,7 +244,7 @@ def _calculate_daily_tariffs(
     return monthly_tariff_from_daily_per_co_es_as_monthly_amount
 
 
-@logging_configuration.use_span("calculate_total_monthly_amount")
+@use_span("calculate_total_monthly_amount")
 def _calculate_total_monthly_amount(
     args: CalculatorArgs,
     monthly_fees: MonthlyAmountPerCharge,

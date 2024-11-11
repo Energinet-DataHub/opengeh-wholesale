@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID
 from pyspark.sql import DataFrame, Column, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.csv_column_names import EphemeralColumns
 from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
     get_start_of_day,
@@ -16,7 +16,7 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
 def read_and_filter_by_latest_calculations(
@@ -26,7 +26,7 @@ def read_and_filter_by_latest_calculations(
     period_start: datetime,
     period_end: datetime,
     time_zone: str,
-    observation_time_column: str | Column,
+    time_column_name: str | Column,
 ) -> DataFrame:
     latest_balance_fixing_calculations = repository.read_latest_calculations().where(
         (
@@ -37,10 +37,11 @@ def read_and_filter_by_latest_calculations(
         & (F.col(DataProductColumnNames.start_of_day) >= period_start)
         & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
+
     df = filter_by_latest_calculations(
         df,
         latest_balance_fixing_calculations,
-        df_time_column=observation_time_column,
+        df_time_column=time_column_name,
         time_zone=time_zone,
     )
 

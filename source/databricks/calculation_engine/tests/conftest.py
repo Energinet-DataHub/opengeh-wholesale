@@ -31,8 +31,11 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+import telemetry_logging.logging_configuration as config
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
+from package.codelists import CalculationType
+from package.container import create_and_configure_container, Container
 from package.databases.migrations_wholesale.schemas import (
     time_series_points_schema,
     metering_point_periods_schema,
@@ -40,8 +43,6 @@ from package.databases.migrations_wholesale.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
-from package.codelists import CalculationType
-from package.container import create_and_configure_container, Container
 from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
@@ -49,7 +50,7 @@ from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
-from testsession_configuration import (
+from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
 
@@ -233,14 +234,8 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 
 
 @pytest.fixture(scope="session")
-def calculation_output_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/{paths.HiveOutputDatabase.FOLDER_NAME}"
-
-
-@pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
-    calculation_output_path: str,
     energy_input_data_written_to_delta: None,  # TODO JVM: can be removed when all migrations are on unity catalog
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
@@ -429,6 +424,17 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     )
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_logging() -> None:
+    """
+    Configures the logging initially.
+    """
+    config.configure_logging(
+        cloud_role_name="dbr-calculation-engine-tests",
+        tracer_name="unit-tests",
     )
 
 

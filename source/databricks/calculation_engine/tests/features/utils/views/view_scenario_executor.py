@@ -15,9 +15,9 @@ from typing import Tuple
 
 from pyspark.sql import SparkSession
 
-from features.utils.csv_to_dataframe_parser import CsvToDataframeWrapperParser
-from features.utils.dataframes.typecasting import cast_column_types
-from features.utils.views.dataframe_wrapper import DataframeWrapper
+from tests.features.utils.csv_to_dataframe_parser import CsvToDataframeWrapperParser
+from tests.features.utils.dataframes.typecasting import cast_column_types
+from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
 
 
 class ViewScenarioExecutor:

@@ -41,10 +41,10 @@ from package.codelists import (
     AggregationLevel,
     TimeSeriesType,
 )
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 
 
-@logging_configuration.use_span("calculation.execute.energy")
+@use_span("calculation.execute.energy")
 def execute(
     args: CalculatorArgs,
     prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
@@ -135,7 +135,7 @@ def _calculate(
     return energy_results_output, positive_grid_loss, negative_grid_loss
 
 
-@logging_configuration.use_span("calculate_exchange")
+@use_span("calculate_exchange")
 def _calculate_exchange(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
@@ -167,7 +167,7 @@ def _calculate_exchange(
     return exchange
 
 
-@logging_configuration.use_span("calculate_non_profiled_consumption_per_es")
+@use_span("calculate_non_profiled_consumption_per_es")
 def _calculate_non_profiled_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
@@ -179,7 +179,7 @@ def _calculate_non_profiled_consumption_per_es(
     return non_profiled_consumption_per_es
 
 
-@logging_configuration.use_span("calculate_temporary_production_per_es")
+@use_span("calculate_temporary_production_per_es")
 def _calculate_temporary_production_per_es(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
@@ -202,7 +202,7 @@ def _calculate_temporary_production_per_es(
     return temporary_production_per_es
 
 
-@logging_configuration.use_span("calculate_temporary_flex_consumption_per_es")
+@use_span("calculate_temporary_flex_consumption_per_es")
 def _calculate_temporary_flex_consumption_per_es(
     args: CalculatorArgs,
     metering_point_time_series: MeteringPointTimeSeries,
@@ -227,7 +227,7 @@ def _calculate_temporary_flex_consumption_per_es(
     return temporary_flex_consumption_per_es
 
 
-@logging_configuration.use_span("calculate_grid_loss")
+@use_span("calculate_grid_loss")
 def _calculate_grid_loss(
     args: CalculatorArgs,
     exchange: EnergyResults,
@@ -274,7 +274,7 @@ def _calculate_grid_loss(
     return positive_grid_loss, negative_grid_loss
 
 
-@logging_configuration.use_span("calculate_adjust_production_per_es")
+@use_span("calculate_adjust_production_per_es")
 def _calculate_adjust_production_per_es(
     temporary_production_per_es: EnergyResults,
     negative_grid_loss: EnergyResults,
@@ -290,7 +290,7 @@ def _calculate_adjust_production_per_es(
     return production_per_es
 
 
-@logging_configuration.use_span("calculate_adjust_flex_consumption_per_es")
+@use_span("calculate_adjust_flex_consumption_per_es")
 def _calculate_adjust_flex_consumption_per_es(
     temporary_flex_consumption_per_es: EnergyResults,
     positive_grid_loss: EnergyResults,
@@ -306,7 +306,7 @@ def _calculate_adjust_flex_consumption_per_es(
     return flex_consumption_per_es
 
 
-@logging_configuration.use_span("calculate_production")
+@use_span("calculate_production")
 def _calculate_production(
     args: CalculatorArgs,
     production_per_es: EnergyResults,
@@ -341,7 +341,7 @@ def _calculate_production(
     return aggregate
 
 
-@logging_configuration.use_span("calculate_flex_consumption")
+@use_span("calculate_flex_consumption")
 def _calculate_flex_consumption(
     args: CalculatorArgs,
     flex_consumption_per_es: EnergyResults,
@@ -373,7 +373,7 @@ def _calculate_flex_consumption(
         )
 
 
-@logging_configuration.use_span("calculate_non_profiled_consumption")
+@use_span("calculate_non_profiled_consumption")
 def _calculate_non_profiled_consumption(
     args: CalculatorArgs,
     non_profiled_consumption_per_es: EnergyResults,
@@ -405,7 +405,7 @@ def _calculate_non_profiled_consumption(
     )
 
 
-@logging_configuration.use_span("calculate_total_consumption")
+@use_span("calculate_total_consumption")
 def _calculate_total_consumption(
     args: CalculatorArgs,
     production: EnergyResults,

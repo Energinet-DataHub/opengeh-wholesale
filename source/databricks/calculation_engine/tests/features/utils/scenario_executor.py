@@ -19,6 +19,7 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
+import telemetry_logging.logging_configuration as config
 
 from package.calculation.calculation_output import CalculationOutput
 from package.calculation.calculator_args import CalculatorArgs
@@ -67,6 +68,12 @@ class ScenarioExecutor:
             self.wholesale_internal_repository,
             self.wholesale_results_internal_repository,
         )
+
+        config.configure_logging(
+            cloud_role_name="dbr-calculation-engine-tests",
+            tracer_name="feature-tests",
+        )
+
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
 
