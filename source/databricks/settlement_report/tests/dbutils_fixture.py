@@ -24,6 +24,7 @@ class DBUtilsSecretsFixture:
     def get(self, scope, name):
         return os.environ.get(name)
 
+
 class DBUtilsFixture:
     """
     This class is used for mocking the behaviour of DBUtils inside tests.

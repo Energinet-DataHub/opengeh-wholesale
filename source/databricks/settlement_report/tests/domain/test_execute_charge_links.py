@@ -13,6 +13,7 @@ from settlement_report_job.domain.csv_column_names import (
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
+
 def test_execute_charge_links__when_energy_supplier__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
