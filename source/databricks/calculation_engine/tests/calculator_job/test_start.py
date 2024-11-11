@@ -96,18 +96,20 @@ class TestWhenInvokedWithValidArguments:
         logs_client = LogsQueryClient(integration_test_configuration.credential)
 
         query = f"""
-AppTraces
-| where AppRoleName == "dbr-calculation-engine"
-| where SeverityLevel == 1
-| where Message startswith_cs "Command line arguments"
-| where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale-aggregations"
-| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-| where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
-| count
+        AppTraces
+        | where AppRoleName == "dbr-calculation-engine"
+        | where SeverityLevel == 1
+        | where Message startswith_cs "Command line arguments"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+        | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
+        | count
         """
+        print(query)
 
         workspace_id = integration_test_configuration.get_analytics_workspace_id()
+        print(workspace_id)
 
         def assert_logged():
             actual = logs_client.query_workspace(
@@ -148,13 +150,13 @@ AppTraces
         logs_client = LogsQueryClient(integration_test_configuration.credential)
 
         query = f"""
-AppDependencies
-| where AppRoleName == "dbr-calculation-engine"
-| where Name == "calculation.parse_job_arguments"
-| where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale-aggregations"
-| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-| count
+        AppDependencies
+        | where AppRoleName == "dbr-calculation-engine"
+        | where Name == "calculation.parse_job_arguments"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+        | count
         """
 
         workspace_id = integration_test_configuration.get_analytics_workspace_id()
@@ -200,15 +202,14 @@ AppDependencies
         logs_client = LogsQueryClient(integration_test_configuration.credential)
 
         query = f"""
-AppExceptions
-| where AppRoleName == "dbr-calculation-engine"
-| where ExceptionType == "ValueError"
-| where OuterMessage == "Environment variable not found: TIME_ZONE"
-| where OperationId != "00000000000000000000000000000000"
-| where Properties.Subsystem == "wholesale-aggregations"
-| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-| where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
-| count
+        AppExceptions
+        | where AppRoleName == "dbr-calculation-engine"
+        | where ExceptionType == "ValueError"
+        | where OuterMessage == "Environment variable not found: TIME_ZONE"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+        | count
         """
 
         workspace_id = integration_test_configuration.get_analytics_workspace_id()

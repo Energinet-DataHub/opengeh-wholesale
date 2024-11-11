@@ -1,11 +1,13 @@
 from typing import Any
 
 from pyspark.sql import SparkSession
-from settlement_report_job import logging
 
 from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
+)
+from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
+    create_metering_point_periods_for_wholesale,
 )
 from settlement_report_job.domain.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.repository import WholesaleRepository
@@ -29,7 +31,7 @@ from settlement_report_job.infrastructure.calculation_type import CalculationTyp
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
 from settlement_report_job.utils import create_zip_file
-from settlement_report_job.logging import Logger
+from telemetry_logging import Logger, use_span
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
@@ -45,14 +47,14 @@ class ReportGenerator:
         self.args = args
         self.log = Logger(__name__)
 
-    @logging.use_span()
+    @use_span()
     def execute_hourly_time_series(self) -> None:
         self._execute_time_series(
             ReportDataType.TimeSeriesHourly,
             task_key="hourly_time_series_files",
         )
 
-    @logging.use_span()
+    @use_span()
     def execute_quarterly_time_series(self) -> None:
         self._execute_time_series(
             ReportDataType.TimeSeriesQuarterly,
@@ -114,7 +116,7 @@ class ReportGenerator:
 
         self.dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
-    @logging.use_span()
+    @use_span()
     def execute_charge_links(self) -> None:
         """
         Entry point for the logic of creating charge links.
@@ -139,7 +141,35 @@ class ReportGenerator:
             key="charge_links_files", value=charge_links_files
         )
 
-    @logging.use_span()
+    @use_span()
+    def execute_metering_point_periods(self) -> None:
+        """
+        Entry point for the logic of creating metering point periods.
+        """
+        if not self.args.include_basis_data:
+            return
+
+        repository = WholesaleRepository(self.spark, self.args.catalog_name)
+        charge_links = create_metering_point_periods_for_wholesale(
+            args=self.args, repository=repository
+        )
+
+        metering_point_periods_files = csv_writer.write(
+            dbutils=self.dbutils,
+            args=self.args,
+            df=charge_links,
+            report_data_type=ReportDataType.MeteringPointPeriods,
+            order_by_columns=get_order_by_columns(
+                ReportDataType.MeteringPointPeriods,
+                self.args.requesting_actor_market_role,
+            ),
+        )
+
+        self.dbutils.jobs.taskValues.set(
+            key="metering_point_periods_files", value=metering_point_periods_files
+        )
+
+    @use_span()
     def execute_energy_results(self) -> None:
         """
         Entry point for the logic of creating energy results.
@@ -164,7 +194,7 @@ class ReportGenerator:
             key="energy_result_files", value=energy_result_files
         )
 
-    @logging.use_span()
+    @use_span()
     def execute_wholesale_results(self) -> None:
         """
         Entry point for the logic of creating wholesale results.
@@ -188,7 +218,7 @@ class ReportGenerator:
             key="wholesale_result_files", value=wholesale_result_files
         )
 
-    @logging.use_span()
+    @use_span()
     def execute_monthly_amounts(self) -> None:
         """
         Entry point for the logic of creating wholesale results.
@@ -212,7 +242,7 @@ class ReportGenerator:
             key="monthly_amounts_files", value=monthly_amounts_files
         )
 
-    @logging.use_span()
+    @use_span()
     def execute_zip(self) -> None:
         """
         Entry point for the logic of creating the final zip file.
@@ -222,9 +252,11 @@ class ReportGenerator:
         task_types_to_zip = {
             TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
             TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
+            TaskType.METERING_POINT_PERIODS: "metering_point_periods_files",
             TaskType.CHARGE_LINKS: "charge_links_files",
             TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
             TaskType.ENERGY_RESULTS: "energy_result_files",
+            TaskType.WHOLESALE_RESULTS: "wholesale_result_files",
         }
 
         for task_key, key in task_types_to_zip.items():

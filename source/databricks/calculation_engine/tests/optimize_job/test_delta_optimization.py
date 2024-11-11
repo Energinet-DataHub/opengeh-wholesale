@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from pyspark.sql.types import StructType, StructField, StringType
 import pytest
-from package.common.logger import Logger
+from telemetry_logging import Logger
 
 
 def test__optimize_table__optimize_is_in_history_of_delta_table(

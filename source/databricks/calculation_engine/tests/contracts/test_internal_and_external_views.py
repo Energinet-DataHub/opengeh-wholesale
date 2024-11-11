@@ -16,11 +16,11 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import IntegerType
 
-from contracts.databases_and_schemas import (
+from tests.contracts.databases_and_schemas import (
     get_expected_schemas,
     get_views_from_database,
 )
-from features.utils.dataframes.columns.view_columns import ViewColumns
+from tests.features.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
 
 

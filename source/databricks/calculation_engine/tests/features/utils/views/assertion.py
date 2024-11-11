@@ -14,9 +14,9 @@
 
 from pyspark.sql import DataFrame
 
-from features.utils.views.dataframe_wrapper import DataframeWrapper
-from helpers.data_frame_utils import assert_dataframe_and_schema
-from testsession_configuration import FeatureTestsConfiguration
+from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
+from tests.helpers.data_frame_utils import assert_dataframe_and_schema
+from tests.testsession_configuration import FeatureTestsConfiguration
 
 
 def assert_output(

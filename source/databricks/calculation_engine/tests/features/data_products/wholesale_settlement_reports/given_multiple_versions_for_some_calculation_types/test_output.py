@@ -16,10 +16,10 @@ from typing import Tuple
 
 import pytest
 
-from features.utils.scenario_output_files import get_output_names
-from features.utils.views.assertion import assert_output
-from features.utils.views.dataframe_wrapper import DataframeWrapper
-from testsession_configuration import TestSessionConfiguration
+from tests.features.utils.scenario_output_files import get_output_names
+from tests.features.utils.views.assertion import assert_output
+from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
+from tests.testsession_configuration import TestSessionConfiguration
 
 
 # IMPORTANT:

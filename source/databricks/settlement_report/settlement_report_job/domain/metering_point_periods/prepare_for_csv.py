@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
@@ -27,10 +27,10 @@ from settlement_report_job.domain.csv_column_names import (
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def prepare_for_csv(
     metering_point_periods: DataFrame,
     requesting_actor_market_role: MarketRole,
@@ -52,12 +52,6 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.grid_area_code).alias(
             CsvColumnNames.grid_area_code_in_metering_points_csv
         ),
-        F.col(DataProductColumnNames.to_grid_area_code).alias(
-            CsvColumnNames.to_grid_area_code
-        ),
-        F.col(DataProductColumnNames.from_grid_area_code).alias(
-            CsvColumnNames.from_grid_area_code
-        ),
         map_from_dict(METERING_POINT_TYPES)[
             F.col(DataProductColumnNames.metering_point_type)
         ].alias(CsvColumnNames.metering_point_type),
@@ -65,6 +59,19 @@ def prepare_for_csv(
             F.col(DataProductColumnNames.settlement_method)
         ].alias(CsvColumnNames.settlement_method),
     ]
+    if requesting_actor_market_role is MarketRole.GRID_ACCESS_PROVIDER:
+        columns.insert(
+            5,
+            F.col(DataProductColumnNames.to_grid_area_code).alias(
+                CsvColumnNames.to_grid_area_code
+            ),
+        )
+        columns.insert(
+            6,
+            F.col(DataProductColumnNames.from_grid_area_code).alias(
+                CsvColumnNames.from_grid_area_code
+            ),
+        )
 
     if requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
