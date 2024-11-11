@@ -44,6 +44,22 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
   }
 
   task {
+    task_key        = "energy_results"
+    max_retries     = 1
+    job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_energy_results"
+    }
+  }
+
+  task {
     task_key        = "hourly_time_series"
     max_retries     = 1
     job_cluster_key = "hourly_time_series_cluster"
@@ -76,22 +92,6 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
   }
 
   task {
-    task_key        = "energy_results"
-    max_retries     = 1
-    job_cluster_key = "settlement_report_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "opengeh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_energy_results"
-    }
-  }
-
-  task {
     task_key        = "zip"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -106,13 +106,13 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
       entry_point = "create_zip"
     }
     depends_on {
+      task_key = "energy_results"
+    }
+    depends_on {
       task_key = "hourly_time_series"
     }
     depends_on {
       task_key = "quarterly_time_series"
-    }
-    depends_on {
-      task_key = "energy_results"
     }
   }
 
@@ -172,54 +172,6 @@ resource "databricks_job" "settlement_report_job_wholesale" {
   }
 
   task {
-    task_key        = "hourly_time_series"
-    max_retries     = 1
-    job_cluster_key = "hourly_time_series_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "opengeh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_hourly_time_series"
-    }
-  }
-
-  task {
-    task_key        = "quarterly_time_series"
-    max_retries     = 1
-    job_cluster_key = "settlement_report_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "opengeh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_quarterly_time_series"
-    }
-  }
-
-  task {
-    task_key        = "metering_point_periods"
-    max_retries     = 1
-    job_cluster_key = "settlement_report_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "opengeh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_metering_point_periods"
-    }
-  }
-
-  task {
     task_key        = "charge_links"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -252,6 +204,70 @@ resource "databricks_job" "settlement_report_job_wholesale" {
   }
 
   task {
+    task_key        = "hourly_time_series"
+    max_retries     = 1
+    job_cluster_key = "hourly_time_series_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_hourly_time_series"
+    }
+  }
+
+  task {
+    task_key        = "metering_point_periods"
+    max_retries     = 1
+    job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_metering_point_periods"
+    }
+  }
+
+  task {
+    task_key        = "monthly_amounts"
+    max_retries     = 1
+    job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_monthly_amounts"
+    }
+  }
+
+  task {
+    task_key        = "quarterly_time_series"
+    max_retries     = 1
+    job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_quarterly_time_series"
+    }
+  }
+
+  task {
     task_key        = "wholesale_results"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -264,22 +280,6 @@ resource "databricks_job" "settlement_report_job_wholesale" {
       package_name = "opengeh_settlement_report"
       # The entry point is defined in setup.py
       entry_point = "create_wholesale_results"
-    }
-  }
-
-  task {
-    task_key    = "monthly_amounts"
-    max_retries = 1
-	job_cluster_key = "settlement_report_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "opengeh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_monthly_amounts"
     }
   }
 
@@ -298,25 +298,25 @@ resource "databricks_job" "settlement_report_job_wholesale" {
       entry_point = "create_zip"
     }
     depends_on {
+      task_key = "energy_results"
+    }
+    depends_on {
       task_key = "charge_links"
     }
     depends_on {
       task_key = "hourly_time_series"
     }
     depends_on {
-      task_key = "quarterly_time_series"
-    }
-    depends_on {
       task_key = "metering_point_periods"
     }
     depends_on {
-      task_key = "energy_results"
+      task_key = "monthly_amounts"
+    }
+    depends_on {
+      task_key = "quarterly_time_series"
     }
     depends_on {
       task_key = "wholesale_results"
-    }
-    depends_on {
-      task_key = "monthly_amounts"
     }
   }
 
