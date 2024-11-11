@@ -7,7 +7,7 @@ import test_factories.charge_link_periods_factory as input_charge_links_factory
 import test_factories.metering_point_periods_factory as input_metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as input_charge_price_information_periods_factory
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
-    create_metering_point_periods_for_wholesale,
+    create_metering_point_periods,
 )
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.wholesale.data_values import (
@@ -35,7 +35,7 @@ def _get_repository_mock(
     return mock_repository
 
 
-def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_values(
+def test_create_metering_point_periods__when_datahub_admin__returns_expected_values(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_datahub_admin_args: SettlementReportArgs,
 ) -> None:
@@ -68,7 +68,7 @@ def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_val
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = create_metering_point_periods_for_wholesale(
+    actual = create_metering_point_periods(
         args=args,
         repository=mock_repository,
     )
@@ -80,42 +80,10 @@ def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_val
     assert actual.collect()[0].asDict() == expected
 
 
-def test_read_and_filter_for_wholesale__when_datahub_admin__returns_expected_columns(
-    spark: SparkSession,
-    standard_wholesale_fixing_scenario_datahub_admin_args: SettlementReportArgs,
-) -> None:
-    # Arrange
-    expected_columns = [
-        "grid_area_code_partitioning",
-        "METERINGPOINTID",
-        "VALIDFROM",
-        "VALIDTO",
-        "GRIDAREAID",
-        "TYPEOFMP",
-        "SETTLEMENTMETHOD",
-        "ENERGYSUPPLIERID",
-    ]
-    metering_point_periods = input_metering_point_periods_factory.create(
-        spark,
-        default_data.create_metering_point_periods_row(),
-    )
-    mock_repository = _get_repository_mock(metering_point_periods)
-
-    # Act
-    actual = create_metering_point_periods_for_wholesale(
-        args=standard_wholesale_fixing_scenario_datahub_admin_args,
-        repository=mock_repository,
-    )
-
-    # Assert
-    assert actual.columns == expected_columns
-
-
-def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_columns(
+def test_create_metering_point_periods_for_wholesale__when_system_operator__returns_expected_columns(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_system_operator_args: SettlementReportArgs,
 ) -> None:
-
     # Arrange
     expected_columns = [
         "grid_area_code_partitioning",
@@ -127,8 +95,6 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_c
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
     ]
-
-    # Arrange
     metering_point_periods = input_metering_point_periods_factory.create(
         spark,
         default_data.create_metering_point_periods_row(),
@@ -151,7 +117,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_c
     )
 
     # Act
-    actual = create_metering_point_periods_for_wholesale(
+    actual = create_metering_point_periods(
         args=standard_wholesale_fixing_scenario_system_operator_args,
         repository=mock_repository,
     )
@@ -160,7 +126,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_expected_c
     assert actual.columns == expected_columns
 
 
-def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_columns(
+def test_create_metering_point_periods__when_energy_supplier__returns_expected_columns(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
 ) -> None:
@@ -183,7 +149,7 @@ def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_c
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = create_metering_point_periods_for_wholesale(
+    actual = create_metering_point_periods(
         args=standard_wholesale_fixing_scenario_energy_supplier_args,
         repository=mock_repository,
     )
@@ -192,7 +158,7 @@ def test_read_and_filter_for_wholesale__when_energy_supplier__returns_expected_c
     assert actual.columns == expected_columns
 
 
-def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expected_columns(
+def test_create_metering_point_periods__when_grid_access_provider__returns_expected_columns(
     spark: SparkSession,
     standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
 ) -> None:
@@ -217,7 +183,7 @@ def test_read_and_filter_for_wholesale__when_grid_access_provider__returns_expec
     mock_repository = _get_repository_mock(metering_point_periods)
 
     # Act
-    actual = create_metering_point_periods_for_wholesale(
+    actual = create_metering_point_periods(
         args=standard_wholesale_fixing_scenario_grid_access_provider_args,
         repository=mock_repository,
     )

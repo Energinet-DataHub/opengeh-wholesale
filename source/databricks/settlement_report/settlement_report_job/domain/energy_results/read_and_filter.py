@@ -66,7 +66,7 @@ def read_and_filter_from_view(
             period_start=args.period_start,
             period_end=args.period_end,
             time_zone=args.time_zone,
-            observation_time_column=DataProductColumnNames.time,
+            time_column_name=DataProductColumnNames.time,
         )
     elif args.calculation_id_by_grid_area:
         # args.calculation_id_by_grid_area should never be null when not BALANCE_FIXING.

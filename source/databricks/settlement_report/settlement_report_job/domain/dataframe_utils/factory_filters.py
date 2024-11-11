@@ -26,7 +26,7 @@ def read_and_filter_by_latest_calculations(
     period_start: datetime,
     period_end: datetime,
     time_zone: str,
-    observation_time_column: str | Column,
+    time_column_name: str | Column,
 ) -> DataFrame:
     latest_balance_fixing_calculations = repository.read_latest_calculations().where(
         (
@@ -37,10 +37,11 @@ def read_and_filter_by_latest_calculations(
         & (F.col(DataProductColumnNames.start_of_day) >= period_start)
         & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
+
     df = filter_by_latest_calculations(
         df,
         latest_balance_fixing_calculations,
-        df_time_column=observation_time_column,
+        df_time_column=time_column_name,
         time_zone=time_zone,
     )
 
