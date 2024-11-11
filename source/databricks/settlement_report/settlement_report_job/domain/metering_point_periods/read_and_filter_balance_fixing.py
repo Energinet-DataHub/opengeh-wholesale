@@ -106,7 +106,7 @@ def _explode_into_daily_period(df: DataFrame, time_zone: str) -> DataFrame:
         F.to_utc_timestamp("local_daily_from_date", time_zone),
     ).withColumn(
         DataProductColumnNames.to_date,
-        F.to_utc_timestamp(F.date_add("local_daily_to_date", 1), time_zone),
+        F.to_utc_timestamp("local_daily_to_date", time_zone),
     )
 
     return df
