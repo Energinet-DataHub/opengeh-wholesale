@@ -232,8 +232,72 @@ def test_read_and_filter__when_calculation_overlap_in_time__returns_latest(
 
     # Act
     actual = read_and_filter(
-        period_start=d.JAN_2ND,
-        period_end=d.JAN_4TH,
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_3RD,
+        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
+        energy_supplier_ids=None,
+        select_columns=DEFAULT_SELECT_COLUMNS,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == 2
+    assert (
+        actual.orderBy(DataProductColumnNames.from_date).collect()[0][
+            DataProductColumnNames.metering_point_id
+        ]
+        == "1"
+    )
+    assert (
+        actual.orderBy(DataProductColumnNames.from_date).collect()[1][
+            DataProductColumnNames.metering_point_id
+        ]
+        == "2"
+    )
+
+
+def test_read_and_filter__when_metering_point_period_is_shorter_in_newer_calculation__returns_the_shorter_period(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    calculation_id_1 = "11111111-1111-1111-1111-11111111"
+    calculation_id_2 = "22222222-2222-2222-2222-22222222"
+    latest_calculations = latest_calculations_factory.create(
+        spark,
+        [
+            default_data.create_latest_calculations_per_day_row(
+                calculation_id=calculation_id_2,
+                start_of_day=d.JAN_1ST,
+            ),
+            default_data.create_latest_calculations_per_day_row(
+                calculation_id=calculation_id_2,
+                start_of_day=d.JAN_2ND,
+            ),
+        ],
+    )
+
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                calculation_id=calculation_id_1,
+                from_date=d.JAN_1ST,
+                to_date=d.JAN_3RD,
+            ),
+            default_data.create_metering_point_periods_row(
+                calculation_id=calculation_id_2,
+                from_date=d.JAN_2ND,
+                to_date=d.JAN_3RD,
+            ),
+        ],
+    )
+    mock_repository = _get_repository_mock(metering_point_periods, latest_calculations)
+
+    # Act
+    actual = read_and_filter(
+        period_start=d.JAN_1ST,
+        period_end=d.JAN_3RD,
         grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
         energy_supplier_ids=None,
         select_columns=DEFAULT_SELECT_COLUMNS,
@@ -243,3 +307,5 @@ def test_read_and_filter__when_calculation_overlap_in_time__returns_latest(
 
     # Assert
     assert actual.count() == 1
+    assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_2ND
+    assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_3RD
