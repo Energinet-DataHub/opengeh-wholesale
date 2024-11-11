@@ -1,9 +1,6 @@
-import copy
-
 from pyspark.sql import SparkSession
 import pytest
 
-from tests.dbutils_fixture import DBUtilsFixture
 
 from tests.data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
@@ -96,7 +93,10 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -140,7 +140,10 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -181,7 +184,10 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -239,7 +245,10 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
