@@ -21,6 +21,8 @@ from test_factories.metering_point_periods_factory import MeteringPointPeriodsRo
 from test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
+
+from test_factories.charge_prices_factory import ChargePricesRow
 from test_factories.monthly_amounts_per_charge_factory import MonthlyAmountsPerChargeRow
 from test_factories.total_monthly_amounts_factory import TotalMonthlyAmountsRow
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
@@ -44,6 +46,7 @@ DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_CHARGE_CODE = "41000"
 DEFAULT_CHARGE_TYPE = ChargeTypeDataProductValue.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "3333333333333"
+DEFAULT_CHARGE_PRICE = Decimal("10.000")
 
 # For energy results
 DEFAULT_RESULT_ID = "12345678-4e15-434c-9d93-b03a6dd272a5"
@@ -78,6 +81,30 @@ def create_charge_link_periods_row(
         from_date=from_date,
         to_date=to_date,
         quantity=quantity,
+    )
+
+
+def create_charge_prices_row(
+    calculation_id: str = DEFAULT_CALCULATION_ID,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_version: int = DEFAULT_CALCULATION_VERSION,
+    charge_code: str = DEFAULT_CHARGE_CODE,
+    charge_type: ChargeTypeDataProductValue = DEFAULT_CHARGE_TYPE,
+    charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
+    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
+    charge_time: datetime = DEFAULT_PERIOD_START,
+) -> ChargePricesRow:
+    charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
+    return ChargePricesRow(
+        calculation_id=calculation_id,
+        calculation_type=calculation_type,
+        calculation_version=calculation_version,
+        charge_key=charge_key,
+        charge_code=charge_code,
+        charge_type=charge_type,
+        charge_owner_id=charge_owner_id,
+        charge_price=charge_price,
+        charge_time=charge_time,
     )
 
 

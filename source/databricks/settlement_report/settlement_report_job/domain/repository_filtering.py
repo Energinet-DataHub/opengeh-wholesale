@@ -108,9 +108,6 @@ def _filter_by_charge_owner_and_tax(
         charge_price_information_periods,
         on=[DataProductColumnNames.calculation_id, DataProductColumnNames.charge_key],
         how="inner",
-    ).select(
-        charge_link_periods["*"],
-        charge_price_information_periods[DataProductColumnNames.is_tax],
-    )
+    ).select(charge_link_periods["*"])
 
     return charge_link_periods
