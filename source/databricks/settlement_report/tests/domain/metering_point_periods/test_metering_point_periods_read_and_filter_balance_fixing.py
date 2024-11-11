@@ -341,7 +341,6 @@ def test_read_and_filter__when_daylight_saving_time_returns_expected(
     )
     mock_repository = _get_repository_mock(metering_point_periods, latest_calculations)
 
-
     # Act
     actual = read_and_filter(
         period_start=from_date,
