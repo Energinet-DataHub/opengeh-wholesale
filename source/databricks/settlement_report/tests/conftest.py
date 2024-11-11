@@ -172,6 +172,20 @@ def standard_balance_fixing_scenario_args(
     )
 
 
+@pytest.fixture(scope="function")
+def standard_balance_fixing_scenario_grid_access_provider_args(
+    standard_balance_fixing_scenario_args: SettlementReportArgs,
+) -> SettlementReportArgs:
+    standard_balance_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    standard_balance_fixing_scenario_args.requesting_actor_id = (
+        standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITH_TAX
+    )
+    standard_balance_fixing_scenario_args.energy_supplier_ids = None
+    return standard_balance_fixing_scenario_args
+
+
 @pytest.fixture(scope="session")
 def standard_balance_fixing_scenario_data_written_to_delta(
     spark: SparkSession,
