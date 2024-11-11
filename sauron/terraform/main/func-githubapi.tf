@@ -1,5 +1,5 @@
 module "func_github_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.1.0"
 
   name                                   = "github-api"
   project_name                           = var.domain_name_short
@@ -11,6 +11,7 @@ module "func_github_api" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                    = module.webapp_service_plan.id
   health_check_path                      = "/api/monitor/ready"
+  enable_staging_slot                    = true
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_alert = {
     enabled         = true
