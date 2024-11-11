@@ -37,6 +37,7 @@ def read_and_filter_by_latest_calculations(
         & (F.col(DataProductColumnNames.start_of_day) >= period_start)
         & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
+
     df = filter_by_latest_calculations(
         df,
         latest_balance_fixing_calculations,

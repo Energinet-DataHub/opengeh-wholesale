@@ -279,7 +279,7 @@ def create_total_monthly_amounts_row(
 
 def create_latest_calculations_per_day_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
-    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
+    calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.BALANCE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
     grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     start_of_day: datetime = DEFAULT_PERIOD_START,
