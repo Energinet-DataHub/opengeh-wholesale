@@ -3,6 +3,8 @@ import pytest
 
 from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
 from tests.domain.assertion import assert_file_names_and_columns
+
+from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.market_role import MarketRole
 import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.report_data_type import ReportDataType
