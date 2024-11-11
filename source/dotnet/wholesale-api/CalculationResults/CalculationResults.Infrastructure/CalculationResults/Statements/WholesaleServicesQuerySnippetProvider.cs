@@ -142,14 +142,19 @@ public sealed class WholesaleServicesQuerySnippetProvider(
 
         if (_queryParameters is { RequestedForEnergySupplier: false, ChargeOwnerId: null })
         {
-            // The following is sufficient, as the validations ensure that the grid area(s) is/are a non-empty,
-            // finite set of grid areas the charge owner owns.
-            // If this assumption changes, then the following should be changed to a more complex query,
-            // to ensure the charge owner only gets 'is_tax' charges from grid areas they own.
-            sql += $"""
-                    AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
-                         OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true)
-                    """;
+             sql += $"""
+                     AND (
+                         -- if requested for actor is SYO, then charge owner must be SYO
+                         ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
+                          AND '{_queryParameters.RequestedForActorNumber}' = '5790000432752')
+                         OR
+                         -- if requested for actor is not SYO, then charge owner must not be SYO
+                         ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '5790000432752'
+                          AND '{_queryParameters.RequestedForActorNumber}' != '5790000432752')
+                         OR
+                         {table}.{DatabricksContract.GetIsTaxColumnName()} = true
+                     )
+                     """;
         }
 
         return sql;
