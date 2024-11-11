@@ -23,6 +23,7 @@ from settlement_report_job.domain.dataframe_utils.factory_filters import (
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
     join_metering_points_periods_and_charge_links_periods,
 )
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
@@ -30,7 +31,7 @@ from settlement_report_job.domain.repository_filtering import (
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-logger = logging.Logger(__name__)
+logger = Logger(__name__)
 
 
 @logging.use_span()
