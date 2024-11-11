@@ -12,12 +12,13 @@ from tests.data_seeding import (
 from tests.domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.market_role import MarketRole
 import settlement_report_job.domain.report_generator as report_generator
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from utils import cleanup_output_path
+from utils import cleanup_output_path, get_actual_files
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -57,7 +58,10 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
