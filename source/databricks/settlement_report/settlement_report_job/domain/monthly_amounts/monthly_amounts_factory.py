@@ -24,7 +24,7 @@ from settlement_report_job.domain.monthly_amounts.prepare_for_csv import (
     prepare_for_csv,
 )
 from settlement_report_job.domain.settlement_report_args_utils import (
-    should_have_one_file_per_grid_area,
+    should_have_reesult_file_per_grid_area,
 )
 
 
@@ -36,5 +36,5 @@ def create_monthly_amounts(
 
     return prepare_for_csv(
         monthly_amounts,
-        should_have_one_file_per_grid_area(args=args),
+        should_have_reesult_file_per_grid_area(args=args),
     )

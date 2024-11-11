@@ -14,7 +14,7 @@
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 
 
-def should_have_one_file_per_grid_area(
+def should_have_reesult_file_per_grid_area(
     args: SettlementReportArgs,
 ) -> bool:
     exactly_one_grid_area_from_calc_ids = (
