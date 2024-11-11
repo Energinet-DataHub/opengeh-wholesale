@@ -18,7 +18,6 @@ from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
 
-from settlement_report_job import logging
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
     join_metering_points_periods_and_charge_links_periods,
 )
@@ -35,7 +34,7 @@ from settlement_report_job.domain.repository_filtering import (
     read_charge_link_periods,
 )
 
-logger = Logger(__name__)
+log = Logger(__name__)
 
 
 @use_span()

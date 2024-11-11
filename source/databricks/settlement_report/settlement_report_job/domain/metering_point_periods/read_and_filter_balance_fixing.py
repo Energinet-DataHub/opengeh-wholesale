@@ -33,7 +33,7 @@ from settlement_report_job.domain.repository_filtering import (
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-logger = logging.Logger(__name__)
+log = Logger(__name__)
 
 
 @use_span()
@@ -103,10 +103,10 @@ def _explode_into_daily_period(df: DataFrame, time_zone: str) -> DataFrame:
 
     df = df.withColumn(
         DataProductColumnNames.from_date,
-        F.to_utc_timestamp("local_daily_from_date"),
+        F.to_utc_timestamp("local_daily_from_date", time_zone),
     ).withColumn(
         DataProductColumnNames.to_date,
-        F.to_utc_timestamp(F.date_add("local_daily_from_date", 1)),
+        F.to_utc_timestamp(F.date_add("local_daily_from_date", 1), time_zone),
     )
 
     return df
