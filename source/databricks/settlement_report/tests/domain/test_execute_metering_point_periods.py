@@ -190,7 +190,7 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
 )
 def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
     spark: SparkSession,
-     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
     market_role: MarketRole,
 ):

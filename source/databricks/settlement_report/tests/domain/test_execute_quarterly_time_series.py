@@ -28,7 +28,7 @@ def reset_task_values(settlement_reports_output_path: str):
 
 def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     spark: SparkSession,
-     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
