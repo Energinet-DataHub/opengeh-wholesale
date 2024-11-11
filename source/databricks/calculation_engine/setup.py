@@ -23,9 +23,6 @@ setup(
     package_data={
         "package": [
             "datamigration/migration_scripts/*.sql",
-            "datamigration_hive/migration_scripts/*.sql",
-            "datamigration_hive/current_state_scripts/schemas/*.sql",
-            "datamigration_hive/current_state_scripts/tables/*.sql",
         ]
     },
     packages=find_packages(exclude=["tests*"]),
