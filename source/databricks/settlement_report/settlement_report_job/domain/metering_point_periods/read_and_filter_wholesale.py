@@ -17,6 +17,7 @@ from uuid import UUID
 from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
+
 from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
     join_metering_points_periods_and_charge_links_periods,
 )
@@ -24,27 +25,29 @@ from settlement_report_job.domain.dataframe_utils.merge_periods import (
     merge_connected_periods,
 )
 from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.metering_point_periods.clamp_period import (
+    clamp_to_selected_period,
+)
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
     read_metering_point_periods_by_calculation_ids,
     read_charge_link_periods,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-logger = Logger(__name__)
+log = Logger(__name__)
 
 
 @use_span()
-def read_and_filter_for_wholesale(
+def read_and_filter(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
     energy_supplier_ids: list[str] | None,
     requesting_actor_market_role: MarketRole,
     requesting_actor_id: str,
+    select_columns: list[str],
     repository: WholesaleRepository,
 ) -> DataFrame:
-    select_columns = _get_select_columns(requesting_actor_market_role)
 
     metering_point_periods = read_metering_point_periods_by_calculation_ids(
         repository=repository,
@@ -68,26 +71,11 @@ def read_and_filter_for_wholesale(
 
     metering_point_periods = merge_connected_periods(metering_point_periods)
 
+    metering_point_periods = clamp_to_selected_period(
+        metering_point_periods, period_start, period_end
+    )
+
     return metering_point_periods
-
-
-def _get_select_columns(requesting_actor_market_role: MarketRole) -> list[str]:
-    select_columns = [
-        DataProductColumnNames.metering_point_id,
-        DataProductColumnNames.from_date,
-        DataProductColumnNames.to_date,
-        DataProductColumnNames.grid_area_code,
-        DataProductColumnNames.from_grid_area_code,
-        DataProductColumnNames.to_grid_area_code,
-        DataProductColumnNames.metering_point_type,
-        DataProductColumnNames.settlement_method,
-    ]
-    if requesting_actor_market_role in [
-        MarketRole.SYSTEM_OPERATOR,
-        MarketRole.DATAHUB_ADMINISTRATOR,
-    ]:
-        select_columns.append(DataProductColumnNames.energy_supplier_id)
-    return select_columns
 
 
 def _filter_by_charge_owner(
