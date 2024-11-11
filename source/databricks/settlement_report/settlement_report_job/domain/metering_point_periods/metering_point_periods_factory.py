@@ -54,6 +54,7 @@ def create_metering_point_periods(
             args.requesting_actor_market_role,
             args.requesting_actor_id,
             selected_columns,
+            args.time_zone,
             repository,
         )
 
