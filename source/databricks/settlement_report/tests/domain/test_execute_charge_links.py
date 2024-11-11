@@ -13,14 +13,6 @@ from settlement_report_job.domain.csv_column_names import (
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
-
-@pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
-    yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
-
-
 def test_execute_charge_links__when_energy_supplier__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
