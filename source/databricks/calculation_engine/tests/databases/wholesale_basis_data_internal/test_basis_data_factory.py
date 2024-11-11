@@ -21,18 +21,18 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
-    create_basis_data_factory,
-)
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
-    hive_metering_point_period_schema,
+    metering_point_periods_schema_uc,
 )
 from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
+)
+from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
+    create_basis_data_factory,
 )
 
 # TODO JVM: Schema need for a test and need to be removed when delta table is fixed
@@ -56,7 +56,7 @@ time_series_points_schema_temp = StructType(
     [
         (
             "metering_point_periods",
-            hive_metering_point_period_schema,
+            metering_point_periods_schema_uc,
         ),
         (
             "time_series_points",
