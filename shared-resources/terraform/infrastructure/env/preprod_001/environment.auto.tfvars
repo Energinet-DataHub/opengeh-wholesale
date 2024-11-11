@@ -13,6 +13,7 @@ pim_contributor_data_plane_group_name    = "SEC-A-Datahub-PreProd-001-Contributo
 pim_contributor_control_plane_group_name = "SEC-A-Datahub-PreProd-001-Contributor-Controlplane"
 pim_reader_group_name                    = "SEC-A-Datahub-PreProd-001-Reader"
 alert_email_address                      = "26a83fcc.energinet.onmicrosoft.com@emea.teams.ms"
+budget_alert_amount                      = 60000 # See issue #2359
 databricks_readers_group = {
   id   = "254255312660677"
   name = "SEC-A-Datahub-PreProd-001-Reader"

@@ -300,3 +300,8 @@ variable "sendgrid_api_key" {
   type        = string
   description = "API key for SendGrid"
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}

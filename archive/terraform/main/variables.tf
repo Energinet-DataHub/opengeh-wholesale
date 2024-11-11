@@ -86,3 +86,8 @@ variable "pim_contributor_control_plane_group_name" {
   description = "Name of the PIM group that needs contributor control plane."
   default     = ""
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}

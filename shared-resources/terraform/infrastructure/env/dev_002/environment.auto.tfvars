@@ -13,6 +13,7 @@ enable_audit_logs                           = false
 platform_security_group_contributor_access  = true
 developer_security_group_contributor_access = true
 developer_security_group_reader_access      = true
+budget_alert_amount                         = 25000 # See issue #2359
 databricks_readers_group = {
   id   = "729028915538231"
   name = "SEC-G-Datahub-DevelopersAzure"

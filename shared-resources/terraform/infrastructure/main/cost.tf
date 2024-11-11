@@ -2,7 +2,7 @@ resource "azurerm_consumption_budget_subscription" "budget_alert_default" {
   name            = "alert-budget-default-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}"
   subscription_id = data.azurerm_subscription.this.id
 
-  amount     = 160000
+  amount     = var.budget_alert_amount
   time_grain = "Monthly"
 
   time_period {
@@ -13,7 +13,9 @@ resource "azurerm_consumption_budget_subscription" "budget_alert_default" {
     dimension {
       name = "ResourceGroupName"
       values = [
-        azurerm_resource_group.this.name
+        azurerm_resource_group.this.name,
+        azurerm_resource_group.audit_logs.name,
+        azurerm_databricks_workspace.this.managed_resource_group_name
       ]
     }
   }

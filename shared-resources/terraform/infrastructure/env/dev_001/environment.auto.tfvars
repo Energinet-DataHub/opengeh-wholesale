@@ -13,6 +13,8 @@ pim_contributor_control_plane_group_name = "SEC-A-Datahub-Dev-001-Contributor-Co
 alert_email_address                      = "d01b5c85.energinet.onmicrosoft.com@emea.teams.ms"
 enable_audit_logs                        = false
 developer_security_group_reader_access   = true
+budget_alert_amount                      = 32000 # See issue #2359
+
 databricks_readers_group = {
   id   = "729028915538231"
   name = "SEC-G-Datahub-DevelopersAzure"
@@ -21,3 +23,4 @@ databricks_contributor_dataplane_group = {
   id   = "284159814927462"
   name = "SEC-A-Datahub-Dev-001-Contributor-Dataplane"
 }
+
