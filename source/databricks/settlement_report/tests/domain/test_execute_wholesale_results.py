@@ -9,6 +9,7 @@ from data_seeding.standard_wholesale_fixing_scenario_data_generator import (
 )
 from settlement_report_job.domain.market_role import MarketRole
 import settlement_report_job.domain.report_generator as report_generator
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
@@ -19,6 +20,7 @@ from utils import (
     get_start_date,
     get_end_date,
     cleanup_output_path,
+    get_actual_files,
 )
 
 
@@ -77,7 +79,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MeteringPointPeriods,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -140,7 +145,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MeteringPointPeriods,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -212,8 +220,10 @@ def test_when_market_role_is(
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
-
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MeteringPointPeriods,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -276,8 +286,10 @@ def test_when_market_role_is_grid_access_provider_return_correct_file_name(
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
-
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MeteringPointPeriods,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
