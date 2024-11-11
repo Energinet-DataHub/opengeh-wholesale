@@ -2,7 +2,6 @@ import pytest
 from pyspark.sql import SparkSession
 
 from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
-from tests.dbutils_fixture import DBUtilsFixture
 
 from tests.domain.assertion import assert_file_names_and_columns
 import settlement_report_job.domain.report_generator as report_generator
