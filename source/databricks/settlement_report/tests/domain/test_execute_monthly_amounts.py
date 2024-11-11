@@ -1,6 +1,8 @@
 from pyspark.sql import SparkSession
 
 import pytest
+
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from tests.domain.assertion import assert_file_names_and_columns
 from tests.dbutils_fixture import DBUtilsFixture
@@ -9,7 +11,7 @@ from settlement_report_job.domain.settlement_report_args import SettlementReport
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
-from utils import cleanup_output_path
+from utils import cleanup_output_path, get_actual_files
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -55,7 +57,10 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
     report_generator_instance.execute_monthly_amounts()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MonthlyAmounts,
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(
             standard_wholesale_fixing_scenario_energy_supplier_args
@@ -103,7 +108,10 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
     report_generator_instance.execute_monthly_amounts()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MonthlyAmounts,
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(
             standard_wholesale_fixing_scenario_energy_supplier_args
