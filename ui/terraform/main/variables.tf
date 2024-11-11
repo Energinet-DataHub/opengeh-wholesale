@@ -138,3 +138,8 @@ variable "localhost_url" {
   description = "The URL of the localhost."
   default     = null
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}
