@@ -6,19 +6,22 @@ from tests.dbutils_fixture import DBUtilsFixture
 
 from tests.domain.assertion import assert_file_names_and_columns
 import settlement_report_job.domain.report_generator as report_generator
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.infrastructure.paths import get_report_output_path
+from utils import get_actual_files, cleanup_output_path
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def test_execute_energy_results__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files_and_content(
@@ -55,7 +58,10 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario__return
     report_generator_instance.execute_energy_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("energy_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.EnergyResults,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(standard_wholesale_fixing_scenario_args),
         actual_files=actual_files,
@@ -106,7 +112,10 @@ def test_execute_energy_results__when_split_report_by_grid_area_is_false__return
     report_generator_instance.execute_energy_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("energy_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.EnergyResults,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(standard_wholesale_fixing_scenario_args),
         actual_files=actual_files,
@@ -150,7 +159,10 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_grid_ac
     report_generator_instance.execute_energy_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("energy_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.EnergyResults,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(standard_wholesale_fixing_scenario_args),
         actual_files=actual_files,
@@ -194,7 +206,10 @@ def test_execute_energy_results__when_standard_wholesale_fixing_scenario_energy_
     report_generator_instance.execute_energy_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("energy_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.EnergyResults,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(standard_wholesale_fixing_scenario_args),
         actual_files=actual_files,

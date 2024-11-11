@@ -11,11 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from datetime import timedelta, datetime
 from zoneinfo import ZoneInfo
 
 from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import MarketRoleInFileName
+from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure import paths
 
 
 class Dates:
@@ -31,6 +35,42 @@ class Dates:
 
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+
+
+def cleanup_output_path(settlement_reports_output_path: str) -> None:
+    for f in os.listdir(settlement_reports_output_path):
+        os.remove(os.path.join(settlement_reports_output_path, f))
+
+
+def get_actual_files(
+    report_data_type: ReportDataType, args: SettlementReportArgs
+) -> list[str]:
+    path = paths.get_report_output_path(args)
+    return [
+        f
+        for f in os.listdir(path)
+        if os.path.isfile(os.path.join(path, f))
+        and f.startswith(_get_file_prefix(report_data_type))
+        and f.endswith(".csv")
+    ]
+
+
+def _get_file_prefix(report_data_type) -> str:
+    if report_data_type == ReportDataType.TimeSeriesHourly:
+        return "TSSD60"
+    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
+        return "TSSD15"
+    elif report_data_type == ReportDataType.MeteringPointPeriods:
+        return "MDMP"
+    elif report_data_type == ReportDataType.ChargeLinks:
+        return "CHARGELINK"
+    elif report_data_type == ReportDataType.EnergyResults:
+        return "RESULTENERGY"
+    elif report_data_type == ReportDataType.WholesaleResults:
+        return "RESULTWHOLESALE"
+    elif report_data_type == ReportDataType.MonthlyAmounts:
+        return "RESULTMONTHLY"
+    raise NotImplementedError(f"Report data type {report_data_type} is not supported.")
 
 
 def get_start_date(period_start: datetime) -> str:
