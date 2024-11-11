@@ -17,13 +17,15 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
+from utils import cleanup_output_path
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(

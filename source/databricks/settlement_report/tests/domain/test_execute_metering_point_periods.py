@@ -12,14 +12,15 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from utils import get_market_role_in_file_name, get_start_date, get_end_date
+from utils import get_start_date, get_end_date, cleanup_output_path
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def _get_expected_columns(requesting_actor_market_role: MarketRole) -> list[str]:
