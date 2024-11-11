@@ -92,6 +92,22 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
   }
 
   task {
+    task_key        = "metering_point_periods"
+    max_retries     = 1
+    job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/opengeh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "opengeh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_metering_point_periods"
+    }
+  }
+
+  task {
     task_key        = "zip"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -113,6 +129,9 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
     }
     depends_on {
       task_key = "quarterly_time_series"
+    }
+    depends_on {
+      task_key = "metering_point_periods"
     }
   }
 
