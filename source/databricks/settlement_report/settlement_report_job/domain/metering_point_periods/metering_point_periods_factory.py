@@ -43,6 +43,7 @@ def create_metering_point_periods(
             args.grid_area_codes,
             args.energy_supplier_ids,
             selected_columns,
+            args.time_zone,
             repository,
         )
     else:
@@ -54,7 +55,6 @@ def create_metering_point_periods(
             args.requesting_actor_market_role,
             args.requesting_actor_id,
             selected_columns,
-            args.time_zone,
             repository,
         )
 
