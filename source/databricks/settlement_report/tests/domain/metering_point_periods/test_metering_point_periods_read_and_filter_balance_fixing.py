@@ -1,7 +1,8 @@
-import uuid
+from datetime import datetime
 from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
+
 import test_factories.default_test_data_spec as default_data
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 from settlement_report_job.domain.metering_point_periods.read_and_filter_balance_fixing import (
@@ -309,3 +310,50 @@ def test_read_and_filter__when_metering_point_period_is_shorter_in_newer_calcula
     assert actual.count() == 1
     assert actual.collect()[0][DataProductColumnNames.from_date] == d.JAN_2ND
     assert actual.collect()[0][DataProductColumnNames.to_date] == d.JAN_3RD
+
+
+def test_read_and_filter__when_daylight_saving_time_returns_expected(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    from_date = datetime(2024, 3, 30, 23)
+    to_date = datetime(2024, 4, 1, 22)
+    latest_calculations = latest_calculations_factory.create(
+        spark,
+        [
+            default_data.create_latest_calculations_per_day_row(
+                start_of_day=datetime(2024, 3, 30, 23),
+            ),
+            default_data.create_latest_calculations_per_day_row(
+                start_of_day=datetime(2024, 3, 31, 22),
+            ),
+        ],
+    )
+
+    metering_point_periods = metering_point_periods_factory.create(
+        spark,
+        [
+            default_data.create_metering_point_periods_row(
+                from_date=from_date,
+                to_date=to_date,
+            ),
+        ],
+    )
+    mock_repository = _get_repository_mock(metering_point_periods, latest_calculations)
+
+
+    # Act
+    actual = read_and_filter(
+        period_start=from_date,
+        period_end=to_date,
+        grid_area_codes=default_data.DEFAULT_GRID_AREA_CODE,
+        energy_supplier_ids=None,
+        select_columns=DEFAULT_SELECT_COLUMNS,
+        time_zone=DEFAULT_TIME_ZONE,
+        repository=mock_repository,
+    )
+
+    # Assert
+    assert actual.count() == 1
+    assert actual.collect()[0][DataProductColumnNames.from_date] == from_date
+    assert actual.collect()[0][DataProductColumnNames.to_date] == to_date
