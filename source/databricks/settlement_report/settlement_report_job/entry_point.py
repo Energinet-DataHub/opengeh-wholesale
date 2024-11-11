@@ -18,12 +18,10 @@ from argparse import Namespace
 from collections.abc import Callable
 from typing import Any
 
-from pyspark.sql.session import SparkSession
-
 from opentelemetry.trace import SpanKind
 
-import settlement_report_job.logging.logging_configuration as config
-from settlement_report_job.logging.span_recording import span_record_exception
+import telemetry_logging.logging_configuration as config
+from telemetry_logging.span_recording import span_record_exception
 from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (

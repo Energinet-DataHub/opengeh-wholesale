@@ -14,7 +14,7 @@
 
 from pyspark.sql import SparkSession, Row
 
-from calculation.preparation.transformations import metering_point_periods_factory
+from tests.calculation.preparation.transformations import metering_point_periods_factory
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal import (
     get_metering_point_periods_basis_data,

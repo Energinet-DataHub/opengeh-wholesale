@@ -16,7 +16,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.time_series.prepare_for_csv import (
@@ -30,10 +30,10 @@ from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def create_time_series_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
@@ -65,7 +65,7 @@ def create_time_series_for_balance_fixing(
     return prepared_time_series
 
 
-@logging.use_span()
+@use_span()
 def create_time_series_for_wholesale(
     period_start: datetime,
     period_end: datetime,

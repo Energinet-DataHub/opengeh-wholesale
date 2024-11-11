@@ -26,7 +26,7 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.constants import Colname
-import calculation.wholesale.factories.prepared_subscriptions_factory as factory
+import tests.calculation.wholesale.factories.prepared_subscriptions_factory as factory
 
 
 class DefaultValues:

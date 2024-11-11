@@ -16,7 +16,7 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
 from package.common import assert_schema
-from testsession_configuration import FeatureTestsConfiguration
+from tests.testsession_configuration import FeatureTestsConfiguration
 
 
 def set_column(
