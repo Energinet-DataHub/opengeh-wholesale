@@ -25,7 +25,7 @@ from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
     create_time_series_for_balance_fixing,
 )
-from settlement_report_job.domain.task_type import TaskType
+from settlement_report_job.infrastructure.task_type import TaskType
 from settlement_report_job.domain.wholesale_results.wholesale_results_factory import (
     create_wholesale_results,
 )
