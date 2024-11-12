@@ -546,6 +546,74 @@ public class WholesaleServicesQueriesCsvTests
             actual.Count.Should().Be(6);
             actual.All(x => x.ChargeOwnerId == syoChargeOwner).Should().BeTrue();
         }
+
+        [Fact]
+        public async Task
+            Given_DdmChargeOwnerRequestsWithTotalMonthlyAndWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsChargeOwnerChargesAndIsTaxChargesExcludingSyoAsChargeOwner()
+        {
+            var newChargeOwnerOnGridArea804 = "8100000000007";
+            var oldChargeOwnerOnGridArea804 = "8100000000047";
+            var totalPeriod = new Period(
+                Instant.FromUtc(2021, 12, 31, 23, 0),
+                Instant.FromUtc(2022, 1, 31, 23, 0));
+
+            var parameters = new WholesaleServicesQueryParameters(
+                AmountType: AmountType.TotalMonthlyAmount,
+                GridAreaCodes: ["804"],
+                EnergySupplierId: null,
+                ChargeOwnerId: null,
+                ChargeTypes: [],
+                CalculationType: null, // This is how we denote 'latest correction'
+                Period: totalPeriod,
+                RequestedForEnergySupplier: false,
+                RequestedForActorNumber: newChargeOwnerOnGridArea804);
+
+            // Act
+            var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+            using var assertionScope = new AssertionScope();
+            actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                    ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
+                    ats.Version, ats.TimeSeriesPoints.Count))
+                .Should()
+                .BeEquivalentTo([
+                    ("804", "5790001687137", oldChargeOwnerOnGridArea804, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790000701278", oldChargeOwnerOnGridArea804, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ]);
+        }
+
+        [Fact]
+        public async Task
+            Given_SyoChargeOwnerRequestsWithTotalMonthlyAndWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsSyoAsChargeOwnerChargesAndIsTaxCharges()
+        {
+            var syoChargeOwner = "5790000432752";
+            var totalPeriod = new Period(
+                Instant.FromUtc(2021, 12, 31, 23, 0),
+                Instant.FromUtc(2022, 1, 31, 23, 0));
+
+            var parameters = new WholesaleServicesQueryParameters(
+                AmountType: AmountType.TotalMonthlyAmount,
+                GridAreaCodes: ["804"],
+                EnergySupplierId: null,
+                ChargeOwnerId: null,
+                ChargeTypes: [],
+                CalculationType: null, // This is how we denote 'latest correction'
+                Period: totalPeriod,
+                RequestedForEnergySupplier: false,
+                RequestedForActorNumber: syoChargeOwner);
+
+            // Act
+            var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+            using var assertionScope = new AssertionScope();
+            actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                    ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
+                    ats.Version, ats.TimeSeriesPoints.Count))
+                .Should()
+                .BeEquivalentTo([
+                    ("804", "5790001687137", syoChargeOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ]);
+        }
     }
 
     public class WholesaleServicesQueriesCsvTestsWithIndividualData

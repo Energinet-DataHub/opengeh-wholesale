@@ -117,9 +117,27 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         }
         else
         {
-            sql += $"""
-                    AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is null
-                    """;
+            // When requested for energy supplier, charge owner must be null
+            if (_queryParameters is { RequestedForEnergySupplier: true })
+            {
+                sql += $"""
+                        AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is null
+                        """;
+            }
+            else
+            {
+                sql += $"""
+                      AND (
+                          -- if requested for actor is SYO, then charge owner must be SYO
+                          ('{_queryParameters.RequestedForActorNumber}' = '{SyoActorNumber}'
+                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SyoActorNumber}')
+                          OR
+                          -- if requested for actor is not SYO, then charge owner must not be SYO or it must be a tax
+                          ('{_queryParameters.RequestedForActorNumber}' != '{SyoActorNumber}'
+                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SyoActorNumber}')
+                      )
+                      """;
+            }
         }
 
         return sql;
@@ -147,7 +165,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
                      AND (
                          -- if requested for actor is SYO, then charge owner must be SYO
                          ('{_queryParameters.RequestedForActorNumber}' = '{SyoActorNumber}'
-                          AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
+                          AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SyoActorNumber}'
                           AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false)
                          OR
                          -- if requested for actor is not SYO, then charge owner must not be SYO or it must be a tax
