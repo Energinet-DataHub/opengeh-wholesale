@@ -126,18 +126,23 @@ public sealed class WholesaleServicesQuerySnippetProvider(
             }
             else
             {
-                sql += $"""
-                      AND (
-                          -- When requested for actor is SystemOperator, then charge owner must be SystemOperator
-                          ('{_queryParameters.RequestedForActorNumber}' = '{SystemOperatorActorNumber}'
-                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}')
-                          OR
-                          -- When requested for actor is not SystemOperator, then charge owner must not be SystemOperator
-                          ('{_queryParameters.RequestedForActorNumber}' != '{SystemOperatorActorNumber}'
-                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}
-                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is not null')
-                      )
-                      """;
+                if (_queryParameters.RequestedForActorNumber == SystemOperatorActorNumber)
+                {
+                    sql += $"""
+                            AND (
+                                {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
+                            )
+                            """;
+                }
+                else
+                {
+                    sql += $"""
+                            AND (
+                                {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}'
+                                AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is not null
+                            )
+                            """;
+                }
             }
         }
 
@@ -162,19 +167,24 @@ public sealed class WholesaleServicesQuerySnippetProvider(
 
         if (_queryParameters is { RequestedForEnergySupplier: false, ChargeOwnerId: null })
         {
-             sql += $"""
-                     AND (
-                         -- When the SystemOperator requests data, then only data which is not tax and where the charge owner is the SystemOperator is returned.
-                         ('{_queryParameters.RequestedForActorNumber}' = '{SystemOperatorActorNumber}'
-                          AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
-                          AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false)
-                         OR
-                         -- When requested for actor is not SystemOperator, then charge owner must not be SystemOperator or it must be a tax
-                         ('{_queryParameters.RequestedForActorNumber}' != '{SystemOperatorActorNumber}'
-                          AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}' 
-                            OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true))
-                     )
+            if (_queryParameters.RequestedForActorNumber == SystemOperatorActorNumber)
+            {
+                sql += $"""
+                        AND (
+                           {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
+                             AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false
+                        )
+                    """;
+            }
+            else
+            {
+                sql += $"""
+                         AND (
+                            ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}' 
+                                OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true)
+                         )
                      """;
+            }
         }
 
         return sql;

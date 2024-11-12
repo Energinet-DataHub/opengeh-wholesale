@@ -549,7 +549,7 @@ public class WholesaleServicesQueriesCsvTests
 
         [Fact]
         public async Task
-            Given_DdmChargeOwnerRequestsWithTotalMonthlyAndWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsChargeOwnerChargesAndIsTaxChargesExcludingSyoAsChargeOwner()
+            Given_DdmChargeOwnerRequestsWithTotalMonthlyAndWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsChargeOwnerChargesAndIsTaxChargesExcludingWhereSyoIsChargeOwner()
         {
             var newChargeOwnerOnGridArea804 = "8100000000007";
             var oldChargeOwnerOnGridArea804 = "8100000000047";
