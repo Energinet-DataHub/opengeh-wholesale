@@ -113,8 +113,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
     {
-        // TODO JVM: Reduce time limit to 18 minutes, when only saving to unity catalog
-        var calculationTimeLimit = TimeSpan.FromMinutes(30);
+        var calculationTimeLimit = TimeSpan.FromMinutes(18);
         var actualCalculationDuration =
             Fixture.ScenarioState.Calculation!.ExecutionTimeEnd - Fixture.ScenarioState.Calculation.ExecutionTimeStart;
 
