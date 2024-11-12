@@ -22,7 +22,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {
-    private const string SyoActorNumber = "5790000432752";
+    private const string SystemOperatorActorNumber = "5790000432752";
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
 
     public IWholesaleServicesDatabricksContract DatabricksContract { get; } = databricksContract;
@@ -128,13 +128,14 @@ public sealed class WholesaleServicesQuerySnippetProvider(
             {
                 sql += $"""
                       AND (
-                          -- if requested for actor is SYO, then charge owner must be SYO
-                          ('{_queryParameters.RequestedForActorNumber}' = '{SyoActorNumber}'
-                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SyoActorNumber}')
+                          -- if requested for actor is SystemOperator, then charge owner must be SystemOperator
+                          ('{_queryParameters.RequestedForActorNumber}' = '{SystemOperatorActorNumber}'
+                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}')
                           OR
-                          -- if requested for actor is not SYO, then charge owner must not be SYO or it must be a tax
-                          ('{_queryParameters.RequestedForActorNumber}' != '{SyoActorNumber}'
-                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SyoActorNumber}')
+                          -- if requested for actor is not SystemOperator, then charge owner must not be SystemOperator
+                          ('{_queryParameters.RequestedForActorNumber}' != '{SystemOperatorActorNumber}'
+                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}
+                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is not null')
                       )
                       """;
             }
@@ -163,14 +164,14 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         {
              sql += $"""
                      AND (
-                         -- if requested for actor is SYO, then charge owner must be SYO
-                         ('{_queryParameters.RequestedForActorNumber}' = '{SyoActorNumber}'
-                          AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SyoActorNumber}'
+                         -- if requested for actor is SystemOperator, then charge owner must be SystemOperator and it must not be a tax
+                         ('{_queryParameters.RequestedForActorNumber}' = '{SystemOperatorActorNumber}'
+                          AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
                           AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false)
                          OR
-                         -- if requested for actor is not SYO, then charge owner must not be SYO or it must be a tax
-                         ('{_queryParameters.RequestedForActorNumber}' != '{SyoActorNumber}'
-                          AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SyoActorNumber}' 
+                         -- if requested for actor is not SystemOperator, then charge owner must not be SystemOperator or it must be a tax
+                         ('{_queryParameters.RequestedForActorNumber}' != '{SystemOperatorActorNumber}'
+                          AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}' 
                             OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true))
                      )
                      """;
