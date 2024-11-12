@@ -1,6 +1,6 @@
 import pytest
 from pyspark.sql import SparkSession
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )

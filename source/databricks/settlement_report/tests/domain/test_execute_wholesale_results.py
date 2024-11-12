@@ -12,7 +12,7 @@ import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path

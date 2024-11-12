@@ -6,7 +6,7 @@ from pyspark.sql import SparkSession
 
 from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.report_name_factory import (
+from settlement_report_job.infrastructure.report_name_factory import (
     FileNameFactory,
     ReportDataType,
 )

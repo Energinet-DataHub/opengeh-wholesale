@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )

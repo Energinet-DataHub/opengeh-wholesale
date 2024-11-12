@@ -12,7 +12,7 @@ import tests.test_factories.metering_point_time_series_factory as time_series_fa
 from settlement_report_job.domain.utils.market_role import MarketRole
 
 from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.wholesale.column_names import (

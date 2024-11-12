@@ -19,7 +19,7 @@ from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
     CHARGE_TYPES,
 )
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
