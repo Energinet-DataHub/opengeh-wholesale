@@ -22,7 +22,7 @@ locals {
       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
       # Durable client (orchestrations)
-      OrchestrationsStorageAccountConnectionString = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=func-edi-api-web-jobs-storage-connection-string)"
+      OrchestrationsStorageAccountConnectionString = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=func-edi-api-taskhub-storage-connection-string)"
       OrchestrationsTaskHubName                    = local.OrchestrationsTaskHubName
     }
   }
