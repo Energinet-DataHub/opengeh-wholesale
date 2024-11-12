@@ -8,11 +8,11 @@ from pyspark.sql import SparkSession, DataFrame
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     monthly_amounts_per_charge_v1,
 )
 

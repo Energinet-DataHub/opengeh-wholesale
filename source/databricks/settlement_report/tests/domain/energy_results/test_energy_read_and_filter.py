@@ -8,7 +8,7 @@ from pyspark.sql import SparkSession, functions as F
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
 from tests.test_factories import latest_calculations_factory

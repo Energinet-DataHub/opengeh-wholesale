@@ -11,7 +11,7 @@ from settlement_report_job.infrastructure.utils import (
     write_files,
 )
 import settlement_report_job.domain.report_naming_convention as market_naming
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeTypeDataProductValue,
 )
 from settlement_report_job.infrastructure.wholesale.data_values.calculation_type import (

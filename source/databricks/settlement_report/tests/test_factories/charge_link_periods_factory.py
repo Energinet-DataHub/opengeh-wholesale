@@ -6,11 +6,11 @@ from pyspark.sql import SparkSession, DataFrame
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeTypeDataProductValue,
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     charge_link_periods_v1,
 )
 

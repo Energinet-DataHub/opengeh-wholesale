@@ -9,7 +9,7 @@ import tests.test_factories.default_test_data_spec as default_data
 import tests.test_factories.metering_point_time_series_factory as time_series_factory
 import tests.test_factories.charge_link_periods_factory as charge_links_factory
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
 
@@ -22,7 +22,7 @@ from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
 from tests.test_factories import latest_calculations_factory
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 

@@ -34,7 +34,7 @@ from settlement_report_job.infrastructure.paths import get_report_output_path
 
 from settlement_report_job.infrastructure.utils import create_zip_file
 from telemetry_logging import Logger, use_span
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole

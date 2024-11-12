@@ -7,12 +7,12 @@ from pyspark.sql.types import DecimalType
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
     MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     metering_point_time_series_v1,
 )
 
