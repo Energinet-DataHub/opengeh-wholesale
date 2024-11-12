@@ -1,5 +1,6 @@
+/*
 module "func_settlement_reports_light_df" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.0.0"
 
   name                                   = "light-df"
   project_name                           = var.domain_name_short
@@ -11,9 +12,10 @@ module "func_settlement_reports_light_df" {
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
+  allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
+  durabletask_storage_connection_string  = module.taskhub_storage_account.primary_connection_string
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
-  is_durable_function                    = true
   health_check_path                      = "/api/monitor/ready"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
@@ -46,12 +48,14 @@ module "func_settlement_reports_light_df" {
       role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
-}
+
+  depends_on = [module.taskhub_storage_account]
+}*/
 
 module "kvs_func_settlement_reports_light_df_base_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "func-settlement-reports-light-df-base-url"
-  value        = "https://${module.func_settlement_reports_light_df.default_hostname}"
+  value        = "https://func-light-df-settrepo-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
