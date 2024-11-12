@@ -1,4 +1,3 @@
-/*
 module "func_settlement_reports_light_df" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.0.0"
 
@@ -50,12 +49,12 @@ module "func_settlement_reports_light_df" {
   ]
 
   depends_on = [module.taskhub_storage_account]
-}*/
+}
 
 module "kvs_func_settlement_reports_light_df_base_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "func-settlement-reports-light-df-base-url"
-  value        = "https://func-light-df-settrepo-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net"
+  value        = "https://${module.func_settlement_reports_light_df.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
