@@ -22,7 +22,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
-
+from telemetry_logging import use_span
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
@@ -48,6 +48,7 @@ def map_from_dict(d: dict) -> Column:
     return F.create_map([F.lit(x) for x in itertools.chain(*d.items())])
 
 
+@use_span()
 def create_zip_file(
     dbutils: Any, report_id: str, save_path: str, files_to_zip: list[str]
 ) -> None:
@@ -104,6 +105,7 @@ def _get_csv_writer_options() -> dict[str, str]:
     return {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
 
 
+@use_span()
 def write_files(
     df: DataFrame,
     path: str,
@@ -124,7 +126,10 @@ def write_files(
         list[str]: Headers for the csv file.
     """
     if EphemeralColumns.chunk_index in partition_columns:
-        w = Window().orderBy(order_by)
+        partition_columns_without_chunk = [
+            col for col in partition_columns if col != EphemeralColumns.chunk_index
+        ]
+        w = Window().partitionBy(partition_columns_without_chunk).orderBy(order_by)
         chunk_index_col = F.ceil((F.row_number().over(w)) / F.lit(rows_per_file))
         df = df.withColumn(EphemeralColumns.chunk_index, chunk_index_col)
 
@@ -143,6 +148,7 @@ def write_files(
     return [c for c in df.columns if c not in partition_columns]
 
 
+@use_span()
 def get_new_files(
     spark_output_path: str,
     report_output_path: str,
@@ -207,6 +213,7 @@ def get_new_files(
     return new_files
 
 
+@use_span()
 def merge_files(
     dbutils: Any, new_files: list[TmpFile], headers: list[str]
 ) -> list[str]:

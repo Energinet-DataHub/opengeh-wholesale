@@ -5,10 +5,10 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession, DataFrame
-import test_factories.default_test_data_spec as default_data
-import test_factories.charge_link_periods_factory as charge_links_factory
-import test_factories.metering_point_periods_factory as metering_point_periods_factory
-import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
+import tests.test_factories.default_test_data_spec as default_data
+import tests.test_factories.charge_link_periods_factory as charge_links_factory
+import tests.test_factories.metering_point_periods_factory as metering_point_periods_factory
+import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -379,20 +379,14 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
     [
         pytest.param(
             GRID_ACCESS_PROVIDER_ID,
-            True,
-            True,
-            id="grid access provider with tax: include",
-        ),
-        pytest.param(
-            GRID_ACCESS_PROVIDER_ID,
             False,
-            False,
+            True,
             id="grid access provider without tax: include",
         ),
         pytest.param(
             OTHER_ID, False, False, id="other charge owner without tax: exclude"
         ),
-        pytest.param(OTHER_ID, True, False, id="other charge owner with tax: include"),
+        pytest.param(OTHER_ID, True, True, id="other charge owner with tax: include"),
     ],
 )
 def test_read_and_filter__when_grid_access_provider__returns_expected_charge_links(
@@ -436,7 +430,7 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter__when_grid_loss_responsible_and_energy_supplier_changes_on_metering_point__returns_expected_one_link_periods(
+def test_read_and_filter__when_energy_supplier_changes_on_metering_point__returns_one_link_period(
     spark: SparkSession,
 ) -> None:
     # Arrange

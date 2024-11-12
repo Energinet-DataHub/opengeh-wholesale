@@ -29,12 +29,14 @@ class FileNameFactory:
         if self.report_data_type in {
             ReportDataType.TimeSeriesHourly,
             ReportDataType.TimeSeriesQuarterly,
+            ReportDataType.MeteringPointPeriods,
             ReportDataType.ChargeLinks,
         }:
             return self._create_basis_data_filename(grid_area_code, chunk_index)
         if self.report_data_type in [
             ReportDataType.EnergyResults,
             ReportDataType.WholesaleResults,
+            ReportDataType.MonthlyAmounts,
         ]:
             return self._create_result_filename(grid_area_code, chunk_index)
         else:
@@ -100,12 +102,16 @@ class FileNameFactory:
             return "TSSD60"
         elif self.report_data_type == ReportDataType.TimeSeriesQuarterly:
             return "TSSD15"
+        elif self.report_data_type == ReportDataType.MeteringPointPeriods:
+            return "MDMP"
         elif self.report_data_type == ReportDataType.ChargeLinks:
             return "CHARGELINK"
         elif self.report_data_type == ReportDataType.EnergyResults:
             return "RESULTENERGY"
         elif self.report_data_type == ReportDataType.WholesaleResults:
             return "RESULTWHOLESALE"
+        elif self.report_data_type == ReportDataType.MonthlyAmounts:
+            return "RESULTMONTHLY"
         raise NotImplementedError(
             f"Report data type {self.report_data_type} is not supported."
         )

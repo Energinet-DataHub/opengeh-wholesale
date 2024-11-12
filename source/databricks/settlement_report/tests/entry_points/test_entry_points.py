@@ -42,6 +42,8 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
         "create_quarterly_time_series",
         "create_charge_links",
         "create_energy_results",
+        "create_monthly_amounts",
+        "create_wholesale_results",
         "create_zip",
     ],
 )

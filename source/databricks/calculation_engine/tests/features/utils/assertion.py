@@ -16,9 +16,9 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 
-from helpers.data_frame_utils import assert_dataframe_and_schema
+from tests.helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput, BasisDataOutput
-from testsession_configuration import FeatureTestsConfiguration
+from tests.testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
 

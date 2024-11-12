@@ -27,6 +27,12 @@ from settlement_report_job.wholesale.schemas.energy_v1 import (
 from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 import (
     latest_calculations_by_day_v1,
 )
+from settlement_report_job.wholesale.schemas.monthly_amounts_per_charge_v1 import (
+    monthly_amounts_per_charge_v1,
+)
+from settlement_report_job.wholesale.schemas.total_monthly_amounts_v1 import (
+    total_monthly_amounts_v1,
+)
 
 
 def write_latest_calculations_by_day_to_delta_table(
@@ -56,6 +62,36 @@ def write_amounts_per_charge_to_delta_table(
         table_name=database_definitions.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME,
         table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_VIEW_NAME}",
         schema=amounts_per_charge_v1,
+    )
+
+
+def write_monthly_amounts_per_charge_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_VIEW_NAME}",
+        schema=monthly_amounts_per_charge_v1,
+    )
+
+
+def write_total_monthly_amounts_to_delta_table(
+    spark: SparkSession,
+    df: DataFrame,
+    table_location: str,
+) -> None:
+    write_dataframe_to_table(
+        spark,
+        df=df,
+        database_name=database_definitions.WholesaleResultsDatabase.DATABASE_NAME,
+        table_name=database_definitions.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_VIEW_NAME}",
+        schema=total_monthly_amounts_v1,
     )
 
 

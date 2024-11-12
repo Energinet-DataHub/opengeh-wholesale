@@ -16,19 +16,26 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
+from settlement_report_job.domain.dataframe_utils.factory_filters import (
+    filter_by_charge_owner_and_tax_depending_on_market_role,
+    filter_by_calculation_id_by_grid_area,
+)
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter_from_view(
     energy_supplier_ids: list[str] | None,
     calculation_id_by_grid_area: dict[str, UUID],
     period_start: datetime,
     period_end: datetime,
+    requesting_actor_market_role: MarketRole,
+    requesting_actor_id: str,
     repository: WholesaleRepository,
 ) -> DataFrame:
     df = repository.read_amounts_per_charge().where(
@@ -41,17 +48,10 @@ def read_and_filter_from_view(
             F.col(DataProductColumnNames.energy_supplier_id).isin(energy_supplier_ids)
         )
 
-    if calculation_id_by_grid_area is not None:
-        calculation_id_by_grid_area_structs = [
-            F.struct(F.lit(grid_area_code), F.lit(str(calculation_id)))
-            for grid_area_code, calculation_id in calculation_id_by_grid_area.items()
-        ]
+    df = df.where(filter_by_calculation_id_by_grid_area(calculation_id_by_grid_area))
 
-        df = df.where(
-            F.struct(
-                F.col(DataProductColumnNames.grid_area_code),
-                F.col(DataProductColumnNames.calculation_id),
-            ).isin(calculation_id_by_grid_area_structs)
-        )
+    df = filter_by_charge_owner_and_tax_depending_on_market_role(
+        df, requesting_actor_market_role, requesting_actor_id
+    )
 
     return df

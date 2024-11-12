@@ -16,7 +16,7 @@ from uuid import UUID
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.dataframe_utils.system_operator_filter import (
@@ -32,10 +32,10 @@ from settlement_report_job.domain.dataframe_utils.factory_filters import (
     read_and_filter_by_latest_calculations,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
@@ -61,13 +61,13 @@ def read_and_filter_for_balance_fixing(
         period_start=period_start,
         period_end=period_end,
         time_zone=time_zone,
-        observation_time_column=DataProductColumnNames.observation_time,
+        time_column_name=DataProductColumnNames.observation_time,
     )
 
     return time_series_points
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter_for_wholesale(
     period_start: datetime,
     period_end: datetime,
@@ -103,7 +103,7 @@ def read_and_filter_for_wholesale(
     return time_series_points
 
 
-@logging.use_span()
+@use_span()
 def _read_from_view(
     period_start: datetime,
     period_end: datetime,

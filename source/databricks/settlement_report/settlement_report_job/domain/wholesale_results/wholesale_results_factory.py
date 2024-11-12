@@ -15,6 +15,7 @@
 from pyspark.sql import DataFrame
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from telemetry_logging import use_span
 
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
@@ -24,6 +25,7 @@ from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
 )
 
 
+@use_span()
 def create_wholesale_results(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
@@ -33,7 +35,30 @@ def create_wholesale_results(
         args.calculation_id_by_grid_area,
         args.period_start,
         args.period_end,
+        args.requesting_actor_market_role,
+        args.requesting_actor_id,
         repository,
     )
 
-    return prepare_for_csv(wholesale)
+    return prepare_for_csv(
+        wholesale,
+        _should_have_one_file_per_grid_area(args),
+    )
+
+
+def _should_have_one_file_per_grid_area(
+    args: SettlementReportArgs,
+) -> bool:
+    exactly_one_grid_area_from_calc_ids = (
+        args.calculation_id_by_grid_area is not None
+        and len(args.calculation_id_by_grid_area) == 1
+    )
+
+    exactly_one_grid_area_from_grid_area_codes = (
+        args.grid_area_codes is not None and len(args.grid_area_codes) == 1
+    )
+    return (
+        exactly_one_grid_area_from_calc_ids
+        or exactly_one_grid_area_from_grid_area_codes
+        or args.split_report_by_grid_area
+    )
