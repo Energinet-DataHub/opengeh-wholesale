@@ -1,9 +1,7 @@
 from typing import Any
 
-from databricks_cli.dbfs.api import FileInfo
 from pyspark.sql import SparkSession
 
-from conftest import file_path_finder
 from settlement_report_job.domain import csv_writer
 from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
