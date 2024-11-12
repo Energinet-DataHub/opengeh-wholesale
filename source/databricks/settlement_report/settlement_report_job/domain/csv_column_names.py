@@ -24,6 +24,7 @@ class CsvColumnNames:
     settlement_method = "SETTLEMENTMETHOD"
     time = "STARTDATETIME"
     to_grid_area_code = "TOGRIDAREAID"
+    is_tax = "TAXINDICATOR"
 
 
 class EphemeralColumns:
