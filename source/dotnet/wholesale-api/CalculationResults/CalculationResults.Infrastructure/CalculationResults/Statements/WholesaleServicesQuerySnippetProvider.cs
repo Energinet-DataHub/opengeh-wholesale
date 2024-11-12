@@ -128,11 +128,11 @@ public sealed class WholesaleServicesQuerySnippetProvider(
             {
                 sql += $"""
                       AND (
-                          -- if requested for actor is SystemOperator, then charge owner must be SystemOperator
+                          -- When requested for actor is SystemOperator, then charge owner must be SystemOperator
                           ('{_queryParameters.RequestedForActorNumber}' = '{SystemOperatorActorNumber}'
                            AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}')
                           OR
-                          -- if requested for actor is not SystemOperator, then charge owner must not be SystemOperator
+                          -- When requested for actor is not SystemOperator, then charge owner must not be SystemOperator
                           ('{_queryParameters.RequestedForActorNumber}' != '{SystemOperatorActorNumber}'
                            AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}
                            AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is not null')
@@ -164,12 +164,12 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         {
              sql += $"""
                      AND (
-                         -- if requested for actor is SystemOperator, then charge owner must be SystemOperator and it must not be a tax
+                         -- When the SystemOperator requests data, then only data which is not tax and where the charge owner is the SystemOperator is returned.
                          ('{_queryParameters.RequestedForActorNumber}' = '{SystemOperatorActorNumber}'
                           AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
                           AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false)
                          OR
-                         -- if requested for actor is not SystemOperator, then charge owner must not be SystemOperator or it must be a tax
+                         -- When requested for actor is not SystemOperator, then charge owner must not be SystemOperator or it must be a tax
                          ('{_queryParameters.RequestedForActorNumber}' != '{SystemOperatorActorNumber}'
                           AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}' 
                             OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true))
