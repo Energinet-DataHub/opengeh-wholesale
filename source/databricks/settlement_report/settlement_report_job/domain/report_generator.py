@@ -2,7 +2,7 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
-from settlement_report_job.domain import csv_writer
+from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
 )
