@@ -519,7 +519,7 @@ public class WholesaleServicesQueriesCsvTests
                     ("804", "5790000701278", oldGridAreaOwner, ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
-                    // Results for the grid area owner
+                    // Results for the new grid area owner
                     ("804", "5790001687137", newGridAreaOwner, ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                 ]);
         }
@@ -587,7 +587,7 @@ public class WholesaleServicesQueriesCsvTests
                     // Results for the old grid area owner
                     ("804", "5790001687137", oldGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790000701278", oldGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
-                    // Results for the grid area owner
+                    // Results for the new grid area owner
                     ("804", "5790000701278", newGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                 ]);
         }
