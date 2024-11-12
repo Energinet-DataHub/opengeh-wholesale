@@ -123,5 +123,5 @@ def _order_by_monthly_amounts(requesting_actor_market_role: MarketRole) -> list[
         MarketRole.SYSTEM_OPERATOR,
     ]:
         order_by_columns.insert(2, CsvColumnNames.charge_owner_id)
-        
+
     return order_by_columns
