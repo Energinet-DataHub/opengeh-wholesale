@@ -600,7 +600,7 @@ public class WholesaleServicesQueriesCsvTests
                 EnergySupplierId: null,
                 ChargeOwnerId: null,
                 ChargeTypes: [],
-                CalculationType: null, // This is how we denote 'latest correction'
+                CalculationType: null,
                 Period: totalPeriod,
                 RequestedForEnergySupplier: false,
                 RequestedForActorNumber: syoChargeOwner);
@@ -609,7 +609,7 @@ public class WholesaleServicesQueriesCsvTests
             var actual = await Sut.GetAsync(parameters).ToListAsync();
 
             using var assertionScope = new AssertionScope();
-            // All result to System operator where system operator is charge
+            // All result to System operator where system operator is charge owner
             actual.All(x => x.ChargeOwnerId == syoChargeOwner).Should().BeTrue();
             actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
                     ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
