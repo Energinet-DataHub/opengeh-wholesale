@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
-from settlement_report_job.domain.report_naming_convention import (
+from settlement_report_job.domain.utils.report_naming_convention import (
     METERING_POINT_TYPES,
     CHARGE_TYPES,
 )
