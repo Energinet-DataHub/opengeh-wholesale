@@ -16,7 +16,7 @@ from settlement_report_job.domain import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
 import pyspark.sql.functions as F
-from settlement_report_job.domain.market_role import (
+from settlement_report_job.domain.utils.market_role import (
     MarketRole,
 )
 from settlement_report_job.domain.energy_results.prepare_for_csv import (
@@ -32,10 +32,10 @@ from tests.dbutils_fixture import DBUtilsFixture
 from functools import reduce
 import pytest
 
-from settlement_report_job.domain.order_by_columns import get_order_by_columns
-from settlement_report_job.domain.report_data_type import ReportDataType
+from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
 import tests.test_factories.time_series_csv_factory as time_series_factory
 import tests.test_factories.energy_factory as energy_factory
 from settlement_report_job.domain.csv_column_names import CsvColumnNames

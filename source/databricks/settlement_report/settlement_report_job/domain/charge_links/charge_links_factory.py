@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.charge_links.read_and_filter import (
     read_and_filter,
 )

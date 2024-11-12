@@ -16,20 +16,19 @@ import os
 import sys
 from argparse import Namespace
 from collections.abc import Callable
-from typing import Any
 
 from opentelemetry.trace import SpanKind
 
 import telemetry_logging.logging_configuration as config
 from telemetry_logging.span_recording import span_record_exception
 from settlement_report_job.domain.report_generator import ReportGenerator
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.settlement_report_job_args import (
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_job_args import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
-from settlement_report_job.utils import get_dbutils
+from settlement_report_job.infrastructure.utils import get_dbutils
 
 
 # The start_x() methods should only have its name updated in correspondence with the

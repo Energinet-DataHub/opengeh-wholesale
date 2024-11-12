@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
 
 
 def should_have_one_file_per_grid_area(

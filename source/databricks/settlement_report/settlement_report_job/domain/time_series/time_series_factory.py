@@ -17,7 +17,7 @@ from uuid import UUID
 from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.time_series.prepare_for_csv import (
     prepare_for_csv,

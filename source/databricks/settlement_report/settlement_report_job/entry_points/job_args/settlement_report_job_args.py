@@ -19,18 +19,18 @@ from argparse import Namespace
 import configargparse
 from configargparse import argparse
 
-from settlement_report_job.infrastructure.args_helper import (
+from settlement_report_job.entry_points.job_args.args_helper import (
     valid_date,
     valid_energy_supplier_ids,
 )
-from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.infrastructure.paths import (
     get_settlement_reports_output_path,
 )
 from telemetry_logging import Logger, logging_configuration
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-import settlement_report_job.infrastructure.environment_variables as env_vars
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+import settlement_report_job.entry_points.job_args.environment_variables as env_vars
 
 
 def parse_command_line_arguments() -> Namespace:

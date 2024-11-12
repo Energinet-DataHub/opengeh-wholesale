@@ -10,7 +10,7 @@ import tests.test_factories.charge_link_periods_factory as charge_links_factory
 import tests.test_factories.metering_point_periods_factory as metering_point_periods_factory
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 

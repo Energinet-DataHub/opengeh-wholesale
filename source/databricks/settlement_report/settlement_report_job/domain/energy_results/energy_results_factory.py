@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
 
 
 from settlement_report_job.domain.energy_results.read_and_filter import (
@@ -24,7 +24,7 @@ from settlement_report_job.domain.energy_results.read_and_filter import (
 from settlement_report_job.domain.energy_results.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.domain.settlement_report_args_utils import (
+from settlement_report_job.domain.utils.settlement_report_args_utils import (
     should_have_one_file_per_grid_area,
 )
 

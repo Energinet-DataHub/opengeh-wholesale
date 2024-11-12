@@ -2,12 +2,12 @@ from datetime import datetime
 from uuid import UUID
 from pyspark.sql import DataFrame, Column, functions as F
 
-from telemetry_logging import Logger, use_span
+from telemetry_logging import Logger
 from settlement_report_job.domain.csv_column_names import EphemeralColumns
-from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
+from settlement_report_job.domain.utils.get_start_of_day import (
     get_start_of_day,
 )
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.repository import (
     WholesaleRepository,

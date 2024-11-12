@@ -12,7 +12,7 @@ import test_factories.charge_price_information_periods_factory as charge_price_i
 from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesale import (
     read_and_filter,
 )
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from utils import Dates as d
 

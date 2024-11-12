@@ -17,10 +17,10 @@ from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
 
-from settlement_report_job.domain.dataframe_utils.factory_filters import (
+from settlement_report_job.domain.utils.factory_filters import (
     read_and_filter_by_latest_calculations,
 )
-from settlement_report_job.domain.dataframe_utils.merge_periods import (
+from settlement_report_job.utils import (
     merge_connected_periods,
 )
 from settlement_report_job.domain.metering_point_periods.clamp_period import (

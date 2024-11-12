@@ -18,13 +18,11 @@ from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
 
-from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
-    join_metering_points_periods_and_charge_links_periods,
-)
-from settlement_report_job.domain.dataframe_utils.merge_periods import (
+from settlement_report_job.domain.utils import join_metering_points_periods_and_charge_links_periods
+from settlement_report_job.utils import (
     merge_connected_periods,
 )
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.metering_point_periods.clamp_period import (
     clamp_to_selected_period,
 )

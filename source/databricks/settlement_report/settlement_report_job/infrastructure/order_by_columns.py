@@ -1,7 +1,7 @@
 from pyspark.sql import functions as F
 
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_data_type import ReportDataType
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.domain.csv_column_names import CsvColumnNames
 
 

@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pyspark.sql import SparkSession, functions as F
 
-from settlement_report_job.domain.dataframe_utils.merge_periods import (
+from settlement_report_job.utils import (
     merge_connected_periods,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames

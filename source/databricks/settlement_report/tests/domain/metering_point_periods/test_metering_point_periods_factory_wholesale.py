@@ -9,7 +9,7 @@ import test_factories.charge_price_information_periods_factory as input_charge_p
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods,
 )
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
 from settlement_report_job.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     SettlementMethodDataProductValue,

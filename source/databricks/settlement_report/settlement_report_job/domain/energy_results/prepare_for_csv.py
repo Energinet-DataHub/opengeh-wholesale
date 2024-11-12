@@ -19,8 +19,8 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.utils import (
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.infrastructure.utils import (
     map_from_dict,
 )
 from settlement_report_job.wholesale.column_names import DataProductColumnNames

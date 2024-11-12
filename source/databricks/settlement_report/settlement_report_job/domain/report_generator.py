@@ -9,10 +9,10 @@ from settlement_report_job.domain.charge_links.charge_links_factory import (
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods,
 )
-from settlement_report_job.domain.order_by_columns import get_order_by_columns
+from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.report_data_type import ReportDataType
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
 from settlement_report_job.domain.monthly_amounts.monthly_amounts_factory import (
     create_monthly_amounts,
 )
@@ -27,15 +27,15 @@ from settlement_report_job.domain.task_type import TaskType
 from settlement_report_job.domain.wholesale_results.wholesale_results_factory import (
     create_wholesale_results,
 )
-from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
-from settlement_report_job.utils import create_zip_file
+from settlement_report_job.infrastructure.utils import create_zip_file
 from telemetry_logging import Logger, use_span
 from settlement_report_job.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 
 
 class ReportGenerator:
