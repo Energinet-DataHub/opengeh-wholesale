@@ -25,7 +25,7 @@ from settlement_report_job.domain.energy_results.prepare_for_csv import (
     prepare_for_csv,
 )
 from settlement_report_job.domain.settlement_report_args_utils import (
-    should_have_one_file_per_grid_area,
+    should_have_result_file_per_grid_area,
 )
 
 
@@ -37,6 +37,6 @@ def create_energy_results(
 
     return prepare_for_csv(
         energy,
-        should_have_one_file_per_grid_area(args),
+        should_have_result_file_per_grid_area(args),
         args.requesting_actor_market_role,
     )
