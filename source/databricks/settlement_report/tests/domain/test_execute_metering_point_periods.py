@@ -230,10 +230,9 @@ def test_execute_metering_point_periods__when_balance_fixing__returns_expected(
     args.energy_supplier_ids = None
     start_time = get_start_date(args.period_start)
     end_time = get_end_date(args.period_end)
-    grid_area_codes = list(args.calculation_id_by_grid_area.keys())
     expected_file_names = [
-        f"MDMP_{grid_area_codes[0]}_{start_time}_{end_time}.csv",
-        f"MDMP_{grid_area_codes[1]}_{start_time}_{end_time}.csv",
+        f"MDMP_{args.grid_area_codes[0]}_{start_time}_{end_time}.csv",
+        f"MDMP_{args.grid_area_codes[1]}_{start_time}_{end_time}.csv",
     ]
     expected_columns = _get_expected_columns(args.requesting_actor_market_role)
     report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
