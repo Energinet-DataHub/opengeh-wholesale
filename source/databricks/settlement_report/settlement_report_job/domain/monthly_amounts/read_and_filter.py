@@ -16,8 +16,10 @@ from pyspark.sql.functions import lit, col
 
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )

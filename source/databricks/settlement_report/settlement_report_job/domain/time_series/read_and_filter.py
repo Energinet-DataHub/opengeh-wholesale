@@ -18,12 +18,14 @@ from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.domain.utils.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.utils.factory_filters import (

@@ -24,12 +24,14 @@ from settlement_report_job.utils import (
     merge_connected_periods,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
     read_charge_link_periods,
     read_metering_point_periods_by_calculation_ids,
 )
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 logger = Logger(__name__)
 

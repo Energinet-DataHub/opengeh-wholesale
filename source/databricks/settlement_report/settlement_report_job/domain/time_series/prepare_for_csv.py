@@ -20,15 +20,17 @@ from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.utils.report_naming_convention import (
     METERING_POINT_TYPES,
 )
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
 from settlement_report_job.infrastructure.utils import (
     map_from_dict,
 )
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
-from settlement_report_job.infrastructure.wholesale import (
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
 

@@ -13,7 +13,9 @@ from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesa
     read_and_filter,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 from utils import Dates as d
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE

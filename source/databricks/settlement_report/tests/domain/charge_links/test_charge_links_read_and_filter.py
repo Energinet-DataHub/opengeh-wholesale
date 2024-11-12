@@ -11,7 +11,9 @@ import tests.test_factories.metering_point_periods_factory as metering_point_per
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE

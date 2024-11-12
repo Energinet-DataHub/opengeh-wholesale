@@ -6,7 +6,9 @@ from pyspark.sql import SparkSession, DataFrame
 from settlement_report_job.infrastructure.wholesale import (
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 from settlement_report_job.infrastructure.wholesale.schemas.latest_calculations_by_day_v1 import (
     latest_calculations_by_day_v1,
 )

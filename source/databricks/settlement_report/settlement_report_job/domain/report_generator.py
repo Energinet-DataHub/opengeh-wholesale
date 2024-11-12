@@ -10,7 +10,7 @@ from settlement_report_job.domain.metering_point_periods.metering_point_periods_
     create_metering_point_periods,
 )
 from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
-from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,

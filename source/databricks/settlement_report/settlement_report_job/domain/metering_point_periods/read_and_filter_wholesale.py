@@ -21,15 +21,15 @@ from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils import (
     join_metering_points_periods_and_charge_links_periods,
 )
-from settlement_report_job.utils import (
+from settlement_report_job.domain.utils.merge_periods import (
     merge_connected_periods,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.metering_point_periods.clamp_period import (
     clamp_to_selected_period,
 )
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.repository_filtering import (
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.repository_filtering import (
     read_metering_point_periods_by_calculation_ids,
     read_charge_link_periods,
 )

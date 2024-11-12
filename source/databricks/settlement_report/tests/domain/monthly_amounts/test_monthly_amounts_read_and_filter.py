@@ -17,7 +17,9 @@ from settlement_report_job.domain.monthly_amounts.read_and_filter import (
     _filter_monthly_amounts_per_charge,
     read_and_filter_from_view,
 )
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE

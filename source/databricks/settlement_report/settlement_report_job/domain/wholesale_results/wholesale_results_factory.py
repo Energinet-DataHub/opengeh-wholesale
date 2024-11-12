@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from settlement_report_job.domain.repository import WholesaleRepository
+from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )

@@ -18,7 +18,9 @@ from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
-from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 from tests.test_factories import latest_calculations_factory
 from settlement_report_job.infrastructure.wholesale import (
     MeteringPointResolutionDataProductValue,
