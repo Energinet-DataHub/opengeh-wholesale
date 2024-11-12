@@ -224,11 +224,9 @@ def test_execute_metering_point_periods__when_balance_fixing__returns_expected(
     dbutils: DBUtilsFixture,
     standard_balance_fixing_scenario_args: SettlementReportArgs,
     standard_balance_fixing_scenario_data_written_to_delta: None,
-    market_role: MarketRole,
 ):
     # Arrange
     args = standard_balance_fixing_scenario_args
-    args.requesting_actor_market_role = market_role
     args.energy_supplier_ids = None
     start_time = get_start_date(args.period_start)
     end_time = get_end_date(args.period_end)
