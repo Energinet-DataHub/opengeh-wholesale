@@ -19,14 +19,16 @@ from pyspark.sql import DataFrame, functions as F
 from settlement_report_job.domain.utils.factory_filters import (
     filter_by_charge_owner_and_tax_depending_on_market_role,
 )
-from settlement_report_job.domain.utils import join_metering_points_periods_and_charge_links_periods
+from settlement_report_job.domain.utils import (
+    join_metering_points_periods_and_charge_links_periods,
+)
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.repository_filtering import (
     read_metering_point_periods_by_calculation_ids,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
 
 logger = Logger(__name__)
 

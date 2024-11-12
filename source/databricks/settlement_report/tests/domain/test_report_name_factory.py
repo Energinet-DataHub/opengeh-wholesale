@@ -10,7 +10,9 @@ from settlement_report_job.domain.report_name_factory import (
     FileNameFactory,
     ReportDataType,
 )
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 
 
 @pytest.fixture(scope="function")

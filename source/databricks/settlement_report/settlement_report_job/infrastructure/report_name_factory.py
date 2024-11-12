@@ -3,7 +3,9 @@ from zoneinfo import ZoneInfo
 
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 
 
 class MarketRoleInFileName:

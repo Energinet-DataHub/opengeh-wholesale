@@ -7,7 +7,7 @@ from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import (
     MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
 )

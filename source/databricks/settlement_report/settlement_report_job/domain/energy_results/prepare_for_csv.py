@@ -23,7 +23,7 @@ from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.infrastructure.utils import (
     map_from_dict,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
 import settlement_report_job.domain.report_naming_convention as market_naming
 
 log = Logger(__name__)

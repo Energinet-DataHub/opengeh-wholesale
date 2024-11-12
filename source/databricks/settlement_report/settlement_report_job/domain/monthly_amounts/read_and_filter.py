@@ -17,8 +17,10 @@ from pyspark.sql.functions import lit, col
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from settlement_report_job.domain.utils.factory_filters import (
     filter_by_calculation_id_by_grid_area,
     filter_by_charge_owner_and_tax_depending_on_market_role,

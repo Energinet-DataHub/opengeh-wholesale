@@ -9,7 +9,7 @@ import tests.test_factories.charge_price_information_periods_factory as charge_p
 from settlement_report_job.domain.utils.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
 
 
 @pytest.mark.parametrize(

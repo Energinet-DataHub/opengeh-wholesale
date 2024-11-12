@@ -23,7 +23,9 @@ from pyspark.sql import SparkSession
 from tests.dbutils_fixture import DBUtilsFixture
 from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 
 
 from tests.data_seeding import (

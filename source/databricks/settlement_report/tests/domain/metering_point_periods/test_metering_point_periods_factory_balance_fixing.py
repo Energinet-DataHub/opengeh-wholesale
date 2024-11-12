@@ -7,7 +7,9 @@ from settlement_report_job.domain.csv_column_names import CsvColumnNames
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods,
 )
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from test_factories import latest_calculations_factory
 from utils import Dates as d
 

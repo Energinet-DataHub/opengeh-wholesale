@@ -6,7 +6,7 @@ from pyspark.sql import SparkSession, functions as F
 from settlement_report_job.utils import (
     merge_connected_periods,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
 
 JAN_1ST = datetime(2023, 12, 31, 23)
 JAN_2ND = datetime(2024, 1, 1, 23)

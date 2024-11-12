@@ -26,7 +26,7 @@ from settlement_report_job.domain.time_series.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import (
     MeteringPointResolutionDataProductValue,
 )
 

@@ -8,11 +8,11 @@ from settlement_report_job.domain.utils.get_start_of_day import (
     get_start_of_day,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.repository import (
     WholesaleRepository,
 )
-from settlement_report_job.wholesale.data_values.calculation_type import (
+from settlement_report_job.infrastructure.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
 

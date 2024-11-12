@@ -25,7 +25,7 @@ from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.infrastructure.utils import map_from_dict
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
 
 log = Logger(__name__)
 

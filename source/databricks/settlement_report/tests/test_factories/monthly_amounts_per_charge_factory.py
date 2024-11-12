@@ -5,12 +5,12 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 
 
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
 )
-from settlement_report_job.wholesale.schemas.monthly_amounts_per_charge_v1 import (
+from settlement_report_job.infrastructure.wholesale import (
     monthly_amounts_per_charge_v1,
 )
 

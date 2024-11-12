@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import (
     MeteringPointTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.calculation_type import (
+from settlement_report_job.infrastructure.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.settlement_method import (
+from settlement_report_job.infrastructure.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
 from test_factories.charge_price_information_periods_factory import (

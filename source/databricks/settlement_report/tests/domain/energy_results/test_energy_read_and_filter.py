@@ -5,8 +5,10 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession, functions as F
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from settlement_report_job.infrastructure.wholesale import (
     CalculationTypeDataProductValue,
 )
 from tests.test_factories import latest_calculations_factory
@@ -17,7 +19,7 @@ from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.energy_results.read_and_filter import (
     read_and_filter_from_view,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE

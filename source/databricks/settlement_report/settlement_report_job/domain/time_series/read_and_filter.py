@@ -22,8 +22,8 @@ from settlement_report_job.domain.repository import WholesaleRepository
 from settlement_report_job.domain.utils.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import (
     MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.domain.utils.factory_filters import (

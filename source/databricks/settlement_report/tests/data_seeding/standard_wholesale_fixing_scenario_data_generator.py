@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,

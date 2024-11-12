@@ -9,7 +9,9 @@ from data_seeding.standard_wholesale_fixing_scenario_data_generator import (
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
 import settlement_report_job.domain.report_generator as report_generator
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )

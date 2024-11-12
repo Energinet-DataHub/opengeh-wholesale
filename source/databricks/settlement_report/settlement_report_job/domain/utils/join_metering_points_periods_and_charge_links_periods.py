@@ -1,6 +1,6 @@
 from pyspark.sql import functions as F, DataFrame
 
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import DataProductColumnNames
 
 
 def join_metering_points_periods_and_charge_links_periods(

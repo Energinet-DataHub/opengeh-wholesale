@@ -15,8 +15,8 @@ from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale import (
     MeteringPointResolutionDataProductValue,
 )
 

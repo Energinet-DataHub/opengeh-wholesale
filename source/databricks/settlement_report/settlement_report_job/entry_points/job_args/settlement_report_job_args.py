@@ -29,7 +29,9 @@ from settlement_report_job.infrastructure.paths import (
 )
 from telemetry_logging import Logger, logging_configuration
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 import settlement_report_job.entry_points.job_args.environment_variables as env_vars
 
 
