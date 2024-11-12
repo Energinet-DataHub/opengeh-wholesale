@@ -4,12 +4,12 @@ module "mssql_database_application_access" {
   sql_server_name = module.mssqldb_edi.server_name
   database_name   = module.mssqldb_edi.name
   application_hosts_names = [
-    module.func_receiver.name,
+    # module.func_receiver.name,
     module.b2c_web_api.name,
     module.b2c_web_api.slot_name,
   ]
   depends_on = [
-    module.func_receiver.name,
+    # module.func_receiver.name,
     module.b2c_web_api.name,
   ]
 }
