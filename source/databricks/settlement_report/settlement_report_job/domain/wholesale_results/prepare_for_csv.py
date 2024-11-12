@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
@@ -25,7 +25,7 @@ from settlement_report_job.infrastructure.utils import (
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
-import settlement_report_job.domain.report_naming_convention as market_naming
+import settlement_report_job.domain.utils.report_naming_convention as market_naming
 
 log = Logger(__name__)
 
