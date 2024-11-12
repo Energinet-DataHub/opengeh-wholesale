@@ -117,7 +117,7 @@ def _order_by_monthly_amounts(requesting_actor_market_role: MarketRole) -> list[
         CsvColumnNames.charge_code,
         CsvColumnNames.resolution,
     ]
-    
+
     if requesting_actor_market_role in [
         MarketRole.GRID_ACCESS_PROVIDER,
         MarketRole.SYSTEM_OPERATOR,
