@@ -214,7 +214,10 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert actual_files is None or len(actual_files) == 0
 
 
