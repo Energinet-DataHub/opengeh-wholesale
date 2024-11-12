@@ -24,4 +24,3 @@ databricks_contributor_dataplane_group = {
   name = "SEC-A-Datahub-Prod-001-Contributor-Dataplane"
 }
 log_retention_in_days = 90
-apim_maintenance_mode = true

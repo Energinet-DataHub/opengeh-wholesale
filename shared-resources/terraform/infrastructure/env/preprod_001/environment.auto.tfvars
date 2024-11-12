@@ -22,4 +22,4 @@ databricks_contributor_dataplane_group = {
   id   = "654194577919190"
   name = "SEC-A-Datahub-PreProd-001-Contributor-Dataplane"
 }
-apim_maintenance_mode = true
+
