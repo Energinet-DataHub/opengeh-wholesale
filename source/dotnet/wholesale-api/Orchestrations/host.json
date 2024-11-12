@@ -2,7 +2,10 @@
   "version": "2.0",
   "extensions": {
     "durableTask": {
-      "hubName": "%OrchestrationsTaskHubName%"
+      "hubName": "%OrchestrationsTaskHubName%",
+      "storageProvider": {
+        "connectionStringName": "OrchestrationsStorageConnectionString"
+      }
     }
   },
   "logging": {
