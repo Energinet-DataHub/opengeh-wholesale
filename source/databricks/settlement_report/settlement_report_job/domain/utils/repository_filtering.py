@@ -9,7 +9,9 @@ from settlement_report_job.domain.utils.factory_filters import (
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.infrastructure.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 
 def read_metering_point_periods_by_calculation_ids(

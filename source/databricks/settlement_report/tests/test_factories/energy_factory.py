@@ -11,7 +11,9 @@ from settlement_report_job.infrastructure.wholesale import (
     MeteringPointResolutionDataProductValue,
 )
 from settlement_report_job.infrastructure.wholesale.schemas.energy_v1 import energy_v1
-from settlement_report_job.infrastructure.wholesale.schemas.energy_per_es_v1 import energy_per_es_v1
+from settlement_report_job.infrastructure.wholesale.schemas.energy_per_es_v1 import (
+    energy_per_es_v1,
+)
 
 
 @dataclass

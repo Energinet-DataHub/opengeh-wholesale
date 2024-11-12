@@ -9,7 +9,9 @@ from settlement_report_job.infrastructure.wholesale import (
     ChargeTypeDataProductValue,
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale.schemas.charge_prices_v1 import charge_prices_v1
+from settlement_report_job.infrastructure.wholesale.schemas.charge_prices_v1 import (
+    charge_prices_v1,
+)
 
 
 @dataclass

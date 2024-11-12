@@ -1,6 +1,8 @@
 from pyspark.sql import DataFrame, functions as F, Window
 
-from settlement_report_job.infrastructure.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 
 def merge_connected_periods(df: DataFrame) -> DataFrame:

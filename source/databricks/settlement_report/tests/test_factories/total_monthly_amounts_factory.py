@@ -6,7 +6,9 @@ from pyspark.sql import SparkSession, DataFrame
 
 
 from settlement_report_job.infrastructure.wholesale import DataProductColumnNames
-from settlement_report_job.infrastructure.wholesale import CalculationTypeDataProductValue
+from settlement_report_job.infrastructure.wholesale import (
+    CalculationTypeDataProductValue,
+)
 from settlement_report_job.infrastructure.wholesale.schemas.total_monthly_amounts_v1 import (
     total_monthly_amounts_v1,
 )
