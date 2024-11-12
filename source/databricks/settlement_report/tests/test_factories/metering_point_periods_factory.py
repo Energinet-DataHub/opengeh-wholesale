@@ -14,7 +14,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
 from settlement_report_job.infrastructure.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.schemas import (
     metering_point_periods_v1,
 )
 

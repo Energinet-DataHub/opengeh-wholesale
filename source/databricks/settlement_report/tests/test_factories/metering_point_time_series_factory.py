@@ -12,7 +12,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.schemas import (
     metering_point_time_series_v1,
 )
 

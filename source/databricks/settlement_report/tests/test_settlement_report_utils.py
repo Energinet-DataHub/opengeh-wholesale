@@ -10,7 +10,7 @@ from settlement_report_job.infrastructure.utils import (
     map_from_dict,
     write_files,
 )
-import settlement_report_job.domain.report_naming_convention as market_naming
+import settlement_report_job.domain.utils.report_naming_convention as market_naming
 from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeTypeDataProductValue,
 )
