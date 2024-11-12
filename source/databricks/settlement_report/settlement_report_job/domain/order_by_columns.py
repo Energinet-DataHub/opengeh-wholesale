@@ -109,12 +109,16 @@ def _order_by_wholesale_results() -> list:
     ]
 
 
-def _order_by_monthly_amounts() -> list:
-    return [
+def _order_by_monthly_amounts(existing_column_list: list[str]) -> list[str]:
+    order_by_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.charge_owner_id,
         CsvColumnNames.charge_type,
         CsvColumnNames.charge_code,
         CsvColumnNames.resolution,
     ]
+    
+    if CsvColumnNames.charge_owner_id in existing_column_list:
+        order_by_columns.insert(2, CsvColumnNames.charge_owner_id)
+        
+    return order_by_columns
