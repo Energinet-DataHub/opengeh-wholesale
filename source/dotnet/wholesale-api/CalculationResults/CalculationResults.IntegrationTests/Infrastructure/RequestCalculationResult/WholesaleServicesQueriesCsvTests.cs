@@ -469,6 +469,8 @@ public class WholesaleServicesQueriesCsvTests
                     ("804", "5790000701278", "8100000000047", ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // from previous charge owner
+                    ("804", "5790001687137", "8100000000007", ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                 ]);
         }
 
@@ -517,14 +519,16 @@ public class WholesaleServicesQueriesCsvTests
                     ("804", "5790000701278", oldGridAreaOwner, ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // Results for the grid area owner
+                    ("804", "5790001687137", newGridAreaOwner, ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                 ]);
         }
 
         [Fact]
         public async Task
-            Given_SystemOperatorRequestsWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsSyoAsChargeOwnerAndIsNotTaxCharges()
+            Given_SystemOperatorRequestsWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsSystemOperatorIsChargeOwnerAndIsNotTaxCharges()
         {
-            var syoChargeOwner = "5790000432752";
+            var systemOperator = "5790000432752";
             var totalPeriod = new Period(
                 Instant.FromUtc(2021, 12, 31, 23, 0),
                 Instant.FromUtc(2022, 1, 31, 23, 0));
@@ -538,14 +542,14 @@ public class WholesaleServicesQueriesCsvTests
                 CalculationType: null, // This is how we denote 'latest correction'
                 Period: totalPeriod,
                 RequestedForEnergySupplier: false,
-                RequestedForActorNumber: syoChargeOwner);
+                RequestedForActorNumber: systemOperator);
 
             // Act
             var actual = await Sut.GetAsync(parameters).ToListAsync();
 
             using var assertionScope = new AssertionScope();
             actual.Count.Should().Be(6);
-            actual.All(x => x.ChargeOwnerId == syoChargeOwner).Should().BeTrue();
+            actual.All(x => x.ChargeOwnerId == systemOperator).Should().BeTrue();
         }
 
         [Fact]
@@ -580,8 +584,11 @@ public class WholesaleServicesQueriesCsvTests
                     ats.Version, ats.TimeSeriesPoints.Count))
                 .Should()
                 .BeEquivalentTo([
+                    // Results for the old grid area owner
                     ("804", "5790001687137", oldGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790000701278", oldGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // Results for the grid area owner
+                    ("804", "5790000701278", newGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                 ]);
         }
 
