@@ -2,7 +2,7 @@ from pyspark.sql import functions as F
 
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
-from settlement_report_job.domain.csv_column_names import CsvColumnNames
+from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 
 
 def get_order_by_columns(

@@ -17,7 +17,7 @@ from pyspark.sql import DataFrame, functions as F, Window
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils import get_start_of_day
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.report_naming_convention import (
+from settlement_report_job.domain.utils.report_naming_convention import (
     METERING_POINT_TYPES,
 )
 from settlement_report_job.domain.csv_column_names import (

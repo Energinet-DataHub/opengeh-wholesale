@@ -18,11 +18,11 @@ from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
-from settlement_report_job.domain.report_name_factory import FileNameFactory
+from settlement_report_job.infrastructure.report_name_factory import FileNameFactory
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.domain.csv_column_names import EphemeralColumns
+from settlement_report_job.domain.utils.csv_column_names import EphemeralColumns
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from settlement_report_job.infrastructure.utils import (
     write_files,
