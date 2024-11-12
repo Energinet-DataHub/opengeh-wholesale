@@ -80,7 +80,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.MeteringPointPeriods,
+        report_data_type=ReportDataType.WholesaleResults,
         args=args,
     )
     assert_file_names_and_columns(
@@ -146,7 +146,7 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.MeteringPointPeriods,
+        report_data_type=ReportDataType.WholesaleResults,
         args=args,
     )
     assert_file_names_and_columns(
@@ -221,7 +221,7 @@ def test_when_market_role_is(
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.MeteringPointPeriods,
+        report_data_type=ReportDataType.WholesaleResults,
         args=args,
     )
     assert_file_names_and_columns(
@@ -287,7 +287,7 @@ def test_when_market_role_is_grid_access_provider_return_correct_file_name(
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.MeteringPointPeriods,
+        report_data_type=ReportDataType.WholesaleResults,
         args=args,
     )
     assert_file_names_and_columns(
