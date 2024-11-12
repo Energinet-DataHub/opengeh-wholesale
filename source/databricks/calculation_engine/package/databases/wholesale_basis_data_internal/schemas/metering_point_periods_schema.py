@@ -21,6 +21,7 @@ from pyspark.sql.types import (
 
 from package.databases.table_column_names import TableColumnNames
 
+# This is the expected metering point periods schema for the metering point periods dataframe in basis data output.
 metering_point_periods_schema_uc = StructType(
     [
         StructField(TableColumnNames.calculation_id, StringType(), False),
@@ -33,8 +34,8 @@ metering_point_periods_schema_uc = StructType(
         StructField(TableColumnNames.to_grid_area_code, StringType(), True),
         StructField(TableColumnNames.parent_metering_point_id, StringType(), True),
         StructField(TableColumnNames.energy_supplier_id, StringType(), True),
-        StructField(TableColumnNames.balance_responsible_party_id, StringType(), True),
+        StructField(TableColumnNames.balance_responsible_id, StringType(), True),
         StructField(TableColumnNames.from_date, TimestampType(), False),
-        StructField(TableColumnNames.to_date, TimestampType(), False),
+        StructField(TableColumnNames.to_date, TimestampType(), True),
     ]
 )
