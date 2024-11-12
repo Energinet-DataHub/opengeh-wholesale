@@ -22,6 +22,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {
+    private const string SyoActorNumber = "5790000432752";
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
 
     public IWholesaleServicesDatabricksContract DatabricksContract { get; } = databricksContract;
@@ -145,14 +146,14 @@ public sealed class WholesaleServicesQuerySnippetProvider(
              sql += $"""
                      AND (
                          -- if requested for actor is SYO, then charge owner must be SYO
-                         ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
-                          AND '{_queryParameters.RequestedForActorNumber}' = '5790000432752')
+                         ('{_queryParameters.RequestedForActorNumber}' = '{SyoActorNumber}'
+                          AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
+                          AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false)
                          OR
-                         -- if requested for actor is not SYO, then charge owner must not be SYO
-                         ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '5790000432752'
-                          AND '{_queryParameters.RequestedForActorNumber}' != '5790000432752')
-                         OR
-                         {table}.{DatabricksContract.GetIsTaxColumnName()} = true
+                         -- if requested for actor is not SYO, then charge owner must not be SYO or it must be a tax
+                         ('{_queryParameters.RequestedForActorNumber}' != '{SyoActorNumber}'
+                          AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SyoActorNumber}' 
+                            OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true))
                      )
                      """;
         }

@@ -543,7 +543,7 @@ public class WholesaleServicesQueriesCsvTests
             var actual = await Sut.GetAsync(parameters).ToListAsync();
 
             using var assertionScope = new AssertionScope();
-            actual.Count.Should().Be(9);
+            actual.Count.Should().Be(6);
             actual.All(x => x.ChargeOwnerId == syoChargeOwner).Should().BeTrue();
         }
     }
