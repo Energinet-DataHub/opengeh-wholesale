@@ -16,12 +16,10 @@ from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.report_naming_convention import (
-    METERING_POINT_TYPES,
     CHARGE_TYPES,
 )
 from settlement_report_job.domain.csv_column_names import (
     CsvColumnNames,
-    EphemeralColumns,
 )
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
@@ -78,55 +76,17 @@ def prepare_for_csv(
         == ChargeResolutionDataProductValue.HOUR.value
     )
 
+    charge_prices_without_hourly_resolution = charge_prices.filter(
+        F.col(DataProductColumnNames.resolution)
+        != ChargeResolutionDataProductValue.HOUR.value
+    )
+
     for i in range(2, 26):
-        charge_prices = hourly_charge_prices.withColumn(
+        hourly_charge_prices = hourly_charge_prices.withColumn(
             f"ENERGYPRICE{i}",
             F.col("ENERGYPRICE1"),
         )
 
-    # CHARGETYPE
-    # CHARGEID
-    # CHARGEOWNER
-    # RESOLUTIONDURATION
-    # TAXINDICATOR
-    # STARTDATETIME
-    # ENERGYPRICE1
-    # ENERGYPRICE2
-    # ENERGYPRICE3
-    # ENERGYPRICE4
-    # ENERGYPRICE5
-    # ENERGYPRICE6
-    # ENERGYPRICE7
-    # ENERGYPRICE8
-    # ENERGYPRICE9
-    # ENERGYPRICE10
-    # ENERGYPRICE11
-    # ENERGYPRICE12
-    # ENERGYPRICE13
-    # ENERGYPRICE14
-    # ENERGYPRICE15
-    # ENERGYPRICE16
-    # ENERGYPRICE17
-    # ENERGYPRICE18
-    # ENERGYPRICE19
-    # ENERGYPRICE20
-    # ENERGYPRICE21
-    # ENERGYPRICE22
-    # ENERGYPRICE23
-    # ENERGYPRICE24
-    # ENERGYPRICE25
+    charge_prices = charge_prices_without_hourly_resolution.union(hourly_charge_prices)
+
     return charge_prices
-
-
-def _get_desired_quantity_column_count(
-    resolution: ChargeResolutionDataProductValue,
-) -> int:
-    if (
-        resolution == ChargeResolutionDataProductValue.DAY
-        or resolution == ChargeResolutionDataProductValue.MONTH
-    ):
-        return 1
-    elif resolution == ChargeResolutionDataProductValue.HOUR:
-        return 25
-    else:
-        raise ValueError(f"Unknown resolution: {resolution}")

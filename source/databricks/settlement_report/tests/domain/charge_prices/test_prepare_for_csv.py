@@ -13,8 +13,11 @@ import tests.test_factories.default_test_data_spec as default_data
 from settlement_report_job.domain.charge_prices.prepare_for_csv import prepare_for_csv
 from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
 from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     ChargeResolutionDataProductValue,
+    CalculationTypeDataProductValue,
+    ChargeTypeDataProductValue,
 )
 import tests.test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
@@ -62,17 +65,21 @@ def _get_repository_mock(
 
 
 @pytest.mark.parametrize(
-    "resolution",
+    "resolution, expected_energy_price",
     [
-        ChargeResolutionDataProductValue.HOUR,
-        ChargeResolutionDataProductValue.DAY,
-        ChargeResolutionDataProductValue.MONTH,
+        (ChargeResolutionDataProductValue.HOUR, Decimal("10.000")),
+        (ChargeResolutionDataProductValue.DAY, None),
+        (ChargeResolutionDataProductValue.MONTH, None),
     ],
 )
-def test_prepare_for_csv(
-    spark: SparkSession, resolution: ChargeResolutionDataProductValue
+def test_when_each_resolution_type_return_one_row(
+    spark: SparkSession,
+    resolution: ChargeResolutionDataProductValue,
+    expected_energy_price: Decimal | None,
 ) -> None:
     # Arrange
+    charge_price = Decimal("10.000")
+
     metering_point_periods = metering_point_periods_factory.create(
         spark,
         default_data.create_metering_point_periods_row(),
@@ -85,7 +92,7 @@ def test_prepare_for_csv(
 
     charge_prices = charge_prices_factory.create(
         spark,
-        default_data.create_charge_prices_row(),
+        default_data.create_charge_prices_row(charge_price=charge_price),
     )
 
     charge_price_information_periods = charge_price_information_periods_factory.create(
@@ -109,12 +116,32 @@ def test_prepare_for_csv(
         requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
         repository=mock_repository,
     )
-    charge_prices.show()
+
+    # or use this instead of the above code
+    # charge_prices = (
+    #     charge_prices_factory.create(
+    #         spark,
+    #         default_data.create_charge_prices_row(charge_price=charge_price),
+    #     )
+    #     .withColumn(
+    #         DataProductColumnNames.grid_area_code,
+    #         F.lit(default_data.DEFAULT_GRID_AREA_CODE),
+    #     )
+    #     .withColumn(DataProductColumnNames.is_tax, F.lit(False))
+    #     .withColumn(
+    #         DataProductColumnNames.resolution,
+    #         F.lit(resolution.value),
+    #     )
+    # )
 
     # Act
     result_df = prepare_for_csv(
         charge_prices=charge_prices,
     )
-    result_df.show()
+
     # Assert
     assert result_df.count() == 1
+    result = result_df.collect()[0]
+    assert result["ENERGYPRICE1"] == charge_price
+    for i in range(2, 26):
+        assert result[f"ENERGYPRICE{i}"] == expected_energy_price
