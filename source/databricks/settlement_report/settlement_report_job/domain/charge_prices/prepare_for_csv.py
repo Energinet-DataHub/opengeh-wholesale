@@ -18,7 +18,10 @@ from telemetry_logging import Logger, use_span
 
 from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 from settlement_report_job.domain.utils.get_start_of_day import get_start_of_day
-from settlement_report_job.domain.utils.report_naming_convention import CHARGE_TYPES
+from settlement_report_job.domain.utils.report_naming_convention import (
+    CHARGE_TYPES,
+    TAX_INDICATORS,
+)
 from settlement_report_job.infrastructure.utils import map_from_dict
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
@@ -79,7 +82,9 @@ def prepare_for_csv(
         ),
         F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
         F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
-        F.col(DataProductColumnNames.is_tax).alias(CsvColumnNames.is_tax),
+        map_from_dict(TAX_INDICATORS)[F.col(DataProductColumnNames.is_tax)].alias(
+            CsvColumnNames.is_tax
+        ),
         F.col(CsvColumnNames.time),
         *charge_price_column_names,
     )

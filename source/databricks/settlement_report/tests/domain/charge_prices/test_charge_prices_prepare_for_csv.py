@@ -10,6 +10,7 @@ from settlement_report_job.domain.charge_prices.prepare_for_csv import prepare_f
 
 
 import test_factories.charge_prices_factory as charge_prices_factory
+from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
@@ -90,7 +91,6 @@ def test_when_resolution_is_day_or_month_return_only_value_in_energy_price_1(
     result_df = prepare_for_csv(
         filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
     )
-    result_df.show()
 
     # Assert
     assert result_df.count() == 1
@@ -139,5 +139,46 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
     assert result_df.count() == 1
     result = result_df.collect()[0]
     for i in range(1, 25):
-        assert result[f"ENERGYPRICE{i}"] == default_data.DEFAULT_CHARGE_PRICE + i - 1
-    assert result["ENERGYPRICE25"] is None
+        assert (
+            result[f"{CsvColumnNames.energy_price}{i}"]
+            == default_data.DEFAULT_CHARGE_PRICE + i - 1
+        )
+    assert result[f"{CsvColumnNames.energy_price}25"] is None
+
+
+@pytest.mark.parametrize(
+    "is_tax, expected_tax_indicator",
+    [
+        (True, 1),
+        (False, 0),
+    ],
+)
+def test_tax_indicator_is_converted_correctly(
+    spark: SparkSession,
+    is_tax: bool,
+    expected_tax_indicator: int,
+) -> None:
+    # Arrange
+    filtered_charge_prices = (
+        charge_prices_factory.create(
+            spark,
+            default_data.create_charge_prices_row(),
+        )
+        .withColumn(
+            DataProductColumnNames.grid_area_code,
+            F.lit(default_data.DEFAULT_GRID_AREA_CODE),
+        )
+        .withColumn(DataProductColumnNames.is_tax, F.lit(is_tax))
+        .withColumn(
+            DataProductColumnNames.resolution,
+            F.lit(ChargeResolutionDataProductValue.DAY.value),
+        )
+    )
+
+    # Act
+    result_df = prepare_for_csv(
+        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert result_df.collect()[0][CsvColumnNames.is_tax] == expected_tax_indicator
