@@ -105,36 +105,19 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
 ) -> None:
     # Arrange
     hours_in_day = [JAN_1ST + timedelta(hours=i) for i in range(24)]
+    charge_price_rows = []
+    for i in range(24):
+        charge_price_rows.append(
+            default_data.create_charge_prices_row(
+                charge_time=hours_in_day[i],
+                charge_price=default_data.DEFAULT_CHARGE_PRICE + i,
+            )
+        )
 
     filtered_charge_prices = (
         charge_prices_factory.create(
             spark,
-            [
-                default_data.create_charge_prices_row(charge_time=hours_in_day[0]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[1]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[2]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[3]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[4]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[5]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[6]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[7]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[8]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[9]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[10]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[11]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[12]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[13]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[14]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[15]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[16]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[17]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[18]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[19]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[20]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[21]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[22]),
-                default_data.create_charge_prices_row(charge_time=hours_in_day[23]),
-            ],
+            charge_price_rows,
         )
         .withColumn(
             DataProductColumnNames.grid_area_code,
@@ -157,5 +140,5 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
     assert result_df.count() == 1
     result = result_df.collect()[0]
     for i in range(1, 25):
-        assert result[f"ENERGYPRICE{i}"] == default_data.DEFAULT_CHARGE_PRICE
+        assert result[f"ENERGYPRICE{i}"] == default_data.DEFAULT_CHARGE_PRICE + i - 1
     assert result["ENERGYPRICE25"] is None
