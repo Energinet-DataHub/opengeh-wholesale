@@ -192,3 +192,8 @@ variable "enable_audit_logs" {
   type        = bool
   description = "Should audit logs be enabled for the environment?"
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}
