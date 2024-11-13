@@ -52,6 +52,9 @@ def get_actual_files(
     report_data_type: ReportDataType, args: SettlementReportArgs
 ) -> list[str]:
     path = paths.get_report_output_path(args)
+    if not os.path.isdir(path):
+        return []
+
     return [
         f
         for f in os.listdir(path)
