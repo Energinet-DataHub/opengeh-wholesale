@@ -22,10 +22,12 @@ from unittest.mock import Mock, patch
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from settlement_report_job.domain.report_generator import ReportGenerator
-from settlement_report_job.entry_point import start_task_with_deps
-from settlement_report_job.infrastructure.settlement_report_job_args import (
+from settlement_report_job.entry_points.entry_point import start_task_with_deps
+from settlement_report_job.entry_points.job_args.settlement_report_job_args import (
     parse_job_arguments,
 )
 from tests.integration_test_configuration import IntegrationTestConfiguration
