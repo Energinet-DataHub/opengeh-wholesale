@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, functions as F
+from pyspark.sql import DataFrame, functions as F, Window
 
 from telemetry_logging import Logger, use_span
+
+from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
+    get_start_of_day,
+)
 from settlement_report_job.domain.report_naming_convention import (
     CHARGE_TYPES,
 )
@@ -23,17 +27,54 @@ from settlement_report_job.domain.csv_column_names import (
 )
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import ChargeResolutionDataProductValue
 
 log = Logger(__name__)
 
 
 @use_span()
 def prepare_for_csv(
-    charge_prices: DataFrame,
+    filtered_charge_prices: DataFrame,
+    time_zone: str,
 ) -> DataFrame:
+    filtered_charge_prices = filtered_charge_prices.withColumn(
+        CsvColumnNames.time,
+        get_start_of_day(DataProductColumnNames.charge_time, time_zone),
+    )
 
-    columns = [
+    win = Window.partitionBy(
+        DataProductColumnNames.charge_type,
+        DataProductColumnNames.charge_owner_id,
+        DataProductColumnNames.charge_code,
+        DataProductColumnNames.resolution,
+        DataProductColumnNames.is_tax,
+        CsvColumnNames.time,
+    ).orderBy(DataProductColumnNames.charge_time)
+    filtered_charge_prices = filtered_charge_prices.withColumn(
+        "chronological_order", F.row_number().over(win)
+    )
+
+    pivoted_df = (
+        filtered_charge_prices.groupBy(
+            DataProductColumnNames.charge_type,
+            DataProductColumnNames.charge_owner_id,
+            DataProductColumnNames.charge_code,
+            DataProductColumnNames.resolution,
+            DataProductColumnNames.is_tax,
+            CsvColumnNames.time,
+        )
+        .pivot(
+            "chronological_order",
+            list(range(1, 25 + 1)),
+        )
+        .agg(F.first(DataProductColumnNames.charge_price))
+    )
+
+    charge_price_column_names = [
+        F.col(str(i)).alias(f"{CsvColumnNames.energy_price}{i}")
+        for i in range(1, 25 + 1)
+    ]
+
+    csv_df = pivoted_df.select(
         map_from_dict(CHARGE_TYPES)[F.col(DataProductColumnNames.charge_type)].alias(
             CsvColumnNames.charge_type
         ),
@@ -43,51 +84,8 @@ def prepare_for_csv(
         F.col(DataProductColumnNames.charge_code).alias(CsvColumnNames.charge_code),
         F.col(DataProductColumnNames.resolution).alias(CsvColumnNames.resolution),
         F.col(DataProductColumnNames.is_tax).alias(CsvColumnNames.is_tax),
-        F.col(DataProductColumnNames.charge_time).alias(CsvColumnNames.time),
-        F.col(DataProductColumnNames.charge_price).alias("ENERGYPRICE1"),
-        F.lit(None).alias("ENERGYPRICE2"),
-        F.lit(None).alias("ENERGYPRICE3"),
-        F.lit(None).alias("ENERGYPRICE4"),
-        F.lit(None).alias("ENERGYPRICE5"),
-        F.lit(None).alias("ENERGYPRICE6"),
-        F.lit(None).alias("ENERGYPRICE7"),
-        F.lit(None).alias("ENERGYPRICE8"),
-        F.lit(None).alias("ENERGYPRICE9"),
-        F.lit(None).alias("ENERGYPRICE10"),
-        F.lit(None).alias("ENERGYPRICE11"),
-        F.lit(None).alias("ENERGYPRICE12"),
-        F.lit(None).alias("ENERGYPRICE13"),
-        F.lit(None).alias("ENERGYPRICE14"),
-        F.lit(None).alias("ENERGYPRICE15"),
-        F.lit(None).alias("ENERGYPRICE16"),
-        F.lit(None).alias("ENERGYPRICE17"),
-        F.lit(None).alias("ENERGYPRICE18"),
-        F.lit(None).alias("ENERGYPRICE19"),
-        F.lit(None).alias("ENERGYPRICE20"),
-        F.lit(None).alias("ENERGYPRICE21"),
-        F.lit(None).alias("ENERGYPRICE22"),
-        F.lit(None).alias("ENERGYPRICE23"),
-        F.lit(None).alias("ENERGYPRICE24"),
-        F.lit(None).alias("ENERGYPRICE25"),
-    ]
-    charge_prices = charge_prices.select(columns)
-
-    hourly_charge_prices = charge_prices.filter(
-        F.col(DataProductColumnNames.resolution)
-        == ChargeResolutionDataProductValue.HOUR.value
+        F.col(CsvColumnNames.time),
+        *charge_price_column_names,
     )
 
-    charge_prices_without_hourly_resolution = charge_prices.filter(
-        F.col(DataProductColumnNames.resolution)
-        != ChargeResolutionDataProductValue.HOUR.value
-    )
-
-    for i in range(2, 26):
-        hourly_charge_prices = hourly_charge_prices.withColumn(
-            f"ENERGYPRICE{i}",
-            F.col("ENERGYPRICE1"),
-        )
-
-    charge_prices = charge_prices_without_hourly_resolution.union(hourly_charge_prices)
-
-    return charge_prices
+    return csv_df

@@ -34,4 +34,4 @@ def create_charge_prices(
         repository,
     )
 
-    return prepare_for_csv(charge_prices)
+    return prepare_for_csv(charge_prices, args.time_zone)

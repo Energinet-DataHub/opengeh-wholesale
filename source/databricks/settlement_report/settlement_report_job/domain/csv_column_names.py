@@ -25,6 +25,7 @@ class CsvColumnNames:
     time = "STARTDATETIME"
     to_grid_area_code = "TOGRIDAREAID"
     is_tax = "TAXINDICATOR"
+    energy_price = "ENERGYPRICE"
 
 
 class EphemeralColumns:

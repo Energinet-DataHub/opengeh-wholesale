@@ -1,15 +1,17 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession, DataFrame, functions as F
 
 import test_factories.default_test_data_spec as default_data
 from settlement_report_job.domain.charge_prices.prepare_for_csv import prepare_for_csv
+
 from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
 from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.wholesale.data_values import (
     ChargeResolutionDataProductValue,
 )
@@ -28,6 +30,7 @@ OTHER_ID = "9999999999999"
 DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
     default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
 }
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 JAN_1ST = datetime(2023, 12, 31, 23)
 JAN_2ND = datetime(2024, 1, 1, 23)
@@ -59,83 +62,103 @@ def _get_repository_mock(
 
 
 @pytest.mark.parametrize(
-    "resolution, expected_energy_price",
+    "resolution",
     [
-        (ChargeResolutionDataProductValue.HOUR, Decimal("10.000")),
-        (ChargeResolutionDataProductValue.DAY, None),
-        (ChargeResolutionDataProductValue.MONTH, None),
+        ChargeResolutionDataProductValue.DAY,
+        ChargeResolutionDataProductValue.MONTH,
     ],
 )
-def test_when_each_resolution_type_return_one_row(
+def test_when_resolution_is_day_or_month_return_only_value_in_energy_price_1(
     spark: SparkSession,
     resolution: ChargeResolutionDataProductValue,
-    expected_energy_price: Decimal | None,
 ) -> None:
     # Arrange
-    charge_price = Decimal("10.000")
-
-    metering_point_periods = metering_point_periods_factory.create(
-        spark,
-        default_data.create_metering_point_periods_row(),
+    filtered_charge_prices = (
+        charge_prices_factory.create(
+            spark,
+            default_data.create_charge_prices_row(),
+        )
+        .withColumn(
+            DataProductColumnNames.grid_area_code,
+            F.lit(default_data.DEFAULT_GRID_AREA_CODE),
+        )
+        .withColumn(DataProductColumnNames.is_tax, F.lit(False))
+        .withColumn(
+            DataProductColumnNames.resolution,
+            F.lit(resolution.value),
+        )
     )
-
-    charge_link_periods = charge_links_factory.create(
-        spark,
-        default_data.create_charge_link_periods_row(),
-    )
-
-    charge_prices = charge_prices_factory.create(
-        spark,
-        default_data.create_charge_prices_row(charge_price=charge_price),
-    )
-
-    charge_price_information_periods = charge_price_information_periods_factory.create(
-        spark,
-        default_data.create_charge_price_information_periods_row(resolution=resolution),
-    )
-
-    mock_repository = _get_repository_mock(
-        metering_point_periods,
-        charge_link_periods,
-        charge_prices,
-        charge_price_information_periods,
-    )
-
-    charge_prices = read_and_filter(
-        period_start=DEFAULT_FROM_DATE,
-        period_end=DEFAULT_TO_DATE,
-        calculation_id_by_grid_area=DEFAULT_CALCULATION_ID_BY_GRID_AREA,
-        energy_supplier_ids=ENERGY_SUPPLIER_IDS,
-        requesting_actor_market_role=MarketRole.DATAHUB_ADMINISTRATOR,
-        requesting_actor_id=DATAHUB_ADMINISTRATOR_ID,
-        repository=mock_repository,
-    )
-
-    # or use this instead of the above code
-    # charge_prices = (
-    #     charge_prices_factory.create(
-    #         spark,
-    #         default_data.create_charge_prices_row(charge_price=charge_price),
-    #     )
-    #     .withColumn(
-    #         DataProductColumnNames.grid_area_code,
-    #         F.lit(default_data.DEFAULT_GRID_AREA_CODE),
-    #     )
-    #     .withColumn(DataProductColumnNames.is_tax, F.lit(False))
-    #     .withColumn(
-    #         DataProductColumnNames.resolution,
-    #         F.lit(resolution.value),
-    #     )
-    # )
 
     # Act
     result_df = prepare_for_csv(
-        charge_prices=charge_prices,
+        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
     )
+    result_df.show()
 
     # Assert
     assert result_df.count() == 1
     result = result_df.collect()[0]
-    assert result["ENERGYPRICE1"] == charge_price
+    assert result["ENERGYPRICE1"] == default_data.DEFAULT_CHARGE_PRICE
     for i in range(2, 26):
-        assert result[f"ENERGYPRICE{i}"] == expected_energy_price
+        assert result[f"ENERGYPRICE{i}"] is None
+
+
+def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price_except_25(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    hours_in_day = [JAN_1ST + timedelta(hours=i) for i in range(24)]
+
+    filtered_charge_prices = (
+        charge_prices_factory.create(
+            spark,
+            [
+                default_data.create_charge_prices_row(charge_time=hours_in_day[0]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[1]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[2]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[3]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[4]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[5]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[6]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[7]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[8]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[9]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[10]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[11]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[12]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[13]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[14]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[15]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[16]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[17]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[18]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[19]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[20]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[21]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[22]),
+                default_data.create_charge_prices_row(charge_time=hours_in_day[23]),
+            ],
+        )
+        .withColumn(
+            DataProductColumnNames.grid_area_code,
+            F.lit(default_data.DEFAULT_GRID_AREA_CODE),
+        )
+        .withColumn(DataProductColumnNames.is_tax, F.lit(False))
+        .withColumn(
+            DataProductColumnNames.resolution,
+            F.lit(ChargeResolutionDataProductValue.HOUR.value),
+        )
+    )
+
+    # Act
+    result_df = prepare_for_csv(
+        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+    )
+    result_df.show()
+
+    # Assert
+    assert result_df.count() == 1
+    result = result_df.collect()[0]
+    for i in range(1, 25):
+        assert result[f"ENERGYPRICE{i}"] == default_data.DEFAULT_CHARGE_PRICE
+    assert result["ENERGYPRICE25"] is None
