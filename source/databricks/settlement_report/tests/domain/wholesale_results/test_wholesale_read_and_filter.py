@@ -6,7 +6,7 @@ import pytest
 from pyspark.sql import SparkSession
 
 import test_factories.default_test_data_spec as default_data
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
 )

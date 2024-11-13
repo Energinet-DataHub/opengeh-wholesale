@@ -23,8 +23,8 @@ from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from telemetry_logging import use_span
-from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.infrastructure.report_name_factory import FileNameFactory
+from settlement_report_job.domain.utils.csv_column_names import (
     EphemeralColumns,
 )
 

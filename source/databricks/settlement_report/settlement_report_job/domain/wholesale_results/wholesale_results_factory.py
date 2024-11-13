@@ -13,11 +13,13 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from telemetry_logging import use_span
 
-from settlement_report_job.domain.settlement_report_args_utils import (
+from settlement_report_job.domain.utils.settlement_report_args_utils import (
     should_have_result_file_per_grid_area,
 )
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
