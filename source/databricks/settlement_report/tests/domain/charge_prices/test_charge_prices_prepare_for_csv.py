@@ -57,7 +57,7 @@ def _get_repository_mock(
 
     return mock_repository
 
-#TODO: test is wrong, fix it
+
 @pytest.mark.parametrize(
     "resolution, expected_energy_price",
     [

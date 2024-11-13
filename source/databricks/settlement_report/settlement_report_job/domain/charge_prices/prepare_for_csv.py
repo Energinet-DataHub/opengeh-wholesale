@@ -32,7 +32,7 @@ log = Logger(__name__)
 def prepare_for_csv(
     charge_prices: DataFrame,
 ) -> DataFrame:
-    # TODO: Wrong
+
     columns = [
         map_from_dict(CHARGE_TYPES)[F.col(DataProductColumnNames.charge_type)].alias(
             CsvColumnNames.charge_type
