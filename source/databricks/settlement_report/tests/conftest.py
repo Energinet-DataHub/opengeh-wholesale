@@ -15,12 +15,16 @@ import os
 import shutil
 import uuid
 import pytest
+import logging
+import yaml
+from pathlib import Path
 from typing import Callable, Generator
 
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
 from tests.dbutils_fixture import DBUtilsFixture
+from tests.integration_test_configuration import IntegrationTestConfiguration
 from settlement_report_job.infrastructure.calculation_type import CalculationType
 from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -418,3 +422,53 @@ def configure_dummy_logging() -> None:
     configure_logging(
         cloud_role_name="any-cloud-role-name", tracer_name="any-tracer-name"
     )
+
+
+@pytest.fixture(scope="session")
+def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
+    """
+    Load settings for integration tests either from a local YAML settings file or from environment variables.
+    Proceeds even if certain Azure-related keys are not present in the settings file.
+    """
+
+    settings_file_path = Path(tests_path) / "integrationtest.local.settings.yml"
+
+    def load_settings_from_env() -> dict:
+        return {
+            key: os.getenv(key)
+            for key in [
+                "AZURE_KEYVAULT_URL",
+                "AZURE_CLIENT_ID",
+                "AZURE_CLIENT_SECRET",
+                "AZURE_TENANT_ID",
+                "AZURE_SUBSCRIPTION_ID",
+            ]
+            if os.getenv(key) is not None
+        }
+
+    settings = _load_settings_from_file(settings_file_path) or load_settings_from_env()
+
+    # Set environment variables from loaded settings
+    for key, value in settings.items():
+        if value is not None:
+            os.environ[key] = value
+
+    if "AZURE_KEYVAULT_URL" in settings:
+        return IntegrationTestConfiguration(
+            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"]
+        )
+
+    logging.error(
+        f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
+    )
+    raise Exception(
+        "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
+    )
+
+
+def _load_settings_from_file(file_path: Path) -> dict:
+    if file_path.exists():
+        with file_path.open() as stream:
+            return yaml.safe_load(stream)
+    else:
+        return {}
