@@ -379,20 +379,14 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
     [
         pytest.param(
             GRID_ACCESS_PROVIDER_ID,
-            True,
-            True,
-            id="grid access provider with tax: include",
-        ),
-        pytest.param(
-            GRID_ACCESS_PROVIDER_ID,
             False,
-            False,
+            True,
             id="grid access provider without tax: include",
         ),
         pytest.param(
             OTHER_ID, False, False, id="other charge owner without tax: exclude"
         ),
-        pytest.param(OTHER_ID, True, False, id="other charge owner with tax: include"),
+        pytest.param(OTHER_ID, True, True, id="other charge owner with tax: include"),
     ],
 )
 def test_read_and_filter__when_grid_access_provider__returns_expected_charge_links(
@@ -436,7 +430,7 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter__when_grid_loss_responsible_and_energy_supplier_changes_on_metering_point__returns_expected_one_link_periods(
+def test_read_and_filter__when_energy_supplier_changes_on_metering_point__returns_one_link_period(
     spark: SparkSession,
 ) -> None:
     # Arrange

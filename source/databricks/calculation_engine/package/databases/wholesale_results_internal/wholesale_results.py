@@ -18,15 +18,14 @@ from pyspark.sql import DataFrame
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    HiveOutputDatabase,
     WholesaleResultsInternalDatabase,
 )
 
 
-@logging_configuration.use_span("calculation.write.wholesale")
+@use_span("calculation.write.wholesale")
 def write_wholesale_results(wholesale_results_output: WholesaleResultsOutput) -> None:
     """Write each wholesale result to the output table."""
     _write("hourly_tariff_per_co_es", wholesale_results_output.hourly_tariff_per_co_es)
@@ -41,24 +40,6 @@ def write_wholesale_results(wholesale_results_output: WholesaleResultsOutput) ->
     _write(
         "fee_per_co_es",
         wholesale_results_output.fee_per_co_es,
-    )
-
-    # TODO JVM: Remove when monthly amounts is fully implemented
-    _write_to_hive(
-        "monthly_tariff_from_hourly_per_co_es",
-        wholesale_results_output.monthly_tariff_from_hourly_per_co_es,
-    )
-    _write_to_hive(
-        "monthly_tariff_from_daily_per_co_es",
-        wholesale_results_output.monthly_tariff_from_daily_per_co_es,
-    )
-    _write_to_hive(
-        "monthly_subscription_per_co_es",
-        wholesale_results_output.monthly_subscription_per_co_es,
-    )
-    _write_to_hive(
-        "monthly_fee_per_co_es",
-        wholesale_results_output.monthly_fee_per_co_es,
     )
 
 
@@ -88,19 +69,4 @@ def _write(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
-        )
-
-    _write_to_hive(name, df)
-
-
-# ToDo JMG: Remove when we are on Unity Catalog
-def _write_to_hive(
-    name: str,
-    df: DataFrame,
-) -> None:
-    with logging_configuration.start_span(f"{name} hive"):
-        df.write.format("delta").mode("append").option(
-            "mergeSchema", "false"
-        ).insertInto(
-            f"{HiveOutputDatabase.DATABASE_NAME}.{HiveOutputDatabase.WHOLESALE_RESULT_TABLE_NAME}"
         )

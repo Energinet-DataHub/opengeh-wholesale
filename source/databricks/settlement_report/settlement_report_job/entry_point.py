@@ -18,13 +18,11 @@ from argparse import Namespace
 from collections.abc import Callable
 from typing import Any
 
-from pyspark.sql.session import SparkSession
-
 from opentelemetry.trace import SpanKind
 
-import settlement_report_job.logging.logging_configuration as config
-from settlement_report_job.logging.span_recording import span_record_exception
-from settlement_report_job.domain import report_generator
+import telemetry_logging.logging_configuration as config
+from telemetry_logging.span_recording import span_record_exception
+from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
 from settlement_report_job.infrastructure.settlement_report_job_args import (
     parse_job_arguments,
@@ -38,32 +36,38 @@ from settlement_report_job.utils import get_dbutils
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start_hourly_time_series() -> None:
-    _start_task(report_generator.execute_hourly_time_series)
+    _start_task(ReportGenerator.execute_hourly_time_series)
 
 
 def start_quarterly_time_series() -> None:
-    _start_task(report_generator.execute_quarterly_time_series)
+    _start_task(ReportGenerator.execute_quarterly_time_series)
+
+
+def start_metering_point_periods() -> None:
+    _start_task(ReportGenerator.execute_metering_point_periods)
 
 
 def start_charge_links() -> None:
-    _start_task(report_generator.execute_charge_links)
+    _start_task(ReportGenerator.execute_charge_links)
 
 
 def start_energy_results() -> None:
-    _start_task(report_generator.execute_energy_results)
+    _start_task(ReportGenerator.execute_energy_results)
 
 
 def start_wholesale_results() -> None:
-    _start_task(report_generator.execute_wholesale_results)
+    _start_task(ReportGenerator.execute_wholesale_results)
+
+
+def start_monthly_amounts() -> None:
+    _start_task(ReportGenerator.execute_monthly_amounts)
 
 
 def start_zip() -> None:
-    _start_task(report_generator.execute_zip)
+    _start_task(ReportGenerator.execute_zip)
 
 
-def _start_task(
-    execute_task: Callable[[SparkSession, Any, SettlementReportArgs], None]
-) -> None:
+def _start_task(execute_task: Callable[[ReportGenerator], None]) -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
@@ -76,14 +80,13 @@ def _start_task(
 
 def start_task_with_deps(
     *,
-    execute_task: Callable[[SparkSession, Any, SettlementReportArgs], None],
+    execute_task: Callable[[ReportGenerator], None],
     cloud_role_name: str = "dbr-settlement-report",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
     parse_job_args: Callable[..., SettlementReportArgs] = parse_job_arguments,
 ) -> None:
     """Start overload with explicit dependencies for easier testing."""
-
     config.configure_logging(
         cloud_role_name=cloud_role_name,
         tracer_name="settlement-report-job",
@@ -109,7 +112,10 @@ def start_task_with_deps(
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
             dbutils = get_dbutils(spark)
-            execute_task(spark, dbutils, args)
+
+            report_generator_instance = ReportGenerator(spark, dbutils, args)
+
+            execute_task(report_generator_instance)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:

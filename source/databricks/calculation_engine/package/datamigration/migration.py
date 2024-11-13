@@ -4,19 +4,16 @@ from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
 )
 
-import package.datamigration_hive.migration as hive_migration
 import package.infrastructure.environment_variables as env_vars
 from package.infrastructure import paths
 from .schema_config import schema_config
 from .substitutions import get_substitutions
 
 MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
-UNUSED = "UNUSED"  # Marks fields that were only used in the old hive implementation
 
 
 def migrate_data_lake(
     catalog_name: str | None = None,
-    spark_config_hive: SparkSqlMigrationsConfiguration = None,
     is_testing: bool = False,
 ) -> None:
     """
@@ -31,11 +28,6 @@ def migrate_data_lake(
 
     create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()
-
-    # Execute the hive migrations until they are finally removed
-    # IMPORTANT: Do this _after_ the UC migrations as the hive migrations changes the
-    #            dependency injection container registrations
-    hive_migration.migrate_data_lake(spark_config_hive)
 
 
 def _create_spark_config(

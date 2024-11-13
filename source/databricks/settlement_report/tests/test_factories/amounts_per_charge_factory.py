@@ -53,7 +53,7 @@ def create(
     spark: SparkSession,
     data_spec: Union[AmountsPerChargeRow, List[AmountsPerChargeRow]],
 ) -> DataFrame:
-    if isinstance(data_spec, AmountsPerChargeRow):
+    if not isinstance(data_spec, list):
         data_specs = [data_spec]
     else:
         data_specs = data_spec

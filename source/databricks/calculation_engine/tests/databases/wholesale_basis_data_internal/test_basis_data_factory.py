@@ -21,7 +21,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from databases.wholesale_basis_data_internal.basis_data_test_factory import (
+from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
     create_basis_data_factory,
 )
 from package.databases.table_column_names import TableColumnNames
@@ -30,7 +30,6 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
     hive_metering_point_period_schema,
-    time_series_points_schema,
 )
 from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,

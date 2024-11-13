@@ -2,11 +2,12 @@ from datetime import datetime
 from uuid import UUID
 from pyspark.sql import DataFrame, Column, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.csv_column_names import EphemeralColumns
 from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
     get_start_of_day,
 )
+from settlement_report_job.domain.market_role import MarketRole
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 from settlement_report_job.domain.repository import (
     WholesaleRepository,
@@ -15,7 +16,7 @@ from settlement_report_job.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
 def read_and_filter_by_latest_calculations(
@@ -25,7 +26,7 @@ def read_and_filter_by_latest_calculations(
     period_start: datetime,
     period_end: datetime,
     time_zone: str,
-    observation_time_column: str | Column,
+    time_column_name: str | Column,
 ) -> DataFrame:
     latest_balance_fixing_calculations = repository.read_latest_calculations().where(
         (
@@ -36,10 +37,11 @@ def read_and_filter_by_latest_calculations(
         & (F.col(DataProductColumnNames.start_of_day) >= period_start)
         & (F.col(DataProductColumnNames.start_of_day) < period_end)
     )
+
     df = filter_by_latest_calculations(
         df,
         latest_balance_fixing_calculations,
-        df_time_column=observation_time_column,
+        df_time_column=time_column_name,
         time_zone=time_zone,
     )
 
@@ -95,3 +97,26 @@ def filter_by_energy_supplier_ids(energy_supplier_ids: list[str]) -> Column:
 
 def filter_by_grid_area_codes(grid_area_codes: list[str]) -> Column:
     return F.col(DataProductColumnNames.grid_area_code).isin(grid_area_codes)
+
+
+def filter_by_charge_owner_and_tax_depending_on_market_role(
+    df: DataFrame,
+    requesting_actor_market_role: MarketRole,
+    charge_owner_id: str,
+) -> DataFrame:
+    if requesting_actor_market_role == MarketRole.SYSTEM_OPERATOR:
+        df = df.where(
+            (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
+            & (~F.col(DataProductColumnNames.is_tax))
+        )
+
+    if requesting_actor_market_role == MarketRole.GRID_ACCESS_PROVIDER:
+        df = df.where(
+            (
+                (F.col(DataProductColumnNames.charge_owner_id) == charge_owner_id)
+                & (~F.col(DataProductColumnNames.is_tax))
+            )
+            | (F.col(DataProductColumnNames.is_tax))
+        )
+
+    return df

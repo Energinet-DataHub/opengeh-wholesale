@@ -16,7 +16,7 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.report_data_type import ReportDataType
 from settlement_report_job.domain.report_name_factory import FileNameFactory
 from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
@@ -28,10 +28,10 @@ from settlement_report_job.utils import (
     merge_files,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def write(
     dbutils: Any,
     args: SettlementReportArgs,
@@ -82,10 +82,14 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "time_series_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
         return "time_series_quarterly"
+    elif report_data_type == ReportDataType.MeteringPointPeriods:
+        return "metering_point_periods"
     elif report_data_type == ReportDataType.ChargeLinks:
         return "charge_links"
     elif report_data_type == ReportDataType.EnergyResults:
         return "energy_results"
+    elif report_data_type == ReportDataType.MonthlyAmounts:
+        return "monthly_amounts"
     elif report_data_type == ReportDataType.WholesaleResults:
         return "wholesale_results"
     else:

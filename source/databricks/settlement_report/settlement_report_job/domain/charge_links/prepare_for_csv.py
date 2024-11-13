@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
+from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.report_naming_convention import (
     METERING_POINT_TYPES,
     CHARGE_TYPES,
@@ -26,10 +26,10 @@ from settlement_report_job.domain.csv_column_names import (
 from settlement_report_job.utils import map_from_dict
 from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def prepare_for_csv(
     charge_link_periods: DataFrame,
 ) -> DataFrame:

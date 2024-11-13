@@ -22,9 +22,8 @@ from pyspark.sql import DataFrame
 from pyspark.sql import Column, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
-
+from telemetry_logging import use_span
 from settlement_report_job.domain.report_name_factory import FileNameFactory
-from settlement_report_job import logging
 from settlement_report_job.domain.csv_column_names import (
     EphemeralColumns,
 )
@@ -49,7 +48,7 @@ def map_from_dict(d: dict) -> Column:
     return F.create_map([F.lit(x) for x in itertools.chain(*d.items())])
 
 
-@logging.use_span()
+@use_span()
 def create_zip_file(
     dbutils: Any, report_id: str, save_path: str, files_to_zip: list[str]
 ) -> None:
@@ -106,7 +105,7 @@ def _get_csv_writer_options() -> dict[str, str]:
     return {"timestampFormat": "yyyy-MM-dd'T'HH:mm:ss'Z'"}
 
 
-@logging.use_span()
+@use_span()
 def write_files(
     df: DataFrame,
     path: str,
@@ -149,7 +148,7 @@ def write_files(
     return [c for c in df.columns if c not in partition_columns]
 
 
-@logging.use_span()
+@use_span()
 def get_new_files(
     spark_output_path: str,
     report_output_path: str,
@@ -214,7 +213,7 @@ def get_new_files(
     return new_files
 
 
-@logging.use_span()
+@use_span()
 def merge_files(
     dbutils: Any, new_files: list[TmpFile], headers: list[str]
 ) -> list[str]:
