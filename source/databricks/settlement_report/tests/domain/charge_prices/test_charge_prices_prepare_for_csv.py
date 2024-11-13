@@ -134,7 +134,6 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
     result_df = prepare_for_csv(
         filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
     )
-    result_df.show()
 
     # Assert
     assert result_df.count() == 1
