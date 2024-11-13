@@ -26,7 +26,10 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.report_generator import ReportGenerator
-from settlement_report_job.entry_points.entry_point import start_task_with_deps
+from settlement_report_job.entry_points.entry_point import (
+    start_task_with_deps,
+    start_hourly_time_series,
+)
 from settlement_report_job.entry_points.job_args.settlement_report_job_args import (
     parse_job_arguments,
 )
@@ -34,26 +37,6 @@ from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(
-        self,
-        standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-    ) -> None:
-        # Arrange
-        mock_execute_report_generator = Mock()
-
-        with patch(
-            "ReportGenerator.execute_hourly_time_series", mock_execute_report_generator
-        ):
-            with patch(
-                "parse_job_arguments",
-                return_value=standard_wholesale_fixing_scenario_args,
-            ):
-                # Act
-                start_task_with_deps(
-                    execute_task=mock_execute_report_generator,
-                    parse_job_arguments=parse_job_arguments,
-                )
-
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
         standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -96,10 +79,8 @@ class TestWhenInvokedWithValidArguments:
         | where Properties.CategoryName == "Energinet.DataHub.settlement_report_job.infrastructure.settlement_report_job_args"
         | count
         """
-        print(query)
 
         workspace_id = integration_test_configuration.get_analytics_workspace_id()
-        print(workspace_id)
 
         def assert_logged():
             actual = logs_client.query_workspace(
