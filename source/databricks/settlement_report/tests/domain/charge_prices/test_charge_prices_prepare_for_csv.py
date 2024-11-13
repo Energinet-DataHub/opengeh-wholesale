@@ -17,6 +17,7 @@ from settlement_report_job.infrastructure.wholesale.column_names import (
 from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeResolutionDataProductValue,
 )
+from utils import Dates
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
@@ -29,16 +30,6 @@ DEFAULT_CALCULATION_ID_BY_GRID_AREA = {
     default_data.DEFAULT_GRID_AREA_CODE: uuid.UUID(default_data.DEFAULT_CALCULATION_ID)
 }
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-
-JAN_1ST = datetime(2023, 12, 31, 23)
-JAN_2ND = datetime(2024, 1, 1, 23)
-JAN_3RD = datetime(2024, 1, 2, 23)
-JAN_4TH = datetime(2024, 1, 3, 23)
-JAN_5TH = datetime(2024, 1, 4, 23)
-JAN_6TH = datetime(2024, 1, 5, 23)
-JAN_7TH = datetime(2024, 1, 6, 23)
-JAN_8TH = datetime(2024, 1, 7, 23)
-JAN_9TH = datetime(2024, 1, 8, 23)
 
 
 def _get_repository_mock(
@@ -104,7 +95,7 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
     spark: SparkSession,
 ) -> None:
     # Arrange
-    hours_in_day = [JAN_1ST + timedelta(hours=i) for i in range(24)]
+    hours_in_day = [Dates.JAN_1ST + timedelta(hours=i) for i in range(24)]
     charge_price_rows = []
     for i in range(24):
         charge_price_rows.append(
