@@ -25,7 +25,6 @@ from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
     create_time_series_for_balance_fixing,
 )
-from settlement_report_job.infrastructure.task_type import TaskType
 from settlement_report_job.domain.wholesale_results.wholesale_results_factory import (
     create_wholesale_results,
 )
@@ -249,33 +248,9 @@ class ReportGenerator:
         """
         Entry point for the logic of creating the final zip file.
         """
-        files_to_zip = []
 
-        task_types_to_zip = {
-            TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
-            TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
-            TaskType.METERING_POINT_PERIODS: "metering_point_periods_files",
-            TaskType.CHARGE_LINKS: "charge_links_files",
-            TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
-            TaskType.ENERGY_RESULTS: "energy_result_files",
-            TaskType.WHOLESALE_RESULTS: "wholesale_result_files",
-        }
-
-        for task_key, key in task_types_to_zip.items():
-            try:
-                file_names = self.dbutils.jobs.taskValues.get(
-                    taskKey=task_key.value, key=key
-                )
-                files_to_zip.extend(
-                    [
-                        f"{get_report_output_path(self.args)}/{file_name}"
-                        for file_name in file_names
-                    ]
-                )
-            except ValueError:
-                self.log.info(
-                    f"Task Key {task_key.value} was not found in TaskValues, continuing without it."
-                )
+        files = self.dbutils.fs.ls(f"{get_report_output_path(self.args)}")
+        files_to_zip = [file_info.path for file_info in files]
 
         self.log.info(f"Files to zip: {files_to_zip}")
         zip_file_path = (
