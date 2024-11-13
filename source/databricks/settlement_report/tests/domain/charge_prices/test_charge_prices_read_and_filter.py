@@ -11,8 +11,7 @@ import test_factories.metering_point_periods_factory as metering_point_periods_f
 import test_factories.charge_prices_factory as charge_prices_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.wholesale.schemas import metering_point_periods_v1
+from settlement_report_job.domain.utils.market_role import MarketRole
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE

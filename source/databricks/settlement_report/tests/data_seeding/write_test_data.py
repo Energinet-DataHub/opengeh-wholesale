@@ -1,36 +1,35 @@
-import os
-import shutil
-
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 
-from settlement_report_job.wholesale import database_definitions
-from settlement_report_job.wholesale.schemas import (
+from settlement_report_job.infrastructure.wholesale import (
+    database_definitions,
+)
+from settlement_report_job.infrastructure.wholesale.schemas import (
     charge_link_periods_v1,
     metering_point_periods_v1,
 )
-from settlement_report_job.wholesale.schemas import (
+from settlement_report_job.infrastructure.wholesale.schemas import (
     charge_price_information_periods_v1,
 )
-from settlement_report_job.wholesale.schemas import (
+from settlement_report_job.infrastructure.wholesale.schemas import (
     metering_point_time_series_v1,
 )
-from settlement_report_job.wholesale.schemas.amounts_per_charge_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas.amounts_per_charge_v1 import (
     amounts_per_charge_v1,
 )
-from settlement_report_job.wholesale.schemas.energy_per_es_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas.energy_per_es_v1 import (
     energy_per_es_v1,
 )
-from settlement_report_job.wholesale.schemas.energy_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas.energy_v1 import (
     energy_v1,
 )
-from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas.latest_calculations_by_day_v1 import (
     latest_calculations_by_day_v1,
 )
-from settlement_report_job.wholesale.schemas.monthly_amounts_per_charge_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas import (
     monthly_amounts_per_charge_v1,
 )
-from settlement_report_job.wholesale.schemas.total_monthly_amounts_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas.total_monthly_amounts_v1 import (
     total_monthly_amounts_v1,
 )
 
