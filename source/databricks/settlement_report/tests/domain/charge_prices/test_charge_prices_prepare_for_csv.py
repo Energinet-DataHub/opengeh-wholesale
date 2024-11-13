@@ -173,3 +173,62 @@ def test_tax_indicator_is_converted_correctly(
 
     # Assert
     assert result_df.collect()[0][CsvColumnNames.is_tax] == expected_tax_indicator
+
+
+@pytest.mark.parametrize(
+    "daylight_savings, expected_energy_price_columns_with_value",
+    [
+        (
+            datetime(2023, 3, 25, 23),
+            23,
+        ),
+        (
+            datetime(2023, 10, 28, 22),
+            25,
+        ),
+    ],
+)
+def test_when_daylight_savings_time_return_number_of_expected_rows(
+    spark: SparkSession,
+    daylight_savings: datetime,
+    expected_energy_price_columns_with_value: int,
+) -> None:
+    # Arrange
+    hours_in_day = [daylight_savings + timedelta(hours=i) for i in range(25)]
+    charge_price_rows = []
+    for i in range(25):
+        charge_price_rows.append(
+            default_data.create_charge_prices_row(
+                charge_time=hours_in_day[i],
+                charge_price=default_data.DEFAULT_CHARGE_PRICE + i,
+            )
+        )
+
+    filtered_charge_prices = (
+        charge_prices_factory.create(
+            spark,
+            charge_price_rows,
+        )
+        .withColumn(
+            DataProductColumnNames.grid_area_code,
+            F.lit(default_data.DEFAULT_GRID_AREA_CODE),
+        )
+        .withColumn(DataProductColumnNames.is_tax, F.lit(False))
+        .withColumn(
+            DataProductColumnNames.resolution,
+            F.lit(ChargeResolutionDataProductValue.HOUR.value),
+        )
+    )
+
+    # Act
+    result_df = prepare_for_csv(
+        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert_count = 0
+    result = result_df.collect()[0]
+    for i in range(1, 26):
+        if result[f"{CsvColumnNames.energy_price}{i}"] is not None:
+            assert_count += 1
+    assert assert_count == expected_energy_price_columns_with_value
