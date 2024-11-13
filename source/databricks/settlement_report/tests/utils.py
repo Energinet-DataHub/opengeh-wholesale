@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
 from datetime import timedelta, datetime
 from zoneinfo import ZoneInfo
 
@@ -42,8 +43,9 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 def cleanup_output_path(settlement_reports_output_path: str) -> None:
-    for f in os.listdir(settlement_reports_output_path):
-        os.remove(os.path.join(settlement_reports_output_path, f))
+    if os.path.exists(settlement_reports_output_path):
+        shutil.rmtree(settlement_reports_output_path)
+        os.makedirs(settlement_reports_output_path)
 
 
 def get_actual_files(
