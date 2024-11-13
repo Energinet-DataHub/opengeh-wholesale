@@ -8,13 +8,15 @@ from data_seeding.standard_wholesale_fixing_scenario_data_generator import (
     CHARGE_OWNER_ID_WITHOUT_TAX,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
-import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
+)
+from settlement_report_job.entry_points.tasks.wholesale_results_task import (
+    WholesaleResultsTask,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import (
@@ -75,10 +77,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = WholesaleResultsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_wholesale_results()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -141,10 +143,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = WholesaleResultsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_wholesale_results()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -216,10 +218,10 @@ def test_when_market_role_is(
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = WholesaleResultsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_wholesale_results()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -242,7 +244,6 @@ def test_when_market_role_is_grid_access_provider_return_correct_file_name(
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
     # Arrange
-
     args = standard_wholesale_fixing_scenario_args
     args.split_report_by_grid_area = True
     args.requesting_actor_market_role = MarketRole.GRID_ACCESS_PROVIDER
@@ -282,10 +283,10 @@ def test_when_market_role_is_grid_access_provider_return_correct_file_name(
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_owner_id,
     ]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = WholesaleResultsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_wholesale_results()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(

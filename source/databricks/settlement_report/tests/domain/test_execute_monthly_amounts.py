@@ -3,10 +3,12 @@ from pyspark.sql import SparkSession
 import pytest
 
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points.tasks.monthly_amounts_task import (
+    MonthlyAmountsTask,
+)
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from domain.assertion import assert_file_names_and_columns
 from dbutils_fixture import DBUtilsFixture
-from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -51,12 +53,12 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
         f"RESULTMONTHLY_805_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
 
-    report_generator_instance = ReportGenerator(
+    task = MonthlyAmountsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
 
     # Act
-    report_generator_instance.execute_monthly_amounts()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -102,12 +104,12 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
         f"RESULTMONTHLY_flere-net_{args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
 
-    report_generator_instance = ReportGenerator(
+    task = MonthlyAmountsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
 
     # Act
-    report_generator_instance.execute_monthly_amounts()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(

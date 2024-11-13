@@ -10,7 +10,6 @@ from domain.assertion import assert_file_names_and_columns
 
 from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.utils.market_role import MarketRole
-import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
@@ -18,6 +17,8 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
+from settlement_report_job.entry_points.task_type import TaskType
+from settlement_report_job.entry_points.tasks.time_series_task import TimeSeriesTask
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import cleanup_output_path, get_actual_files
 
@@ -53,10 +54,10 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_quarterly_time_series()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -91,10 +92,10 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
-    report_generator_instance.execute_quarterly_time_series()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -138,10 +139,10 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
-    report_generator_instance.execute_quarterly_time_series()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -182,10 +183,10 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
-    report_generator_instance.execute_quarterly_time_series()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -210,10 +211,10 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
-    report_generator_instance.execute_quarterly_time_series()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -246,10 +247,10 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
-    report_generator_instance.execute_quarterly_time_series()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
