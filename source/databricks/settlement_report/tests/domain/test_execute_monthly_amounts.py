@@ -13,6 +13,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
+from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
 from utils import cleanup_output_path, get_actual_files
 
 
@@ -71,14 +72,18 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
     )
 
 
-def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(
+def test_execute_monthly_amounts__when_administrator_and_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
-    standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
+    standard_wholesale_fixing_scenario_datahub_admin_args: SettlementReportArgs,
     standard_wholesale_fixing_scenario_data_written_to_delta: None,
 ):
-    args = standard_wholesale_fixing_scenario_energy_supplier_args
+    args = standard_wholesale_fixing_scenario_datahub_admin_args
     args.split_report_by_grid_area = False
+    args.energy_supplier_ids = [
+        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
+    ]
+
     # Arrange
     expected_columns = [
         CsvColumnNames.calculation_type,
@@ -96,7 +101,7 @@ def test_execute_monthly_amounts__when_split_report_by_grid_area_is_false__retur
     ]
 
     expected_file_names = [
-        f"RESULTMONTHLY_flere-net_{args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
+        f"RESULTMONTHLY_flere-net_{args.energy_supplier_ids[0]}_02-01-2024_02-01-2024.csv",
     ]
 
     report_generator_instance = ReportGenerator(spark, dbutils, args)
