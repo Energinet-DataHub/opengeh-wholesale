@@ -284,6 +284,13 @@ jobs:
 
   settlement_report_unit_tests:
     if: ${{ inputs.has_settlement_report_job_changes }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
+        tests_filter_expression:
+          - name: Settlement Report Testing
+            paths: data_seeding/ domain/ entry_points/ infrastructure/ test_settlement_report_job_utils.py
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       operating_system: dh3-ubuntu-20.04-4core
@@ -292,7 +299,62 @@ jobs:
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       tests_folder_path: ./source/databricks/settlement_report/tests
       test_report_path: ./source/databricks/settlement_report/tests
+      # See .docker/entrypoint.py on how to use the filter expression
+      tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
       image_tag: ${{ inputs.image_tag }}
+
+  # Tests that require the integration test environment
+  settlement_report_integration_tests:
+    if: ${{ inputs.has_settlement_report_job_changes }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
+    with:
+      operating_system: dh3-ubuntu-20.04-4core
+      path_static_checks: ./source/databricks/settlement_report
+      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      tests_folder_path: ./source/databricks/settlement_report/tests
+      test_report_path: ./source/databricks/settlement_report/tests
+      # See .docker/entrypoint.py on how to use the filter expression
+      tests_filter_expression: integration_test/
+      use_integrationtest_environment: true
+      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      image_tag: ${{ inputs.image_tag }}
+
+  # Check executed unit tests
+  settlement_report_unit_test_check:
+    if: ${{ inputs.has_settlement_report_job_changes }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Execute python tests
+        shell: bash
+        id: test_count
+        run: |
+          # Small hack to get the repository name
+          repository=${{ github.repository }}
+          repository_owner=${{ github.repository_owner }}
+          repository_name=${repository/$repository_owner\//}
+
+          # IMPORTANT: When adding a new folder here, one must also add the folder
+          # to one of the test jobs above! This is because this filter contains the sum of all folders
+          # from test jobs.
+          filter="data_seeding/
+          domain/
+          entry_points/
+          infrastructure/
+          test_settlement_report_job_utils.py"
+
+          IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
   settlement_report_mypy_check:
     if: ${{ inputs.has_settlement_report_job_changes }}

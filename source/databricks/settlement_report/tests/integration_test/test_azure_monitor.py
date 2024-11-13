@@ -75,7 +75,7 @@ class TestWhenInvokedWithValidArguments:
         | where Message startswith_cs "Command line arguments"
         | where OperationId != "00000000000000000000000000000000"
         | where Properties.Subsystem == "wholesale-aggregations"
-        | where Properties.settlement_report_id == "{standard_wholesale_fixing_scenario_args.calculation_id}"
+        | where Properties.settlement_report_id == "{standard_wholesale_fixing_scenario_args.report_id}"
         | where Properties.CategoryName == "Energinet.DataHub.settlement_report_job.infrastructure.settlement_report_job_args"
         | count
         """
