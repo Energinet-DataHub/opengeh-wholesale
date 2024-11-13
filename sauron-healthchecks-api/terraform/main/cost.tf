@@ -2,7 +2,7 @@ resource "azurerm_consumption_budget_subscription" "budget_alert_default" {
   name            = "alert-budget-default-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}"
   subscription_id = data.azurerm_subscription.this.id
 
-  amount     = 1000
+  amount     = var.budget_alert_amount
   time_grain = "Monthly"
 
   time_period {

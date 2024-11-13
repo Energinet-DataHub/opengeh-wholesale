@@ -96,3 +96,8 @@ variable "alert_email_address" {
   type        = string
   description = "The email address to which alerts are sent."
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}
