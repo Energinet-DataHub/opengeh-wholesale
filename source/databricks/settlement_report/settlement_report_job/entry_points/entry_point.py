@@ -21,7 +21,6 @@ from opentelemetry.trace import SpanKind
 
 import telemetry_logging.logging_configuration as config
 from telemetry_logging.span_recording import span_record_exception
-from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points import task_factory
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
