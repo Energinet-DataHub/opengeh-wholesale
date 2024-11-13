@@ -39,7 +39,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
 from settlement_report_job.domain.utils.market_role import MarketRole
 
 
-class ReportGenerator:
+class ReportGenerator2:
     def __init__(
         self, spark: SparkSession, dbutils: Any, args: SettlementReportArgs
     ) -> None:
