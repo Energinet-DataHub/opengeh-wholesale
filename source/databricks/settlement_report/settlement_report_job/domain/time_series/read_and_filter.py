@@ -17,16 +17,18 @@ from uuid import UUID
 from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.dataframe_utils.system_operator_filter import (
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.dataframe_utils.factory_filters import (
+from settlement_report_job.domain.utils.factory_filters import (
     filter_by_energy_supplier_ids,
     filter_by_calculation_id_by_grid_area,
     read_and_filter_by_latest_calculations,
