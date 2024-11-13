@@ -3,11 +3,13 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.schemas.latest_calculations_by_day_v1 import (
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.infrastructure.wholesale.schemas.latest_calculations_by_day_v1 import (
     latest_calculations_by_day_v1,
 )
 
