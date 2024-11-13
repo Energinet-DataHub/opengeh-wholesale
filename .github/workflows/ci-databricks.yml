@@ -290,7 +290,7 @@ jobs:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
           - name: Settlement report unit testing
-            paths: data_seeding/ domain/ entry_points/ infrastructure/ test_settlement_report_job_utils.py
+            paths: data_seeding/ domain/ entry_points/ infrastructure/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -353,8 +353,7 @@ jobs:
           filter="data_seeding/
           domain/
           entry_points/
-          infrastructure/
-          test_settlement_report_job_utils.py"
+          infrastructure/"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
