@@ -22,6 +22,7 @@ public sealed class WholesaleServicesQuerySnippetProvider(
     IWholesaleServicesDatabricksContract databricksContract,
     WholesaleServicesQueryParameters queryParameters)
 {
+    private const string SystemOperatorActorNumber = "5790000432752";
     private readonly WholesaleServicesQueryParameters _queryParameters = queryParameters;
 
     public IWholesaleServicesDatabricksContract DatabricksContract { get; } = databricksContract;
@@ -116,9 +117,33 @@ public sealed class WholesaleServicesQuerySnippetProvider(
         }
         else
         {
-            sql += $"""
-                    AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is null
-                    """;
+            // When requested for energy supplier, charge owner must be null
+            if (_queryParameters is { RequestedForEnergySupplier: true })
+            {
+                sql += $"""
+                        AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is null
+                        """;
+            }
+            else
+            {
+                if (_queryParameters.RequestedForActorNumber == SystemOperatorActorNumber)
+                {
+                    sql += $"""
+                            AND (
+                                {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
+                            )
+                            """;
+                }
+                else
+                {
+                    sql += $"""
+                            AND (
+                                {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}'
+                                AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} is not null
+                            )
+                            """;
+                }
+            }
         }
 
         return sql;
@@ -142,14 +167,24 @@ public sealed class WholesaleServicesQuerySnippetProvider(
 
         if (_queryParameters is { RequestedForEnergySupplier: false, ChargeOwnerId: null })
         {
-            // The following is sufficient, as the validations ensure that the grid area(s) is/are a non-empty,
-            // finite set of grid areas the charge owner owns.
-            // If this assumption changes, then the following should be changed to a more complex query,
-            // to ensure the charge owner only gets 'is_tax' charges from grid areas they own.
-            sql += $"""
-                    AND ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.RequestedForActorNumber}'
-                         OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true)
+            if (_queryParameters.RequestedForActorNumber == SystemOperatorActorNumber)
+            {
+                sql += $"""
+                        AND (
+                           {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
+                             AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false
+                        )
                     """;
+            }
+            else
+            {
+                sql += $"""
+                         AND (
+                            ({table}.{DatabricksContract.GetChargeOwnerIdColumnName()} != '{SystemOperatorActorNumber}' 
+                                OR {table}.{DatabricksContract.GetIsTaxColumnName()} = true)
+                         )
+                     """;
+            }
         }
 
         return sql;
