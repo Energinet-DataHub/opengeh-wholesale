@@ -257,7 +257,10 @@ def test_execute_metering_point_periods__when_balance_fixing__returns_expected(
     report_generator_instance.execute_metering_point_periods()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("metering_point_periods_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MeteringPointPeriods,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
