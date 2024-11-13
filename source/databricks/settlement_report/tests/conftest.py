@@ -25,10 +25,11 @@ from pyspark.sql import SparkSession
 
 from tests.dbutils_fixture import DBUtilsFixture
 from tests.integration_test_configuration import IntegrationTestConfiguration
-from settlement_report_job.infrastructure.calculation_type import CalculationType
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 
 from tests.data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
@@ -174,6 +175,20 @@ def standard_balance_fixing_scenario_args(
         settlement_reports_output_path=settlement_reports_output_path,
         include_basis_data=True,
     )
+
+
+@pytest.fixture(scope="function")
+def standard_balance_fixing_scenario_grid_access_provider_args(
+    standard_balance_fixing_scenario_args: SettlementReportArgs,
+) -> SettlementReportArgs:
+    standard_balance_fixing_scenario_args.requesting_actor_market_role = (
+        MarketRole.GRID_ACCESS_PROVIDER
+    )
+    standard_balance_fixing_scenario_args.requesting_actor_id = (
+        standard_wholesale_fixing_scenario_data_generator.CHARGE_OWNER_ID_WITH_TAX
+    )
+    standard_balance_fixing_scenario_args.energy_supplier_ids = None
+    return standard_balance_fixing_scenario_args
 
 
 @pytest.fixture(scope="session")

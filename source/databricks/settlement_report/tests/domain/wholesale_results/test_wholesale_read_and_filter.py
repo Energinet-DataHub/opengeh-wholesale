@@ -5,13 +5,13 @@ from unittest.mock import Mock
 import pytest
 from pyspark.sql import SparkSession
 
-import tests.test_factories.default_test_data_spec as default_data
-from settlement_report_job.domain.market_role import MarketRole
+import test_factories.default_test_data_spec as default_data
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
 )
-from tests.test_factories.default_test_data_spec import create_amounts_per_charge_row
-from tests.test_factories.amounts_per_charge_factory import create
+from test_factories.default_test_data_spec import create_amounts_per_charge_row
+from test_factories.amounts_per_charge_factory import create
 
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
@@ -129,11 +129,6 @@ def test_energy_supplier_ids_scenarios(
     "args_calculation_id_by_grid_area, expected_rows",
     [
         pytest.param(
-            None,
-            1,
-            id="When calculation_id_by_grid_area is None, return 1 row",
-        ),
-        pytest.param(
             {"804": UUID(default_data.DEFAULT_CALCULATION_ID)},
             1,
             id="when calculation_id and grid_area_code is in calculation_id_by_grid_area, return 1 row",
@@ -155,7 +150,7 @@ def test_energy_supplier_ids_scenarios(
         ),
     ],
 )
-def test_calculation_id_by_grid_loss_scenarios(
+def test_calculation_id_by_grid_area_scenarios(
     spark: SparkSession,
     args_calculation_id_by_grid_area: dict[str, UUID],
     expected_rows: int,
