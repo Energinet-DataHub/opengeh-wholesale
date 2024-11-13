@@ -54,7 +54,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    task = TimeSeriesTask(spark, dbutils, args)
+    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()
