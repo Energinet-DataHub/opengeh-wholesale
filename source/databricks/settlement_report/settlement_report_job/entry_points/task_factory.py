@@ -6,6 +6,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.entry_points.task_type import TaskType
+from settlement_report_job.entry_points.tasks.charge_links_task import ChargeLinksTask
 from settlement_report_job.entry_points.tasks.energy_resuls_task import (
     EnergyResultsTask,
 )
@@ -22,6 +23,7 @@ from settlement_report_job.entry_points.tasks.time_series_task import TimeSeries
 from settlement_report_job.entry_points.tasks.wholesale_results_task import (
     WholesaleResultsTask,
 )
+from settlement_report_job.entry_points.tasks.zip_task import ZipTask
 
 
 def create(
@@ -40,17 +42,18 @@ def create(
             task_type=TaskType.TimeSeriesQuarterly,
         )
     elif task_type is TaskType.TimeSeriesHourly:
-        return TimeSeriesHourlyTask(spark=spark, dbutils=dbutils, args=args)
-
+        return TimeSeriesTask(
+            spark=spark, dbutils=dbutils, args=args, task_type=TaskType.TimeSeriesHourly
+        )
+    elif task_type is TaskType.ChargeLinks:
+        return ChargeLinksTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.EnergyResults:
         return EnergyResultsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.WholesaleResults:
         return WholesaleResultsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.MonthlyAmounts:
         return MonthlyAmountsTask(spark=spark, dbutils=dbutils, args=args)
-    elif task_type is TaskType.MeteringPointPeriods:
-        return MeteringPointPeriodsTask(spark=spark, dbutils=dbutils, args=args)
-    elif task_type is TaskType.EnergyResults:
-        return EnergyResultsTask(spark=spark, dbutils=dbutils, args=args)
-    elif task_type is TaskType.WholesaleResults:
-        return WholesaleResultsTask(spark=spark, dbutils=dbutils, args=args)
+    elif task_type is TaskType.Zip:
+        return ZipTask(spark=spark, dbutils=dbutils, args=args)
+    else:
+        raise ValueError(f"Unknown task type: {task_type}")
