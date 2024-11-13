@@ -235,6 +235,38 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
     )
 
 
+def test_execute_metering_point_periods__when_balance_fixing__returns_expected(
+    spark: SparkSession,
+    dbutils: DBUtilsFixture,
+    standard_balance_fixing_scenario_args: SettlementReportArgs,
+    standard_balance_fixing_scenario_data_written_to_delta: None,
+):
+    # Arrange
+    args = standard_balance_fixing_scenario_args
+    args.energy_supplier_ids = None
+    start_time = get_start_date(args.period_start)
+    end_time = get_end_date(args.period_end)
+    expected_file_names = [
+        f"MDMP_{args.grid_area_codes[0]}_{start_time}_{end_time}.csv",
+        f"MDMP_{args.grid_area_codes[1]}_{start_time}_{end_time}.csv",
+    ]
+    expected_columns = _get_expected_columns(args.requesting_actor_market_role)
+    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+
+    # Act
+    report_generator_instance.execute_metering_point_periods()
+
+    # Assert
+    actual_files = dbutils.jobs.taskValues.get("metering_point_periods_files")
+    assert_file_names_and_columns(
+        path=get_report_output_path(args),
+        actual_files=actual_files,
+        expected_columns=expected_columns,
+        expected_file_names=expected_file_names,
+        spark=spark,
+    )
+
+
 def test_execute_metering_point_periods__when_include_basis_data_false__returns_no_file_paths(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
