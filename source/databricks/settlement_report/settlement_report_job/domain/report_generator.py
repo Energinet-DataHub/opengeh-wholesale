@@ -25,7 +25,6 @@ from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
     create_time_series_for_balance_fixing,
 )
-from settlement_report_job.infrastructure.task_type import TaskType
 from settlement_report_job.domain.wholesale_results.wholesale_results_factory import (
     create_wholesale_results,
 )
@@ -53,20 +52,17 @@ class ReportGenerator:
     def execute_hourly_time_series(self) -> None:
         self._execute_time_series(
             ReportDataType.TimeSeriesHourly,
-            task_key="hourly_time_series_files",
         )
 
     @use_span()
     def execute_quarterly_time_series(self) -> None:
         self._execute_time_series(
             ReportDataType.TimeSeriesQuarterly,
-            task_key="quarterly_time_series_files",
         )
 
     def _execute_time_series(
         self,
         report_data_type: ReportDataType,
-        task_key: str,
     ) -> None:
         """
         Entry point for the logic of creating time series.
@@ -106,7 +102,7 @@ class ReportGenerator:
                 requesting_actor_id=self.args.requesting_actor_id,
             )
 
-        time_series_files = csv_writer.write(
+        csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=time_series_df,
@@ -115,8 +111,6 @@ class ReportGenerator:
                 report_data_type, self.args.requesting_actor_market_role
             ),
         )
-
-        self.dbutils.jobs.taskValues.set(key=task_key, value=time_series_files)
 
     @use_span()
     def execute_charge_links(self) -> None:
@@ -129,7 +123,7 @@ class ReportGenerator:
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
         charge_links = create_charge_links(args=self.args, repository=repository)
 
-        charge_links_files = csv_writer.write(
+        csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=charge_links,
@@ -137,10 +131,6 @@ class ReportGenerator:
             order_by_columns=get_order_by_columns(
                 ReportDataType.ChargeLinks, self.args.requesting_actor_market_role
             ),
-        )
-
-        self.dbutils.jobs.taskValues.set(
-            key="charge_links_files", value=charge_links_files
         )
 
     @use_span()
@@ -156,7 +146,7 @@ class ReportGenerator:
             args=self.args, repository=repository
         )
 
-        metering_point_periods_files = csv_writer.write(
+        csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=charge_links,
@@ -165,10 +155,6 @@ class ReportGenerator:
                 ReportDataType.MeteringPointPeriods,
                 self.args.requesting_actor_market_role,
             ),
-        )
-
-        self.dbutils.jobs.taskValues.set(
-            key="metering_point_periods_files", value=metering_point_periods_files
         )
 
     @use_span()
@@ -182,7 +168,7 @@ class ReportGenerator:
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
         energy_results_df = create_energy_results(args=self.args, repository=repository)
 
-        energy_result_files = csv_writer.write(
+        csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=energy_results_df,
@@ -190,10 +176,6 @@ class ReportGenerator:
             order_by_columns=get_order_by_columns(
                 ReportDataType.EnergyResults, self.args.requesting_actor_market_role
             ),
-        )
-
-        self.dbutils.jobs.taskValues.set(
-            key="energy_result_files", value=energy_result_files
         )
 
     @use_span()
@@ -206,7 +188,7 @@ class ReportGenerator:
             args=self.args, repository=repository
         )
 
-        wholesale_result_files = csv_writer.write(
+        csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=wholesale_results_df,
@@ -214,10 +196,6 @@ class ReportGenerator:
             order_by_columns=get_order_by_columns(
                 ReportDataType.WholesaleResults, self.args.requesting_actor_market_role
             ),
-        )
-
-        self.dbutils.jobs.taskValues.set(
-            key="wholesale_result_files", value=wholesale_result_files
         )
 
     @use_span()
@@ -230,7 +208,7 @@ class ReportGenerator:
             args=self.args, repository=repository
         )
 
-        monthly_amounts_files = csv_writer.write(
+        csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
             df=wholesale_results_df,
@@ -240,42 +218,16 @@ class ReportGenerator:
             ),
         )
 
-        self.dbutils.jobs.taskValues.set(
-            key="monthly_amounts_files", value=monthly_amounts_files
-        )
-
     @use_span()
     def execute_zip(self) -> None:
         """
         Entry point for the logic of creating the final zip file.
         """
-        files_to_zip = []
-
-        task_types_to_zip = {
-            TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
-            TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
-            TaskType.METERING_POINT_PERIODS: "metering_point_periods_files",
-            TaskType.CHARGE_LINKS: "charge_links_files",
-            TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
-            TaskType.ENERGY_RESULTS: "energy_result_files",
-            TaskType.WHOLESALE_RESULTS: "wholesale_result_files",
-        }
-
-        for task_key, key in task_types_to_zip.items():
-            try:
-                file_names = self.dbutils.jobs.taskValues.get(
-                    taskKey=task_key.value, key=key
-                )
-                files_to_zip.extend(
-                    [
-                        f"{get_report_output_path(self.args)}/{file_name}"
-                        for file_name in file_names
-                    ]
-                )
-            except ValueError:
-                self.log.info(
-                    f"Task Key {task_key.value} was not found in TaskValues, continuing without it."
-                )
+        report_output_path = get_report_output_path(self.args)
+        files_to_zip = [
+            f"{report_output_path}/{file_info.name}"
+            for file_info in self.dbutils.fs.ls(report_output_path)
+        ]
 
         self.log.info(f"Files to zip: {files_to_zip}")
         zip_file_path = (

@@ -1,15 +1,17 @@
 from pyspark.sql import SparkSession
 import pytest
 
-from tests.dbutils_fixture import DBUtilsFixture
 
-from tests.data_seeding import (
+from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
-from tests.domain.assertion import assert_file_names_and_columns
+from domain.assertion import assert_file_names_and_columns
+
+from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.utils.market_role import MarketRole
 import settlement_report_job.domain.report_generator as report_generator
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -17,13 +19,15 @@ from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
+from utils import cleanup_output_path, get_actual_files
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
@@ -55,7 +59,10 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -90,7 +97,10 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -134,7 +144,10 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -175,7 +188,10 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -200,7 +216,10 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert actual_files is None or len(actual_files) == 0
 
 
@@ -233,7 +252,10 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
     report_generator_instance.execute_quarterly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="quarterly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesQuarterly,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
