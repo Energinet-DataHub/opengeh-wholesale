@@ -248,11 +248,10 @@ class ReportGenerator:
         """
         Entry point for the logic of creating the final zip file.
         """
-
-        files = self.dbutils.fs.ls(f"{get_report_output_path(self.args)}")
+        report_output_path = get_report_output_path(self.args)
         files_to_zip = [
-            f"{get_report_output_path(self.args)}/{file_info.name}"
-            for file_info in files
+            f"{report_output_path}/{file_info.name}"
+            for file_info in self.dbutils.fs.ls(report_output_path)
         ]
 
         self.log.info(f"Files to zip: {files_to_zip}")
