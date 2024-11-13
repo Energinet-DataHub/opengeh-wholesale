@@ -1,24 +1,27 @@
 from pyspark.sql import SparkSession
 
 import pytest
+
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from tests.domain.assertion import assert_file_names_and_columns
-from tests.dbutils_fixture import DBUtilsFixture
+from domain.assertion import assert_file_names_and_columns
+from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
-)
-from settlement_report_job.domain.utils.market_role import MarketRole
+) 
+from utils import cleanup_output_path, get_actual_files
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files_and_content(
@@ -55,7 +58,10 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
     report_generator_instance.execute_monthly_amounts()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MonthlyAmounts,
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -149,8 +155,10 @@ def test_execute_monthly_amounts__when_grid_access_provider__returns_expected_nu
     report_generator_instance.execute_monthly_amounts()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
-
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MonthlyAmounts,
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+    ) 
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -158,7 +166,6 @@ def test_execute_monthly_amounts__when_grid_access_provider__returns_expected_nu
         expected_file_names=expected_file_names,
         spark=spark,
     )
-
 
 def test_execute_monthly_amounts__when_system_operator__returns_expected_number_of_files_and_content(
     spark: SparkSession,
@@ -201,7 +208,10 @@ def test_execute_monthly_amounts__when_system_operator__returns_expected_number_
     report_generator_instance.execute_monthly_amounts()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("monthly_amounts_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.MonthlyAmounts,
+        args=standard_wholesale_fixing_scenario_energy_supplier_args,
+    )
 
     assert_file_names_and_columns(
         path=get_report_output_path(args),
