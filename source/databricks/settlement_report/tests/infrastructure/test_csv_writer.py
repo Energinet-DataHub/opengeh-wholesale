@@ -11,36 +11,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from tests.domain.assertion import assert_file_names_and_columns
-from settlement_report_job.domain import csv_writer
+from domain.assertion import assert_file_names_and_columns
+from settlement_report_job.infrastructure import csv_writer
 
 from pyspark.sql import SparkSession, DataFrame
 import pyspark.sql.functions as F
-from settlement_report_job.domain.market_role import (
+from settlement_report_job.domain.utils.market_role import (
     MarketRole,
 )
 from settlement_report_job.domain.energy_results.prepare_for_csv import (
     prepare_for_csv,
 )
-from tests.data_seeding import (
+from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
 )
-from tests.test_factories.default_test_data_spec import (
+from test_factories.default_test_data_spec import (
     create_energy_results_data_spec,
 )
-from tests.dbutils_fixture import DBUtilsFixture
+from dbutils_fixture import DBUtilsFixture
 from functools import reduce
 import pytest
 
-from settlement_report_job.domain.order_by_columns import get_order_by_columns
-from settlement_report_job.domain.report_data_type import ReportDataType
+from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-import tests.test_factories.time_series_csv_factory as time_series_factory
-import tests.test_factories.energy_factory as energy_factory
-from settlement_report_job.domain.csv_column_names import CsvColumnNames
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+import test_factories.time_series_csv_factory as time_series_factory
+import test_factories.energy_factory as energy_factory
+from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )

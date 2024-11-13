@@ -2,17 +2,19 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
-from settlement_report_job.domain import csv_writer
+from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
 )
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods,
 )
-from settlement_report_job.domain.order_by_columns import get_order_by_columns
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.report_data_type import ReportDataType
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from settlement_report_job.domain.monthly_amounts.monthly_amounts_factory import (
     create_monthly_amounts,
 )
@@ -23,19 +25,18 @@ from settlement_report_job.domain.time_series.time_series_factory import (
     create_time_series_for_wholesale,
     create_time_series_for_balance_fixing,
 )
-from settlement_report_job.domain.task_type import TaskType
 from settlement_report_job.domain.wholesale_results.wholesale_results_factory import (
     create_wholesale_results,
 )
-from settlement_report_job.infrastructure.calculation_type import CalculationType
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
-from settlement_report_job.utils import create_zip_file
+from settlement_report_job.infrastructure.utils import create_zip_file
 from telemetry_logging import Logger, use_span
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
 )
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 
 
 class ReportGenerator:
@@ -247,33 +248,11 @@ class ReportGenerator:
         """
         Entry point for the logic of creating the final zip file.
         """
-        files_to_zip = []
-
-        task_types_to_zip = {
-            TaskType.HOURLY_TIME_SERIES: "hourly_time_series_files",
-            TaskType.QUARTERLY_TIME_SERIES: "quarterly_time_series_files",
-            TaskType.METERING_POINT_PERIODS: "metering_point_periods_files",
-            TaskType.CHARGE_LINKS: "charge_links_files",
-            TaskType.MONTHLY_AMOUNTS: "monthly_amounts_files",
-            TaskType.ENERGY_RESULTS: "energy_result_files",
-            TaskType.WHOLESALE_RESULTS: "wholesale_result_files",
-        }
-
-        for task_key, key in task_types_to_zip.items():
-            try:
-                file_names = self.dbutils.jobs.taskValues.get(
-                    taskKey=task_key.value, key=key
-                )
-                files_to_zip.extend(
-                    [
-                        f"{get_report_output_path(self.args)}/{file_name}"
-                        for file_name in file_names
-                    ]
-                )
-            except ValueError:
-                self.log.info(
-                    f"Task Key {task_key.value} was not found in TaskValues, continuing without it."
-                )
+        report_output_path = get_report_output_path(self.args)
+        files_to_zip = [
+            f"{report_output_path}/{file_info.name}"
+            for file_info in self.dbutils.fs.ls(report_output_path)
+        ]
 
         self.log.info(f"Files to zip: {files_to_zip}")
         zip_file_path = (

@@ -4,23 +4,23 @@ from datetime import datetime
 from tempfile import TemporaryDirectory
 from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.types import StructType, StructField, StringType
-from settlement_report_job.utils import (
+from settlement_report_job.infrastructure.utils import (
     create_zip_file,
     get_dbutils,
     map_from_dict,
     write_files,
 )
-import settlement_report_job.domain.report_naming_convention as market_naming
-from settlement_report_job.wholesale.data_values.charge_type import (
+import settlement_report_job.domain.utils.report_naming_convention as market_naming
+from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeTypeDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.calculation_type import (
+from settlement_report_job.infrastructure.wholesale.data_values.calculation_type import (
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.metering_point_type import (
+from settlement_report_job.infrastructure.wholesale.data_values.metering_point_type import (
     MeteringPointTypeDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.settlement_method import (
+from settlement_report_job.infrastructure.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
 

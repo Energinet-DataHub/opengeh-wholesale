@@ -6,10 +6,12 @@ import tests.test_factories.metering_point_time_series_factory as time_series_fa
 import tests.test_factories.charge_link_periods_factory as charge_link_periods_factory
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 
-from settlement_report_job.domain.dataframe_utils.system_operator_filter import (
+from settlement_report_job.domain.utils.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 
 @pytest.mark.parametrize(
