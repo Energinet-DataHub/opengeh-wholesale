@@ -1,13 +1,15 @@
 import pytest
 from pyspark.sql import SparkSession
 
-from tests.dbutils_fixture import DBUtilsFixture
+from dbutils_fixture import DBUtilsFixture
 
 
-from tests.domain.assertion import assert_file_names_and_columns
+from domain.assertion import assert_file_names_and_columns
 import settlement_report_job.domain.report_generator as report_generator
-from settlement_report_job.domain.report_data_type import ReportDataType
-from settlement_report_job.entry_points.job_args.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )

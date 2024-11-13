@@ -15,10 +15,14 @@ import os
 from datetime import timedelta, datetime
 from zoneinfo import ZoneInfo
 
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_data_type import ReportDataType
-from settlement_report_job.domain.report_name_factory import MarketRoleInFileName
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.infrastructure.report_name_factory import (
+    MarketRoleInFileName,
+)
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 from settlement_report_job.infrastructure import paths
 
 
