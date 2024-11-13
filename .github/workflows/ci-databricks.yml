@@ -289,8 +289,8 @@ jobs:
       matrix:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
-          - name: Settlement Report Testing
-            paths: data_seeding/ domain/ entry_points/ infrastructure/ test_settlement_report_job_utils.py
+          - name: Settlement report unit testing
+            paths: domain/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -309,7 +309,7 @@ jobs:
     if: ${{ inputs.has_settlement_report_job_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
-      job_name: Settlement Report Integration Testing
+      job_name: Settlement report integration testing
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/settlement_report
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
