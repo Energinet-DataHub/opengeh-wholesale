@@ -128,3 +128,8 @@ variable "create_azure_load_testing_resource" {
   description = "Should an Azure Load Testing resource be created for the environment?"
   default     = false
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}
