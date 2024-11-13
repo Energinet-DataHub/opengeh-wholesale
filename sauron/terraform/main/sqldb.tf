@@ -32,12 +32,16 @@ module "mssql_database_application_access" {
 
   application_hosts_names = [
     module.func_github_api.name,
-    module.func_bff_api.name
+    module.func_bff_api.name,
+    module.func_github_api.slot_name,
+    module.func_bff_api.slot_name
   ]
 
   depends_on = [
     module.func_github_api.name,
-    module.func_bff_api.name
+    module.func_bff_api.name,
+    module.func_github_api.slot_name,
+    module.func_bff_api.slot_name
   ]
 }
 
