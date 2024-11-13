@@ -3,7 +3,7 @@ from pyspark.sql import SparkSession
 
 from dbutils_fixture import DBUtilsFixture
 
-from domain.assertion import assert_file_names_and_columns
+from assertion import assert_file_names_and_columns
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,

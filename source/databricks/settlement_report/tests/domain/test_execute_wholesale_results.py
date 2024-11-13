@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 import pytest
 
 from dbutils_fixture import DBUtilsFixture
-from domain.assertion import assert_file_names_and_columns
+from assertion import assert_file_names_and_columns
 
 from data_seeding.standard_wholesale_fixing_scenario_data_generator import (
     CHARGE_OWNER_ID_WITHOUT_TAX,

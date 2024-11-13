@@ -7,7 +7,7 @@ from settlement_report_job.entry_points.tasks.monthly_amounts_task import (
     MonthlyAmountsTask,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from domain.assertion import assert_file_names_and_columns
+from assertion import assert_file_names_and_columns
 from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,

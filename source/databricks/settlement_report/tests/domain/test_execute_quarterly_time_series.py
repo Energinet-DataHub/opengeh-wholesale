@@ -6,7 +6,7 @@ from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
-from domain.assertion import assert_file_names_and_columns
+from assertion import assert_file_names_and_columns
 
 from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.utils.market_role import MarketRole
