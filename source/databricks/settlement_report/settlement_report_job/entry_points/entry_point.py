@@ -39,7 +39,7 @@ from settlement_report_job.infrastructure.utils import get_dbutils
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start_hourly_time_series() -> None:
-    _start_task(ReportDataType.TimeSeriesHourly)
+    _start_task(TaskType.TimeSeriesHourly)
 
 
 def start_quarterly_time_series() -> None:

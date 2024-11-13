@@ -15,7 +15,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
-from tests.data_seeding import standard_wholesale_fixing_scenario_data_generator
+from data_seeding import standard_wholesale_fixing_scenario_data_generator
 from utils import cleanup_output_path, get_actual_files
 
 
@@ -55,9 +55,7 @@ def test_execute_monthly_amounts__when_standard_wholesale_fixing_scenario__retur
         f"RESULTMONTHLY_805_{args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
 
-    task = MonthlyAmountsTask(
-        spark, dbutils, args
-    )
+    task = MonthlyAmountsTask(spark, dbutils, args)
 
     # Act
     task.execute()
@@ -108,9 +106,7 @@ def test_execute_monthly_amounts__when_administrator_and_split_report_by_grid_ar
         f"RESULTMONTHLY_flere-net_{args.energy_supplier_ids[0]}_02-01-2024_02-01-2024.csv",
     ]
 
-    task = MonthlyAmountsTask(
-        spark, dbutils, args
-    )
+    task = MonthlyAmountsTask(spark, dbutils, args)
 
     # Act
     task.execute()
@@ -163,10 +159,10 @@ def test_execute_monthly_amounts__when_grid_access_provider__returns_expected_nu
         f"RESULTMONTHLY_{target_grid_area}_{args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
     ]
 
-    report_generator_instance = ReportGenerator(spark, dbutils, args)
+    task = MonthlyAmountsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_monthly_amounts()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -216,11 +212,10 @@ def test_execute_monthly_amounts__when_system_operator__returns_expected_number_
         f"RESULTMONTHLY_{target_grid_area}_02-01-2024_02-01-2024.csv",
     ]
 
-    report_generator_instance = ReportGenerator(spark, dbutils, args)
+    task = MonthlyAmountsTask(spark, dbutils, args)
 
-    print(args.requesting_actor_market_role)
     # Act
-    report_generator_instance.execute_monthly_amounts()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
