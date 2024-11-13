@@ -16,17 +16,13 @@ from pyspark.sql import DataFrame, functions as F, Window
 
 from telemetry_logging import Logger, use_span
 
-from settlement_report_job.domain.dataframe_utils.get_start_of_day import (
-    get_start_of_day,
+from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
+from settlement_report_job.domain.utils.get_start_of_day import get_start_of_day
+from settlement_report_job.domain.utils.report_naming_convention import CHARGE_TYPES
+from settlement_report_job.infrastructure.utils import map_from_dict
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
 )
-from settlement_report_job.domain.report_naming_convention import (
-    CHARGE_TYPES,
-)
-from settlement_report_job.domain.csv_column_names import (
-    CsvColumnNames,
-)
-from settlement_report_job.utils import map_from_dict
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
 
 log = Logger(__name__)
 

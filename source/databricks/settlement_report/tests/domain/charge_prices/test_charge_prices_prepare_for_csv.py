@@ -1,6 +1,5 @@
 import uuid
 from datetime import datetime, timedelta
-from decimal import Decimal
 from unittest.mock import Mock
 
 import pytest
@@ -9,16 +8,14 @@ from pyspark.sql import SparkSession, DataFrame, functions as F
 import test_factories.default_test_data_spec as default_data
 from settlement_report_job.domain.charge_prices.prepare_for_csv import prepare_for_csv
 
-from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
+
+import test_factories.charge_prices_factory as charge_prices_factory
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeResolutionDataProductValue,
 )
-import test_factories.charge_link_periods_factory as charge_links_factory
-import test_factories.metering_point_periods_factory as metering_point_periods_factory
-import test_factories.charge_prices_factory as charge_prices_factory
-import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
