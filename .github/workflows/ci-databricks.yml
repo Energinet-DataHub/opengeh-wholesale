@@ -340,7 +340,7 @@ jobs:
 
       - name: Execute python tests
         shell: bash
-        id: test_count
+        id: test_count_settlement_report
         run: |
           # Small hack to get the repository name
           repository=${{ github.repository }}

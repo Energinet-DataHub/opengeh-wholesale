@@ -30,6 +30,7 @@ from settlement_report_job.entry_points.entry_point import (
 )
 from settlement_report_job.entry_points.task_type import TaskType
 from tests.integration_test_configuration import IntegrationTestConfiguration
+from settlement_report_job.entry_points import task_factory
 
 
 class TestWhenInvokedWithValidArguments:
@@ -57,12 +58,13 @@ class TestWhenInvokedWithValidArguments:
             integration_test_configuration.get_applicationinsights_connection_string()
         )
         os.environ["CATALOG_NAME"] = "test_catalog"
+        task_factory_mock = Mock()
 
         # Act
         with pytest.raises(SystemExit):
             with patch(
-                "settlement_report_job.infrastructure.utils.get_dbutils",
-                return_value=None,
+                "settlement_report_job.entry_points.task_factory.create",
+                task_factory_mock,
             ):
                 with patch(
                     "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
