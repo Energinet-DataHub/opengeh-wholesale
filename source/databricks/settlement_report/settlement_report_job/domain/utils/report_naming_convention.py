@@ -69,3 +69,8 @@ CHARGE_TYPES = {
     ChargeTypeDataProductValue.FEE.value: "D02",
     ChargeTypeDataProductValue.TARIFF.value: "D03",
 }
+
+TAX_INDICATORS = {
+    True: 1,
+    False: 0,
+}
