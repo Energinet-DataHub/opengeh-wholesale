@@ -22,10 +22,10 @@ from unittest.mock import Mock, patch
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
-from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
+from settlement_report_job.domain.report_generator import ReportGenerator
 
 from settlement_report_job.entry_points.entry_point import (
     start_hourly_time_series,
