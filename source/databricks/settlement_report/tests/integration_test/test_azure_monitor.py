@@ -53,18 +53,27 @@ class TestWhenInvokedWithValidArguments:
 
         # Arrange
         self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
-
         applicationinsights_connection_string = (
             integration_test_configuration.get_applicationinsights_connection_string()
         )
         os.environ["CATALOG_NAME"] = "test_catalog"
+        mock_get_dbutils = Mock()
+        mock_execute = Mock()
 
         # Act
         with pytest.raises(SystemExit):
-            start_task_with_deps(
-                task_type=TaskType.TimeSeriesHourly,
-                applicationinsights_connection_string=applicationinsights_connection_string,
-            )
+            with patch(
+                "settlement_report_job.infrastructure.utils.get_dbutils",
+                mock_get_dbutils,
+            ):
+                with patch(
+                    "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                    mock_execute,
+                ):
+                    start_task_with_deps(
+                        task_type=TaskType.TimeSeriesHourly,
+                        applicationinsights_connection_string=applicationinsights_connection_string,
+                    )
 
         # Assert
         # noinspection PyTypeChecker
