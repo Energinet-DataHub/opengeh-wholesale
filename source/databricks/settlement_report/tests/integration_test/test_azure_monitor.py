@@ -65,6 +65,7 @@ class TestWhenInvokedWithValidArguments:
             with patch(
                 "settlement_report_job.infrastructure.utils.get_dbutils",
                 mock_get_dbutils,
+                return_value=None,
             ):
                 with patch(
                     "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
