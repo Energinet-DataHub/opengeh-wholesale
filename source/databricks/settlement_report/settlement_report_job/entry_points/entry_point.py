@@ -21,7 +21,8 @@ from opentelemetry.trace import SpanKind
 
 import telemetry_logging.logging_configuration as config
 from telemetry_logging.span_recording import span_record_exception
-from settlement_report_job.domain.report_generator import ReportGenerator
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points import task_factory
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -29,6 +30,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_job_args impo
     parse_job_arguments,
     parse_command_line_arguments,
 )
+from settlement_report_job.entry_points.task_type import TaskType
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
 from settlement_report_job.infrastructure.utils import get_dbutils
 
@@ -37,51 +39,51 @@ from settlement_report_job.infrastructure.utils import get_dbutils
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start_hourly_time_series() -> None:
-    _start_task(ReportGenerator.execute_hourly_time_series)
+    _start_task(TaskType.TimeSeriesHourly)
 
 
 def start_quarterly_time_series() -> None:
-    _start_task(ReportGenerator.execute_quarterly_time_series)
+    _start_task(TaskType.TimeSeriesQuarterly)
 
 
 def start_metering_point_periods() -> None:
-    _start_task(ReportGenerator.execute_metering_point_periods)
+    _start_task(TaskType.MeteringPointPeriods)
 
 
 def start_charge_links() -> None:
-    _start_task(ReportGenerator.execute_charge_links)
+    _start_task(TaskType.ChargeLinks)
 
 
 def start_energy_results() -> None:
-    _start_task(ReportGenerator.execute_energy_results)
+    _start_task(TaskType.EnergyResults)
 
 
 def start_wholesale_results() -> None:
-    _start_task(ReportGenerator.execute_wholesale_results)
+    _start_task(TaskType.WholesaleResults)
 
 
 def start_monthly_amounts() -> None:
-    _start_task(ReportGenerator.execute_monthly_amounts)
+    _start_task(TaskType.MonthlyAmounts)
 
 
 def start_zip() -> None:
-    _start_task(ReportGenerator.execute_zip)
+    _start_task(TaskType.Zip)
 
 
-def _start_task(execute_task: Callable[[ReportGenerator], None]) -> None:
+def _start_task(task_type: TaskType) -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
 
     start_task_with_deps(
-        execute_task=execute_task,
+        task_type=task_type,
         applicationinsights_connection_string=applicationinsights_connection_string,
     )
 
 
 def start_task_with_deps(
     *,
-    execute_task: Callable[[ReportGenerator], None],
+    task_type: TaskType,
     cloud_role_name: str = "dbr-settlement-report",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
@@ -114,9 +116,8 @@ def start_task_with_deps(
             spark = initialize_spark()
             dbutils = get_dbutils(spark)
 
-            report_generator_instance = ReportGenerator(spark, dbutils, args)
-
-            execute_task(report_generator_instance)
+            task = task_factory.create(task_type, spark, dbutils, args)
+            task.execute()
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
