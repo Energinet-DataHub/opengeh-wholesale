@@ -17,7 +17,7 @@ module "func_process_manager_orchestrations" {
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   app_settings                           = local.func_process_manager_orchestrations.app_settings
-  allowed_monitor_reader_entra_groups    = [var.developer_security_group_name]
+  allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
 
   health_check_alert = length(module.monitor_action_group_edi) != 1 ? null : {
     action_group_id = module.monitor_action_group_edi[0].id
