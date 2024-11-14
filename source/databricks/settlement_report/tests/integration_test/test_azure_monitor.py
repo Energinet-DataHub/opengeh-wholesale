@@ -26,10 +26,12 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.report_generator import ReportGenerator
-
 from settlement_report_job.entry_points.entry_point import (
-    start_hourly_time_series,
     start_task_with_deps,
+    start_hourly_time_series,
+)
+from settlement_report_job.entry_points.job_args.settlement_report_job_args import (
+    parse_job_arguments,
 )
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -55,6 +57,7 @@ class TestWhenInvokedWithValidArguments:
 
         # Arrange
         self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
+
         applicationinsights_connection_string = os.getenv(
             "APPLICATIONINSIGHTS_CONNECTION_STRING"
         )
@@ -103,17 +106,15 @@ class TestWhenInvokedWithValidArguments:
             uuid.uuid4()
         )  # Ensure unique report id
         sys.argv = []
-        sys.argv.append(
-            "--entry-point=start_hourly_time_series"
-        )  # Kind of a workaround as the first argv is ignored when parsing
+        sys.argv.append("--entry-point=execute_wholesale_results") # Workaround as the parse command line arguments starts with the second argument
         sys.argv.append(
             f"--report-id={str(standard_wholesale_fixing_scenario_args.report_id)}"
         )
         sys.argv.append(
-            f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start.strftime('%Y-%m-%dT%H:%M:%SZ'))}"
+            f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start.strftime('%Y-%m-%dT%h:%M:%SZ'))}"
         )
         sys.argv.append(
-            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%H:%M:%SZ'))}"
+            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%h:%M:%SZ')}")}"
         )
         sys.argv.append(
             f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
