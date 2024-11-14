@@ -119,7 +119,7 @@ class TestWhenInvokedWithValidArguments:
         )
         sys.argv.append("--requesting-actor-market-role=datahub_administrator")
         sys.argv.append("--requesting-actor-id=1234567890123")
-        sys.argv.append("--grid-areas-codes=[804]")
+        sys.argv.append("--grid-area-codes=[804]")
 
 
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
