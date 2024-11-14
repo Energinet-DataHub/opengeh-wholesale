@@ -2,7 +2,7 @@ from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 
 
-def get_order_by_columns_charge_links(
+def order_by_columns(
     requesting_actor_market_role: MarketRole,
 ) -> list[str]:
     order_by_columns = [

@@ -2,9 +2,11 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
+from settlement_report_job.domain.monthly_amounts.order_by_columns import (
+    order_by_columns,
+)
 from settlement_report_job.entry_points.tasks.task_base import TaskBase
 from settlement_report_job.infrastructure import csv_writer
-from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
 from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
@@ -37,7 +39,5 @@ class MonthlyAmountsTask(TaskBase):
             args=self.args,
             df=wholesale_results_df,
             report_data_type=ReportDataType.MonthlyAmounts,
-            order_by_columns=get_order_by_columns(
-                ReportDataType.MonthlyAmounts, self.args.requesting_actor_market_role
-            ),
+            order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )
