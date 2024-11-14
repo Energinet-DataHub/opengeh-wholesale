@@ -109,10 +109,10 @@ class TestWhenInvokedWithValidArguments:
             f"--report-id={str(standard_wholesale_fixing_scenario_args.report_id)}"
         )
         sys.argv.append(
-            f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start.strftime('%Y-%m-%dT%h:%M:%SZ'))}"
+            f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start.strftime('%Y-%m-%dT%H:%M:%SZ'))}"
         )
         sys.argv.append(
-            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%h:%M:%SZ'))}"
+            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%H:%M:%SZ'))}"
         )
         sys.argv.append(
             f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
