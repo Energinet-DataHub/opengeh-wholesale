@@ -25,7 +25,6 @@ from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.entry_points.entry_point import (
     start_task_with_deps,
     start_hourly_time_series,
@@ -33,6 +32,7 @@ from settlement_report_job.entry_points.entry_point import (
 from settlement_report_job.entry_points.job_args.settlement_report_job_args import (
     parse_job_arguments,
 )
+import settlement_report_job.domain.report_generator as report_generator
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
