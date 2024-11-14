@@ -111,10 +111,10 @@ class TestWhenInvokedWithValidArguments:
             f"--period-end-datetime={str(standard_wholesale_fixing_scenario_args.period_end)}"
         )
         sys.argv.append(
-            f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type)}"
+            f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
         )
         sys.argv.append(
-            f"--requesting-actor-market-role={str(standard_wholesale_fixing_scenario_args.requesting_actor_market_role)}"
+            f"--requesting-actor-market-role={str(standard_wholesale_fixing_scenario_args.requesting_actor_market_role.value)}"
         )
         sys.argv.append(
             f"--requesting-actor-id={str(standard_wholesale_fixing_scenario_args.requesting_actor_id)}"

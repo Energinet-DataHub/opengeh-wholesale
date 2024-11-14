@@ -289,14 +289,8 @@ jobs:
       matrix:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
-          - name: Settlement report unit testing domain
-            paths: domain/
-          - name: Settlement report unit testing entry_points
-            paths: entry_points/
-          - name: Settlement report unit testing infrastructure
-            paths: infrastructure/
-          - name: Settlement report unit testing test_settlement_report_utils
-            paths: test_settlement_report_utils.py
+          - name: Settlement report unit testing
+            paths: domain/ entry_points/ infrastructure/ test_settlement_report_utils.py
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -356,11 +350,10 @@ jobs:
           # IMPORTANT: When adding a new folder here, one must also add the folder
           # to one of the test jobs above! This is because this filter contains the sum of all folders
           # from test jobs.
-          filter="data_seeding/
-          domain/
+          filter="domain/
           entry_points/
           infrastructure/
-          test_settlement_report_job_utils.py"
+          test_settlement_report_utils.py"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
 
