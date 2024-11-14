@@ -40,10 +40,10 @@ class WholesaleRepository:
             WholesaleBasisDataDatabase.TIME_SERIES_POINTS_VIEW_NAME,
         )
 
-    def read_charge_prices(self) -> DataFrame:
+    def read_charge_price_points(self) -> DataFrame:
         return self._read_view_or_table(
             WholesaleBasisDataDatabase.DATABASE_NAME,
-            WholesaleBasisDataDatabase.CHARGE_PRICES_VIEW_NAME,
+            WholesaleBasisDataDatabase.CHARGE_PRICE_POINTS_VIEW_NAME,
         )
 
     def read_charge_link_periods(self) -> DataFrame:

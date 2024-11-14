@@ -33,6 +33,7 @@ class FileNameFactory:
             ReportDataType.TimeSeriesQuarterly,
             ReportDataType.MeteringPointPeriods,
             ReportDataType.ChargeLinks,
+            ReportDataType.ChargePricePoints,
         }:
             return self._create_basis_data_filename(grid_area_code, chunk_index)
         if self.report_data_type in [
@@ -108,6 +109,8 @@ class FileNameFactory:
             return "MDMP"
         elif self.report_data_type == ReportDataType.ChargeLinks:
             return "CHARGELINK"
+        elif self.report_data_type == ReportDataType.ChargePricePoints:
+            return "CHARGEPRICE"
         elif self.report_data_type == ReportDataType.EnergyResults:
             return "RESULTENERGY"
         elif self.report_data_type == ReportDataType.WholesaleResults:

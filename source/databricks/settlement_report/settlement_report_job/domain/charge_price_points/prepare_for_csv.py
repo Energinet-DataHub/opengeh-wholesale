@@ -16,7 +16,10 @@ from pyspark.sql import DataFrame, functions as F, Window
 
 from telemetry_logging import Logger, use_span
 
-from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
+from settlement_report_job.domain.utils.csv_column_names import (
+    CsvColumnNames,
+    EphemeralColumns,
+)
 from settlement_report_job.domain.utils.get_start_of_day import get_start_of_day
 from settlement_report_job.domain.utils.report_naming_convention import (
     CHARGE_TYPES,
@@ -32,15 +35,16 @@ log = Logger(__name__)
 
 @use_span()
 def prepare_for_csv(
-    filtered_charge_prices: DataFrame,
+    filtered_charge_price_points: DataFrame,
     time_zone: str,
 ) -> DataFrame:
-    filtered_charge_prices = filtered_charge_prices.withColumn(
+    filtered_charge_price_points = filtered_charge_price_points.withColumn(
         CsvColumnNames.time,
         get_start_of_day(DataProductColumnNames.charge_time, time_zone),
     )
 
     win = Window.partitionBy(
+        DataProductColumnNames.grid_area_code,
         DataProductColumnNames.charge_type,
         DataProductColumnNames.charge_owner_id,
         DataProductColumnNames.charge_code,
@@ -48,12 +52,13 @@ def prepare_for_csv(
         DataProductColumnNames.is_tax,
         CsvColumnNames.time,
     ).orderBy(DataProductColumnNames.charge_time)
-    filtered_charge_prices = filtered_charge_prices.withColumn(
+    filtered_charge_price_points = filtered_charge_price_points.withColumn(
         "chronological_order", F.row_number().over(win)
     )
 
     pivoted_df = (
-        filtered_charge_prices.groupBy(
+        filtered_charge_price_points.groupBy(
+            DataProductColumnNames.grid_area_code,
             DataProductColumnNames.charge_type,
             DataProductColumnNames.charge_owner_id,
             DataProductColumnNames.charge_code,
@@ -74,6 +79,9 @@ def prepare_for_csv(
     ]
 
     csv_df = pivoted_df.select(
+        F.col(DataProductColumnNames.grid_area_code).alias(
+            EphemeralColumns.grid_area_code_partitioning
+        ),
         map_from_dict(CHARGE_TYPES)[F.col(DataProductColumnNames.charge_type)].alias(
             CsvColumnNames.charge_type
         ),

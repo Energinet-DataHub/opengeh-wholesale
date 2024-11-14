@@ -47,14 +47,14 @@ def read_and_filter(
 ) -> DataFrame:
     logger.info("Creating charge prices")
 
-    charge_prices = (
-        repository.read_charge_prices()
+    charge_price_points = (
+        repository.read_charge_price_points()
         .where((F.col(DataProductColumnNames.charge_time) >= period_start))
         .where(F.col(DataProductColumnNames.charge_time) < period_end)
     )
 
-    charge_prices = _join_with_charge_link_and_metering_point_periods(
-        charge_prices,
+    charge_price_points = _join_with_charge_link_and_metering_point_periods(
+        charge_price_points,
         period_start,
         period_end,
         calculation_id_by_grid_area,
@@ -66,7 +66,7 @@ def read_and_filter(
         repository.read_charge_price_information_periods()
     )
 
-    charge_prices = charge_prices.join(
+    charge_price_points = charge_price_points.join(
         charge_price_information_periods,
         on=[
             DataProductColumnNames.calculation_id,
@@ -74,7 +74,7 @@ def read_and_filter(
         ],
         how="inner",
     ).select(
-        charge_prices["*"],
+        charge_price_points["*"],
         charge_price_information_periods[DataProductColumnNames.is_tax],
         charge_price_information_periods[DataProductColumnNames.resolution],
     )
@@ -83,17 +83,17 @@ def read_and_filter(
         MarketRole.SYSTEM_OPERATOR,
         MarketRole.GRID_ACCESS_PROVIDER,
     ]:
-        charge_prices = filter_by_charge_owner_and_tax_depending_on_market_role(
-            charge_prices,
+        charge_price_points = filter_by_charge_owner_and_tax_depending_on_market_role(
+            charge_price_points,
             requesting_actor_market_role,
             requesting_actor_id,
         )
 
-    return charge_prices
+    return charge_price_points
 
 
 def _join_with_charge_link_and_metering_point_periods(
-    charge_prices: DataFrame,
+    charge_price_points: DataFrame,
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
@@ -119,8 +119,8 @@ def _join_with_charge_link_and_metering_point_periods(
         )
     )
 
-    charge_prices = (
-        charge_prices.join(
+    charge_price_points = (
+        charge_price_points.join(
             charge_links_and_metering_point_periods,
             on=[
                 DataProductColumnNames.calculation_id,
@@ -137,11 +137,11 @@ def _join_with_charge_link_and_metering_point_periods(
             < F.col(DataProductColumnNames.to_date)
         )
         .select(
-            charge_prices["*"],
+            charge_price_points["*"],
             charge_links_and_metering_point_periods[
                 DataProductColumnNames.grid_area_code
             ],
         )
     ).distinct()
 
-    return charge_prices
+    return charge_price_points

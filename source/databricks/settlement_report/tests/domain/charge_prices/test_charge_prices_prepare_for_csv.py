@@ -6,10 +6,12 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame, functions as F
 
 import test_factories.default_test_data_spec as default_data
-from settlement_report_job.domain.charge_prices.prepare_for_csv import prepare_for_csv
+from settlement_report_job.domain.charge_price_points.prepare_for_csv import (
+    prepare_for_csv,
+)
 
 
-import test_factories.charge_prices_factory as charge_prices_factory
+import test_factories.charge_price_points_factory as charge_price_points_factory
 from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
@@ -35,13 +37,13 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 def _get_repository_mock(
     metering_point_period: DataFrame,
     charge_link_periods: DataFrame,
-    charge_prices: DataFrame,
+    charge_price_points: DataFrame,
     charge_price_information_periods: DataFrame | None = None,
 ) -> Mock:
     mock_repository = Mock()
     mock_repository.read_metering_point_periods.return_value = metering_point_period
     mock_repository.read_charge_link_periods.return_value = charge_link_periods
-    mock_repository.read_charge_prices.return_value = charge_prices
+    mock_repository.read_charge_price_points.return_value = charge_price_points
     if charge_price_information_periods:
         mock_repository.read_charge_price_information_periods.return_value = (
             charge_price_information_periods
@@ -62,10 +64,10 @@ def test_when_resolution_is_day_or_month_return_only_value_in_energy_price_1(
     resolution: ChargeResolutionDataProductValue,
 ) -> None:
     # Arrange
-    filtered_charge_prices = (
-        charge_prices_factory.create(
+    filtered_charge_price_points = (
+        charge_price_points_factory.create(
             spark,
-            default_data.create_charge_prices_row(),
+            default_data.create_charge_price_points_row(),
         )
         .withColumn(
             DataProductColumnNames.grid_area_code,
@@ -80,7 +82,8 @@ def test_when_resolution_is_day_or_month_return_only_value_in_energy_price_1(
 
     # Act
     result_df = prepare_for_csv(
-        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+        filtered_charge_price_points=filtered_charge_price_points,
+        time_zone=DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -99,14 +102,14 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
     charge_price_rows = []
     for i in range(24):
         charge_price_rows.append(
-            default_data.create_charge_prices_row(
+            default_data.create_charge_price_points_row(
                 charge_time=hours_in_day[i],
                 charge_price=default_data.DEFAULT_CHARGE_PRICE + i,
             )
         )
 
-    filtered_charge_prices = (
-        charge_prices_factory.create(
+    filtered_charge_price_points = (
+        charge_price_points_factory.create(
             spark,
             charge_price_rows,
         )
@@ -123,7 +126,8 @@ def test_when_resolution_is_hour_return_one_row_with_value_in_every_energy_price
 
     # Act
     result_df = prepare_for_csv(
-        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+        filtered_charge_price_points=filtered_charge_price_points,
+        time_zone=DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -150,10 +154,10 @@ def test_tax_indicator_is_converted_correctly(
     expected_tax_indicator: int,
 ) -> None:
     # Arrange
-    filtered_charge_prices = (
-        charge_prices_factory.create(
+    filtered_charge_price_points = (
+        charge_price_points_factory.create(
             spark,
-            default_data.create_charge_prices_row(),
+            default_data.create_charge_price_points_row(),
         )
         .withColumn(
             DataProductColumnNames.grid_area_code,
@@ -168,7 +172,8 @@ def test_tax_indicator_is_converted_correctly(
 
     # Act
     result_df = prepare_for_csv(
-        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+        filtered_charge_price_points=filtered_charge_price_points,
+        time_zone=DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -198,14 +203,14 @@ def test_when_daylight_savings_time_return_number_of_expected_rows(
     charge_price_rows = []
     for i in range(25):
         charge_price_rows.append(
-            default_data.create_charge_prices_row(
+            default_data.create_charge_price_points_row(
                 charge_time=hours_in_day[i],
                 charge_price=default_data.DEFAULT_CHARGE_PRICE + i,
             )
         )
 
-    filtered_charge_prices = (
-        charge_prices_factory.create(
+    filtered_charge_price_points = (
+        charge_price_points_factory.create(
             spark,
             charge_price_rows,
         )
@@ -222,7 +227,8 @@ def test_when_daylight_savings_time_return_number_of_expected_rows(
 
     # Act
     result_df = prepare_for_csv(
-        filtered_charge_prices=filtered_charge_prices, time_zone=DEFAULT_TIME_ZONE
+        filtered_charge_price_points=filtered_charge_price_points,
+        time_zone=DEFAULT_TIME_ZONE,
     )
 
     # Assert
