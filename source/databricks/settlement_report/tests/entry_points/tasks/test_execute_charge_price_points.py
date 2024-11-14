@@ -140,8 +140,8 @@ def test_execute_charge_price_points__when_system_operator_or_datahub_admin_with
     args.requesting_actor_market_role = market_role
 
     expected_file_names = [
-        f"CHARGEPRICE_804_02-01-2024_02-01-2024.csv",
-        f"CHARGEPRICE_805_02-01-2024_02-01-2024.csv",
+        "CHARGEPRICE_804_02-01-2024_02-01-2024.csv",
+        "CHARGEPRICE_805_02-01-2024_02-01-2024.csv",
     ]
 
     task = ChargePricePointsTask(
