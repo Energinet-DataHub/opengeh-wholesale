@@ -81,6 +81,8 @@ def parse_job_arguments(
             include_basis_data=job_args.include_basis_data,
         )
 
+        print("Settlement report args: ", settlement_report_args)
+
         return settlement_report_args
 
 
@@ -89,6 +91,8 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
         description="Create settlement report",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
+
+    print("Command line args: ", command_line_args)
 
     # Run parameters
     p.add_argument("--report-id", type=str, required=True)
