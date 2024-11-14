@@ -62,7 +62,7 @@ class TestWhenInvokedWithValidArguments:
         # Act
         with pytest.raises(SystemExit):
             start_task_with_deps(
-                execute_task=ReportGenerator.execute_hourly_time_series,
+                execute_task=ReportGenerator.execute_wholesale_results,
                 applicationinsights_connection_string=applicationinsights_connection_string,
             )
 
