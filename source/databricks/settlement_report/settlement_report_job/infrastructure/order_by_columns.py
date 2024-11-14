@@ -1,8 +1,8 @@
 from pyspark.sql import functions as F
 
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.report_data_type import ReportDataType
-from settlement_report_job.domain.csv_column_names import CsvColumnNames
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 
 
 def get_order_by_columns(
@@ -22,7 +22,7 @@ def get_order_by_columns(
     elif report_data_type == ReportDataType.WholesaleResults:
         return _order_by_wholesale_results()
     elif report_data_type == ReportDataType.MonthlyAmounts:
-        return _order_by_monthly_amounts()
+        return _order_by_monthly_amounts(requesting_actor_market_role)
     else:
         raise ValueError(f"Unsupported report data type: {report_data_type}")
 
@@ -109,12 +109,19 @@ def _order_by_wholesale_results() -> list:
     ]
 
 
-def _order_by_monthly_amounts() -> list:
-    return [
+def _order_by_monthly_amounts(requesting_actor_market_role: MarketRole) -> list[str]:
+    order_by_columns = [
         CsvColumnNames.grid_area_code,
         CsvColumnNames.energy_supplier_id,
-        CsvColumnNames.charge_owner_id,
         CsvColumnNames.charge_type,
         CsvColumnNames.charge_code,
         CsvColumnNames.resolution,
     ]
+
+    if requesting_actor_market_role not in [
+        MarketRole.GRID_ACCESS_PROVIDER,
+        MarketRole.SYSTEM_OPERATOR,
+    ]:
+        order_by_columns.insert(2, CsvColumnNames.charge_owner_id)
+
+    return order_by_columns

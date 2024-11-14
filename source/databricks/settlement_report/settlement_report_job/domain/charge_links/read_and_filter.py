@@ -17,19 +17,21 @@ from uuid import UUID
 from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
-from settlement_report_job.domain.dataframe_utils.join_metering_points_periods_and_charge_links_periods import (
+from settlement_report_job.domain.utils.join_metering_points_periods_and_charge_links_periods import (
     join_metering_points_periods_and_charge_links_periods,
 )
-from settlement_report_job.domain.dataframe_utils.merge_periods import (
+from settlement_report_job.domain.utils.merge_periods import (
     merge_connected_periods,
 )
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.repository_filtering import (
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.repository_filtering import (
     read_charge_link_periods,
     read_metering_point_periods_by_calculation_ids,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 logger = Logger(__name__)
 

@@ -1,27 +1,37 @@
 from pyspark.sql import SparkSession
 import pytest
 
-from tests.dbutils_fixture import DBUtilsFixture
-from tests.domain.assertion import assert_file_names_and_columns
+from dbutils_fixture import DBUtilsFixture
+from domain.assertion import assert_file_names_and_columns
 
 from data_seeding.standard_wholesale_fixing_scenario_data_generator import (
     CHARGE_OWNER_ID_WITHOUT_TAX,
 )
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 import settlement_report_job.domain.report_generator as report_generator
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
-from utils import get_market_role_in_file_name, get_start_date, get_end_date
+from utils import (
+    get_market_role_in_file_name,
+    get_start_date,
+    get_end_date,
+    cleanup_output_path,
+    get_actual_files,
+)
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_is_false__returns_expected(
@@ -71,7 +81,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.WholesaleResults,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -134,7 +147,10 @@ def test_execute_wholesale_results__when_energy_supplier_and_split_by_grid_area_
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.WholesaleResults,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -206,8 +222,10 @@ def test_when_market_role_is(
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
-
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.WholesaleResults,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -270,8 +288,10 @@ def test_when_market_role_is_grid_access_provider_return_correct_file_name(
     report_generator_instance.execute_wholesale_results()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get(key="wholesale_result_files")
-
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.WholesaleResults,
+        args=args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,

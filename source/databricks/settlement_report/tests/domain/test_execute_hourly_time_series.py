@@ -1,16 +1,20 @@
 import pytest
 from pyspark.sql import SparkSession
 
-from tests.dbutils_fixture import DBUtilsFixture
+from dbutils_fixture import DBUtilsFixture
 
 
-from tests.domain.assertion import assert_file_names_and_columns
+from domain.assertion import assert_file_names_and_columns
 import settlement_report_job.domain.report_generator as report_generator
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.domain.csv_column_names import (
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
+from utils import cleanup_output_path, get_actual_files
 
 
 # NOTE: The tests in test_execute_quarterly_time_series.py should cover execute_hourly also, so we don't need to test
@@ -18,10 +22,11 @@ from settlement_report_job.infrastructure.paths import get_report_output_path
 
 
 @pytest.fixture(scope="function", autouse=True)
-def reset_task_values(dbutils: DBUtilsFixture):
+def reset_task_values(settlement_reports_output_path: str):
     yield
-    print("Resetting task values")
-    dbutils.jobs.taskValues.reset()
+    cleanup_output_path(
+        settlement_reports_output_path=settlement_reports_output_path,
+    )
 
 
 def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files_and_content(
@@ -49,7 +54,10 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
     report_generator_instance.execute_hourly_time_series()
 
     # Assert
-    actual_files = dbutils.jobs.taskValues.get("hourly_time_series_files")
+    actual_files = get_actual_files(
+        report_data_type=ReportDataType.TimeSeriesHourly,
+        args=standard_wholesale_fixing_scenario_args,
+    )
     assert_file_names_and_columns(
         path=get_report_output_path(standard_wholesale_fixing_scenario_args),
         actual_files=actual_files,

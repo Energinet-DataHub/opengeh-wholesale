@@ -14,9 +14,12 @@
 
 from pyspark.sql import DataFrame
 
+from settlement_report_job.domain.charge_prices.prepare_for_csv import prepare_for_csv
 from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
 
 
 def create_charge_prices(
@@ -33,4 +36,4 @@ def create_charge_prices(
         repository,
     )
 
-    return charge_prices
+    return prepare_for_csv(charge_prices, args.time_zone)

@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeTypeDataProductValue,
     CalculationTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.settlement_method import (
+from settlement_report_job.infrastructure.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
 
@@ -68,4 +68,9 @@ CHARGE_TYPES = {
     ChargeTypeDataProductValue.SUBSCRIPTION.value: "D01",
     ChargeTypeDataProductValue.FEE.value: "D02",
     ChargeTypeDataProductValue.TARIFF.value: "D03",
+}
+
+TAX_INDICATORS = {
+    True: 1,
+    False: 0,
 }
