@@ -126,9 +126,10 @@ class TestWhenInvokedWithValidArguments:
         sys.argv.append(
             f"--calculation-id-by-grid-area={str(standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area)}"
         )
-        sys.argv.append(
-            f"--grid-areas-codes={str(standard_wholesale_fixing_scenario_args.grid_area_codes)}"
-        )
+        if standard_wholesale_fixing_scenario_args.grid_area_codes:
+            sys.argv.append(
+                f"--grid-areas-codes={str(standard_wholesale_fixing_scenario_args.grid_area_codes)}"
+            )
 
 
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
