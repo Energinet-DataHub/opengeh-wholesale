@@ -173,6 +173,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public async Task Validate_WhenPeriodIsMoreThan3AndAHalfYearBackInTimeAndNotPartOfCutOffMonth_ReturnsUnsuccessfulValidation()
     {
         // Arrange
+        _clockMock.Setup(c => c.GetCurrentInstant()).Returns(Instant.FromUtc(2024, 11, 15, 16, 46, 43));
         var periodStart = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
             .InZone(_timeZone) // 2024-11-15 17:46:43 CET
             .Date.PlusYears(-3) // 2021-11-15
