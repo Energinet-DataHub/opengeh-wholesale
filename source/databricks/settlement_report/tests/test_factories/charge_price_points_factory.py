@@ -11,13 +11,13 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     ChargeTypeDataProductValue,
     CalculationTypeDataProductValue,
 )
-from settlement_report_job.infrastructure.wholesale.schemas.charge_prices_v1 import (
-    charge_prices_v1,
+from settlement_report_job.infrastructure.wholesale.schemas.charge_price_points_v1 import (
+    charge_price_points_v1,
 )
 
 
 @dataclass
-class ChargePricesRow:
+class ChargePricePointsRow:
     calculation_id: str
     calculation_type: CalculationTypeDataProductValue
     calculation_version: int
@@ -31,7 +31,7 @@ class ChargePricesRow:
 
 def create(
     spark: SparkSession,
-    rows: ChargePricesRow | list[ChargePricesRow],
+    rows: ChargePricePointsRow | list[ChargePricePointsRow],
 ) -> DataFrame:
     if not isinstance(rows, list):
         rows = [rows]
@@ -52,4 +52,4 @@ def create(
             }
         )
 
-    return spark.createDataFrame(row_list, charge_prices_v1)
+    return spark.createDataFrame(row_list, charge_price_points_v1)

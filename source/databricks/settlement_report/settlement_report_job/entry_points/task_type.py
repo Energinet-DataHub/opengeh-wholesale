@@ -15,10 +15,9 @@
 from enum import Enum
 
 
-class ReportDataType(Enum):
+class TaskType(Enum):
     """
-    Types of data that can be included in a settlement report.
-    Used to distinguish between different types of data in the report.
+    Databricks tasks that can be executed.
     """
 
     TimeSeriesHourly = 1
@@ -28,4 +27,4 @@ class ReportDataType(Enum):
     EnergyResults = 5
     WholesaleResults = 6
     MonthlyAmounts = 7
-    ChargePricePoints = 8
+    Zip = 8

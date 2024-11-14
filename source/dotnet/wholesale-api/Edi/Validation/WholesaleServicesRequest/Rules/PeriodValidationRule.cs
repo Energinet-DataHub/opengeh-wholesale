@@ -18,9 +18,16 @@ using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper)
+public sealed class PeriodValidationRule(
+    DateTimeZone dateTimeZone,
+    PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
+    private const int AllowedTimeFrameYearsFromNow = 3;
+    private const int AllowedTimeFrameMonthsFromNow = 6;
+    private readonly PeriodValidationHelper _periodValidationHelper = periodValidationHelper;
+    private readonly DateTimeZone _dateTimeZone = dateTimeZone;
+
     private static readonly ValidationError _invalidDateFormat =
         new(
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z",
@@ -28,7 +35,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for 3 år og 3 måneder tilbage i tid / It is not possible to request data 3 years and 3 months back in time",
+            $"Der kan ikke anmodes om data for {AllowedTimeFrameYearsFromNow} år og {AllowedTimeFrameMonthsFromNow} måneder tilbage i tid / It is not possible to request data {AllowedTimeFrameYearsFromNow} years and {AllowedTimeFrameMonthsFromNow} months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
@@ -73,7 +80,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         MustBeMidnight(startInstant.Value, "Period Start", errors);
         MustBeMidnight(endInstant.Value, "Period End", errors);
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
-        MustNotBe3YearsAnd3MonthsOld(startInstant.Value, errors);
+        MustNotBeOlderThan3YearsAnd6Months(startInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
@@ -92,9 +99,12 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         return null;
     }
 
-    private void MustNotBe3YearsAnd3MonthsOld(Instant periodStart, ICollection<ValidationError> errors)
+    private void MustNotBeOlderThan3YearsAnd6Months(Instant periodStart, ICollection<ValidationError> errors)
     {
-        if (periodValidationHelper.IsMonthOlder3Years2Months(periodStart))
+        if (_periodValidationHelper.IsMonthOfDateOlderThanXYearsAndYMonths(
+                periodStart,
+                AllowedTimeFrameYearsFromNow,
+                AllowedTimeFrameMonthsFromNow))
         {
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
         }
@@ -105,8 +115,8 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         Instant periodEnd,
         ICollection<ValidationError> errors)
     {
-        var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
-        var zonedEndDateTime = new ZonedDateTime(periodEnd, dateTimeZone);
+        var zonedStartDateTime = new ZonedDateTime(periodStart, _dateTimeZone);
+        var zonedEndDateTime = new ZonedDateTime(periodEnd, _dateTimeZone);
         if (zonedEndDateTime.LocalDateTime.Month > zonedStartDateTime.LocalDateTime.Month
             && zonedEndDateTime.LocalDateTime.Day > zonedStartDateTime.LocalDateTime.Day)
         {
@@ -127,11 +137,12 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
     {
-        if (periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
+        if (_periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
-        errors.Add(zonedDateTime.IsDaylightSavingTime()
-            ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
-            : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
+        errors.Add(
+            zonedDateTime.IsDaylightSavingTime()
+                ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
+                : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
     }
 }
