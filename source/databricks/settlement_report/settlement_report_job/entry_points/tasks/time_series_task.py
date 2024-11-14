@@ -7,7 +7,6 @@ from settlement_report_job.entry_points.task_type import TaskType
 from settlement_report_job.entry_points.tasks.task_base import TaskBase
 from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -44,10 +43,8 @@ class TimeSeriesTask(TaskBase):
             return
 
         if self.task_type is TaskType.TimeSeriesHourly:
-            report_type = ReportDataType.TimeSeriesHourly
             metering_point_resolution = MeteringPointResolutionDataProductValue.HOUR
         elif self.task_type is TaskType.TimeSeriesQuarterly:
-            report_type = ReportDataType.TimeSeriesQuarterly
             metering_point_resolution = MeteringPointResolutionDataProductValue.QUARTER
         else:
             raise ValueError(f"Unsupported report data type: {self.task_type}")
@@ -81,6 +78,6 @@ class TimeSeriesTask(TaskBase):
             dbutils=self.dbutils,
             args=self.args,
             df=time_series_df,
-            report_data_type=report_type,
+            folder_name="time_series_points",
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )

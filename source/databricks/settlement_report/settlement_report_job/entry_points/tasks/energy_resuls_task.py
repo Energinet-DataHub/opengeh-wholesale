@@ -8,7 +8,6 @@ from settlement_report_job.domain.energy_results.order_by_columns import (
 from settlement_report_job.entry_points.tasks.task_base import TaskBase
 from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -40,6 +39,6 @@ class EnergyResultsTask(TaskBase):
             dbutils=self.dbutils,
             args=self.args,
             df=energy_results_df,
-            report_data_type=ReportDataType.EnergyResults,
+            folder_name="energy_results",
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )

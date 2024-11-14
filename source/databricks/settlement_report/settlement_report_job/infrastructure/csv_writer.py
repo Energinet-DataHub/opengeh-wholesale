@@ -17,7 +17,6 @@ from typing import Any
 from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
-from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.infrastructure.report_name_factory import FileNameFactory
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
@@ -38,13 +37,13 @@ def write(
     dbutils: Any,
     args: SettlementReportArgs,
     df: DataFrame,
-    report_data_type: ReportDataType,
+    folder_name: str,
     order_by_columns: list[str],
     rows_per_file: int = 1_000_000,
 ) -> list[str]:
 
     report_output_path = get_report_output_path(args)
-    spark_output_path = f"{report_output_path}/{_get_folder_name(report_data_type)}"
+    spark_output_path = f"{report_output_path}/{folder_name}"
 
     partition_columns = []
     if EphemeralColumns.grid_area_code_partitioning in df.columns:
@@ -77,22 +76,3 @@ def write(
     file_names = [os.path.basename(file_path) for file_path in files_paths]
 
     return file_names
-
-
-def _get_folder_name(report_data_type: ReportDataType) -> str:
-    if report_data_type == ReportDataType.TimeSeriesHourly:
-        return "time_series_hourly"
-    elif report_data_type == ReportDataType.TimeSeriesQuarterly:
-        return "time_series_quarterly"
-    elif report_data_type == ReportDataType.MeteringPointPeriods:
-        return "metering_point_periods"
-    elif report_data_type == ReportDataType.ChargeLinks:
-        return "charge_links"
-    elif report_data_type == ReportDataType.EnergyResults:
-        return "energy_results"
-    elif report_data_type == ReportDataType.MonthlyAmounts:
-        return "monthly_amounts"
-    elif report_data_type == ReportDataType.WholesaleResults:
-        return "wholesale_results"
-    else:
-        raise ValueError(f"Unsupported report data type: {report_data_type}")

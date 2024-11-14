@@ -11,7 +11,6 @@ from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
 )
 from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -39,6 +38,6 @@ class ChargeLinksTask(TaskBase):
             dbutils=self.dbutils,
             args=self.args,
             df=charge_links,
-            report_data_type=ReportDataType.ChargeLinks,
+            folder_name="charge_link_periods",
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )
