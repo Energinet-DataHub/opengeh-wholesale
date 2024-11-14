@@ -57,8 +57,6 @@ class TestWhenInvokedWithValidArguments:
             integration_test_configuration.get_applicationinsights_connection_string()
         )
         os.environ["CATALOG_NAME"] = "test_catalog"
-        mock_get_dbutils = Mock()
-        mock_execute = Mock()
 
         # Act
         with pytest.raises(SystemExit):
