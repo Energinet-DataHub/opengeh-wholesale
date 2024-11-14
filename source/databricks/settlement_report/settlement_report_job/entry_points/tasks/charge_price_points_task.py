@@ -2,16 +2,18 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
+from settlement_report_job.infrastructure import csv_writer
+from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.domain.charge_price_points.charge_price_points_factory import (
     create_charge_price_points,
+)
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
+from settlement_report_job.domain.charge_price_points.order_by_columns import (
+    order_by_columns,
 )
 from settlement_report_job.entry_points.tasks.task_base import (
     TaskBase,
 )
-from settlement_report_job.infrastructure import csv_writer
-from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
-from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -42,7 +44,5 @@ class ChargePricePointsTask(TaskBase):
             args=self.args,
             df=charge_price_points,
             report_data_type=ReportDataType.ChargePricePoints,
-            order_by_columns=get_order_by_columns(
-                ReportDataType.ChargePricePoints, self.args.requesting_actor_market_role
-            ),
+            order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )
