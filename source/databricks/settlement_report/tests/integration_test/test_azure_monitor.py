@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import argparse
+import os
 import sys
 import time
 import uuid
@@ -22,11 +22,14 @@ from unittest.mock import Mock, patch
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
+from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
+
 from settlement_report_job.entry_points.entry_point import (
     start_hourly_time_series,
+    start_task_with_deps,
 )
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -52,10 +55,16 @@ class TestWhenInvokedWithValidArguments:
 
         # Arrange
         self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
+        applicationinsights_connection_string = os.getenv(
+            "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        )
 
         # Act
         with pytest.raises(SystemExit):
-            start_hourly_time_series()
+            start_task_with_deps(
+                execute_task=ReportGenerator.execute_hourly_time_series,
+                applicationinsights_connection_string=applicationinsights_connection_string,
+            )
 
         # Assert
         # noinspection PyTypeChecker
