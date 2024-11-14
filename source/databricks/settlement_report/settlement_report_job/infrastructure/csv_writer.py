@@ -88,6 +88,8 @@ def _get_folder_name(report_data_type: ReportDataType) -> str:
         return "metering_point_periods"
     elif report_data_type == ReportDataType.ChargeLinks:
         return "charge_links"
+    elif report_data_type == ReportDataType.ChargePricePoints:
+        return "charge_price_points"
     elif report_data_type == ReportDataType.EnergyResults:
         return "energy_results"
     elif report_data_type == ReportDataType.MonthlyAmounts:

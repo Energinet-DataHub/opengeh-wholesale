@@ -2,6 +2,9 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
+from settlement_report_job.domain.charge_price_points.charge_price_points_factory import (
+    create_charge_price_points,
+)
 from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.domain.charge_links.charge_links_factory import (
     create_charge_links,
@@ -130,6 +133,29 @@ class ReportGenerator:
             report_data_type=ReportDataType.ChargeLinks,
             order_by_columns=get_order_by_columns(
                 ReportDataType.ChargeLinks, self.args.requesting_actor_market_role
+            ),
+        )
+
+    @use_span()
+    def execute_charge_price_points(self) -> None:
+        """
+        Entry point for the logic of creating charge prices.
+        """
+        if not self.args.include_basis_data:
+            return
+
+        repository = WholesaleRepository(self.spark, self.args.catalog_name)
+        charge_price_points = create_charge_price_points(
+            args=self.args, repository=repository
+        )
+
+        csv_writer.write(
+            dbutils=self.dbutils,
+            args=self.args,
+            df=charge_price_points,
+            report_data_type=ReportDataType.ChargePricePoints,
+            order_by_columns=get_order_by_columns(
+                ReportDataType.ChargePricePoints, self.args.requesting_actor_market_role
             ),
         )
 

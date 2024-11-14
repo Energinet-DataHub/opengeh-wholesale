@@ -2,7 +2,7 @@ import pyspark.sql.types as t
 
 nullable = True
 
-charge_prices_v1 = t.StructType(
+charge_price_points_v1 = t.StructType(
     [
         # UUID
         t.StructField("calculation_id", t.StringType(), not nullable),

@@ -12,13 +12,13 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     SettlementMethodDataProductValue,
 )
-from tests.test_factories.default_test_data_spec import (
+from test_factories.default_test_data_spec import (
     create_energy_results_data_spec,
     create_amounts_per_charge_row,
     create_monthly_amounts_per_charge_row,
     create_total_monthly_amounts_row,
 )
-from tests.test_factories import (
+from test_factories import (
     metering_point_periods_factory,
     metering_point_time_series_factory,
     charge_link_periods_factory,
@@ -27,6 +27,7 @@ from tests.test_factories import (
     amounts_per_charge_factory,
     monthly_amounts_per_charge_factory,
     total_monthly_amounts_factory,
+    charge_price_points_factory,
 )
 
 GRID_AREAS = ["804", "805"]
@@ -66,6 +67,8 @@ class Charge:
     charge_type: ChargeTypeDataProductValue
     charge_owner_id: str
     is_tax: bool
+    charge_price: Decimal
+    charge_time: datetime
 
 
 def create_metering_point_periods(spark: SparkSession) -> DataFrame:
@@ -155,6 +158,31 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
             )
 
     return charge_link_periods_factory.create(spark, rows)
+
+
+def create_charge_price_points(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with charge prices data for testing purposes.
+    """
+
+    rows = []
+    for metering_point in _get_all_metering_points():
+        for charge in _get_all_charges():
+            rows.append(
+                charge_price_points_factory.ChargePricePointsRow(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    calculation_version=1,
+                    charge_key=charge.charge_key,
+                    charge_code=charge.charge_code,
+                    charge_type=charge.charge_type,
+                    charge_owner_id=charge.charge_owner_id,
+                    charge_price=charge.charge_price,
+                    charge_time=charge.charge_time,
+                )
+            )
+
+    return charge_price_points_factory.create(spark, rows)
 
 
 def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
@@ -343,6 +371,8 @@ def _get_all_charges() -> list[Charge]:
             charge_type=ChargeTypeDataProductValue.TARIFF,
             charge_owner_id=CHARGE_OWNER_ID_WITHOUT_TAX,
             is_tax=False,
+            charge_price=Decimal("10"),
+            charge_time=FROM_DATE,
         ),
         Charge(
             charge_key=f"4001_{ChargeTypeDataProductValue.TARIFF.value}_5790001330553",
@@ -350,5 +380,7 @@ def _get_all_charges() -> list[Charge]:
             charge_type=ChargeTypeDataProductValue.TARIFF,
             charge_owner_id=CHARGE_OWNER_ID_WITH_TAX,
             is_tax=True,
+            charge_price=Decimal("12"),
+            charge_time=FROM_DATE,
         ),
     ]

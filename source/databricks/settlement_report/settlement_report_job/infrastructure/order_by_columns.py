@@ -17,6 +17,8 @@ def get_order_by_columns(
         return _order_by_metering_point_periods(requesting_actor_market_role)
     elif report_data_type == ReportDataType.ChargeLinks:
         return _get_order_by_columns_charge_links(requesting_actor_market_role)
+    elif report_data_type == ReportDataType.ChargePricePoints:
+        return _get_order_by_columns_charge_price_points(requesting_actor_market_role)
     if report_data_type == ReportDataType.EnergyResults:
         return _order_by_energy_results(requesting_actor_market_role)
     elif report_data_type == ReportDataType.WholesaleResults:
@@ -69,6 +71,26 @@ def _get_order_by_columns_charge_links(
         CsvColumnNames.charge_owner_id,
         CsvColumnNames.charge_code,
         CsvColumnNames.charge_link_from_date,
+    ]
+    if requesting_actor_market_role in [
+        MarketRole.SYSTEM_OPERATOR,
+        MarketRole.DATAHUB_ADMINISTRATOR,
+    ]:
+        order_by_columns.insert(0, CsvColumnNames.energy_supplier_id)
+
+    return order_by_columns
+
+
+def _get_order_by_columns_charge_price_points(
+    requesting_actor_market_role: MarketRole,
+) -> list[str]:
+    order_by_columns = [
+        CsvColumnNames.charge_type,
+        CsvColumnNames.charge_owner_id,
+        CsvColumnNames.charge_code,
+        CsvColumnNames.resolution,
+        CsvColumnNames.is_tax,
+        CsvColumnNames.time,
     ]
     if requesting_actor_market_role in [
         MarketRole.SYSTEM_OPERATOR,
