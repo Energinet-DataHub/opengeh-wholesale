@@ -49,9 +49,6 @@ import settlement_report_job.domain.time_series.order_by_columns as time_series_
 import settlement_report_job.domain.energy_results.order_by_columns as energy_order_by_columns
 
 
-DEFAULT_FOLDER_NAME = "some_folder"
-
-
 def _read_csv_file(
     directory: str,
     file_name: str,
@@ -96,7 +93,7 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
-        folder_name=DEFAULT_FOLDER_NAME,
+        report_data_type=report_data_type,
         order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
@@ -168,7 +165,7 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
-        folder_name=DEFAULT_FOLDER_NAME,
+        report_data_type=report_data_type,
         order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
