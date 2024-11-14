@@ -35,7 +35,7 @@ from tests.data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
-from data_seeding.write_test_data import (
+from tests.data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
