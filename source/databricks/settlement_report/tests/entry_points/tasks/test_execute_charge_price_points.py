@@ -4,7 +4,6 @@ import pytest
 from assertion import assert_file_names_and_columns
 from dbutils_fixture import DBUtilsFixture
 
-from data_seeding import standard_wholesale_fixing_scenario_data_generator
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
