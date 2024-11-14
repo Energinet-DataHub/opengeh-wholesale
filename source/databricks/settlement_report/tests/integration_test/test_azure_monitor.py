@@ -25,13 +25,8 @@ from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.domain.report_generator import ReportGenerator
 from settlement_report_job.entry_points.entry_point import (
-    start_task_with_deps,
     start_hourly_time_series,
-)
-from settlement_report_job.entry_points.job_args.settlement_report_job_args import (
-    parse_job_arguments,
 )
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -60,9 +55,7 @@ class TestWhenInvokedWithValidArguments:
 
         # Act
         with pytest.raises(SystemExit):
-            start_task_with_deps(
-                execute_task=ReportGenerator.execute_wholesale_results,
-            )
+            start_hourly_time_series()
 
         # Assert
         # noinspection PyTypeChecker
