@@ -1,12 +1,3 @@
-resource "databricks_instance_pool" "settlement_report_cluster_pool" {
-  instance_pool_name                    = "settlement_report-instance-pool"
-  min_idle_instances                    = 0
-  max_capacity                          = 24
-  node_type_id                          = "Standard_D8as_v4"
-  idle_instance_autotermination_minutes = 120
-  preloaded_spark_versions              = [local.spark_version]
-}
-
 resource "databricks_job" "settlement_report_job_balance_fixing" {
   provider            = databricks.dbw
   name                = "SettlementReportBalanceFixing"
@@ -16,8 +7,8 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
     job_cluster_key = "hourly_time_series_cluster"
 
     new_cluster {
-      instance_pool_id = databricks_instance_pool.settlement_report_cluster_pool.id
       spark_version  = local.spark_version
+      node_type_id = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -36,8 +27,8 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
     job_cluster_key = "settlement_report_cluster"
 
     new_cluster {
-      instance_pool_id = databricks_instance_pool.settlement_report_cluster_pool.id
       spark_version  = local.spark_version
+      node_type_id = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -162,8 +153,8 @@ resource "databricks_job" "settlement_report_job_wholesale" {
     job_cluster_key = "hourly_time_series_cluster"
 
     new_cluster {
-      instance_pool_id = databricks_instance_pool.settlement_report_cluster_pool.id
       spark_version  = local.spark_version
+      node_type_id = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -182,8 +173,8 @@ resource "databricks_job" "settlement_report_job_wholesale" {
     job_cluster_key = "settlement_report_cluster"
 
     new_cluster {
-      instance_pool_id = databricks_instance_pool.settlement_report_cluster_pool.id
       spark_version  = local.spark_version
+      node_type_id = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
