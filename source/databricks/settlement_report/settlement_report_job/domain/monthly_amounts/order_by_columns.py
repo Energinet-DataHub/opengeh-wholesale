@@ -11,7 +11,7 @@ def order_by_columns(requesting_actor_market_role: MarketRole) -> list[str]:
         CsvColumnNames.resolution,
     ]
 
-    if requesting_actor_market_role in [
+    if requesting_actor_market_role not in [
         MarketRole.GRID_ACCESS_PROVIDER,
         MarketRole.SYSTEM_OPERATOR,
     ]:
