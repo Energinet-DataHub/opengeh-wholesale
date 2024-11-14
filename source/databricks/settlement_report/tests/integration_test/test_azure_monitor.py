@@ -95,13 +95,16 @@ class TestWhenInvokedWithValidArguments:
         )  # Ensure unique report id
         sys.argv = []
         sys.argv.append(
+            "--entry-point=start_hourly_time_series"
+        )  # Kind of a workaround as the first argv is ignored when parsing
+        sys.argv.append(
             f"--report-id={str(standard_wholesale_fixing_scenario_args.report_id)}"
         )
         sys.argv.append(
-            f"--period-start-datetime={str(standard_wholesale_fixing_scenario_args.period_start)}"
+            f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start)}"
         )
         sys.argv.append(
-            f"--period-end-datetime={str(standard_wholesale_fixing_scenario_args.period_end)}"
+            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end)}"
         )
         sys.argv.append(
             f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
