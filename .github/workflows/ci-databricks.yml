@@ -290,7 +290,7 @@ jobs:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
           - name: Settlement report unit testing
-            paths: domain/ entry_points/ infrastructure/ integration_test/ test_settlement_report_utils.py
+            paths: domain/ entry_points/ infrastructure/ test_settlement_report_utils.py
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -302,10 +302,6 @@ jobs:
       test_report_path: ./source/databricks/settlement_report/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
-      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
-      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
       image_tag: ${{ inputs.image_tag }}
 
   # Tests that require the integration test environment
