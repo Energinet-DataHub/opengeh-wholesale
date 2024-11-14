@@ -1,18 +1,20 @@
 from pyspark.sql import SparkSession
 import pytest
 
+from assertion import assert_file_names_and_columns
 from dbutils_fixture import DBUtilsFixture
 
 from data_seeding import standard_wholesale_fixing_scenario_data_generator
-from domain.assertion import assert_file_names_and_columns
 from settlement_report_job.domain.utils.market_role import MarketRole
-import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
+)
+from settlement_report_job.entry_points.tasks.charge_price_points_task import (
+    ChargePricePointsTask,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_actual_files
@@ -62,12 +64,12 @@ def test_execute_charge_price_points__when_energy_supplier__returns_expected(
         f"{CsvColumnNames.energy_price}24",
         f"{CsvColumnNames.energy_price}25",
     ]
-    report_generator_instance = report_generator.ReportGenerator(
+    task = ChargePricePointsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
 
     # Act
-    report_generator_instance.execute_charge_price_points()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
