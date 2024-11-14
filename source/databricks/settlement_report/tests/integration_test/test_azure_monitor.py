@@ -28,7 +28,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.entry_points.entry_point import (
     start_task_with_deps,
 )
-from settlement_report_job.domain.report_generator import ReportGenerator
+from settlement_report_job.entry_points.task_type import TaskType
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
@@ -61,7 +61,7 @@ class TestWhenInvokedWithValidArguments:
         # Act
         with pytest.raises(SystemExit):
             start_task_with_deps(
-                execute_task=ReportGenerator.execute_wholesale_results,
+                task_type=TaskType.TimeSeriesHourly,
                 applicationinsights_connection_string=applicationinsights_connection_string,
             )
 
