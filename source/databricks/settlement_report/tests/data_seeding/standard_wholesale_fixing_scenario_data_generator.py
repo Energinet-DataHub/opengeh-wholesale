@@ -67,8 +67,6 @@ class Charge:
     charge_type: ChargeTypeDataProductValue
     charge_owner_id: str
     is_tax: bool
-    charge_price: Decimal
-    charge_time: datetime
 
 
 def create_metering_point_periods(spark: SparkSession) -> DataFrame:
@@ -176,8 +174,8 @@ def create_charge_price_points(spark: SparkSession) -> DataFrame:
                 charge_code=charge.charge_code,
                 charge_type=charge.charge_type,
                 charge_owner_id=charge.charge_owner_id,
-                charge_price=charge.charge_price,
-                charge_time=charge.charge_time,
+                charge_price=Decimal("10"),
+                charge_time=FROM_DATE,
             )
         )
 
@@ -381,8 +379,6 @@ def _get_all_charges() -> list[Charge]:
             charge_type=ChargeTypeDataProductValue.TARIFF,
             charge_owner_id=CHARGE_OWNER_ID_WITHOUT_TAX,
             is_tax=False,
-            charge_price=Decimal("10"),
-            charge_time=FROM_DATE,
         ),
         Charge(
             charge_key=f"4001_{ChargeTypeDataProductValue.TARIFF.value}_5790001330553",
@@ -390,7 +386,5 @@ def _get_all_charges() -> list[Charge]:
             charge_type=ChargeTypeDataProductValue.TARIFF,
             charge_owner_id=CHARGE_OWNER_ID_WITH_TAX,
             is_tax=True,
-            charge_price=Decimal("12"),
-            charge_time=FROM_DATE,
         ),
     ]
