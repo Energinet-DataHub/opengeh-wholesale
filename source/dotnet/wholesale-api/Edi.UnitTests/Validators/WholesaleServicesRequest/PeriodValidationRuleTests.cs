@@ -33,7 +33,7 @@ public class PeriodValidationRuleTests
 
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd3Months =
         new(
-            "Der kan ikke anmodes om data for 3 år og 3 måneder tilbage i tid / It is not possible to request data 3 years and 3 months back in time",
+            "Der kan ikke anmodes om data for 3 år og 6 måneder tilbage i tid / It is not possible to request data 3 years and 6 months back in time",
             "E17");
 
     private static readonly ValidationError _invalidWinterMidnightFormat =
@@ -130,7 +130,7 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIs5YearsOld_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodStartIsMoreThan3YearsAnd6MonthsOldAndPeriodNotPartOfCutOffMonth_ReturnsExpectedValidationError()
     {
         // Arrange
         var dateTimeOffset = _now.ToDateTimeOffset().AddYears(-5);
@@ -148,42 +148,18 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnNoValidationError()
-    {
-        // Arrange
-        var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var end = new LocalDateTime(2024, 5, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(start.ToString())
-            .WithPeriodEnd(end.ToString())
-            .Build();
-
-        // Act
-        var errors = await _sut.ValidateAsync(message);
-
-        // Assert
-        errors.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3YearsAnd3MonthsOld_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodStartIsLessThan3YearsAnd6MonthsOld_ReturnNoValidationError()
     {
         // Arrange
         _now = new LocalDateTime(2024, 6, 1, 0, 0, 0)
             .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
-        var start = new LocalDateTime(2021, 3, 1, 0, 0, 0)
+        var start = new LocalDateTime(2022, 4, 1, 0, 0, 0)
             .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
-        var end = new LocalDateTime(2024, 4, 1, 0, 0, 0)
+        var end = new LocalDateTime(2022, 5, 1, 0, 0, 0)
             .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
@@ -196,54 +172,22 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
-    }
-
-    [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3Years2MonthsAnd1HourOldDueToDaylightSavingTime_ReturnsNoValidationError()
-    {
-        // Arrange
-        var periodStartDate = new LocalDateTime(2021, 10, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var periodEndDate = new LocalDateTime(2021, 11, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        _now = new LocalDateTime(2024, 12, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(periodStartDate.ToString())
-            .WithPeriodEnd(periodEndDate.ToString())
-            .Build();
-
-        // Act
-        var errors = await _sut.ValidateAsync(message);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
         errors.Should().BeEmpty();
-        var duration = _now - periodStartDate;
-        duration.Days.Should().Be(1157);
-        duration.Hours.Should().Be(1);
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3Years2MonthsMinus1HourOldDueToDaylightSavingTime_ReturnsNoValidationError()
+    public async Task Validate_WhenPeriodStartIsMoreThan3And6MonthsBackInTimeButPartOfCutOffMonth_ReturnsNoValidationError()
     {
         // Arrange
-        var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
+        var periodStartDate = new LocalDateTime(2021, 6, 1, 0, 0, 0)
             .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
-        var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
+        var periodEndDate = new LocalDateTime(2021, 7, 1, 0, 0, 0)
             .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
-        _now = new LocalDateTime(2024, 5, 1, 0, 0, 0)
+        _now = new LocalDateTime(2024, 12, 15, 13, 25, 37)
             .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
@@ -257,102 +201,6 @@ public class PeriodValidationRuleTests
 
         // Assert
         using var assertionScope = new AssertionScope();
-        errors.Should().BeEmpty();
-        var duration = _now - periodStartDate;
-        duration.Days.Should().Be(1156);
-        duration.Hours.Should().Be(23);
-    }
-
-    [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3Years3MonthsAnd1HourOldDueToDaylightSavingTime_ReturnsExpectedValidationError()
-    {
-        // Arrange
-        var periodStartDate = new LocalDateTime(2021, 10, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var periodEndDate = new LocalDateTime(2021, 11, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        _now = new LocalDateTime(2025, 1, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(periodStartDate.ToString())
-            .WithPeriodEnd(periodEndDate.ToString())
-            .Build();
-
-        // Act
-        var errors = await _sut.ValidateAsync(message);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
-        var duration = _now - periodStartDate;
-        duration.Days.Should().Be(1188);
-        duration.Hours.Should().Be(1);
-    }
-
-    [Fact]
-    public async Task Validate_WhenPeriodStartIsExactly3Years3MonthsMinus1HourOldDueToDaylightSavingTime_ReturnsExpectedValidationError()
-    {
-        // Arrange
-        var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        _now = new LocalDateTime(2024, 6, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(periodStartDate.ToString())
-            .WithPeriodEnd(periodEndDate.ToString())
-            .Build();
-
-        // Act
-        var errors = await _sut.ValidateAsync(message);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        errors.Should().ContainSingle().Subject.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd3Months);
-        var duration = _now - periodStartDate;
-        duration.Days.Should().Be(1187);
-        duration.Hours.Should().Be(23);
-    }
-
-    [Fact]
-    public async Task Validate_WhenPeriodStart3Years2Month1DayFromNow_ReturnsNoValidationError()
-    {
-        // Arrange
-        _now = new LocalDateTime(2024, 6, 2, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var end = new LocalDateTime(2021, 5, 1, 0, 0, 0)
-            .InZoneStrictly(_dateTimeZone!)
-            .ToInstant();
-
-        var message = new WholesaleServicesRequestBuilder()
-            // 1 day too old is the smallest possible period it can be too old
-            .WithPeriodStart(start.ToString())
-            .WithPeriodEnd(end.ToString())
-            .Build();
-
-        // Act
-        var errors = await _sut.ValidateAsync(message);
-
-        // Assert
         errors.Should().BeEmpty();
     }
 

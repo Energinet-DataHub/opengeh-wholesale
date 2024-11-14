@@ -22,7 +22,7 @@ from tests.test_factories.metering_point_time_series_factory import (
     MeteringPointTimeSeriesTestDataSpec,
 )
 
-from tests.test_factories.charge_prices_factory import ChargePricesRow
+from tests.test_factories.charge_price_points_factory import ChargePricePointsRow
 from tests.test_factories.monthly_amounts_per_charge_factory import (
     MonthlyAmountsPerChargeRow,
 )
@@ -86,7 +86,7 @@ def create_charge_link_periods_row(
     )
 
 
-def create_charge_prices_row(
+def create_charge_price_points_row(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
@@ -95,9 +95,9 @@ def create_charge_prices_row(
     charge_owner_id: str = DEFAULT_CHARGE_OWNER_ID,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     charge_time: datetime = DEFAULT_PERIOD_START,
-) -> ChargePricesRow:
+) -> ChargePricePointsRow:
     charge_key = f"{charge_code}-{charge_type}-{charge_owner_id}"
-    return ChargePricesRow(
+    return ChargePricePointsRow(
         calculation_id=calculation_id,
         calculation_type=calculation_type,
         calculation_version=calculation_version,

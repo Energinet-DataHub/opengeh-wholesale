@@ -28,7 +28,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.entry_points.entry_point import (
     start_task_with_deps,
 )
-import settlement_report_job.domain.report_generator as report_generator
+from settlement_report_job.domain.report_generator import ReportGenerator
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 

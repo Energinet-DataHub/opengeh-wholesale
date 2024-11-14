@@ -73,6 +73,8 @@ def _get_file_prefix(report_data_type) -> str:
         return "MDMP"
     elif report_data_type == ReportDataType.ChargeLinks:
         return "CHARGELINK"
+    elif report_data_type == ReportDataType.ChargePricePoints:
+        return "CHARGEPRICE"
     elif report_data_type == ReportDataType.EnergyResults:
         return "RESULTENERGY"
     elif report_data_type == ReportDataType.WholesaleResults:
