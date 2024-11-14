@@ -8,6 +8,7 @@ from settlement_report_job.domain.wholesale_results.order_by_columns import (
 from settlement_report_job.entry_points.tasks.task_base import TaskBase
 from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -37,6 +38,6 @@ class WholesaleResultsTask(TaskBase):
             dbutils=self.dbutils,
             args=self.args,
             df=wholesale_results_df,
-            folder_name="wholesale_results",
+            report_data_type=ReportDataType.WholesaleResults,
             order_by_columns=order_by_columns(),
         )

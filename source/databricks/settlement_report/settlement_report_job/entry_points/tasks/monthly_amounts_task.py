@@ -8,6 +8,7 @@ from settlement_report_job.domain.monthly_amounts.order_by_columns import (
 from settlement_report_job.entry_points.tasks.task_base import TaskBase
 from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -37,6 +38,6 @@ class MonthlyAmountsTask(TaskBase):
             dbutils=self.dbutils,
             args=self.args,
             df=wholesale_results_df,
-            folder_name="monthly_amounts",
+            report_data_type=ReportDataType.MonthlyAmounts,
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )

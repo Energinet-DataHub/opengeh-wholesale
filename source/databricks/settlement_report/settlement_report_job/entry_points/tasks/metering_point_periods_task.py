@@ -13,6 +13,7 @@ from settlement_report_job.domain.metering_point_periods.metering_point_periods_
     create_metering_point_periods,
 )
 from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -42,6 +43,6 @@ class MeteringPointPeriodsTask(TaskBase):
             dbutils=self.dbutils,
             args=self.args,
             df=charge_links,
-            folder_name="metering_point_periods",
+            report_data_type=ReportDataType.MeteringPointPeriods,
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )
