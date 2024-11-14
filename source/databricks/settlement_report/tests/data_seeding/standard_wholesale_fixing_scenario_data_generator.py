@@ -166,21 +166,20 @@ def create_charge_price_points(spark: SparkSession) -> DataFrame:
     """
 
     rows = []
-    for metering_point in _get_all_metering_points():
-        for charge in _get_all_charges():
-            rows.append(
-                charge_price_points_factory.ChargePricePointsRow(
-                    calculation_id=CALCULATION_ID,
-                    calculation_type=CALCULATION_TYPE,
-                    calculation_version=1,
-                    charge_key=charge.charge_key,
-                    charge_code=charge.charge_code,
-                    charge_type=charge.charge_type,
-                    charge_owner_id=charge.charge_owner_id,
-                    charge_price=charge.charge_price,
-                    charge_time=charge.charge_time,
-                )
+    for charge in _get_all_charges():
+        rows.append(
+            charge_price_points_factory.ChargePricePointsRow(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                calculation_version=1,
+                charge_key=charge.charge_key,
+                charge_code=charge.charge_code,
+                charge_type=charge.charge_type,
+                charge_owner_id=charge.charge_owner_id,
+                charge_price=charge.charge_price,
+                charge_time=charge.charge_time,
             )
+        )
 
     return charge_price_points_factory.create(spark, rows)
 
