@@ -44,5 +44,5 @@ class ChargePricePointsTask(TaskBase):
             args=self.args,
             df=charge_price_points,
             report_data_type=ReportDataType.ChargePricePoints,
-            order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
+            order_by_columns=order_by_columns(),
         )
