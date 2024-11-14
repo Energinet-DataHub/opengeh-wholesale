@@ -57,6 +57,7 @@ class TestWhenInvokedWithValidArguments:
         applicationinsights_connection_string = (
             integration_test_configuration.get_applicationinsights_connection_string()
         )
+        os.environ["CATALOG_NAME"] = "test_catalog"
 
         # Act
         with pytest.raises(SystemExit):
