@@ -289,16 +289,14 @@ jobs:
       matrix:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
-          - name: Settlement report unit testing data_seeding
-            paths: data_seeding/
           - name: Settlement report unit testing domain
             paths: domain/
           - name: Settlement report unit testing entry_points
             paths: entry_points/
           - name: Settlement report unit testing infrastructure
             paths: infrastructure/
-          - name: Settlement report unit testing test_settlement_report_job_utils
-            paths: test_settlement_report_job_utils.py
+          - name: Settlement report unit testing test_settlement_report_utils
+            paths: test_settlement_report_utils.py
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v14
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}

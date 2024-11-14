@@ -61,7 +61,7 @@ class TestWhenInvokedWithValidArguments:
         # Act
         with pytest.raises(SystemExit):
             start_task_with_deps(
-                ReportGenerator.execute_wholesale_results,
+                execute_task=ReportGenerator.execute_wholesale_results,
             )
 
         # Assert
