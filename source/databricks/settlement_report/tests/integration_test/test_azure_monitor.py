@@ -106,7 +106,9 @@ class TestWhenInvokedWithValidArguments:
             uuid.uuid4()
         )  # Ensure unique report id
         sys.argv = []
-        sys.argv.append("--entry-point=execute_wholesale_results") # Workaround as the parse command line arguments starts with the second argument
+        sys.argv.append(
+            "--entry-point=execute_wholesale_results"
+        )  # Workaround as the parse command line arguments starts with the second argument
         sys.argv.append(
             f"--report-id={str(standard_wholesale_fixing_scenario_args.report_id)}"
         )
@@ -114,7 +116,7 @@ class TestWhenInvokedWithValidArguments:
             f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start.strftime('%Y-%m-%dT%h:%M:%SZ'))}"
         )
         sys.argv.append(
-            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%h:%M:%SZ')}")}"
+            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%h:%M:%SZ'))}"
         )
         sys.argv.append(
             f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
