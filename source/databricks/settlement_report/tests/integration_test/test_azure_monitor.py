@@ -117,19 +117,9 @@ class TestWhenInvokedWithValidArguments:
         sys.argv.append(
             f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
         )
-        sys.argv.append(
-            f"--requesting-actor-market-role={str(standard_wholesale_fixing_scenario_args.requesting_actor_market_role.value)}"
-        )
-        sys.argv.append(
-            f"--requesting-actor-id={str(standard_wholesale_fixing_scenario_args.requesting_actor_id)}"
-        )
-        sys.argv.append(
-            f"--calculation-id-by-grid-area={str(standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area)}"
-        )
-        if standard_wholesale_fixing_scenario_args.grid_area_codes:
-            sys.argv.append(
-                f"--grid-areas-codes={str(standard_wholesale_fixing_scenario_args.grid_area_codes)}"
-            )
+        sys.argv.append(f"--requesting-actor-market-role=datahub_administrator")
+        sys.argv.append(f"--requesting-actor-id=1234567890123")
+        sys.argv.append(f"--grid-areas-codes=[804]")
 
 
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
