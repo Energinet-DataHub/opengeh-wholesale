@@ -135,7 +135,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         Validate_WhenPeriodOverlapsCutOffAt3AndAHalfYearBackInTime_ReturnsSuccessfulValidation()
     {
         // Prerequisite: The current time is NOT the start of a month.
-        _clockMock.Object.GetCurrentInstant().ToDateTimeUtc().Date.Should().NotHaveDay(1).And.NotHaveDay(2);
+        _clockMock.Setup(c => c.GetCurrentInstant()).Returns(Instant.FromUtc(2024, 11, 15, 16, 46, 43));
 
         // Arrange
         var periodStart = _clockMock.Object.GetCurrentInstant() // Assuming 2024-11-15 16:46:43 UTC
