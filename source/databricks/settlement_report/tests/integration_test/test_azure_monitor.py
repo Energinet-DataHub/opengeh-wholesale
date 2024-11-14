@@ -64,12 +64,11 @@ class TestWhenInvokedWithValidArguments:
         with pytest.raises(SystemExit):
             with patch(
                 "settlement_report_job.infrastructure.utils.get_dbutils",
-                mock_get_dbutils,
                 return_value=None,
             ):
                 with patch(
                     "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
-                    mock_execute,
+                    return_value=None,
                 ):
                     start_task_with_deps(
                         task_type=TaskType.TimeSeriesHourly,
