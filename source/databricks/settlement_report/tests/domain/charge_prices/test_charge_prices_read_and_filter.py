@@ -8,9 +8,11 @@ from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
 import test_factories.charge_link_periods_factory as charge_links_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
-import test_factories.charge_prices_factory as charge_prices_factory
+import test_factories.charge_price_points_factory as charge_price_points_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
-from settlement_report_job.domain.charge_prices.read_and_filter import read_and_filter
+from settlement_report_job.domain.charge_price_points.read_and_filter import (
+    read_and_filter,
+)
 from settlement_report_job.domain.utils.market_role import MarketRole
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
@@ -38,13 +40,13 @@ JAN_9TH = datetime(2024, 1, 8, 23)
 def _get_repository_mock(
     metering_point_period: DataFrame,
     charge_link_periods: DataFrame,
-    charge_prices: DataFrame,
+    charge_price_points: DataFrame,
     charge_price_information_periods: DataFrame | None = None,
 ) -> Mock:
     mock_repository = Mock()
     mock_repository.read_metering_point_periods.return_value = metering_point_period
     mock_repository.read_charge_link_periods.return_value = charge_link_periods
-    mock_repository.read_charge_prices.return_value = charge_prices
+    mock_repository.read_charge_price_points.return_value = charge_price_points
     if charge_price_information_periods:
         mock_repository.read_charge_price_information_periods.return_value = (
             charge_price_information_periods
@@ -114,9 +116,9 @@ def test_when_energy_supplier_ids_contain_only_one_energy_supplier_id(
         ],
     )
 
-    charge_prices = charge_prices_factory.create(
+    charge_price_points = charge_price_points_factory.create(
         spark,
-        default_data.create_charge_prices_row(charge_time=JAN_2ND),
+        default_data.create_charge_price_points_row(charge_time=JAN_2ND),
     )
 
     charge_price_information_periods = charge_price_information_periods_factory.create(
@@ -127,7 +129,7 @@ def test_when_energy_supplier_ids_contain_only_one_energy_supplier_id(
     mock_repository = _get_repository_mock(
         metering_point_periods,
         charge_link_periods,
-        charge_prices,
+        charge_price_points,
         charge_price_information_periods,
     )
 
@@ -213,9 +215,9 @@ def test_when_two_energy_suppliers_ids_with_different_periods(
         ],
     )
 
-    charge_prices = charge_prices_factory.create(
+    charge_price_points = charge_price_points_factory.create(
         spark,
-        default_data.create_charge_prices_row(charge_time=charge_time),
+        default_data.create_charge_price_points_row(charge_time=charge_time),
     )
 
     charge_price_information_periods = charge_price_information_periods_factory.create(
@@ -226,7 +228,7 @@ def test_when_two_energy_suppliers_ids_with_different_periods(
     mock_repository = _get_repository_mock(
         metering_point_periods,
         charge_link_periods,
-        charge_prices,
+        charge_price_points,
         charge_price_information_periods,
     )
 
@@ -284,9 +286,9 @@ def test_time_within_and_outside_of_date_range_scenarios(
         default_data.create_charge_link_periods_row(from_date=JAN_1ST, to_date=JAN_4TH),
     )
 
-    charge_prices = charge_prices_factory.create(
+    charge_price_points = charge_price_points_factory.create(
         spark,
-        default_data.create_charge_prices_row(charge_time=charge_time),
+        default_data.create_charge_price_points_row(charge_time=charge_time),
     )
 
     charge_price_information_periods = charge_price_information_periods_factory.create(
@@ -297,7 +299,7 @@ def test_time_within_and_outside_of_date_range_scenarios(
     mock_repository = _get_repository_mock(
         metering_point_periods,
         charge_link_periods,
-        charge_prices,
+        charge_price_points,
         charge_price_information_periods,
     )
 
@@ -355,9 +357,9 @@ def test_energy_supplier_ids_scenarios(
         spark, default_data.create_charge_link_periods_row()
     )
 
-    charge_prices = charge_prices_factory.create(
+    charge_price_points = charge_price_points_factory.create(
         spark,
-        default_data.create_charge_prices_row(),
+        default_data.create_charge_price_points_row(),
     )
 
     charge_price_information_periods = charge_price_information_periods_factory.create(
@@ -368,7 +370,7 @@ def test_energy_supplier_ids_scenarios(
     mock_repository = _get_repository_mock(
         metering_point_periods,
         charge_link_periods,
-        charge_prices,
+        charge_price_points,
         charge_price_information_periods,
     )
 
@@ -432,9 +434,9 @@ def test_calculation_id_by_grid_area_scenarios(
         ),
     )
 
-    charge_prices = charge_prices_factory.create(
+    charge_price_points = charge_price_points_factory.create(
         spark,
-        default_data.create_charge_prices_row(
+        default_data.create_charge_price_points_row(
             calculation_id=default_data.DEFAULT_CALCULATION_ID
         ),
     )
@@ -449,7 +451,7 @@ def test_calculation_id_by_grid_area_scenarios(
     mock_repository = _get_repository_mock(
         metering_point_periods,
         charge_link_periods,
-        charge_prices,
+        charge_price_points,
         charge_price_information_periods,
     )
 
@@ -519,9 +521,9 @@ def test_grid_access_provider_and_system_operator_scenarios(
         default_data.create_charge_link_periods_row(),
     )
 
-    charge_prices = charge_prices_factory.create(
+    charge_price_points = charge_price_points_factory.create(
         spark,
-        default_data.create_charge_prices_row(),
+        default_data.create_charge_price_points_row(),
     )
 
     charge_price_information_periods = charge_price_information_periods_factory.create(
@@ -532,7 +534,7 @@ def test_grid_access_provider_and_system_operator_scenarios(
     mock_repository = _get_repository_mock(
         metering_point_periods,
         charge_link_periods,
-        charge_prices,
+        charge_price_points,
         charge_price_information_periods,
     )
 

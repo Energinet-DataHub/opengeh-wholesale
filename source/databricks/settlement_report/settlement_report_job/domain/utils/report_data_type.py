@@ -28,3 +28,4 @@ class ReportDataType(Enum):
     EnergyResults = 5
     WholesaleResults = 6
     MonthlyAmounts = 7
+    ChargePricePoints = 8
