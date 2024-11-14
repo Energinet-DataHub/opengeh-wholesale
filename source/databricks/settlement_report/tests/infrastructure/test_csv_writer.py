@@ -45,6 +45,11 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
+import settlement_report_job.domain.time_series.order_by_columns as time_series_order_by_columns
+import settlement_report_job.domain.energy_results.order_by_columns as energy_order_by_columns
+
+
+DEFAULT_FOLDER_NAME = "some_folder"
 
 
 def _read_csv_file(
@@ -91,9 +96,8 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
-        report_data_type=report_data_type,
-        order_by_columns=get_order_by_columns(
-            report_data_type=report_data_type,
+        folder_name=DEFAULT_FOLDER_NAME,
+        order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
     )
@@ -124,8 +128,7 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
-        order_by_columns=get_order_by_columns(
-            report_data_type=report_data_type,
+        order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
     )
@@ -165,9 +168,8 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
-        report_data_type=report_data_type,
-        order_by_columns=get_order_by_columns(
-            report_data_type=report_data_type,
+        folder_name=DEFAULT_FOLDER_NAME,
+        order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=rows_per_file,
@@ -201,7 +203,6 @@ def test_write__files_have_correct_ordering_for_each_file(
         CsvColumnNames.metering_point_id,
         CsvColumnNames.time,
     ]
-    report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
     test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
@@ -216,7 +217,7 @@ def test_write__files_have_correct_ordering_for_each_file(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
-        report_data_type=report_data_type,
+        report_data_type=ReportDataType.TimeSeriesHourly,
         order_by_columns=expected_order_by,
         rows_per_file=rows_per_file,
     )
@@ -421,8 +422,7 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
-        order_by_columns=get_order_by_columns(
-            report_data_type=report_data_type,
+        order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=10,
@@ -460,8 +460,7 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
         args=standard_wholesale_fixing_scenario_args,
         df=df_prepared_time_series,
         report_data_type=report_data_type,
-        order_by_columns=get_order_by_columns(
-            report_data_type=report_data_type,
+        order_by_columns=time_series_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=31,
@@ -531,8 +530,7 @@ def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expe
         args=standard_wholesale_fixing_scenario_args,
         df=df,
         report_data_type=ReportDataType.EnergyResults,
-        order_by_columns=get_order_by_columns(
-            report_data_type=ReportDataType.EnergyResults,
+        order_by_columns=energy_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=10000,
@@ -600,8 +598,7 @@ def test_write__when_energy_supplier_and_split_per_grid_area_is_false__returns_c
         args=standard_wholesale_fixing_scenario_args,
         df=df,
         report_data_type=ReportDataType.EnergyResults,
-        order_by_columns=get_order_by_columns(
-            ReportDataType.EnergyResults,
+        order_by_columns=energy_order_by_columns.order_by_columns(
             standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=10000,
@@ -672,8 +669,7 @@ def test_write__when_energy_and_prevent_large_files__returns_expected_number_of_
         args=standard_wholesale_fixing_scenario_args,
         df=df,
         report_data_type=ReportDataType.EnergyResults,
-        order_by_columns=get_order_by_columns(
-            ReportDataType.EnergyResults,
+        order_by_columns=energy_order_by_columns.order_by_columns(
             standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=df.count() // expected_file_count + 1,
