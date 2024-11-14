@@ -24,7 +24,9 @@ from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
-from settlement_report_job.infrastructure.utils import map_from_dict
+from settlement_report_job.domain.utils import (
+    map_from_dict,
+)
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )

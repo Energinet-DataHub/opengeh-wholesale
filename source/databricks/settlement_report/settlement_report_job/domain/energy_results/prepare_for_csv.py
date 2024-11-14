@@ -20,7 +20,7 @@ from settlement_report_job.domain.utils.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.infrastructure.utils import (
+from settlement_report_job.domain.utils import (
     map_from_dict,
 )
 from settlement_report_job.infrastructure.wholesale.column_names import (

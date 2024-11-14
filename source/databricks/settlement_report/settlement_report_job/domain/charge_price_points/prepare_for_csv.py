@@ -25,7 +25,9 @@ from settlement_report_job.domain.utils.report_naming_convention import (
     CHARGE_TYPES,
     TAX_INDICATORS,
 )
-from settlement_report_job.infrastructure.utils import map_from_dict
+from settlement_report_job.domain.utils import (
+    map_from_dict,
+)
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
