@@ -2,17 +2,19 @@ from pyspark.sql import SparkSession
 import pytest
 
 from data_seeding import standard_wholesale_fixing_scenario_data_generator
-from domain.assertion import assert_file_names_and_columns
+from assertion import assert_file_names_and_columns
 
 from dbutils_fixture import DBUtilsFixture
 from settlement_report_job.domain.utils.market_role import MarketRole
-import settlement_report_job.domain.report_generator as report_generator
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
+)
+from settlement_report_job.entry_points.tasks.metering_point_periods_task import (
+    MeteringPointPeriodsTask,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_start_date, get_end_date, cleanup_output_path, get_actual_files
@@ -82,12 +84,12 @@ def test_execute_metering_point_periods__when_energy_supplier__returns_expected(
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_market_role
     )
-    report_generator_instance = report_generator.ReportGenerator(
+    task = MeteringPointPeriodsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
 
     # Act
-    report_generator_instance.execute_metering_point_periods()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -123,12 +125,12 @@ def test_execute_metering_point_periods__when_grid_access_provider__returns_expe
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_market_role
     )
-    report_generator_instance = report_generator.ReportGenerator(
+    task = MeteringPointPeriodsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
     )
 
     # Act
-    report_generator_instance.execute_metering_point_periods()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -172,10 +174,10 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
         f"MDMP_{grid_area_codes[1]}_{energy_supplier_id}_{start_time}_{end_time}.csv",
     ]
     expected_columns = _get_expected_columns(args.requesting_actor_market_role)
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = MeteringPointPeriodsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_metering_point_periods()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -216,10 +218,10 @@ def test_execute_metering_point_periods__when_system_operator_or_datahub_admin_w
     expected_columns = _get_expected_columns(
         standard_wholesale_fixing_scenario_args.requesting_actor_market_role
     )
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = MeteringPointPeriodsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_metering_point_periods()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -251,10 +253,10 @@ def test_execute_metering_point_periods__when_balance_fixing__returns_expected(
         f"MDMP_{args.grid_area_codes[1]}_{start_time}_{end_time}.csv",
     ]
     expected_columns = _get_expected_columns(args.requesting_actor_market_role)
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = MeteringPointPeriodsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_metering_point_periods()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
@@ -279,10 +281,10 @@ def test_execute_metering_point_periods__when_include_basis_data_false__returns_
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = MeteringPointPeriodsTask(spark, dbutils, args)
 
     # Act
-    report_generator_instance.execute_metering_point_periods()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
