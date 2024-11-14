@@ -139,13 +139,10 @@ def test_execute_charge_price_points__when_system_operator_or_datahub_admin_with
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.requesting_actor_market_role = market_role
-    energy_supplier_id = (
-        standard_wholesale_fixing_scenario_data_generator.ENERGY_SUPPLIER_IDS[0]
-    )
-    args.energy_supplier_ids = [energy_supplier_id]
+
     expected_file_names = [
-        f"CHARGEPRICE_804_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
-        f"CHARGEPRICE_805_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
+        f"CHARGEPRICE_804_02-01-2024_02-01-2024.csv",
+        f"CHARGEPRICE_805_02-01-2024_02-01-2024.csv",
     ]
 
     task = ChargePricePointsTask(
