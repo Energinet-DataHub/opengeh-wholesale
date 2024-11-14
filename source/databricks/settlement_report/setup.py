@@ -37,6 +37,7 @@ setup(
             "create_quarterly_time_series = settlement_report_job.entry_points.entry_point:start_quarterly_time_series",
             "create_metering_point_periods = settlement_report_job.entry_points.entry_point:start_metering_point_periods",
             "create_charge_links          = settlement_report_job.entry_points.entry_point:start_charge_links",
+            "create_charge_price_points   = settlement_report_job.entry_points.entry_point:start_charge_price_points",
             "create_energy_results        = settlement_report_job.entry_points.entry_point:start_energy_results",
             "create_monthly_amounts       = settlement_report_job.entry_points.entry_point:start_monthly_amounts",
             "create_wholesale_results     = settlement_report_job.entry_points.entry_point:start_wholesale_results",
