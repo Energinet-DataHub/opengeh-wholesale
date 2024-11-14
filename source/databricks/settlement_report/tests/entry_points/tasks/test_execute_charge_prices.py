@@ -19,6 +19,40 @@ from settlement_report_job.entry_points.tasks.charge_price_points_task import (
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_actual_files
 
+expected_columns = [
+    CsvColumnNames.charge_type,
+    CsvColumnNames.charge_owner_id,
+    CsvColumnNames.charge_code,
+    CsvColumnNames.resolution,
+    CsvColumnNames.is_tax,
+    CsvColumnNames.time,
+    f"{CsvColumnNames.energy_price}1",
+    f"{CsvColumnNames.energy_price}2",
+    f"{CsvColumnNames.energy_price}3",
+    f"{CsvColumnNames.energy_price}4",
+    f"{CsvColumnNames.energy_price}5",
+    f"{CsvColumnNames.energy_price}6",
+    f"{CsvColumnNames.energy_price}7",
+    f"{CsvColumnNames.energy_price}8",
+    f"{CsvColumnNames.energy_price}9",
+    f"{CsvColumnNames.energy_price}10",
+    f"{CsvColumnNames.energy_price}11",
+    f"{CsvColumnNames.energy_price}12",
+    f"{CsvColumnNames.energy_price}13",
+    f"{CsvColumnNames.energy_price}14",
+    f"{CsvColumnNames.energy_price}15",
+    f"{CsvColumnNames.energy_price}16",
+    f"{CsvColumnNames.energy_price}17",
+    f"{CsvColumnNames.energy_price}18",
+    f"{CsvColumnNames.energy_price}19",
+    f"{CsvColumnNames.energy_price}20",
+    f"{CsvColumnNames.energy_price}21",
+    f"{CsvColumnNames.energy_price}22",
+    f"{CsvColumnNames.energy_price}23",
+    f"{CsvColumnNames.energy_price}24",
+    f"{CsvColumnNames.energy_price}25",
+]
+
 
 def test_execute_charge_price_points__when_energy_supplier__returns_expected(
     spark: SparkSession,
@@ -31,39 +65,7 @@ def test_execute_charge_price_points__when_energy_supplier__returns_expected(
         f"CHARGEPRICE_804_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
         f"CHARGEPRICE_805_{standard_wholesale_fixing_scenario_energy_supplier_args.requesting_actor_id}_DDQ_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.resolution,
-        CsvColumnNames.is_tax,
-        CsvColumnNames.time,
-        f"{CsvColumnNames.energy_price}1",
-        f"{CsvColumnNames.energy_price}2",
-        f"{CsvColumnNames.energy_price}3",
-        f"{CsvColumnNames.energy_price}4",
-        f"{CsvColumnNames.energy_price}5",
-        f"{CsvColumnNames.energy_price}6",
-        f"{CsvColumnNames.energy_price}7",
-        f"{CsvColumnNames.energy_price}8",
-        f"{CsvColumnNames.energy_price}9",
-        f"{CsvColumnNames.energy_price}10",
-        f"{CsvColumnNames.energy_price}11",
-        f"{CsvColumnNames.energy_price}12",
-        f"{CsvColumnNames.energy_price}13",
-        f"{CsvColumnNames.energy_price}14",
-        f"{CsvColumnNames.energy_price}15",
-        f"{CsvColumnNames.energy_price}16",
-        f"{CsvColumnNames.energy_price}17",
-        f"{CsvColumnNames.energy_price}18",
-        f"{CsvColumnNames.energy_price}19",
-        f"{CsvColumnNames.energy_price}20",
-        f"{CsvColumnNames.energy_price}21",
-        f"{CsvColumnNames.energy_price}22",
-        f"{CsvColumnNames.energy_price}23",
-        f"{CsvColumnNames.energy_price}24",
-        f"{CsvColumnNames.energy_price}25",
-    ]
+
     task = ChargePricePointsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
@@ -88,7 +90,7 @@ def test_execute_charge_price_points__when_energy_supplier__returns_expected(
     )
 
 
-def test_execute_charge_links__when_grid_access_provider__returns_expected(
+def test_execute_charge_price_points__when_grid_access_provider__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
@@ -96,29 +98,20 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
 ):
     # Arrange
     expected_file_names = [
-        f"CHARGELINK_804_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
-        f"CHARGELINK_805_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"CHARGEPRICE_804_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
+        f"CHARGEPRICE_805_{standard_wholesale_fixing_scenario_grid_access_provider_args.requesting_actor_id}_DDM_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-    ]
-    report_generator_instance = report_generator.ReportGenerator(
+
+    task = ChargePricePointsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
     )
 
     # Act
-    report_generator_instance.execute_charge_links()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.ChargeLinks,
+        report_data_type=ReportDataType.ChargePricePoints,
         args=standard_wholesale_fixing_scenario_grid_access_provider_args,
     )
     assert_file_names_and_columns(
@@ -136,7 +129,7 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_energy_supplier_id__returns_expected(
+def test_execute_charge_price_points__when_system_operator_or_datahub_admin_with_one_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -151,28 +144,20 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
     )
     args.energy_supplier_ids = [energy_supplier_id]
     expected_file_names = [
-        f"CHARGELINK_804_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
-        f"CHARGELINK_805_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
+        f"CHARGEPRICE_804_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
+        f"CHARGEPRICE_805_{energy_supplier_id}_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-        CsvColumnNames.energy_supplier_id,
-    ]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+
+    task = ChargePricePointsTask(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    report_generator_instance.execute_charge_links()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.ChargeLinks,
+        report_data_type=ReportDataType.ChargePricePoints,
         args=args,
     )
     assert_file_names_and_columns(
@@ -188,7 +173,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
+def test_execute_charge_price_points__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -200,30 +185,23 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_e
     args.requesting_actor_market_role = market_role
     args.energy_supplier_ids = None
     expected_file_names = [
-        "CHARGELINK_804_02-01-2024_02-01-2024.csv",
-        "CHARGELINK_805_02-01-2024_02-01-2024.csv",
+        "CHARGEPRICE_804_02-01-2024_02-01-2024.csv",
+        "CHARGEPRICE_805_02-01-2024_02-01-2024.csv",
     ]
-    expected_columns = [
-        CsvColumnNames.metering_point_id,
-        CsvColumnNames.metering_point_type,
-        CsvColumnNames.charge_type,
-        CsvColumnNames.charge_owner_id,
-        CsvColumnNames.charge_code,
-        CsvColumnNames.charge_quantity,
-        CsvColumnNames.charge_link_from_date,
-        CsvColumnNames.charge_link_to_date,
-        CsvColumnNames.energy_supplier_id,
-    ]
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+
+    task = ChargePricePointsTask(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    report_generator_instance.execute_charge_links()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.ChargeLinks,
+        report_data_type=ReportDataType.ChargePricePoints,
         args=args,
     )
+
     assert_file_names_and_columns(
         path=get_report_output_path(args),
         actual_files=actual_files,
@@ -233,7 +211,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_e
     )
 
 
-def test_execute_charge_links__when_include_basis_data_false__returns_no_file_paths(
+def test_execute_charge_price_points__when_include_basis_data_false__returns_no_file_paths(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -242,14 +220,16 @@ def test_execute_charge_links__when_include_basis_data_false__returns_no_file_pa
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
-    report_generator_instance = report_generator.ReportGenerator(spark, dbutils, args)
+    task = ChargePricePointsTask(
+        spark, dbutils, standard_wholesale_fixing_scenario_args
+    )
 
     # Act
-    report_generator_instance.execute_charge_links()
+    task.execute()
 
     # Assert
     actual_files = get_actual_files(
-        report_data_type=ReportDataType.ChargeLinks,
+        report_data_type=ReportDataType.ChargePricePoints,
         args=args,
     )
     assert actual_files is None or len(actual_files) == 0
