@@ -62,7 +62,7 @@ class TestWhenInvokedWithArguments:
 
         # Act
         with patch(
-            "settlement_report_job.entry_points.task_factory.create",
+            "settlement_report_job.entry_points.tasks.task_factory.create",
             task_factory_mock,
         ):
             with patch(
@@ -111,8 +111,8 @@ class TestWhenInvokedWithArguments:
         """
         Assert that the settlement report job adds log records to Azure Monitor with the expected settings:
         | where AppRoleName == "dbr-settlement-report"
-        | where SeverityLevel == 1
-        | where Message startswith_cs "Command line arguments"
+        | where ExceptionType == "argparse.ArgumentTypeError"
+        | where OuterMessage startswith_cs "Grid area codes must consist of 3 digits"
         | where OperationId != "00000000000000000000000000000000"
         | where Properties.Subsystem == "wholesale-aggregations"
         - custom field "settlement_report_id" = <the settlement report id>
@@ -139,7 +139,7 @@ class TestWhenInvokedWithArguments:
         # Act
         with pytest.raises(SystemExit):
             with patch(
-                "settlement_report_job.entry_points.task_factory.create",
+                "settlement_report_job.entry_points.tasks.task_factory.create",
                 task_factory_mock,
             ):
                 with patch(
