@@ -2,6 +2,9 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
+from settlement_report_job.domain.metering_point_periods.order_by_columns import (
+    order_by_columns,
+)
 from settlement_report_job.entry_points.tasks.task_base import (
     TaskBase,
 )
@@ -9,7 +12,6 @@ from settlement_report_job.infrastructure import csv_writer
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
     create_metering_point_periods,
 )
-from settlement_report_job.infrastructure.order_by_columns import get_order_by_columns
 from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
@@ -42,8 +44,5 @@ class MeteringPointPeriodsTask(TaskBase):
             args=self.args,
             df=charge_links,
             report_data_type=ReportDataType.MeteringPointPeriods,
-            order_by_columns=get_order_by_columns(
-                ReportDataType.MeteringPointPeriods,
-                self.args.requesting_actor_market_role,
-            ),
+            order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )
