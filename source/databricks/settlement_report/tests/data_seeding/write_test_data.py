@@ -151,8 +151,8 @@ def write_charge_link_periods_to_delta_table(
         spark,
         df=df,
         database_name=database_definitions.WholesaleBasisDataDatabase.DATABASE_NAME,
-        table_name=database_definitions.WholesaleBasisDataDatabase.charge_link_periods_VIEW_NAME,
-        table_location=f"{table_location}/{database_definitions.WholesaleBasisDataDatabase.charge_link_periods_VIEW_NAME}",
+        table_name=database_definitions.WholesaleBasisDataDatabase.CHARGE_LINK_PERIODS_VIEW_NAME,
+        table_location=f"{table_location}/{database_definitions.WholesaleBasisDataDatabase.CHARGE_LINK_PERIODS_VIEW_NAME}",
         schema=charge_link_periods_v1,
     )
 
