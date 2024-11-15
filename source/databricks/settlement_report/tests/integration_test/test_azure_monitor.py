@@ -139,9 +139,10 @@ class TestWhenInvokedWithArguments:
         ):
             with patch(
                 "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
-                return_value=None,
             ) as execute_mock:
-                execute_mock.side_effect = SystemExit(error_message)
+                execute_mock.raiseError.side_effect = Mock(
+                    side_effect=SystemExit(error_message)
+                )
                 start_task_with_deps(
                     task_type=valid_task_type,
                     applicationinsights_connection_string=applicationinsights_connection_string,
