@@ -138,18 +138,19 @@ class TestWhenInvokedWithArguments:
         task_factory_mock = Mock()
 
         # Act
-        with patch(
-            "settlement_report_job.entry_points.task_factory.create",
-            task_factory_mock,
-        ):
+        with pytest.raises(SystemExit):
             with patch(
-                "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
-                return_value=None,
+                "settlement_report_job.entry_points.task_factory.create",
+                task_factory_mock,
             ):
-                start_task_with_deps(
-                    task_type=valid_task_type,
-                    applicationinsights_connection_string=applicationinsights_connection_string,
-                )
+                with patch(
+                    "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                    return_value=None,
+                ):
+                    start_task_with_deps(
+                        task_type=valid_task_type,
+                        applicationinsights_connection_string=applicationinsights_connection_string,
+                    )
 
         # Assert
         # noinspection PyTypeChecker
@@ -158,12 +159,12 @@ class TestWhenInvokedWithArguments:
         query = f"""
         AppExceptions
         | where AppRoleName == "dbr-settlement-report"
-        | where ExceptionType == "ValueError"
-        | where OuterMessage startswith_cs "Grid area codes must"
+        | where ExceptionType == "argparse.ArgumentTypeError"
+        | where OuterMessage startswith_cs "Grid area codes must consist of 3 digits"
         | where OperationId != "00000000000000000000000000000000"
         | where Properties.Subsystem == "wholesale-aggregations"
         | where Properties.settlement_report_id == "{standard_wholesale_fixing_scenario_args.report_id}"
-        | where Properties.CategoryName == "Energinet.DataHub.settlement_report_job.entry_points.job_args.settlement_report_job_args"
+        | where Properties.CategoryName == "Energinet.DataHub.telemetry_logging.span_recording"
         | count
         """
 
@@ -173,6 +174,7 @@ class TestWhenInvokedWithArguments:
             actual = logs_client.query_workspace(
                 workspace_id, query, timespan=timedelta(minutes=5)
             )
+            # There should be two counts, one from the arg_parser and one
             assert_row_count(actual, 1)
 
         # Assert, but timeout if not succeeded
