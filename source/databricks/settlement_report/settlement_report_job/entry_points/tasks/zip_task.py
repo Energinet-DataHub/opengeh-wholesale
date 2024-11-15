@@ -8,7 +8,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 
-from settlement_report_job.infrastructure.utils import create_zip_file
+from settlement_report_job.infrastructure.create_zip_file import create_zip_file
 from telemetry_logging import use_span
 
 
