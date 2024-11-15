@@ -53,6 +53,10 @@ def start_charge_links() -> None:
     _start_task(TaskType.ChargeLinks)
 
 
+def start_charge_price_points() -> None:
+    _start_task(TaskType.ChargePricePoints)
+
+
 def start_energy_results() -> None:
     _start_task(TaskType.EnergyResults)
 
