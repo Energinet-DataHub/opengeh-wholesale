@@ -107,7 +107,7 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
     [SubsystemFact]
     public async Task AndThen_ZipFileContainsCsvWithExpectedPrefix()
     {
-        var zipFilePath = Fixture.ScenarioState.ExpectedRelativeOutputFilePath;
+        var zipFilePath = Fixture.GetAbsolutePath(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
         var filePrefixes = new[] { "ENERGYRESULTS", "WHOLESALERESULTS" };
 
         await using var zipStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);

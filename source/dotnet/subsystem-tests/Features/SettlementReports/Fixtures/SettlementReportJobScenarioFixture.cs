@@ -173,6 +173,11 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
         return (settlementReportJobState == SettlementReportJobState.Completed, runState.Item1);
     }
 
+    public string GetAbsolutePath(string relativeFilePath)
+    {
+        return $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
+    }
+
     /// <summary>
     /// Get file information for at file in the Databricks Catalogue.
     /// </summary>
@@ -182,8 +187,7 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
     {
         try
         {
-            var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
-            return await FilesDatabricksClient.Files.GetFileInfoAsync(absoluteFilePath);
+            return await FilesDatabricksClient.Files.GetFileInfoAsync(GetAbsolutePath(relativeFilePath));
         }
         catch (Exception ex)
         {
