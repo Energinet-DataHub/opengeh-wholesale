@@ -16,15 +16,12 @@ import os
 import sys
 from argparse import Namespace
 from collections.abc import Callable
-from typing import Any
 
 from opentelemetry.trace import SpanKind
 
 import telemetry_logging.logging_configuration as config
-from pyspark.sql import SparkSession
 from telemetry_logging.span_recording import span_record_exception
-from settlement_report_job.entry_points import task_factory
-from settlement_report_job.entry_points.get_dbutils import get_dbutils
+from settlement_report_job.entry_points.tasks import task_factory
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -32,7 +29,8 @@ from settlement_report_job.entry_points.job_args.settlement_report_job_args impo
     parse_job_arguments,
     parse_command_line_arguments,
 )
-from settlement_report_job.entry_points.task_type import TaskType
+from settlement_report_job.entry_points.tasks.task_type import TaskType
+from settlement_report_job.entry_points.utils.get_dbutils import get_dbutils
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
 
 
