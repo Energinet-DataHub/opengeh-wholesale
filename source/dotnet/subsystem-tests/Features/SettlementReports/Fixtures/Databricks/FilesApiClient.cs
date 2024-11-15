@@ -49,4 +49,25 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
             ContentLength: response.Content.Headers.ContentLength ?? -1,
             LastModified: response.Content.Headers.LastModified);
     }
+
+    /// <summary>
+    /// Gets a stream to the file.
+    /// </summary>
+    /// <param name="filePath">The absolute path of the file.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A stream to the file.</returns>
+    public async Task<Stream> GetFileStreamAsync(string filePath, CancellationToken cancellationToken = default)
+    {
+        var url = $"{ApiVersion}/fs/files{filePath}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw CreateApiException(response);
+        }
+
+        return await response.Content.ReadAsStreamAsync(cancellationToken);
+    }
 }

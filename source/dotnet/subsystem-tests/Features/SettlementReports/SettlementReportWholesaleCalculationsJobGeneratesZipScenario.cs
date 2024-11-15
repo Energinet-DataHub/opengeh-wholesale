@@ -107,14 +107,15 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
     [SubsystemFact]
     public async Task AndThen_ZipFileContainsCsvWithExpectedPrefix()
     {
-        var zipFilePath = Fixture.GetAbsolutePath(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
-        var filePrefixes = new[] { "ENERGYRESULTS", "WHOLESALERESULTS" };
+        var expectedFilePrefixes = new[] { "ENERGYRESULTS", "WHOLESALERESULTS" };
+        await using var zipStream = await Fixture.GetFileStreamAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
-        await using var zipStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
-        using var archive = new System.IO.Compression.ZipArchive(zipStream, System.IO.Compression.ZipArchiveMode.Read);
+        zipStream.Should().NotBeNull();
 
-        var entryFound = filePrefixes.Any(prefix => archive.Entries.Any(e => e.Name.StartsWith(prefix)));
-        entryFound.Should().BeTrue($"because we expected the zip file to contain a file with a name starting with one of the specified prefixes: {string.Join(", ", filePrefixes)}");
+        using var archive = new System.IO.Compression.ZipArchive(zipStream!, System.IO.Compression.ZipArchiveMode.Read);
+
+        var entryFound = expectedFilePrefixes.Any(prefix => archive.Entries.Any(e => e.Name.StartsWith(prefix)));
+        entryFound.Should().BeTrue($"because we expected the zip file to contain a file with a name starting with one of the specified prefixes: {string.Join(", ", expectedFilePrefixes)}");
     }
 
     /// <summary>
