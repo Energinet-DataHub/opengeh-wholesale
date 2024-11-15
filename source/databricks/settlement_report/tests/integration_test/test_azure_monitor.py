@@ -28,7 +28,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.entry_points.entry_point import (
     start_task_with_deps,
 )
-from settlement_report_job.entry_points.task_type import TaskType
+from settlement_report_job.entry_points.tasks.task_type import TaskType
 from tests.integration_test_configuration import IntegrationTestConfiguration
 from settlement_report_job.entry_points import task_factory
 
