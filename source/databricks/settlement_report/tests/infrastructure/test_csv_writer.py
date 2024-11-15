@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from assertion import assert_file_names_and_columns
 from settlement_report_job.infrastructure import csv_writer
@@ -694,7 +696,7 @@ def test_write_files__csv_separator_is_comma_and_decimals_use_points(
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    columns = write_files(
+    columns = _write_files(
         df,
         csv_path,
         partition_columns=[],
@@ -731,7 +733,7 @@ def test_write_files__when_order_by_specified_on_multiple_partitions(
     csv_path = f"{tmp_dir.name}/csv_file"
 
     # Act
-    columns = write_files(
+    columns = _write_files(
         df,
         csv_path,
         partition_columns=["key"],
