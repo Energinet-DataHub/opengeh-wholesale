@@ -90,8 +90,6 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    print("Command line args: ", command_line_args)
-
     # Run parameters
     p.add_argument("--report-id", type=str, required=True)
     p.add_argument("--period-start", type=valid_date, required=True)
