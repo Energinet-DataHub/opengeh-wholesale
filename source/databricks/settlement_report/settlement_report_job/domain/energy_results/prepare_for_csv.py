@@ -26,7 +26,7 @@ from settlement_report_job.domain.utils.map_from_dict import (
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
-import settlement_report_job.domain.utils.report_naming_convention as market_naming
+import settlement_report_job.domain.utils.map_to_csv_naming as market_naming
 
 log = Logger(__name__)
 

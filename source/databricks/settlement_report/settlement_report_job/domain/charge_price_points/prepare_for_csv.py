@@ -21,7 +21,7 @@ from settlement_report_job.domain.utils.csv_column_names import (
     EphemeralColumns,
 )
 from settlement_report_job.domain.utils.get_start_of_day import get_start_of_day
-from settlement_report_job.domain.utils.report_naming_convention import (
+from settlement_report_job.domain.utils.map_to_csv_naming import (
     CHARGE_TYPES,
     TAX_INDICATORS,
 )
