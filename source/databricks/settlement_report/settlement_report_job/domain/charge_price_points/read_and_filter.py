@@ -113,7 +113,7 @@ def _join_with_charge_link_and_metering_point_periods(
         energy_supplier_ids=energy_supplier_ids,
     )
 
-    charge_links_and_metering_point_periods = (
+    charge_link_periods_and_metering_point_periods = (
         join_metering_points_periods_and_charge_link_periods(
             charge_link_periods, metering_point_periods
         )
@@ -121,7 +121,7 @@ def _join_with_charge_link_and_metering_point_periods(
 
     charge_price_points = (
         charge_price_points.join(
-            charge_links_and_metering_point_periods,
+            charge_link_periods_and_metering_point_periods,
             on=[
                 DataProductColumnNames.calculation_id,
                 DataProductColumnNames.charge_key,
@@ -138,7 +138,7 @@ def _join_with_charge_link_and_metering_point_periods(
         )
         .select(
             charge_price_points["*"],
-            charge_links_and_metering_point_periods[
+            charge_link_periods_and_metering_point_periods[
                 DataProductColumnNames.grid_area_code
             ],
         )

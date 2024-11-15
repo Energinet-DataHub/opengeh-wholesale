@@ -18,7 +18,7 @@ class WholesaleBasisDataDatabase:
     METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods_v1"
     TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
     CHARGE_PRICE_POINTS_VIEW_NAME = "charge_price_points_v1"
-    CHARGE_LINKS_VIEW_NAME = "charge_link_periods_v1"
+    charge_link_periods_VIEW_NAME = "charge_link_periods_v1"
     CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
 
 

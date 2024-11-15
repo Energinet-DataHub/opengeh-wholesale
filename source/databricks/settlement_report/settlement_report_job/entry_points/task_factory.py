@@ -6,7 +6,9 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.entry_points.task_type import TaskType
-from settlement_report_job.entry_points.tasks.charge_links_task import ChargeLinksTask
+from settlement_report_job.entry_points.tasks.charge_link_periods_task import (
+    ChargeLinksTask,
+)
 from settlement_report_job.entry_points.tasks.energy_resuls_task import (
     EnergyResultsTask,
 )
