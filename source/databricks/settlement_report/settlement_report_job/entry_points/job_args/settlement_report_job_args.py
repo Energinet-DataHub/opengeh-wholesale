@@ -81,8 +81,6 @@ def parse_job_arguments(
             include_basis_data=job_args.include_basis_data,
         )
 
-        print("Settlement report args: ", settlement_report_args)
-
         return settlement_report_args
 
 
