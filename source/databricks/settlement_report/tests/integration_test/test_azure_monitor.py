@@ -21,7 +21,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
-
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -124,9 +124,12 @@ class TestWhenInvokedWithArguments:
 
         # Arrange
         valid_task_type = TaskType.TimeSeriesHourly
+        standard_wholesale_fixing_scenario_args.calculation_type = (
+            CalculationType.BALANCE_FIXING
+        )
         standard_wholesale_fixing_scenario_args.grid_area_codes = [
             "8054"
-        ]  # Should produce an error
+        ]  # Should produce an error with balance fixing
         self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
         applicationinsights_connection_string = (
             integration_test_configuration.get_applicationinsights_connection_string()
