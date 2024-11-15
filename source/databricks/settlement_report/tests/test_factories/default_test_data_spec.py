@@ -23,9 +23,7 @@ from test_factories.metering_point_time_series_factory import (
 )
 
 from test_factories.charge_price_points_factory import ChargePricePointsRow
-from test_factories.monthly_amounts_per_charge_factory import (
-    MonthlyAmountsPerChargeRow,
-)
+from test_factories.monthly_amounts_per_charge_factory import MonthlyAmountsPerChargeRow
 from test_factories.total_monthly_amounts_factory import TotalMonthlyAmountsRow
 from test_factories.charge_link_periods_factory import ChargeLinkPeriodsRow
 from test_factories.energy_factory import EnergyTestDataSpec
