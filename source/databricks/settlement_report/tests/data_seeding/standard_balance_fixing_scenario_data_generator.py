@@ -10,8 +10,8 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointTypeDataProductValue,
     SettlementMethodDataProductValue,
 )
-from tests.test_factories.default_test_data_spec import create_energy_results_data_spec
-from tests.test_factories import (
+from test_factories.default_test_data_spec import create_energy_results_data_spec
+from test_factories import (
     metering_point_time_series_factory,
     metering_point_periods_factory,
     latest_calculations_factory,
