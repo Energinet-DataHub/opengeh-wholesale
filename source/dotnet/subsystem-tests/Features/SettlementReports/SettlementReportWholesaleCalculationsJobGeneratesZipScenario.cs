@@ -56,7 +56,7 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
         // Expectations
         Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(15);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
-            $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
+            $"/wholesale_settlement_report_output/settlement_reports/3b0b3d20-59b3-4025-89e8-f45a18d8959d.zip";
     }
 
     [ScenarioStep(1)]
@@ -105,9 +105,19 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
 
     [ScenarioStep(4)]
     [SubsystemFact]
-    public async Task AndThen_ZipFileContainsCsvWithExpectedPrefix()
+    public async Task AndThen_ZipFileContainsCsvFilesWithExpectedPrefix()
     {
-        var expectedFilePrefixes = new[] { "ENERGYRESULTS", "WHOLESALERESULTS" };
+        var expectedFilePrefixes = new[]
+        {
+            "TSSD60",
+            "TSSD15",
+            "MDMP",
+            "CHARGELINK",
+            "CHARGEPRICE",
+            "RESULTENERGY",
+            "RESULTWHOLESALE",
+            "RESULTMONTHLY",
+        };
         await using var zipStream = await Fixture.GetFileStreamAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
 
         zipStream.Should().NotBeNull();
