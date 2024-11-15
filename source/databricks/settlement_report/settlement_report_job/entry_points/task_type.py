@@ -24,7 +24,8 @@ class TaskType(Enum):
     TimeSeriesQuarterly = 2
     MeteringPointPeriods = 3
     ChargeLinks = 4
-    EnergyResults = 5
-    WholesaleResults = 6
-    MonthlyAmounts = 7
-    Zip = 8
+    ChargePricePoints = 5
+    EnergyResults = 6
+    WholesaleResults = 7
+    MonthlyAmounts = 8
+    Zip = 9
