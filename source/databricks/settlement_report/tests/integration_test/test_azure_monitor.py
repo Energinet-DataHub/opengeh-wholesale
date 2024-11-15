@@ -104,7 +104,7 @@ class TestWhenInvokedWithArguments:
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
-    def test_add_info_log_record_to_azure_monitor_with_expected_settings(
+    def test_add_exception_log_record_to_azure_monitor_with_unexpected_settings(
         self,
         standard_wholesale_fixing_scenario_args: SettlementReportArgs,
         integration_test_configuration: IntegrationTestConfiguration,
