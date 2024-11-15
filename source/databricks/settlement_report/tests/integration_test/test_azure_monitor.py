@@ -125,7 +125,7 @@ class TestWhenInvokedWithArguments:
         # Arrange
         valid_task_type = TaskType.TimeSeriesHourly
         standard_wholesale_fixing_scenario_args.grid_area_codes = (
-            804  # Should produce an error
+            8054  # Should produce an error
         )
         self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
         applicationinsights_connection_string = (
