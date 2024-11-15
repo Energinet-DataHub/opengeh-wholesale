@@ -103,10 +103,24 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
         outputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
+    [ScenarioStep(4)]
+    [SubsystemFact]
+    public async Task AndThen_ZipFileContainsCsvWithExpectedPrefix()
+    {
+        var zipFilePath = Fixture.ScenarioState.ExpectedRelativeOutputFilePath;
+        var filePrefixes = new[] { "ENERGYRESULTS", "WHOLESALERESULTS" };
+
+        await using var zipStream = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
+        using var archive = new System.IO.Compression.ZipArchive(zipStream, System.IO.Compression.ZipArchiveMode.Read);
+
+        var entryFound = filePrefixes.Any(prefix => archive.Entries.Any(e => e.Name.StartsWith(prefix)));
+        entryFound.Should().BeTrue($"because we expected the zip file to contain a file with a name starting with one of the specified prefixes: {string.Join(", ", filePrefixes)}");
+    }
+
     /// <summary>
     /// In this step we verify the 'duration' of the job is within our 'performance goal'.
     /// </summary>
-    [ScenarioStep(4)]
+    [ScenarioStep(5)]
     [SubsystemFact]
     public void AndThen_JobDurationIsLessThanOrEqualToTimeLimit()
     {
